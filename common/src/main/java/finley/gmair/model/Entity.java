@@ -1,4 +1,4 @@
-package common.sunshine.model;
+package finley.gmair.model;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
