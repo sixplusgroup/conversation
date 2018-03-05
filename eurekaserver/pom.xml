@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>finley.gmair</groupId>
-    <artifactId>gateway</artifactId>
+    <artifactId>eureka-server</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <dependencyManagement>
@@ -28,7 +28,7 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+            <artifactId>spring-cloud-starter-eureka-server</artifactId>
             <version>1.4.3.RELEASE</version>
         </dependency>
     </dependencies>
@@ -38,7 +38,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.4.3.RELEASE</version>
             </plugin>
         </plugins>
     </build>

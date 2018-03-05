@@ -2,9 +2,11 @@ zuul:
   routes:
     message:
       path: /message/**
-      url: http://localhost:8001/message
+      url: http://127.0.0.1:8002/message
 
 ribbon:
   eureka:
     enabled: false
 
+server:
+  port: 8888

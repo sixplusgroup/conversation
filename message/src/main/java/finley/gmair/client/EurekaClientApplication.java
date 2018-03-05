@@ -19,6 +19,13 @@ public class EurekaClientApplication {
         SpringApplication.run(EurekaClientApplication.class, args);
     }
 
+    /**
+     * This method is called to send message to a target user
+     * phone number & message content should be passed
+     * signature will be loaded from configuration file
+     * @param form
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/send/single")
     public ResultData sendOne(MessageForm form) {
         ResultData result = new ResultData();
@@ -26,6 +33,13 @@ public class EurekaClientApplication {
         return result;
     }
 
+    /**
+     * This method is called to send message to a group of target user
+     * phone number & message content should be passed
+     * signature will be loaded from configuration file
+     * @param form
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/send/group")
     public ResultData sendGroup(MessageForm form) {
         ResultData result = new ResultData();
