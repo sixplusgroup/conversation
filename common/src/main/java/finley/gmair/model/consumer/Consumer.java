@@ -27,7 +27,7 @@ public class Consumer extends Entity{
 
     public Consumer(String name, String wechat, String address, String province, String city, String district, String phone) {
         this(name, wechat);
-        this.address = new Address(address, province, city, district);;
+        this.address = new Address(address, province, city, district);
         this.phone = new Phone(phone);
     }
 
