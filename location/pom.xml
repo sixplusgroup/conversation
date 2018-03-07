@@ -10,14 +10,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>finley.gmair</groupId>
-    <artifactId>common</artifactId>
+    <artifactId>location</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.46</version>
-        </dependency>
-    </dependencies>
+
 </project>
