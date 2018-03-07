@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SpringBootApplication
 @RequestMapping("auth")
-@MapperScan("finley.gmair.mapper")
 @ComponentScan("finley.gmair.service")
 @ComponentScan("finley.gmair.dao")
 public class AuthenticationApplication {
