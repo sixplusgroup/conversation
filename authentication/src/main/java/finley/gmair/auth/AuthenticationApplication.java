@@ -5,22 +5,23 @@ import finley.gmair.model.consumer.Consumer;
 import finley.gmair.service.ConsumerService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @SpringBootApplication
-@RequestMapping("auth")
+@RequestMapping("/auth")
 @ComponentScan("finley.gmair.service")
 @ComponentScan("finley.gmair.dao")
 public class AuthenticationApplication {
     @Autowired
+
     private ConsumerService consumerService;
 
     public static void main(String[] args) {
@@ -31,12 +32,21 @@ public class AuthenticationApplication {
     public ResultData register(ConsumerForm form) {
         ResultData result = new ResultData();
         Consumer consumer = new Consumer(form.getName(), form.getWechat(), form.getAddressDetail(), form.getAddressProvince(), form.getAddressCity(), form.getAddressDistrict(), form.getPhone());
-        ResultData response = consumerService.createConsumer(consumer);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-
+        if(!StringUtils.isEmpty(form.getUsername())) {
+            consumer.setUsername(form.getUsername());
         }
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-
+        try {
+            ResultData response = consumerService.createConsumer(consumer);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+            }
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to create consumer.");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }

@@ -22,7 +22,7 @@
     </select>
 
     <insert id="insert" parameterType="java.util.Map" useGeneratedKeys="false">
-        INSERT INTO gmair_userinfo.consumer_phone(phone_id, consumer_id, phone_number, create_time)
+        INSERT INTO gmair_userinfo.consumer_phone(phone_id, consumer_id, phone_number, mobile_preferred, block_flag, create_time)
         VALUES (#{phone.phoneId}, #{consumerId}, #{phone.number}, #{phone.preferred}, #{phone.blockFlag}, #{phone.createAt})
     </insert>
 
