@@ -2,7 +2,7 @@ package finley.gmair.model.district;
 
 import finley.gmair.model.Entity;
 
-public class city extends Entity {
+public class City extends Entity {
     private String cityId;
 
     private String provinceId;

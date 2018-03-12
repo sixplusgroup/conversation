@@ -32,12 +32,12 @@
         ORDER BY create_time DESC
     </select>
 
-    <insert id="insert" parameterType="finley.gmair.model.district.city" useGeneratedKeys="false">
+    <insert id="insert" parameterType="finley.gmair.model.district.City" useGeneratedKeys="false">
         INSERT INTO gmair_location.city_list(city_id, province_id, city_name, city_pinyin, block_flag, create_time)
         VALUES (#{cityId}, #{provinceId}, #{cityName}, #{cityPinyin}, #{blockFlag}, #{createAt})
     </insert>
 
-    <update id="update" parameterType="finley.gmair.model.district.city">
+    <update id="update" parameterType="finley.gmair.model.district.City">
         UPDATE gmair_location.city_list
         <set>
             <if test="provinceId != null">
