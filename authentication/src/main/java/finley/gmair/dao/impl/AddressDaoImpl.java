@@ -7,6 +7,7 @@ import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -15,6 +16,7 @@ import java.util.TreeMap;
 public class AddressDaoImpl extends BaseDao implements AddressDao{
 
     @Override
+    @Transactional
     public ResultData insert(Address address, String consumerId) {
         ResultData result = new ResultData();
         address.setAddressId(IDGenerator.generate("ADR"));

@@ -8,6 +8,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
 @Repository
 public class ConsumerDaoImpl extends BaseDao implements ConsumerDao {
     @Override
+    @Transactional
     public ResultData insert(Consumer consumer) {
         ResultData result = new ResultData();
         consumer.setConsumerId(IDGenerator.generate("CSR"));

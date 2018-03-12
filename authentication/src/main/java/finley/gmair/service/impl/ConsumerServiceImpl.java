@@ -11,7 +11,9 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -26,6 +28,7 @@ public class ConsumerServiceImpl implements ConsumerService {
     private AddressDao addressDao;
 
     @Override
+    @Transactional
     public ResultData createConsumer(Consumer consumer) {
         ResultData result = new ResultData();
         //save consumer data
@@ -65,5 +68,24 @@ public class ConsumerServiceImpl implements ConsumerService {
         ResultData result = new ResultData();
 
         return result;
+    }
+
+    /**
+     * This method is to query any result that match at least one of the conditions
+     * @param condition
+     * @return
+     */
+    @Override
+    public boolean existConsumer(Map<String, Object> condition) {
+        Map<String, Object> con = new HashMap<>();
+        for (Map.Entry<String, Object> e : condition.entrySet()) {
+            con.clear();
+            con.put(e.getKey(), e.getValue());
+            ResultData response = consumerDao.query(con);
+            if(response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                return true;
+            }
+        }
+        return false;
     }
 }

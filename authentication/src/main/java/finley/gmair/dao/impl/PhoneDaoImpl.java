@@ -8,6 +8,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.TreeMap;
 public class PhoneDaoImpl extends BaseDao implements PhoneDao {
 
     @Override
+    @Transactional
     public ResultData insert(Phone phone, String consumerId) {
         ResultData result = new ResultData();
         phone.setPhoneId(IDGenerator.generate("PHN"));
