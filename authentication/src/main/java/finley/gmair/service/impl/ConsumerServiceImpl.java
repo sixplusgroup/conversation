@@ -66,7 +66,18 @@ public class ConsumerServiceImpl implements ConsumerService {
     @Override
     public ResultData queryConsumer(Map<String, Object> condition) {
         ResultData result = new ResultData();
-
+        ResultData response = consumerDao.query(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query consumer information");
+            return result;
+        }
+        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No qualified user is found");
+            return result;
+        }
+        result.setData(response.getData());
         return result;
     }
 
