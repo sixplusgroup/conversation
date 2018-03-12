@@ -17,6 +17,8 @@
         <module>authentication</module>
         <module>gateway</module>
         <module>location</module>
+        <module>feign-server</module>
+        <module>ribbon-server</module>
     </modules>
 
     <parent>
