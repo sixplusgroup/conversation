@@ -26,7 +26,7 @@
             AND consumer_wechat = #{wechat}
         </if>
         <if test="phone != null">
-            AND phone = #{phone}
+            AND phone_number = #{phone}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}

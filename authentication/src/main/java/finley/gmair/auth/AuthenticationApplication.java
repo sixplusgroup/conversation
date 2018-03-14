@@ -24,8 +24,7 @@ import java.util.TimeZone;
 
 @RestController
 @RequestMapping("/auth")
-@ComponentScan("finley.gmair.service")
-@ComponentScan("finley.gmair.dao")
+@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.config", "finley.gmair.factory", "finley.gmair.controller"})
 @EnableCaching
 @SpringBootApplication
 public class AuthenticationApplication {
