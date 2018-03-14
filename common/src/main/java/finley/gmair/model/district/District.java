@@ -9,6 +9,17 @@ public class District extends Entity {
 
     private String districtName;
 
+    public District() {
+        super();
+    }
+
+    public District(String districtId, String cityId, String districtName) {
+        this();
+        this.districtId = districtId;
+        this.cityId = cityId;
+        this.districtName = districtName;
+    }
+
     public String getDistrictId() {
         return districtId;
     }

@@ -11,6 +11,18 @@ public class City extends Entity {
 
     private String cityPinyin;
 
+    public City() {
+        super();
+    }
+
+    public City(String cityId, String provinceId, String cityName, String cityPinyin) {
+        this();
+        this.cityId = cityId;
+        this.provinceId = provinceId;
+        this.cityName = cityName;
+        this.cityPinyin = cityPinyin;
+    }
+
     public String getCityId() {
         return cityId;
     }

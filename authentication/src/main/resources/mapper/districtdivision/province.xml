@@ -28,9 +28,23 @@
         ORDER BY create_time DESC
     </select>
 
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO gmair_location.province_list
+        (province_id, province_name, province_pinyin, block_flag, create_time)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+          (
+            #{item.provinceId}, #{item.provinceName}, #{item.provincePinyin},
+            #{item.blockFlag}, #{item.createAt}
+          )
+        </foreach>
+    </insert>
+
     <insert id="insert" parameterType="finley.gmair.model.district.Province" useGeneratedKeys="false">
-        INSERT INTO gmair_location.province_list(province_id, province_name, province_pinyin, block_flag, create_time)
-        VALUES (#{provinceId}, #{provinceName}, #{provincePinyin}, #{blockFlag}, #{createAt})
+        INSERT INTO gmair_location.province_list
+        (province_id, province_name, province_pinyin, block_flag, create_time)
+        VALUES
+        (#{provinceId}, #{provinceName}, #{provincePinyin}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="finley.gmair.model.district.Province">

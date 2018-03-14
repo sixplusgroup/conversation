@@ -9,6 +9,17 @@ public class Province extends Entity {
 
     private String provincePinyin;
 
+    public Province() {
+        super();
+    }
+
+    public Province(String provinceId, String provinceName, String provincePinyin) {
+        this();
+        this.provinceId = provinceId;
+        this.provinceName = provinceName;
+        this.provincePinyin = provincePinyin;
+    }
+
     public String getProvinceId() {
         return provinceId;
     }
