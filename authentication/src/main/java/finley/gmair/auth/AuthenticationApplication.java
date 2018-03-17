@@ -2,16 +2,23 @@ package finley.gmair.auth;
 
 import finley.gmair.form.consumer.ConsumerForm;
 import finley.gmair.form.consumer.LoginForm;
+import finley.gmair.form.message.MessageForm;
 import finley.gmair.model.consumer.Consumer;
 import finley.gmair.service.ConsumerService;
+import finley.gmair.service.MessageService;
 import finley.gmair.service.SerialService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +33,9 @@ import java.util.TimeZone;
 @RequestMapping("/auth")
 @ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.config", "finley.gmair.factory", "finley.gmair.controller"})
 @EnableCaching
+@EnableEurekaClient
+@EnableFeignClients(basePackages = "finley.gmair.service")
+@EnableDiscoveryClient
 @SpringBootApplication
 public class AuthenticationApplication {
     @Autowired
@@ -33,6 +43,9 @@ public class AuthenticationApplication {
 
     @Autowired
     private SerialService serialService;
+
+    @Autowired
+    private MessageService messageService;
 
     public static void main(String[] args) {
         SpringApplication.run(AuthenticationApplication.class, args);
@@ -118,6 +131,9 @@ public class AuthenticationApplication {
             return result;
         }
         Map<String, String> value = serialService.generate(phone);
+        // call message agent to send the text to corresponding phone number
+        // retrieve message template from database
+        ResultData response = messageService.sendOne(new MessageForm());
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(value.get(phone));
         return result;

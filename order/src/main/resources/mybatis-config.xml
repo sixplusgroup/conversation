@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <mappers>
+        <mapper resource="mapper/consumer/consumer.xml"/>
+        <mapper resource="mapper/consumer/consumeraddress.xml"/>
+        <mapper resource="mapper/consumer/consumerphone.xml"/>
+        <mapper resource="mapper/districtdivision/province.xml"/>
+        <mapper resource="mapper/districtdivision/city.xml"/>
+        <mapper resource="mapper/districtdivision/district.xml"/>
+    </mappers>
+</configuration>

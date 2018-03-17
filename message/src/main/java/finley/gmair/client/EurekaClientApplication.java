@@ -5,12 +5,14 @@ import finley.gmair.util.MessageUtil;
 import finley.gmair.util.ResultData;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@EnableDiscoveryClient
 @EnableEurekaClient
 @SpringBootApplication
 @RequestMapping("/message")
@@ -23,6 +25,7 @@ public class EurekaClientApplication {
      * This method is called to send message to a target user
      * phone number & message content should be passed
      * signature will be loaded from configuration file
+     *
      * @param form
      * @return
      */
@@ -37,6 +40,7 @@ public class EurekaClientApplication {
      * This method is called to send message to a group of target user
      * phone number & message content should be passed
      * signature will be loaded from configuration file
+     *
      * @param form
      * @return
      */
