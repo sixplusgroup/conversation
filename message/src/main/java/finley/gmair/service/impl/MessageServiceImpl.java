@@ -7,6 +7,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class MessageServiceImpl implements MessageService {
     private MessageDao messageDao;
 
     @Override
+    @Transactional
     public ResultData createTextMessage(TextMessage message) {
         ResultData result = new ResultData();
         ResultData response = messageDao.insert(message);
@@ -25,6 +27,7 @@ public class MessageServiceImpl implements MessageService {
             result.setData(response.getData());
         } else {
             result.setDescription(response.getDescription());
+            result.setDescription("Fail to save text message to database");
         }
         return result;
     }
@@ -35,11 +38,11 @@ public class MessageServiceImpl implements MessageService {
         ResultData response = messageDao.query(condition);
         result.setResponseCode(response.getResponseCode());
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return response;
+            result.setDescription("Fail to save text message to database");
         } else {
             List<TextMessage> list = (List<TextMessage>) response.getData();
             result.setData(list);
-            return result;
         }
+        return result;
     }
 }
