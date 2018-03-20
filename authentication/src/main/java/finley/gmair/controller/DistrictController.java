@@ -77,7 +77,7 @@ public class DistrictController {
                         cityItem.setCityName(jsonArray.getJSONArray(1).getJSONObject(p).get("fullname").toString());
                         JSONArray jsonArrayCityPinYin= (JSONArray) jsonArray.getJSONArray(1).getJSONObject(p).get("pinyin");
                         String citystr = null;
-                        for (int j=0;j<jsonArrayCityPinYin.size();j++){
+                        for (int j = 0; j < jsonArrayCityPinYin.size(); j++){
                             citystr += jsonArrayCityPinYin.get(j).toString();
                         }
                         cityItem.setCityPinyin(citystr);
@@ -90,19 +90,19 @@ public class DistrictController {
                         for (int j = 0; j < jsonArrayAreaCIDX.size(); j++) {
                             if (j == 0) {
                                 if (jsonArrayAreaCIDX.get(j) != null)
-                                    startAreaIndex = (int) jsonArrayAreaCIDX.get(j) + 493;
+                                    startAreaIndex = (int) jsonArrayAreaCIDX.get(j);
                             }
                             if (j == 1) {
                                 if (jsonArrayAreaCIDX.get(j) != null)
-                                    endAreaIndex = (int) jsonArrayAreaCIDX.get(j) + 493;
+                                    endAreaIndex = (int) jsonArrayAreaCIDX.get(j);
                             }
                         }
                         //通过获得的区的区间下标，遍历城市的区
                         if (startAreaIndex != -1 && endAreaIndex != -1) {
                             for (int k = startAreaIndex; k <= endAreaIndex; k++) {
-                                districtItem.setDistrictId(jsonArray.getJSONArray(1).getJSONObject(k).get("id").toString());
+                                districtItem.setDistrictId(jsonArray.getJSONArray(2).getJSONObject(k).get("id").toString());
                                 districtItem.setCityId(cityId);
-                                districtItem.setDistrictName(jsonArray.getJSONArray(1).getJSONObject(k).get("fullname").toString());
+                                districtItem.setDistrictName(jsonArray.getJSONArray(2).getJSONObject(k).get("fullname").toString());
                                 districtList.add(districtItem);
                             }
                         }
