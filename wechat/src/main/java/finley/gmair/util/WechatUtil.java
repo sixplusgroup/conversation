@@ -1,27 +1,15 @@
-package util;
-
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package finley.gmair.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import config.ReceptionConfig;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class WechatUtil {
 	private static Logger logger = LoggerFactory.getLogger(WechatUtil.class);
@@ -49,7 +37,7 @@ public class WechatUtil {
 			String message = new String(bytes, "UTF-8");
 			JSONObject object = JSON.parseObject(message);
 			result = object.getString("access_token");
-			ReceptionConfig.setJsapiTicket(queryJsApiTicket(result));
+			WechatProperties.setJsapiTicket(queryJsApiTicket(result));
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
