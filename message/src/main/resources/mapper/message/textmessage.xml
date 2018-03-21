@@ -9,7 +9,7 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <select id="query" parameterType="java.util.Map" resultMap="consumerVo">
+    <select id="query" parameterType="java.util.Map" resultMap="messageVo">
         SELECT message_id, phone, text, block_flag, create_time
         FROM gmair_message.text_message
         WHERE 1 = 1
@@ -19,7 +19,7 @@
         ORDER BY create_time DESC
     </select>
 
-    <insert id="insert" parameterType="finley.gmair.model.consumer.Consumer">
+    <insert id="insert" parameterType="finley.gmair.model.message.TextMessage" useGeneratedKeys="false">
         INSERT INTO gmair_message.text_message (message_id, phone, text, block_flag, create_time)
         VALUES (#{messageId}, #{phone}, #{text}, #{blockFlag}, #{createAt})
     </insert>
