@@ -10,16 +10,19 @@ eureka:
 
 zuul:
   routes:
-    management:
-      path: /manage/**
-      url: http://127.0.0.1:
     message:
       path: /message/**
-      url: http://127.0.0.1:8002/message
+      url: http://127.0.0.1:8001/message
+    location:
+      path: /location/**
+      url: http://127.0.0.1:8002/location
+    wechat:
+      path: /wechat/**
+      url: http://127.0.0.0:8003/wechat
 
 ribbon:
   eureka:
     enabled: true
 
 server:
-  port: 8001
+  port: 8888
