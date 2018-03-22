@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.wechat.accesstoken">
+    <resultMap id="accessTokenVo" type="finley.gmair.model.wechat.AccessToken">
+        <result property="accessToken" column="access_token"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.wechat.AccessToken">
+        INSERT INTO gmair_wechat.access_token (access_token, block_flag, create_time)
+        VALUES (#{accessToken}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="accessTokenVo">
+        SELECT access_token, block_flag, create_time
+        FROM gmair_wechat.access_token
+        WHERE block_flag = FALSE
+    </select>
+
+    <update id="update" parameterType="finley.gmair.model.wechat.AccessToken">
+        UPDATE gmair_wechat.access_token
+        SET access_token = #{accessToken},
+            block_flag   = #{blockFlag},
+            create_time  = #{createAt}
+    </update>
+</mapper>

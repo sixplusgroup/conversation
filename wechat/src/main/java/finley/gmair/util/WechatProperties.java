@@ -44,6 +44,11 @@ public class WechatProperties {
         WechatProperties.jsapiTicket = jsapiTicket;
     }
 
+    /**
+     * This method can only be called by Wechat Scheduler
+     *
+     * @param token
+     */
     public static void setAccessToken(String token) {
         accessToken = token;
     }
