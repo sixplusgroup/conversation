@@ -7,7 +7,7 @@ public class ArticleTemplate extends Entity {
 
     private String articleTitle;
 
-    private String descriptionType;
+    private DescriptionType descriptionType;
 
     private String descriptionContent;
 
@@ -17,9 +17,10 @@ public class ArticleTemplate extends Entity {
 
     public ArticleTemplate() {
         super();
+        this.descriptionType = DescriptionType.TEXT;
     }
 
-    public ArticleTemplate(String templateId, String articleTitle, String descriptionType, String descriptionContent, String pictureUrl, String articleUrl) {
+    public ArticleTemplate(String templateId, String articleTitle, DescriptionType descriptionType, String descriptionContent, String pictureUrl, String articleUrl) {
         this();
         this.templateId = templateId;
         this.articleTitle = articleTitle;
@@ -45,11 +46,11 @@ public class ArticleTemplate extends Entity {
         this.articleTitle = articleTitle;
     }
 
-    public String getDescriptionType() {
+    public DescriptionType getDescriptionType() {
         return descriptionType;
     }
 
-    public void setDescriptionType(String descriptionType) {
+    public void setDescriptionType(DescriptionType descriptionType) {
         this.descriptionType = descriptionType;
     }
 
