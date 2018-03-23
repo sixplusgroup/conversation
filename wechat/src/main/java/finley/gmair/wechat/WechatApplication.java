@@ -17,7 +17,7 @@ import java.util.List;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.scheduler", "finley.gmair.dao"})
+@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao"})
 public class WechatApplication {
     private Logger logger = LoggerFactory.getLogger(WechatApplication.class);
 

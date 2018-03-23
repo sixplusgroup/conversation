@@ -20,6 +20,8 @@
         <module>feign-server</module>
         <module>ribbon-server</module>
         <module>order</module>
+        <module>airquality</module>
+        <module>wechat</module>
     </modules>
 
     <parent>
