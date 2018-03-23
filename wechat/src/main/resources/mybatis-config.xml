@@ -6,5 +6,6 @@
     <mappers>
         <mapper resource="mapper/wechat/accesstoken.xml"></mapper>
         <mapper resource="mapper/wechat/wechatuser.xml"></mapper>
+        <mapper resource="mapper/wechat/autoreply.xml"></mapper>
     </mappers>
 </configuration>
