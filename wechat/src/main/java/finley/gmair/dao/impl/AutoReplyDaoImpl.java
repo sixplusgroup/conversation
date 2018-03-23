@@ -60,6 +60,6 @@ public class AutoReplyDaoImpl extends BaseDao implements AutoReplyDao {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
-        return null;
+        return result;
     }
 }
