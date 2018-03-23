@@ -52,7 +52,7 @@
                 article_title = #{articleTitle},
             </if>
             <if test="descriptionType != null">
-                description_type = #{descriptionType},
+                description_type = #{descriptionType, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
             </if>
             <if test="descriptionContent != null">
                 description_content = #{descriptionContent},
