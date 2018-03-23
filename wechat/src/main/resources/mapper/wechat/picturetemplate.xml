@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.wechat.picturetemplate">
+    <resultMap id="pictureTemplateVo" type="finley.gmair.model.wechat.PictureTemplate">
+        <result property="templateId" column="template_id"></result>
+        <result property="pictureUrl" column="picture_url"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.wechat.PictureTemplate" useGeneratedKeys="false">
+        INSERT INTO gmair_wechat.picture_template(template_id, picture_url, block_flag, create_time)
+        VALUES (#{templateId}, #{pictureUrl}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="pictureTemplateVo">
+        SELECT template_id, picture_url, block_flag, create_time
+        FROM gmair_wechat.picture_template
+        WHERE 1 = 1
+        <if test="templateId != null">
+            AND template_id = #{templateId}
+        </if>
+        <if test="pictureUrl != null">
+            AND picture_url = #{pictureUrl}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="update" parameterType="finley.gmair.model.wechat.PictureTemplate">
+        UPDATE gmair_wechat.picture_template
+        <set>
+            <if test="pictureUrl != null">
+                picture_url = #{pictureUrl},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag}
+            </if>
+        </set>
+        WHERE template_id = #{templateId}
+    </update>
+</mapper>
