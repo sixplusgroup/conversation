@@ -52,7 +52,6 @@
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},
             </if>
-            reply_id = #{replyId}
         </set>
         WHERE reply_id = #{replyId}
     </update>
