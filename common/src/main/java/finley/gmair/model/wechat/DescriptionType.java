@@ -9,6 +9,16 @@ public enum DescriptionType {
         this.code = code;
     }
 
+    public static DescriptionType convertToDescriptionType(int code) {
+        DescriptionType descriptionType = DescriptionType.TEXT;
+        switch (code) {
+            case 0: descriptionType = DescriptionType.TEXT; break;
+            case 1: descriptionType = DescriptionType.MACHINE_LIST; break;
+            default: break;
+        }
+        return descriptionType;
+    }
+
     public int getCode() {
         return code;
     }
