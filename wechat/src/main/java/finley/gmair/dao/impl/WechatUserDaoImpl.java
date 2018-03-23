@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.WechatUserDao;
 import finley.gmair.model.wechat.WechatUser;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ public class WechatUserDaoImpl extends BaseDao implements WechatUserDao {
     @Transactional
     public ResultData insert(WechatUser wechatUser) {
         ResultData result = new ResultData();
+        wechatUser.setUserId(IDGenerator.generate("WCU"));
         try {
             sqlSession.insert("gmair.wechat.user.insert", wechatUser);
             result.setData(wechatUser);
