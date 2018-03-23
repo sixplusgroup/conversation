@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.wechat.texttemplate">
+    <resultMap id="textTemplateVo" type="finley.gmair.model.wechat.TextTemplate">
+        <result property="templateId" column="template_id"></result>
+        <result property="messageType" column="message_type"></result>
+        <result property="response" column="response"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.wechat.TextTemplate" useGeneratedKeys="false">
+        INSERT INTO gmair_wechat.text_template(template_id, message_type, response, block_flag, create_time)
+        VALUES (#{templateId}, #{messageType}, #{response}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="textTemplateVo">
+        SELECT template_id, message_type, response, block_flag, create_time
+        FROM gmair_wechat.text_template
+        WHERE 1 = 1
+        <if test="templateId != null">
+            AND template_id = #{templateId}
+        </if>
+        <if test="messageType != null">
+            AND message_type = #{messageType}
+        </if>
+        <if test="response != null">
+            AND response = #{response}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="update" parameterType="finley.gmair.model.wechat.TextTemplate">
+        UPDATE gmair_wechat.text_template
+        <set>
+            <if test="messageType != null">
+                message_type = #{messageType},
+            </if>
+            <if test="response != null">
+                response = #{response},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag}
+            </if>
+        </set>
+        WHERE template_id = #{templateId}
+    </update>
+</mapper>
