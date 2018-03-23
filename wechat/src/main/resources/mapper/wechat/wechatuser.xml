@@ -2,6 +2,72 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.wechat.user">
     <resultMap id="userVo" type="finley.gmair.model.wechat.WechatUser">
-
+        <result property="userId" column="user_id"></result>
+        <result property="wechatId" column="wechat_id"></result>
+        <result property="nickName" column="nickname"></result>
+        <result property="userSex" column="user_sex"></result>
+        <result property="userCity" column="user_city"></result>
+        <result property="userProvince" column="user_province"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
     </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.wechat.WechatUser" useGeneratedKeys="false">
+        INSERT INTO gmair_wechat.wechat_user(user_id, wechat_id, nickname, user_sex, user_city, user_province, block_flag, create_time)
+        VALUES (#{userId}, #{wechatId}, #{nickName}, #{userSex}, #{userCity}, #{userProvince}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="userVo">
+        SELECT user_id, wechat_id, nickname, user_sex, user_city, user_province, block_flag, create_time
+        FROM gmair_wechat.wechat_user
+        WHERE 1 = 1
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        <if test="wechatId != null">
+            AND wechat_id = #{wechatId}
+        </if>
+        <if test="nickName != null">
+            AND nickname = #{nickName}
+        </if>
+        <if test="userSex != null">
+            AND user_sex = #{userSex}
+        </if>
+        <if test="userCity != null">
+            AND user_city = #{userCity}
+        </if>
+        <if test="userProvince != null">
+            AND user_provicne = #{userProvince}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="update" parameterType="finley.gmair.model.wechat.WechatUser">
+        UPDATE gmair_wechat.wechat_user
+        <set>
+            <if test="wechatId != null">
+                wechat_id = #{wechatId},
+            </if>
+            <if test="nickName != null">
+                nickname = #{nickName},
+            </if>
+            <if test="userSex != null">
+                user_sex = #{userSex},
+            </if>
+            <if test="userCity != null">
+                user_city = #{userCity},
+            </if>
+            <if test="userProvince != null">
+                user_provicne = #{userProvince},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            user_id = #{userId}
+        </set>
+        WHERE user_id = #{userId}
+    </update>
 </mapper>
