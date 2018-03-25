@@ -1,11 +1,10 @@
 package finley.gmair.model.district;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.Entity;
 
 public class District extends Entity {
     private String districtId;
-
-    private String cityId;
 
     private String districtName;
 
@@ -13,11 +12,14 @@ public class District extends Entity {
         super();
     }
 
-    public District(String districtId, String cityId, String districtName) {
+    public District(String districtId, String districtName) {
         this();
         this.districtId = districtId;
-        this.cityId = cityId;
         this.districtName = districtName;
+    }
+
+    public District(JSONObject object) {
+        this(object.getString("id"), object.getString("fullname"));
     }
 
     public String getDistrictId() {
@@ -26,14 +28,6 @@ public class District extends Entity {
 
     public void setDistrictId(String districtId) {
         this.districtId = districtId;
-    }
-
-    public String getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(String cityId) {
-        this.cityId = cityId;
     }
 
     public String getDistrictName() {
