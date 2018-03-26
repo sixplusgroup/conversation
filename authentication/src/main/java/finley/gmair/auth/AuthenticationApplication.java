@@ -29,7 +29,7 @@ import java.util.TimeZone;
 
 @RestController
 @RequestMapping("/auth")
-@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.config", "finley.gmair.factory", "finley.gmair.controller"})
+@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.config", "finley.gmair.controller"})
 @EnableCaching
 @EnableEurekaClient
 @EnableFeignClients(basePackages = "finley.gmair.service")
