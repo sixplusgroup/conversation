@@ -52,9 +52,6 @@ public class LocationApplication {
         return result;
     }
 
-    @Autowired
-    private DistrictDivisionService districtDivisionService;
-
     @RequestMapping(method = RequestMethod.POST, value = "/init")
     public ResultData init() {
         ResultData result = new ResultData();
@@ -72,6 +69,10 @@ public class LocationApplication {
                     province = provinces.getJSONObject(i);
                     city = cities.getJSONObject(j);
                     district = districts.getJSONObject(k);
+                    if (k == 0) {
+                        locationService.createProvince(new Province(province));
+                        locationService.createCity(new City(city), province.getString("id"));
+                    }
                     //if out of city range but still in province range, read the next city
                     int pEnd = province.getJSONArray("cidx").getIntValue(1);
                     int cEnd = city.getJSONArray("cidx").getIntValue(1);
