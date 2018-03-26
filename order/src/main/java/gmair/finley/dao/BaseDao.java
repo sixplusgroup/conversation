@@ -1,4 +1,4 @@
-package finley.gmair.dao;
+package gmair.finley.dao;
 
 import org.apache.ibatis.session.SqlSession;
 
