@@ -50,7 +50,7 @@
                 template_id = #{templateId},
             </if>
             <if test="blockFlag != null">
-                block_flag = #{blockFlag},
+                block_flag = #{blockFlag}
             </if>
         </set>
         WHERE reply_id = #{replyId}
