@@ -64,7 +64,7 @@
                 article_url = #{articleUrl},
             </if>
             <if test="blockFlag != null">
-                block_flag = #{blockFlag},
+                block_flag = #{blockFlag}
             </if>
         </set>
         WHERE template_id = #{templateId}
