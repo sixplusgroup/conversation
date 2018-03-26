@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.FileInputStream;
 
 @SpringBootApplication
-@ComponentScan("gmair.finley.dao")
+@ComponentScan({"gmair.finley.dao", "gmair.finley.controller", "gmair.finley.service"})
 @RestController
 @RequestMapping("/order")
 public class OrderApplication {

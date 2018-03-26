@@ -1,0 +1,52 @@
+package gmair.finley.dao.impl;
+
+
+import finley.gmair.model.order.OrderMission;
+import finley.gmair.util.IDGenerator;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
+import finley.gmair.vo.order.OrderMissionVo;
+import gmair.finley.dao.BaseDao;
+import gmair.finley.dao.OrderMissionDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+
+@Repository
+public class OrderMissionDaoImpl extends BaseDao implements OrderMissionDao {
+	private Logger logger = LoggerFactory.getLogger(OrderMissionDaoImpl.class);
+
+	@Override
+	public ResultData insert(OrderMission mission) {
+		ResultData result = new ResultData();
+		mission.setMissionId(IDGenerator.generate("MIS"));
+		try {
+			sqlSession.insert("management.ordermission.insert", mission);
+			result.setData(mission);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			result.setDescription(e.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public ResultData query(Map<String, Object> condition) {
+		ResultData result = new ResultData();
+		try {
+			List<OrderMissionVo> list = sqlSession.selectList("management.ordermission.query", condition);
+			if(list.isEmpty()) {
+				result.setResponseCode(ResponseCode.RESPONSE_NULL);
+			}
+			result.setData(list);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			result.setDescription(e.getMessage());
+		}
+		return result;
+	}
+
+}

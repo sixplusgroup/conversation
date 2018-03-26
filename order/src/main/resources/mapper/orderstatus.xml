@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="management.orderstatus">
+	<resultMap id="OrderStatusVo" type="vo.order.OrderStatusVo">
+		<result property = "orderId" column="order_id" />
+		<result property = "status" column="order_status" typeHandler="handler.OrderStatusHandler"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	
+	<select id="queryOrder" parameterType="java.util.Map" resultType = "java.lang.String">
+		select distinct order_status
+		from `gmair_order`.guomai_order
+		order by order_status asc
+	</select>
+</mapper>

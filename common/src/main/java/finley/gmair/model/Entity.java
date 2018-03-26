@@ -9,8 +9,8 @@ import java.sql.Timestamp;
  * Created by sunshine on 4/8/16.
  */
 public abstract class Entity {
-    private boolean blockFlag;
-    private Timestamp createAt;
+    protected boolean blockFlag;
+    protected Timestamp createAt;
 
     public Entity() {
         this.blockFlag = false;
