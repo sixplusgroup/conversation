@@ -9,7 +9,6 @@ import com.sun.jersey.api.client.WebResource;
 import finley.gmair.model.district.City;
 import finley.gmair.model.district.District;
 import finley.gmair.model.district.Province;
-import finley.gmair.service.DistrictDivisionService;
 import finley.gmair.service.LocationService;
 import finley.gmair.util.HttpDeal;
 import finley.gmair.util.LocationProperties;
@@ -25,9 +24,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @SpringBootApplication
