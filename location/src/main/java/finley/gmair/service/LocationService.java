@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.district.City;
 import finley.gmair.model.district.District;
 import finley.gmair.model.district.Province;
@@ -15,4 +16,6 @@ public interface LocationService {
     ResultData createCity(City city, String provinceId);
 
     ResultData createDistrict(District district, String cityId);
+
+    void process(JSONObject response);
 }
