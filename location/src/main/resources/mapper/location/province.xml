@@ -13,13 +13,16 @@
 
     <insert id="insert" parameterType="finley.gmair.model.district.Province" useGeneratedKeys="false">
         INSERT INTO gmair_location.province_list (province_id, province_name, province_pinyin, longitude, latitude, block_flag, create_time)
-        VALUES (#{provinceId}, #{provinceName}, #{provincePinyin}, #{longitude}, #{latitude}, #{blockflag}, #{createAt})
+        VALUES (#{provinceId}, #{provinceName}, #{provincePinyin}, #{longitude}, #{latitude}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="provinceVo">
         SELECT province_id, province_name, province_pinyin, longitude, latitude, block_flag, create_time
         FROM gmair_location.province_list
         WHERE 1 = 1
+        <if test="provinceId != null">
+            AND province_id = #{provinceId}
+        </if>
         <if test="provinceName != null">
             AND province_name = #{provinceName}
         </if>

@@ -18,7 +18,7 @@
              #{city.blockFlag}, #{city.createAt})
     </insert>
 
-    <select id="select" parameterType="java.util.Map" resultMap="cityVo">
+    <select id="query" parameterType="java.util.Map" resultMap="cityVo">
         SELECT city_id, city_name, city_pinyin, longitude, latitude, block_flag, create_time
         FROM gmair_location.city_list
         WHERE 1 = 1

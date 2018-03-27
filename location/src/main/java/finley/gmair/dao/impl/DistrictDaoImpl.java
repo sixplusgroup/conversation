@@ -1,5 +1,6 @@
 package finley.gmair.dao.impl;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.DistrictDao;
 import finley.gmair.model.district.District;
@@ -28,6 +29,7 @@ public class DistrictDaoImpl extends BaseDao implements DistrictDao {
             result.setData(district);
         } catch (Exception e) {
             logger.error(e.getMessage());
+            logger.error(JSON.toJSONString(district) + "city: " + cityId);
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

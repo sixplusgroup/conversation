@@ -14,7 +14,6 @@ import java.util.Map;
 
 @Repository
 public class ProvinceDaoImpl extends BaseDao implements ProvinceDao {
-    private Logger logger = LoggerFactory.getLogger(ProvinceDaoImpl.class);
 
     @Override
     public ResultData insertProvince(Province province) {
@@ -23,7 +22,6 @@ public class ProvinceDaoImpl extends BaseDao implements ProvinceDao {
             sqlSession.insert("gmair.location.province.insert", province);
             result.setData(province);
         } catch (Exception e) {
-            logger.error(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -34,13 +32,12 @@ public class ProvinceDaoImpl extends BaseDao implements ProvinceDao {
     public ResultData queryProvince(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<Province> list = sqlSession.selectList("gmair.location.province.select", condition);
+            List<Province> list = sqlSession.selectList("gmair.location.province.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(list);
         } catch (Exception e) {
-            logger.error(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

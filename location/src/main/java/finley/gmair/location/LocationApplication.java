@@ -10,10 +10,7 @@ import finley.gmair.model.district.City;
 import finley.gmair.model.district.District;
 import finley.gmair.model.district.Province;
 import finley.gmair.service.LocationService;
-import finley.gmair.util.HttpDeal;
-import finley.gmair.util.LocationProperties;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
+import finley.gmair.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,25 +57,51 @@ public class LocationApplication {
                 JSONArray cities = data.getJSONArray(1);
                 JSONArray districts = data.getJSONArray(2);
                 JSONObject province, city, district;
-                for (int i = 0, j = 0, k = 0; k < districts.size(); k++) {
+                boolean flag = false;
+                int i, j, k;
+                for (i = 0, j = 0, k = 0; k < districts.size(); k++) {
                     //assign the province, city and district
                     province = provinces.getJSONObject(i);
                     city = cities.getJSONObject(j);
                     district = districts.getJSONObject(k);
-                    if (k == 0) {
+                    if (i == 0 && j == 0 && k == 0) {
                         locationService.createProvince(new Province(province));
                         locationService.createCity(new City(city), province.getString("id"));
                     }
-                    //if out of city range but still in province range, read the next city
                     int pEnd = province.getJSONArray("cidx").getIntValue(1);
+                    //judge whether the province is a province-level municipality
+                    if (!city.containsKey("cidx")) {
+                        flag = true;
+                        if (j < pEnd + 1) {
+                            if (j != 0) locationService.createCity(new City(city), province.getString("id"));
+                            j++;
+                            k--;
+                            continue;
+                        }
+                        province = provinces.getJSONObject(++i);
+                        //move to the next province
+                        locationService.createProvince(new Province(province));
+                        k--;
+                        continue;
+                    }
+                    if (flag) {
+                        if (j >= pEnd + 1) {
+                            province = provinces.getJSONObject(++i);
+                            locationService.createProvince(new Province(province));
+                        }
+                        locationService.createCity(new City(city), province.getString("id"));
+                        flag = false;
+                    }
+                    //judge whether the city exist in city list
                     int cEnd = city.getJSONArray("cidx").getIntValue(1);
-                    if (k < cEnd) {
+                    //if out of city range but still in province range, read the next city
+                    if (k < cEnd + 1) {
                         //the district still belongs to the current city
                         locationService.createDistrict(new District(district), city.getString("id"));
                         continue;
                     }
                     city = cities.getJSONObject(++j);
-                    if (j < pEnd) {
+                    if (j < pEnd + 1) {
                         //the city still belongs to the current province
                         locationService.createCity(new City(city), province.getString("id"));
                         k--;
@@ -87,8 +110,25 @@ public class LocationApplication {
                     province = provinces.getJSONObject(++i);
                     //move to the next province
                     locationService.createProvince(new Province(province));
+                    locationService.createCity(new City(city), province.getString("id"));
                     k--;
-                    continue;
+                }
+                for (; j < cities.size(); j++) {
+                    province = provinces.getJSONObject(i);
+                    city = cities.getJSONObject(j);
+                    int pEnd = province.getJSONArray("cidx").getIntValue(1);
+                    if (j < pEnd + 1) {
+                        locationService.createCity(new City(city), province.getString("id"));
+                        continue;
+                    }
+                    province = provinces.getJSONObject(++i);
+                    j--;
+                    //move to the next province
+                    locationService.createProvince(new Province(province));
+                }
+                for (; i < provinces.size(); i++) {
+                    province = provinces.getJSONObject(i);
+                    locationService.createProvince(new Province(province));
                 }
             } else {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);

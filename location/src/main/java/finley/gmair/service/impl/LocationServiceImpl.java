@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -32,7 +33,20 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public ResultData createProvince(Province province) {
         ResultData result = new ResultData();
-        ResultData response = provinceDao.insertProvince(province);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("provinceId", province.getProvinceId());
+        ResultData response = provinceDao.queryProvince(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("Province already exist");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query province information from database");
+            return result;
+        }
+        response = provinceDao.insertProvince(province);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -65,7 +79,20 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public ResultData createCity(City city, String provinceId) {
         ResultData result = new ResultData();
-        ResultData response = cityDao.insertCity(city, provinceId);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("cityId", city.getCityId());
+        ResultData response = cityDao.queryCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("City already exist");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query city information from database");
+            return result;
+        }
+        response = cityDao.insertCity(city, provinceId);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
