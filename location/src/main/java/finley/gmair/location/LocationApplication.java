@@ -12,9 +12,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @SpringBootApplication
@@ -53,6 +57,54 @@ public class LocationApplication {
     @RequestMapping(method = RequestMethod.POST, value = "/ip/resolve")
     public ResultData ip2address(String ip) {
         ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/province/list")
+    public ResultData province() {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = locationService.fetchProvince(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No province information found");
+        }
+        return result;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{provinceId}/cities")
+    public ResultData city(@PathVariable("provinceId") String province) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(province)) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Please make sure the request is illegal");
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("provinceId", province);
+        condition.put("blockFlag", false);
+        ResultData response = locationService.fetchCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No city information found");
+        }
+        return result;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{cityId}/districts")
+    public ResultData district(@PathVariable("cityId") String city) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(city)) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Please make sure the request is illegal");
+        }
 
         return result;
     }

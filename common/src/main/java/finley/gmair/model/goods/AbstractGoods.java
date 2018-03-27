@@ -1,4 +1,4 @@
-package finley.gmair.model.order;
+package finley.gmair.model.goods;
 
 import finley.gmair.model.Entity;
 

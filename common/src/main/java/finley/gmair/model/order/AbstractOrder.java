@@ -7,7 +7,7 @@ import java.util.List;
 public abstract class AbstractOrder extends Entity {
     private String orderId;
 
-    private List<AbstractOrderItem> list;
+    protected List<OrderItem> list;
 
     private String consignee;
 
@@ -21,15 +21,15 @@ public abstract class AbstractOrder extends Entity {
         super();
     }
 
-    public AbstractOrder(List<AbstractOrderItem> list) {
+    public AbstractOrder(List<OrderItem> list) {
         this();
         this.list = list;
-        for (AbstractOrderItem item : list) {
+        for (OrderItem item : list) {
             totalPrice += item.getItemPrice();
         }
     }
 
-    public AbstractOrder(List<AbstractOrderItem> list, String consignee, String phone, String address) {
+    public AbstractOrder(List<OrderItem> list, String consignee, String phone, String address) {
         this(list);
         this.consignee = consignee;
         this.phone = phone;
@@ -44,11 +44,11 @@ public abstract class AbstractOrder extends Entity {
         this.orderId = orderId;
     }
 
-    public List<AbstractOrderItem> getList() {
+    public List<OrderItem> getList() {
         return list;
     }
 
-    public void setList(List<AbstractOrderItem> list) {
+    public void setList(List<OrderItem> list) {
         this.list = list;
     }
 

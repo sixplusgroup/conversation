@@ -1,52 +1,56 @@
 package finley.gmair.model.order;
 
-
 import finley.gmair.model.Entity;
 
-public class OrderItem extends Entity{
-    private String orderItemId;
-    private String orderId;
-    private String commodityId;
-    private int commodityQuantity;
+public class OrderItem extends Entity {
+    private String itemId;
 
-    public String getOrderItemId() {
-        return orderItemId;
-    }
+    private String itemName;
 
-    public void setOrderItemId(String orderItemId) {
-        this.orderItemId = orderItemId;
-    }
+    private double quantity;
 
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getCommodityId() {
-        return commodityId;
-    }
-
-    public void setCommodityId(String commodityId) {
-        this.commodityId = commodityId;
-    }
-
-    public int getCommodityQuantity() {
-        return commodityQuantity;
-    }
-
-    public void setCommodityQuantity(int commodityQuantity) {
-        this.commodityQuantity = commodityQuantity;
-    }
+    private double itemPrice;
 
     public OrderItem() {
+        super();
     }
 
-    public OrderItem(String orderId, String commodityId, int commodityQuantity) {
-        this.orderId = orderId;
-        this.commodityId = commodityId;
-        this.commodityQuantity = commodityQuantity;
+    public OrderItem(String itemName, double quantity, double itemPrice) {
+        this();
+        this.itemName = itemName;
+        this.quantity = quantity;
+        this.itemPrice = itemPrice;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(double quantity) {
+        this.quantity = quantity;
+    }
+
+    public double getItemPrice() {
+        return itemPrice;
+    }
+
+    public void setItemPrice(double itemPrice) {
+        this.itemPrice = itemPrice;
     }
 }

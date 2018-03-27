@@ -60,7 +60,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public ResultData queryProvince(Map<String, Object> condition) {
+    public ResultData fetchProvince(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = provinceDao.queryProvince(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -73,7 +73,7 @@ public class LocationServiceImpl implements LocationService {
         }
         if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to query province information from database");
+            result.setDescription("Fail to retrieve province from database");
         }
         return result;
     }
@@ -102,6 +102,25 @@ public class LocationServiceImpl implements LocationService {
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         result.setDescription("Fail to store city to database");
+        return result;
+    }
+
+    @Override
+    public ResultData fetchCity(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = cityDao.queryCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (result.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No city found from database");
+        }
+        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve city from database");
+        }
         return result;
     }
 

@@ -11,9 +11,11 @@ import java.util.Map;
 public interface LocationService {
     ResultData createProvince(Province province);
 
-    ResultData queryProvince(Map<String, Object> condition);
+    ResultData fetchProvince(Map<String, Object> condition);
 
     ResultData createCity(City city, String provinceId);
+
+    ResultData fetchCity(Map<String, Object> condition);
 
     ResultData createDistrict(District district, String cityId);
 
