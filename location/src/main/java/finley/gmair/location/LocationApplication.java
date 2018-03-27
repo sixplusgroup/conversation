@@ -30,6 +30,12 @@ public class LocationApplication {
         SpringApplication.run(LocationApplication.class, args);
     }
 
+    /**
+     * This method is to analyze the user input and map it to a address
+     *
+     * @param address
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/address/resolve")
     public ResultData geocoder(String address) {
         ResultData result = new ResultData();
@@ -37,6 +43,26 @@ public class LocationApplication {
         return result;
     }
 
+    /**
+     * This will tell the location of the ip
+     * if no parameter ip is specified, will use the request source ip by default
+     *
+     * @param ip
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/ip/resolve")
+    public ResultData ip2address(String ip) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    /**
+     * This method is called to initialize the province, city, district information
+     * Do not call this method if you do not know what you are doing
+     *
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/init")
     public ResultData init() {
         ResultData result = new ResultData();
