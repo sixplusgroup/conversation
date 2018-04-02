@@ -11,6 +11,9 @@ public class PlatformOrder extends AbstractOrder {
 
     private String district;
 
+    private OrderChannel channel;
+
+
     public PlatformOrder() {
         super();
     }

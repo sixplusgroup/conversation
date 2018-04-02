@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.order.platform.channel">
+    <resultMap id="channelVo" type="finley.gmair.model.order.OrderChannel">
+        <result property="channelId" column="channel_id"></result>
+        <result property="channelName" column="channel_name"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.order.OrderChannel" useGeneratedKeys="false">
+        INSERT INTO gmair_order.platform_order_channel (channel_id, channel_name, block_flag, create_time)
+        VALUES (#{channelId}, #{channelName}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="channelVo">
+        SELECT channel_id, channel_name, block_flag, create_time
+        FROM gmair_order.platform_order_channel
+        WHERE 1 = 1
+        <if test="channelId != null">
+            AND channel_id = #{channelId}
+        </if>
+        <if test="channelName != null">
+            AND channel_name = #{channelName}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <update id="update" parameterType="finley.gmair.model.order.OrderChannel">
+        UPDATE gmair_order.platform_order_channel
+        <set>
+            <if test="channelName != null">
+                channel_name = #{channelName},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            channel_id = #{channelId}
+        </set>
+        WHERE channel_id = #{channelId}
+    </update>
+</mapper>
