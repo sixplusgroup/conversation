@@ -96,6 +96,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ResultData fetchPlatformOrder(Map<String, Object> condition) {
         ResultData result = new ResultData();
+        ResultData response = orderDao.queryOrder(condition);
 
         return result;
     }
