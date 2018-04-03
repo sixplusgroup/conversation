@@ -12,10 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,6 +58,7 @@ public class LocationApplication {
         return result;
     }
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/province/list")
     public ResultData province() {
         ResultData result = new ResultData();
@@ -77,6 +75,7 @@ public class LocationApplication {
         return result;
     }
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/{provinceId}/cities")
     public ResultData city(@PathVariable("provinceId") String province) {
         ResultData result = new ResultData();
@@ -98,6 +97,7 @@ public class LocationApplication {
         return result;
     }
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/{cityId}/districts")
     public ResultData district(@PathVariable("cityId") String city) {
         ResultData result = new ResultData();
@@ -105,7 +105,17 @@ public class LocationApplication {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("Please make sure the request is illegal");
         }
-
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("cityId", city);
+        condition.put("blockFlag", false);
+        ResultData response = locationService.fetchDistrict(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No district information found");
+        }
         return result;
     }
 

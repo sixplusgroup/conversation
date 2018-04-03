@@ -139,6 +139,25 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    public ResultData fetchDistrict(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = districtDao.queryDistrict(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (result.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No district found from database");
+        }
+        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve district information");
+        }
+        return result;
+    }
+
+    @Override
     public void process(JSONObject response) {
         JSONArray data = response.getJSONArray("result");
         JSONArray provinces = data.getJSONArray(0);

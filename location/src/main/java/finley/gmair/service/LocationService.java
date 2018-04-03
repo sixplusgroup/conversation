@@ -19,5 +19,7 @@ public interface LocationService {
 
     ResultData createDistrict(District district, String cityId);
 
+    ResultData fetchDistrict(Map<String, Object> condition);
+
     void process(JSONObject response);
 }
