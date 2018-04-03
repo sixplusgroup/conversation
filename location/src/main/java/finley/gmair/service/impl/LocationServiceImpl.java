@@ -67,11 +67,11 @@ public class LocationServiceImpl implements LocationService {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
-        if (result.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No province found from database");
         }
-        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to retrieve province from database");
         }
@@ -113,11 +113,11 @@ public class LocationServiceImpl implements LocationService {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
-        if (result.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No city found from database");
         }
-        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to retrieve city from database");
         }
@@ -146,11 +146,11 @@ public class LocationServiceImpl implements LocationService {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
-        if (result.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No district found from database");
         }
-        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to retrieve district information");
         }
