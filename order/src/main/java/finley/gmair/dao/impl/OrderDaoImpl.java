@@ -17,7 +17,8 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
         ResultData result = new ResultData();
         order.setOrderId(IDGenerator.generate("ODR"));
         try {
-            sqlSession.insert("gmair.order.insert", order);
+            sqlSession.insert("gmair.order.platform.insert", order);
+            result.setData(order);
         }catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());

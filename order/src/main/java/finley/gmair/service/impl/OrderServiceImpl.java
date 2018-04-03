@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.order.OrderChannel;
 import finley.gmair.model.order.OrderItem;
 import finley.gmair.model.order.PlatformOrder;
@@ -17,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -52,7 +54,21 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ResultData createPlatformOrderChannel(OrderChannel channel) {
         ResultData result = new ResultData();
-        ResultData response = channelDao.insertChannel(channel);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("channelName", channel.getChannelName());
+        condition.put("blockFlag", false);
+        ResultData response = channelDao.queryChannel(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription(new StringBuffer("Channel with name: ").append(channel.getChannelName()).append(" already exist").toString());
+            return result;
+        }
+        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to finish the prerequisite check");
+            return result;
+        }
+        response = channelDao.insertChannel(channel);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -78,6 +94,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public ResultData fetchPlatformOrder(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @Override
+    public ResultData createPlatformOrder(PlatformOrder order) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @Override
+    public ResultData updatePlatformOrder(PlatformOrder order) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @Override
     public ResultData process(MultipartFile file) {
         ResultData result = new ResultData();
         try {
@@ -91,7 +128,8 @@ public class OrderServiceImpl implements OrderService {
                 return result;
             }
             Workbook workbook = WorkbookFactory.create(of);
-
+            List<PlatformOrder> list = process(workbook);
+            result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
@@ -104,16 +142,25 @@ public class OrderServiceImpl implements OrderService {
         if (sheet == null) {
             return null;
         }
-        List<PlatformOrder> list = new ArrayList<>();
         Row header = sheet.getRow(0);
         int[] index = index(header);
         if (index == null) {
             return null;
         }
+        List<PlatformOrder> list = new ArrayList<>();
         int row = 1;
         Row current = sheet.getRow(row);
         while (current != null) {
             String channel = stringValue(0, index, current);
+            //check whether the channel exist, if not, log it as a new channel
+            new Thread(() -> {
+                Map<String, Object> condition = new HashMap<>();
+                condition.put("channelName", channel);
+                condition.put("blockFlag", false);
+                ResultData response = channelDao.queryChannel(condition);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_NULL)
+                    createPlatformOrderChannel(new OrderChannel(channel));
+            });
             String number = stringValue(1, index, current);
             String model = stringValue(2, index, current);
             double quantity = doubleValue(3, index, current);
@@ -123,8 +170,20 @@ public class OrderServiceImpl implements OrderService {
             String address = stringValue(7, index, current);
             String description = stringValue(8, index, current);
             OrderItem item = new OrderItem(model, quantity, 0);
+            List<OrderItem> items = new ArrayList<>(Arrays.asList(item));
+            ResultData response = locationService.geocoder(address);
+            PlatformOrder order = new PlatformOrder(items, number, username, phone, address, channel, description);
+            order.setCreateAt(new Timestamp(date.getTime()));
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                JSONObject location = ((JSONObject) response.getData()).getJSONObject("address_components");
+                String provicne = location.getString("province");
+                String city = location.getString("city");
+                String district = location.getString("district");
+                order.setLocation(provicne, city, district);
+            }
+            list.add(order);
         }
-        return null;
+        return list;
     }
 
     private int[] index(Row row) {
@@ -147,7 +206,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private String stringValue(int i, int[] index, Row row) {
-        return StringUtils.isEmpty(row.getCell(index[i])) ? "" : row.getCell(index[i]).getStringCellValue();
+        return StringUtils.isEmpty(row.getCell(index[i])) ? "" : row.getCell(index[i]).getStringCellValue().trim();
     }
 
     private double doubleValue(int i, int[] index, Row row) {

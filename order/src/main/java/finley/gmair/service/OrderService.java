@@ -15,5 +15,11 @@ public interface OrderService {
 
     ResultData updatePlatformOrderChannel(OrderChannel channel);
 
+    ResultData fetchPlatformOrder(Map<String, Object> condition);
+
+    ResultData createPlatformOrder(PlatformOrder order);
+
+    ResultData updatePlatformOrder(PlatformOrder order);
+
     ResultData process(MultipartFile file);
 }

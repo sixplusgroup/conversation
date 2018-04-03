@@ -6,3 +6,10 @@ CREATE TABLE `gmair_order`.`platform_order_channel` (
   `create_time`  DATETIME    NOT NULL,
   PRIMARY KEY (`channel_id`)
 );
+
+#2018.04.03
+ALTER TABLE `gmair_order`.`platform_order`
+  ADD COLUMN `order_channel` VARCHAR(45) NOT NULL
+  AFTER `total_price`,
+  ADD COLUMN `description` VARCHAR(100) NULL
+  AFTER `order_channel`;

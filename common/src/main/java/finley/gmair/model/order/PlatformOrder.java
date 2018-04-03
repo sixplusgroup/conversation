@@ -11,7 +11,9 @@ public class PlatformOrder extends AbstractOrder {
 
     private String district;
 
-    private OrderChannel channel;
+    private String channel;
+
+    private String description;
 
 
     public PlatformOrder() {
@@ -33,6 +35,14 @@ public class PlatformOrder extends AbstractOrder {
     public PlatformOrder(List<OrderItem> list, String orderNo, String province, String city, String district) {
         this(orderNo, province, city, district);
         this.list = list;
+    }
+
+    public PlatformOrder(List<OrderItem> list, String orderNo, String consignee, String phone, String address, String channel, String description) {
+        super(list, consignee, phone, address);
+        this.orderNo = orderNo;
+        this.list = list;
+        this.description = description;
+        this.channel = channel;
     }
 
     public String getOrderNo() {
@@ -65,5 +75,27 @@ public class PlatformOrder extends AbstractOrder {
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public void setLocation(String province, String city, String district) {
+        this.province = province;
+        this.city = city;
+        this.district = district;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
