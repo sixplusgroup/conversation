@@ -1,4 +1,4 @@
-package gmair.finley.dao;
+package finley.gmair.dao;
 
 import finley.gmair.model.order.OrderChannel;
 import finley.gmair.util.ResultData;

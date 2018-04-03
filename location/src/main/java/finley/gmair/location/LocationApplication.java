@@ -24,6 +24,8 @@ import java.util.Map;
 public class LocationApplication {
     private final static String TENCENT_DISTRICT_URL = "http://apis.map.qq.com/ws/district/v1/list";
 
+    private final static String TENCENT_GEO_URL = "http://apis.map.qq.com/ws/geocoder/v1/";
+
     @Autowired
     private LocationService locationService;
 
@@ -40,7 +42,20 @@ public class LocationApplication {
     @RequestMapping(method = RequestMethod.POST, value = "/address/resolve")
     public ResultData geocoder(String address) {
         ResultData result = new ResultData();
-
+        if (StringUtils.isEmpty(address)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("The address cannot be empty");
+            return result;
+        }
+        String url = new StringBuffer(TENCENT_GEO_URL).append("?key=").append(LocationProperties.getValue("tencent_map_key")).append("&address=").append(address.trim()).toString();
+        JSONObject response = JSON.parseObject(HttpDeal.getResponse(url));
+        if (!StringUtils.isEmpty(response) && response.getInteger("status") == 0) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getJSONObject("result"));
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Cannot resolve the address at the moment");
+        }
         return result;
     }
 

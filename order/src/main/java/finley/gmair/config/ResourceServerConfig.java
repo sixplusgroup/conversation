@@ -1,4 +1,4 @@
-package gmair.finley.config;
+package finley.gmair.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

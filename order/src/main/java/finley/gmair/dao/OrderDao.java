@@ -1,4 +1,4 @@
-package gmair.finley.dao;
+package finley.gmair.dao;
 
 import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.util.ResultData;

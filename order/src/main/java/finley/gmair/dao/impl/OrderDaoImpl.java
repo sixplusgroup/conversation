@@ -1,11 +1,11 @@
-package gmair.finley.dao.impl;
+package finley.gmair.dao.impl;
 
+import finley.gmair.dao.BaseDao;
+import finley.gmair.dao.OrderDao;
 import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import gmair.finley.dao.BaseDao;
-import gmair.finley.dao.OrderDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
