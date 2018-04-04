@@ -139,6 +139,13 @@ public class OrderServiceImpl implements OrderService {
     public ResultData updatePlatformOrder(PlatformOrder order) {
         ResultData result = new ResultData();
         ResultData response = orderDao.updateOrder(order);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to update order with id: ").append(order.getOrderId()).append(" to ").append(order.toString()).toString());
+        }
         return result;
     }
 
