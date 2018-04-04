@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.dao.OrderItemDao;
 import finley.gmair.model.order.OrderChannel;
 import finley.gmair.model.order.OrderItem;
 import finley.gmair.model.order.PlatformOrder;
@@ -25,6 +26,9 @@ import java.util.*;
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderDao orderDao;
+
+    @Autowired
+    private OrderItemDao orderItemDao;
 
     @Autowired
     private ChannelDao channelDao;
@@ -116,14 +120,25 @@ public class OrderServiceImpl implements OrderService {
     public ResultData createPlatformOrder(PlatformOrder order) {
         ResultData result = new ResultData();
         //first store order and then store order item
-
+        ResultData response = orderDao.insertOrder(order);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store platform order with: " + order.toString());
+        }
+        String orderId = ((PlatformOrder) response.getData()).getOrderId();
+        order.setOrderId(orderId);
+        //insert order item
+        List<OrderItem> list = order.getList();
+        list.forEach(item -> orderItemDao.insert(item, orderId));
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(order);
         return result;
     }
 
     @Override
     public ResultData updatePlatformOrder(PlatformOrder order) {
         ResultData result = new ResultData();
-
+        ResultData response = orderDao.updateOrder(order);
         return result;
     }
 
