@@ -27,6 +27,6 @@ public class SetupProviderDaoImpl extends BaseDao implements SetupProviderDao{
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
-        return null;
+        return result;
     }
 }
