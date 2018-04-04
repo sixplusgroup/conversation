@@ -15,9 +15,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@RequestMapping("/wechat")
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao"})
+@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
     private Logger logger = LoggerFactory.getLogger(WechatApplication.class);
 

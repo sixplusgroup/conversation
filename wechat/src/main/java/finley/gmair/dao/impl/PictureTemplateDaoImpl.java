@@ -8,11 +8,13 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public class PictureTemplateDaoImpl extends BaseDao implements PictureTemplateDao {
     private Logger logger = LoggerFactory.getLogger(PictureTemplateDaoImpl.class);
 
