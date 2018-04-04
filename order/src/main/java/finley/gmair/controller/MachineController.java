@@ -41,7 +41,7 @@ public class MachineController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", 0);
-        ResultData response = machineService.fetchInstallType(condition);
+        ResultData response = machineService.fetchSetupProvider(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setData(response.getData());
         } else {
