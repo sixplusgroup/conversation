@@ -21,7 +21,7 @@ zuul:
       url: http://127.0.0.1:8003/wechat
     order:
       path: /order/**
-      url: http://127.0.0.1:8004/wechat
+      url: http://127.0.0.1:8005/wechat
 
 ribbon:
   eureka:
