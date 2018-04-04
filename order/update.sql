@@ -16,17 +16,9 @@ ALTER TABLE `gmair_order`.`platform_order`
 
 #2018.04.04
 create table `gmair_order`.`machine_install_type`(
-	  mis_id varchar(20),
+	  mit_id varchar(20),
     install_type varchar(45),
     block_flag tinyint(1) default 0,
     create_time datetime,
     primary key (mis_id)
-)
-
-create table `airdevice`.`setup_provider`(
-	provider_id varchar(20),
-    provider_name varchar(45),
-    block_flag tinyint(1) default 0,
-    create_time datetime,
-    primary key (provider_id)
 )

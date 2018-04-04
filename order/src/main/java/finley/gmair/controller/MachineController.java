@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController("/order")
+@RestController
+@RequestMapping("/order")
 public class MachineController {
 
     @Autowired

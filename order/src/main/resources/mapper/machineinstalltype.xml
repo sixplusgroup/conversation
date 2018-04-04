@@ -10,7 +10,7 @@
 
     <select id="query" parameterType="java.util.Map" resultMap="MachineInstallTypeVo">
         SELECT *
-        FROM `gmair_order`.`setup_provider`
+        FROM `gmair_order`.`machine_install_type`
         where 1 = 1
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}

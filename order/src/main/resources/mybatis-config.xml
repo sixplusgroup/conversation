@@ -7,6 +7,6 @@
         <mapper resource="mapper/platformorder.xml" />
         <mapper resource="mapper/platformorderchannel.xml" />
         <mapper resource="mapper/platformorderitem.xml" />
-        <mapper resource="mapper/machineinstalltype/xml" />
+        <mapper resource="mapper/machineinstalltype.xml" />
     </mappers>
 </configuration>
