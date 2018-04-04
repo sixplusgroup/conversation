@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.machineInstall">
+    <resultMap id="MachineInstallTypeVo" type="finley.gmair.vo.machine.MachineInstallTypeVo">
+        <result property="mitId" column="mit_id" />
+        <result property="installType" column="install_type" />
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="MachineInstallTypeVo">
+        SELECT *
+        FROM `gmair_order`.`setup_provider`
+        where 1 = 1
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+</mapper>

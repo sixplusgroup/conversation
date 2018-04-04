@@ -4,14 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <mappers>
-        <mapper resource="mapper/order.xml"/>
-        <mapper resource="mapper/guomaiorder.xml" />
-        <mapper resource="mapper/machinemission.xml" />
-        <mapper resource="mapper/orderchannel.xml" />
-        <mapper resource="mapper/orderdiversion/xml" />
-        <mapper resource="mapper/orderitem.xml" />
-        <mapper resource="mapper/ordermission.xml" />
-        <mapper resource="mapper/orderstatus.xml" />
-        <mapper resource="mapper/setupprovider.xml" />
+        <mapper resource="mapper/platformorder.xml" />
+        <mapper resource="mapper/platformorderchannel.xml" />
+        <mapper resource="mapper/platformorderitem.xml" />
+        <mapper resource="mapper/machineinstalltype/xml" />
     </mappers>
 </configuration>
