@@ -97,13 +97,25 @@ public class OrderServiceImpl implements OrderService {
     public ResultData fetchPlatformOrder(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = orderDao.queryOrder(condition);
-
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No platform order found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to fetch platform order");
+        }
         return result;
     }
 
     @Override
     public ResultData createPlatformOrder(PlatformOrder order) {
         ResultData result = new ResultData();
+        //first store order and then store order item
 
         return result;
     }
