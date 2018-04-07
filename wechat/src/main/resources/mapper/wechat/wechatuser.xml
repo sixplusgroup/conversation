@@ -61,7 +61,7 @@
                 user_city = #{userCity},
             </if>
             <if test="userProvince != null">
-                user_provicne = #{userProvince},
+                user_province = #{userProvince},
             </if>
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},
