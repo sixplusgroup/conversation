@@ -1,7 +1,7 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.wechat.AccessToken;
-import finley.gmair.service.AccessTokenService;
+import finley.gmair.model.wechat.AutoReply;
+import finley.gmair.service.AutoReplyService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -15,17 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/wechat/token")
-public class AccessTokenController {
-    private Logger logger = LoggerFactory.getLogger(AccessTokenController.class);
+@RequestMapping("/wechat/autoreply")
+public class AutoReplyController {
+    private Logger logger = LoggerFactory.getLogger(AutoReplyController.class);
 
     @Autowired
-    private AccessTokenService accessTokenService;
+    private AutoReplyService autoReplyService;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResultData createAccessToken(AccessToken token) {
+    public ResultData create(AutoReply reply) {
         ResultData result = new ResultData();
-        ResultData response = accessTokenService.create(token);
+        ResultData response = autoReplyService.create(reply);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -37,31 +37,34 @@ public class AccessTokenController {
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public ResultData queryAccessToken() {
+    public ResultData query() {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        ResultData response = accessTokenService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        ResultData response = autoReplyService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(response.getDescription());
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-        } else {
-            result.setResponseCode(response.getResponseCode());
-            result.setDescription(response.getDescription());
         }
         return result;
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ResultData updateAccessToken(AccessToken token) {
+    public ResultData update(AutoReply reply) {
         ResultData result = new ResultData();
-        ResultData response = accessTokenService.modify(token);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        } else {
+        ResultData response = autoReplyService.modify(reply);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
         }
         return result;
     }

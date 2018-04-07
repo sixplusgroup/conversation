@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,26 +61,32 @@ public class AutoReplyServiceImpl implements AutoReplyService {
     public ResultData modify(AutoReply reply) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("replyId", reply.getReplyId());
-        ResultData response = autoReplyDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No autoreply found from database");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        if (StringUtils.isEmpty(reply.getReplyId())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to query autoreply information from database");
+            result.setDescription("Can't update autoreply without replyId");
+            return result;
+        } else {
+            condition.put("replyId", reply.getReplyId());
+            ResultData response = autoReplyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No autoreply found from database");
+                return result;
+            }
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to query autoreply information from database");
+                return result;
+            }
+            response = autoReplyDao.update(reply);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                return result;
+            }
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update autoreply to database");
             return result;
         }
-        response = autoReplyDao.update(reply);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("Fail to update autoreply to database");
-        return result;
     }
 }

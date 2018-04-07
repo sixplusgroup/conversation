@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,18 +28,12 @@ public class WechatUserServiceImpl implements WechatUserService {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("wechatId", user.getWechatId());
-        ResultData response = wechatUserDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        if (existWechatUser(condition)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Wechatuser already exist");
             return result;
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to query wechatuser information from database");
-            return result;
-        }
-        response = wechatUserDao.insert(user);
+        ResultData response = wechatUserDao.insert(user);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -72,26 +67,46 @@ public class WechatUserServiceImpl implements WechatUserService {
     public ResultData modify(WechatUser user) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("userId", user.getUserId());
-        ResultData response = wechatUserDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No wechatuser found from database");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        if (StringUtils.isEmpty(user.getUserId())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to query wechatuser information from database");
+            result.setDescription("Can't update wechatuser without userId");
+            return result;
+        } else {
+            condition.put("userId", user.getUserId());
+            ResultData response = wechatUserDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No wechatuser found from database");
+                return result;
+            }
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to query wechatuser information from database");
+                return result;
+            }
+            response = wechatUserDao.update(user);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                return result;
+            }
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update wechatuser to database");
             return result;
         }
-        response = wechatUserDao.update(user);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            return result;
+    }
+
+    @Override
+    public boolean existWechatUser(Map<String, Object> condition) {
+        Map<String, Object> con = new HashMap<>();
+        for (Map.Entry<String, Object> e : condition.entrySet()) {
+            con.clear();
+            con.put(e.getKey(), e.getValue());
+            ResultData response = wechatUserDao.query(con);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                return true;
+            }
         }
-        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("Fail to update wechatuser to database");
-        return result;
+        return false;
     }
 }

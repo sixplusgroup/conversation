@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,26 +61,32 @@ public class PictureTemplateServiceImpl implements PictureTemplateService {
     public ResultData modify(PictureTemplate template) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("templateId", template.getTemplateId());
-        ResultData response = pictureTemplateDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No picturetemplate found from database");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        if (StringUtils.isEmpty(template.getTemplateId())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to query picturetemplate information from database");
+            result.setDescription("Can't update picturetemplate without templateId");
+            return result;
+        } else {
+            condition.put("templateId", template.getTemplateId());
+            ResultData response = pictureTemplateDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No picturetemplate found from database");
+                return result;
+            }
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to query picturetemplate information from database");
+                return result;
+            }
+            response = pictureTemplateDao.update(template);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                return result;
+            }
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update picturetemplate to database");
             return result;
         }
-        response = pictureTemplateDao.update(template);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("Fail to update picturetemplate to database");
-        return result;
     }
 }

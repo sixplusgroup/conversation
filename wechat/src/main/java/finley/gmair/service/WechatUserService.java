@@ -11,4 +11,6 @@ public interface WechatUserService {
     ResultData fetch(Map<String, Object> condition);
 
     ResultData modify(WechatUser user);
+
+    boolean existWechatUser(Map<String, Object> condition);
 }
