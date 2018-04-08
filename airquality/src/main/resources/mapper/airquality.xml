@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.airquality.airquality">
+
+
+    <insert id="insert" parameterType="finley.gmair.model.air.AirQuality">
+        INSERT INTO `gmair_airquality`.`gmair_airquality`
+        (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
+        ,block_flag, create_time)
+        VALUES
+        (
+        #{airQuality.cityId}, #{airQuality.aqi}, #{airQuality.aqiLevel}, #{airQuality.primePollution},
+        #{airQuality.pm25}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
+        #{airQuality.so2}, #{airQuality.recordTime}, #{airQuality.blockFlag}, #{airQuality.createTime}
+        )
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO `gmair_airquality`.`gmair_airquality`
+        (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
+        ,block_flag, create_time)
+        VALUES
+        <foreach collection="list" separator="," index="index" item="airQuality">
+            (
+            #{airQuality.cityId}, #{airQuality.aqi}, #{airQuality.aqiLevel}, #{airQuality.primePollution},
+            #{airQuality.pm25}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
+            #{airQuality.so2}, #{airQuality.recordTime}, #{airQuality.blockFlag}, #{airQuality.createTime}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertLatest" parameterType="finley.gmair.model.air.AirQuality">
+        INSERT INTO `gmair_airquality`.`city_latest_aqi`
+        (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
+        ,block_flag, create_time)
+        VALUES
+        (
+        #{airQuality.cityId}, #{airQuality.aqi}, #{airQuality.aqiLevel}, #{airQuality.primePollution},
+        #{airQuality.pm25}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
+        #{airQuality.so2}, #{airQuality.recordTime}, #{airQuality.blockFlag}, #{airQuality.createTime}
+        )
+    </insert>
+
+    <insert id="insertLatestBatch" parameterType="java.util.List">
+        INSERT INTO `gmair_airquality`.`gmair_airquality`
+        (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
+        ,block_flag, create_time)
+        VALUES
+        <foreach collection="list" separator="," index="index" item="airQuality">
+            (
+            #{airQuality.cityId}, #{airQuality.aqi}, #{airQuality.aqiLevel}, #{airQuality.primePollution},
+            #{airQuality.pm25}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
+            #{airQuality.so2}, #{airQuality.recordTime}, #{airQuality.blockFlag}, #{airQuality.createTime}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="empty">
+        DELETE from `gmair_airquality`.`city_latest_aqi`;
+    </delete>
+</mapper>

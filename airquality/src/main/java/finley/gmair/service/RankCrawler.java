@@ -7,6 +7,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class RankCrawler {
     private final static String AIR_RANK = "http://pm25.in/rank";
     private final static String AIR_URL = "http://pm25.in";
@@ -37,12 +40,13 @@ public class RankCrawler {
                 Elements tds = tr.getElementsByTag("td");
                 AirQuality airQuality = new AirQuality();
                 try {
-                    airQuality.setRank(Integer.parseInt(tds.get(0).text()));
                     Element cityHref = tds.get(1).getElementsByTag("a").first();
-                    airQuality.setCity(cityHref.text());
+                    //todo use city name to get city id
+                    airQuality.setCityId(cityHref.text());
+
                     airQuality.setUrl(cityHref.attr("href"));
                     airQuality.setAqi(Double.parseDouble(tds.get(2).text()));
-                    airQuality.setClassification(tds.get(3).text());
+                    airQuality.setAqiLevel(tds.get(3).text());
                     airQuality.setPrimePollution(tds.get(4).text());
                     airQuality.setPm25(Double.parseDouble(tds.get(5).text()));
                     airQuality.setPm10(Double.parseDouble(tds.get(6).text()));
@@ -56,6 +60,7 @@ public class RankCrawler {
                     e.printStackTrace();
                 }
             }
+
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

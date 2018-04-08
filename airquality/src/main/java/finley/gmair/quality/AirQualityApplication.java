@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.service"})
+@ComponentScan({"finley.gmair.service", "finley.gmair.dao"})
 public class AirQualityApplication {
     public static void main(String[] args) {
         SpringApplication.run(AirQualityApplication.class, args);

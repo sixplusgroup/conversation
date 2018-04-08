@@ -6,11 +6,10 @@ import java.sql.Timestamp;
 
 public class AirQuality extends Entity{
 
-    private int rank;
-    private String city;
+    private String cityId;
     private String url;
     private double aqi;
-    private String classification;
+    private String aqiLevel;
     private String primePollution;
     private double pm25;
     private double pm10;
@@ -18,22 +17,7 @@ public class AirQuality extends Entity{
     private double no2;
     private double o3;
     private double so2;
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
+    private Timestamp recordTime;
 
     public String getUrl() {
         return url;
@@ -51,12 +35,20 @@ public class AirQuality extends Entity{
         this.aqi = aqi;
     }
 
-    public String getClassification() {
-        return classification;
+    public String getCityId() {
+        return cityId;
     }
 
-    public void setClassification(String classification) {
-        this.classification = classification;
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getAqiLevel() {
+        return aqiLevel;
+    }
+
+    public void setAqiLevel(String aqiLevel) {
+        this.aqiLevel = aqiLevel;
     }
 
     public String getPrimePollution() {
@@ -115,4 +107,11 @@ public class AirQuality extends Entity{
         this.so2 = so2;
     }
 
+    public Timestamp getRecordTime() {
+        return recordTime;
+    }
+
+    public void setRecordTime(Timestamp recordTime) {
+        this.recordTime = recordTime;
+    }
 }
