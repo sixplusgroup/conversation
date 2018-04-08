@@ -1,4 +1,4 @@
-DROP TABLE if EXISTS `text_template``;
+DROP TABLE if EXISTS `text_template`;
 CREATE TABLE `text_template` (
 `template_id`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 `message_type`  varchar(45) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
