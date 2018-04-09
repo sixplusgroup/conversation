@@ -6,10 +6,7 @@ import finley.gmair.util.RequestUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -29,10 +26,11 @@ public class OrderController {
      * @param request
      * @return
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/upload")
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.POST, value = "/upload")
     public ResultData upload(MultipartHttpServletRequest request) {
         ResultData result = new ResultData();
-        MultipartFile file = RequestUtil.getFile(request, "order-list");
+        MultipartFile file = RequestUtil.getFile(request, "order_list");
         ResultData response = orderService.process(file);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

@@ -116,6 +116,14 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
+    /**
+     * This method will save the order record to database
+     * step 1: save the order information
+     * step 2: save the order item list
+     *
+     * @param order
+     * @return
+     */
     @Override
     public ResultData createPlatformOrder(PlatformOrder order) {
         ResultData result = new ResultData();

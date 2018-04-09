@@ -5,14 +5,17 @@ import finley.gmair.model.Entity;
 public class MessageTemplate extends Entity {
     private String templateId;
 
+    private MessageCatalog catalog;
+
     private String message;
 
     public MessageTemplate() {
         super();
     }
 
-    public MessageTemplate(String message) {
+    public MessageTemplate(MessageCatalog catalog, String message) {
         this();
+        this.catalog = catalog;
         this.message = message;
     }
 
@@ -30,5 +33,13 @@ public class MessageTemplate extends Entity {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public MessageCatalog getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(MessageCatalog catalog) {
+        this.catalog = catalog;
     }
 }

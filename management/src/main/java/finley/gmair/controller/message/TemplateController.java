@@ -24,8 +24,9 @@ public class TemplateController {
             result.setDescription("Please fill the message template first");
             return result;
         }
+        MessageCatalog catalog = MessageCatalog.AUTHENTICATION;
         //create the template
-        MessageTemplate template = new MessageTemplate(form.getText());
+        MessageTemplate template = new MessageTemplate(catalog, form.getText());
         return result;
     }
 
