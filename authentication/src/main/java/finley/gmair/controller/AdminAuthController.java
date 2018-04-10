@@ -7,6 +7,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ public class AdminAuthController {
     @Autowired
     private AdminService adminService;
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/admin/login")
     public ResultData login(LoginForm form) {
         ResultData result = new ResultData();
