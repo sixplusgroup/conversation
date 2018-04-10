@@ -6,7 +6,7 @@ eureka:
   client:
     healthcheck: true
     service-url:
-      defaultZone: http://localhost:8000/eureka/
+      defaultZone: http://127.0.0.1:8000/eureka/
 
 zuul:
   routes:
@@ -16,12 +16,9 @@ zuul:
     location:
       path: /location/**
       url: http://127.0.0.1:8002/location
-    wechat:
-      path: /wechat/**
-      url: http://127.0.0.1:8003/wechat
-    order:
-      path: /order/**
-      url: http://127.0.0.1:8005/order
+    auth:
+      path: /auth/**
+      url: http://127.0.0.1:8003/auth
 
 ribbon:
   eureka:
