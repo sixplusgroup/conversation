@@ -7,11 +7,9 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +21,7 @@ public class AdminAuthController {
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/admin/login")
-    public ResultData login(LoginForm form) {
+    public ResultData login(@RequestBody LoginForm form) {
         ResultData result = new ResultData();
         if (!StringUtils.isEmpty(form.getEmail()) && !StringUtils.isEmpty(form.getPassword())) {
             String email = form.getEmail();
@@ -46,6 +44,8 @@ public class AdminAuthController {
             }
             return result;
         }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Please make sure you fill the username and password");
         return result;
     }
 }
