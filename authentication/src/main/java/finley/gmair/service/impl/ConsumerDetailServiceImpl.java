@@ -1,9 +1,9 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.service.ConsumerService;
+import finley.gmair.model.admin.Admin;
+import finley.gmair.service.AdminService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -20,19 +20,19 @@ import java.util.Map;
 public class ConsumerDetailServiceImpl implements UserDetailsService{
 
     @Autowired
-    ConsumerService consumerService;
+    AdminService adminService;
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         List<SimpleGrantedAuthority> authorities = List.of();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("phone", userName);
-        ResultData resultData = consumerService.queryConsumer(condition);
+        condition.put("username", userName);
+        ResultData resultData = adminService.fetchAdmin(condition);
         if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
             throw new UsernameNotFoundException("User not found");
         }
-        ConsumerVo consumer = ((List<ConsumerVo>) resultData.getData()).get(0);
+        Admin admin = ((List<Admin>) resultData.getData()).get(0);
 
-        return new User(consumer.getUsername(), "123456", authorities);
+        return new User(admin.getUsername(), admin.getPassword(), authorities);
     }
 }
