@@ -29,10 +29,19 @@ public class ConsumerDetailServiceImpl implements UserDetailsService{
         condition.put("username", userName);
         ResultData resultData = adminService.fetchAdmin(condition);
         if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            throw new UsernameNotFoundException("User not found");
+            //use email login
+            condition.clear();
+            condition.put("email", userName);
+            resultData = adminService.fetchAdmin(condition);
+            if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                throw new UsernameNotFoundException("no user");
+            }
+            Admin admin = ((List<Admin>) resultData.getData()).get(0);
+            return new User(admin.getEmail(), admin.getPassword(), authorities);
         }
+        //user name login
         Admin admin = ((List<Admin>) resultData.getData()).get(0);
-
         return new User(admin.getUsername(), admin.getPassword(), authorities);
+
     }
 }
