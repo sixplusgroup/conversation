@@ -21,7 +21,7 @@ public class City extends LocationEntity {
     }
 
     public City(JSONObject object) {
-        this(object.getString("id"), object.getString("name"), object.getString("pinyin"), object.getJSONObject("location").getDouble("lng"), object.getJSONObject("location").getDouble("lat"));
+        this(object.getString("id"), object.getString("fullname"), object.getString("pinyin"), object.getJSONObject("location").getDouble("lng"), object.getJSONObject("location").getDouble("lat"));
     }
 
     public String getCityId() {
