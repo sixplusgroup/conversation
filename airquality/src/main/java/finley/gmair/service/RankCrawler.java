@@ -2,26 +2,35 @@ package finley.gmair.service;
 
 import finley.gmair.model.air.AirQuality;
 import finley.gmair.model.air.MonitorStation;
+import finley.gmair.service.feign.LocationFeign;
 import finley.gmair.util.RegExpUtil;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class RankCrawler {
     private final static String AIR_RANK = "http://pm25.in/rank";
     private final static String AIR_URL = "http://pm25.in";
+
+    @Autowired
+    LocationFeign locationFeign;
+
+    @Autowired
+    ObscureCityCacheService obscureCityCacheService;
+
+    @Autowired
+    ProvinceCityCacheService provinceCityCacheService;
 
     public void rank() {
         Map<String, AirQuality> map = new HashMap<>();
@@ -42,8 +51,32 @@ public class RankCrawler {
                 try {
                     Element cityHref = tds.get(1).getElementsByTag("a").first();
                     //todo use city name to get city id
-                    airQuality.setCityId(cityHref.text());
-
+                    String obscureCityName = cityHref.text();
+                    ResultData response = obscureCityCacheService.fetch(obscureCityName);
+                    if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        // if we have city name in the cache
+                        String cityId = (String) response.getData();
+                        airQuality.setCityId(cityId);
+                    } else {
+                        // if we do not have city in cache, we need to fetch using feign invoke
+                        response = locationFeign.geocoder(obscureCityName);
+                        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                            LinkedHashMap<String, Object> linkedHashMap = (LinkedHashMap<String, Object>) response.getData();
+                            LinkedHashMap<String, String> addressComponents =
+                                    (LinkedHashMap<String, String>) linkedHashMap.get("address_components");
+                            String accurateCity = addressComponents.get("city");
+                            response = provinceCityCacheService.fetch(accurateCity);
+                            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                                String cityId = (String) response.getData();
+                                airQuality.setCityId(cityId);
+                                obscureCityCacheService.generate(obscureCityName, cityId);
+                            } else {
+                                System.out.println(accurateCity);
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
                     airQuality.setUrl(cityHref.attr("href"));
                     airQuality.setAqi(Double.parseDouble(tds.get(2).text()));
                     airQuality.setAqiLevel(tds.get(3).text());
@@ -61,7 +94,7 @@ public class RankCrawler {
                 }
             }
 
-
+            System.out.println();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             //fail to connect to the page, have another try in 5 minutes
