@@ -26,6 +26,8 @@
         <module>wechat</module>
         <module>core</module>
         <module>express</module>
+        <module>machine</module>
+        <module>installation</module>
     </modules>
 
     <parent>
