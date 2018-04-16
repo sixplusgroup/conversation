@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ConsumerDetailServiceImpl implements UserDetailsService{
+public class AdminDetailServiceImpl implements UserDetailsService{
 
     @Autowired
     AdminService adminService;
