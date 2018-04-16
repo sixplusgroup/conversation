@@ -14,7 +14,8 @@
         <module>reception</module>
         <module>management</module>
         <module>common</module>
-        <module>authentication</module>
+        <module>auth-admin</module>
+        <module>auth-consumer</module>
         <module>gateway</module>
         <module>gmbatis</module>
         <module>location</module>
@@ -23,6 +24,8 @@
         <module>order</module>
         <module>airquality</module>
         <module>wechat</module>
+        <module>core</module>
+        <module>express</module>
     </modules>
 
     <parent>

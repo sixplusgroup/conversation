@@ -1,4 +1,8 @@
 package finley.gmair.controller;
 
-public class AssignController {
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class CommunicationController {
+
 }

@@ -1,7 +1,9 @@
 package finley.gmair.client;
 
 import finley.gmair.form.message.MessageForm;
+import finley.gmair.form.message.MessageTemplateForm;
 import finley.gmair.model.message.MessageCatalog;
+import finley.gmair.model.message.MessageTemplate;
 import finley.gmair.model.message.TextMessage;
 import finley.gmair.service.MessageService;
 import finley.gmair.service.MessageTemplateService;
@@ -14,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -133,7 +136,18 @@ public class EurekaClientApplication {
                 return result;
         }
         condition.put("blockFlag", false);
+        return result;
+    }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/template/create")
+    public ResultData createTemplate(MessageTemplateForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getCatalog()) || StringUtils.isEmpty(form.getText())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please ensure that all the required fields are filled with proper value");
+            return result;
+        }
+        MessageTemplate template = new MessageTemplate(MessageCatalog.fromValue(form.getCatalog()), form.getText());
         return result;
     }
 }

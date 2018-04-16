@@ -10,7 +10,7 @@ public interface ConsumerService {
     @Transactional
     ResultData createConsumer(Consumer consumer);
 
-    ResultData queryConsumer(Map<String, Object> condition);
+    ResultData fetchConsumer(Map<String, Object> condition);
 
     boolean existConsumer(Map<String, Object> condition);
 }
