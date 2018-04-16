@@ -16,9 +16,20 @@ zuul:
     location:
       path: /location/**
       url: http://127.0.0.1:8002/location
-    auth:
-      path: /auth/**
+    auth-consumer:
+      path: /oauth/consumer/token
+      url: http://127.0.0.1:8003/oauth/token
+    auth-consumer-all:
+      path: /auth/consumer/**
       url: http://127.0.0.1:8003/auth
+    auth-admin:
+      path: /oauth/admin/token
+      url: http://127.0.0.1:8004/oauth/token
+    auth-consumer-all:
+          path: /auth/admin/**
+          url: http://127.0.0.1:8004/auth
+
+
 
 ribbon:
   eureka:

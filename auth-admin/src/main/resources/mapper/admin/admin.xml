@@ -10,13 +10,13 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.admin.Admin" useGeneratedKeys="false">
-        INSERT INTO gmair_userinfo.admin_info (admin_id, admin_email, admin_name, admin_password, block_flag, create_time)
+        INSERT INTO gmair_admininfo.admin_info (admin_id, admin_email, admin_name, admin_password, block_flag, create_time)
         VALUES (#{adminId}, #{email}, #{username}, #{password}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="adminVo">
         SELECT admin_id, admin_email, admin_name, admin_password, block_flag, create_time
-        FROM gmair_userinfo.admin_info
+        FROM gmair_admininfo.admin_info
         WHERE 1 = 1
         <if test="adminId != null">
             AND admin_id = #{adminId}
@@ -36,7 +36,7 @@
     </select>
 
     <update id="update" parameterType="finley.gmair.model.admin.Admin">
-        UPDATE gmair_userinfo.admin_info
+        UPDATE gmair_admininfo.admin_info
         <set>
             <if test="username != null">
                 admin_name = #{username},

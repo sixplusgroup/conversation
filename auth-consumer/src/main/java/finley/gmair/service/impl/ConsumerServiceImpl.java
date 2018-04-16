@@ -64,7 +64,7 @@ public class ConsumerServiceImpl implements ConsumerService {
     }
 
     @Override
-    public ResultData queryConsumer(Map<String, Object> condition) {
+    public ResultData fetchConsumer(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = consumerDao.query(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
