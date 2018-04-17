@@ -11,6 +11,8 @@ public class Md5Encoder implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence charSequence, String s) {
+        if (charSequence.length() == 0)
+            return true;
         return this.encode(charSequence).equals(s);
     }
 }
