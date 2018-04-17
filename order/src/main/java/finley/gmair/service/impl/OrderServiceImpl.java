@@ -37,67 +37,6 @@ public class OrderServiceImpl implements OrderService {
     private LocationService locationService;
 
     @Override
-    public ResultData fetchPlatformOrderChannel(Map<String, Object> condition) {
-        ResultData result = new ResultData();
-        ResultData response = channelDao.queryChannel(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No channel information found");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to find channel information");
-        }
-        return result;
-    }
-
-    @Override
-    public ResultData createPlatformOrderChannel(OrderChannel channel) {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("channelName", channel.getChannelName());
-        condition.put("blockFlag", false);
-        ResultData response = channelDao.queryChannel(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription(new StringBuffer("Channel with name: ").append(channel.getChannelName()).append(" already exist").toString());
-            return result;
-        }
-        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to finish the prerequisite check");
-            return result;
-        }
-        response = channelDao.insertChannel(channel);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to insert channel: " + channel.toString());
-        }
-        return result;
-    }
-
-    @Override
-    public ResultData updatePlatformOrderChannel(OrderChannel channel) {
-        ResultData result = new ResultData();
-        ResultData response = channelDao.updateChannel(channel);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("Fail to update channel with channel_id: ").append(channel.getChannelId()).append(" to: ").append(channel.toString()).toString());
-        }
-        return result;
-    }
-
-    @Override
     public ResultData fetchPlatformOrder(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = orderDao.queryOrder(condition);
@@ -202,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
                 condition.put("blockFlag", false);
                 ResultData response = channelDao.queryChannel(condition);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_NULL)
-                    createPlatformOrderChannel(new OrderChannel(channel));
+                    channelDao.insertChannel(new OrderChannel(channel));
             });
             String number = stringValue(1, index, current);
             String model = stringValue(2, index, current);
