@@ -1,5 +1,4 @@
-package finley.gmair.handler;
+package finley.gmair.controller;
 
 public class CommunicationController {
-
 }
