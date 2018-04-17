@@ -53,9 +53,9 @@ public class ConsumerAuthController {
             if (form.getPhone() != null) {
                 condition.put("phone", form.getPhone());
             }
-            if (consumerService.existConsumer(condition)) {
+            if (consumerService.exist(condition)) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("User already exist, please make sure of your wechat or phone number");
+                result.setDescription("User already exist, please be sure of your wechat or phone number");
                 return result;
             }
         }
