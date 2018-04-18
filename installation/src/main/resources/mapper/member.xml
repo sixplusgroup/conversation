@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.installation.Member">
+    <resultMap id="Member" type="finley.gmair.model.installation.Member">
+        <result property="memberId" column="member_id" />
+        <result property="teamId" column="team_id" />
+        <result property="memberPhone" column="member_phone"/>
+        <result property="memberName" column="member_name" />
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="Member">
+        SELECT *
+        FROM `gmair_install`.`team_member`
+        where 1 = 1
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+</mapper>

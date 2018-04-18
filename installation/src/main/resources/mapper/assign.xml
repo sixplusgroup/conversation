@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.order.platform.item">
+    <resultMap id="assign" type="finley.gmair.model.installation.Assign">
+        <result property="assignId" column="assign_id"></result>
+        <result property="qrcode" column="code_value"></result>
+        <result property="teamId" column="team_id"></result>
+        <result property="memberId" column="member_id"></result>
+        <result property="assignDate" column="assign_data"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="java.util.Map" useGeneratedKeys="false">
+        INSERT INTO gmair_install.install_assign (assign_id, code_value, team_id, assign_date, block_flag, create_time)
+        VALUES (#{assign.assignId}, #{qrcode}, #{item.itemName}, #{item.quantity}, #{item.itemPrice}, #{item.blockFlag},
+                #{item.createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="itemVo">
+        SELECT item_id, item_name, quantity, item_price, block_flag, create_time
+        FROM gmair_order.order_item
+        WHERE 1 = 1
+        <if test="itemId != null">
+            AND item_id = #{itemId}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <update id="update" parameterType="finley.gmair.model.order.OrderItem">
+        UPDATE gmair_order.order_item
+        <set>
+            <if test="itemName != null">
+                item_name = #{itemName},
+            </if>
+            <if test="itemPrice != null">
+                item_price = #{itemPrice},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            item_id = #{itemId}
+        </set>
+        WHERE item_id = #{itemId}
+    </update>
+</mapper>
