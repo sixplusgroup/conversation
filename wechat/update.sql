@@ -11,3 +11,39 @@ ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
 ROW_FORMAT=DYNAMIC
 ;
+
+##2018.04.17
+CREATE VIEW text_reply_view
+AS
+SELECT
+auto_reply.keyword AS keyword,
+auto_reply.message_type AS message_type,
+text_template.template_id AS template_id,
+text_template.response AS response
+from auto_reply, text_template
+where auto_reply.template_id = text_template.template_id;
+
+##2018.04.17
+CREATE VIEW picture_reply_view
+AS
+SELECT
+picture_template.template_id AS template_id,
+auto_reply.message_type AS message_type,
+auto_reply.keyword as keyword,
+picture_template.picture_url as picture_url
+FROM auto_reply, picture_template
+WHERE auto_reply.template_id = picture_template.template_id;
+
+##2018.04.17
+CREATE VIEW article_reply_view
+AS
+SELECT
+article_template.template_id AS template_id,
+auto_reply.message_type AS message_type,
+auto_reply.keyword as keyword,
+article_template.article_title AS article_title,
+article_template.article_url AS article_url,
+article_template.picture_url AS picture_url,
+article_template.description_content AS description_content
+FROM auto_reply, article_template
+WHERE auto_reply.template_id = article_template.template_id;

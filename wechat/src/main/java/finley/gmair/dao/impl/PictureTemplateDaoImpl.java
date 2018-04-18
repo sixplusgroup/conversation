@@ -6,6 +6,7 @@ import finley.gmair.model.wechat.PictureTemplate;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.wechat.PictureReplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -57,6 +58,23 @@ public class PictureTemplateDaoImpl extends BaseDao implements PictureTemplateDa
         try {
             sqlSession.update("gmair.wechat.picturetemplate.update", pictureTemplate);
             result.setData(pictureTemplate);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryPictureReply(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<PictureReplyVo> list = sqlSession.selectList("gmair.wechat.picturetemplate.queryPictureReply", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
         } catch (Exception e) {
             logger.error(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

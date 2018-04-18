@@ -26,6 +26,8 @@
         <module>wechat</module>
         <module>core</module>
         <module>express</module>
+        <module>machine</module>
+        <module>installation</module>
     </modules>
 
     <parent>
@@ -82,6 +84,11 @@
                     <source>1.9</source>
                     <target>1.9</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
