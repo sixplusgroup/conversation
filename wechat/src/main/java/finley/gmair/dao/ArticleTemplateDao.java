@@ -11,4 +11,6 @@ public interface ArticleTemplateDao {
     ResultData query(Map<String, Object> condition);
 
     ResultData update(ArticleTemplate articleTemplate);
+
+    ResultData queryArticleReply(Map<String, Object> condition);
 }

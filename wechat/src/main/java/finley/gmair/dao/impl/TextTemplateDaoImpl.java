@@ -6,6 +6,7 @@ import finley.gmair.model.wechat.TextTemplate;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.wechat.TextReplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -57,6 +58,23 @@ public class TextTemplateDaoImpl extends BaseDao implements TextTemplateDao {
         try {
             sqlSession.update("gmair.wechat.texttemplate.update", textTemplate);
             result.setData(textTemplate);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryTextReply(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<TextReplyVo> list = sqlSession.selectList("gmair.wechat.texttemplate.queryTextReply", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
         } catch (Exception e) {
             logger.error(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

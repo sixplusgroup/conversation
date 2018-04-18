@@ -11,4 +11,6 @@ public interface PictureTemplateService {
     ResultData fetch(Map<String, Object> condition);
 
     ResultData modify(PictureTemplate template);
+
+    ResultData fetchPictureReply(Map<String, Object> condition);
 }

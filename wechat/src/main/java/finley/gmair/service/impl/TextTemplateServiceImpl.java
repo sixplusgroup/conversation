@@ -89,4 +89,23 @@ public class TextTemplateServiceImpl implements TextTemplateService {
             return result;
         }
     }
+
+    @Override
+    public ResultData fetchTextReply(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = textTemplateDao.queryTextReply(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No textReply found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve textReply information from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
 }

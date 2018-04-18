@@ -6,6 +6,7 @@ import finley.gmair.model.wechat.ArticleTemplate;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.wechat.ArticleReplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -57,6 +58,23 @@ public class ArticleTemplateDaoImpl extends BaseDao implements ArticleTemplateDa
         try {
             sqlSession.update("gmair.wechat.articletemplate.update", articleTemplate);
             result.setData(articleTemplate);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryArticleReply(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<ArticleReplyVo> list = sqlSession.selectList("gmair.wechat.articletemplate.queryArticleReply", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
         } catch (Exception e) {
             logger.error(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
