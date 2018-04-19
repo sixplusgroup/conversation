@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,5 +67,10 @@ public class AdminAuthController {
             }
         }
         return result;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/admin")
+    public Principal user(Principal user) {
+        return user;
     }
 }
