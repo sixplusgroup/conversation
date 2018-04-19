@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.installation.Member">
-    <resultMap id="Member" type="finley.gmair.model.installation.Member">
+    <resultMap id="MemberMap" type="finley.gmair.model.installation.Member">
         <result property="memberId" column="member_id" />
         <result property="teamId" column="team_id" />
         <result property="memberPhone" column="member_phone"/>
         <result property="memberName" column="member_name" />
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <select id="query" parameterType="java.util.Map" resultMap="Member">
-        SELECT *
-        FROM `gmair_install`.`team_member`
-        where 1 = 1
-        <if test="blockFlag != null">
-            AND block_flag = #{blockFlag}
-        </if>
-    </select>
+    <insert id="insert" parameterType="java.util.Map" useGeneratedKeys="false">
+        insert into gmair_install.team_member(member_id, team_id, member_phone, member_name, block_flag, create_time)
+        values(
+          #{memberId},#{teamId},#{memberPhone},#{memberName},#{blockFlag},#{createAt}
+        )
+    </insert>
+
+
+
+
 </mapper>
