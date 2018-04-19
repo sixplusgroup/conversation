@@ -12,5 +12,5 @@ public interface ConsumerService {
 
     ResultData fetchConsumer(Map<String, Object> condition);
 
-    boolean existConsumer(Map<String, Object> condition);
+    boolean exist(Map<String, Object> condition);
 }

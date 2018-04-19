@@ -87,7 +87,7 @@ public class ConsumerServiceImpl implements ConsumerService {
      * @return
      */
     @Override
-    public boolean existConsumer(Map<String, Object> condition) {
+    public boolean exist(Map<String, Object> condition) {
         Map<String, Object> con = new HashMap<>();
         for (Map.Entry<String, Object> e : condition.entrySet()) {
             con.clear();
