@@ -74,6 +74,12 @@ public class RankCrawler {
                                 System.out.println(accurateCity);
                             }
                         } else {
+                            //the api endpoint can only be access 60 time in a second, so sleep 50 ms
+                            try{
+                                Thread.sleep(50);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             continue;
                         }
                     }

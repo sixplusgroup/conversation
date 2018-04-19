@@ -107,6 +107,24 @@ public class WechatApplication {
                             String xml = content.toXML(result);
                             return xml;
                         }
+                        new Thread(() -> {
+                            String openId = eventInMessage.getFromUserName();
+                            //query user information according to the corresponding openid
+                            //step 1. verify whether the user already exist in db
+
+                            //step 2. if not, create a new wechat user record for the user
+
+                            /**
+                             * 1. openid
+                             * 2. nickname
+                             * 3. sex
+                             * 4. city
+                             * 5. country
+                             * 6. province
+                             * 7. headimgurl
+                             * 8. unionid
+                             * */
+                        });
                         break;
                     }
                     if (eventInMessage.getEventKey().equals("gmair")) {

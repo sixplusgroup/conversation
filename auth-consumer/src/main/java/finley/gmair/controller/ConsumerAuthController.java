@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,5 +118,10 @@ public class ConsumerAuthController {
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Message sent, please check the code");
         return result;
+    }
+
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public Principal user(Principal user) {
+        return user;
     }
 }
