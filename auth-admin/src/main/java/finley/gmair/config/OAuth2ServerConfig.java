@@ -24,7 +24,6 @@ public class OAuth2ServerConfig {
 
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) {
-            resources.resourceId("compute").stateless(true);
             resources.resourceId("order").stateless(true);
         }
 
@@ -41,7 +40,7 @@ public class OAuth2ServerConfig {
                     .anonymous()
                     .and()
                     .authorizeRequests()
-                    .antMatchers("/user/**").authenticated();
+                    .antMatchers("/auth/admin/**").authenticated();
             // @formatter:on
         }
     }
