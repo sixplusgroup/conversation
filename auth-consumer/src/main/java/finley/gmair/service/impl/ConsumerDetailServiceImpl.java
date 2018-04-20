@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.service.ConsumerService;
+import finley.gmair.service.SerialService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerVo;
@@ -24,6 +25,9 @@ public class ConsumerDetailServiceImpl implements UserDetailsService{
     @Autowired
     ConsumerService consumerService;
 
+    @Autowired
+    SerialService serialService;
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Map<String, Object> condition = new HashMap<>();
@@ -32,7 +36,7 @@ public class ConsumerDetailServiceImpl implements UserDetailsService{
         ResultData response = consumerService.fetchConsumer(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             ConsumerVo consumerVo = ((List<ConsumerVo>) response.getData()).get(0);
-            return new User(consumerVo.getPhone(), "", grantedAuthorities);
+            return new User(consumerVo.getPhone(), serialService.fetch(s).get(s), grantedAuthorities);
         } else {
             condition.clear();
             condition.put("wechat", s);
