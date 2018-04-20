@@ -1,5 +1,6 @@
 package finley.gmair.wechat;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.config.Config;
@@ -109,22 +110,20 @@ public class WechatApplication {
                         }
                         new Thread(() -> {
                             String openId = eventInMessage.getFromUserName();
-                            //query user information according to the corresponding openid
-                            //step 1. verify whether the user already exist in db
+                            String accessToken = Config.getAccessToken();
+                            String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + accessToken + "&openid=" + openId + "&lang=zh_CN";
+                            String result = HttpDeal.getResponse(url);
+                            JSONObject json = JSON.parseObject(result);
+                            WechatUser user = new WechatUser(openId, json);
 
-                            //step 2. if not, create a new wechat user record for the user
-
-                            /**
-                             * 1. openid
-                             * 2. nickname
-                             * 3. sex
-                             * 4. city
-                             * 5. country
-                             * 6. province
-                             * 7. headimgurl
-                             * 8. unionid
-                             * */
-                        });
+                            Map<String, Object> condition = new HashMap<>();
+                            condition.put("wechatId", openId);
+                            if (wechatUserService.existWechatUser(condition)) {
+                                wechatUserService.modify(user);
+                            } else {
+                                wechatUserService.create(user);
+                            }
+                        }).start();
                         break;
                     }
                     if (eventInMessage.getEventKey().equals("gmair")) {
