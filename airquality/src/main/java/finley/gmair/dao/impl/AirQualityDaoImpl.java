@@ -48,6 +48,7 @@ public class AirQualityDaoImpl extends BaseDao implements AirQualityDao{
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
+            e.printStackTrace();
         }
         return result;
     }

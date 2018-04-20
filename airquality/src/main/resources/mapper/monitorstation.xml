@@ -3,8 +3,8 @@
 <mapper namespace="gmair.airquality.monitorstation">
 
 
-    <insert id="insert" parameterType="finley.gmair.model.air.MonitorStation">
-        INSERT INTO `gmair_airquality`.`monitor_station`
+    <insert id="replace" parameterType="finley.gmair.model.air.MonitorStation">
+        REPLACE INTO `gmair_airquality`.`monitor_station`
         (station_id, belong_city_id, station_name, block_flag)
         VALUES (
         #{monitorStation.stationId}, #{monitorStation.belongCityId}, #{monitorStation.stationName},
@@ -12,8 +12,8 @@
         )
     </insert>
 
-    <insert id="insertBatch" parameterType="java.util.List">
-        INSERT INTO `gmair_airquality`.`monitor_station`
+    <insert id="replaceBatch" parameterType="java.util.List">
+        REPLACE INTO `gmair_airquality`.`monitor_station`
         (station_id, belong_city_id, station_name, block_flag)
         VALUES
         <foreach collection="list" separator="," index="index" item="monitorStation">

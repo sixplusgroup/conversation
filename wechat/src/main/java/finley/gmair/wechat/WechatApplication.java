@@ -124,7 +124,6 @@ public class WechatApplication {
                                 wechatUserService.create(user);
                             }
                         }).start();
-                        break;
                     }
                     if (eventInMessage.getEventKey().equals("gmair")) {
                         String openId = eventInMessage.getFromUserName();

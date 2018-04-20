@@ -19,7 +19,7 @@ public class MonitorStationDaoImpl extends BaseDao implements MonitorStationDao 
         ResultData result = new ResultData();
         monitorStation.setStationId(IDGenerator.generate("ms"));
         try {
-            sqlSession.insert("gmair.airquality.monitorstation.insert", monitorStation);
+            sqlSession.insert("gmair.airquality.monitorstation.replace", monitorStation);
             result.setData(monitorStation);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -35,7 +35,7 @@ public class MonitorStationDaoImpl extends BaseDao implements MonitorStationDao 
             monitorStation.setStationId(IDGenerator.generate("ms"));
         }
         try {
-            sqlSession.insert("gmair.airquality.monitorstation.insertBatch", list);
+            sqlSession.insert("gmair.airquality.monitorstation.replaceBatch", list);
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

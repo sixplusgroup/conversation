@@ -102,14 +102,12 @@ public class OrderServiceImpl implements OrderService {
         try {
             String filename = file.getOriginalFilename();
             String extension = filename.substring(filename.lastIndexOf(".") + 1);
-            File of = new File(filename);
-            file.transferTo(of);
             if (!StringUtils.isEmpty(extension) && !(OrderExtension.XLSX.equals(extension) || OrderExtension.XLS.equals(extension))) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("The file extension is not as expected");
                 return result;
             }
-            Workbook workbook = WorkbookFactory.create(of);
+            Workbook workbook = WorkbookFactory.create(file.getInputStream());
             List<PlatformOrder> list = process(workbook);
             result.setData(list);
         } catch (Exception e) {
@@ -148,7 +146,12 @@ public class OrderServiceImpl implements OrderService {
             double quantity = doubleValue(3, index, current);
             Date date = dateValue(4, index, current);
             String username = stringValue(5, index, current);
-            String phone = stringValue(6, index, current);
+            String phone;
+            try {
+                phone = stringValue(6, index, current);
+            } catch (Exception e) {
+                phone = String.valueOf(doubleValue(6, index, current));
+            }
             String address = stringValue(7, index, current);
             String description = stringValue(8, index, current);
             OrderItem item = new OrderItem(model, quantity, 0);
@@ -174,7 +177,7 @@ public class OrderServiceImpl implements OrderService {
         int i = 0;
         Cell cell = row.getCell(i);
         do {
-            list.add(cell.getStringCellValue());
+            list.add(cell.getStringCellValue().trim());
             i++;
             cell = row.getCell(i);
         } while (cell != null && !StringUtils.isEmpty(cell.getStringCellValue()));
@@ -188,7 +191,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private String stringValue(int i, int[] index, Row row) {
-        return StringUtils.isEmpty(row.getCell(index[i])) ? "" : row.getCell(index[i]).getStringCellValue().trim();
+        return StringUtils.isEmpty(row.getCell(index[i])) ? "" : row.getCell(index[i]).getStringCellValue();
     }
 
     private double doubleValue(int i, int[] index, Row row) {
