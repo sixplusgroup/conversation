@@ -6,5 +6,6 @@
     <mappers>
         <mapper resource="mapper/airquality.xml"/>
         <mapper resource="mapper/monitorstation.xml"/>
+        <mapper resource="mapper/cityurl.xml"/>
     </mappers>
 </configuration>

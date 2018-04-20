@@ -1,5 +1,5 @@
 #2018.04.08 add city_daily_aqi_detail to store aqi data for the
-CREATE TABLE `gmair_airquality`.`city_daily_aqi_detail` (
+CREATE TABLE   (
   `city_id` VARCHAR(20) NOT NULL,
   `aqi_index` INT NOT NULL,
   `aqi_level` VARCHAR(45) NOT NULL,
@@ -13,3 +13,11 @@ CREATE TABLE `gmair_airquality`.`city_daily_aqi_detail` (
   `record_time` DATETIME NOT NULL,
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL);
+
+create table `gmair_airquality`.`city_url` (
+	  city_id varchar(20) not null UNIQUE,
+    city_url varchar(255) not null,
+    block_flag tinyint(1) default 0,
+    create_time datetime not null,
+    PRIMARY KEY (city_id)
+)
