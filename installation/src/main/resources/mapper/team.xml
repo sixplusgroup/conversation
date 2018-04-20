@@ -2,64 +2,49 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.installation.team">
     <resultMap id="Team" type="finley.gmair.model.installation.Team">
-        <result property="orderId" column="order_id"></result>
-        <result property="orderNo" column="order_no"></result>
-        <result property="consignee" column="consignee"></result>
-        <result property="phone" column="phone"></result>
-        <result property="address" column="address"></result>
-        <result property="province" column="province"></result>
-        <result property="city" column="city"></result>
-        <result property="district" column="district"></result>
-        <result property="totalPrice" column="total_price"></result>
-        <result property="channel" column="order_channel"></result>
-        <result property="description" column="description"></result>
+        <result property="teamId" column="team_id"></result>
+        <result property="teamName" column="team_name"></result>
+        <result property="teamArea" column="team_area"></result>
+        <result property="teamDescription" column="team_description"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <insert id="insert" parameterType="finley.gmair.model.order.PlatformOrder" useGeneratedKeys="false">
-        INSERT INTO gmair_order.platform_order (order_id, order_no, consignee, phone, address, province, city, district, total_price, order_channel, description, block_flag, create_time)
+    <insert id="insert" parameterType="finley.gmair.model.installation.Team" useGeneratedKeys="false">
+        INSERT INTO gmair_install.install_team (team_id, team_name, team_area, team_description, block_flag, create_time)
         VALUES
-            (#{orderId}, #{orderNo}, #{consignee}, #{phone}, #{address}, #{province}, #{city}, #{district}, #{channel},
-                         #{channel}, #{description}, #{blockFlag}, #{createAt})
+            (#{teamId}, #{teamName}, #{teamArea}, #{teamDescription}, #{blockFlag}, #{createAt})
     </insert>
 
-    <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        SELECT order_id, order_no, consignee, phone, address, province, city, district, total_price, order_channel,
-        description, block_flag, create_time
-        FROM gmair_order.platform_order
+    <select id="query" parameterType="java.util.Map" resultMap="Team">
+        SELECT team_id, team_name, team_area, team_description, block_flag, create_time
+        FROM gmair_install.install_team
         WHERE 1 = 1
-        <if test="orderId != null">
-            AND order_id = #{orderId}
+        <if test="teamId != null">
+            AND team_id = #{teamId}
         </if>
-        <if test="orderNo != null">
-            AND order_no = #{orderNo}
+        <if test="teamName != null">
+            AND team_name = #{teamName}
         </if>
-        <if test="phone != null">
-            AND phone = #{phone}
+        <if test="teamArea != null">
+            AND team_area = #{teamArea}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
     </select>
 
-    <update id="update" parameterType="finley.gmair.model.order.PlatformOrder">
-        UPDATE gmair_order.platform_order
+    <update id="update" parameterType="finley.gmair.model.installation.Team">
+        UPDATE gmair_install.install_team
         <set>
-            <if test="address != null">
-                address = #{address},
+            <if test="teamName != null">
+                team_name = #{teamName},
             </if>
-            <if test="province != null">
-                province = #{province},
+            <if test="teamArea != null">
+                team_area = #{teamArea},
             </if>
-            <if test="city != null">
-                city = #{city},
-            </if>
-            <if test="district != null">
-                district = #{district},
-            </if>
-            order_id = #{orderId}
+            team_id = #{teamId}
         </set>
-        WHERE order_id = #{orderId}
+        WHERE team_id = #{teamId}
     </update>
 </mapper>

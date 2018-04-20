@@ -7,7 +7,7 @@ public class Snapshot extends Entity {
     private String snapshotId;
     private String assignId;
     private String qrcode;
-    private String wecharId;
+    private String wechatId;
     private String memberPhone;
     private String checkList;
     private String indoorHole;
@@ -21,11 +21,11 @@ public class Snapshot extends Entity {
         super();
     }
 
-    public Snapshot(String assignId, String qrcode, String wecharId, String memberPhone, String checkList, String indoorHole, String outdoorHole, String indoorPreAir, String indoorPostAir, String holeDirection) {
+    public Snapshot(String assignId, String qrcode, String wechatId, String memberPhone, String checkList, String indoorHole, String outdoorHole, String indoorPreAir, String indoorPostAir, String holeDirection) {
         this();
         this.assignId = assignId;
         this.qrcode = qrcode;
-        this.wecharId = wecharId;
+        this.wechatId = wechatId;
         this.memberPhone = memberPhone;
         this.checkList = checkList;
         this.indoorHole = indoorHole;
@@ -58,12 +58,12 @@ public class Snapshot extends Entity {
         this.qrcode = qrcode;
     }
 
-    public String getWecharId() {
-        return wecharId;
+    public String getWechatId() {
+        return wechatId;
     }
 
-    public void setWecharId(String wecharId) {
-        this.wecharId = wecharId;
+    public void setWechatId(String wechatId) {
+        this.wechatId = wechatId;
     }
 
     public String getMemberPhone() {
