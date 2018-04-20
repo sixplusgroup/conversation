@@ -10,7 +10,7 @@ public class WechatUser extends Entity {
 
     private String nickName;
 
-    private String userSex;
+    private int userSex;
 
     private String userCity;
 
@@ -26,7 +26,7 @@ public class WechatUser extends Entity {
         super();
     }
 
-    public WechatUser(String wechatId, String nickName, String userSex, String userCity, String userProvince, String userCountry, String headimgUrl, String userUnionid) {
+    public WechatUser(String wechatId, String nickName, int userSex, String userCity, String userProvince, String userCountry, String headimgUrl, String userUnionid) {
         this();
         this.wechatId = wechatId;
         this.nickName = nickName;
@@ -39,7 +39,7 @@ public class WechatUser extends Entity {
     }
 
     public WechatUser(String openId, JSONObject object) {
-        this(openId, object.getString("nickname"), object.getString("sex"),
+        this(openId, object.getString("nickname"), object.getInteger("sex"),
                 object.getString("city"), object.getString("province"),
                 object.getString("country"), object.getString("headimgurl"),
                 object.getString("unionid"));
@@ -69,11 +69,11 @@ public class WechatUser extends Entity {
         this.nickName = nickName;
     }
 
-    public String getUserSex() {
+    public int getUserSex() {
         return userSex;
     }
 
-    public void setUserSex(String userSex) {
+    public void setUserSex(int userSex) {
         this.userSex = userSex;
     }
 

@@ -21,7 +21,7 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="userVo">
-        SELECT user_id, wechat_id, nickname, user_sex, user_city, user_province, block_flag, create_time
+        SELECT user_id, wechat_id, nickname, user_sex, user_city, user_province, user_country, headimg_url, user_unionid, block_flag, create_time
         FROM gmair_wechat.wechat_user
         WHERE 1 = 1
         <if test="userId != null">
