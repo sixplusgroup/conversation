@@ -40,6 +40,7 @@ public class OAuth2ServerConfig {
                     .anonymous()
                     .and()
                     .authorizeRequests()
+                    .antMatchers("/auth/admin/create").permitAll()
                     .antMatchers("/auth/admin/**").authenticated();
             // @formatter:on
         }
