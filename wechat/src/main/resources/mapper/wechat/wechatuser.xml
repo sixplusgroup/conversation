@@ -60,9 +60,6 @@
     <update id="update" parameterType="finley.gmair.model.wechat.WechatUser">
         UPDATE gmair_wechat.wechat_user
         <set>
-            <if test="wechatId != null">
-                wechat_id = #{wechatId},
-            </if>
             <if test="nickName != null">
                 nickname = #{nickName},
             </if>
@@ -87,8 +84,7 @@
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},
             </if>
-            user_id = #{userId}
         </set>
-        WHERE user_id = #{userId}
+        WHERE wechat_id = #{wechatId}
     </update>
 </mapper>
