@@ -49,6 +49,7 @@ public class LocationApplication {
         }
         String url = new StringBuffer(TENCENT_GEO_URL).append("?key=").append(LocationProperties.getValue("tencent_map_key")).append("&address=").append(address.trim()).toString();
         JSONObject response = JSON.parseObject(HttpDeal.getResponse(url));
+        System.out.println(response.toString());
         if (!StringUtils.isEmpty(response) && response.getInteger("status") == 0) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getJSONObject("result"));
