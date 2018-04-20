@@ -15,6 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -47,7 +48,9 @@ public class RankCrawler {
 
     /**
      * get city rank and
+     * every hour on half
      */
+    @Scheduled(cron = "* 30 * * * *")
     public void rank() {
         Map<String, AirQuality> map = new HashMap<>();
         int count = 1;
@@ -130,6 +133,7 @@ public class RankCrawler {
                 .collect(Collectors.toList());
         List<AirQuality> airQualityList = map.values().stream().collect(Collectors.toList());
         insertCityAqiDetail(airQualityList);
+        updateCityUrl(cityUrlList);
     }
 
     private void insertCityAqiDetail(List<AirQuality> airQualityList) {
@@ -140,10 +144,10 @@ public class RankCrawler {
         cityUrlDao.replaceBatch(cityUrlList);
     }
 
-
     /**
-     * update city monitor station
+     * update city monitor station, every month
      */
+    @Scheduled(cron = "* * * 1 * *")
     public void updateCityStation() {
         Map<String, Object> condition = new HashMap<>();
         ResultData response = cityUrlDao.select(condition);
