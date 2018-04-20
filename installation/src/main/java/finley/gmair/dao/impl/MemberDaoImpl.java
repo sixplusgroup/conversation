@@ -18,7 +18,7 @@ public class MemberDaoImpl extends BaseDao implements MemberDao {
         ResultData result =new ResultData();
         member.setMemberId(IDGenerator.generate("ISM"));
         try{
-            sqlSession.insert("gmair.installation.Member.insert",member);
+            sqlSession.insert("gmair.installation.member.insert",member);
             result.setData(member);
         }
         catch (Exception e){
@@ -32,7 +32,7 @@ public class MemberDaoImpl extends BaseDao implements MemberDao {
     public ResultData queryMember(Map<String, Object> condition) {
         ResultData result =new ResultData();
         try{
-            List<Member> list = sqlSession.selectList("gmair.installation.Member.query", condition);
+            List<Member> list = sqlSession.selectList("gmair.installation.member.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -47,7 +47,7 @@ public class MemberDaoImpl extends BaseDao implements MemberDao {
     public ResultData updateMember(Member member) {
         ResultData result =new ResultData();
         try {
-            sqlSession.update("gmair.installation.Member.update", member);
+            sqlSession.update("gmair.installation.member.update", member);
             result.setData(member);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

@@ -22,6 +22,7 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
             result.setData(team);
         }
         catch(Exception e){
+            System.out.println("inDao insert error");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -36,6 +37,8 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
             result.setData(list);
         }
         catch(Exception e){
+            System.out.println("inDao query error");
+            System.out.println(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

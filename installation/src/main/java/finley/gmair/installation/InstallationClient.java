@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-@ComponentScan({"finley.gmair.config", "finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao"})
+@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao"})
 @RestController
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @RequestMapping("/installation")
 @EnableDiscoveryClient
 public class InstallationClient {
-    public void main(String[] args) {
+    public static void main(String... args) {
         SpringApplication.run(InstallationClient.class, args);
     }
 }

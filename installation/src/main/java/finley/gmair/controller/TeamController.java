@@ -52,6 +52,7 @@ public class TeamController {
 
         //create the the team
         Team team = new Team(teamName,teamArea,teamDescription);
+        System.out.println("inController"+team.getTeamName()+" "+team.getTeamArea()+" "+team.getDescription());
         response = teamService.createTeam(team);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -72,7 +73,7 @@ public class TeamController {
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
         {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to team channel info");
+            result.setDescription("Fail to team info");
         }
         else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL)
         {

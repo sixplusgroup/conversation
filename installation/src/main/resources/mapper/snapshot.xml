@@ -18,7 +18,7 @@
 
     </resultMap>
 
-    <insert id="insert" parameterMap="finley.gmair.model.installation.Snapshot" useGeneratedKeys="false">
+    <insert id="insert" parameterType="finley.gmair.model.installation.Snapshot" useGeneratedKeys="false">
         REPLACE INTO gmair_install.install_snapshot
         VALUES (
         #{snapshotId},#{assignId},#{qrcode},#{wechatId},#{memberPhone},#{checkList},#{indoorHole},#{outdoorHole},
