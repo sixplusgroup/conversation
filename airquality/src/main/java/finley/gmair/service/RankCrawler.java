@@ -53,7 +53,7 @@ public class RankCrawler {
     @Scheduled(cron = "* 30 * * * *")
     public void rank() {
         Map<String, AirQuality> map = new HashMap<>();
-        int count = 1;
+        int count = 4;
         while (count > 0) {
             count--;
             try {
