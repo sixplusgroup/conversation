@@ -28,6 +28,7 @@
         <module>express</module>
         <module>machine</module>
         <module>installation</module>
+        <module>sf-common</module>
     </modules>
 
     <parent>
@@ -41,7 +42,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Brixton.SR5</version>
+                <version>Edgware.SR2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -91,7 +92,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
             </plugin>
         </plugins>
     </build>
