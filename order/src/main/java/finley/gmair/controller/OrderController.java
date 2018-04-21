@@ -37,8 +37,6 @@ public class OrderController {
             result.setDescription("Fail to process the file");
             return result;
         }
-        List<PlatformOrder> list = (List<PlatformOrder>) response.getData();
-        new Thread(() -> list.forEach(item -> orderService.createPlatformOrder(item))).start();
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Orders are in process, please check it later");
         return result;

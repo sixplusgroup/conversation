@@ -22,3 +22,8 @@ create table `gmair_order`.`machine_install_type`(
     create_time datetime,
     primary key (mis_id)
 )
+
+#2018.04.21 province and city can be null in platform order
+ALTER TABLE `gmair_order`.`platform_order`
+  CHANGE COLUMN `province` `province` VARCHAR(45) NULL ,
+  CHANGE COLUMN `city` `city` VARCHAR(45) NULL ;
