@@ -21,7 +21,7 @@
     <select id="query" parameterType="java.util.Map" resultMap="Member">
         SELECT member_id,team_id,member_phone,member_name,block_flag,create_time
         FROM gmair_install.team_member
-        WHERE 1=1
+        WHERE 1 = 1
         <if test="memberId != null">
             AND member_id = #{memberId}
         </if>
@@ -29,19 +29,22 @@
             AND team_id = #{teamId}
         </if>
         <if test="memberPhone != null">
-            AND member_phone = #{memberPhone}
+            AND member_phone like #{memberPhone}
         </if>
         <if test="memberName != null">
             AND member_name = #{memberName}
         </if>
         <if test="blockFlag != null">
-            AND block_flag = #{blockFalg}
+            AND block_flag = #{blockFlag}
         </if>
     </select>
 
     <update id="update" parameterType="finley.gmair.model.installation.Member">
         UPDATE gmair_install.team_member
         <set>
+            <if test="memberName != null">
+                member_name = #{memberName},
+            </if>
             <if test="memberPhone != null">
                 member_phone = #{memberPhone},
             </if>

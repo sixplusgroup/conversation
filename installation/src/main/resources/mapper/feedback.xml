@@ -12,7 +12,7 @@
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Feedback" useGeneratedKeys="false">
         INSERT INTO gmair_install.install_feedback(feedback_id, code_value, member_phone, feedback_content, block_flag, create_time)
-        VALUES (#{feedbackId}, #{qrcode}, #{memberPhone}, #{feedbackContent} #{blockFlag}, #{createAt})
+        VALUES (#{feedbackId}, #{qrcode}, #{memberPhone}, #{feedbackContent}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="Feedback">

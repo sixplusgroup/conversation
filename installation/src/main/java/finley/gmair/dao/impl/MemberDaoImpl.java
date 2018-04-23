@@ -8,6 +8,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,15 +32,24 @@ public class MemberDaoImpl extends BaseDao implements MemberDao {
     @Override
     public ResultData queryMember(Map<String, Object> condition) {
         ResultData result =new ResultData();
+        List<Member> list = new ArrayList<>();
         try{
-            List<Member> list = sqlSession.selectList("gmair.installation.member.query", condition);
-            if (list.isEmpty()) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            }
+            list = sqlSession.selectList("gmair.installation.member.query", condition);
             result.setData(list);
+
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
+        }
+
+        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
+            if (list.isEmpty() == true) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No member found");
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("Success to found member");
+            }
         }
         return result;
     }

@@ -6,17 +6,17 @@ public class Team extends Entity {
     private String teamId;
     private String teamName;
     private String teamArea;
-    private String description;
+    private String teamDescription;
     public Team()
     {
         super();
     }
 
-    public Team(String teamName, String teamArea, String description) {
+    public Team(String teamName, String teamArea, String teamDescription) {
         this();
         this.teamName = teamName;
         this.teamArea = teamArea;
-        this.description = description;
+        this.teamDescription = teamDescription;
     }
 
     public String getTeamId() {
@@ -43,11 +43,11 @@ public class Team extends Entity {
         this.teamArea = teamArea;
     }
 
-    public String getDescription() {
-        return description;
+    public String getTeamDescription() {
+        return teamDescription;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTeamDescription(String teamDescription) {
+        this.teamDescription = teamDescription;
     }
 }

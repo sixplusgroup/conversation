@@ -8,6 +8,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +19,10 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
         ResultData result = new ResultData();
         team.setTeamId(IDGenerator.generate("ITM"));
         try{
-            sqlSession.insert("gmail.installation.team.insert",team);
+            sqlSession.insert("gmair.installation.team.insert",team);
             result.setData(team);
         }
         catch(Exception e){
-            System.out.println("inDao insert error");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -32,15 +32,24 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
     @Override
     public ResultData queryTeam(Map<String, Object> condition){
         ResultData result = new ResultData();
+        List<Team> list=new ArrayList<>();
         try{
-            List<Team> list=sqlSession.selectList("gmail.installation.team.query",condition);
+            list=sqlSession.selectList("gmair.installation.team.query",condition);
             result.setData(list);
         }
         catch(Exception e){
-            System.out.println("inDao query error");
-            System.out.println(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
+        }
+
+        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
+            if (list.isEmpty() == true) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No team found");
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("Success to found team");
+            }
         }
         return result;
     }
@@ -49,7 +58,7 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
     public ResultData updateTeam(Team team){
         ResultData result = new ResultData();
         try{
-            sqlSession.update("gmail.installation.team.update",team);
+            sqlSession.update("gmair.installation.team.update",team);
             result.setData(team);
         }catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

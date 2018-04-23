@@ -2,28 +2,9 @@ package finley.gmair.form.installation;
 
 public class FeedbackForm {
 
-
-    private String wechatId;
-    private String phone;
     private String qrcode;
-    private String status;
-    private String reason;
-
-    public String getWechatId() {
-        return wechatId;
-    }
-
-    public void setWechatId(String wechatId) {
-        this.wechatId = wechatId;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    private String memberPhone;
+    private String feedbackContent;
 
     public String getQrcode() {
         return qrcode;
@@ -33,21 +14,19 @@ public class FeedbackForm {
         this.qrcode = qrcode;
     }
 
-    public String getStatus() {
-        return status;
+    public String getMemberPhone() {
+        return memberPhone;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setMemberPhone(String memberPhone) {
+        this.memberPhone = memberPhone;
     }
 
-    public String getReason() {
-        return reason;
+    public String getFeedbackContent() {
+        return feedbackContent;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
+    public void setFeedbackContent(String feedbackContent) {
+        this.feedbackContent = feedbackContent;
     }
-
-
 }

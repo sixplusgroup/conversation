@@ -22,6 +22,7 @@ public class TeamServiceImpl implements TeamService {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
+            result.setDescription("Success to fetch team");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -45,6 +46,7 @@ public class TeamServiceImpl implements TeamService {
         ResultData response = teamDao.queryTeam(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
         {
+
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("team with name: ").append(team.getTeamName()).append(" already exist").toString());
             return result;
@@ -53,7 +55,6 @@ public class TeamServiceImpl implements TeamService {
 
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to finish the prerequisite check");
-            System.out.println("in Service fetch fail "+team.getTeamName()+" "+team.getTeamArea()+" "+team.getDescription());
             return result;
         }
 
@@ -65,7 +66,6 @@ public class TeamServiceImpl implements TeamService {
         else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to insert team" + team.toString());
-            System.out.println("inService insert "+team.getTeamName()+" "+team.getTeamArea()+" "+team.getDescription());
         }
         return result;
     }

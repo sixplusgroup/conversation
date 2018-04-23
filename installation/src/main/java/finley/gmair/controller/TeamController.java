@@ -46,13 +46,12 @@ public class TeamController {
         ResultData response = teamService.fetchTeam(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription(new StringBuffer("Team: ").append(teamName).append(" already exist").toString());
+            result.setDescription(new StringBuffer("TeamController: Team: ").append(teamName).append(" already exist").toString());
             return result;
         }
 
         //create the the team
         Team team = new Team(teamName,teamArea,teamDescription);
-        System.out.println("inController"+team.getTeamName()+" "+team.getTeamArea()+" "+team.getDescription());
         response = teamService.createTeam(team);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -61,6 +60,7 @@ public class TeamController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
+        result.setDescription("Success to create the team");
         return result;
     }
 
@@ -84,7 +84,14 @@ public class TeamController {
         {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
+            result.setDescription("Success to team info");
         }
+        return result;
+    }
+    @GetMapping("/update")
+    public ResultData update(TeamForm team){
+        ResultData result=new ResultData();
+
         return result;
     }
 }

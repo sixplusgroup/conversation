@@ -8,9 +8,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +40,7 @@ public class MemberController {
         if(StringUtils.isEmpty(form.getMemberPhone()))
         {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);;
-            result.setDescription("Pleaseprivide the member phone");
+            result.setDescription("Please privide the member phone");
             return result;
         }
 
@@ -55,6 +53,11 @@ public class MemberController {
         condition.put("teamId", teamId);
         condition.put("blockFlag", false);
         ResultData response = teamService.fetchTeam(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("member with phone: ").append(memberPhone).append(" already exist").toString());
+            return result;
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription(new StringBuffer("Team: ").append(teamId).append(" is not exist").toString());
@@ -79,4 +82,40 @@ public class MemberController {
         result.setData(response.getData());
         return result;
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{memberPhone}/info")
+    public ResultData list(@PathVariable("memberPhone") String memberPhone)
+    {
+        ResultData result = new ResultData();
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("memberPhone",memberPhone);
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetchMember(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get member info");
+        }
+        else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No member info at the moment");
+        }
+        else
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("Success to get member info");
+        }
+        return result;
+    }
+
+    @PostMapping("/update")
+    public ResultData update(MemberForm form) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+
 }
