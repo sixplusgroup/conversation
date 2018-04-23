@@ -87,13 +87,9 @@ public class WechatApplication {
                         Map<String, Object> condition = new HashMap<>();
                         condition.put("messageType", "text");
                         condition.put("keyWord", textInMessage.getContent());
-                        ResultData rd = textTemplateService.fetchTextReply(condition);
-                        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                            TextReplyVo TVo = ((List<TextReplyVo>) rd.getData()).get(0);
-                            TextOutMessage result = initialize(TVo.getResponse(), textInMessage);
-                            String xml = content.toXML(result);
-                            return xml;
-                        }
+                        TextOutMessage result = getResult(condition, textInMessage);
+                        String xml = content.toXML(result);
+                        return xml;
                     }
                 case "event":
                     content.alias("xml", TextOutMessage.class);
@@ -101,29 +97,28 @@ public class WechatApplication {
                     Map<String, Object> map = new HashMap<>();
                     if (eventInMessage.getEvent().equals("subscribe")) {
                         map.put("keyWord", "subscribe");
-                        ResultData rd = textTemplateService.fetchTextReply(map);
-                        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                            TextReplyVo TVo = ((List<TextReplyVo>) rd.getData()).get(0);
-                            TextOutMessage result = initialize(TVo.getResponse(), eventInMessage);
-                            String xml = content.toXML(result);
-                            return xml;
-                        }
+                        TextOutMessage result = getResult(map, eventInMessage);
+                        String xml = content.toXML(result);
+
                         new Thread(() -> {
                             String openId = eventInMessage.getFromUserName();
                             String accessToken = Config.getAccessToken();
                             String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + accessToken + "&openid=" + openId + "&lang=zh_CN";
-                            String result = HttpDeal.getResponse(url);
-                            JSONObject json = JSON.parseObject(result);
+                            String resultStr = HttpDeal.getResponse(url);
+                            JSONObject json = JSON.parseObject(resultStr);
                             WechatUser user = new WechatUser(openId, json);
 
                             Map<String, Object> condition = new HashMap<>();
                             condition.put("wechatId", openId);
+                            ResultData rd = new ResultData();
                             if (wechatUserService.existWechatUser(condition)) {
-                                wechatUserService.modify(user);
+                                rd = wechatUserService.modify(user);
                             } else {
-                                wechatUserService.create(user);
+                                rd = wechatUserService.create(user);
                             }
                         }).start();
+
+                        return xml;
                     }
                     if (eventInMessage.getEventKey().equals("gmair")) {
                         String openId = eventInMessage.getFromUserName();
@@ -137,13 +132,9 @@ public class WechatApplication {
                             content.alias("xml", TextOutMessage.class);
                             map.clear();
                             map.put("KeyWord", "NoWechatId");
-                            rd = textTemplateService.fetchTextReply(map);
-                            if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                TextReplyVo tVo = ((List<TextReplyVo>) rd.getData()).get(0);
-                                TextOutMessage result = initialize(tVo.getResponse(), eventInMessage);
-                                String xml = content.toXML(result);
-                                return xml;
-                            }
+                            TextOutMessage result = getResult(map, eventInMessage);
+                            String xml = content.toXML(result);
+                            return xml;
                         }
                     }
                     break;
@@ -162,6 +153,16 @@ public class WechatApplication {
         result.setToUserName(message.getFromUserName());
         result.setCreateTime(new Date().getTime());
         result.setContent(content);
+        return result;
+    }
+
+    private TextOutMessage getResult (Map<String, Object> con, AbstractInMessage message) {
+        ResultData responsedata = textTemplateService.fetchTextReply(con);
+        TextOutMessage result = new TextOutMessage();
+        if (responsedata.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            TextReplyVo TVo = ((List<TextReplyVo>) responsedata.getData()).get(0);
+            result = initialize(TVo.getResponse(), message);
+        }
         return result;
     }
 }
