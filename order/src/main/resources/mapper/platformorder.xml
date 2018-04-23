@@ -64,7 +64,7 @@
                 district = #{district},
             </if>
             <if test="status != null">
-                status = #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+                order_status = #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
             </if>
             order_id = #{orderId}
         </set>

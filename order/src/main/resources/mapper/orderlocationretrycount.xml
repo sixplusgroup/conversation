@@ -43,11 +43,15 @@
         <if test="retryCountGT != null">
             AND retry_count > #{retryCountGT}
         </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
         <if test="retryCountLT != null">
             <![CDATA[
               AND retry_count < #{retryCountLT}
             ]]>
         </if>
+
     </select>
 
     <update id="update" parameterType="finley.gmair.model.location.OrderLocationRetryCount">

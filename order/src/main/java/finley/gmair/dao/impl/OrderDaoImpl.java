@@ -52,6 +52,7 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
             sqlSession.update("gmair.order.platform.update", order);
             result.setData(order);
         } catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

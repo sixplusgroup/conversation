@@ -40,6 +40,7 @@ public class OrderScheduler {
      */
     @Scheduled(cron = "0 0/10 * * * ?")
     public void locate() {
+        System.out.println("start schedule....");
         Map<String, Object> condition = new HashMap<>();
         condition.put("retryCountLT", MAX_RETRY_COUNT);
         condition.put("blockFlag", false);
@@ -65,19 +66,22 @@ public class OrderScheduler {
                             String province = location.getString("province");
                             String city = location.getString("city");
                             String district = location.getString("district");
-                            order.setLocation(province, city, district);
-                            order.setTotalPrice(order.getTotalPrice());
-                            orderService.updatePlatformOrder(order);
-
+                            PlatformOrder orderUpdate = new PlatformOrder();
+                            orderUpdate.setLocation(province, city, district);
+                            orderUpdate.setTotalPrice(order.getTotalPrice());
+                            orderUpdate.setStatus(order.getStatus());
+                            orderUpdate.setOrderId(order.getOrderId());
+                            response = orderService.updatePlatformOrder(orderUpdate);
                             // 3. if resolve address successfully, delete retryCount record
-                            orderLocationRetryCountService.delete(condition);
+                            response = updateRetryCount(retryCount.getOrderId(), retryCount.getRetryCount() + 1);
+                            response = orderLocationRetryCountService.delete(condition);
                         } else {
                             // if resolve failed, update the retry count
-                            updateRetryCount(retryCount.getOrderId(), retryCount.getRetryCount() + 1);
+                            response = updateRetryCount(retryCount.getOrderId(), retryCount.getRetryCount() + 1);
                         }
                     } catch (Exception e) {
                         // encounter exception
-                        updateRetryCount(retryCount.getOrderId(), retryCount.getRetryCount() + 1);
+                        response = updateRetryCount(retryCount.getOrderId(), retryCount.getRetryCount() + 1);
                     }
                 }
             }
@@ -90,11 +94,11 @@ public class OrderScheduler {
         }
     }
 
-    private void updateRetryCount(String orderId, int retryCount) {
+    private ResultData updateRetryCount(String orderId, int retryCount) {
         OrderLocationRetryCount orderLocationRetryCount = new OrderLocationRetryCount();
         orderLocationRetryCount.setRetryCount(retryCount);
         orderLocationRetryCount.setOrderId(orderId);
         orderLocationRetryCount.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-        orderLocationRetryCountService.update(orderLocationRetryCount);
+        return orderLocationRetryCountService.update(orderLocationRetryCount);
     }
 }
