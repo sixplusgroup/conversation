@@ -64,7 +64,7 @@ public class WechatApplication {
         return "";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/wechat", produces = "text/xml; charset = utf-8")
+    @RequestMapping(method = RequestMethod.POST, value = "/wechat", produces = "text/xml;charset=utf-8")
     public String handle(HttpServletRequest request, HttpServletRequest response) {
         try {
             ServletInputStream stream = request.getInputStream();
