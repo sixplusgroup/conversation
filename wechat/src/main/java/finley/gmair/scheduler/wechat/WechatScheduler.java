@@ -1,4 +1,4 @@
-package finley.gmair.scheduler;
+package finley.gmair.scheduler.wechat;
 
 import finley.gmair.util.WechatProperties;
 import finley.gmair.util.WechatUtil;

@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.OrderItemDao;
 import finley.gmair.model.order.OrderChannel;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Service
@@ -108,8 +110,23 @@ public class OrderServiceImpl implements OrderService {
                 return result;
             }
             Workbook workbook = WorkbookFactory.create(file.getInputStream());
-            List<PlatformOrder> list = process(workbook);
-            result.setData(list);
+            Sheet sheet = workbook.getSheetAt(0);
+            if (sheet == null) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Please make sure the data is in the #1 sheet");
+                return result;
+            }
+            Row header = sheet.getRow(0);
+            int[] index = index(header);
+            if (index == null) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Please make sure that you use the expected template");
+                return result;
+            }
+            new Thread(() -> {
+                List<PlatformOrder> list = process(workbook, index);
+                new Thread(() -> list.forEach(item -> createPlatformOrder(item))).start();
+            }).start();
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
@@ -117,30 +134,24 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
-    private List<PlatformOrder> process(Workbook workbook) {
+    private List<PlatformOrder> process(Workbook workbook, int[] index) {
         Sheet sheet = workbook.getSheetAt(0);
-        if (sheet == null) {
-            return null;
-        }
-        Row header = sheet.getRow(0);
-        int[] index = index(header);
-        if (index == null) {
-            return null;
-        }
         List<PlatformOrder> list = new ArrayList<>();
         int row = 1;
         Row current = sheet.getRow(row);
         while (current != null) {
             String channel = stringValue(0, index, current);
             //check whether the channel exist, if not, log it as a new channel
-            new Thread(() -> {
-                Map<String, Object> condition = new HashMap<>();
-                condition.put("channelName", channel);
-                condition.put("blockFlag", false);
-                ResultData response = channelDao.queryChannel(condition);
-                if (response.getResponseCode() == ResponseCode.RESPONSE_NULL)
-                    channelDao.insertChannel(new OrderChannel(channel));
-            });
+            if (!StringUtils.isEmpty(channel))
+                new Thread(() -> {
+                    Map<String, Object> condition = new HashMap<>();
+                    condition.put("channelName", channel);
+                    condition.put("blockFlag", false);
+                    ResultData response = channelDao.queryChannel(condition);
+                    if (response.getResponseCode() == ResponseCode.RESPONSE_NULL)
+                        channelDao.insertChannel(new OrderChannel(channel));
+                }).start();
+            else break;
             String number = stringValue(1, index, current);
             String model = stringValue(2, index, current);
             double quantity = doubleValue(3, index, current);
@@ -150,23 +161,30 @@ public class OrderServiceImpl implements OrderService {
             try {
                 phone = stringValue(6, index, current);
             } catch (Exception e) {
-                phone = String.valueOf(doubleValue(6, index, current));
+                phone = phoneValue(6, index, current);
             }
-            String address = stringValue(7, index, current);
+            String address = stringValue(7, index, current).replaceAll(" ", "");
             String description = stringValue(8, index, current);
             OrderItem item = new OrderItem(model, quantity, 0);
             List<OrderItem> items = new ArrayList<>(Arrays.asList(item));
-            ResultData response = locationService.geocoder(address);
             PlatformOrder order = new PlatformOrder(items, number, username, phone, address, channel, description);
             order.setCreateAt(new Timestamp(date.getTime()));
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                JSONObject location = ((JSONObject) response.getData()).getJSONObject("address_components");
-                String provicne = location.getString("province");
-                String city = location.getString("city");
-                String district = location.getString("district");
-                order.setLocation(provicne, city, district);
+            try {
+                ResultData response = locationService.geocoder(address);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    JSONObject location = (JSON.parseObject(JSON.toJSONString(response.getData()))).getJSONObject("address_components");
+                    String province = location.getString("province");
+                    String city = location.getString("city");
+                    String district = location.getString("district");
+                    order.setLocation(province, city, district);
+                }
+                //trigger the method no more than twice per second
+                Thread.sleep(500);
+            } catch (Exception e) {
+                //leave the province, city, district empty
             }
             list.add(order);
+            current = sheet.getRow(++row);
         }
         return list;
     }
@@ -196,6 +214,10 @@ public class OrderServiceImpl implements OrderService {
 
     private double doubleValue(int i, int[] index, Row row) {
         return StringUtils.isEmpty(row.getCell(index[i])) ? 0 : row.getCell(index[i]).getNumericCellValue();
+    }
+
+    private String phoneValue(int i, int[] index, Row row) {
+        return StringUtils.isEmpty(row.getCell(index[i])) ? "" : new DecimalFormat("#").format(row.getCell(index[i]).getNumericCellValue());
     }
 
     private Date dateValue(int i, int[] index, Row row) {

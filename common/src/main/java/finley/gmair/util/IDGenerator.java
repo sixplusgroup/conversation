@@ -1,5 +1,7 @@
 package finley.gmair.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Random;
 
 /**
@@ -7,7 +9,7 @@ import java.util.Random;
  */
 public class IDGenerator {
     private static final Random seed = new Random();
-    private static final char[] code = {'z', 'x', 'f', 'w', 'i', 'l', 'o', 'v', 'e', 'f', 'y', 'r', 'h', 'a', 'n', 'g', 'u', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private static final char[] code = {'a', 'e', 'f', 'g', 'h', 'i', 'l', 'n', 'o', 'r', 'u', 'v', 'w', 'x', 'y', 'z', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     private static int num(int min, int max) {
         return min + seed.nextInt(max - min);
@@ -24,7 +26,9 @@ public class IDGenerator {
         }
         StringBuffer result = new StringBuffer();
         Random random = new Random();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         result.append(prefix.toUpperCase());
+        result.append(sdf.format(Calendar.getInstance().getTime()));
         result.append(new String(temp));
         result.append(random.nextInt(99));
         return result.toString();

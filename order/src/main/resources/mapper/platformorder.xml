@@ -20,8 +20,8 @@
     <insert id="insert" parameterType="finley.gmair.model.order.PlatformOrder" useGeneratedKeys="false">
         INSERT INTO gmair_order.platform_order (order_id, order_no, consignee, phone, address, province, city, district, total_price, order_channel, description, block_flag, create_time)
         VALUES
-            (#{orderId}, #{orderNo}, #{consignee}, #{phone}, #{address}, #{province}, #{city}, #{district}, #{channel},
-                         #{channel}, #{description}, #{blockFlag}, #{createAt})
+            (#{orderId}, #{orderNo}, #{consignee}, #{phone}, #{address}, #{province}, #{city}, #{district},
+                         #{totalPrice}, #{channel}, #{description}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
@@ -40,6 +40,9 @@
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
+        </if>
+        <if test="incomplete != null">
+            AND (province IS NULL OR city IS NULL)
         </if>
     </select>
 

@@ -1,4 +1,4 @@
-package finley.gmair.handler;
+package finley.gmair.model;
 
 public interface EnumValue {
     int getValue();
