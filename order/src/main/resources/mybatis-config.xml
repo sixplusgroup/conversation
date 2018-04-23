@@ -9,5 +9,6 @@
         <mapper resource="mapper/platformorderitem.xml" />
         <mapper resource="mapper/machineinstalltype.xml" />
         <mapper resource="mapper/setupprovider.xml" />
+        <mapper resource="mapper/orderlocationtrycount.xml" />
     </mappers>
 </configuration>
