@@ -15,9 +15,12 @@ public class PlatformOrder extends AbstractOrder {
 
     private String description;
 
+    private OrderStatus status;
+
 
     public PlatformOrder() {
         super();
+        this.status = OrderStatus.PAYED;
     }
 
     public PlatformOrder(String orderNo) {
@@ -43,6 +46,7 @@ public class PlatformOrder extends AbstractOrder {
         this.list = list;
         this.description = description;
         this.channel = channel;
+        this.status = OrderStatus.PAYED;
     }
 
     public String getOrderNo() {
@@ -97,5 +101,13 @@ public class PlatformOrder extends AbstractOrder {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 }
