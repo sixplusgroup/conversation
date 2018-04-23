@@ -41,6 +41,9 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
+        <if test="incomplete != null">
+            AND (province IS NULL OR city IS NULL)
+        </if>
     </select>
 
     <update id="update" parameterType="finley.gmair.model.order.PlatformOrder">
