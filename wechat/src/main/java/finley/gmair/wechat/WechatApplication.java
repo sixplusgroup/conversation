@@ -156,7 +156,7 @@ public class WechatApplication {
         return result;
     }
 
-    public TextOutMessage getResult (Map<String, Object> con, AbstractInMessage message) {
+    private TextOutMessage getResult (Map<String, Object> con, AbstractInMessage message) {
         ResultData responsedata = textTemplateService.fetchTextReply(con);
         TextOutMessage result = new TextOutMessage();
         if (responsedata.getResponseCode() == ResponseCode.RESPONSE_OK) {
