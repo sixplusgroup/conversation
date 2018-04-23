@@ -15,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/order")
+@CrossOrigin
 public class MachineController {
 
     @Autowired
