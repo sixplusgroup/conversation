@@ -8,6 +8,7 @@ import finley.gmair.model.location.OrderLocationRetryCount;
 import finley.gmair.model.order.OrderChannel;
 import finley.gmair.model.order.OrderItem;
 import finley.gmair.model.order.PlatformOrder;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.dao.ChannelDao;
@@ -174,6 +175,7 @@ public class OrderServiceImpl implements OrderService {
             List<OrderItem> items = new ArrayList<>(Arrays.asList(item));
             PlatformOrder order = new PlatformOrder(items, number, username, phone, address, channel, description);
             order.setCreateAt(new Timestamp(date.getTime()));
+            order.setOrderId(IDGenerator.generate("ODR"));
             try {
                 ResultData response = locationService.geocoder(address);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

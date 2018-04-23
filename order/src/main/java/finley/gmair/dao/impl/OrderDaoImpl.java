@@ -7,6 +7,7 @@ import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,8 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
     @Override
     public ResultData insertOrder(PlatformOrder order) {
         ResultData result = new ResultData();
-        order.setOrderId(IDGenerator.generate("ODR"));
+        if (StringUtils.isEmpty(order.getOrderId()))
+            order.setOrderId(IDGenerator.generate("ODR"));
         try {
             sqlSession.insert("gmair.order.platform.insert", order);
             result.setData(order);

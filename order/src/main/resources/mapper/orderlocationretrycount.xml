@@ -15,8 +15,7 @@
         (order_id, retry_count, update_time, block_flag, create_time)
         VALUES
         (
-         #{OrderLocationRetryCount.orderId}, #{OrderLocationRetryCount,retryCount}, #{OrderLocationRetryCount.updateTime},
-         #{OrderLocationRetryCount.blockFlag}, #{OrderLocationRetryCount.createAt}
+         #{orderId}, #{retryCount}, #{updateTime}, #{blockFlag}, #{createAt}
         )
     </insert>
 
@@ -26,7 +25,7 @@
         VALUES
         <foreach collection="list" index="index" separator="," item="OrderLocationRetryCount">
             (
-            #{OrderLocationRetryCount.orderId}, #{OrderLocationRetryCount,retryCount}, #{OrderLocationRetryCount.updateTime},
+            #{OrderLocationRetryCount.orderId}, #{OrderLocationRetryCount.retryCount}, #{OrderLocationRetryCount.updateTime},
             #{OrderLocationRetryCount.blockFlag}, #{OrderLocationRetryCount.createAt}
             )
         </foreach>
