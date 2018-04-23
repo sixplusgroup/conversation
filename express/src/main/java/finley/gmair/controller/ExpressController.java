@@ -31,12 +31,14 @@ public class ExpressController {
     public ResultData addCompany(ExpressCompanyForm form) {
         ResultData result = new ResultData();
         String companyName = form.getCompanyName().trim();
-        if (StringUtils.isEmpty(companyName)) {
+        String companyCode = form.getCompanyCode().trim();
+        if (StringUtils.isEmpty(companyName)||StringUtils.isEmpty(companyCode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the express company name is specified");
+            result.setDescription("Please make sure the express company name or code is specified");
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("companyName", companyName);
+        condition.put("companyCode", companyCode);
         condition.put("blockFlag", false);
         ResultData response = expressService.fetchExpressCompany(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -44,7 +46,7 @@ public class ExpressController {
             result.setDescription(new StringBuffer("Express company: ").append(companyName).append(" already exist").toString());
             return result;
         }
-        ExpressCompany company = new ExpressCompany(companyName);
+        ExpressCompany company = new ExpressCompany(companyName,companyCode);
         response = expressService.createExpressCompany(company);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);

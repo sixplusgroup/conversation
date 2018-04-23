@@ -28,7 +28,7 @@ public class ExpressStatusHandler extends BaseTypeHandler<ExpressStatus> {
 
     @Override
     public void setNonNullParameter(PreparedStatement preparedStatement, int i, ExpressStatus status, JdbcType jdbcType) throws SQLException {
-        preparedStatement.setInt(i, status.getCode());
+        preparedStatement.setInt(i, status.getValue());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ExpressStatusHandler extends BaseTypeHandler<ExpressStatus> {
 
     private ExpressStatus locateEnumStatus(int code) {
         for (ExpressStatus status : enums) {
-            if (status.getCode() == (Integer.valueOf(code))) {
+            if (status.getValue() == (Integer.valueOf(code))) {
                 return status;
             }
         }
