@@ -1,4 +1,4 @@
-package finley.gmair.handler;
+package finley.gmair.mybatis.handler;
 
 import finley.gmair.model.message.MessageCatalog;
 import org.apache.ibatis.type.BaseTypeHandler;
@@ -67,6 +67,6 @@ public class MessageCatalogHandler extends BaseTypeHandler<MessageCatalog> {
                 return status;
             }
         }
-        throw new IllegalArgumentException("Unknown enum type：" + code + ",请核对" + catalog.getSimpleName());
+        throw new IllegalArgumentException("Unknown enum type：" + code + ",please check " + catalog.getSimpleName());
     }
 }

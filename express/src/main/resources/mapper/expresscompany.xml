@@ -4,17 +4,18 @@
     <resultMap id="companyVo" type="finley.gmair.model.express.ExpressCompany">
         <result property="companyId" column="company_id"></result>
         <result property="companyName" column="company_name"></result>
+        <result property="companyCode" column="company_code"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.express.ExpressCompany" useGeneratedKeys="false">
-        INSERT INTO gmair_express.express_company (company_id, company_name, block_flag, create_time)
-        VALUES (#{companyId}, #{companyName}, #{blockFlag}, #{createAt})
+        INSERT INTO gmair_express.express_company (company_id, company_name, company_code, block_flag, create_time)
+        VALUES (#{companyId}, #{companyName}, #{companyCode}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="companyVo">
-        SELECT company_id, company_name, block_flag, create_time
+        SELECT company_id, company_name, company_code, block_flag, create_time
         FROM gmair_express.express_company
         WHERE 1 = 1
         <if test="companyId != null">
@@ -22,6 +23,9 @@
         </if>
         <if test="companyName != null">
             AND company_name = #{companyName}
+        </if>
+        <if test="companyCode != null">
+            AND company_code= #{companyCode}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}

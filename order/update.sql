@@ -37,3 +37,8 @@ CREATE TABLE `gmair_order`.`order_location_retry_count` (
   `create_time` DATETIME    NOT NULL,
   PRIMARY KEY (`order_id`)
 );
+
+#add column order status
+ALTER TABLE `gmair_order`.`platform_order`
+  ADD COLUMN `order_status` TINYINT(1) NOT NULL DEFAULT 0
+  AFTER `description`;

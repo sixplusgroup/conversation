@@ -1,6 +1,6 @@
-package finley.gmair.handler;
+package finley.gmair.mybatis.handler;
 
-import finley.gmair.model.express.ExpressStatus;
+import finley.gmair.model.order.OrderStatus;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
@@ -9,15 +9,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ExpressStatusHandler extends BaseTypeHandler<ExpressStatus> {
+public class OrderStatusHandler extends BaseTypeHandler<OrderStatus> {
+    private Class<OrderStatus> status;
 
-    private Class<ExpressStatus> status;
+    private final OrderStatus[] enums;
 
-    private final ExpressStatus[] enums;
-
-    public ExpressStatusHandler(Class<ExpressStatus> status) {
+    public OrderStatusHandler(Class<OrderStatus> status) {
         if (status == null) {
-            throw new IllegalArgumentException("Status argument cannot be null");
+            throw new IllegalArgumentException("Catalog argument cannot be null");
         }
         this.status = status;
         this.enums = status.getEnumConstants();
@@ -27,12 +26,12 @@ public class ExpressStatusHandler extends BaseTypeHandler<ExpressStatus> {
     }
 
     @Override
-    public void setNonNullParameter(PreparedStatement preparedStatement, int i, ExpressStatus status, JdbcType jdbcType) throws SQLException {
+    public void setNonNullParameter(PreparedStatement preparedStatement, int i, OrderStatus status, JdbcType jdbcType) throws SQLException {
         preparedStatement.setInt(i, status.getValue());
     }
 
     @Override
-    public ExpressStatus getNullableResult(ResultSet resultSet, String s) throws SQLException {
+    public OrderStatus getNullableResult(ResultSet resultSet, String s) throws SQLException {
         int i = resultSet.getInt(s);
         if (resultSet.wasNull()) {
             return null;
@@ -42,7 +41,7 @@ public class ExpressStatusHandler extends BaseTypeHandler<ExpressStatus> {
     }
 
     @Override
-    public ExpressStatus getNullableResult(ResultSet resultSet, int i) throws SQLException {
+    public OrderStatus getNullableResult(ResultSet resultSet, int i) throws SQLException {
         int index = resultSet.getInt(i);
         if (resultSet.wasNull()) {
             return null;
@@ -52,7 +51,7 @@ public class ExpressStatusHandler extends BaseTypeHandler<ExpressStatus> {
     }
 
     @Override
-    public ExpressStatus getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
+    public OrderStatus getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
         int index = callableStatement.getInt(i);
         if (callableStatement.wasNull()) {
             return null;
@@ -61,12 +60,12 @@ public class ExpressStatusHandler extends BaseTypeHandler<ExpressStatus> {
         }
     }
 
-    private ExpressStatus locateEnumStatus(int code) {
-        for (ExpressStatus status : enums) {
+    private OrderStatus locateEnumStatus(int code) {
+        for (OrderStatus status : enums) {
             if (status.getValue() == (Integer.valueOf(code))) {
                 return status;
             }
         }
-        throw new IllegalArgumentException("Unknown enum type：" + code + ", please check " + status.getSimpleName());
+        throw new IllegalArgumentException("Unknown enum type：" + code + ",please check " + status.getSimpleName());
     }
 }

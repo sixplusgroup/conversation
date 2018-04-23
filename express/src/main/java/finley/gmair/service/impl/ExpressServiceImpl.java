@@ -1,7 +1,9 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ExpressCompanyDao;
+import finley.gmair.dao.ExpressOrderDao;
 import finley.gmair.model.express.ExpressCompany;
+import finley.gmair.model.express.ExpressOrder;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -15,6 +17,9 @@ public class ExpressServiceImpl implements ExpressService {
 
     @Autowired
     private ExpressCompanyDao expressCompanyDao;
+
+    @Autowired
+    private ExpressOrderDao expressOrderDao;
 
     @Override
     public ResultData createExpressCompany(ExpressCompany company) {
@@ -45,6 +50,39 @@ public class ExpressServiceImpl implements ExpressService {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to fetch express company from database");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createExpressOrder(ExpressOrder order) {
+        ResultData result = new ResultData();
+        ResultData response = expressOrderDao.insertExpressOrder(order);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to store express order with id: ").append(order.getExpressId()).toString());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @Override
+    public ResultData fetchExpressOrder(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = expressOrderDao.queryExpressOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No express order found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to fetch express order from database");
         }
         return result;
     }
