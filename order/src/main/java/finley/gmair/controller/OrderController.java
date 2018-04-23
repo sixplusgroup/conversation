@@ -42,6 +42,7 @@ public class OrderController {
         return result;
     }
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/{orderId}/info")
     public ResultData info(@PathVariable("orderId") String orderId) {
         ResultData result = new ResultData();
@@ -51,6 +52,27 @@ public class OrderController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("Please make sure you have the correct order number");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve the order information, please try again later");
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.GET, value = "/list")
+    public ResultData list() {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchPlatformOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("no more order list");
             return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
