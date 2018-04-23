@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.order.locationretrycount">
+
+    <resultMap id="orderLocationRetryCountVo" type="finley.gmair.vo.location.OrderLocationRetryCountVo">
+        <result property="orderId" column="order_id"/>
+        <result property="retryCount" column="retry_count"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="blockFlag" column="block_flag" />
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="finley.gmair.model.location.OrderLocationRetryCount">
+        INSERT INTO `gmair_order`.`order_location_retry_count`
+        (order_id, retry_count, update_time, block_flag, create_time)
+        VALUES
+        (
+         #{OrderLocationRetryCount.orderId}, #{OrderLocationRetryCount,retryCount}, #{OrderLocationRetryCount.updateTime},
+         #{OrderLocationRetryCount.blockFlag}, #{OrderLocationRetryCount.createAt}
+        )
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO `gmair_order`.`order_location_retry_count`
+        (order_id, retry_count, update_time, block_flag, create_time)
+        VALUES
+        <foreach collection="list" index="index" separator="," item="OrderLocationRetryCount">
+            (
+            #{OrderLocationRetryCount.orderId}, #{OrderLocationRetryCount,retryCount}, #{OrderLocationRetryCount.updateTime},
+            #{OrderLocationRetryCount.blockFlag}, #{OrderLocationRetryCount.createAt}
+            )
+        </foreach>
+    </insert>
+    
+    <select id="query" resultMap="orderLocationRetryCountVo" parameterType="java.util.Map">
+        select
+        order_id, retry_count, update_time, block_flag, create_time
+        from `gmair_order`.`order_location_retry_count`
+        WHERE
+        1 = 1
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="retryCountGT != null">
+            AND retry_count > #{retryCountGT}
+        </if>
+        <if test="retryCountLT != null">
+            <![CDATA[
+              AND retry_count < #{retryCountLT}
+            ]]>
+        </if>
+    </select>
+
+    <update id="update" parameterType="finley.gmair.model.location.OrderLocationRetryCount">
+        UPDATE `gmair_order`.`order_location_retry_count`
+        <set>
+            <if test="retryCount != null">
+                retry_count = #{retryCount},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            order_id = #{orderId}
+        </set>
+        WHERE
+        order_id = #{orderId}
+    </update>
+
+
+    <delete id="delete" parameterType="java.util.Map">
+        UPDATE `gmair_order`.`order_location_retry_count`
+        SET
+        block_flag = 1
+        WHERE
+        order_id = #{orderId}
+    </delete>
+
+</mapper>

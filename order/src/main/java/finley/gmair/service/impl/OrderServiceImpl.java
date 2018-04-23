@@ -3,6 +3,8 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.OrderItemDao;
+import finley.gmair.dao.OrderLocationRetryCountDao;
+import finley.gmair.model.location.OrderLocationRetryCount;
 import finley.gmair.model.order.OrderChannel;
 import finley.gmair.model.order.OrderItem;
 import finley.gmair.model.order.PlatformOrder;
@@ -37,6 +39,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private OrderLocationRetryCountDao orderLocationRetryCountDao;
 
     @Override
     public ResultData fetchPlatformOrder(Map<String, Object> condition) {
@@ -177,16 +182,27 @@ public class OrderServiceImpl implements OrderService {
                     String city = location.getString("city");
                     String district = location.getString("district");
                     order.setLocation(province, city, district);
+                } else {
+                    insertOrderLocationRetryCount(order.getOrderId(), 1);
                 }
                 //trigger the method no more than twice per second
                 Thread.sleep(500);
             } catch (Exception e) {
                 //leave the province, city, district empty
+                insertOrderLocationRetryCount(order.getOrderId(), 1);
             }
             list.add(order);
             current = sheet.getRow(++row);
         }
         return list;
+    }
+
+    private ResultData insertOrderLocationRetryCount(String orderId, int retryCount) {
+        OrderLocationRetryCount orderLocationRetryCount = new OrderLocationRetryCount();
+        orderLocationRetryCount.setOrderId(orderId);
+        orderLocationRetryCount.setRetryCount(retryCount);
+        orderLocationRetryCount.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        return orderLocationRetryCountDao.insert(orderLocationRetryCount);
     }
 
     private int[] index(Row row) {
