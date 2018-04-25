@@ -25,7 +25,6 @@ import java.util.*;
 
 @SpringBootApplication
 @RestController
-@RequestMapping("/wechat")
 @ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
     private final String QRCODE_MEDIA = "OJYiVWlTzSXggGpNfsTx7DeMbXVhwrQxJV84b-ikJkM";
@@ -52,7 +51,7 @@ public class WechatApplication {
         String nonce = request.getParameter("nonce");// 随机数
         String echostr = request.getParameter("echostr");//
         List<String> params = new ArrayList<>();
-        params.add("wechat_token");
+        params.add(WechatProperties.getValue("wechat_token"));
         params.add(timestamp);
         params.add(nonce);
         Collections.sort(params);
