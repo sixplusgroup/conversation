@@ -28,8 +28,6 @@ import java.util.*;
 @RequestMapping("/wechat")
 @ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
-    private Logger logger = LoggerFactory.getLogger(WechatApplication.class);
-
     private final String QRCODE_MEDIA = "OJYiVWlTzSXggGpNfsTx7DeMbXVhwrQxJV84b-ikJkM";
 
     @Autowired
@@ -72,12 +70,10 @@ public class WechatApplication {
             String input = WechatUtil.inputStream2String(stream);
             XStream content = XStreamFactory.init(false);
             content.alias("xml", AbstractInMessage.class);
-            logger.info("input" + input);
             AbstractInMessage message = (AbstractInMessage) content.fromXML(input);
             //final InMessage message = (InMessage) content.fromXML(input);
             HttpSession session = request.getSession();
             session.setAttribute("openId", message.getFromUserName());
-            logger.info("message" + JSONObject.toJSONString(message));
             switch (message.getMsgType()) {
                 case "text":
                     content.alias("xml", TextOutMessage.class);
@@ -142,7 +138,7 @@ public class WechatApplication {
             }
             WechatUtil.pushImage(Config.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
         }
         return "";
     }
