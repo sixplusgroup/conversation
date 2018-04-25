@@ -84,7 +84,7 @@ public class WechatApplication {
                         Map<String, Object> condition = new HashMap<>();
                         condition.put("messageType", "text");
                         condition.put("keyWord", textInMessage.getContent());
-                        TextOutMessage result = getResult(condition, textInMessage);
+                        TextOutMessage result = initialize(getResponse(condition), textInMessage);
                         String xml = content.toXML(result);
                         return xml;
                     }
@@ -94,7 +94,7 @@ public class WechatApplication {
                     Map<String, Object> map = new HashMap<>();
                     if (eventInMessage.getEvent().equals("subscribe")) {
                         map.put("keyWord", "subscribe");
-                        TextOutMessage result = getResult(map, eventInMessage);
+                        TextOutMessage result = initialize(getResponse(map), eventInMessage);
                         String xml = content.toXML(result);
 
                         new Thread(() -> {
@@ -124,12 +124,13 @@ public class WechatApplication {
                         ResultData rd = wechatUserService.fetch(map);
                         WechatUser WVo = ((List<WechatUser>) rd.getData()).get(0);
                         if (WVo != null && WVo.getWechatId() != null) {
-
+                            //new machine don't finish, function of this condition can't achieve, return null
+                            return "";
                         } else {
                             content.alias("xml", TextOutMessage.class);
                             map.clear();
                             map.put("KeyWord", "NoWechatId");
-                            TextOutMessage result = getResult(map, eventInMessage);
+                            TextOutMessage result = initialize(getResponse(map), eventInMessage);
                             String xml = content.toXML(result);
                             return xml;
                         }
@@ -153,13 +154,14 @@ public class WechatApplication {
         return result;
     }
 
-    private TextOutMessage getResult (Map<String, Object> con, AbstractInMessage message) {
-        ResultData responsedata = textTemplateService.fetchTextReply(con);
-        TextOutMessage result = new TextOutMessage();
-        if (responsedata.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            TextReplyVo TVo = ((List<TextReplyVo>) responsedata.getData()).get(0);
-            result = initialize(TVo.getResponse(), message);
+    private String getResponse(Map<String, Object> con) {
+        ResultData rd = textTemplateService.fetchTextReply(con);
+        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            TextReplyVo TVo = ((List<TextReplyVo>) rd.getData()).get(0);
+            String result = TVo.getResponse();
+            return result;
+        } else {
+            return "";
         }
-        return result;
     }
 }
