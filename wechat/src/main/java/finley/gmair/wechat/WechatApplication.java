@@ -25,10 +25,9 @@ import java.util.*;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao"})
+@RequestMapping("/wechat")
+@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
-    private Logger logger = LoggerFactory.getLogger(WechatApplication.class);
-
     private final String QRCODE_MEDIA = "OJYiVWlTzSXggGpNfsTx7DeMbXVhwrQxJV84b-ikJkM";
 
     @Autowired
@@ -46,7 +45,7 @@ public class WechatApplication {
         SpringApplication.run(WechatApplication.class, args);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/wechat")
+    @RequestMapping(method = RequestMethod.GET, value = "/token")
     public String check(HttpServletRequest request) {
         String signature = request.getParameter("signature");// 微信加密签名
         String timestamp = request.getParameter("timestamp");// 时间戳
@@ -64,19 +63,17 @@ public class WechatApplication {
         return "";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/wechat", produces = "text/xml;charset=utf-8")
+    @RequestMapping(method = RequestMethod.POST, value = "/token", produces = "text/xml;charset=utf-8")
     public String handle(HttpServletRequest request, HttpServletRequest response) {
         try {
             ServletInputStream stream = request.getInputStream();
             String input = WechatUtil.inputStream2String(stream);
             XStream content = XStreamFactory.init(false);
             content.alias("xml", AbstractInMessage.class);
-            logger.info("input" + input);
             AbstractInMessage message = (AbstractInMessage) content.fromXML(input);
             //final InMessage message = (InMessage) content.fromXML(input);
             HttpSession session = request.getSession();
             session.setAttribute("openId", message.getFromUserName());
-            logger.info("message" + JSONObject.toJSONString(message));
             switch (message.getMsgType()) {
                 case "text":
                     content.alias("xml", TextOutMessage.class);
@@ -87,7 +84,7 @@ public class WechatApplication {
                         Map<String, Object> condition = new HashMap<>();
                         condition.put("messageType", "text");
                         condition.put("keyWord", textInMessage.getContent());
-                        TextOutMessage result = getResult(condition, textInMessage);
+                        TextOutMessage result = initialize(getResponse(condition), textInMessage);
                         String xml = content.toXML(result);
                         return xml;
                     }
@@ -97,7 +94,7 @@ public class WechatApplication {
                     Map<String, Object> map = new HashMap<>();
                     if (eventInMessage.getEvent().equals("subscribe")) {
                         map.put("keyWord", "subscribe");
-                        TextOutMessage result = getResult(map, eventInMessage);
+                        TextOutMessage result = initialize(getResponse(map), eventInMessage);
                         String xml = content.toXML(result);
 
                         new Thread(() -> {
@@ -127,12 +124,13 @@ public class WechatApplication {
                         ResultData rd = wechatUserService.fetch(map);
                         WechatUser WVo = ((List<WechatUser>) rd.getData()).get(0);
                         if (WVo != null && WVo.getWechatId() != null) {
-
+                            //new machine don't finish, function of this condition can't achieve, return null
+                            return "";
                         } else {
                             content.alias("xml", TextOutMessage.class);
                             map.clear();
                             map.put("KeyWord", "NoWechatId");
-                            TextOutMessage result = getResult(map, eventInMessage);
+                            TextOutMessage result = initialize(getResponse(map), eventInMessage);
                             String xml = content.toXML(result);
                             return xml;
                         }
@@ -141,7 +139,7 @@ public class WechatApplication {
             }
             WechatUtil.pushImage(Config.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
         }
         return "";
     }
@@ -156,13 +154,14 @@ public class WechatApplication {
         return result;
     }
 
-    private TextOutMessage getResult (Map<String, Object> con, AbstractInMessage message) {
-        ResultData responsedata = textTemplateService.fetchTextReply(con);
-        TextOutMessage result = new TextOutMessage();
-        if (responsedata.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            TextReplyVo TVo = ((List<TextReplyVo>) responsedata.getData()).get(0);
-            result = initialize(TVo.getResponse(), message);
+    private String getResponse(Map<String, Object> con) {
+        ResultData rd = textTemplateService.fetchTextReply(con);
+        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            TextReplyVo TVo = ((List<TextReplyVo>) rd.getData()).get(0);
+            String result = TVo.getResponse();
+            return result;
+        } else {
+            return "";
         }
-        return result;
     }
 }
