@@ -17,8 +17,7 @@ public class SnapshotServiceImpl implements SnapshotService {
     private SnapshotDao snapshotDao;
 
     @Override
-    public ResultData createSnapshot(Snapshot snapshot)
-    {
+    public ResultData createSnapshot(Snapshot snapshot) {
         ResultData result = new ResultData();
         ResultData response = snapshotDao.insertSnapshot(snapshot);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
@@ -41,15 +40,14 @@ public class SnapshotServiceImpl implements SnapshotService {
             result.setData(response.getData());
             result.setDescription("Success to fetch snapshot");
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No snapshot found");
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to fetch snapshot");
         }
         return result;
     }
-
 }

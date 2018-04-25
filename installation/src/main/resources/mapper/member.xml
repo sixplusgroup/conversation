@@ -29,7 +29,7 @@
             AND team_id = #{teamId}
         </if>
         <if test="memberPhone != null">
-            AND member_phone like #{memberPhone}
+            AND member_phone = #{memberPhone}
         </if>
         <if test="memberName != null">
             AND member_name = #{memberName}

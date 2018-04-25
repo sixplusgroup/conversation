@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.installation.pic">
+    <resultMap id="Pic" type="finley.gmair.model.installation.Pic">
+        <result property="picId" column="pic_id" />
+        <result property="picAddress" column="pic_address" />
+        <result property="picMd5" column="pic_md5" />
+        <result property="memberPhone" column="member_phone" />
+        <result property="copyFlag" column="copy_flag" />
+        <result property="blockFlag" column="block_flag" />
+        <result property="createAt" column="create_time" />
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.installation.Pic" useGeneratedKeys="false">
+        INSERT INTO gmair_install.install_pic
+        VALUES(
+          #{picId},#{picAddress},#{picMd5},#{memberPhone},#{copyFlag},#{blockFlag},#{createAt}
+        )
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="Pic">
+        SELECT *
+        FROM gmair_install.install_pic
+        WHERE 1 = 1
+        <if test="picId != null">
+            AND pic_id = #{picId}
+        </if>
+        <if test="picAddress != null">
+            AND pic_address = #{picAddress}
+        </if>
+        <if test="picMd5 != null">
+            AND pic_md5 = #{picMd5}
+        </if>
+        <if test="memberPhone != null">
+            AND member_phone = #{memberPhone}
+        </if>
+        <if test="copyFlag != null">
+            AND copy_flag = #{copyFlag}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+</mapper>

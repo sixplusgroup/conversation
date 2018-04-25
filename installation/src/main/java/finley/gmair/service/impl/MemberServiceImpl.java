@@ -25,11 +25,11 @@ public class MemberServiceImpl implements MemberService {
             result.setData(response.getData());
             result.setDescription("Success to fetch member");
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No member found");
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to fetch member");
         }

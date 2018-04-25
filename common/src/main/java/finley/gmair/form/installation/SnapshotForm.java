@@ -1,36 +1,11 @@
-package finley.gmair.model.installation;
+package finley.gmair.form.installation;
 
-import finley.gmair.model.Entity;
-
-public class Snapshot extends Entity {
-
-    private String snapshotId;
+public class SnapshotForm {
     private String assignId;
     private String qrcode;
     private String wechatId;
     private String memberPhone;
     private String picPath;
-
-    public Snapshot()
-    {
-        super();
-    }
-
-    public Snapshot(String assignId, String qrcode, String wechatId, String memberPhone, String picPath){
-        this();
-        this.assignId = assignId;
-        this.qrcode = qrcode;
-        this.wechatId = wechatId;
-        this.memberPhone = memberPhone;
-        this.picPath = picPath;
-    }
-    public String getSnapshotId() {
-        return snapshotId;
-    }
-
-    public void setSnapshotId(String snapshotId) {
-        this.snapshotId = snapshotId;
-    }
 
     public String getAssignId() {
         return assignId;

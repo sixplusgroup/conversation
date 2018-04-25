@@ -9,5 +9,6 @@
         <mapper resource="mapper/member.xml" />
         <mapper resource="mapper/snapshot.xml" />
         <mapper resource="mapper/team.xml" />
+        <mapper resource="mapper/pic.xml" />
     </mappers>
 </configuration>
