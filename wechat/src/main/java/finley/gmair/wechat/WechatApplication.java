@@ -25,7 +25,8 @@ import java.util.*;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao"})
+@RequestMapping("/wechat")
+@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
     private Logger logger = LoggerFactory.getLogger(WechatApplication.class);
 
@@ -46,7 +47,7 @@ public class WechatApplication {
         SpringApplication.run(WechatApplication.class, args);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/wechat")
+    @RequestMapping(method = RequestMethod.GET, value = "/token")
     public String check(HttpServletRequest request) {
         String signature = request.getParameter("signature");// 微信加密签名
         String timestamp = request.getParameter("timestamp");// 时间戳
@@ -64,7 +65,7 @@ public class WechatApplication {
         return "";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/wechat", produces = "text/xml;charset=utf-8")
+    @RequestMapping(method = RequestMethod.POST, value = "/token", produces = "text/xml;charset=utf-8")
     public String handle(HttpServletRequest request, HttpServletRequest response) {
         try {
             ServletInputStream stream = request.getInputStream();
