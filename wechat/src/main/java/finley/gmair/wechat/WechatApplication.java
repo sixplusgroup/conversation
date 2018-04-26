@@ -24,7 +24,6 @@ import java.util.*;
 @RestController
 @ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
-    private final String QRCODE_MEDIA = "OJYiVWlTzSXggGpNfsTx7DeMbXVhwrQxJV84b-ikJkM";
 
     @Autowired
     private TextTemplateService textTemplateService;
