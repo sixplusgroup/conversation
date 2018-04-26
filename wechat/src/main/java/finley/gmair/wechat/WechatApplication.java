@@ -25,7 +25,7 @@ import java.util.*;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
+@ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao"})
 public class WechatApplication {
     private final String QRCODE_MEDIA = "OJYiVWlTzSXggGpNfsTx7DeMbXVhwrQxJV84b-ikJkM";
 
