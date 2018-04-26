@@ -3,13 +3,10 @@ package finley.gmair.wechat;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
-import finley.gmair.config.Config;
 import finley.gmair.model.wechat.*;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.wechat.TextReplyVo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -78,7 +75,7 @@ public class WechatApplication {
                     content.alias("xml", TextOutMessage.class);
                     final TextInMessage textInMessage = (TextInMessage) content.fromXML(input);
                     if (textInMessage.getContent().equals("赠送")) {
-                        WechatUtil.pushImage(Config.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
+                        WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
                     } else {
                         Map<String, Object> condition = new HashMap<>();
                         condition.put("messageType", "text");
@@ -98,7 +95,7 @@ public class WechatApplication {
 
                         new Thread(() -> {
                             String openId = eventInMessage.getFromUserName();
-                            String accessToken = Config.getAccessToken();
+                            String accessToken = WechatProperties.getAccessToken();
                             String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + accessToken + "&openid=" + openId + "&lang=zh_CN";
                             String resultStr = HttpDeal.getResponse(url);
                             JSONObject json = JSON.parseObject(resultStr);
@@ -136,7 +133,7 @@ public class WechatApplication {
                     }
                     break;
             }
-            WechatUtil.pushImage(Config.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
+            WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
         } catch (Exception e) {
             e.printStackTrace();
         }
