@@ -27,15 +27,11 @@ public class WechatApplication {
     private final String QRCODE_MEDIA = "OJYiVWlTzSXggGpNfsTx7DeMbXVhwrQxJV84b-ikJkM";
 
     @Autowired
-    private AutoReplyService autoReplyService;
-    @Autowired
     private TextTemplateService textTemplateService;
     @Autowired
-    private ArticleTemplateService articleTemplateService;
-    @Autowired
-    private PictureTemplateService pictureTemplateService;
-    @Autowired
     private WechatUserService wechatUserService;
+    @Autowired
+    private WechatResourceService wechatResourceService;
 
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
@@ -75,7 +71,9 @@ public class WechatApplication {
                     content.alias("xml", TextOutMessage.class);
                     final TextInMessage textInMessage = (TextInMessage) content.fromXML(input);
                     if (textInMessage.getContent().equals("赠送")) {
-                        WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
+                        Map<String, Object> condition = new HashMap<>();
+                        condition.put("resourceName", "contactUs_MEDIA");
+                        WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), getResource(condition));
                     } else {
                         Map<String, Object> condition = new HashMap<>();
                         condition.put("messageType", "text");
@@ -133,7 +131,9 @@ public class WechatApplication {
                     }
                     break;
             }
-            WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("resourceName", "contactUs_MEDIA");
+            WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), getResource(condition));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -155,6 +155,17 @@ public class WechatApplication {
         if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
             TextReplyVo TVo = ((List<TextReplyVo>) rd.getData()).get(0);
             String result = TVo.getResponse();
+            return result;
+        } else {
+            return "";
+        }
+    }
+
+    private String getResource(Map<String, Object> condition) {
+        ResultData rd = wechatResourceService.fetch(condition);
+        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            WechatResource rVo = ((List<WechatResource>) rd.getData()).get(0);
+            String result = rVo.getResourceId();
             return result;
         } else {
             return "";
