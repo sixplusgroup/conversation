@@ -10,5 +10,6 @@
         <mapper resource="mapper/wechat/articletemplate.xml"></mapper>
         <mapper resource="mapper/wechat/picturetemplate.xml"></mapper>
         <mapper resource="mapper/wechat/texttemplate.xml"></mapper>
+        <mapper resource="mapper/wechat/wechatresource.xml"></mapper>
     </mappers>
 </configuration>
