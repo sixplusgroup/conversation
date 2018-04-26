@@ -202,12 +202,19 @@ public class OrderServiceImpl implements OrderService {
             // use express service
             if (expressIndex != null) {
                 String expressCompany = stringValue(0, expressIndex, current);
-                String expressNo = stringValue(1, expressIndex, current);
-                ExpressOrderForm expressOrderForm = new ExpressOrderForm();
-                expressOrderForm.setOrderId(order.getOrderId());
-                expressOrderForm.setCompanyId(expressCompany);
-                expressOrderForm.setExpressNo(expressNo);
-                ResultData expressResult = expressService.addOrder(expressOrderForm);
+                String expressNo = "";
+                try {
+                    expressNo = stringValue(1, expressIndex, current);
+                } catch (Exception e) {
+                    expressNo = phoneValue(1, expressIndex, current);
+                }
+                if (!StringUtils.isEmpty(expressCompany) && !StringUtils.isEmpty(expressNo)) {
+                    try {
+                        ResultData expressResult = expressService.addOrder(order.getOrderId(), expressCompany, expressNo);
+                    } catch (Exception e) {
+
+                    }
+                }
             }
             list.add(order);
             current = sheet.getRow(++row);
