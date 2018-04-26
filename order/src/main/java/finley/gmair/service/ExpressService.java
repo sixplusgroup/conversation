@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("express-agent")
 public interface ExpressService {
-    @RequestMapping(value = "/order/create", method = RequestMethod.POST)
-    public ResultData addOrder(@RequestParam ExpressOrderForm form);
+    @RequestMapping(value = "/express/order/create", method = RequestMethod.POST)
+    public ResultData addOrder(@RequestParam("orderId") String orderId,
+                               @RequestParam("companyId") String companyId,
+                               @RequestParam("expressNo") String expressNo);
 }
