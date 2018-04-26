@@ -2,27 +2,28 @@ package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.dao.ChannelDao;
+import finley.gmair.dao.OrderDao;
 import finley.gmair.dao.OrderItemDao;
 import finley.gmair.dao.OrderLocationRetryCountDao;
+import finley.gmair.form.express.ExpressOrderForm;
 import finley.gmair.model.location.OrderLocationRetryCount;
 import finley.gmair.model.order.OrderChannel;
 import finley.gmair.model.order.OrderItem;
 import finley.gmair.model.order.PlatformOrder;
-import finley.gmair.util.IDGenerator;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
-import finley.gmair.dao.ChannelDao;
-import finley.gmair.dao.OrderDao;
+import finley.gmair.service.ExpressService;
 import finley.gmair.service.LocationService;
 import finley.gmair.service.OrderService;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.OrderExtension;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -43,6 +44,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderLocationRetryCountDao orderLocationRetryCountDao;
+
+    @Autowired
+    private ExpressService expressService;
 
     @Override
     public ResultData fetchPlatformOrder(Map<String, Object> condition) {
@@ -123,14 +127,15 @@ public class OrderServiceImpl implements OrderService {
                 return result;
             }
             Row header = sheet.getRow(0);
-            int[] index = index(header);
+            int[] index = index(OrderExtension.HEADER, header);
             if (index == null) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("Please make sure that you use the expected template");
                 return result;
             }
+            int[] expressIndex = index(OrderExtension.EXPRESS_HEADER, header);
             new Thread(() -> {
-                List<PlatformOrder> list = process(workbook, index);
+                List<PlatformOrder> list = process(workbook, index, expressIndex);
                 new Thread(() -> list.forEach(item -> createPlatformOrder(item))).start();
             }).start();
         } catch (Exception e) {
@@ -140,7 +145,7 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
-    private List<PlatformOrder> process(Workbook workbook, int[] index) {
+    private List<PlatformOrder> process(Workbook workbook, int[] index, int[] expressIndex) {
         Sheet sheet = workbook.getSheetAt(0);
         List<PlatformOrder> list = new ArrayList<>();
         int row = 1;
@@ -176,6 +181,7 @@ public class OrderServiceImpl implements OrderService {
             PlatformOrder order = new PlatformOrder(items, number, username, phone, address, channel, description);
             order.setCreateAt(new Timestamp(date.getTime()));
             order.setOrderId(IDGenerator.generate("ODR"));
+            // use location service geocode address
             try {
                 ResultData response = locationService.geocoder(address);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -193,6 +199,16 @@ public class OrderServiceImpl implements OrderService {
                 //leave the province, city, district empty
                 insertOrderLocationRetryCount(order.getOrderId(), 1);
             }
+            // use express service
+            if (expressIndex != null) {
+                String expressCompany = stringValue(0, expressIndex, current);
+                String expressNo = stringValue(1, expressIndex, current);
+                ExpressOrderForm expressOrderForm = new ExpressOrderForm();
+                expressOrderForm.setOrderId(order.getOrderId());
+                expressOrderForm.setCompanyId(expressCompany);
+                expressOrderForm.setExpressNo(expressNo);
+                ResultData expressResult = expressService.addOrder(expressOrderForm);
+            }
             list.add(order);
             current = sheet.getRow(++row);
         }
@@ -207,8 +223,8 @@ public class OrderServiceImpl implements OrderService {
         return orderLocationRetryCountDao.insert(orderLocationRetryCount);
     }
 
-    private int[] index(Row row) {
-        int[] index = new int[OrderExtension.HEADER.length];
+    private int[] index(final String[] header, Row row) {
+        int[] index = new int[header.length];
         List<String> list = new ArrayList<>();
         int i = 0;
         Cell cell = row.getCell(i);
@@ -218,7 +234,7 @@ public class OrderServiceImpl implements OrderService {
             cell = row.getCell(i);
         } while (cell != null && !StringUtils.isEmpty(cell.getStringCellValue()));
         for (i = 0; i < index.length; i++) {
-            index[i] = list.indexOf(OrderExtension.HEADER[i]);
+            index[i] = list.indexOf(header[i]);
             if (index[i] < 0) {
                 return null;
             }
