@@ -67,12 +67,12 @@ public class WechatUserServiceImpl implements WechatUserService {
     public ResultData modify(WechatUser user) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if (StringUtils.isEmpty(user.getUserId())) {
+        if (StringUtils.isEmpty(user.getWechatId())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Can't update wechatuser without userId");
             return result;
         } else {
-            condition.put("userId", user.getUserId());
+            condition.put("wechatId", user.getWechatId());
             ResultData response = wechatUserDao.query(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
