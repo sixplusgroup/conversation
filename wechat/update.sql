@@ -47,3 +47,10 @@ article_template.picture_url AS picture_url,
 article_template.description_content AS description_content
 FROM auto_reply, article_template
 WHERE auto_reply.template_id = article_template.template_id;
+
+#2018.04.26 create table to store resources
+CREATE TABLE `gmair_wechat`.`wechat_resource` (
+  `resource_id` VARCHAR(55) NOT NULL,
+  `resource_name` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL);

@@ -37,11 +37,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("text list is empty");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("text fetch error, please inspect");
         }
         return result;
     }
@@ -56,7 +56,7 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("text create error");
         }
         return result;
     }
@@ -71,11 +71,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("text update error");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("can't update with no such text");
         }
         return result;
     }
@@ -92,11 +92,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("reply is empty");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("Error: please try again");
         }
         return result;
     }
@@ -113,11 +113,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("article is empty");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("article fetch error, please inspect");
         }
         return result;
     }
@@ -134,11 +134,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("reply is null");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("Error: please check up");
         }
         return result;
     }
@@ -153,7 +153,7 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("article create error");
         }
         return result;
     }
@@ -168,11 +168,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("article update error");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("Error: can't update with no such article");
         }
         return result;
     }
@@ -189,11 +189,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("picture is empty");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(response.getResponseCode());
-            result.setDescription(response.getDescription());
+            result.setDescription("picture fetch error,please inspect");
         }
         return result;
     }
@@ -210,11 +210,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("reply list is null");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(response.getResponseCode());
-            result.setDescription(response.getDescription());
+            result.setDescription("Reply error,please refresh");
         }
         return result;
     }
@@ -229,7 +229,7 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("picture create error");
         }
         return result;
     }
@@ -244,11 +244,11 @@ public class TemplateController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
+            result.setDescription("picture update error");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(response.getDescription());
+            result.setDescription("Error: can't update with no such picture");
         }
         return result;
     }

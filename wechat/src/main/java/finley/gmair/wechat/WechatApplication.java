@@ -3,13 +3,10 @@ package finley.gmair.wechat;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
-import finley.gmair.config.Config;
 import finley.gmair.model.wechat.*;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.wechat.TextReplyVo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,7 +22,6 @@ import java.util.*;
 
 @SpringBootApplication
 @RestController
-@RequestMapping("/wechat")
 @ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
     private final String QRCODE_MEDIA = "OJYiVWlTzSXggGpNfsTx7DeMbXVhwrQxJV84b-ikJkM";
@@ -45,14 +41,14 @@ public class WechatApplication {
         SpringApplication.run(WechatApplication.class, args);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/token")
+    @RequestMapping(method = RequestMethod.GET, value = "/wechat")
     public String check(HttpServletRequest request) {
         String signature = request.getParameter("signature");// 微信加密签名
         String timestamp = request.getParameter("timestamp");// 时间戳
         String nonce = request.getParameter("nonce");// 随机数
         String echostr = request.getParameter("echostr");//
         List<String> params = new ArrayList<>();
-        params.add("wechat_token");
+        params.add(WechatProperties.getValue("wechat_token"));
         params.add(timestamp);
         params.add(nonce);
         Collections.sort(params);
@@ -63,7 +59,7 @@ public class WechatApplication {
         return "";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/token", produces = "text/xml;charset=utf-8")
+    @RequestMapping(method = RequestMethod.POST, value = "/wechat", produces = "text/xml;charset=utf-8")
     public String handle(HttpServletRequest request, HttpServletRequest response) {
         try {
             ServletInputStream stream = request.getInputStream();
@@ -79,7 +75,7 @@ public class WechatApplication {
                     content.alias("xml", TextOutMessage.class);
                     final TextInMessage textInMessage = (TextInMessage) content.fromXML(input);
                     if (textInMessage.getContent().equals("赠送")) {
-                        WechatUtil.pushImage(Config.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
+                        WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
                     } else {
                         Map<String, Object> condition = new HashMap<>();
                         condition.put("messageType", "text");
@@ -99,7 +95,7 @@ public class WechatApplication {
 
                         new Thread(() -> {
                             String openId = eventInMessage.getFromUserName();
-                            String accessToken = Config.getAccessToken();
+                            String accessToken = WechatProperties.getAccessToken();
                             String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + accessToken + "&openid=" + openId + "&lang=zh_CN";
                             String resultStr = HttpDeal.getResponse(url);
                             JSONObject json = JSON.parseObject(resultStr);
@@ -137,7 +133,7 @@ public class WechatApplication {
                     }
                     break;
             }
-            WechatUtil.pushImage(Config.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
+            WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), QRCODE_MEDIA);
         } catch (Exception e) {
             e.printStackTrace();
         }
