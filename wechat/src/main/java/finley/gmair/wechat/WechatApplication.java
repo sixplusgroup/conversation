@@ -44,7 +44,7 @@ public class WechatApplication {
         SpringApplication.run(WechatApplication.class, args);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/token")
+    @RequestMapping(method = RequestMethod.GET, value = "/wechat")
     public String check(HttpServletRequest request) {
         String signature = request.getParameter("signature");// 微信加密签名
         String timestamp = request.getParameter("timestamp");// 时间戳
@@ -62,7 +62,7 @@ public class WechatApplication {
         return "";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/token", produces = "text/xml;charset=utf-8")
+    @RequestMapping(method = RequestMethod.POST, value = "/wechat", produces = "text/xml;charset=utf-8")
     public String handle(HttpServletRequest request, HttpServletRequest response) {
         try {
             ServletInputStream stream = request.getInputStream();
