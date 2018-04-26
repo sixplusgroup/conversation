@@ -1,18 +1,14 @@
 package finley.gmair.controller;
 
 import finley.gmair.form.installation.SnapshotForm;
-import finley.gmair.model.installation.Pic;
 import finley.gmair.model.installation.Snapshot;
-import finley.gmair.service.MemberService;
 import finley.gmair.service.PicService;
 import finley.gmair.service.SnapshotService;
-import finley.gmair.service.UploadService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +22,6 @@ public class SnapshotController {
     @Autowired
     private PicService picService;
 
-    @Autowired
-    private UploadService uploadService;
 
     @RequestMapping("/create")
     public ResultData create(SnapshotForm form){
@@ -91,7 +85,7 @@ public class SnapshotController {
         result.setDescription("Success to create the snapshot");
 
 
-        //picService.createPic(pic)
+        //new a thread to handle the pic saving work
         new Thread(() -> {
             System.out.println("start the savePic thread");
             picService.savePic(memberPhone,picPath);
@@ -126,26 +120,5 @@ public class SnapshotController {
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/upload")
-    public ResultData upload(@RequestParam MultipartFile file) {
-        ResultData result = new ResultData();
-        String absolutePath = this.getClass().getClassLoader().getResource("").getPath();
-        System.out.println(absolutePath);
-        int index = absolutePath.indexOf("/target/classes/");
-        String basePath = absolutePath.substring(0, index);
-        ResultData response = uploadService.upload(file);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("服务器繁忙，请稍后再试!");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("文件为空");
-            return result;
-        } else {
-            result.setData(response.getData());
-            result.setDescription("文件上传成功");
-            return result;
-        }
-    }
+
 }

@@ -3,14 +3,20 @@ package finley.gmair.service.impl;
 import finley.gmair.dao.PicDao;
 import finley.gmair.model.installation.Pic;
 import finley.gmair.service.PicService;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.SystemTellerUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,6 +98,56 @@ public class PicServiceImpl implements PicService {
             }
         }
         return result;
+    }
+
+    @Override
+    public ResultData uploadPic(MultipartFile file) {
+        ResultData result = new ResultData();
+        //check the file not empty.
+        try {
+            if (file == null || file.getBytes().length == 0) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                return result;
+            }
+        }
+        catch (IOException e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            return result;
+        }
+
+        //create the local saving path
+        String PATH = "/Users/wjq/desktop/uploadIMG";
+        Date current = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        String time = format.format(current);
+        StringBuilder builder = new StringBuilder(PATH);
+        builder.append(File.separator);
+        builder.append(time);
+
+        //according to the path,create a file.
+        File directory = new File(builder.toString());
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
+        String key = IDGenerator.generate("PIC");
+        String name = key + suffix;
+        String completeName = builder.append(File.separator).append(name).toString();
+
+        File temp = new File(completeName);
+        try {
+            file.transferTo(temp);
+            int index = temp.getPath().indexOf(SystemTellerUtil.tellPath(PATH + File.separator + time));
+            result.setData(temp.getPath().substring(index));
+        } catch (IOException e) {
+            //logger.debug(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        } finally {
+            return result;
+        }
     }
 }
 

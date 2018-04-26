@@ -30,7 +30,6 @@ public class FeedbackServiceImpl implements FeedbackService {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to insert feedback" + feedback.toString());
         }
-
         return result;
     }
 
