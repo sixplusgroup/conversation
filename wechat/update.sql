@@ -48,6 +48,12 @@ article_template.description_content AS description_content
 FROM auto_reply, article_template
 WHERE auto_reply.template_id = article_template.template_id;
 
+#2018.04.23 alter table to store more information
+ALTER TABLE `gmair_wechat`.`wechat_user`
+   ADD COLUMN `user_country` VARCHAR(20) NOT NULL AFTER `user_province`,
+   ADD COLUMN `headimg_url` VARCHAR(50) NOT NULL AFTER `user_country`,
+   ADD COLUMN `user_unioinid` VARCHAR(20) NOT NULL AFTER `headimg_url`;
+
 #2018.04.26 create table to store resources
 CREATE TABLE `gmair_wechat`.`wechat_resource` (
   `resource_id` VARCHAR(55) NOT NULL,
