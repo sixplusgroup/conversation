@@ -52,6 +52,9 @@
             <if test="memberPhone != null">
                 member_phone = #{memberPhone},
             </if>
+            <if test="wechatId != null">
+                wechat_id = #{wechatId},
+            </if>
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},
             </if>

@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -136,10 +137,56 @@ public class MemberController {
         return result;
     }
 
-    @PostMapping("/update")
-    public ResultData update(MemberForm form) {
+    @PostMapping("/setwechat")
+    public ResultData setwechat(String memberPhone,String wechatId) {
         ResultData result = new ResultData();
-        //TODO
+
+        memberPhone=memberPhone.trim();
+        wechatId=wechatId.trim();
+
+        //check empty input
+        if(StringUtils.isEmpty(memberPhone)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide the assignId");
+            return result;
+        }
+        if(StringUtils.isEmpty(wechatId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide the installDate");
+            return result;
+        }
+
+        //according to the memberPhone,find the member
+        Member member = new Member();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("memberPhone",memberPhone);
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetchMember(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            member = ((List<Member>)response.getData()).get(0);
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setDescription("can not find the member with memberPhone");
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now,please try again later");
+        }
+
+        //update the member
+        member.setWechatId(wechatId);
+        response = memberService.updateMember(member);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(member);
+            result.setDescription("success to update the member");
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now,please try again later");
+        }
+
         return result;
     }
 
