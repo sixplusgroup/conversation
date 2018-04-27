@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @RequestMapping("/installation")
 @EnableDiscoveryClient
-public class InstallationClient {
+public class InstallationApplication {
     public static void main(String... args) {
-        SpringApplication.run(InstallationClient.class, args);
+        SpringApplication.run(InstallationApplication.class, args);
     }
 }

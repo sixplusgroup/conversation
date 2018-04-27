@@ -23,23 +23,22 @@ public class MemberController {
     private TeamService teamService;
 
     @PostMapping("/create")
-    public ResultData createMember(MemberForm form)
-    {
+    public ResultData createMember(MemberForm form) {
         ResultData result = new ResultData();
 
-        if(StringUtils.isEmpty(form.getTeamId())){
+        if (StringUtils.isEmpty(form.getTeamId())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the team ID");
             return result;
         }
-        if(StringUtils.isEmpty(form.getMemberName())){
+        if (StringUtils.isEmpty(form.getMemberName())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the member name");
             return result;
         }
-        if(StringUtils.isEmpty(form.getMemberPhone()))
-        {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);;
+        if (StringUtils.isEmpty(form.getMemberPhone())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            ;
             result.setDescription("Please privide the member phone");
             return result;
         }
@@ -53,7 +52,7 @@ public class MemberController {
         condition.put("teamId", teamId);
         condition.put("blockFlag", false);
         ResultData response = teamService.fetchTeam(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("member with phone: ").append(memberPhone).append(" already exist").toString());
             return result;
@@ -63,15 +62,14 @@ public class MemberController {
             result.setDescription(new StringBuffer("Team: ").append(teamId).append(" is not exist").toString());
             return result;
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR)
-        {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("fetch Team: ").append(teamId).append(" error").toString());
             return result;
         }
 
         //create the the member
-        Member member = new Member(teamId,memberPhone,memberName);
+        Member member = new Member(teamId, memberPhone, memberName);
         response = memberService.createMember(member);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -84,25 +82,19 @@ public class MemberController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{memberPhone}/info")
-    public ResultData list(@PathVariable("memberPhone") String memberPhone)
-    {
+    public ResultData list(@PathVariable("memberPhone") String memberPhone) {
         ResultData result = new ResultData();
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("memberPhone",memberPhone);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("memberPhone", memberPhone);
+        condition.put("blockFlag", false);
         ResultData response = memberService.fetchMember(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
-        {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to get member info");
-        }
-        else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL)
-        {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No member info at the moment");
-        }
-        else
-        {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to get member info");
@@ -117,5 +109,25 @@ public class MemberController {
         return result;
     }
 
-
+    @PostMapping("/exist")
+    public ResultData exist(String openid) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechat_id", openid);
+        condition.put("blockFlag", false);
+        ResultData response = memberService.fetchMember(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No user with openid: ").append(openid).append(" found, need to bind first").toString());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query the information, please try again later");
+        }
+        return result;
+    }
 }
