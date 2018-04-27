@@ -117,4 +117,63 @@ public class ExpressController {
         }
         return result;
     }
+
+    /**
+     * This method is used to query express_order in the system
+     *
+     * @return
+     */
+    @PostMapping("/order/query")
+    public ResultData queryOrder(ExpressOrderForm form) {
+        ResultData result = new ResultData();
+        String orderId = form.getOrderId().trim();
+        if (StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the order id is specified");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = expressService.fetchExpressOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<ExpressOrder> list= (List<ExpressOrder>) response.getData();
+            result.setData(list.get(0));
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }else{
+            return response;
+        }
+    }
+
+    /**
+     * This method is used to query express_order in the system
+     *
+     * @return
+     */
+    @PostMapping("/route/query")
+    public ResultData queryRoute(ExpressOrderForm form) {
+        ResultData result = new ResultData();
+        String expressNo = form.getExpressNo().trim();
+        if (StringUtils.isEmpty(expressNo)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the express no is specified");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("expressNo", expressNo);
+        condition.put("blockFlag", false);
+        ResultData response = expressService.fetchExpressOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            /*
+            获取快递路由信息
+             */
+            result.setData(null);
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }else{
+
+            return response;
+        }
+    }
 }
