@@ -9,10 +9,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -123,10 +120,9 @@ public class ExpressController {
      *
      * @return
      */
-    @PostMapping("/order/query")
-    public ResultData queryOrder(ExpressOrderForm form) {
+    @PostMapping("/order/query/{orderId}")
+    public ResultData queryOrder(@PathVariable String orderId) {
         ResultData result = new ResultData();
-        String orderId = form.getOrderId().trim();
         if (StringUtils.isEmpty(orderId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure the order id is specified");
@@ -147,14 +143,13 @@ public class ExpressController {
     }
 
     /**
-     * This method is used to query express_order in the system
+     * This method is used to query express details in the system
      *
      * @return
      */
-    @PostMapping("/route/query")
-    public ResultData queryRoute(ExpressOrderForm form) {
+    @PostMapping("/query/{expressNo}")
+    public ResultData queryRoute(@PathVariable String expressNo) {
         ResultData result = new ResultData();
-        String expressNo = form.getExpressNo().trim();
         if (StringUtils.isEmpty(expressNo)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure the express no is specified");
