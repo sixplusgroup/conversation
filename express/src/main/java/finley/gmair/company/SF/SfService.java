@@ -1,10 +1,20 @@
 package finley.gmair.company.SF;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+@Service
 public class SfService {
 
-    private final static String appId = "00047409";
+    @Value("${SFappId}")
+    private String appId;
 
-    private final static String appKey = "F6CF4BE11B81AA69CC96B8A39FF75F0F";
+    @Value("${SFappKey}")
+    private String appKey;
 
+    public void test(){
+        System.out.println(appId);
+        System.out.println(appKey);
+    }
 
 }
