@@ -4,6 +4,8 @@ import finley.gmair.model.wechat.WechatUser;
 import finley.gmair.service.WechatUserService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.WechatProperties;
+import finley.gmair.util.WechatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,37 +40,11 @@ public class WechatUserController {
         return result;
     }
 
-    @PostMapping(value = "/create")
-    public ResultData createUser(WechatUser user) {
-        ResultData result = new ResultData();
-        ResultData response = wechatUserService.create(user);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("user create error");
-        }
-        return result;
-    }
-
-    @PostMapping(value = "/update")
-    public ResultData updateUser(WechatUser user) {
-        ResultData result = new ResultData();
-        ResultData response = wechatUserService.modify(user);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("Error: can't update with No such user");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
-        }
-        return result;
+    @PostMapping(value = "/openId")
+    public String getOpenId(String code) {
+        final String appid = WechatProperties.getValue("wechat_appid");
+        final String secret = WechatProperties.getValue("wechat_secret");
+        String openid = WechatUtil.queryOauthOpenId(appid, secret, code);
+        return openid;
     }
 }
