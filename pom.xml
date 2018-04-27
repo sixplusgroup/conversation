@@ -29,7 +29,6 @@
         <module>machine</module>
         <module>installation</module>
         <module>sf-common</module>
-        <module>test</module>
     </modules>
 
     <parent>
