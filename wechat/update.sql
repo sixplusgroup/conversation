@@ -16,9 +16,9 @@ ROW_FORMAT=DYNAMIC
 CREATE VIEW text_reply_view
 AS
 SELECT
-auto_reply.keyword AS keyword,
-auto_reply.message_type AS message_type,
 text_template.template_id AS template_id,
+auto_reply.message_type AS message_type,
+auto_reply.keyword AS keyword,
 text_template.response AS response
 from auto_reply, text_template
 where auto_reply.template_id = text_template.template_id;
