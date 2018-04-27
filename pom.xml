@@ -29,7 +29,7 @@
         <module>machine</module>
         <module>installation</module>
         <module>sf-common</module>
-        <module>test</module>
+        <module>menu</module>
     </modules>
 
     <parent>
