@@ -9,6 +9,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ public class ExpressOrderDaoImpl extends BaseDao implements ExpressOrderDao {
     public ResultData insertExpressOrder(ExpressOrder order) {
         ResultData result = new ResultData();
         order.setExpressId(IDGenerator.generate("EXO"));
+        order.setDeliverTime(new Timestamp(System.currentTimeMillis()));
+        order.setReceiveTime(new Timestamp(System.currentTimeMillis()));
         try {
             sqlSession.insert("gmair.express.order.insert", order);
             result.setData(order);

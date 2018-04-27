@@ -2,6 +2,8 @@ package finley.gmair.model.express;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class ExpressOrder extends Entity {
 
     private String expressId;
@@ -13,6 +15,10 @@ public class ExpressOrder extends Entity {
     private String expressNo;
 
     private String expressStatus;
+
+    private Timestamp deliverTime;
+
+    private Timestamp receiveTime;
 
     public ExpressOrder() {
         super();
@@ -44,4 +50,12 @@ public class ExpressOrder extends Entity {
     public String getExpressStatus() { return expressStatus; }
 
     public void setExpressStatus(String expressStatus) { this.expressStatus = expressStatus; }
+
+    public Timestamp getDeliverTime() { return deliverTime; }
+
+    public void setDeliverTime(Timestamp deliverTime) { this.deliverTime = deliverTime; }
+
+    public Timestamp getReceiveTime() { return receiveTime; }
+
+    public void setReceiveTime(Timestamp receiveTime) { this.receiveTime = receiveTime; }
 }

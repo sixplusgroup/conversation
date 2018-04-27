@@ -3,7 +3,7 @@ package finley.gmair.form.express;
 public class ExpressOrderForm {
     private String orderId;
 
-    private String companyId;
+    private String companyName;
 
     private String expressNo;
 
@@ -11,9 +11,9 @@ public class ExpressOrderForm {
 
     public void setOrderId(String orderId) { this.orderId = orderId; }
 
-    public String getCompanyId() { return companyId; }
+    public String getCompanyName() { return companyName; }
 
-    public void setCompanyId(String companyId) { this.companyId = companyId; }
+    public void setCompanyName(String companyName) { this.companyName = companyName; }
 
     public String getExpressNo() { return expressNo; }
 

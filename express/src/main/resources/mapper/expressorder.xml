@@ -7,32 +7,34 @@
         <result property="companyId" column="company_id"></result>
         <result property="expressNo" column="express_no"></result>
         <result property="expressStatus" column="express_status"></result>
+        <result property="deliverTime" column="deliver_time"></result>
+        <result property="receiveTime" column="receive_time"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.express.ExpressOrder" useGeneratedKeys="false">
-        INSERT INTO gmair_express.order_express(express_id, order_id, company_id, express_no, express_status, block_flag, create_time)
-        VALUES (#{expressId}, #{orderId}, #{companyId}, #{expressNo}, #{expressStatus}, #{blockFlag}, #{createAt})
+        INSERT INTO gmair_express.order_express(express_id, order_id, company_id, express_no, express_status,deliver_time, receive_time, block_flag, create_time)
+        VALUES (#{expressId}, #{orderId}, #{companyId}, #{expressNo}, #{expressStatus}, #{deliverTime}, #{receiveTime}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        SELECT express_id, order_id, company_id, express_no, express_status, block_flag, create_time
+        SELECT express_id, order_id, company_id, express_no, express_status, deliver_time, receive_time, block_flag, create_time
         FROM gmair_express.order_express
         WHERE 1 = 1
         <if test="expressId != null">
             AND express_id = #{expressId}
         </if>
-        <if test="order_id != null">
+        <if test="orderId != null">
             AND order_id = #{orderId}
         </if>
-        <if test="company_id != null">
+        <if test="companyId != null">
             AND company_id= #{companyId}
         </if>
-        <if test="express_no != null">
+        <if test="expressNo != null">
             AND express_no= #{expressNo}
         </if>
-        <if test="express_status != null">
+        <if test="expressStatus != null">
             AND express_status= #{expressStatus}
         </if>
         <if test="blockFlag != null">

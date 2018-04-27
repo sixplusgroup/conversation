@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,10 +38,10 @@ public class ExpressController {
         if (StringUtils.isEmpty(companyName)||StringUtils.isEmpty(companyCode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure the express company name or code is specified");
+            return result;
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("companyName", companyName);
-        condition.put("companyCode", companyCode);
         condition.put("blockFlag", false);
         ResultData response = expressService.fetchExpressCompany(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -70,21 +71,38 @@ public class ExpressController {
     public ResultData addOrder(ExpressOrderForm form) {
         ResultData result = new ResultData();
         String orderId = form.getOrderId().trim();
-        String companyId = form.getCompanyId().trim();
+        String companyName = form.getCompanyName().trim();
         String expressNo = form.getExpressNo().trim();
-        if (StringUtils.isEmpty(orderId)||StringUtils.isEmpty(companyId)||StringUtils.isEmpty(expressNo )){
+        if (StringUtils.isEmpty(orderId)||StringUtils.isEmpty(companyName)||StringUtils.isEmpty(expressNo )){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure the order id or express company or no is specified");
+            return result;
+        }
+        Map<String, Object> condition_company = new HashMap<>();
+        condition_company.put("companyName", companyName);
+        ResultData response_company = expressService.fetchExpressCompany(condition_company);
+        String companyId;
+        if (response_company.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<ExpressCompany> list= (List<ExpressCompany>) response_company.getData();
+            companyId=list.get(0).getCompanyId();
+        }else{
+            return response_company;
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
-        condition.put("companyId", companyId);
-        condition.put("expressNo", expressNo);
         condition.put("blockFlag", false);
         ResultData response = expressService.fetchExpressOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("Express order: ").append(orderId).append(" already exist").toString());
+            return result;
+        }
+        condition.remove("orderId");
+        condition.put("expressNo", expressNo);
+        response = expressService.fetchExpressOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription(new StringBuffer("Express order_expressNo: ").append(expressNo).append(" already exist").toString());
             return result;
         }
         ExpressOrder order = new ExpressOrder(orderId, companyId, expressNo);
