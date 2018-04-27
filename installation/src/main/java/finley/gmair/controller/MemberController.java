@@ -110,6 +110,32 @@ public class MemberController {
         return result;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/findwechat")
+    public ResultData findwechat(String wechatId){
+        ResultData result = new ResultData();
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("wechatId",wechatId);
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetchMember(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get member info.");
+        }
+        else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No member info at the moment.");
+        }
+        else
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("Success to get member info.");
+        }
+        return result;
+    }
+
     @PostMapping("/update")
     public ResultData update(MemberForm form) {
         ResultData result = new ResultData();

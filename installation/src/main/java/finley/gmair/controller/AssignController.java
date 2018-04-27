@@ -37,7 +37,7 @@ public class AssignController {
     private MemberService memberService;
 
 
-    //首次创建assign表单,订单发货时由order模块调用触发
+    //订单发货时由order模块调用触发,创建安装任务表单
     @RequestMapping("/create")
     public ResultData create(AssignForm form){
         ResultData result = new ResultData();
@@ -69,7 +69,7 @@ public class AssignController {
 
     }
 
-    //assign被分配时更新install_assign,管理人员分配安装任务时触发
+    //管理人员分配安装任务时触发
     @RequestMapping(method = RequestMethod.POST , value="/allocate")
     public ResultData allocate(AllocateForm form){
         ResultData result = new ResultData();
@@ -218,12 +218,12 @@ public class AssignController {
         }
         else{
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("can not update the processing or finised assign record");
+            result.setDescription("can not update the processing or finished assign record");
         }
         return result;
     }
 
-    //拉取所有assign记录,管理员查看所有安装任务时触发
+    //管理员查看所有安装任务时触发,拉取所有安装任务列表.
     @RequestMapping("/list")
     public ResultData list(){
         ResultData result= new ResultData();
@@ -247,7 +247,7 @@ public class AssignController {
         return result;
     }
 
-    //拉取待分配的assign记录,管理员查看待分配安装任务时触发
+    //管理员查看待分配安装任务时触发,拉取待分配的安装任务列表.
     @RequestMapping("/todolist")
     public ResultData todolist(){
         ResultData result= new ResultData();
@@ -272,7 +272,7 @@ public class AssignController {
         return result;
     }
 
-    //拉取所有已分配未安装的assgin记录
+    //拉取已分配状态的安装任务列表
     @RequestMapping("/assignedlist")
     public ResultData assignedlist(){
         ResultData result= new ResultData();
@@ -297,7 +297,7 @@ public class AssignController {
         return result;
     }
 
-    //拉取所有正在安装的assign记录
+    //拉取正在安装状态的安装任务列表
     @RequestMapping("/processinglist")
     public ResultData processinglist(){
         ResultData result= new ResultData();
@@ -322,7 +322,7 @@ public class AssignController {
         return result;
     }
 
-    //拉取所有已完成的的assign记录
+    //拉取已完成状态的安装任务列表
     @RequestMapping("/finishedlist")
     public ResultData finishedlist(){
         ResultData result= new ResultData();
@@ -347,7 +347,7 @@ public class AssignController {
         return result;
     }
 
-    //拉取可反馈的的assign记录,工人想要进行反馈时触发
+    //工人选择反馈界面时触发,拉取可反馈安装任务列表.
     @RequestMapping(method = RequestMethod.GET, value = "/feedbacklist")
     public ResultData feedbacklist(String wechatId){
         ResultData result = new ResultData();
@@ -393,7 +393,7 @@ public class AssignController {
         }
         else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now, please try again later! ");
+            result.setDescription("server is busy now, please try again later!  ");
         }
         else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -403,7 +403,63 @@ public class AssignController {
         return result;
     }
 
-    //工人查看自己所处团队的待安装任务时触发
+    //工人查看分配给自己的安装任务时触发.
+    @RequestMapping(method = RequestMethod.GET, value = "/workertodo")
+    public ResultData workertodo(String wechatId){
+        ResultData result = new ResultData();
+
+        wechatId = wechatId.trim();
+
+        //check empty input
+        if(StringUtils.isEmpty(wechatId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide the memberId");
+            return result;
+        }
+
+        //according to wechatId, find memberId
+        String memberId = "";
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechatId",wechatId);
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetchMember(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            memberId = ((List<Member>)response.getData()).get(0).getMemberId();
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not found the member!");
+            return result;
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now");
+            return result;
+        }
+
+        //fetch the assigned assign list.
+        condition.clear();
+        condition.put("assignStatus",AssignStatus.ASSIGNED.getValue());
+        condition.put("memberId",memberId);
+        condition.put("blockFlag",false);
+        response = assignService.fetchAssign(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("no assign found");
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now, please try again later  ");
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to get the assigned list");
+        }
+        return result;
+    }
+
+    //工人查看分配给自己的团队但没有指定具体人的安装任务时触发
     @RequestMapping(method = RequestMethod.GET, value = "/workerteamlist")
     public ResultData workerteamlist(String teamId){
         ResultData result = new ResultData();
@@ -420,6 +476,7 @@ public class AssignController {
         //fetch the assign list which worker with workerId should do.
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignStatus",AssignStatus.ASSIGNED.getValue());
+        condition.put("memberId","");
         condition.put("teamId",teamId);
         condition.put("blockFlag",false);
 
@@ -441,7 +498,7 @@ public class AssignController {
         return result;
     }
 
-    //查找assign表中是否存在qrcode为某值的记录
+    //工人扫二维码时触发,查找assign表中是否存在qrcode为某值的记录
     @RequestMapping(method = RequestMethod.GET, value = "/qrcode")
     public ResultData qrcode(String qrcode)
     {
