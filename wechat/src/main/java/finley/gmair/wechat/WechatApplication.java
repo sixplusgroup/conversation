@@ -6,6 +6,8 @@ import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
+import finley.gmair.vo.wechat.AutoReplyVo;
+import finley.gmair.vo.wechat.PictureReplyVo;
 import finley.gmair.vo.wechat.TextReplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -30,7 +32,11 @@ public class WechatApplication {
     @Autowired
     private WechatUserService wechatUserService;
     @Autowired
-    private WechatResourceService wechatResourceService;
+    private AutoReplyService autoReplyService;
+    @Autowired
+    private PictureTemplateService pictureTemplateService;
+    @Autowired
+    private ArticleTemplateService articleTemplateService;
 
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
@@ -69,17 +75,27 @@ public class WechatApplication {
                 case "text":
                     content.alias("xml", TextOutMessage.class);
                     final TextInMessage textInMessage = (TextInMessage) content.fromXML(input);
-                    if (textInMessage.getContent().equals("赠送")) {
-                        Map<String, Object> condition = new HashMap<>();
-                        condition.put("resourceName", "contactUs_MEDIA");
-                        WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), getResource(condition));
-                    } else {
-                        Map<String, Object> condition = new HashMap<>();
-                        condition.put("messageType", "text");
-                        condition.put("keyWord", textInMessage.getContent());
-                        TextOutMessage result = initialize(getResponse(condition), textInMessage);
-                        String xml = content.toXML(result);
-                        return xml;
+                    Map<String, Object> condition = new HashMap<>();
+                    condition.put("messageType", "text");
+                    condition.put("keyWord", textInMessage.getContent());
+                    ResultData rs = autoReplyService.fetch(condition);
+                    if (rs.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        AutoReplyVo aVo = ((List<AutoReplyVo>)rs.getData()).get(0);
+                        if (aVo.getTemplateId().contains("PTI")) {
+                            condition.clear();
+                            condition.put("templateId", aVo.getTemplateId());
+                            WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), getPicUrl(condition));
+                        }
+                        if (aVo.getTemplateId().contains("TTI")) {
+                            condition.clear();
+                            condition.put("templateId", aVo.getTemplateId());
+                            TextOutMessage result = initialize(getResponse(condition), textInMessage);
+                            String xml = content.toXML(result);
+                            return xml;
+                        }
+                        if (aVo.getTemplateId().contains("ATI")) {
+
+                        }
                     }
                 case "event":
                     content.alias("xml", TextOutMessage.class);
@@ -89,7 +105,7 @@ public class WechatApplication {
                         map.put("keyWord", "subscribe");
                         TextOutMessage result = initialize(getResponse(map), eventInMessage);
                         String xml = content.toXML(result);
-
+                        //start thread to store or update user information
                         new Thread(() -> {
                             String openId = eventInMessage.getFromUserName();
                             String accessToken = WechatProperties.getAccessToken();
@@ -97,17 +113,15 @@ public class WechatApplication {
                             String resultStr = HttpDeal.getResponse(url);
                             JSONObject json = JSON.parseObject(resultStr);
                             WechatUser user = new WechatUser(openId, json);
-
-                            Map<String, Object> condition = new HashMap<>();
-                            condition.put("wechatId", openId);
+                            map.clear();
+                            map.put("wechatId", openId);
                             ResultData rd = new ResultData();
-                            if (wechatUserService.existWechatUser(condition)) {
+                            if (wechatUserService.existWechatUser(map)) {
                                 rd = wechatUserService.modify(user);
                             } else {
                                 rd = wechatUserService.create(user);
                             }
                         }).start();
-
                         return xml;
                     }
                     if (eventInMessage.getEventKey().equals("gmair")) {
@@ -130,9 +144,6 @@ public class WechatApplication {
                     }
                     break;
             }
-            Map<String, Object> condition = new HashMap<>();
-            condition.put("resourceName", "contactUs_MEDIA");
-            WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), getResource(condition));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,22 +163,32 @@ public class WechatApplication {
     private String getResponse(Map<String, Object> con) {
         ResultData rd = textTemplateService.fetchTextReply(con);
         if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            TextReplyVo TVo = ((List<TextReplyVo>) rd.getData()).get(0);
-            String result = TVo.getResponse();
+            TextReplyVo tVo = ((List<TextReplyVo>) rd.getData()).get(0);
+            String result = tVo.getResponse();
             return result;
         } else {
             return "";
         }
     }
 
-    private String getResource(Map<String, Object> condition) {
-        ResultData rd = wechatResourceService.fetch(condition);
+    private String getPicUrl(Map<String, Object> condition) {
+        ResultData rd = pictureTemplateService.fetchPictureReply(condition);
         if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            WechatResource rVo = ((List<WechatResource>) rd.getData()).get(0);
-            String result = rVo.getResourceId();
+            PictureReplyVo pVo = ((List<PictureReplyVo>) rd.getData()).get(0);
+            String result = pVo.getPictureUrl();
             return result;
         } else {
             return "";
+        }
+    }
+
+    private AutoReplyVo getArticle(Map<String, Object> condition) {
+        ResultData rd = articleTemplateService.fetchArticleReply(condition);
+        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            AutoReplyVo aVo = ((List<AutoReplyVo>) rd.getData()).get(0);
+            return aVo;
+        } else {
+            return null;
         }
     }
 }
