@@ -1,7 +1,10 @@
 package finley.gmair.controller;
 
 import finley.gmair.form.installation.SnapshotForm;
+import finley.gmair.model.installation.Assign;
+import finley.gmair.model.installation.AssignStatus;
 import finley.gmair.model.installation.Snapshot;
+import finley.gmair.service.AssignService;
 import finley.gmair.service.PicService;
 import finley.gmair.service.SnapshotService;
 import finley.gmair.util.ResponseCode;
@@ -11,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,45 +26,45 @@ public class SnapshotController {
     @Autowired
     private PicService picService;
 
+    @Autowired
+    private AssignService assignService;
 
     @RequestMapping("/create")
     public ResultData create(SnapshotForm form){
         ResultData result = new ResultData();
 
-        //check empty input
-        if(StringUtils.isEmpty(form.getAssignId())){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the assignID");
-            return result;
-        }
-        if(StringUtils.isEmpty(form.getQrcode())){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the qrcode");
-            return result;
-        }
-        if(StringUtils.isEmpty(form.getWechatId())){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the wechatId");
-            return result;
-        }
-        if(StringUtils.isEmpty(form.getMemberPhone())){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the phone number");
-            return result;
-        }
-        if(StringUtils.isEmpty(form.getPicPath())) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the pic path");
-            return result;
-        }
-
-        //build the Snapshot Model
         String assignId = form.getAssignId().trim();
         String qrcode = form.getQrcode().trim();
         String wechatId = form.getWechatId().trim();
         String memberPhone = form.getMemberPhone().trim();
         String picPath = form.getPicPath().trim();
-        Snapshot snapshot = new Snapshot(assignId,qrcode,wechatId,memberPhone,picPath);
+
+        //check whether input is empty
+        if(StringUtils.isEmpty(assignId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide the assignID");
+            return result;
+        }
+        if(StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide the qrcode");
+            return result;
+        }
+        if(StringUtils.isEmpty(wechatId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide the wechatId");
+            return result;
+        }
+        if(StringUtils.isEmpty(memberPhone)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide the phone number");
+            return result;
+        }
+        if(StringUtils.isEmpty(picPath)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide the pic path");
+            return result;
+        }
 
         //check whether the assignId is exist.
         Map<String, Object> condition = new HashMap<>();
@@ -74,6 +78,7 @@ public class SnapshotController {
         }
 
         //create the Snapshot
+        Snapshot snapshot = new Snapshot(assignId,qrcode,wechatId,memberPhone,picPath);
         response = snapshotService.createSnapshot(snapshot);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -84,14 +89,24 @@ public class SnapshotController {
         result.setData(response.getData());
         result.setDescription("Success to create the snapshot");
 
-
-        //new a thread to handle the pic saving work
+        //new a thread to handle the pic saving and repetition checking.
         new Thread(() -> {
-            System.out.println("start the savePic thread");
             picService.savePic(memberPhone,picPath);
         }).start();
-        return result;
 
+        //new a thread to update the assign status.
+        condition.clear();
+        condition.put("assignId",assignId);
+        condition.put("blockFlag",false);
+        response = assignService.fetchAssign(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            Assign assign = ((List<Assign>)response.getData()).get(0);
+            assign.setAssignStatus(AssignStatus.FINISHED);
+            new Thread(() -> {
+                assignService.updateAssign(assign);
+            }).start();
+        }
+        return result;
     }
 
     @RequestMapping("/list")
@@ -99,7 +114,7 @@ public class SnapshotController {
     {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFalg",false);
+        condition.put("blockFlag",false);
         ResultData response = snapshotService.fetchSnapshot(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
         {

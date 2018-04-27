@@ -19,13 +19,13 @@ public class WechatController {
         String openid = WechatUtil.queryOauthOpenId(WechatProperties.getWechatAppid(),WechatProperties.getWechatSecret(),code);
         if(openid!=null&&openid!="")
         {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("can not get the openid");
-        }
-        else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(openid);
             result.setDescription("success to get the openid");
+        }
+        else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("can not get the openid");
         }
         return result;
     }

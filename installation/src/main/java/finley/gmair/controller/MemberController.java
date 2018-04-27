@@ -27,17 +27,22 @@ public class MemberController {
     {
         ResultData result = new ResultData();
 
-        if(StringUtils.isEmpty(form.getTeamId())){
+        String teamId = form.getTeamId().trim();
+        String memberPhone = form.getMemberPhone().trim();
+        String memberName = form.getMemberName().trim();
+
+        //check whether input is empty
+        if(StringUtils.isEmpty(teamId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the team ID");
             return result;
         }
-        if(StringUtils.isEmpty(form.getMemberName())){
+        if(StringUtils.isEmpty(memberName)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the member name");
             return result;
         }
-        if(StringUtils.isEmpty(form.getMemberPhone()))
+        if(StringUtils.isEmpty(memberPhone))
         {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);;
             result.setDescription("Please privide the member phone");
@@ -45,10 +50,6 @@ public class MemberController {
         }
 
         //check whether the team exist
-        String teamId = form.getTeamId().trim();
-        String memberPhone = form.getMemberPhone().trim();
-        String memberName = form.getMemberName().trim();
-
         Map<String, Object> condition = new HashMap<>();
         condition.put("teamId", teamId);
         condition.put("blockFlag", false);
@@ -113,7 +114,7 @@ public class MemberController {
     @PostMapping("/update")
     public ResultData update(MemberForm form) {
         ResultData result = new ResultData();
-
+        //TODO
         return result;
     }
 

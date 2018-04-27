@@ -23,6 +23,7 @@ public class PicController {
     @RequestMapping("copypic")
     public ResultData copypic(){
         ResultData result = new ResultData();
+
         Map<String ,Object> condition = new HashMap<>();
         condition.put("copyFlag",true);
         condition.put("blockFlag",false);
@@ -50,10 +51,10 @@ public class PicController {
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
     public ResultData upload(@RequestParam MultipartFile file) {
         ResultData result = new ResultData();
-        String absolutePath = this.getClass().getClassLoader().getResource("").getPath();
-        System.out.println(absolutePath);
-        int index = absolutePath.indexOf("/target/classes/");
-        String basePath = absolutePath.substring(0, index);
+
+        //String absolutePath = this.getClass().getClassLoader().getResource("").getPath();
+        //int index = absolutePath.indexOf("/target/classes/");
+        //String basePath = absolutePath.substring(0, index);
         ResultData response = picService.uploadPic(file);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

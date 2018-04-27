@@ -25,6 +25,12 @@ public class TeamController {
     @PostMapping("/create")
     public ResultData createTeam(TeamForm form){
         ResultData result = new ResultData();
+
+        String teamName = form.getTeamName().trim();
+        String teamArea = form.getTeamArea().trim();
+        String teamDescription = form.getTeamDescription().trim();
+
+        //check whether input is empty
         if(StringUtils.isEmpty(form.getTeamName())){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the Team name");
@@ -37,9 +43,6 @@ public class TeamController {
         }
 
         //check whether the team name exist
-        String teamName = form.getTeamName().trim();
-        String teamArea = form.getTeamArea().trim();
-        String teamDescription = form.getTeamDescription().trim();
         Map<String, Object> condition = new HashMap<>();
         condition.put("teamName", teamName);
         condition.put("blockFlag", false);
@@ -67,6 +70,7 @@ public class TeamController {
     @GetMapping("/list")
     public ResultData list(){
         ResultData result = new ResultData();
+
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFalg",false);
         ResultData response = teamService.fetchTeam(condition);
@@ -88,10 +92,11 @@ public class TeamController {
         }
         return result;
     }
+
     @GetMapping("/update")
     public ResultData update(TeamForm team){
         ResultData result=new ResultData();
-
+        //TODO
         return result;
     }
 }

@@ -2,16 +2,17 @@ package finley.gmair.form.installation;
 
 public class FeedbackForm {
 
-    private String qrcode;
+    private String assignId;
     private String memberPhone;
     private String feedbackContent;
+    private String status;
 
-    public String getQrcode() {
-        return qrcode;
+    public String getAssignId() {
+        return assignId;
     }
 
-    public void setQrcode(String qrcode) {
-        this.qrcode = qrcode;
+    public void setAssignId(String assignId) {
+        this.assignId = assignId;
     }
 
     public String getMemberPhone() {
@@ -28,5 +29,13 @@ public class FeedbackForm {
 
     public void setFeedbackContent(String feedbackContent) {
         this.feedbackContent = feedbackContent;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

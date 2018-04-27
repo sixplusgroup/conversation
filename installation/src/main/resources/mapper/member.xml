@@ -6,14 +6,15 @@
         <result property="teamId" column="team_id" />
         <result property="memberPhone" column="member_phone"/>
         <result property="memberName" column="member_name" />
+        <result property="wechatId" column="wechat_id" />
         <result property="blockFlag" column="block_flag" />
         <result property="createAt" column="create_time" />
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Member" useGeneratedKeys="false">
-        INSERT INTO gmair_install.team_member(member_id, team_id, member_phone, member_name, block_flag, create_time)
+        INSERT INTO gmair_install.team_member(member_id, team_id, member_phone, member_name, wechat_id, block_flag, create_time)
         VALUES(
-          #{memberId},#{teamId},#{memberPhone},#{memberName},#{blockFlag},#{createAt}
+          #{memberId},#{teamId},#{memberPhone},#{memberName},#{wechatId},#{blockFlag},#{createAt}
         )
     </insert>
 

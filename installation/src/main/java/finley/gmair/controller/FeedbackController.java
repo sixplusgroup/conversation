@@ -24,30 +24,32 @@ public class FeedbackController {
     @PostMapping("/create")
     public ResultData create(FeedbackForm form)
     {
-        String qrcode = form.getQrcode().trim();
+        ResultData result = new ResultData();
+
+        String assignId = form.getAssignId().trim();
         String memberPhone = form.getMemberPhone().trim();
         String feedbackContent = form.getFeedbackContent().trim();
-        ResultData result = new ResultData();
-        if(StringUtils.isEmpty(qrcode)){
+        String status = form.getStatus();
+
+        //check whether input is empty
+        if(StringUtils.isEmpty(assignId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the qrcode");
             return result;
         }
-
         if(StringUtils.isEmpty(memberPhone)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the phone");
             return result;
         }
-
         if(StringUtils.isEmpty(feedbackContent)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the feedback content");
             return result;
         }
 
-        //create the the team
-        Feedback feedback = new Feedback(qrcode,memberPhone,feedbackContent);
+        //create the the feedback
+        Feedback feedback = new Feedback(assignId,memberPhone,feedbackContent,status);
         ResultData response = feedbackService.createFeedback(feedback);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -64,6 +66,7 @@ public class FeedbackController {
     public ResultData list()
     {
         ResultData result = new ResultData();
+        
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFalg",false);
         ResultData response = feedbackService.fetchFeedback(condition);

@@ -11,5 +11,4 @@ public interface FeedbackService {
 
     ResultData fetchFeedback(Map<String, Object> condition);
 
-    //ResultData updateFeedback(Feedback feedback);
 }
