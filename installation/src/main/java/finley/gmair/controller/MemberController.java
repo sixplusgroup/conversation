@@ -26,7 +26,6 @@ public class MemberController {
     public ResultData createMember(MemberForm form)
     {
         ResultData result = new ResultData();
-
         String teamId = form.getTeamId().trim();
         String memberPhone = form.getMemberPhone().trim();
         String memberName = form.getMemberName().trim();

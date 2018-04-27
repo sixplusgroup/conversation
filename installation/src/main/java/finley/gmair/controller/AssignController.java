@@ -347,28 +347,46 @@ public class AssignController {
         return result;
     }
 
-    //拉取已分配的assign记录,工人查看自己的安装任务时触发
-    @RequestMapping(method = RequestMethod.GET, value = "/workerlist")
-    public ResultData workerlist(String memberId){
+    //拉取可反馈的的assign记录,工人想要进行反馈时触发
+    @RequestMapping(method = RequestMethod.GET, value = "/feedbacklist")
+    public ResultData feedbacklist(String wechatId){
         ResultData result = new ResultData();
 
-        memberId = memberId.trim();
+        wechatId = wechatId.trim();
 
         //check empty input
-        if(StringUtils.isEmpty(memberId)){
+        if(StringUtils.isEmpty(wechatId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the memberId");
             return result;
         }
 
-        //fetch the assign list which worker with workerId should do.
+        //according to wechatId, find memberId
+        String memberId = "";
         Map<String, Object> condition = new HashMap<>();
-        condition.put("assignStatus",AssignStatus.ASSIGNED.getValue());
+        condition.put("wechatId",wechatId);
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetchMember(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            memberId = ((List<Member>)response.getData()).get(0).getMemberId();
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not found the member");
+            return result;
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now");
+            return result;
+        }
+
+        //fetch the PROCESSING assign list.
+        condition.clear();
+        condition.put("assignStatus",AssignStatus.PROCESSING.getValue());
         condition.put("memberId",memberId);
         condition.put("blockFlag",false);
-
-        //fetch the assign list
-        ResultData response = assignService.fetchAssign(condition);
+        response = assignService.fetchAssign(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("no assign found");

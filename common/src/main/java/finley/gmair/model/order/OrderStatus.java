@@ -11,7 +11,6 @@ public enum OrderStatus implements EnumValue {
         this.value = value;
     }
 
-
     @Override
     public int getValue() {
         return value;

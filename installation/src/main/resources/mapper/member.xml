@@ -20,7 +20,7 @@
 
 
     <select id="query" parameterType="java.util.Map" resultMap="Member">
-        SELECT member_id,team_id,member_phone,member_name,block_flag,create_time
+        SELECT *
         FROM gmair_install.team_member
         WHERE 1 = 1
         <if test="memberId != null">
@@ -34,6 +34,9 @@
         </if>
         <if test="memberName != null">
             AND member_name = #{memberName}
+        </if>
+        <if test="wechatId != null">
+            AND wechat_id = #{wechatId}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}

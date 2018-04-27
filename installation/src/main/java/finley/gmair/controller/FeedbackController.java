@@ -68,7 +68,7 @@ public class FeedbackController {
         ResultData result = new ResultData();
         
         Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFalg",false);
+        condition.put("blockFlag",false);
         ResultData response = feedbackService.fetchFeedback(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
         {
