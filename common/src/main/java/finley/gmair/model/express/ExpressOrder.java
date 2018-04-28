@@ -14,7 +14,7 @@ public class ExpressOrder extends Entity {
 
     private String expressNo;
 
-    private String expressStatus;
+    private ExpressStatus expressStatus;
 
     private Timestamp deliverTime;
 
@@ -26,9 +26,10 @@ public class ExpressOrder extends Entity {
 
     public ExpressOrder(String orderId, String companyId, String expressNo) {
         this();
-        this.orderId=orderId;
-        this.companyId=companyId;
-        this.expressNo=expressNo;
+        this.orderId = orderId;
+        this.companyId = companyId;
+        this.expressNo = expressNo;
+        this.expressStatus = ExpressStatus.ASSIGNED;
     }
 
     public String getExpressId() { return expressId; }
@@ -47,9 +48,13 @@ public class ExpressOrder extends Entity {
 
     public void setExpressNo(String expressNo) { this.expressNo = expressNo; }
 
-    public String getExpressStatus() { return expressStatus; }
+    public ExpressStatus getExpressStatus() {
+        return expressStatus;
+    }
 
-    public void setExpressStatus(String expressStatus) { this.expressStatus = expressStatus; }
+    public void setExpressStatus(ExpressStatus expressStatus) {
+        this.expressStatus = expressStatus;
+    }
 
     public Timestamp getDeliverTime() { return deliverTime; }
 
