@@ -94,4 +94,18 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         result.setDescription("Fail to update accesstoken to database");
         return result;
     }
+
+    @Override
+    public boolean existToken(Map<String, Object> condition) {
+        Map<String, Object> con = new HashMap<>();
+        for (Map.Entry<String, Object> e : condition.entrySet()) {
+            con.clear();
+            con.put(e.getKey(), e.getValue());
+            ResultData response = accessTokenDao.query(con);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
