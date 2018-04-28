@@ -72,7 +72,6 @@ public class WechatApplication {
             session.setAttribute("openId", message.getFromUserName());
             switch (message.getMsgType()) {
                 case "text":
-                    content.alias("xml", TextOutMessage.class);
                     final TextInMessage textInMessage = (TextInMessage) content.fromXML(input);
                     Map<String, Object> condition = new HashMap<>();
                     condition.put("messageType", "text");
@@ -89,6 +88,7 @@ public class WechatApplication {
                             condition.clear();
                             condition.put("templateId", aVo.getTemplateId());
                             TextOutMessage result = initialize(getResponse(condition), textInMessage);
+                            content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);
                             return xml;
                         }
@@ -97,12 +97,12 @@ public class WechatApplication {
                         }
                     }
                 case "event":
-                    content.alias("xml", TextOutMessage.class);
                     final EventInMessage eventInMessage = (EventInMessage) content.fromXML(input);
                     Map<String, Object> map = new HashMap<>();
                     if (eventInMessage.getEvent().equals("subscribe")) {
                         map.put("keyWord", "subscribe");
                         TextOutMessage result = initialize(getResponse(map), eventInMessage);
+                        content.alias("xml", TextOutMessage.class);
                         String xml = content.toXML(result);
                         //start thread to store or update user information
                         new Thread(() -> {
@@ -137,6 +137,7 @@ public class WechatApplication {
                             map.clear();
                             map.put("KeyWord", "NoWechatId");
                             TextOutMessage result = initialize(getResponse(map), eventInMessage);
+                            content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);
                             return xml;
                         }
