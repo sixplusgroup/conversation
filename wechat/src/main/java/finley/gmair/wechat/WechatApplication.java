@@ -6,7 +6,7 @@ import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
-import finley.gmair.vo.wechat.AutoReplyVo;
+import finley.gmair.vo.wechat.ArticleReplyVo;
 import finley.gmair.vo.wechat.PictureReplyVo;
 import finley.gmair.vo.wechat.TextReplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +78,7 @@ public class WechatApplication {
                     condition.put("keyWord", tmessage.getContent());
                     ResultData response = autoReplyService.fetch(condition);
                     if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                        AutoReplyVo aVo = ((List<AutoReplyVo>) response.getData()).get(0);
+                        AutoReply aVo = ((List<AutoReply>) response.getData()).get(0);
                         if (aVo.getTemplateId().contains("PTI")) {
                             condition.clear();
                             condition.put("templateId", aVo.getTemplateId());
@@ -186,10 +186,10 @@ public class WechatApplication {
         }
     }
 
-    private AutoReplyVo getArticle(Map<String, Object> condition) {
+    private ArticleReplyVo getArticle(Map<String, Object> condition) {
         ResultData rd = articleTemplateService.fetchArticleReply(condition);
         if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            AutoReplyVo aVo = ((List<AutoReplyVo>) rd.getData()).get(0);
+            ArticleReplyVo aVo = ((List<ArticleReplyVo>) rd.getData()).get(0);
             return aVo;
         } else {
             return null;
