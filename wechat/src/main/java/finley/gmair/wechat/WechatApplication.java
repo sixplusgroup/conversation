@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.swing.text.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
 
 @SpringBootApplication
@@ -61,34 +64,35 @@ public class WechatApplication {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/wechat", produces = "text/xml;charset=utf-8")
-    public String handle(HttpServletRequest request, HttpServletRequest response) {
+    public String handle(HttpServletRequest request) {
         try {
             ServletInputStream stream = request.getInputStream();
             String input = WechatUtil.inputStream2String(stream);
+
+            int start = input.indexOf("<MsgType>");
+            int end = input.indexOf("</MsgType>");
+
+            String type = input.substring(start + "<MsgType>".length(), end);
             XStream content = XStreamFactory.init(false);
-            content.alias("xml", InMessage.class);
-            final InMessage message = (InMessage) content.fromXML(input);
-            HttpSession session = request.getSession();
-            session.setAttribute("openId", message.getFromUserName());
-            switch (message.getMsgType()) {
+            switch (type) {
                 case "text":
                     content.alias("xml", TextInMessage.class);
-                    final TextInMessage textInMessage = (TextInMessage) content.fromXML(input);
+                    final TextInMessage tmessage = (TextInMessage) content.fromXML(input);
                     Map<String, Object> condition = new HashMap<>();
                     condition.put("messageType", "text");
-                    condition.put("keyWord", textInMessage.getContent());
-                    ResultData rs = autoReplyService.fetch(condition);
-                    if (rs.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                        AutoReplyVo aVo = ((List<AutoReplyVo>)rs.getData()).get(0);
+                    condition.put("keyWord", tmessage.getContent());
+                    ResultData response = autoReplyService.fetch(condition);
+                    if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        AutoReplyVo aVo = ((List<AutoReplyVo>) response.getData()).get(0);
                         if (aVo.getTemplateId().contains("PTI")) {
                             condition.clear();
                             condition.put("templateId", aVo.getTemplateId());
-                            WechatUtil.pushImage(WechatProperties.getAccessToken(), message.getFromUserName(), getPicUrl(condition));
+                            WechatUtil.pushImage(WechatProperties.getAccessToken(), tmessage.getFromUserName(), getPicUrl(condition));
                         }
                         if (aVo.getTemplateId().contains("TTI")) {
                             condition.clear();
                             condition.put("templateId", aVo.getTemplateId());
-                            TextOutMessage result = initialize(getResponse(condition), textInMessage);
+                            TextOutMessage result = initialize(getResponse(condition), tmessage);
                             content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);
                             return xml;
@@ -99,16 +103,16 @@ public class WechatApplication {
                     }
                 case "event":
                     content.alias("xml", EventInMessage.class);
-                    final EventInMessage eventInMessage = (EventInMessage) content.fromXML(input);
+                    final EventInMessage emessage = (EventInMessage) content.fromXML(input);
                     Map<String, Object> map = new HashMap<>();
-                    if (eventInMessage.getEvent().equals("subscribe")) {
+                    if (emessage.getEvent().equals("subscribe")) {
                         map.put("keyWord", "subscribe");
-                        TextOutMessage result = initialize(getResponse(map), eventInMessage);
+                        TextOutMessage result = initialize(getResponse(map), emessage);
                         content.alias("xml", TextOutMessage.class);
                         String xml = content.toXML(result);
                         //start thread to store or update user information
                         new Thread(() -> {
-                            String openId = eventInMessage.getFromUserName();
+                            String openId = emessage.getFromUserName();
                             String accessToken = WechatProperties.getAccessToken();
                             String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + accessToken + "&openid=" + openId + "&lang=zh_CN";
                             String resultStr = HttpDeal.getResponse(url);
@@ -125,8 +129,8 @@ public class WechatApplication {
                         }).start();
                         return xml;
                     }
-                    if (eventInMessage.getEventKey().equals("gmair")) {
-                        String openId = eventInMessage.getFromUserName();
+                    if (emessage.getEventKey().equals("gmair")) {
+                        String openId = emessage.getFromUserName();
                         map.clear();
                         map.put("wechatId", openId);
                         ResultData rd = wechatUserService.fetch(map);
@@ -137,7 +141,7 @@ public class WechatApplication {
                         } else {
                             map.clear();
                             map.put("KeyWord", "NoWechatId");
-                            TextOutMessage result = initialize(getResponse(map), eventInMessage);
+                            TextOutMessage result = initialize(getResponse(map), emessage);
                             content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);
                             return xml;
