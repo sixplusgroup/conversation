@@ -2,17 +2,17 @@ package finley.gmair.model.installation;
 
 import finley.gmair.model.EnumValue;
 
-public enum ReconnaissanceStatus implements EnumValue {
-    TODO(0), UNREACHABLE(1), FINISHED(2);
+public enum AssignStatus implements EnumValue {
+    TODOASSIGN(0), ASSIGNED(1), PROCESSING(2), FINISHED(3);
 
     private int value;
 
-    ReconnaissanceStatus(int value) {
+    AssignStatus(int value) {
         this.value = value;
     }
 
     @Override
     public int getValue() {
-        return 0;
+        return value;
     }
 }
