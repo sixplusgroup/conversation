@@ -14,6 +14,7 @@ public class Assign extends Entity {
     public Assign()
     {
         super();
+        this.assignStatus = AssignStatus.TODOASSIGN;
     }
 
     public Assign(String qrcode, String teamId, String memberId, Timestamp assignDate) {
