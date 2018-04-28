@@ -20,7 +20,6 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
     public ResultData insertAssign(Assign assign){
         ResultData result = new ResultData();
         assign.setAssignId(IDGenerator.generate("IAS"));
-        assign.setAssignStatus(AssignStatus.TODOASSIGN);
         try{
             sqlSession.insert("gmair.installation.assign.insert",assign);
             result.setData(assign);
