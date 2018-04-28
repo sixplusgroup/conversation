@@ -10,4 +10,5 @@ public interface FeedbackDao {
 
     ResultData queryFeedback(Map<String, Object> condition);
 
+    ResultData updateFeedback(Feedback feedback);
 }

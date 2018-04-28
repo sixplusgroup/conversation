@@ -16,7 +16,7 @@ public class OrderStatusHandler extends BaseTypeHandler<OrderStatus> {
 
     public OrderStatusHandler(Class<OrderStatus> status) {
         if (status == null) {
-            throw new IllegalArgumentException("Catalog argument cannot be null");
+            throw new IllegalArgumentException("Status argument cannot be null");
         }
         this.status = status;
         this.enums = status.getEnumConstants();

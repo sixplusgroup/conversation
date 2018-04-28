@@ -56,4 +56,16 @@ public class FeedbackDaoImpl extends BaseDao implements FeedbackDao {
         return result;
     }
 
+    @Override
+    public ResultData updateFeedback(Feedback feedback){
+        ResultData result = new ResultData();
+        try{
+            sqlSession.update("gmair.installation.feedback.update",feedback);
+            result.setData(feedback);
+        }catch(Exception e){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }
