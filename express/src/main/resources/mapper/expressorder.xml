@@ -35,10 +35,26 @@
             AND express_no= #{expressNo}
         </if>
         <if test="expressStatus != null">
-            AND express_status= #{expressStatus}
+            AND express_status &lt; #{expressStatus}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
     </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_express.order_express
+        SET
+        <if test="deliverTime != null">
+           deliver_time = #{deliverTime},
+        </if>
+        <if test="receiveTime != null">
+           receive_time = #{receiveTime},
+        </if>
+        express_status = #{expressStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+        WHERE order_id IN
+        <foreach collection="list" index="index" item="expressOrder" open="(" separator="," close=")">
+            #{expressOrder.orderId}
+        </foreach>
+    </update>
 </mapper>

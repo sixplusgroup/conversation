@@ -20,13 +20,11 @@ public class ExpressOrderDaoImpl extends BaseDao implements ExpressOrderDao {
         ResultData result = new ResultData();
         order.setExpressId(IDGenerator.generate("EXO"));
         order.setDeliverTime(new Timestamp(System.currentTimeMillis()));
-        order.setReceiveTime(new Timestamp(System.currentTimeMillis()));
         try {
             sqlSession.insert("gmair.express.order.insert", order);
             result.setData(order);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            System.out.println(e.getMessage());
             result.setDescription(e.getMessage());
         }
         return result;
@@ -41,6 +39,18 @@ public class ExpressOrderDaoImpl extends BaseDao implements ExpressOrderDao {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(list);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData updateExpressOrder(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.express.order.update",condition);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());

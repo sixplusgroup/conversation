@@ -9,4 +9,6 @@ public interface ExpressOrderDao {
     ResultData insertExpressOrder(ExpressOrder order);
 
     ResultData queryExpressOrder(Map<String, Object> condition);
+
+    ResultData updateExpressOrder(Map<String, Object> condition);
 }
