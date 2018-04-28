@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,12 +51,10 @@ public class PicController {
 
     //处理上传图片的请求
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
-    public ResultData upload(@RequestParam MultipartFile file) {
-        ResultData result = new ResultData();
+    public ResultData upload(MultipartHttpServletRequest request) {
 
-        //String absolutePath = this.getClass().getClassLoader().getResource("").getPath();
-        //int index = absolutePath.indexOf("/target/classes/");
-        //String basePath = absolutePath.substring(0, index);
+        ResultData result = new ResultData();
+        MultipartFile file = request.getFile("fileName");
         ResultData response = picService.uploadPic(file);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
