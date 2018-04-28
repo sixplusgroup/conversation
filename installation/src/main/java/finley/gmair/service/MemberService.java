@@ -10,4 +10,6 @@ public interface MemberService {
 
     ResultData fetchMember(Map<String, Object> condition);
 
+    ResultData updateMember(Member member);
+
 }
