@@ -44,8 +44,8 @@ public class PicController {
     }
 
     //从数据表install_pic中拉取重复图片的信息
-    @RequestMapping(method = RequestMethod.GET, value="copypic")
-    public ResultData copypic(){
+    @RequestMapping(method = RequestMethod.GET, value="copy")
+    public ResultData copy(){
         ResultData result = new ResultData();
 
         Map<String ,Object> condition = new HashMap<>();

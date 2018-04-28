@@ -459,8 +459,8 @@ public class AssignController {
     }
 
     //工人查看分配给自己的团队但没有指定具体人的安装任务时触发
-    @RequestMapping(method = RequestMethod.GET, value = "/workerteamlist")
-    public ResultData workerteamlist(String teamId){
+    @RequestMapping(method = RequestMethod.GET, value = "/teamtodo")
+    public ResultData teamtodo(String teamId){
         ResultData result = new ResultData();
 
         teamId = teamId.trim();
@@ -472,14 +472,13 @@ public class AssignController {
             return result;
         }
 
-        //fetch the assign list which worker with workerId should do.
+        //fetch the assign list
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignStatus",AssignStatus.ASSIGNED.getValue());
         condition.put("memberId","");
         condition.put("teamId",teamId);
         condition.put("blockFlag",false);
 
-        //fetch the assign list
         ResultData response = assignService.fetchAssign(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -494,6 +493,7 @@ public class AssignController {
             result.setData(response.getData());
             result.setDescription("success to get the assigned list");
         }
+
         return result;
     }
 
@@ -508,7 +508,7 @@ public class AssignController {
         ResultData response = assignService.fetchAssign(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getResponseCode());
+            result.setData(response.getData());
             result.setDescription("success to find the assign with qrcode");
         }
         else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
