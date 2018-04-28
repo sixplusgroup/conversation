@@ -54,20 +54,31 @@ public class MemberController {
         condition.put("teamId", teamId);
         condition.put("blockFlag", false);
         ResultData response = teamService.fetchTeam(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("member with phone: ").append(memberPhone).append(" already exist").toString());
-            return result;
-        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(new StringBuffer("Team: ").append(teamId).append(" is not exist").toString());
+            result.setDescription("team is not exist");
             return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR)
         {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("fetch Team: ").append(teamId).append(" error").toString());
+            result.setDescription("server is busy now,please try again later");
+            return result;
+        }
+
+        //check weather the phone has been registered
+        condition.clear();
+        condition.put("memberPhone",memberPhone);
+        condition.put("blockFlag",false);
+        response = memberService.fetchMember(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("member phone has been registered");
+            return result;
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now,try again later");
             return result;
         }
 
