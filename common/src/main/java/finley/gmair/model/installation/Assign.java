@@ -9,7 +9,6 @@ public class Assign extends Entity {
     private String qrcode;
     private String teamId;
     private String memberId;
-    private AssignStatus assignStatus;
     private Timestamp assignDate;
     public Assign()
     {
@@ -54,14 +53,6 @@ public class Assign extends Entity {
 
     public void setMemberId(String memberId) {
         this.memberId = memberId;
-    }
-
-    public AssignStatus getAssignStatus() {
-        return assignStatus;
-    }
-
-    public void setAssignStatus(AssignStatus assignStatus) {
-        this.assignStatus = assignStatus;
     }
 
     public Timestamp getAssignDate() {

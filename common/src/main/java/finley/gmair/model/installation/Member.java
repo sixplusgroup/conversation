@@ -7,7 +7,6 @@ public class Member extends Entity {
     private String teamId;
     private String memberPhone;
     private String memberName;
-    private String wechatId;
     public Member()
     {
         super();
@@ -50,13 +49,5 @@ public class Member extends Entity {
 
     public void setMemberName(String memberName) {
         this.memberName = memberName;
-    }
-
-    public String getWechatId() {
-        return wechatId;
-    }
-
-    public void setWechatId(String wechatId) {
-        this.wechatId = wechatId;
     }
 }
