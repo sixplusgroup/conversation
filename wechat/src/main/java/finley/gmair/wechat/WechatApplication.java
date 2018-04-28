@@ -19,10 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.swing.text.Document;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
 
 @SpringBootApplication
@@ -71,11 +67,10 @@ public class WechatApplication {
 
             int start = input.indexOf("<MsgType>");
             int end = input.indexOf("</MsgType>");
-
-            String type = input.substring(start + "<MsgType>".length(), end);
-            XStream content = XStreamFactory.init(false);
+            String type = input.substring(start + "<MsgType>".length(), end).replace("<![CDATA[", "").replace("]]>", "");
             switch (type) {
                 case "text":
+                    XStream content = XStreamFactory.init(false);
                     content.alias("xml", TextInMessage.class);
                     final TextInMessage tmessage = (TextInMessage) content.fromXML(input);
                     Map<String, Object> condition = new HashMap<>();
@@ -101,7 +96,9 @@ public class WechatApplication {
 
                         }
                     }
+                    break;
                 case "event":
+                    content = XStreamFactory.init(false);
                     content.alias("xml", EventInMessage.class);
                     final EventInMessage emessage = (EventInMessage) content.fromXML(input);
                     Map<String, Object> map = new HashMap<>();
@@ -148,6 +145,8 @@ public class WechatApplication {
                         }
                     }
                     break;
+                default:
+                    return "";
             }
         } catch (Exception e) {
             e.printStackTrace();

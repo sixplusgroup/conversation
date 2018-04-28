@@ -60,3 +60,6 @@ CREATE TABLE `gmair_wechat`.`wechat_resource` (
   `resource_name` VARCHAR(45) NOT NULL,
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL);
+
+#====================================
+
