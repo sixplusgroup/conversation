@@ -60,9 +60,8 @@ public class WechatApplication {
             ServletInputStream stream = request.getInputStream();
             String input = WechatUtil.inputStream2String(stream);
             XStream content = XStreamFactory.init(false);
-            content.alias("xml", AbstractInMessage.class);
-            AbstractInMessage message = (AbstractInMessage) content.fromXML(input);
-            //final InMessage message = (InMessage) content.fromXML(input);
+            content.alias("xml", InMessage.class);
+            final InMessage message = (InMessage) content.fromXML(input);
             HttpSession session = request.getSession();
             session.setAttribute("openId", message.getFromUserName());
             switch (message.getMsgType()) {
