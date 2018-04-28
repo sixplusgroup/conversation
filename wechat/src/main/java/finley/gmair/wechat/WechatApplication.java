@@ -72,6 +72,7 @@ public class WechatApplication {
             session.setAttribute("openId", message.getFromUserName());
             switch (message.getMsgType()) {
                 case "text":
+                    content.alias("xml", TextInMessage.class);
                     final TextInMessage textInMessage = (TextInMessage) content.fromXML(input);
                     Map<String, Object> condition = new HashMap<>();
                     condition.put("messageType", "text");
@@ -97,6 +98,7 @@ public class WechatApplication {
                         }
                     }
                 case "event":
+                    content.alias("xml", EventInMessage.class);
                     final EventInMessage eventInMessage = (EventInMessage) content.fromXML(input);
                     Map<String, Object> map = new HashMap<>();
                     if (eventInMessage.getEvent().equals("subscribe")) {
@@ -133,7 +135,6 @@ public class WechatApplication {
                             //new machine don't finish, function of this condition can't achieve, return null
                             return "";
                         } else {
-                            content.alias("xml", TextOutMessage.class);
                             map.clear();
                             map.put("KeyWord", "NoWechatId");
                             TextOutMessage result = initialize(getResponse(map), eventInMessage);
@@ -151,7 +152,7 @@ public class WechatApplication {
     }
 
 
-    private TextOutMessage initialize(String content, AbstractInMessage message) {
+    private TextOutMessage initialize(String content, InMessage message) {
         TextOutMessage result = new TextOutMessage();
         result.setFromUserName(message.getToUserName());
         result.setToUserName(message.getFromUserName());

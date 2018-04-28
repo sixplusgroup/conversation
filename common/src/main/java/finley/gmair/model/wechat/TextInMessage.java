@@ -1,6 +1,6 @@
 package finley.gmair.model.wechat;
 
-public class TextInMessage extends AbstractInMessage {
+public class TextInMessage extends InMessage {
     private String Content;
     private long MsgId;
 

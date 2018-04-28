@@ -4,6 +4,7 @@ public class InMessage {
     private String ToUserName;
     private String FromUserName;
     private String MsgType;
+    private long CreateTime;
 
     public InMessage() {
         super();
@@ -31,5 +32,13 @@ public class InMessage {
 
     public void setMsgType(String msgType) {
         MsgType = msgType;
+    }
+
+    public long getCreateTime() {
+        return CreateTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        CreateTime = createTime;
     }
 }

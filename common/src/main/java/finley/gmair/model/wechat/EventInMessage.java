@@ -1,6 +1,6 @@
 package finley.gmair.model.wechat;
 
-public class EventInMessage extends AbstractInMessage {
+public class EventInMessage extends InMessage {
     private String Event;
     private String EventKey;
 
