@@ -15,7 +15,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/auth")
 public class InstallerController {
-    @PostMapping("/wechat/openid")
+    @PostMapping("/openid")
     public ResultData openid(String code) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(code)) {
