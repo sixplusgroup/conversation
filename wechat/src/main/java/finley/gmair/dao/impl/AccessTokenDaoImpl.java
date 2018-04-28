@@ -36,7 +36,7 @@ public class AccessTokenDaoImpl extends BaseDao implements AccessTokenDao {
     public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            AccessToken token = sqlSession.selectOne("gmair.wechat.accesstoken.select", condition);
+            AccessToken token = sqlSession.selectOne("gmair.wechat.accesstoken.query", condition);
             if (StringUtils.isEmpty(token)) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }

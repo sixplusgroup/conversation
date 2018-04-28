@@ -21,7 +21,7 @@ public class WechatScheduler {
      * This method will renew the access token once an hour
      * and will be saved to database
      */
-    @Scheduled(cron = "0 0 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void renewal() {
         String token = WechatUtil.queryAccessToken(WechatProperties.getValue("wechat_appid"), WechatProperties.getValue("wechat_secret"));
         WechatProperties.setAccessToken(token);
