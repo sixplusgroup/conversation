@@ -14,7 +14,6 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +37,7 @@ public class AssignController {
 
 
     //订单发货时由order模块调用触发,创建安装任务表单
-    @RequestMapping("/create")
+    @RequestMapping(method = RequestMethod.POST, value= "/create")
     public ResultData create(AssignForm form){
         ResultData result = new ResultData();
 
@@ -69,7 +68,7 @@ public class AssignController {
 
     }
 
-    //管理人员分配安装任务时触发
+    //管理人员分配安装任务时触发,修改任务状态,队伍,人员
     @RequestMapping(method = RequestMethod.POST , value="/allocate")
     public ResultData allocate(AllocateForm form){
         ResultData result = new ResultData();
@@ -161,7 +160,7 @@ public class AssignController {
         return result;
     }
 
-    //更新assign的安装状态,安装工人选择安装时间并提交时触发.
+    //安装工人选择安装时间并提交时触发,修改任务状态,安装日期
     @RequestMapping(method = RequestMethod.POST , value="/date")
     public ResultData date(InstallDateForm form){
 
@@ -224,7 +223,7 @@ public class AssignController {
     }
 
     //管理员查看所有安装任务时触发,拉取所有安装任务列表.
-    @RequestMapping("/list")
+    @RequestMapping(method =RequestMethod.GET, value="/list")
     public ResultData list(){
         ResultData result= new ResultData();
 
@@ -248,7 +247,7 @@ public class AssignController {
     }
 
     //管理员查看待分配安装任务时触发,拉取待分配的安装任务列表.
-    @RequestMapping("/todolist")
+    @RequestMapping(method = RequestMethod.GET, value="/todolist")
     public ResultData todolist(){
         ResultData result= new ResultData();
 
@@ -273,7 +272,7 @@ public class AssignController {
     }
 
     //拉取已分配状态的安装任务列表
-    @RequestMapping("/assignedlist")
+    @RequestMapping(method = RequestMethod.GET, value="/assignedlist")
     public ResultData assignedlist(){
         ResultData result= new ResultData();
 
@@ -298,7 +297,7 @@ public class AssignController {
     }
 
     //拉取正在安装状态的安装任务列表
-    @RequestMapping("/processinglist")
+    @RequestMapping(method = RequestMethod.GET, value="/processinglist")
     public ResultData processinglist(){
         ResultData result= new ResultData();
 
@@ -323,7 +322,7 @@ public class AssignController {
     }
 
     //拉取已完成状态的安装任务列表
-    @RequestMapping("/finishedlist")
+    @RequestMapping(method = RequestMethod.GET, value="/finishedlist")
     public ResultData finishedlist(){
         ResultData result= new ResultData();
 

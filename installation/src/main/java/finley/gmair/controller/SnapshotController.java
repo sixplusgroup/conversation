@@ -29,7 +29,7 @@ public class SnapshotController {
     @Autowired
     private AssignService assignService;
 
-    @RequestMapping("/create")
+    @RequestMapping(method = RequestMethod.POST, value="/create")
     public ResultData create(SnapshotForm form){
         ResultData result = new ResultData();
 
@@ -109,7 +109,7 @@ public class SnapshotController {
         return result;
     }
 
-    @RequestMapping("/list")
+    @RequestMapping(method = RequestMethod.GET, value="/list")
     public ResultData list()
     {
         ResultData result = new ResultData();

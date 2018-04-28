@@ -21,8 +21,30 @@ public class PicController {
     @Autowired
     PicService picService;
 
+    //处理上传图片的请求
+    @RequestMapping(method = RequestMethod.POST, value = "/upload")
+    public ResultData upload(MultipartHttpServletRequest request) {
+
+        ResultData result = new ResultData();
+        MultipartFile file = request.getFile("fileName");
+        ResultData response = picService.uploadPic(file);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务器繁忙，请稍后再试!");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("文件为空");
+            return result;
+        } else {
+            result.setData(response.getData());
+            result.setDescription("文件上传成功");
+            return result;
+        }
+    }
+
     //从数据表install_pic中拉取重复图片的信息
-    @RequestMapping("copypic")
+    @RequestMapping(method = RequestMethod.GET, value="copypic")
     public ResultData copypic(){
         ResultData result = new ResultData();
 
@@ -49,25 +71,5 @@ public class PicController {
         return result;
     }
 
-    //处理上传图片的请求
-    @RequestMapping(method = RequestMethod.POST, value = "/upload")
-    public ResultData upload(MultipartHttpServletRequest request) {
 
-        ResultData result = new ResultData();
-        MultipartFile file = request.getFile("fileName");
-        ResultData response = picService.uploadPic(file);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("服务器繁忙，请稍后再试!");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("文件为空");
-            return result;
-        } else {
-            result.setData(response.getData());
-            result.setDescription("文件上传成功");
-            return result;
-        }
-    }
 }

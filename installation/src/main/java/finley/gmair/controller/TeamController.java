@@ -8,10 +8,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +19,7 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
 
-    @PostMapping("/create")
+    @RequestMapping(method = RequestMethod.POST, value="/create")
     public ResultData createTeam(TeamForm form){
         ResultData result = new ResultData();
 
@@ -67,7 +64,7 @@ public class TeamController {
         return result;
     }
 
-    @GetMapping("/list")
+    @RequestMapping(method = RequestMethod.GET, value="/list")
     public ResultData list(){
         ResultData result = new ResultData();
 
