@@ -95,8 +95,8 @@ public class MemberController {
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{memberPhone}/info")
-    public ResultData list(@PathVariable("memberPhone") String memberPhone)
+    @RequestMapping(method = RequestMethod.GET, value = "/findphone")
+    public ResultData findPhone(String memberPhone)
     {
         ResultData result = new ResultData();
         Map<String,Object> condition = new HashMap<>();
