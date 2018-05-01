@@ -23,9 +23,9 @@ public class TextTemplateDaoImpl extends BaseDao implements TextTemplateDao {
     @Transactional
     public ResultData insert(TextTemplate textTemplate) {
         ResultData result = new ResultData();
-        textTemplate.setTemplateId(IDGenerator.generate("TTI"));
+        textTemplate.setTemplateId(IDGenerator.generate("TTE"));
         try {
-            sqlSession.insert("gmair.wechat.texttemplate.insert", textTemplate);
+            sqlSession.insert("gmair.wechat.template.text.insert", textTemplate);
             result.setData(textTemplate);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -39,7 +39,7 @@ public class TextTemplateDaoImpl extends BaseDao implements TextTemplateDao {
     public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<TextTemplate> list = sqlSession.selectList("gmair.wechat.texttemplate.query", condition);
+            List<TextTemplate> list = sqlSession.selectList("gmair.wechat.template.text.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -56,7 +56,7 @@ public class TextTemplateDaoImpl extends BaseDao implements TextTemplateDao {
     public ResultData update(TextTemplate textTemplate) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.wechat.texttemplate.update", textTemplate);
+            sqlSession.update("gmair.wechat.template.text.update", textTemplate);
             result.setData(textTemplate);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -70,7 +70,7 @@ public class TextTemplateDaoImpl extends BaseDao implements TextTemplateDao {
     public ResultData queryTextReply(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<TextReplyVo> list = sqlSession.selectList("gmair.wechat.texttemplate.queryTextReply", condition);
+            List<TextReplyVo> list = sqlSession.selectList("gmair.wechat.template.text.queryTextReply", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }

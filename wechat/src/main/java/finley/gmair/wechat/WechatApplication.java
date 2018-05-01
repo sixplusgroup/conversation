@@ -79,20 +79,20 @@ public class WechatApplication {
                     ResultData response = autoReplyService.fetch(condition);
                     if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                         AutoReply aVo = ((List<AutoReply>) response.getData()).get(0);
-                        if (aVo.getTemplateId().contains("PTI")) {
+                        if (aVo.getTemplateId().startsWith("PTI")) {
                             condition.clear();
                             condition.put("templateId", aVo.getTemplateId());
                             WechatUtil.pushImage(WechatProperties.getAccessToken(), tmessage.getFromUserName(), getPicUrl(condition));
                         }
-                        if (aVo.getTemplateId().contains("TTI")) {
+                        if (aVo.getTemplateId().startsWith("TTI")) {
                             condition.clear();
                             condition.put("templateId", aVo.getTemplateId());
-                            TextOutMessage result = initialize(getResponse(condition), tmessage);
+                            TextOutMessage result = initialize(textResponse(condition), tmessage);
                             content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);
                             return xml;
                         }
-                        if (aVo.getTemplateId().contains("ATI")) {
+                        if (aVo.getTemplateId().startsWith("ATI")) {
 
                         }
                     }
@@ -104,7 +104,7 @@ public class WechatApplication {
                     Map<String, Object> map = new HashMap<>();
                     if (emessage.getEvent().equals("subscribe")) {
                         map.put("keyWord", "subscribe");
-                        TextOutMessage result = initialize(getResponse(map), emessage);
+                        TextOutMessage result = initialize(textResponse(map), emessage);
                         content.alias("xml", TextOutMessage.class);
                         String xml = content.toXML(result);
                         //start thread to store or update user information
@@ -138,7 +138,7 @@ public class WechatApplication {
                         } else {
                             map.clear();
                             map.put("KeyWord", "NoWechatId");
-                            TextOutMessage result = initialize(getResponse(map), emessage);
+                            TextOutMessage result = initialize(textResponse(map), emessage);
                             content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);
                             return xml;
@@ -164,10 +164,10 @@ public class WechatApplication {
         return result;
     }
 
-    private String getResponse(Map<String, Object> con) {
-        ResultData rd = textTemplateService.fetchTextReply(con);
-        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            TextReplyVo tVo = ((List<TextReplyVo>) rd.getData()).get(0);
+    private String textResponse(Map<String, Object> condition) {
+        ResultData response = textTemplateService.fetchTextReply(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            TextReplyVo tVo = ((List<TextReplyVo>) response.getData()).get(0);
             String result = tVo.getResponse();
             return result;
         } else {

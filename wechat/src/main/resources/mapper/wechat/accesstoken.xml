@@ -13,9 +13,11 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="accessTokenVo">
-        SELECT access_token, block_flag, create_time
+        SELECT
+            access_token,
+            block_flag,
+            create_time
         FROM gmair_wechat.access_token
-        WHERE block_flag = FALSE
     </select>
 
     <update id="update" parameterType="finley.gmair.model.wechat.AccessToken">

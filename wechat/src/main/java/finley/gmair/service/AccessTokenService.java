@@ -13,4 +13,6 @@ public interface AccessTokenService {
     ResultData modify(AccessToken token);
 
     boolean existToken(Map<String, Object> condition);
+
+    ResultData renew(AccessToken token);
 }

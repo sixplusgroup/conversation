@@ -7,6 +7,7 @@ import finley.gmair.util.ResultData;
 import finley.gmair.util.WechatProperties;
 import finley.gmair.util.WechatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,11 +41,23 @@ public class WechatUserController {
         return result;
     }
 
-    @PostMapping(value = "/openId")
-    public String getOpenId(String code) {
+    @PostMapping(value = "/openid")
+    public ResultData openid(String code) {
+        ResultData result = new ResultData();
         final String appid = WechatProperties.getValue("wechat_appid");
         final String secret = WechatProperties.getValue("wechat_secret");
-        String openid = WechatUtil.queryOauthOpenId(appid, secret, code);
-        return openid;
+        try {
+            String openid = WechatUtil.queryOauthOpenId(appid, secret, code);
+            if (!StringUtils.isEmpty(openid)) {
+                result.setData(openid);
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription(new StringBuffer("Fail to resolve the current code: ").append(code).toString());
+            }
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Code: ").append(code).append(" not valid").toString());
+        }
+        return result;
     }
 }

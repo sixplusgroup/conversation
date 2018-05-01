@@ -15,9 +15,8 @@ public class AutoReply extends Entity {
         super();
     }
 
-    public AutoReply(String replyId, String messageType, String keyWord, String templateId) {
+    public AutoReply(String messageType, String keyWord, String templateId) {
         this();
-        this.replyId = replyId;
         this.messageType = messageType;
         this.keyWord = keyWord;
         this.templateId = templateId;

@@ -1,14 +1,18 @@
 package finley.gmair.controller;
 
+import finley.gmair.form.wechat.TextTemplateForm;
 import finley.gmair.model.wechat.ArticleTemplate;
+import finley.gmair.model.wechat.AutoReply;
 import finley.gmair.model.wechat.PictureTemplate;
 import finley.gmair.model.wechat.TextTemplate;
 import finley.gmair.service.ArticleTemplateService;
+import finley.gmair.service.AutoReplyService;
 import finley.gmair.service.PictureTemplateService;
 import finley.gmair.service.TextTemplateService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -18,12 +22,19 @@ import java.util.Map;
 @RestController
 @RequestMapping("/wechat/template")
 public class TemplateController {
+    private final static String TEMPLATE_TEXT = "text";
+
     @Autowired
     private TextTemplateService textTemplateService;
+
     @Autowired
     private ArticleTemplateService articleTemplateService;
+
     @Autowired
     private PictureTemplateService pictureTemplateService;
+
+    @Autowired
+    private AutoReplyService autoReplyService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/text/list")
     public ResultData TextList() {
@@ -46,17 +57,39 @@ public class TemplateController {
         return result;
     }
 
+    /**
+     * This method is called by the portal to create a template of text type
+     *
+     * @param form
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/text/create")
-    public ResultData createText(TextTemplate template) {
+    public ResultData createText(TextTemplateForm form) {
         ResultData result = new ResultData();
-        ResultData response = textTemplateService.create(template);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
+        if (StringUtils.isEmpty(form.getInMessageType()) || StringUtils.isEmpty(form.getKeyword()) || StringUtils.isEmpty(form.getResponse())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill all the required fields");
+            return result;
         }
+        //save the template and then bind it to keyword in auto reply
+        TextTemplate template = new TextTemplate(TEMPLATE_TEXT, form.getResponse());
+        ResultData response = textTemplateService.create(template);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("text create error");
+            return result;
+        }
+        //bind the keyword and template
+        template = (TextTemplate) response.getData();
+        AutoReply reply = new AutoReply(form.getInMessageType(), form.getKeyword(), template.getTemplateId());
+        response = autoReplyService.create(reply);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to save the auto reply");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("The auto reply is configured successfully");
         }
         return result;
     }
@@ -202,7 +235,7 @@ public class TemplateController {
     public ResultData queryPictureReply() {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("keyWord","pic");
+        condition.put("keyWord", "pic");
         ResultData response = pictureTemplateService.fetchPictureReply(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);

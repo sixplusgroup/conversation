@@ -13,9 +13,8 @@ public class TextTemplate extends Entity {
         super();
     }
 
-    public TextTemplate(String templateId, String messageType, String response) {
+    public TextTemplate(String messageType, String response) {
         this();
-        this.templateId = templateId;
         this.messageType = messageType;
         this.response = response;
     }
