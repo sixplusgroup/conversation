@@ -47,4 +47,9 @@ public class ReconnaissanceServiceImpl implements ReconnaissanceService {
         }
         return result;
     }
+
+    @Override
+    public ResultData assignReconnaissance(Reconnaissance reconnaissance) {
+        return reconnaissanceDao.update(reconnaissance);
+    }
 }

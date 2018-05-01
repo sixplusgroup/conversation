@@ -9,4 +9,6 @@ public interface ReconnaissanceDao {
     ResultData insert(Reconnaissance reconnaissance);
 
     ResultData query(Map<String, Object> condition);
+
+    ResultData update(Reconnaissance reconnaissance);
 }

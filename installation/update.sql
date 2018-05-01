@@ -11,3 +11,6 @@ CREATE TABLE `gmair_install`.`reconnaissance_list` (
 
 ALTER TABLE `gmair_install`.`reconnaissance_list`
   ADD COLUMN `recon_status` TINYINT(1) NOT NULL DEFAULT 0 AFTER `description`;
+
+ALTER TABLE `gmair_install`.`reconnaissance_list`
+  ADD COLUMN `recon_date` DATE NOT NULL AFTER `recon_status`;

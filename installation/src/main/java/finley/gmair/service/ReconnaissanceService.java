@@ -9,4 +9,6 @@ public interface ReconnaissanceService {
     ResultData createReconnaissance(Reconnaissance reconnaissance);
 
     ResultData fetchReconnaissance(Map<String, Object> condition);
+
+    ResultData assignReconnaissance(Reconnaissance reconnaissance);
 }

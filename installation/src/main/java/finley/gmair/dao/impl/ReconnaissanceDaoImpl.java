@@ -43,4 +43,18 @@ public class ReconnaissanceDaoImpl extends BaseDao implements ReconnaissanceDao 
         }
         return result;
     }
+
+    @Override
+    public ResultData update(Reconnaissance reconnaissance) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.install.reconnaissance.update", reconnaissance);
+            result.setData(reconnaissance);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }
