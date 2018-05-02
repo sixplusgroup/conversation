@@ -82,7 +82,7 @@ public class WechatApplication {
                     final TextInMessage tmessage = (TextInMessage) content.fromXML(input);
                     Map<String, Object> condition = new HashMap<>();
                     condition.put("messageType", "text");
-                    condition.put("keyWord", tmessage.getContent());
+                    condition.put("keyword", tmessage.getContent());
                     ResultData response = autoReplyService.fetch(condition);
                     if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                         AutoReply reply = ((List<AutoReply>) response.getData()).get(0);
@@ -103,7 +103,7 @@ public class WechatApplication {
                     final EventInMessage emessage = (EventInMessage) content.fromXML(input);
                     Map<String, Object> map = new HashMap<>();
                     if (emessage.getEvent().equals("subscribe")) {
-                        map.put("keyWord", "subscribe");
+                        map.put("keyword", "subscribe");
                         TextOutMessage result = initialize(textResponse(map), emessage);
                         content.alias("xml", TextOutMessage.class);
                         String xml = content.toXML(result);
@@ -137,7 +137,7 @@ public class WechatApplication {
                             return "";
                         } else {
                             map.clear();
-                            map.put("KeyWord", "NoWechatId");
+                            map.put("Keyword", "NoId");
                             TextOutMessage result = initialize(textResponse(map), emessage);
                             content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);

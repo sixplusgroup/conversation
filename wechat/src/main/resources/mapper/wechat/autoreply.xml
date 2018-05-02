@@ -4,7 +4,7 @@
     <resultMap id="autoReplyVo" type="finley.gmair.model.wechat.AutoReply">
         <result property="replyId" column="reply_id"></result>
         <result property="messageType" column="message_type"></result>
-        <result property="keyWord" column="keyword"></result>
+        <result property="keyword" column="keyword"></result>
         <result property="templateId" column="template_id"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
@@ -12,7 +12,7 @@
     
     <insert id="insert" parameterType="finley.gmair.model.wechat.AutoReply" useGeneratedKeys="false">
         INSERT INTO gmair_wechat.auto_reply(reply_id, message_type, keyword, template_id, block_flag, create_time)
-        VALUES (#{replyId}, #{messageType}, #{keyWord}, #{templateId}, #{blockFlag}, #{createAt})
+        VALUES (#{replyId}, #{messageType}, #{keyword}, #{templateId}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="autoReplyVo">
@@ -26,7 +26,7 @@
             AND message_type = #{messageType}
         </if>
         <if test="keyWord != null">
-            AND keyword = #{keyWord}
+            AND keyword = #{keyword}
         </if>
         <if test="templateId != null">
             AND template_id = #{templateId}
@@ -44,7 +44,7 @@
                 message_type = #{messageType},
             </if>
             <if test="keyWord != null">
-                keyword = #{keyWord},
+                keyword = #{keyword},
             </if>
             <if test="templateId != null">
                 template_id = #{templateId},

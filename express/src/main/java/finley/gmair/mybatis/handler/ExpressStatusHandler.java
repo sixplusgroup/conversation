@@ -1,4 +1,4 @@
-package finley.gmair.handler;
+package finley.gmair.mybatis.handler;
 
 import finley.gmair.model.express.ExpressStatus;
 import org.apache.ibatis.type.BaseTypeHandler;

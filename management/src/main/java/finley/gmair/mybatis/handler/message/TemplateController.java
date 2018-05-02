@@ -1,4 +1,4 @@
-package finley.gmair.controller.message;
+package finley.gmair.mybatis.handler.message;
 
 import finley.gmair.form.message.MessageTemplateForm;
 import finley.gmair.model.message.MessageCatalog;

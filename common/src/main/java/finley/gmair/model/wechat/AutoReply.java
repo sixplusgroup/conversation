@@ -7,7 +7,7 @@ public class AutoReply extends Entity {
 
     private String messageType;
 
-    private String keyWord;
+    private String keyword;
 
     private String templateId;
 
@@ -15,10 +15,10 @@ public class AutoReply extends Entity {
         super();
     }
 
-    public AutoReply(String messageType, String keyWord, String templateId) {
+    public AutoReply(String messageType, String keyword, String templateId) {
         this();
         this.messageType = messageType;
-        this.keyWord = keyWord;
+        this.keyword = keyword;
         this.templateId = templateId;
     }
 
@@ -38,12 +38,12 @@ public class AutoReply extends Entity {
         this.messageType = messageType;
     }
 
-    public String getKeyWord() {
-        return keyWord;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setKeyWord(String keyWord) {
-        this.keyWord = keyWord;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getTemplateId() {

@@ -4,7 +4,7 @@
     <resultMap id="articleTemplateVo" type="finley.gmair.model.wechat.ArticleTemplate">
         <result property="templateId" column="template_id"></result>
         <result property="articleTitle" column="article_title"></result>
-        <!---<result property="descriptionType" column="description_type"></result>-->
+        <result property="descriptionType" column="description_type" typeHandler="finley.gmair.handler.DescriptionTypeHandler"></result>
         <result property="descriptionContent" column="description_content"></result>
         <result property="pictureUrl" column="picture_url"></result>
         <result property="articleUrl" column="article_url"></result>
@@ -15,7 +15,7 @@
     <resultMap id="articleReply" type="finley.gmair.vo.wechat.ArticleReplyVo">
         <result property="templateId" column="template_id"></result>
         <result property="messageType" column="message_type"></result>
-        <result property="keyWord" column="keyword"></result>
+        <result property="keyword" column="keyword"></result>
         <result property="articleTitle" column="article_title"></result>
         <result property="descriptionContent" column="description_content"></result>
         <result property="pictureUrl" column="picture_url"></result>
@@ -91,7 +91,7 @@
             AND message_type = #{messageType}
         </if>
         <if test="keyWord != null">
-            AND keyword = #{keyWord}
+            AND keyword = #{keyword}
         </if>
         <if test="articleTitle != null">
             AND article_title = #{articleTitle}

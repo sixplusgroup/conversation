@@ -11,9 +11,8 @@ public class PictureTemplate extends Entity {
         super();
     }
 
-    private PictureTemplate(String templateId, String pictureUrl) {
+    public PictureTemplate(String pictureUrl) {
         this();
-        this.templateId = templateId;
         this.pictureUrl = pictureUrl;
     }
 

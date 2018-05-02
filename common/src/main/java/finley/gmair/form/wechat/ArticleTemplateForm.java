@@ -1,9 +1,9 @@
-package finley.gmair.model.wechat;
+package finley.gmair.form.wechat;
 
-import finley.gmair.model.Entity;
+import finley.gmair.model.wechat.DescriptionType;
 
-public class ArticleTemplate extends Entity {
-    private String templateId;
+public class ArticleTemplateForm {
+    private String inMessageType;
 
     private String articleTitle;
 
@@ -11,30 +11,22 @@ public class ArticleTemplate extends Entity {
 
     private String descriptionContent;
 
+    private String keyword;
+
     private String pictureUrl;
 
     private String articleUrl;
 
-    public ArticleTemplate() {
+    public ArticleTemplateForm() {
         super();
-        this.descriptionType = DescriptionType.TEXT;
     }
 
-    public ArticleTemplate(String articleTitle, DescriptionType descriptionType, String descriptionContent, String pictureUrl, String articleUrl) {
-        this();
-        this.articleTitle = articleTitle;
-        this.descriptionType = descriptionType;
-        this.descriptionContent = descriptionContent;
-        this.pictureUrl = pictureUrl;
-        this.articleUrl = articleUrl;
+    public String getInMessageType() {
+        return inMessageType;
     }
 
-    public String getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(String templateId) {
-        this.templateId = templateId;
+    public void setInMessageType(String inMessageType) {
+        this.inMessageType = inMessageType;
     }
 
     public String getArticleTitle() {
@@ -59,6 +51,14 @@ public class ArticleTemplate extends Entity {
 
     public void setDescriptionContent(String descriptionContent) {
         this.descriptionContent = descriptionContent;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getPictureUrl() {

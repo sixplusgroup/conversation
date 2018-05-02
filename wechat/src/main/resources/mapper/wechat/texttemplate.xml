@@ -12,7 +12,7 @@
     <resultMap id="textReply" type="finley.gmair.vo.wechat.TextReplyVo">
         <result property="templateId" column="template_id"></result>
         <result property="messageType" column="message_type"></result>
-        <result property="keyWord" column="keyword"></result>
+        <result property="keyword" column="keyword"></result>
         <result property="response" column="response"></result>
     </resultMap>
 
@@ -67,7 +67,7 @@
             AND message_type = #{messageType}
         </if>
         <if test="keyWord != null">
-            AND keyword = #{keyWord}
+            AND keyword = #{keyword}
         </if>
         <if test="response != null">
             AND response = #{response}

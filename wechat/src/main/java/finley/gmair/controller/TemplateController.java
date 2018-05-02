@@ -1,10 +1,9 @@
 package finley.gmair.controller;
 
+import finley.gmair.form.wechat.ArticleTemplateForm;
+import finley.gmair.form.wechat.PictureTemplateForm;
 import finley.gmair.form.wechat.TextTemplateForm;
-import finley.gmair.model.wechat.ArticleTemplate;
-import finley.gmair.model.wechat.AutoReply;
-import finley.gmair.model.wechat.PictureTemplate;
-import finley.gmair.model.wechat.TextTemplate;
+import finley.gmair.model.wechat.*;
 import finley.gmair.service.ArticleTemplateService;
 import finley.gmair.service.AutoReplyService;
 import finley.gmair.service.PictureTemplateService;
@@ -177,16 +176,33 @@ public class TemplateController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/article/create")
-    public ResultData createArticle(ArticleTemplate template) {
+    public ResultData createArticle(ArticleTemplateForm form) {
         ResultData result = new ResultData();
-        ResultData response = articleTemplateService.create(template);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
+        if (StringUtils.isEmpty(form.getInMessageType()) || StringUtils.isEmpty(form.getArticleTitle()) || StringUtils.isEmpty(form.getDescriptionType()) || StringUtils.isEmpty(form.getKeyword())
+                || StringUtils.isEmpty(form.getDescriptionContent()) || StringUtils.isEmpty(form.getPictureUrl()) || StringUtils.isEmpty(form.getArticleUrl())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill all the required fields");
+            return result;
         }
+
+        ArticleTemplate template = new ArticleTemplate(form.getArticleTitle(), form.getDescriptionType(), form.getDescriptionContent(), form.getPictureUrl(), form.getArticleUrl());
+        ResultData response = articleTemplateService.create(template);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("article create error");
+            return result;
+        }
+
+        template = (ArticleTemplate) response.getData();
+        AutoReply reply = new AutoReply(form.getInMessageType(), form.getKeyword(), template.getTemplateId());
+        response = autoReplyService.create(reply);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to save the auto reply");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("The auto reply is configured successfully");
         }
         return result;
     }
@@ -253,16 +269,32 @@ public class TemplateController {
     }
 
     @PostMapping(value = "/picture/create")
-    public ResultData createPicture(PictureTemplate template) {
+    public ResultData createPicture(PictureTemplateForm form) {
         ResultData result = new ResultData();
-        ResultData response = pictureTemplateService.create(template);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
+        if (StringUtils.isEmpty(form.getInMessageType()) || StringUtils.isEmpty(form.getKeyword()) || StringUtils.isEmpty(form.getPictureUrl())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill all the required fields");
+            return result;
         }
+
+        PictureTemplate template = new PictureTemplate(form.getPictureUrl());
+        ResultData response = pictureTemplateService.create(template);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("picture create error");
+            return result;
+        }
+
+        template = (PictureTemplate) response.getData();
+        AutoReply reply = new AutoReply(form.getInMessageType(), form.getKeyword(), template.getTemplateId());
+        response = autoReplyService.create(reply);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to save the auto reply");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("The auto reply is configured successfully");
         }
         return result;
     }

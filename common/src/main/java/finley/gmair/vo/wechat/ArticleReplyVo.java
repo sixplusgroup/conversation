@@ -3,7 +3,7 @@ package finley.gmair.vo.wechat;
 public class ArticleReplyVo {
     private String templateId;
     private String messageType;
-    private String keyWord;
+    private String keyword;
     private String articleTitle;
     private String articleUrl;
     private String pictureUrl;
@@ -25,12 +25,12 @@ public class ArticleReplyVo {
         this.messageType = messageType;
     }
 
-    public String getKeyWord() {
-        return keyWord;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setKeyWord(String keyWord) {
-        this.keyWord = keyWord;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getArticleTitle() {
