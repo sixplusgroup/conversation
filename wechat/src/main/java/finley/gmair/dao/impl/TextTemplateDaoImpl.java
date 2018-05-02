@@ -65,21 +65,4 @@ public class TextTemplateDaoImpl extends BaseDao implements TextTemplateDao {
         }
         return result;
     }
-
-    @Override
-    public ResultData queryTextReply(Map<String, Object> condition) {
-        ResultData result = new ResultData();
-        try {
-            List<TextReplyVo> list = sqlSession.selectList("gmair.wechat.template.text.queryTextReply", condition);
-            if (list.isEmpty()) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            }
-            result.setData(list);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.getMessage());
-        }
-        return result;
-    }
 }
