@@ -5,8 +5,6 @@ import finley.gmair.model.wechat.AccessToken;
 import finley.gmair.service.AccessTokenService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +14,6 @@ import java.util.Map;
 
 @Service
 public class AccessTokenServiceImpl implements AccessTokenService {
-    private Logger logger = LoggerFactory.getLogger(AccessTokenServiceImpl.class);
 
     @Autowired
     private AccessTokenDao accessTokenDao;

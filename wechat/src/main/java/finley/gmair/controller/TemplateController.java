@@ -93,46 +93,6 @@ public class TemplateController {
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/text/update")
-    public ResultData updateText(TextTemplate template) {
-        ResultData result = new ResultData();
-        ResultData response = textTemplateService.modify(template);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("text update error");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can't update with no such text");
-        }
-        return result;
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/textReply/query")
-    public ResultData queryTextReply() {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("messageType", "text");
-        ResultData response = textTemplateService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("reply is empty");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Error: please try again");
-        }
-        return result;
-    }
-
     @RequestMapping(method = RequestMethod.GET, value = "/article/list")
     public ResultData articleList() {
         ResultData result = new ResultData();
@@ -150,27 +110,6 @@ public class TemplateController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("article fetch error, please inspect");
-        }
-        return result;
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/articleReply/query")
-    public ResultData queryArticleReply() {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("messageType", "text");
-        ResultData response = articleTemplateService.fetchArticleReply(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("reply is null");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Error: please check up");
         }
         return result;
     }
@@ -207,25 +146,6 @@ public class TemplateController {
         return result;
     }
 
-    @PostMapping(value = "/article/update")
-    public ResultData updateArticle(ArticleTemplate template) {
-        ResultData result = new ResultData();
-        ResultData response = articleTemplateService.modify(template);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("article update error");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("Error: can't update with no such article");
-        }
-        return result;
-    }
-
     @GetMapping(value = "/picture/list")
     public ResultData pictureList() {
         ResultData result = new ResultData();
@@ -243,27 +163,6 @@ public class TemplateController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription("picture fetch error,please inspect");
-        }
-        return result;
-    }
-
-    @GetMapping(value = "/pictureReply/query")
-    public ResultData queryPictureReply() {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("keyWord", "pic");
-        ResultData response = pictureTemplateService.fetchPictureReply(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("reply list is null");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(response.getResponseCode());
-            result.setDescription("Reply error,please refresh");
         }
         return result;
     }
@@ -295,25 +194,6 @@ public class TemplateController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("The auto reply is configured successfully");
-        }
-        return result;
-    }
-
-    @PostMapping(value = "/picture/update")
-    public ResultData updatePicture(PictureTemplate template) {
-        ResultData result = new ResultData();
-        ResultData response = pictureTemplateService.modify(template);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("picture update error");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("Error: can't update with no such picture");
         }
         return result;
     }

@@ -9,6 +9,4 @@ public interface TextTemplateService {
     ResultData create(TextTemplate template);
 
     ResultData fetch(Map<String, Object> condition);
-
-    ResultData modify(TextTemplate template);
 }

@@ -46,13 +46,10 @@
             <if test="keyWord != null">
                 keyword = #{keyword},
             </if>
-            <if test="templateId != null">
-                template_id = #{templateId},
-            </if>
             <if test="blockFlag != null">
                 block_flag = #{blockFlag}
             </if>
         </set>
-        WHERE reply_id = #{replyId}
+        WHERE template_id = #{templateId}
     </update>
 </mapper>

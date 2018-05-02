@@ -9,8 +9,4 @@ public interface ArticleTemplateService {
     ResultData create(ArticleTemplate template);
 
     ResultData fetch(Map<String, Object> condition);
-
-    ResultData modify(ArticleTemplate template);
-
-    ResultData fetchArticleReply(Map<String, Object> condition);
 }

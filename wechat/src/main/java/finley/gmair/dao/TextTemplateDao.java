@@ -9,6 +9,4 @@ public interface TextTemplateDao {
     ResultData insert(TextTemplate textTemplate);
 
     ResultData query(Map<String, Object> condition);
-
-    ResultData update(TextTemplate textTemplate);
 }

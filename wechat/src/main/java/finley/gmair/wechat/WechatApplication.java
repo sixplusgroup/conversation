@@ -6,9 +6,6 @@ import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
-import finley.gmair.vo.wechat.ArticleReplyVo;
-import finley.gmair.vo.wechat.PictureReplyVo;
-import finley.gmair.vo.wechat.TextReplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -175,24 +172,14 @@ public class WechatApplication {
         }
     }
 
-    private String getPicUrl(Map<String, Object> condition) {
-        ResultData rd = pictureTemplateService.fetchPictureReply(condition);
+    private String pictureUrl(Map<String, Object> condition) {
+        ResultData rd = pictureTemplateService.fetch(condition);
         if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            PictureReplyVo pVo = ((List<PictureReplyVo>) rd.getData()).get(0);
-            String result = pVo.getPictureUrl();
+            PictureTemplate template = ((List<PictureTemplate>) rd.getData()).get(0);
+            String result = template.getPictureUrl();
             return result;
         } else {
             return "";
-        }
-    }
-
-    private ArticleReplyVo getArticle(Map<String, Object> condition) {
-        ResultData rd = articleTemplateService.fetchArticleReply(condition);
-        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            ArticleReplyVo aVo = ((List<ArticleReplyVo>) rd.getData()).get(0);
-            return aVo;
-        } else {
-            return null;
         }
     }
 }

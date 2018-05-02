@@ -9,13 +9,6 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <resultMap id="textReply" type="finley.gmair.vo.wechat.TextReplyVo">
-        <result property="templateId" column="template_id"></result>
-        <result property="messageType" column="message_type"></result>
-        <result property="keyword" column="keyword"></result>
-        <result property="response" column="response"></result>
-    </resultMap>
-
     <insert id="insert" parameterType="finley.gmair.model.wechat.TextTemplate" useGeneratedKeys="false">
         INSERT INTO gmair_wechat.text_template(template_id, message_type, response, block_flag, create_time)
         VALUES (#{templateId}, #{messageType}, #{response}, #{blockFlag}, #{createAt})
@@ -40,37 +33,4 @@
         ORDER BY create_time DESC
     </select>
 
-    <update id="update" parameterType="finley.gmair.model.wechat.TextTemplate">
-        UPDATE gmair_wechat.text_template
-        <set>
-            <if test="messageType != null">
-                message_type = #{messageType},
-            </if>
-            <if test="response != null">
-                response = #{response},
-            </if>
-            <if test="blockFlag != null">
-                block_flag = #{blockFlag}
-            </if>
-        </set>
-        WHERE template_id = #{templateId}
-    </update>
-
-    <select id="queryTextReply" parameterType="java.util.Map" resultMap="textReply">
-        SELECT template_id, message_type, keyword, response
-        FROM gmair_wechat.text_reply_view
-        WHERE 1 = 1
-        <if test="templateId != null">
-            AND template_id = #{templateId}
-        </if>
-        <if test="messageType != null">
-            AND message_type = #{messageType}
-        </if>
-        <if test="keyWord != null">
-            AND keyword = #{keyword}
-        </if>
-        <if test="response != null">
-            AND response = #{response}
-        </if>
-    </select>
 </mapper>
