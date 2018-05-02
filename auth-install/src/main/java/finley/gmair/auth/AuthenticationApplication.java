@@ -8,7 +8,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.config"})
+@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.config", "finley.gmair.sf.config"})
 @EnableCaching
 @EnableEurekaClient
 @EnableFeignClients(basePackages = "finley.gmair.service")
