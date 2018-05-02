@@ -24,7 +24,7 @@ public class OAuth2ServerConfig {
 
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) {
-            resources.resourceId("order").stateless(true);
+            resources.resourceId("install-agent").stateless(true);
         }
 
         @Override
@@ -40,8 +40,8 @@ public class OAuth2ServerConfig {
                     .anonymous()
                     .and()
                     .authorizeRequests()
-                    .antMatchers("/auth/admin/create").permitAll()
-                    .antMatchers("/auth/admin/**").authenticated();
+                    .antMatchers("/auth/openid").permitAll()
+                    .antMatchers("/auth/**").authenticated();
             // @formatter:on
         }
     }

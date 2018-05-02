@@ -17,28 +17,38 @@ zuul:
       path: /location/**
       url: http://127.0.0.1:8002/location
     auth-consumer:
-      path: /oauth/consumer/token
-      url: http://127.0.0.1:8003/oauth/token
+      path: /oauth/consumer/**
+      url: http://127.0.0.1:8003/oauth
     auth-consumer-all:
       path: /auth/consumer/**
-      url: http://127.0.0.1:8003/auth
+      url: http://127.0.0.1:8003/auth/consumer
     auth-admin:
-      path: /oauth/admin/token
-      url: http://127.0.0.1:8004/oauth/token
-    auth-consumer-all:
+      path: /oauth/admin/**
+      url: http://127.0.0.1:8004/oauth
+    auth-admin-all:
       path: /auth/admin/**
-      url: http://127.0.0.1:8004/auth
+      url: http://127.0.0.1:8004/auth/admin
+    wechat:
+      path: /wechat/**
+      url: http://127.0.0.1/wechat
     auth-installer:
-      path: /oauth/installer/**
-      url: http://127.0.0.1/oauth
+      path: /oauth/install/**
+      url: http://127.0.0.1:8005/oauth
+    auth-install-all:
+      path: /auth/install/**
+      url: http://127.0.0.1:8005/auth
     installation:
       path: /installation/**
       url: http://127.0.0.1:8006/installation
-
 
 ribbon:
   eureka:
     enabled: true
 
 server:
-  port: 8888
+  port: 443
+  ssl:
+      enabled: true
+      key-store: classpath:microservice.jks
+      key-store-password: 214585429780019
+      key-password: 214585429780019
