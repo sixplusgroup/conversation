@@ -26,9 +26,14 @@ zuul:
       path: /oauth/admin/token
       url: http://127.0.0.1:8004/oauth/token
     auth-consumer-all:
-          path: /auth/admin/**
-          url: http://127.0.0.1:8004/auth
-
+      path: /auth/admin/**
+      url: http://127.0.0.1:8004/auth
+    auth-installer:
+      path: /oauth/installer/**
+      url: http://127.0.0.1/oauth
+    installation:
+      path: /installation/**
+      url: http://127.0.0.1:8006/installation
 
 
 ribbon:
