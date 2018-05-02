@@ -4,7 +4,7 @@
     <resultMap id="templateVo" type="finley.gmair.model.message.MessageTemplate">
         <result property="templateId" column="template_id"></result>
         <result property="catalog" column="message_catalog"
-                typeHandler="finley.gmair.handler.MessageCatalogHandler"></result>
+                typeHandler="finley.gmair.mybatis.handler.MessageCatalogHandler"></result>
         <result property="message" column="message_content"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
