@@ -3,8 +3,10 @@ package finley.gmair.controller;
 import finley.gmair.form.installation.SnapshotForm;
 import finley.gmair.model.installation.Assign;
 import finley.gmair.model.installation.AssignStatus;
+import finley.gmair.model.installation.Member;
 import finley.gmair.model.installation.Snapshot;
 import finley.gmair.service.AssignService;
+import finley.gmair.service.MemberService;
 import finley.gmair.service.PicService;
 import finley.gmair.service.SnapshotService;
 import finley.gmair.util.ResponseCode;
@@ -29,22 +31,17 @@ public class SnapshotController {
     @Autowired
     private AssignService assignService;
 
+    @Autowired
+    private MemberService memberService;
     @RequestMapping(method = RequestMethod.POST, value="/create")
     public ResultData create(SnapshotForm form){
         ResultData result = new ResultData();
 
-        String assignId = form.getAssignId().trim();
         String qrcode = form.getQrcode().trim();
         String wechatId = form.getWechatId().trim();
-        String memberPhone = form.getMemberPhone().trim();
         String picPath = form.getPicPath().trim();
 
         //check whether input is empty
-        if(StringUtils.isEmpty(assignId)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the assignID");
-            return result;
-        }
         if(StringUtils.isEmpty(qrcode)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the qrcode");
@@ -55,25 +52,51 @@ public class SnapshotController {
             result.setDescription("Please provide the wechatId");
             return result;
         }
-        if(StringUtils.isEmpty(memberPhone)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the phone number");
-            return result;
-        }
         if(StringUtils.isEmpty(picPath)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide the pic path");
             return result;
         }
 
-        //check whether the assignId is exist.
+        //according to the qrcode,find the assignId.
+        String assignId = "";
         Map<String, Object> condition = new HashMap<>();
-        condition.put("assignId", assignId);
+        condition.put("qrcode", qrcode);
         condition.put("blockFlag", false);
-        ResultData response = snapshotService.fetchSnapshot(condition);
+        ResultData response = assignService.fetchAssign(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription(new StringBuffer("Assign with id ").append(assignId).append(" is already exist").toString());
+            assignId = ((List<Assign>)response.getData()).get(0).getAssignId();
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the qrcode");
+            return result;
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now,please try again later");
+            return result;
+        }
+
+        //according to the wechatId,find the memberPhone.
+        String memberPhone = "";
+        condition = new HashMap<>();
+        condition.put("wechatId", wechatId);
+        condition.put("blockFlag", false);
+        response = memberService.fetchMember(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            memberPhone = ((List<Member>)response.getData()).get(0).getMemberPhone();
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the wechat");
+            return result;
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now,please try again later.");
             return result;
         }
 
@@ -89,9 +112,12 @@ public class SnapshotController {
         result.setData(response.getData());
         result.setDescription("Success to create the snapshot");
 
+
         //new a thread to handle the pic saving and repetition checking.
+        final String phone = memberPhone;
+        final String pic = picPath;
         new Thread(() -> {
-            picService.savePic(memberPhone,picPath);
+            picService.savePic(phone,pic);
         }).start();
 
         //new a thread to update the assign status.
