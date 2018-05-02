@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.wechat.WechatUser;
 import finley.gmair.service.WechatUserService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
