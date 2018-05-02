@@ -11,10 +11,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.datetime.joda.LocalDateParser;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -23,6 +20,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/installation/reconnaissance")
 public class ReconnaissanceController {
@@ -39,13 +37,13 @@ public class ReconnaissanceController {
         }
         reconnaissance.setStatus(ReconnaissanceStatus.TODO);
 
-        LocalDate reconDate = DateFormatUtil.convertToLocalDate(form.getReconDate());
-        if (reconDate == null) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("勘测日期格式错误");
-            return result;
-        }
-        reconnaissance.setReconnaissanceDate(Timestamp.valueOf(LocalDateTime.of(reconDate, LocalTime.MIN)));
+//        LocalDate reconDate = DateFormatUtil.convertToLocalDate(form.getReconDate());
+//        if (reconDate == null) {
+//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//            result.setDescription("勘测日期格式错误");
+//            return result;
+//        }
+//        reconnaissance.setReconnaissanceDate(Timestamp.valueOf(LocalDateTime.of(reconDate, LocalTime.MIN)));
 
 
         ResultData response = reconnaissanceService.createReconnaissance(reconnaissance);

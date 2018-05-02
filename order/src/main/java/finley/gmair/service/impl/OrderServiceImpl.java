@@ -14,6 +14,7 @@ import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.service.ExpressService;
 import finley.gmair.service.LocationService;
 import finley.gmair.service.OrderService;
+import finley.gmair.service.ReconnaissanceService;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.OrderExtension;
 import finley.gmair.util.ResponseCode;
@@ -47,6 +48,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ExpressService expressService;
+
+    @Autowired
+    private ReconnaissanceService reconnaissanceService;
 
     @Override
     public ResultData fetchPlatformOrder(Map<String, Object> condition) {
@@ -215,6 +219,12 @@ public class OrderServiceImpl implements OrderService {
 
                     }
                 }
+            }
+            // create reconnaissance
+            try {
+                ResultData reconnaissanceResult = reconnaissanceService.createReconnaissance(order.getOrderId());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             list.add(order);
             current = sheet.getRow(++row);
