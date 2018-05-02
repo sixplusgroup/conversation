@@ -46,3 +46,4 @@ ALTER TABLE `gmair_install`.`install_snapshot`
   DROP COLUMN `check_list`,
   ADD COLUMN `pic_path` LONGTEXT NOT NULL AFTER `member_phone`;
 
+alter table reconnaissance_list modify recon_date date default null;
