@@ -1,0 +1,8 @@
+spring.application.name=auth-install-agent
+
+server.port=8005
+
+eureka.client.healthcheck=true
+eureka.client.service-url.defaultZone=http://127.0.0.1:8000/eureka/
+
+security.oauth2.resource.filter-order=3
