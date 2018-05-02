@@ -6,7 +6,7 @@
         <result property="orderId" column="order_id"></result>
         <result property="companyId" column="company_id"></result>
         <result property="expressNo" column="express_no"></result>
-        <result property="expressStatus" column="express_status" typeHandler="finley.gmair.mybatis.handler.ExpressStatusHandler"></result>
+        <result property="expressStatus" column="express_status" typeHandler="finley.gmair.handler.ExpressStatusHandler"></result>
         <result property="deliverTime" column="deliver_time"></result>
         <result property="receiveTime" column="receive_time"></result>
         <result property="blockFlag" column="block_flag"></result>

@@ -10,4 +10,6 @@ public interface ExpressParcelDao {
     ResultData queryExpressParcel(Map<String, Object> condition);
 
     ResultData insertExpressParcel(ExpressParcel expressParcel);
+
+    ResultData updateExpressParcel(Map<String, Object> condition);
 }

@@ -1,7 +1,7 @@
 package finley.gmair.schedule;
 
-import finley.gmair.dao.ExpressOrderDao;
-import finley.gmair.model.express.ExpressOrder;
+import finley.gmair.dao.ExpressParcelDao;
+import finley.gmair.model.express.ExpressParcel;
 import finley.gmair.model.express.ExpressStatus;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -16,101 +16,97 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class statusSchedule {
+public class ParcelStatusSchedule {
 
     @Autowired
-    private ExpressOrderDao expressOrderDao;
+    private ExpressParcelDao expressParcelDao;
 
     /**
-     *This method is used to update express status every hour
+     *This method is used to update express parcel status every hour
      *
      */
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "30 * * * * ?")
     public void update(){
         System.out.println(new Timestamp(System.currentTimeMillis()));
         Map<String, Object> condition = new HashMap<>();
         condition.put("expressStatus", 3);
         condition.put("blockFlag",false);
-        ResultData response = expressOrderDao.queryExpressOrder(condition);
+        ResultData response = expressParcelDao.queryExpressParcel(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<ExpressOrder> list = (List<ExpressOrder>) response.getData();
-            response = this.classify_order(list);
+            List<ExpressParcel> list = (List<ExpressParcel>) response.getData();
+            response = this.classify_parcel(list);
             if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
                 System.out.println(response.getDescription());
             }else{
-                System.out.println("order_express update successfully");
+                System.out.println("parcel_express update successfully");
             }
         }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
-            System.out.println("none of order_express need to update");
+            System.out.println("none of parcel_express need to update");
         }
     }
 
     /**
-     *This method is used to classify orders
+     *This method is used to classify parcels
      *
      */
 
-    public ResultData classify_order(List<ExpressOrder> list){
-        List<ExpressOrder> order_status_picked = new ArrayList<>();
-        List<ExpressOrder> order_status_shipping = new ArrayList<>();
-        List<ExpressOrder> order_status_received = new ArrayList<>();
-        List<ExpressOrder> order_status_returned = new ArrayList<>();
-        for(ExpressOrder expressOrder : list){
+    public ResultData classify_parcel(List<ExpressParcel> list){
+        List<ExpressParcel> parcel_status_picked = new ArrayList<>();
+        List<ExpressParcel> parcel_status_shipping = new ArrayList<>();
+        List<ExpressParcel> parcel_status_received = new ArrayList<>();
+        List<ExpressParcel> parcel_status_returned = new ArrayList<>();
+        for(ExpressParcel expressParcel : list){
             /**
              * query status ...  compare status  ...  set status
-             * 
+             *
              */
-            //expressOrder.setExpressStatus(ExpressStatus.RECEIVED);
+            //expressParcel.setExpressStatus(ExpressStatus.RECEIVED);
             boolean changed = true;
             if(changed){
-                int value = expressOrder.getExpressStatus().getValue();
+                int value = expressParcel.getExpressStatus().getValue();
                 switch(value){
-                    case 1 : order_status_picked.add(expressOrder);
-                    case 2 : order_status_shipping.add(expressOrder);
-                    case 3 : order_status_received.add(expressOrder);
-                    case 4 : order_status_returned.add(expressOrder);
+                    case 1 : parcel_status_picked.add(expressParcel);
+                    case 2 : parcel_status_shipping.add(expressParcel);
+                    case 3 : parcel_status_received.add(expressParcel);
+                    case 4 : parcel_status_returned.add(expressParcel);
                 }
             }
         }
-        ResultData response = this.update_order(order_status_picked);
+        ResultData response = this.update_parcel(parcel_status_picked);
         if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
-            response.setDescription("order_status_picked update failed");
+            response.setDescription("parcel_status_picked update failed");
             return response;
         }
-        response = this.update_order(order_status_shipping);
+        response = this.update_parcel(parcel_status_shipping);
         if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
-            response.setDescription("order_status_shipping update failed");
+            response.setDescription("parcel_status_shipping update failed");
             return response;
         }
-        response = this.update_order(order_status_received);
+        response = this.update_parcel(parcel_status_received);
         if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
-            response.setDescription("order_status_received update failed");
+            response.setDescription("parcel_status_received update failed");
             return response;
         }
-        response = this.update_order(order_status_returned);
+        response = this.update_parcel(parcel_status_returned);
         if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
-            response.setDescription("order_status_returned update failed");
+            response.setDescription("parcel_status_returned update failed");
             return response;
         }
         return response;
     }
 
     /**
-     *This method is used to update orders
+     *This method is used to update parcels
      *
      */
 
-    public ResultData update_order(List<ExpressOrder> list){
+    public ResultData update_parcel(List<ExpressParcel> list){
         ResultData result = new ResultData();
         if(list.size() > 0) {
             Map<String, Object> condition = new HashMap<>();
             condition.put("list", list);
             condition.put("expressStatus", list.get(0).getExpressStatus().getValue());
-            condition.put("deliverTime", new Timestamp(System.currentTimeMillis()));
-            if(list.get(0).getExpressStatus().getValue() == ExpressStatus.RECEIVED.getValue()){
-                condition.put("receiveTime", new Timestamp(System.currentTimeMillis()));
-            }
-            ResultData response = expressOrderDao.updateExpressOrder(condition);
+            ResultData response = expressParcelDao.updateExpressParcel(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
             }

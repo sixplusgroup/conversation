@@ -41,7 +41,18 @@ public class ExpressParcelDaoImpl extends BaseDao implements ExpressParcelDao {
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
-            System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData updateExpressParcel(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.express.parcel.update",condition);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
         }
         return result;
     }
