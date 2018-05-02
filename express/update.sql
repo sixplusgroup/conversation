@@ -14,3 +14,8 @@ ALTER TABLE `gmair_express`.`order_express`
   AFTER `express_status`,
   ADD COLUMN `receive_time` DATETIME NULL
   AFTER `deliver_time`;
+
+#2018.05.02 add express no in parcel express
+ALTER TABLE `gmair_express`.`parcel_express`
+  ADD COLUMN `express_no` VARCHAR(50) NOT NULL AFTER `parent_express`;
+

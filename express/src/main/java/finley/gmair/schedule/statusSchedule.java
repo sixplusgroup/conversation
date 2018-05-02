@@ -30,16 +30,18 @@ public class statusSchedule {
         System.out.println(new Timestamp(System.currentTimeMillis()));
         Map<String, Object> condition = new HashMap<>();
         condition.put("expressStatus", 3);
+        condition.put("blockFlag",false);
         ResultData response = expressOrderDao.queryExpressOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             List<ExpressOrder> list = (List<ExpressOrder>) response.getData();
-            System.out.println(list.size());
             response = this.classify_order(list);
             if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
                 System.out.println(response.getDescription());
+            }else{
+                System.out.println("order_express update successfully");
             }
-        }else{
-            System.out.println(response.getDescription());
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            System.out.println("none of order_express need to update");
         }
     }
 
@@ -58,7 +60,7 @@ public class statusSchedule {
              * query status ...  compare status  ...  set status
              * 
              */
-            expressOrder.setExpressStatus(ExpressStatus.RECEIVED);
+            //expressOrder.setExpressStatus(ExpressStatus.RECEIVED);
             boolean changed = true;
             if(changed){
                 int value = expressOrder.getExpressStatus().getValue();
@@ -103,7 +105,7 @@ public class statusSchedule {
         if(list.size() > 0) {
             Map<String, Object> condition = new HashMap<>();
             condition.put("list", list);
-            condition.put("expressStatus", list.get(0).getExpressStatus());
+            condition.put("expressStatus", list.get(0).getExpressStatus().getValue());
             condition.put("deliverTime", new Timestamp(System.currentTimeMillis()));
             if(list.get(0).getExpressStatus().getValue() == ExpressStatus.RECEIVED.getValue()){
                 condition.put("receiveTime", new Timestamp(System.currentTimeMillis()));
