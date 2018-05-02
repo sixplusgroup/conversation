@@ -2,6 +2,7 @@ package finley.gmair.service;
 
 import finley.gmair.model.express.ExpressCompany;
 import finley.gmair.model.express.ExpressOrder;
+import finley.gmair.model.express.ExpressParcel;
 import finley.gmair.util.ResultData;
 
 import java.util.Map;
@@ -14,4 +15,8 @@ public interface ExpressService {
     ResultData createExpressOrder(ExpressOrder order);
 
     ResultData fetchExpressOrder(Map<String, Object> condition);
+
+    ResultData createExpressParcel(ExpressParcel expressParcel);
+
+    ResultData fetchExpressParcel(Map<String, Object> condition);
 }

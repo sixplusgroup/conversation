@@ -2,8 +2,11 @@ package finley.gmair.controller;
 
 import finley.gmair.form.express.ExpressCompanyForm;
 import finley.gmair.form.express.ExpressOrderForm;
+import finley.gmair.form.express.ExpressParcelForm;
 import finley.gmair.model.express.ExpressCompany;
 import finley.gmair.model.express.ExpressOrder;
+import finley.gmair.model.express.ExpressParcel;
+import finley.gmair.model.express.ParcelType;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -170,5 +173,64 @@ public class ExpressController {
 
             return response;
         }
+    }
+
+    /**
+     * This method is used to add parcel in the system
+     *
+     * @return
+     */
+    @PostMapping("/parcel/create")
+    public ResultData addParcel(ExpressParcelForm form) {
+        ResultData result = new ResultData();
+        String parentExpress = form.getParentExpress().trim();
+        String expressNo = form.getExpressNo().trim();
+        String codeValue = form.getCodeValue().trim();
+        ParcelType parcelType = form.getParcelType();
+        if(StringUtils.isEmpty(parentExpress)||StringUtils.isEmpty(parcelType)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the parentExpress or parcelType is specified");
+            return result;
+        }
+        if(StringUtils.isEmpty(codeValue)&&parcelType.getValue() == 0){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the codeValue is specified");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        ResultData response;
+        if(!StringUtils.isEmpty(codeValue)) {
+            condition.put("codeValue", codeValue);
+            condition.put("blockflag", false);
+            response = expressService.fetchExpressParcel(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription(new StringBuffer("Express parcel belongs to order_express: ").append(parentExpress).append(" already exist").toString());
+                return result;
+            }
+        }
+        if(StringUtils.isEmpty(expressNo)){
+            Map<String, Object> condition_order = new HashMap<>();
+            condition_order.put("expressId", parentExpress);
+            condition_order.put("blockFlag", false);
+            ResultData response_order = expressService.fetchExpressOrder(condition_order);
+            if (response_order.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<ExpressOrder> list= (List<ExpressOrder>) response_order.getData();
+                expressNo=list.get(0).getExpressNo();
+            }else{
+                return response_order;
+            }
+        }
+        ExpressParcel expressParcel = new ExpressParcel(parentExpress,expressNo,codeValue,parcelType);
+        response = expressService.createExpressParcel(expressParcel);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to add express parcel belongs to: ").append(parentExpress).toString());
+        }
+        return result;
     }
 }

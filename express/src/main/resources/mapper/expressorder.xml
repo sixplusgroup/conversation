@@ -14,7 +14,7 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.express.ExpressOrder" useGeneratedKeys="false">
-        INSERT INTO gmair_express.order_express(express_id, order_id, company_id, express_no, express_status,deliver_time, receive_time, block_flag, create_time)
+        INSERT INTO gmair_express.order_express(express_id, order_id, company_id, express_no, express_status, deliver_time, receive_time, block_flag, create_time)
         VALUES (#{expressId}, #{orderId}, #{companyId}, #{expressNo}, #{expressStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{deliverTime}, #{receiveTime}, #{blockFlag}, #{createAt})
     </insert>
 

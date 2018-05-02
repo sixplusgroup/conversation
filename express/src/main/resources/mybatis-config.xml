@@ -6,5 +6,6 @@
     <mappers>
         <mapper resource="mapper/expresscompany.xml" />
         <mapper resource="mapper/expressorder.xml" />
+        <mapper resource="mapper/expressparcel.xml" />
     </mappers>
 </configuration>

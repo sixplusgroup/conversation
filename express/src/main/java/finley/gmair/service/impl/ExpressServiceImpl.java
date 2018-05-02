@@ -2,8 +2,10 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.ExpressCompanyDao;
 import finley.gmair.dao.ExpressOrderDao;
+import finley.gmair.dao.ExpressParcelDao;
 import finley.gmair.model.express.ExpressCompany;
 import finley.gmair.model.express.ExpressOrder;
+import finley.gmair.model.express.ExpressParcel;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -20,6 +22,9 @@ public class ExpressServiceImpl implements ExpressService {
 
     @Autowired
     private ExpressOrderDao expressOrderDao;
+
+    @Autowired
+    private ExpressParcelDao expressParcelDao;
 
     @Override
     public ResultData createExpressCompany(ExpressCompany company) {
@@ -83,6 +88,39 @@ public class ExpressServiceImpl implements ExpressService {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to fetch express order from database");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createExpressParcel(ExpressParcel expressParcel) {
+        ResultData result = new ResultData();
+        ResultData response = expressParcelDao.insertExpressParcel(expressParcel);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to store express parcel with parent_express: ").append(expressParcel.getParentExpress()).toString());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @Override
+    public ResultData fetchExpressParcel(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = expressParcelDao.queryExpressParcel(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No express parcel found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to fetch express parcel from database");
         }
         return result;
     }
