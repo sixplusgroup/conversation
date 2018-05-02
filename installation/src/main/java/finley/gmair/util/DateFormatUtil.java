@@ -9,10 +9,10 @@ public class DateFormatUtil {
         if (dateString == null) {
             return null;
         }
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("Y-M-D");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
         try {
-            LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateTimeFormatter);
-            return localDateTime.toLocalDate();
+            LocalDate localDate = LocalDate.parse(dateString, dateTimeFormatter);
+            return localDate;
         } catch (Exception e) {
 
         }

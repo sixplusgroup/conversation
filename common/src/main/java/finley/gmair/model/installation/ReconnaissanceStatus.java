@@ -13,6 +13,6 @@ public enum ReconnaissanceStatus implements EnumValue {
 
     @Override
     public int getValue() {
-        return 0;
+        return this.value;
     }
 }

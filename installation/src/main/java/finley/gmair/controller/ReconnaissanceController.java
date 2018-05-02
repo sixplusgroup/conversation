@@ -23,7 +23,8 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController("/installation/reconnaissance")
+@RestController
+@RequestMapping("/installation/reconnaissance")
 public class ReconnaissanceController {
 
     @Autowired
@@ -81,7 +82,7 @@ public class ReconnaissanceController {
         return result;
     }
 
-    @RequestMapping(value = "/reconnaissance/{reconnaissanceId}/process", method = RequestMethod.POST)
+    @RequestMapping(value = "/{reconnaissanceId}/process", method = RequestMethod.POST)
     public ResultData reconnaissanceProcess(@PathVariable String reconnaissanceId, ReconnaissanceForm form) {
         ResultData result = new ResultData();
         Reconnaissance reconnaissance = new Reconnaissance(form.getOrderId(), form.getSetupMethod());

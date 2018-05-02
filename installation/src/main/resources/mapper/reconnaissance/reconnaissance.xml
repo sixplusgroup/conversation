@@ -16,7 +16,7 @@
     <insert id="insert" parameterType="finley.gmair.model.installation.Reconnaissance" useGeneratedKeys="false">
         INSERT INTO gmair_install.reconnaissance_list (recon_id, order_id, setup_method, description, recon_status, recon_date, block_flag, create_time)
         VALUES (#{reconId}, #{orderId}, #{setupMethod}, #{description},
-                #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{reconnaissanceDate} #{blockFlag}, #{createAt})
+                #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{reconnaissanceDate}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="reconnaissanceVo">

@@ -14,3 +14,7 @@ ALTER TABLE `gmair_install`.`reconnaissance_list`
 
 ALTER TABLE `gmair_install`.`reconnaissance_list`
   ADD COLUMN `recon_date` DATE NOT NULL AFTER `recon_status`;
+
+ALTER TABLE `gmair_install`.`reconnaissance_list`
+  modify setup_method VARCHAR (31);
+

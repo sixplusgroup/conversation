@@ -22,6 +22,7 @@ public class ReconnaissanceDaoImpl extends BaseDao implements ReconnaissanceDao 
             sqlSession.insert("gmair.install.reconnaissance.insert", reconnaissance);
             result.setData(reconnaissance);
         } catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -38,6 +39,7 @@ public class ReconnaissanceDaoImpl extends BaseDao implements ReconnaissanceDao 
             }
             result.setData(list);
         }catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

@@ -53,12 +53,17 @@ public class ReconnaissanceStatusHandler extends BaseTypeHandler<ReconnaissanceS
 
     @Override
     public ReconnaissanceStatus getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
-        return null;
+        int index = callableStatement.getInt(i);
+        if (callableStatement.wasNull()) {
+            return null;
+        } else {
+            return locateEnumStatus(index);
+        }
     }
 
     private ReconnaissanceStatus locateEnumStatus(int code) {
         for (ReconnaissanceStatus status : enums) {
-            if (status.getValue() == (Integer.valueOf(code))) {
+            if (status.getValue() == code) {
                 return status;
             }
         }
