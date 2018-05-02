@@ -18,3 +18,31 @@ ALTER TABLE `gmair_install`.`reconnaissance_list`
 ALTER TABLE `gmair_install`.`reconnaissance_list`
   modify setup_method VARCHAR (31);
 
+#2018.05.02 add some previous changes to the installation part
+
+ALTER TABLE `gmair_install`.`team_member`
+  ADD COLUMN `wechat_id` VARCHAR(50) NULL AFTER `member_phone`;
+
+CREATE TABLE `gmair_install`.`install_pic` (
+  `pic_id` VARCHAR(20) NOT NULL,
+  `pic_address` VARCHAR(100) NOT NULL,
+  `pic_md5` VARCHAR(45) NOT NULL,
+  `member_phone` VARCHAR(20) NOT NULL,
+  `copy_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`pic_id`));
+
+ALTER TABLE `gmair_install`.`install_feedback`
+  ADD COLUMN `assign_id` VARCHAR(20) NOT NULL AFTER `feedback_id`,
+  ADD COLUMN `status` VARCHAR(45) NOT NULL AFTER `member_phone`;
+
+ALTER TABLE `gmair_install`.`install_snapshot`
+  DROP COLUMN `hole_direction`,
+  DROP COLUMN `indoor_post_air`,
+  DROP COLUMN `indoor_pre_air`,
+  DROP COLUMN `outdoor_hole`,
+  DROP COLUMN `indoor_hole`,
+  DROP COLUMN `check_list`,
+  ADD COLUMN `pic_path` LONGTEXT NOT NULL AFTER `member_phone`;
+

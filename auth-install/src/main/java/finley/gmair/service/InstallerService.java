@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 @FeignClient("install-agent")
 public interface InstallerService {
 
-    @PostMapping("/installation/member/exist")
-    ResultData exist(String openid);
-
+    @PostMapping("/installation/member/findwechat")
+    ResultData exist(String wechatId);
 }
