@@ -118,7 +118,7 @@ public class TemplateController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("messageType", "text");
-        ResultData response = textTemplateService.fetchTextReply(condition);
+        ResultData response = textTemplateService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());

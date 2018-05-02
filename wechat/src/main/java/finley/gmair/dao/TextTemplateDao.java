@@ -11,6 +11,4 @@ public interface TextTemplateDao {
     ResultData query(Map<String, Object> condition);
 
     ResultData update(TextTemplate textTemplate);
-
-    ResultData queryTextReply(Map<String, Object> condition);
 }

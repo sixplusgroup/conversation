@@ -28,14 +28,19 @@ public class WechatApplication {
 
     @Autowired
     private TextTemplateService textTemplateService;
+
     @Autowired
     private WechatUserService wechatUserService;
+
     @Autowired
     private AutoReplyService autoReplyService;
+
     @Autowired
     private PictureTemplateService pictureTemplateService;
+
     @Autowired
     private ArticleTemplateService articleTemplateService;
+
 
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
@@ -67,7 +72,9 @@ public class WechatApplication {
 
             int start = input.indexOf("<MsgType>");
             int end = input.indexOf("</MsgType>");
+
             String type = input.substring(start + "<MsgType>".length(), end).replace("<![CDATA[", "").replace("]]>", "");
+
             switch (type) {
                 case "text":
                     XStream content = XStreamFactory.init(false);
@@ -78,22 +85,15 @@ public class WechatApplication {
                     condition.put("keyWord", tmessage.getContent());
                     ResultData response = autoReplyService.fetch(condition);
                     if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                        AutoReply aVo = ((List<AutoReply>) response.getData()).get(0);
-                        if (aVo.getTemplateId().startsWith("PTI")) {
+                        AutoReply reply = ((List<AutoReply>) response.getData()).get(0);
+                        if (reply.getTemplateId().startsWith("TTE")) {
+                            //clear & set the new filter condition
                             condition.clear();
-                            condition.put("templateId", aVo.getTemplateId());
-                            WechatUtil.pushImage(WechatProperties.getAccessToken(), tmessage.getFromUserName(), getPicUrl(condition));
-                        }
-                        if (aVo.getTemplateId().startsWith("TTI")) {
-                            condition.clear();
-                            condition.put("templateId", aVo.getTemplateId());
+                            condition.put("templateId", reply.getTemplateId());
                             TextOutMessage result = initialize(textResponse(condition), tmessage);
                             content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);
                             return xml;
-                        }
-                        if (aVo.getTemplateId().startsWith("ATI")) {
-
                         }
                     }
                     break;
@@ -165,10 +165,10 @@ public class WechatApplication {
     }
 
     private String textResponse(Map<String, Object> condition) {
-        ResultData response = textTemplateService.fetchTextReply(condition);
+        ResultData response = textTemplateService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            TextReplyVo tVo = ((List<TextReplyVo>) response.getData()).get(0);
-            String result = tVo.getResponse();
+            TextTemplate template = ((List<TextTemplate>) response.getData()).get(0);
+            String result = template.getResponse();
             return result;
         } else {
             return "";

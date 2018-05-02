@@ -11,6 +11,4 @@ public interface TextTemplateService {
     ResultData fetch(Map<String, Object> condition);
 
     ResultData modify(TextTemplate template);
-
-    ResultData fetchTextReply(Map<String, Object> condition);
 }
