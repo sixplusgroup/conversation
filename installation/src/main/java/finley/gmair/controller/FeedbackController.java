@@ -75,7 +75,7 @@ public class FeedbackController {
         else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL)
         {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No feedback info at the moment");
+            result.setDescription("No feedback info at the moment.");
         }
         else
         {
