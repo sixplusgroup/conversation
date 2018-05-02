@@ -575,7 +575,7 @@ public class AssignController {
         }
         else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find the assign with qrcode");
+            result.setDescription("fail to find the assign with qrcode.");
         }
         return result;
     }
