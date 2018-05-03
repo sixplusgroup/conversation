@@ -12,7 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class InstallerDetailServiceImpl implements UserDetailsService {
@@ -23,7 +25,10 @@ public class InstallerDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String openid) throws UsernameNotFoundException {
         List<SimpleGrantedAuthority> authorities = List.of();
-        ResultData response = installerService.exist(openid);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("openid", openid);
+        condition.put("blockFlag", false);
+        ResultData response = installerService.queryInstaller(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             throw new UsernameNotFoundException("no matching installer");
         }
