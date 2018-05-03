@@ -42,19 +42,9 @@ public class SnapshotController {
         String picPath = form.getPicPath().trim();
 
         //check whether input is empty
-        if(StringUtils.isEmpty(qrcode)){
+        if(StringUtils.isEmpty(qrcode)||StringUtils.isEmpty(wechatId)||StringUtils.isEmpty(picPath)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the qrcode");
-            return result;
-        }
-        if(StringUtils.isEmpty(wechatId)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the wechatId");
-            return result;
-        }
-        if(StringUtils.isEmpty(picPath)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the pic path");
+            result.setDescription("Please provide all information");
             return result;
         }
 

@@ -29,19 +29,9 @@ public class FeedbackController {
         String status = form.getStatus();
 
         //check whether input is empty
-        if(StringUtils.isEmpty(assignId)){
+        if(StringUtils.isEmpty(assignId) || StringUtils.isEmpty(memberPhone) || StringUtils.isEmpty(feedbackContent)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the qrcode");
-            return result;
-        }
-        if(StringUtils.isEmpty(memberPhone)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the phone");
-            return result;
-        }
-        if(StringUtils.isEmpty(feedbackContent)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the feedback content");
+            result.setDescription("Please provide all information");
             return result;
         }
 
