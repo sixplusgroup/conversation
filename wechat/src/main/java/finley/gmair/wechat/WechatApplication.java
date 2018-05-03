@@ -95,7 +95,10 @@ public class WechatApplication {
                         if (reply.getTemplateId().startsWith("PTI")) {
                             condition.clear();
                             condition.put("templateId", reply.getTemplateId());
-                            WechatUtil.pushImage(WechatProperties.getAccessToken(), tmessage.getFromUserName(), pictureUrl(condition));
+                            PictureOutMessage result = init(pictureUrl(condition), tmessage);
+                            content.alias("xml", PictureOutMessage.class);
+                            String xml = content.toXML(result);
+                            return xml;
                         }
                     }
                     break;
@@ -165,6 +168,15 @@ public class WechatApplication {
         result.setToUserName(message.getFromUserName());
         result.setCreateTime(new Date().getTime());
         result.setContent(content);
+        return result;
+    }
+
+    private PictureOutMessage init(String mediaId, InMessage message) {
+        PictureOutMessage result = new PictureOutMessage();
+        result.setFromUserName(message.getToUserName());
+        result.setToUserName(message.getFromUserName());
+        result.setCreateTime(new Date().getTime());
+        result.setMediaId(mediaId);
         return result;
     }
 
