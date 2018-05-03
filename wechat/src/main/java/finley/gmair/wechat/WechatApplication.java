@@ -95,11 +95,7 @@ public class WechatApplication {
                         if (reply.getTemplateId().startsWith("PTI")) {
                             condition.clear();
                             condition.put("templateId", reply.getTemplateId());
-                            TextOutMessage result = initialize(pictureUrl(condition), tmessage);
-                            content.alias("xml", TextOutMessage.class);
-                            String xml = content.toXML(result);
-                            return xml;
-                            //WechatUtil.pushImage(WechatProperties.getAccessToken(), tmessage.getFromUserName(), pictureUrl(condition));
+                            WechatUtil.pushImage(WechatProperties.getAccessToken(), tmessage.getFromUserName(), pictureUrl(condition));
                         }
                     }
                     break;
@@ -109,6 +105,7 @@ public class WechatApplication {
                     final EventInMessage emessage = (EventInMessage) content.fromXML(input);
                     Map<String, Object> map = new HashMap<>();
                     if (emessage.getEvent().equals("subscribe")) {
+                        map.put("messageType", "event");
                         map.put("keyword", "subscribe");
                         TextOutMessage result = initialize(textResponse(map), emessage);
                         content.alias("xml", TextOutMessage.class);
@@ -143,6 +140,7 @@ public class WechatApplication {
                             return "";
                         } else {
                             map.clear();
+                            map.put("messageType", "event");
                             map.put("Keyword", "NoId");
                             TextOutMessage result = initialize(textResponse(map), emessage);
                             content.alias("xml", TextOutMessage.class);
