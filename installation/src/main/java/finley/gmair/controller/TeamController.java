@@ -28,14 +28,9 @@ public class TeamController {
         String teamDescription = form.getTeamDescription().trim();
 
         //check whether input is empty
-        if(StringUtils.isEmpty(form.getTeamName())){
+        if(StringUtils.isEmpty(teamName)||StringUtils.isEmpty(teamArea)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the Team name");
-            return result;
-        }
-        if(StringUtils.isEmpty(form.getTeamArea())){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the Team area");
+            result.setDescription("Please provide all information");
             return result;
         }
 

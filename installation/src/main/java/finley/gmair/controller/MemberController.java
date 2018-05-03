@@ -32,20 +32,9 @@ public class MemberController {
         String memberName = form.getMemberName().trim();
 
         //check whether input is empty
-        if(StringUtils.isEmpty(teamId)){
+        if(StringUtils.isEmpty(teamId) || StringUtils.isEmpty(memberName) || StringUtils.isEmpty(memberPhone) ){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the team ID");
-            return result;
-        }
-        if(StringUtils.isEmpty(memberName)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the member name");
-            return result;
-        }
-        if(StringUtils.isEmpty(memberPhone))
-        {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);;
-            result.setDescription("Please privide the member phone");
+            result.setDescription("Please provide all information");
             return result;
         }
 
@@ -103,14 +92,9 @@ public class MemberController {
         wechatId=wechatId.trim();
 
         //check empty input
-        if(StringUtils.isEmpty(memberPhone)){
+        if(StringUtils.isEmpty(memberPhone) || StringUtils.isEmpty(wechatId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the assignId");
-            return result;
-        }
-        if(StringUtils.isEmpty(wechatId)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the installDate");
+            result.setDescription("Please provide the all information");
             return result;
         }
 
@@ -126,10 +110,12 @@ public class MemberController {
         else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
             result.setDescription("can not find the member with memberPhone");
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
         }
         else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,please try again later");
+            return result;
         }
 
         //update the member

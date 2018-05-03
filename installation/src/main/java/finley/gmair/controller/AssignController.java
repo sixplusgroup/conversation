@@ -76,14 +76,9 @@ public class AssignController {
         qrcode = qrcode.trim();
 
         //check whether input is empty
-        if(StringUtils.isEmpty(wechatId)){
+        if(StringUtils.isEmpty(wechatId) || StringUtils.isEmpty(qrcode)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the qrcode");
-            return result;
-        }
-        if(StringUtils.isEmpty(qrcode)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the qrcode");
+            result.setDescription("Please provide all information");
             return result;
         }
 
@@ -136,14 +131,9 @@ public class AssignController {
         String memberName = form.getMemberName().trim();
 
         //check empty input
-        if(StringUtils.isEmpty(assignId)){
+        if(StringUtils.isEmpty(assignId) || StringUtils.isEmpty(teamName)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the assignId");
-            return result;
-        }
-        if(StringUtils.isEmpty(teamName)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the teamName");
+            result.setDescription("Please provide all information");
             return result;
         }
 
@@ -228,16 +218,12 @@ public class AssignController {
         String installDate = form.getInstallDate().trim();
 
         //check empty input
-        if(StringUtils.isEmpty(assignId)){
+        if(StringUtils.isEmpty(assignId) || StringUtils.isEmpty(installDate)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the assignId");
+            result.setDescription("Please provide all information");
             return result;
         }
-        if(StringUtils.isEmpty(installDate)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the installDate");
-            return result;
-        }
+
 
         //according to the assignId,find the assign record.
         Assign assign = new Assign();
