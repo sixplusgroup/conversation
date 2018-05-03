@@ -20,7 +20,6 @@ public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
         ResultData result = new ResultData();
         tempFileMap.setFileId(IDGenerator.generate("RTF"));
         try{
-
             sqlSession.insert("gmair.resource.tempfilemap.insert", tempFileMap);
             result.setData(tempFileMap);
         }

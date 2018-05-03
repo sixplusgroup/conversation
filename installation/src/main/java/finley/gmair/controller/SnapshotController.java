@@ -5,16 +5,15 @@ import finley.gmair.model.installation.Assign;
 import finley.gmair.model.installation.AssignStatus;
 import finley.gmair.model.installation.Member;
 import finley.gmair.model.installation.Snapshot;
-import finley.gmair.service.AssignService;
-import finley.gmair.service.MemberService;
-import finley.gmair.service.PicService;
-import finley.gmair.service.SnapshotService;
+import finley.gmair.model.resource.FileMap;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,10 @@ public class SnapshotController {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private TempFileMapService tempFileMapService;
+
     @RequestMapping(method = RequestMethod.POST, value="/create")
     public ResultData create(SnapshotForm form){
         ResultData result = new ResultData();
@@ -102,14 +105,6 @@ public class SnapshotController {
         result.setData(response.getData());
         result.setDescription("Success to create the snapshot");
 
-
-        //new a thread to handle the pic saving and repetition checking.
-        final String phone = memberPhone;
-        final String pic = picPath;
-        new Thread(() -> {
-            picService.savePic(phone,pic);
-        }).start();
-
         //new a thread to update the assign status.
         condition.clear();
         condition.put("assignId",assignId);
@@ -122,6 +117,20 @@ public class SnapshotController {
                 assignService.updateAssign(assign);
             }).start();
         }
+
+        //new a thread to handle the pic saving and repetition checking.
+        final String phone = memberPhone;
+        String []urls = picPath.split(",");
+        String []actualPath = urls;
+        new Thread(() -> {
+            for(int i=0;i<urls.length;i++) {
+                actualPath[i] = (String) (tempFileMapService.actualPath(urls[i]).getData());
+                picService.savePic(phone,urls[i],actualPath[i]);
+            }
+        }).start();
+
+        //new a thread to solve the pic delete from
+
         return result;
     }
 
