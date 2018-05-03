@@ -92,6 +92,15 @@ public class WechatApplication {
                             String xml = content.toXML(result);
                             return xml;
                         }
+                        if (reply.getTemplateId().startsWith("PTI")) {
+                            condition.clear();
+                            condition.put("templateId", reply.getTemplateId());
+                            TextOutMessage result = initialize(pictureUrl(condition), tmessage);
+                            content.alias("xml", TextOutMessage.class);
+                            String xml = content.toXML(result);
+                            return xml;
+                            //WechatUtil.pushImage(WechatProperties.getAccessToken(), tmessage.getFromUserName(), pictureUrl(condition));
+                        }
                     }
                     break;
                 case "event":
