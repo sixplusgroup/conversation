@@ -42,3 +42,24 @@ CREATE TABLE `gmair_order`.`order_location_retry_count` (
 ALTER TABLE `gmair_order`.`platform_order`
   ADD COLUMN `order_status` TINYINT(1) NOT NULL DEFAULT 0
   AFTER `description`;
+
+CREATE TABLE `order_commodity` (
+  `com_id` varchar(20) NOT NULL,
+  `com_name` varchar(45) DEFAULT NULL,
+  `com_type` tinyint(1) NOT NULL DEFAULT '0',
+  `com_price` double NOT NULL DEFAULT '0',
+  `block_flag` tinyint(1) NOT NULL DEFAULT '0',
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`com_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+CREATE TABLE `order_item` (
+  `order_item_id` varchar(20) NOT NULL,
+  `order_id` varchar(20) NOT NULL,
+  `com_id` varchar(20) NOT NULL,
+  `price` decimal(10,0) NOT NULL,
+  `order_item_quantity` int(11) NOT NULL DEFAULT '1',
+  `block_flag` tinyint(1) NOT NULL DEFAULT '0',
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`order_item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8

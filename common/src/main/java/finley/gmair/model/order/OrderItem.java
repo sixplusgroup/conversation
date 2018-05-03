@@ -5,6 +5,8 @@ import finley.gmair.model.Entity;
 public class OrderItem extends Entity {
     private String itemId;
 
+    private String commodityId;
+
     private String itemName;
 
     private double quantity;
@@ -20,6 +22,14 @@ public class OrderItem extends Entity {
         this.itemName = itemName;
         this.quantity = quantity;
         this.itemPrice = itemPrice;
+    }
+
+    public String getCommodityId() {
+        return commodityId;
+    }
+
+    public void setCommodityId(String commodityId) {
+        this.commodityId = commodityId;
     }
 
     public String getItemId() {
