@@ -10,5 +10,6 @@
         <mapper resource="mapper/machineinstalltype.xml" />
         <mapper resource="mapper/setupprovider.xml" />
         <mapper resource="mapper/orderlocationretrycount.xml" />
+        <mapper resource="mapper/ordercommodity.xml" />
     </mappers>
 </configuration>

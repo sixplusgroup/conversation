@@ -1,16 +1,15 @@
 package finley.gmair.vo.order;
 
+import finley.gmair.model.goods.CommodityType;
+
 import java.sql.Timestamp;
 
 
 public class OrderCommodityVo {
     private String commodityId;
-    private String orderId;
-    private String commodityType;
+    private CommodityType commodityType;
     private String commodityName;
     private double commodityPrice;
-    private int commodityQuantity;
-    private String commodityQrcode;
     private Boolean blockFlag;
     private Timestamp createTime;
 
@@ -22,19 +21,11 @@ public class OrderCommodityVo {
         this.commodityId = commodityId;
     }
 
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getCommodityType() {
+    public CommodityType getCommodityType() {
         return commodityType;
     }
 
-    public void setCommodityType(String commodityType) {
+    public void setCommodityType(CommodityType commodityType) {
         this.commodityType = commodityType;
     }
 
@@ -52,22 +43,6 @@ public class OrderCommodityVo {
 
     public void setCommodityPrice(double commodityPrice) {
         this.commodityPrice = commodityPrice;
-    }
-
-    public int getCommodityQuantity() {
-        return commodityQuantity;
-    }
-
-    public void setCommodityQuantity(int commodityQuantity) {
-        this.commodityQuantity = commodityQuantity;
-    }
-
-    public String getCommodityQrcode() {
-        return commodityQrcode;
-    }
-
-    public void setCommodityQrcode(String commodityQrcode) {
-        this.commodityQrcode = commodityQrcode;
     }
 
     public Boolean getBlockFlag() {

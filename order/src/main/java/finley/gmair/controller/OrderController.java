@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.service.OrderService;
 import finley.gmair.util.RequestUtil;
 import finley.gmair.util.ResponseCode;
@@ -11,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/order")

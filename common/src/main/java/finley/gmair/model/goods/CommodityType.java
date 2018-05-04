@@ -1,17 +1,19 @@
 package finley.gmair.model.goods;
 
-public enum CommodityType {
+import finley.gmair.model.EnumValue;
+
+public enum CommodityType implements EnumValue {
 
     GUOMAI_XINFENG(0), GUOMAI_SCREEN(1), GUOMAI_OTHER(2);
 
-    int code;
+    private int value;
 
-    CommodityType(int code) {
-        this.code = code;
+    CommodityType(int value) {
+        this.value = value;
     }
 
-    public int getCode() {
-        return this.code;
+    public int getValue() {
+        return this.value;
     }
 
     public static CommodityType convertToCommodityType(int code) {
