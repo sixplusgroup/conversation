@@ -36,8 +36,11 @@ public class SnapshotController {
     @Autowired
     private TempFileMapService tempFileMapService;
 
-    @RequestMapping(method = RequestMethod.POST, value="/create")
-    public ResultData create(SnapshotForm form){
+    @Autowired
+    private FileMapService fileMapService;
+
+    @RequestMapping(method = RequestMethod.POST, value = "/create")
+    public ResultData create(SnapshotForm form) {
         ResultData result = new ResultData();
 
         String qrcode = form.getQrcode().trim();
@@ -45,7 +48,7 @@ public class SnapshotController {
         String picPath = form.getPicPath().trim();
 
         //check whether input is empty
-        if(StringUtils.isEmpty(qrcode)||StringUtils.isEmpty(wechatId)||StringUtils.isEmpty(picPath)){
+        if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(wechatId) || StringUtils.isEmpty(picPath)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide all information");
             return result;
@@ -57,16 +60,14 @@ public class SnapshotController {
         condition.put("qrcode", qrcode);
         condition.put("blockFlag", false);
         ResultData response = assignService.fetchAssign(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            assignId = ((List<Assign>)response.getData()).get(0).getAssignId();
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            assignId = ((List<Assign>) response.getData()).get(0).getAssignId();
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find the qrcode");
             return result;
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,please try again later");
             return result;
@@ -78,81 +79,77 @@ public class SnapshotController {
         condition.put("wechatId", wechatId);
         condition.put("blockFlag", false);
         response = memberService.fetchMember(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            memberPhone = ((List<Member>)response.getData()).get(0).getMemberPhone();
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            memberPhone = ((List<Member>) response.getData()).get(0).getMemberPhone();
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find the wechat");
             return result;
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,please try again later.");
             return result;
         }
 
         //create the Snapshot
-        Snapshot snapshot = new Snapshot(assignId,qrcode,wechatId,memberPhone,picPath);
+        Snapshot snapshot = new Snapshot(assignId, qrcode, wechatId, memberPhone, picPath);
         response = snapshotService.createSnapshot(snapshot);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("Success to create the snapshot");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to create the snapshot");
             return result;
         }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
-        result.setDescription("Success to create the snapshot");
 
         //new a thread to update the assign status.
         condition.clear();
-        condition.put("assignId",assignId);
-        condition.put("blockFlag",false);
-        response = assignService.fetchAssign(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
-            Assign assign = ((List<Assign>)response.getData()).get(0);
-            assign.setAssignStatus(AssignStatus.FINISHED);
-            new Thread(() -> {
+        condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        final Map<String,Object> condition1 = condition;
+        new Thread(()->{
+            final ResultData response1 = assignService.fetchAssign(condition1);
+            if (response1.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                Assign assign = ((List<Assign>) response1.getData()).get(0);
+                assign.setAssignStatus(AssignStatus.FINISHED);
                 assignService.updateAssign(assign);
-            }).start();
-        }
-
-        //new a thread to handle the pic saving and repetition checking.
-        final String phone = memberPhone;
-        String []urls = picPath.split(",");
-        String []actualPath = urls;
-        new Thread(() -> {
-            for(int i=0;i<urls.length;i++) {
-                actualPath[i] = (String) (tempFileMapService.actualPath(urls[i]).getData());
-                picService.savePic(phone,urls[i],actualPath[i]);
             }
         }).start();
 
-        //new a thread to solve the pic delete from
+        //new a thread to save the fileUrl-actualPath map
+        new Thread(() -> {
+            fileMapService.createPicMap(picPath);
+        }).start();
 
+        //new a thread to handle the pic url saving and delete useless url.
+        final String phone = memberPhone;
+        String[] urls = picPath.split(",");
+        String[] actualPath = urls;
+        new Thread(() -> {
+            for (int i = 0; i < urls.length; i++) {
+                actualPath[i] = (String) (tempFileMapService.actualPath(urls[i]).getData());
+                picService.savePic(phone, urls[i], actualPath[i]);
+            }
+        }).start();
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value="/list")
-    public ResultData list()
-    {
+    @RequestMapping(method = RequestMethod.GET, value = "/list")
+    public ResultData list() {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         ResultData response = snapshotService.fetchSnapshot(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
-        {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to snapshot info");
-        }
-        else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL)
-        {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No snapshot info at the moment");
-        }
-        else
-        {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to snapshot info");

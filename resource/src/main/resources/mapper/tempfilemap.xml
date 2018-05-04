@@ -24,13 +24,13 @@
         <if test="fileId != null">
             AND file_id = #{fileId}
         </if>
-        <if test="teamId != null">
+        <if test="fileUrl != null">
             AND file_url = #{fileUrl}
         </if>
-        <if test="memberPhone != null">
+        <if test="actualPath != null">
             AND actual_path = #{actualPath}
         </if>
-        <if test="memberName != null">
+        <if test="fileName != null">
             AND filename = #{fileName}
         </if>
         <if test="blockFlag != null">

@@ -30,9 +30,7 @@ public class PicController {
     //处理上传图片的请求
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
     public ResultData upload(MultipartHttpServletRequest request) {
-
         ResultData result = new ResultData();
-
         MultipartFile file = request.getFile("fileName");
 
         //check the file not empty.
@@ -50,8 +48,7 @@ public class PicController {
         }
 
         //actualPath
-        String basePath =File.separator+"Users"+File.separator+"wjq"+File.separator+"desktop"+
-                File.separator+"uploadIMG";
+        String basePath =File.separator+"Users"+File.separator+"wjq"+File.separator+"desktop"+ File.separator+"uploadIMG";
         String time = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
         String actualPath = basePath+File.separator+time;
         StringBuilder builder = new StringBuilder(actualPath);
@@ -82,17 +79,18 @@ public class PicController {
             return result;
         }
 
-        //save the fileUrl-actualPath map
+        //save the temp fileUrl-actualPath map
         ResultData response=tempFileMapService.createPicMap(fileUrl,actualPath,fileName);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
         {
             result.setData(response.getData());
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to save tempFilemap");
         }
         else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR)
         {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to save map");
+            result.setDescription("Fail to save tempFilemap");
         }
         return result;
     }

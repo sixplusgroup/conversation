@@ -37,6 +37,7 @@ public class TempFileMapController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(fileUrl);
+        result.setDescription("success to create the tempFileMap");
         return result;
     }
 
@@ -50,6 +51,7 @@ public class TempFileMapController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
+
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("url is invalid");
@@ -58,6 +60,7 @@ public class TempFileMapController {
             String actualPath = ((List<FileMap>) response.getData()).get(0).getActualPath();
             String fileName = ((List<FileMap>) response.getData()).get(0).getFileName();
             result.setData(actualPath + File.separator + fileName);
+            result.setDescription("success to get the actualPath");
         }
         return result;
     }
