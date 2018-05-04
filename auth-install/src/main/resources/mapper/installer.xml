@@ -17,8 +17,25 @@
         <if test="wechatId != null">
             AND wechat_id = #{wechatId}
         </if>
+        <if test="memberPhone != null">
+            AND member_phone = #{memberPhone}
+        </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
     </select>
+
+    <update id="update" parameterType="finley.gmair.model.installation.Member">
+        UPDATE gmair_install.team_member
+        <set>
+            <if test="wechatId != null">
+                wechat_id = #{wechatId},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            member_id = #{memberId}
+        </set>
+        WHERE member_id = #{memberId}
+    </update>
 </mapper>

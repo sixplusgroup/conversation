@@ -28,7 +28,7 @@ public class InstallerDetailServiceImpl implements UserDetailsService {
         Map<String, Object> condition = new HashMap<>();
         condition.put("openid", openid);
         condition.put("blockFlag", false);
-        ResultData response = installerService.queryInstaller(condition);
+        ResultData response = installerService.fetchInstaller(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             throw new UsernameNotFoundException("no matching installer");
         }

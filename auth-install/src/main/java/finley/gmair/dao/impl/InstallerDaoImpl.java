@@ -27,4 +27,17 @@ public class InstallerDaoImpl extends BaseDao implements InstallerDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData update(Member member) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.install.worker.update", member);
+            result.setData(member);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }
