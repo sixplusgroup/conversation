@@ -2,5 +2,6 @@
 <configuration>
     <mappers>
         <mapper resource="mapper/admin/admin.xml"/>
+        <mapper resource="mapper/admin/adminrole.xml"/>
     </mappers>
 </configuration>

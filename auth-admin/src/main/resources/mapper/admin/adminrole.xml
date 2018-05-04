@@ -1,0 +1,31 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.adminrole">
+    <resultMap id="adminRoleVo" type="finley.gmair.vo.role.RoleVo">
+        <result property="roleId" column="role_id"></result>
+        <result property="roleName" column="role_name"></result>
+        <result property="roleDescription" column="role_description"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <!--<insert id="insert" parameterType="finley.gmair.model.admin.Admin" useGeneratedKeys="false">-->
+        <!--INSERT INTO gmair_admininfo.admin_info (admin_id, admin_email, admin_name, admin_password, block_flag, create_time)-->
+        <!--VALUES (#{adminId}, #{email}, #{username}, #{password}, #{blockFlag}, #{createAt})-->
+    <!--</insert>-->
+
+    <select id="query" parameterType="java.util.Map" resultMap="adminRoleVo">
+        SELECT role_id, role_name, role_description, block_flag, create_time
+        FROM `gmair_admininfo`.`admin_role_view`
+        WHERE 1 = 1
+        <if test="roleId != null">
+            AND role_id = #{roleId}
+        </if>
+        <if test="adminId != null">
+            AND user_id = #{adminId}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+</mapper>
