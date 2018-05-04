@@ -9,4 +9,6 @@ public interface TempFileMapService {
     ResultData createTempFileMap(FileMap fileMap);
 
     ResultData fetchTempFileMap(Map<String, Object> condition);
+
+    ResultData deleteTempFileMap();
 }

@@ -62,14 +62,13 @@ public class PicController {
         //fileName
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
         String key = IDGenerator.generate("PIC");
-        String name = key + suffix;
-        String fileName = builder.append(File.separator).append(name).toString();
+        String fileName = key + suffix;
 
         //fileUrl
         String fileUrl = "https://192.168.1.1:8011"+File.separator+"InstallPic"+File.separator+fileName;
 
         //save to the disk
-        File temp = new File(fileName);
+        File temp = new File(builder.append(File.separator).append(fileName).toString());
         try {
             file.transferTo(temp);
             result.setData(fileUrl);

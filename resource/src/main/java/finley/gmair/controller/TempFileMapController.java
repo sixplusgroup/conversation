@@ -30,14 +30,15 @@ public class TempFileMapController {
         //save the tempFileMap
         FileMap tempFileMap = new FileMap(fileUrl, actualPath, fileName);
         ResultData response = tempFileMapService.createTempFileMap(tempFileMap);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to create the tempFileMap");
-            return result;
         }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(fileUrl);
-        result.setDescription("success to create the tempFileMap");
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(fileUrl);
+            result.setDescription("success to create the tempFileMap");
+        }
         return result;
     }
 

@@ -58,4 +58,11 @@
         WHERE file_id = #{fileId}
     </update>
 
+    <delete id="delete">
+        DELETE FROM gmair_resource.tempfile_location
+        WHERE file_url not in(
+          SELECT gmair_resource.file_location.file_url
+          FROM gmair_resource.file_location
+        )
+    </delete>
 </mapper>

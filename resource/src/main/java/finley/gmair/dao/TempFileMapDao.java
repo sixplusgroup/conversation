@@ -9,4 +9,6 @@ public interface TempFileMapDao {
     ResultData insertTempFileMap(FileMap tempFileMap);
 
     ResultData queryTempFileMap(Map<String, Object> condition);
+
+    ResultData deleteTempFileMap();
 }

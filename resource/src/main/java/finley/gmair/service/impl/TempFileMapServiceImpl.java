@@ -51,4 +51,21 @@ public class TempFileMapServiceImpl implements TempFileMapService {
         }
         return result;
     }
+
+    @Override
+    public ResultData deleteTempFileMap()
+    {
+        ResultData result = new ResultData();
+        ResultData response = tempFileMapDao.deleteTempFileMap();
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to delete tempFileMap");
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to delete tempFileMap");
+        }
+        return result;
+    }
 }

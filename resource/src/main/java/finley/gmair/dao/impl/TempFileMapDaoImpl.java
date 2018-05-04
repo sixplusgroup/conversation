@@ -16,14 +16,13 @@ import java.util.Map;
 public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
 
     @Override
-    public ResultData insertTempFileMap(FileMap tempFileMap){
+    public ResultData insertTempFileMap(FileMap tempFileMap) {
         ResultData result = new ResultData();
         tempFileMap.setFileId(IDGenerator.generate("RTF"));
-        try{
+        try {
             sqlSession.insert("gmair.resource.tempfilemap.insert", tempFileMap);
             result.setData(tempFileMap);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -31,10 +30,10 @@ public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
     }
 
     @Override
-    public ResultData queryTempFileMap(Map<String, Object> condition){
+    public ResultData queryTempFileMap(Map<String, Object> condition) {
         ResultData result = new ResultData();
         List<FileMap> list = new ArrayList<>();
-        try{
+        try {
             list = sqlSession.selectList("gmair.resource.tempfilemap.query", condition);
             result.setData(list);
 
@@ -43,7 +42,7 @@ public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
             result.setDescription(e.getMessage());
         }
 
-        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
+        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("No tempfilemap found");
@@ -51,6 +50,19 @@ public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription("Success to found tempfilemap");
             }
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData deleteTempFileMap() {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.resource.tempfilemap.delete");
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
         }
         return result;
     }
