@@ -1,8 +1,9 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.TeamDao;
-import finley.gmair.model.installation.Team;
+import finley.gmair.dao.PicDao;
+import finley.gmair.model.installation.Member;
+import finley.gmair.model.installation.Pic;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -12,16 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 @Repository
-public class TeamDaoImpl extends BaseDao implements TeamDao {
+public class PicDaoImpl extends BaseDao implements PicDao {
     @Override
-    public ResultData insertTeam(Team team) {
+    public ResultData insertPic(Pic pic){
+
         ResultData result = new ResultData();
-        team.setTeamId(IDGenerator.generate("ITM"));
-        try {
-            sqlSession.insert("gmair.installation.team.insert", team);
-            result.setData(team);
-        } catch (Exception e) {
+        pic.setPicId(IDGenerator.generate("IPC"));
+        try{
+            sqlSession.insert("gmair.installation.pic.insert",pic);
+            result.setData(pic);
+        }
+        catch (Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -29,40 +33,41 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
     }
 
     @Override
-    public ResultData queryTeam(Map<String, Object> condition) {
+    public ResultData queryPic(Map<String, Object> condition){
         ResultData result = new ResultData();
-        List<Team> list = new ArrayList<>();
-        try {
-            list = sqlSession.selectList("gmair.installation.team.query", condition);
+        List<Member> list = new ArrayList<>();
+        try{
+            list = sqlSession.selectList("gmair.installation.pic.query", condition);
             result.setData(list);
+
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
 
-        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("No team found");
+                result.setDescription("No pic found");
             } else {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("Success to found team");
+                result.setDescription("Success to found pic");
             }
         }
         return result;
     }
-
     @Override
-    public ResultData updateTeam(Team team) {
+    public ResultData deletePic(Map<String, Object> condition)
+    {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.installation.team.update", team);
-            result.setData(team);
-        } catch (Exception e) {
+            sqlSession.delete("gmair.installation.pic.delete",condition);
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
+        catch (Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
         return result;
     }
-
 }

@@ -8,7 +8,6 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -17,14 +16,15 @@ public class AssignServiceImpl implements AssignService {
     private AssignDao assignDao;
 
     @Override
-    public ResultData createAssign(Assign assign) {
+    public ResultData createAssign(Assign assign){
         ResultData result = new ResultData();
         ResultData response = assignDao.insertAssign(assign);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to insert assign");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to insert assign" + assign.toString());
         }
@@ -32,7 +32,7 @@ public class AssignServiceImpl implements AssignService {
     }
 
     @Override
-    public ResultData fetchAssign(Map<String, Object> condition) {
+    public ResultData fetchAssign(Map<String, Object> condition){
         ResultData result = new ResultData();
         ResultData response = assignDao.queryAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -52,14 +52,15 @@ public class AssignServiceImpl implements AssignService {
     }
 
     @Override
-    public ResultData updateAssign(Assign assign) {
+    public  ResultData updateAssign(Assign assign){
         ResultData result = new ResultData();
         ResultData response = assignDao.updateAssign(assign);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to update assign");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        }
+        else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to update assign");
         }

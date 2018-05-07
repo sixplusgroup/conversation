@@ -17,17 +17,19 @@ public class MemberServiceImpl implements MemberService {
     private MemberDao memberDao;
 
     @Override
-    public ResultData fetchMember(Map<String, Object> condition) {
+    public ResultData fetchMember(Map<String, Object> condition){
         ResultData result = new ResultData();
         ResultData response = memberDao.queryMember(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to fetch member");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No member found");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to fetch member");
         }
@@ -35,15 +37,16 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public ResultData createMember(Member member) {
+    public ResultData createMember(Member member){
         ResultData result = new ResultData();
 
         Map<String, Object> condition = new HashMap<>();
-        condition.put("memberPhone", member.getMemberPhone());
-        condition.put("blockFalg", false);
+        condition.put("memberPhone",member.getMemberPhone());
+        condition.put("blockFalg",false);
 
         ResultData response = memberDao.queryMember(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
+        {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("member with phone: ").append(member.getMemberPhone()).append(" already exist").toString());
             return result;
@@ -54,11 +57,12 @@ public class MemberServiceImpl implements MemberService {
             return result;
         }
 
-        response = memberDao.insertMember(member);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        response=memberDao.insertMember(member);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to insert member" + member.toString());
         }
@@ -66,14 +70,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public ResultData updateMember(Member member) {
+    public ResultData updateMember(Member member){
         ResultData result = new ResultData();
         ResultData response = memberDao.updateMember(member);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to update member");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        }
+        else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to update member");
         }

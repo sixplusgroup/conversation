@@ -1,8 +1,8 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.SnapshotDao;
-import finley.gmair.model.installation.Snapshot;
+import finley.gmair.dao.FeedbackDao;
+import finley.gmair.model.installation.Feedback;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -13,16 +13,18 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class SnapshotDaoImpl extends BaseDao implements SnapshotDao {
+public class FeedbackDaoImpl extends BaseDao implements FeedbackDao {
 
     @Override
-    public ResultData insertSnapshot(Snapshot snapshot) {
+    public ResultData insertFeedback(Feedback feedback) {
+
         ResultData result = new ResultData();
-        snapshot.setSnapshotId(IDGenerator.generate("ISS"));
-        try {
-            sqlSession.insert("gmair.installation.snapshot.insert", snapshot);
-            result.setData(snapshot);
-        } catch (Exception e) {
+        feedback.setFeedbackId(IDGenerator.generate("IFB"));
+        try{
+            sqlSession.insert("gmair.installation.feedback.insert",feedback);
+            result.setData(feedback);
+        }
+        catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -30,26 +32,28 @@ public class SnapshotDaoImpl extends BaseDao implements SnapshotDao {
     }
 
     @Override
-    public ResultData querySnapshot(Map<String, Object> condition) {
+    public ResultData queryFeedback(Map<String, Object> condition){
         ResultData result = new ResultData();
-        List<Snapshot> list = new ArrayList<>();
-        try {
-            list = sqlSession.selectList("gmair.installation.snapshot.query", condition);
+        List<Feedback> list=new ArrayList<>();
+        try{
+            list=sqlSession.selectList("gmair.installation.feedback.query",condition);
             result.setData(list);
-        } catch (Exception e) {
+        }
+        catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
 
-        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("No snapshot found");
+                result.setDescription("No feedback found");
             } else {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("Success to found snapshot");
+                result.setDescription("Success to found feedback");
             }
         }
         return result;
     }
+
 }

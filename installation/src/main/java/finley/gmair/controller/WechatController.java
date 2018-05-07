@@ -14,16 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class WechatController {
 
     @GetMapping("openid")
-    public ResultData getOpenId(String code){
+    public ResultData getOpenId(String code) {
         ResultData result = new ResultData();
-        String openid = WechatUtil.queryOauthOpenId(WechatProperties.getWechatAppid(),WechatProperties.getWechatSecret(),code);
-        if(openid!=null&&openid!="")
-        {
+        String openid = WechatUtil.queryOauthOpenId(WechatProperties.getWechatAppid(), WechatProperties.getWechatSecret(), code);
+        if (openid != null && openid != "") {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(openid);
             result.setDescription("success to get the openid");
-        }
-        else {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("can not get the openid");
         }

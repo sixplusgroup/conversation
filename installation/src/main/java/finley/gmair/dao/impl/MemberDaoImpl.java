@@ -16,13 +16,12 @@ import java.util.Map;
 public class MemberDaoImpl extends BaseDao implements MemberDao {
     @Override
     public ResultData insertMember(Member member) {
-        ResultData result =new ResultData();
+        ResultData result = new ResultData();
         member.setMemberId(IDGenerator.generate("ISM"));
-        try{
-            sqlSession.insert("gmair.installation.member.insert",member);
+        try {
+            sqlSession.insert("gmair.installation.member.insert", member);
             result.setData(member);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -31,9 +30,9 @@ public class MemberDaoImpl extends BaseDao implements MemberDao {
 
     @Override
     public ResultData queryMember(Map<String, Object> condition) {
-        ResultData result =new ResultData();
+        ResultData result = new ResultData();
         List<Member> list = new ArrayList<>();
-        try{
+        try {
             list = sqlSession.selectList("gmair.installation.member.query", condition);
             result.setData(list);
 
@@ -42,7 +41,7 @@ public class MemberDaoImpl extends BaseDao implements MemberDao {
             result.setDescription(e.getMessage());
         }
 
-        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
+        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("No member found");
@@ -53,9 +52,10 @@ public class MemberDaoImpl extends BaseDao implements MemberDao {
         }
         return result;
     }
+
     @Override
     public ResultData updateMember(Member member) {
-        ResultData result =new ResultData();
+        ResultData result = new ResultData();
         try {
             sqlSession.update("gmair.installation.member.update", member);
             result.setData(member);

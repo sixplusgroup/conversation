@@ -1,8 +1,8 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.TeamDao;
-import finley.gmair.model.installation.Team;
+import finley.gmair.dao.MemberDao;
+import finley.gmair.model.installation.Member;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -13,15 +13,16 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class TeamDaoImpl extends BaseDao implements TeamDao {
+public class MemberDaoImpl extends BaseDao implements MemberDao {
     @Override
-    public ResultData insertTeam(Team team) {
-        ResultData result = new ResultData();
-        team.setTeamId(IDGenerator.generate("ITM"));
-        try {
-            sqlSession.insert("gmair.installation.team.insert", team);
-            result.setData(team);
-        } catch (Exception e) {
+    public ResultData insertMember(Member member) {
+        ResultData result =new ResultData();
+        member.setMemberId(IDGenerator.generate("ISM"));
+        try{
+            sqlSession.insert("gmair.installation.member.insert",member);
+            result.setData(member);
+        }
+        catch (Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -29,40 +30,39 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
     }
 
     @Override
-    public ResultData queryTeam(Map<String, Object> condition) {
-        ResultData result = new ResultData();
-        List<Team> list = new ArrayList<>();
-        try {
-            list = sqlSession.selectList("gmair.installation.team.query", condition);
+    public ResultData queryMember(Map<String, Object> condition) {
+        ResultData result =new ResultData();
+        List<Member> list = new ArrayList<>();
+        try{
+            list = sqlSession.selectList("gmair.installation.member.query", condition);
             result.setData(list);
+
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
 
-        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("No team found");
+                result.setDescription("No member found");
             } else {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("Success to found team");
+                result.setDescription("Success to found member");
             }
         }
         return result;
     }
-
     @Override
-    public ResultData updateTeam(Team team) {
-        ResultData result = new ResultData();
+    public ResultData updateMember(Member member) {
+        ResultData result =new ResultData();
         try {
-            sqlSession.update("gmair.installation.team.update", team);
-            result.setData(team);
+            sqlSession.update("gmair.installation.member.update", member);
+            result.setData(member);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
         return result;
     }
-
 }

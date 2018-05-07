@@ -20,10 +20,11 @@ public class SnapshotServiceImpl implements SnapshotService {
     public ResultData createSnapshot(Snapshot snapshot) {
         ResultData result = new ResultData();
         ResultData response = snapshotDao.insertSnapshot(snapshot);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to insert snapshot" + snapshot.toString());
         }
@@ -31,17 +32,19 @@ public class SnapshotServiceImpl implements SnapshotService {
     }
 
     @Override
-    public ResultData fetchSnapshot(Map<String, Object> condition) {
+    public ResultData fetchSnapshot(Map<String, Object> condition){
         ResultData result = new ResultData();
         ResultData response = snapshotDao.querySnapshot(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to fetch snapshot");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No snapshot found");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to fetch snapshot");
         }

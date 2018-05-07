@@ -19,8 +19,9 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
 
-    @RequestMapping(method = RequestMethod.POST, value="/create")
-    public ResultData createTeam(TeamForm form){
+    //管理人员创建团队时触发
+    @RequestMapping(method = RequestMethod.POST, value = "/create")
+    public ResultData createTeam(TeamForm form) {
         ResultData result = new ResultData();
 
         String teamName = form.getTeamName().trim();
@@ -28,7 +29,7 @@ public class TeamController {
         String teamDescription = form.getTeamDescription().trim();
 
         //check whether input is empty
-        if(StringUtils.isEmpty(teamName)||StringUtils.isEmpty(teamArea)){
+        if (StringUtils.isEmpty(teamName) || StringUtils.isEmpty(teamArea)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide all information");
             return result;
@@ -46,7 +47,7 @@ public class TeamController {
         }
 
         //create the the team
-        Team team = new Team(teamName,teamArea,teamDescription);
+        Team team = new Team(teamName, teamArea, teamDescription);
         response = teamService.createTeam(team);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -59,25 +60,21 @@ public class TeamController {
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value="/list")
-    public ResultData list(){
+    //管理人员查看团队信息时触发,拉取所有团队列表
+    @RequestMapping(method = RequestMethod.GET, value = "/list")
+    public ResultData list() {
         ResultData result = new ResultData();
 
         Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFalg",false);
+        condition.put("blockFalg", false);
         ResultData response = teamService.fetchTeam(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
-        {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to team info");
-        }
-        else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL)
-        {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No team info at the moment");
-        }
-        else
-        {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to team info");
@@ -86,8 +83,8 @@ public class TeamController {
     }
 
     @GetMapping("/update")
-    public ResultData update(TeamForm team){
-        ResultData result=new ResultData();
+    public ResultData update(TeamForm team) {
+        ResultData result = new ResultData();
         //TODO
         return result;
     }

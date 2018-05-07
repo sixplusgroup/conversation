@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.install.reconnaissance">
+    <resultMap id="reconnaissanceVo" type="finley.gmair.model.installation.Reconnaissance">
+        <result property="reconId" column="recon_id"></result>
+        <result property="orderId" column="order_id"></result>
+        <result property="setupMethod" column="setup_method"></result>
+        <result property="description" column="description"></result>
+        <result property="status" column="recon_status"
+                typeHandler="finley.gmair.mybatis.handler.install.ReconnaissanceStatusHandler"></result>
+        <result property="reconnaissanceDate" column="recon_date"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.installation.Reconnaissance" useGeneratedKeys="false">
+        INSERT INTO gmair_install.reconnaissance_list (recon_id, order_id, setup_method, description, recon_status, recon_date, block_flag, create_time)
+        VALUES (#{reconId}, #{orderId}, #{setupMethod}, #{description},
+                #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{reconnaissanceDate}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="reconnaissanceVo">
+        SELECT recon_id, order_id, setup_method, description, recon_status, recon_date, block_flag, create_time
+        FROM gmair_install.reconnaissance_list
+        WHERE 1 = 1
+        <if test="reconId != null">
+            AND recon_id = #{reconId}
+        </if>
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="status != null">
+            AND recon_status = #{status}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <update id="update" parameterType="finley.gmair.model.installation.Reconnaissance">
+        UPDATE `gmair_install`.`reconnaissance_list`
+        <set>
+            <if test="setupMethod != null">
+                setup_method = #{setupMethod},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="status != null">
+                recon_status = #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+            </if>
+            <if test="reconnaissanceDate != null">
+                recon_date = #{reconnaissanceDate},
+            </if>
+            recon_id = #{reconId}
+        </set>
+        WHERE
+        recon_id = #{reconId}
+    </update>
+
+</mapper>

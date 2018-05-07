@@ -19,10 +19,11 @@ public class SnapshotDaoImpl extends BaseDao implements SnapshotDao {
     public ResultData insertSnapshot(Snapshot snapshot) {
         ResultData result = new ResultData();
         snapshot.setSnapshotId(IDGenerator.generate("ISS"));
-        try {
-            sqlSession.insert("gmair.installation.snapshot.insert", snapshot);
+        try{
+            sqlSession.insert("gmair.installation.snapshot.insert",snapshot);
             result.setData(snapshot);
-        } catch (Exception e) {
+        }
+        catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -30,18 +31,19 @@ public class SnapshotDaoImpl extends BaseDao implements SnapshotDao {
     }
 
     @Override
-    public ResultData querySnapshot(Map<String, Object> condition) {
+    public ResultData querySnapshot(Map<String, Object> condition){
         ResultData result = new ResultData();
-        List<Snapshot> list = new ArrayList<>();
-        try {
-            list = sqlSession.selectList("gmair.installation.snapshot.query", condition);
+        List<Snapshot> list=new ArrayList<>();
+        try{
+            list=sqlSession.selectList("gmair.installation.snapshot.query",condition);
             result.setData(list);
-        } catch (Exception e) {
+        }
+        catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
 
-        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("No snapshot found");

@@ -20,11 +20,10 @@ public class FeedbackDaoImpl extends BaseDao implements FeedbackDao {
 
         ResultData result = new ResultData();
         feedback.setFeedbackId(IDGenerator.generate("IFB"));
-        try{
-            sqlSession.insert("gmair.installation.feedback.insert",feedback);
+        try {
+            sqlSession.insert("gmair.installation.feedback.insert", feedback);
             result.setData(feedback);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -32,19 +31,18 @@ public class FeedbackDaoImpl extends BaseDao implements FeedbackDao {
     }
 
     @Override
-    public ResultData queryFeedback(Map<String, Object> condition){
+    public ResultData queryFeedback(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        List<Feedback> list=new ArrayList<>();
-        try{
-            list=sqlSession.selectList("gmair.installation.feedback.query",condition);
+        List<Feedback> list = new ArrayList<>();
+        try {
+            list = sqlSession.selectList("gmair.installation.feedback.query", condition);
             result.setData(list);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
 
-        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
+        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("No feedback found");

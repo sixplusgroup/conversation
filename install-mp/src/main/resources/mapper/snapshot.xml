@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.installation.snapshot">
+    <resultMap id="Snapshot" type="finley.gmair.model.installation.Snapshot">
+        <result property="snapshotId" column="snapshot_id" />
+        <result property="assignId" column="assign_id" />
+        <result property="qrcode" column="code_value" />
+        <result property="wechatId" column="wechat_id" />
+        <result property="memberPhone" column="member_phone" />
+        <result property="picPath" column="pic_path" />
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time" />
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.installation.Snapshot" useGeneratedKeys="false">
+        REPLACE INTO gmair_install.install_snapshot
+        VALUES (#{snapshotId},#{assignId},#{qrcode},#{wechatId},#{memberPhone},#{picPath},#{blockFlag},#{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="Snapshot">
+        SELECT *
+        FROM gmair_install.install_snapshot
+        where 1 = 1
+        <if test="snapshotId !=null">
+            AND snapshot_id = #{snapshotId}
+        </if>
+        <if test="assignId !=null">
+            AND assign_id = #{assignId}
+        </if>
+        <if test="qrcode !=null">
+            AND code_value = #{qrcode}
+        </if>
+        <if test="wechatId !=null">
+            AND wechat_id = #{wechatId}
+        </if>
+        <if test="memberPhone !=null">
+            AND member_phone = #{memberPhone}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+</mapper>

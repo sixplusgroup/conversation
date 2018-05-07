@@ -18,15 +18,14 @@ import java.util.Map;
 @Repository
 public class PicDaoImpl extends BaseDao implements PicDao {
     @Override
-    public ResultData insertPic(Pic pic){
+    public ResultData insertPic(Pic pic) {
 
         ResultData result = new ResultData();
         pic.setPicId(IDGenerator.generate("IPC"));
-        try{
-            sqlSession.insert("gmair.installation.pic.insert",pic);
+        try {
+            sqlSession.insert("gmair.installation.pic.insert", pic);
             result.setData(pic);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -34,10 +33,10 @@ public class PicDaoImpl extends BaseDao implements PicDao {
     }
 
     @Override
-    public ResultData queryPic(Map<String, Object> condition){
+    public ResultData queryPic(Map<String, Object> condition) {
         ResultData result = new ResultData();
         List<Member> list = new ArrayList<>();
-        try{
+        try {
             list = sqlSession.selectList("gmair.installation.pic.query", condition);
             result.setData(list);
 
@@ -46,7 +45,7 @@ public class PicDaoImpl extends BaseDao implements PicDao {
             result.setDescription(e.getMessage());
         }
 
-        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
+        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("No pic found");
@@ -57,15 +56,14 @@ public class PicDaoImpl extends BaseDao implements PicDao {
         }
         return result;
     }
+
     @Override
-    public ResultData deletePic(Map<String, Object> condition)
-    {
+    public ResultData deletePic(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.delete("gmair.installation.pic.delete",condition);
+            sqlSession.delete("gmair.installation.pic.delete", condition);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

@@ -18,10 +18,11 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
     public ResultData insertTeam(Team team) {
         ResultData result = new ResultData();
         team.setTeamId(IDGenerator.generate("ITM"));
-        try {
-            sqlSession.insert("gmair.installation.team.insert", team);
+        try{
+            sqlSession.insert("gmair.installation.team.insert",team);
             result.setData(team);
-        } catch (Exception e) {
+        }
+        catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -29,18 +30,19 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
     }
 
     @Override
-    public ResultData queryTeam(Map<String, Object> condition) {
+    public ResultData queryTeam(Map<String, Object> condition){
         ResultData result = new ResultData();
-        List<Team> list = new ArrayList<>();
-        try {
-            list = sqlSession.selectList("gmair.installation.team.query", condition);
+        List<Team> list=new ArrayList<>();
+        try{
+            list=sqlSession.selectList("gmair.installation.team.query",condition);
             result.setData(list);
-        } catch (Exception e) {
+        }
+        catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
 
-        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("No team found");
@@ -53,12 +55,12 @@ public class TeamDaoImpl extends BaseDao implements TeamDao {
     }
 
     @Override
-    public ResultData updateTeam(Team team) {
+    public ResultData updateTeam(Team team){
         ResultData result = new ResultData();
-        try {
-            sqlSession.update("gmair.installation.team.update", team);
+        try{
+            sqlSession.update("gmair.installation.team.update",team);
             result.setData(team);
-        } catch (Exception e) {
+        }catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

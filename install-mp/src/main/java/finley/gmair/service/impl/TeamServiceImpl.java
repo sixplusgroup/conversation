@@ -15,7 +15,6 @@ import java.util.Map;
 public class TeamServiceImpl implements TeamService {
     @Autowired
     private TeamDao teamDao;
-
     @Override
     public ResultData fetchTeam(Map<String, Object> condition) {
         ResultData result = new ResultData();
@@ -37,15 +36,16 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public ResultData createTeam(Team team) {
+    public ResultData createTeam(Team team){
         ResultData result = new ResultData();
 
         Map<String, Object> condition = new HashMap<>();
-        condition.put("teamName", team.getTeamName());
-        condition.put("blockFalg", false);
+        condition.put("teamName",team.getTeamName());
+        condition.put("blockFalg",false);
 
         ResultData response = teamDao.queryTeam(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
+        {
 
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("team with name: ").append(team.getTeamName()).append(" already exist").toString());
@@ -58,11 +58,12 @@ public class TeamServiceImpl implements TeamService {
             return result;
         }
 
-        response = teamDao.insertTeam(team);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        response=teamDao.insertTeam(team);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to insert team" + team.toString());
         }

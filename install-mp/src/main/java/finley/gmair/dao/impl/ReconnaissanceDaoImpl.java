@@ -1,7 +1,6 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.ReconnaissanceDao;
 import finley.gmair.model.installation.Reconnaissance;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
@@ -34,11 +33,11 @@ public class ReconnaissanceDaoImpl extends BaseDao implements ReconnaissanceDao 
         ResultData result = new ResultData();
         try {
             List<Reconnaissance> list = sqlSession.selectList("gmair.install.reconnaissance.query", condition);
-            if (list.isEmpty()) {
+            if(list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(list);
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());

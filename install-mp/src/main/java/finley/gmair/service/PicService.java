@@ -1,14 +1,15 @@
-package finley.gmair.dao;
+package finley.gmair.service;
 
 import finley.gmair.model.installation.Pic;
 import finley.gmair.util.ResultData;
 
 import java.util.Map;
 
-public interface PicDao {
-    ResultData insertPic(Pic pic);
+public interface PicService {
 
-    ResultData queryPic(Map<String, Object> condition);
+    ResultData createPic(Pic pic);
+
+    ResultData fetchPic(Map<String, Object> condition);
 
     ResultData deletePic(Map<String, Object> condition);
 }
