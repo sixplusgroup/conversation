@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import com.ctc.wstx.util.StringUtil;
 import finley.gmair.form.installation.TeamForm;
 import finley.gmair.model.installation.Team;
 import finley.gmair.service.TeamService;

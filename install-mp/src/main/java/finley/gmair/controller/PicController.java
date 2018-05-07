@@ -57,7 +57,7 @@ public class PicController {
         String actualPath = basePath + File.separator + time;
         StringBuilder builder = new StringBuilder(actualPath);
 
-        //according to the actualPath,create a file.
+        //according to the actualPath,create a directory.
         File directory = new File(builder.toString());
         if (!directory.exists()) {
             directory.mkdirs();
@@ -86,15 +86,13 @@ public class PicController {
         String picPath = actualPath + File.separator + fileName;
         File picFile = new File(picPath);
         if (picFile.exists() == false) {
-            result.setDescription(picPath + " is not a correct path.");
             return result;
         }
 
-        //角色
-
-        String memberPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //get memberPhone and save pic information
+        //String memberPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String memberPhone = "123";
         Pic pic = new Pic(fileUrl, memberPhone);
-
         try {
             String picMd5 = DigestUtils.md5Hex(new FileInputStream(picPath));
             pic.setPicMd5(picMd5);

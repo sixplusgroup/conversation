@@ -13,10 +13,12 @@ public interface TempFileMapService {
                             @RequestParam("actualPath") String actualPath,
                             @RequestParam("fileName") String fileName);
 
+    @RequestMapping(method = RequestMethod.POST, value = "/resource/tempfilemap/deletevalid")
+    ResultData deleteValidPicMapFromTempFileMap(@RequestParam("fileUrl") String fileUrl);
+
     @RequestMapping(method = RequestMethod.GET, value = "/resource/tempfilemap/fetchpath")
     ResultData actualPath(@RequestParam("fileUrl") String fileUrl);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/resource/tempfilemap/deletevalid")
-    ResultData deleteValidPicMapFromTempFileMap(@RequestParam("fileUrl") String fileUrl);
+
 
 }

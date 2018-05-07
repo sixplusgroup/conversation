@@ -57,7 +57,7 @@ public class ResourceScheduler {
                 urls.append(fm.getFileUrl() + ",");
             }
         }
-        picService.deleteByUrl(urls.toString());
+        //picService.deleteByUrl(urls.toString());
     }
 
 }

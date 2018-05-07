@@ -24,7 +24,7 @@ public class OAuth2ServerConfig {
 
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) {
-            resources.resourceId("install-agent").stateless(true);
+            resources.resourceId("install-mp-agent").stateless(true);
         }
 
         @Override

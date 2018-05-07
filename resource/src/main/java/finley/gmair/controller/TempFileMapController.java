@@ -49,7 +49,6 @@ public class TempFileMapController {
         for (int i = 0; i < urls.length; i++) {
             condition.clear();
             condition.put("fileUrl", urls[i]);
-            condition.put("blockFlag", false);
             tempFileMapService.deleteTempFileMap(condition);
         }
         return result;

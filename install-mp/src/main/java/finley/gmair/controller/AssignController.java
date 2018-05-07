@@ -6,7 +6,6 @@ import finley.gmair.model.installation.AssignStatus;
 import finley.gmair.model.installation.Member;
 import finley.gmair.service.AssignService;
 import finley.gmair.service.MemberService;
-import finley.gmair.service.TeamService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,6 @@ import java.util.Map;
 public class AssignController {
     @Autowired
     private AssignService assignService;
-
-    @Autowired
-    private TeamService teamService;
 
     @Autowired
     private MemberService memberService;

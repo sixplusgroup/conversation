@@ -2,7 +2,6 @@ package finley.gmair.controller;
 
 import finley.gmair.form.installation.AllocateForm;
 import finley.gmair.form.installation.AssignForm;
-import finley.gmair.form.installation.InstallDateForm;
 import finley.gmair.model.installation.Assign;
 import finley.gmair.model.installation.AssignStatus;
 import finley.gmair.model.installation.Member;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.xml.transform.Result;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
