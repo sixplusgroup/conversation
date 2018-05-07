@@ -32,6 +32,7 @@
         <module>sf-common</module>
         <module>menu</module>
         <module>resource</module>
+        <module>install-mp</module>
     </modules>
 
     <parent>
