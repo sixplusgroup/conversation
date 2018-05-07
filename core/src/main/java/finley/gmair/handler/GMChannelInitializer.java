@@ -1,4 +1,23 @@
 package finley.gmair.handler;
 
-public class GMChannelInitializer {
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import org.springframework.stereotype.Component;
+
+@Component
+public class GMChannelInitializer extends ChannelInitializer<SocketChannel> {
+
+    @Override
+    protected void initChannel(SocketChannel socketChannel) {
+        ChannelPipeline pipeline = socketChannel.pipeline();
+        pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
+        pipeline.addLast(new LineBasedFrameDecoder(1024));
+        pipeline.addLast(new StringDecoder());
+        pipeline.addLast(new GMPacketHandler());
+    }
 }
