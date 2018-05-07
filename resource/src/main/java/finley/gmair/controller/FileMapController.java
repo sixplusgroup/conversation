@@ -29,9 +29,9 @@ public class FileMapController {
     @RequestMapping(method = RequestMethod.POST, value = "/createpic")
     public ResultData createPicMap(String fileUrl) {
         ResultData result = new ResultData();
+        result.setData(new StringBuffer(""));
         String[] urls = fileUrl.split(",");
         Map<String, Object> condition = new HashMap<>();
-        List<String> failUrls = new ArrayList<>();
         for (int i = 0; i < urls.length; i++) {
 
             //从tempFileMap表里获取对应url的map
@@ -39,8 +39,7 @@ public class FileMapController {
             condition.put("fileUrl", urls[i]);
             condition.put("blockFlag", false);
             ResultData response = tempFileMapService.fetchTempFileMap(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                failUrls.add(urls[i]);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                 continue;
             }
 
@@ -49,15 +48,11 @@ public class FileMapController {
             String fileName = ((List<FileMap>) response.getData()).get(0).getFileName();
             FileMap fileMap = new FileMap(urls[i], actualPath, fileName);
             response = fileMapService.createFileMap(fileMap);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                failUrls.add(urls[i]);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setData(new StringBuffer(urls[i]+",")+result.getData().toString());
             }
         }
-        result.setData(failUrls);
-        if(failUrls.isEmpty())
-            result.setDescription("success to save all urls");
-        else
-            result.setDescription("fail to save some urls");
+        result.setDescription("success to create the map for urls in data.");
         return result;
     }
 

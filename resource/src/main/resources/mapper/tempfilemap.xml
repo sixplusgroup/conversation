@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.resource.tempfilemap">
     <resultMap id="TempFileMap" type="finley.gmair.model.resource.FileMap">
-        <result property="fileId" column="file_id" />
-        <result property="fileUrl" column="file_url" />
+        <result property="fileId" column="file_id"/>
+        <result property="fileUrl" column="file_url"/>
         <result property="actualPath" column="actual_path"/>
-        <result property="fileName" column="filename" />
-        <result property="blockFlag" column="block_flag" />
-        <result property="createAt" column="create_time" />
+        <result property="fileName" column="filename"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.resource.FileMap" useGeneratedKeys="false">
@@ -36,6 +36,9 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
+        <if test="createAt != null">
+            AND DATEDIFF(CURRENT_DATE ,create_time) &gt; 7
+        </if>
     </select>
 
     <update id="update" parameterType="finley.gmair.model.resource.FileMap">
@@ -58,11 +61,18 @@
         WHERE file_id = #{fileId}
     </update>
 
-    <delete id="delete">
+    <delete id="delete" parameterType="java.util.Map">
         DELETE FROM gmair_resource.tempfile_location
-        WHERE file_url not in(
-          SELECT gmair_resource.file_location.file_url
-          FROM gmair_resource.file_location
-        )
+        WHERE 0 = 1
+        <if test="fileId != null">
+            OR file_id = #{fileId}
+        </if>
+        <if test="fileUrl != null">
+            OR file_url = #{fileUrl}
+        </if>
+        <if test="createAt != null">
+            OR DATEDIFF(CURRENT_DATE ,create_time) &gt; 7
+        </if>
     </delete>
+
 </mapper>

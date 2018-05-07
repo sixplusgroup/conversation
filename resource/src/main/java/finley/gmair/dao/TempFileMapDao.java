@@ -10,5 +10,5 @@ public interface TempFileMapDao {
 
     ResultData queryTempFileMap(Map<String, Object> condition);
 
-    ResultData deleteTempFileMap();
+    ResultData deleteTempFileMap(Map<String, Object> condition);
 }

@@ -122,18 +122,9 @@ public class SnapshotController {
         //new a thread to save the fileUrl-actualPath map
         new Thread(() -> {
             fileMapService.createPicMap(picPath);
+            tempFileMapService.deleteValidPicMapFromTempFileMap(picPath);
         }).start();
 
-        //new a thread to handle the pic url saving and delete useless url.
-        final String phone = memberPhone;
-        String[] urls = picPath.split(",");
-        String[] actualPath = urls;
-        new Thread(() -> {
-            for (int i = 0; i < urls.length; i++) {
-                actualPath[i] = (String) (tempFileMapService.actualPath(urls[i]).getData());
-                picService.savePic(phone, urls[i], actualPath[i]);
-            }
-        }).start();
         return result;
     }
 
