@@ -1,7 +1,9 @@
 package finley.gmair.scheduler.resource;
 
+import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.resource.FileMap;
 import finley.gmair.service.FileMapService;
+import finley.gmair.service.PicService;
 import finley.gmair.service.TempFileMapService;
 import finley.gmair.util.FileUtil;
 import finley.gmair.util.ResponseCode;
@@ -23,7 +25,7 @@ public class ResourceScheduler {
     private TempFileMapService tempFileMapService;
 
     @Autowired
-    private FileMapService fileMapService;
+    private PicService picService;
 
     //@Scheduled(cron = "0 0 0 0/7 * ?")
     @Scheduled(cron = "0/30 * * * * ?")
@@ -33,11 +35,11 @@ public class ResourceScheduler {
         //删除大于7天的临时文件
         Map<String, Object> condition = new HashMap<>();
         condition.put("createAt", "2018-1-1");
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         List<FileMap> tempfilemapList = (List<FileMap>) (tempFileMapService.fetchTempFileMap(condition)).getData();
         if (tempfilemapList != null) {
-            for (FileMap f1 : tempfilemapList) {
-                String actualPath = f1.getActualPath() + File.separator + f1.getFileName();
+            for (FileMap fm : tempfilemapList) {
+                String actualPath = fm.getActualPath() + File.separator + fm.getFileName();
                 System.out.println("start to delete " + actualPath);
                 FileUtil.deleteFile(actualPath);
             }
@@ -46,12 +48,16 @@ public class ResourceScheduler {
         //删除表中大于7天的临时数据表记录
         condition.clear();
         condition.put("createAt", "2018-1-1");
-        ResultData response = tempFileMapService.deleteTempFileMap(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            System.out.println("删除表记录成功!");
-        } else {
-            System.out.println("删除表记录失败!");
+        tempFileMapService.deleteTempFileMap(condition);
+
+        //删除installation的pic表中的临时记录
+        StringBuffer urls = new StringBuffer("");
+        if (tempfilemapList != null) {
+            for (FileMap fm : tempfilemapList) {
+                urls.append(fm.getFileUrl() + ",");
+            }
         }
+        picService.deleteByUrl(urls.toString());
     }
 
 }

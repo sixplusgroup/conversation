@@ -42,4 +42,11 @@
         </if>
     </select>
 
+    <delete id="delete" parameterType="java.util.Map">
+        DELETE FROM gmair_install.install_pic
+        WHERE 0=1
+        <if test="picAddress != null">
+            OR pic_address = #{picAddress}
+        </if>
+    </delete>
 </mapper>

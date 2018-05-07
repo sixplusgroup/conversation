@@ -1,11 +1,14 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.installation.Pic;
 import finley.gmair.service.PicService;
 import finley.gmair.service.TempFileMapService;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,6 +31,7 @@ public class PicController {
 
     @Autowired
     TempFileMapService tempFileMapService;
+
     //处理上传图片的请求
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
     public ResultData upload(MultipartHttpServletRequest request) {
@@ -35,22 +40,21 @@ public class PicController {
 
         //check the file not empty.
         try {
-            if (file ==null || file.getBytes().length == 0) {
+            if (file == null || file.getBytes().length == 0) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("file empty");
                 return result;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
             return result;
         }
 
         //actualPath
-        String basePath =File.separator+"Users"+File.separator+"wjq"+File.separator+"desktop"+ File.separator+"uploadIMG";
+        String basePath = File.separator + "Users" + File.separator + "wjq" + File.separator + "desktop" + File.separator + "uploadIMG";
         String time = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
-        String actualPath = basePath+File.separator+time;
+        String actualPath = basePath + File.separator + time;
         StringBuilder builder = new StringBuilder(actualPath);
 
         //according to the actualPath,create a file.
@@ -65,9 +69,9 @@ public class PicController {
         String fileName = key + suffix;
 
         //fileUrl
-        String fileUrl = "https://192.168.1.1:8011"+File.separator+"InstallPic"+File.separator+fileName;
+        String fileUrl = "https://192.168.1.1:8011" + File.separator + "InstallPic" + File.separator + fileName;
 
-        //save to the disk
+        //transfer to the disk
         File temp = new File(builder.append(File.separator).append(fileName).toString());
         try {
             file.transferTo(temp);
@@ -78,49 +82,87 @@ public class PicController {
             return result;
         }
 
+        //save the installation fileUrl
+        String picPath = actualPath + File.separator + fileName;
+        File picFile = new File(picPath);
+        if (picFile.exists() == false) {
+            result.setDescription(picPath + " is not a correct path.");
+            return result;
+        }
+
+        //角色
+
+        String memberPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Pic pic = new Pic(fileUrl, memberPhone);
+
+        try {
+            String picMd5 = DigestUtils.md5Hex(new FileInputStream(picPath));
+            pic.setPicMd5(picMd5);
+            //compute copyFlag
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("picMd5", picMd5);
+            condition.put("blockFlag", false);
+            ResultData response = picService.fetchPic(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK)
+                pic.setCopyFlag(true);
+            else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL)
+                pic.setCopyFlag(false);
+            //保存
+            picService.createPic(pic);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+
+
         //save the temp fileUrl-actualPath map
-        ResultData response=tempFileMapService.createPicMap(fileUrl,actualPath,fileName);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
-        {
-            result.setData(response.getData());
+        ResultData response = tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to save tempFilemap");
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR)
-        {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to save tempFilemap");
         }
+        result.setData(fileUrl);
         return result;
     }
 
     //从数据表install_pic中拉取重复图片的信息
-    @RequestMapping(method = RequestMethod.GET, value="copy")
-    public ResultData copy(){
+    @RequestMapping(method = RequestMethod.GET, value = "copy")
+    public ResultData copy() {
         ResultData result = new ResultData();
 
-        Map<String ,Object> condition = new HashMap<>();
-        condition.put("copyFlag",true);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("copyFlag", true);
+        condition.put("blockFlag", false);
         ResultData response = picService.fetchPic(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
-        {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("success to duplicate pic");
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL)
-        {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("no duplicate pic found");
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR)
-        {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,please try again later.");
         }
         return result;
     }
 
+    //删除对应url的图片记录
+    @RequestMapping(method = RequestMethod.POST, value = "delete")
+    public ResultData deleteByUrl(String fileUrl){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        String []urls=fileUrl.split(",");
+        for(String url:urls) {
+            condition.clear();
+            condition.put("picAddress",url);
+            picService.deletePic(condition);
+        }
+        return result;
+    }
 
 }

@@ -57,4 +57,18 @@ public class PicDaoImpl extends BaseDao implements PicDao {
         }
         return result;
     }
+    @Override
+    public ResultData deletePic(Map<String, Object> condition)
+    {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.installation.pic.delete",condition);
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
+        catch (Exception e){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

@@ -12,8 +12,5 @@ public interface PicService {
 
     ResultData fetchPic(Map<String,Object> condition);
 
-    ResultData savePic(String memberPhone,String url,String path);
-
-    //ResultData uploadPic(MultipartFile file);
-
+    ResultData deletePic(Map<String, Object> condition);
 }

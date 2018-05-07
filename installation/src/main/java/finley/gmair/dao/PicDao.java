@@ -9,4 +9,6 @@ public interface PicDao  {
     ResultData insertPic(Pic pic);
 
     ResultData queryPic(Map<String, Object> condition);
+
+    ResultData deletePic(Map<String, Object> condition);
 }

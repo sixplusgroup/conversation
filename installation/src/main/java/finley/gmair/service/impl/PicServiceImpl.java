@@ -61,90 +61,21 @@ public class PicServiceImpl implements PicService {
     }
 
     @Override
-    public ResultData savePic(String memberPhone,String url,String path)
+    public ResultData deletePic(Map<String,Object> condition)
     {
         ResultData result = new ResultData();
-
-        File file = new File(path);
-        if(file.exists()==false) {
-            result.setDescription(path+" is not a correct path.");
-            return result;
+        ResultData response = picDao.deletePic(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("Success to delete pic");
         }
-
-        Pic pic = new Pic(url,memberPhone);
-        try {
-            //拿到文件路径,对图片文件进行md5运算.
-            String picMd5 = DigestUtils.md5Hex(new FileInputStream(path));
-            pic.setPicMd5(picMd5);
-            //查找是否存在重复md5的文件,计算copyFlag
-            Map<String,Object> condition = new HashMap<>();
-            condition.put("picMd5",picMd5);
-            condition.put("blockFlag",false);
-            ResultData response = fetchPic(condition);
-            if(response.getResponseCode()==ResponseCode.RESPONSE_OK)
-                pic.setCopyFlag(true);
-            else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL)
-                pic.setCopyFlag(false);
-            //保存
-            createPic(pic);
-        }
-        catch (Exception e){
+        else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.getMessage());
+            result.setDescription("Fail to delete pic");
         }
         return result;
     }
 
-    /*
-    @Override
-    public ResultData uploadPic(MultipartFile file) {
-        ResultData result = new ResultData();
-        //check the file not empty.
-        try {
-            if (file == null || file.getBytes().length == 0) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                return result;
-            }
-        }
-        catch (IOException e) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.getMessage());
-            return result;
-        }
-
-        //create the local saving path
-        String PATH = "/Users/wjq/desktop/uploadIMG";
-        Date current = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        String time = format.format(current);
-        StringBuilder builder = new StringBuilder(PATH);
-        builder.append(File.separator);
-        builder.append(time);
-
-        //according to the path,create a file.
-        File directory = new File(builder.toString());
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
-        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
-        String key = IDGenerator.generate("PIC");
-        String name = key + suffix;
-        String completeName = builder.append(File.separator).append(name).toString();
-
-        File temp = new File(completeName);
-        try {
-            file.transferTo(temp);
-            int index = temp.getPath().indexOf(SystemTellerUtil.tellPath(PATH + File.separator + time));
-            result.setData(temp.getPath().substring(index));
-        } catch (IOException e) {
-            //logger.debug(e.getMessage());
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.getMessage());
-        } finally {
-            return result;
-        }
-    }
-    */
 }
 
