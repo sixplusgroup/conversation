@@ -25,6 +25,7 @@ public class OAuth2ServerConfig {
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) {
             resources.resourceId("order").stateless(true);
+            resources.resourceId("installation-agent").stateless(true);
         }
 
         @Override
