@@ -57,7 +57,7 @@ public class AdminDetailServiceImpl implements UserDetailsService{
         condition.put("adminId", admin.getAdminId());
         condition.put("blockFlag", false);
         resultData = adminRoleService.fetchAdminRole(condition);
-        if (resultData.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+        if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
             List<RoleVo> list = (List<RoleVo>) resultData.getData();
             list.forEach(e -> authorities.add(new SimpleGrantedAuthority(e.getRoleName())));
         }
