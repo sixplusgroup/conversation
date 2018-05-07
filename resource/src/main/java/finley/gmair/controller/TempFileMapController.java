@@ -3,7 +3,6 @@ package finley.gmair.controller;
 
 import finley.gmair.model.resource.FileMap;
 import finley.gmair.service.TempFileMapService;
-import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +32,25 @@ public class TempFileMapController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to create the tempFileMap");
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(fileUrl);
             result.setDescription("success to create the tempFileMap");
+        }
+        return result;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/deletevalid")
+    public ResultData deleteValidPicMapFromTempFileMap(String fileUrl) {
+        ResultData result = new ResultData();
+        String[] urls = fileUrl.split(",");
+        Map<String, Object> condition = new HashMap<>();
+        //delete the url
+        for (int i = 0; i < urls.length; i++) {
+            condition.clear();
+            condition.put("fileUrl", urls[i]);
+            condition.put("blockFlag", false);
+            tempFileMapService.deleteTempFileMap(condition);
         }
         return result;
     }
@@ -65,4 +78,6 @@ public class TempFileMapController {
         }
         return result;
     }
+
+
 }

@@ -55,10 +55,10 @@ public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
     }
 
     @Override
-    public ResultData deleteTempFileMap() {
+    public ResultData deleteTempFileMap(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.delete("gmair.resource.tempfilemap.delete");
+            sqlSession.delete("gmair.resource.tempfilemap.delete", condition);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

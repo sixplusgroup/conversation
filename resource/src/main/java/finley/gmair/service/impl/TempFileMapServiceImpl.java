@@ -53,10 +53,10 @@ public class TempFileMapServiceImpl implements TempFileMapService {
     }
 
     @Override
-    public ResultData deleteTempFileMap()
+    public ResultData deleteTempFileMap(Map<String, Object> condition)
     {
         ResultData result = new ResultData();
-        ResultData response = tempFileMapDao.deleteTempFileMap();
+        ResultData response = tempFileMapDao.deleteTempFileMap(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to delete tempFileMap");
