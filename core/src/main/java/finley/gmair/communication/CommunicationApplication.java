@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan({"finley.gmair.controller", "finley.gmair.netty", "finley.gmair.handler"})
+@ComponentScan({ "finley.gmair.netty", "finley.gmair.handler", "finley.gmair.controller"})
 @SpringBootApplication
 public class CommunicationApplication {
 

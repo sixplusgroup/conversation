@@ -1,7 +1,6 @@
 package finley.gmair.handler;
 
 import finley.gmair.netty.GMRepository;
-import finley.gmair.netty.GMServer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
