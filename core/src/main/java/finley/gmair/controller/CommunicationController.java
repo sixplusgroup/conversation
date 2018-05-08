@@ -7,7 +7,6 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/core")
@@ -37,7 +36,7 @@ public class CommunicationController {
         String CTF = form.getCTF();
         String CID = form.getCID();
         String UID = form.getUID();
-        Timestamp TIME = form.getTIME();
+        long TIME = form.getTIME();
         String LEN = form.getLEN();
         String DATA = form.getDATA();
         String CRC = form.getCRC();

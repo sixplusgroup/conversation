@@ -3,7 +3,6 @@ package finley.gmair.model.core;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
-import java.sql.Timestamp;
 
 public class HeartbeatPacket {
 
@@ -15,7 +14,7 @@ public class HeartbeatPacket {
 
     private String UID;
 
-    private Timestamp TIME;
+    private long TIME;
 
     private String LEN;
 
@@ -29,7 +28,7 @@ public class HeartbeatPacket {
 
     }
 
-    public HeartbeatPacket(String FRH, String CTF, String CID, String UID, Timestamp TIME, String LEN, String DATA, String CRC, String FRT){
+    public HeartbeatPacket(String FRH, String CTF, String CID, String UID, long TIME, String LEN, String DATA, String CRC, String FRT){
         this();
         this.FRH=FRH;
         this.CTF=CTF;
@@ -74,11 +73,11 @@ public class HeartbeatPacket {
         this.UID = UID;
     }
 
-    public Timestamp getTIME() {
+    public long getTIME() {
         return TIME;
     }
 
-    public void setTIME(Timestamp TIME) {
+    public void setTIME(long TIME) {
         this.TIME = TIME;
     }
 
