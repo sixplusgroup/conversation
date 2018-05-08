@@ -123,7 +123,7 @@ public class ExpressController {
      *
      * @return
      */
-    @PostMapping("/order/query/{orderId}")
+    @GetMapping("/order/query/{orderId}")
     public ResultData queryOrder(@PathVariable String orderId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(orderId)){
@@ -150,7 +150,7 @@ public class ExpressController {
      *
      * @return
      */
-    @PostMapping("/query/{expressNo}")
+    @GetMapping("/query/{expressNo}")
     public ResultData queryRoute(@PathVariable String expressNo) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(expressNo)){

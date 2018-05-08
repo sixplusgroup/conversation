@@ -1,5 +1,0 @@
-tcp.port=8888
-boss.thread.count=2
-worker.thread.count=4
-so.keepalive=true
-so.backlog=100
