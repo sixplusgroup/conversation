@@ -18,8 +18,8 @@ public class InstallationScheduler {
     @Autowired
     private PicService picService;
 
-    //@Scheduled(cron = "0 0 0 0/7 * ?")
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0 0 0 0/7 * ?")
+    //@Scheduled(cron = "0/10 * * * * ?")
     public void deleteInvalid() {
 
         System.out.println("start--------------------");

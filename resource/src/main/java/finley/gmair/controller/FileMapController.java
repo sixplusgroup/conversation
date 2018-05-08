@@ -7,6 +7,7 @@ import finley.gmair.service.TempFileMapService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +30,14 @@ public class FileMapController {
     @RequestMapping(method = RequestMethod.POST, value = "/createpic")
     public ResultData createPicMap(String fileUrl) {
         ResultData result = new ResultData();
+        //check empty input
+        if(StringUtils.isEmpty(fileUrl))
+        {
+            result.setDescription("url is empty");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+
         result.setData(new StringBuffer(""));
         String[] urls = fileUrl.split(",");
         Map<String, Object> condition = new HashMap<>();

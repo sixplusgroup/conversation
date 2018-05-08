@@ -56,3 +56,4 @@ ALTER TABLE `gmair_install`.`install_assign`
 ADD COLUMN `consumer_consignee` VARCHAR(45) NOT NULL AFTER `create_time`,
 ADD COLUMN `consumer_phone` VARCHAR(45) NOT NULL AFTER `consumer_consignee`,
 ADD COLUMN `consumer_address` VARCHAR(255) NOT NULL AFTER `consumer_phone`;
+

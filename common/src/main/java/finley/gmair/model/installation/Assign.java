@@ -11,18 +11,24 @@ public class Assign extends Entity {
     private String memberId;
     private AssignStatus assignStatus;
     private Timestamp assignDate;
+    private String consumerConsignee;
+    private String consumerPhone;
+    private String consumerAddress;
     public Assign()
     {
         super();
         this.assignStatus = AssignStatus.TODOASSIGN;
     }
 
-    public Assign(String qrcode, String teamId, String memberId, Timestamp assignDate) {
+    public Assign(String qrcode, String teamId, String memberId, Timestamp assignDate, String consumerConsignee, String consumerPhone, String consumerAddress) {
         this();
         this.qrcode = qrcode;
         this.teamId = teamId;
         this.memberId = memberId;
         this.assignDate = assignDate;
+        this.consumerConsignee = consumerConsignee;
+        this.consumerPhone = consumerPhone;
+        this.consumerAddress = consumerAddress;
     }
 
     public String getAssignId() {
@@ -71,6 +77,30 @@ public class Assign extends Entity {
 
     public void setAssignDate(Timestamp assignDate) {
         this.assignDate = assignDate;
+    }
+
+    public String getConsumerConsignee() {
+        return consumerConsignee;
+    }
+
+    public void setConsumerConsignee(String consumerConsignee) {
+        this.consumerConsignee = consumerConsignee;
+    }
+
+    public String getConsumerPhone() {
+        return consumerPhone;
+    }
+
+    public void setConsumerPhone(String consumerPhone) {
+        this.consumerPhone = consumerPhone;
+    }
+
+    public String getConsumerAddress() {
+        return consumerAddress;
+    }
+
+    public void setConsumerAddress(String consumerAddress) {
+        this.consumerAddress = consumerAddress;
     }
 }
 

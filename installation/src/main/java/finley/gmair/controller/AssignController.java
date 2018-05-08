@@ -40,17 +40,24 @@ public class AssignController {
         ResultData result = new ResultData();
 
         String qrcode = form.getQrcode().trim();
+        String consumerConsignee = form.getConsumerConsignee().trim();
+        String consumerPhone = form.getConsumerPhone().trim();
+        String consumerAddress = form.getConsumerAddress().trim();
 
         //check whether input is empty
-        if (StringUtils.isEmpty(qrcode)) {
+        if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(consumerConsignee)
+                || StringUtils.isEmpty(consumerPhone) || StringUtils.isEmpty(consumerAddress)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the qrcode");
+            result.setDescription("Please provide all the information");
             return result;
         }
 
         //create the the assign and save
         Assign assign = new Assign();
         assign.setQrcode(qrcode);
+        assign.setConsumerConsignee(consumerConsignee);
+        assign.setConsumerPhone(consumerPhone);
+        assign.setConsumerAddress(consumerAddress);
         ResultData response = assignService.createAssign(assign);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);

@@ -68,6 +68,9 @@ public class AssignController {
         assign.setMemberId(member.getMemberId());
         assign.setAssignStatus(AssignStatus.PROCESSING);
         assign.setAssignDate(new Timestamp(System.currentTimeMillis()));
+        assign.setConsumerConsignee("");
+        assign.setConsumerPhone("");
+        assign.setConsumerAddress("");
         response = assignService.createAssign(assign);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
