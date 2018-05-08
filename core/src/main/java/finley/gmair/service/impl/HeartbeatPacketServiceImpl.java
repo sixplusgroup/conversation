@@ -27,4 +27,23 @@ public class HeartbeatPacketServiceImpl implements HeartbeatPacketService {
         result.setData(response.getData());
         return result;
     }
+
+    @Override
+    public ResultData fetchHeartbeatPacket(String UID) {
+        ResultData result = new ResultData();
+        ResultData response = heartbeatPacketDao.queryHeartbeatPacket(UID);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No heartbeat packet found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to fetch heartbeat packet from database");
+        }
+        return result;
+    }
 }

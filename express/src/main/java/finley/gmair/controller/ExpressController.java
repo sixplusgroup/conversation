@@ -233,4 +233,40 @@ public class ExpressController {
         }
         return result;
     }
+
+    /**
+     * This method is used to query orderId in the system
+     *
+     * @return
+     */
+    @GetMapping("/parcel/query/{codeValue}")
+    public ResultData getOrderId(@PathVariable String codeValue) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(codeValue)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the code_value is specified");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", codeValue);
+        condition.put("blockFlag", false);
+        ResultData response = expressService.fetchExpressParcel(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            ExpressParcel parcel = ((List<ExpressParcel>) response.getData()).get(0);
+            condition.clear();
+            condition.put("expressId", parcel.getParentExpress());
+            response = expressService.fetchExpressOrder(condition);
+            if(response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                ExpressOrder order = ((List<ExpressOrder>) response.getData()).get(0);
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(order);
+                return result;
+            }else{
+                return response;
+            }
+
+        }else{
+            return response;
+        }
+    }
 }

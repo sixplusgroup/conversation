@@ -7,4 +7,6 @@ public interface HeartbeatPacketDao {
 
     ResultData insertHeartbeatPacket(HeartbeatPacket heartbeatPacket);
 
+    ResultData queryHeartbeatPacket(String UID);
+
 }

@@ -5,10 +5,7 @@ import finley.gmair.service.HeartbeatPacketService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 
@@ -28,6 +25,11 @@ public class CommunicationController {
         return null;
     }
 
+    /**
+     * This method is used to create heartbeat packet in the system
+     *
+     * @return
+     */
     @PostMapping("/heartbeatPacket/create")
     public ResultData addHeartbeatPacket(HeartbeatPacket form){
         ResultData result = new ResultData();
@@ -52,4 +54,23 @@ public class CommunicationController {
         }
         return result;
     }
+
+    /**
+     * This method is used to query heartbeat packet by UID
+     *
+     * @return
+     */
+    @GetMapping("/heartbeatPacket/query/{UID}")
+    public ResultData queryHeartbeatPacket(@PathVariable String UID){
+        ResultData result = new ResultData();
+        ResultData response = heartbeatPacketService.fetchHeartbeatPacket(UID);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }else{
+            return response;
+        }
+    }
+
 }

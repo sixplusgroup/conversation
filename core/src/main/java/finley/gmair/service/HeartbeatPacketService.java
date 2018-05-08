@@ -7,4 +7,6 @@ public interface HeartbeatPacketService {
 
     ResultData createHeartbeatPacket(HeartbeatPacket heartbeatPacket);
 
+    ResultData fetchHeartbeatPacket(String UID);
+
 }
