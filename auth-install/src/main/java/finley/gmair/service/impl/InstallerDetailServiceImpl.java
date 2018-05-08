@@ -26,7 +26,7 @@ public class InstallerDetailServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String openid) throws UsernameNotFoundException {
         List<SimpleGrantedAuthority> authorities = List.of();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("openid", openid);
+        condition.put("wechatId", openid);
         condition.put("blockFlag", false);
         ResultData response = installerService.fetchInstaller(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
