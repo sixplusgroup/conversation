@@ -41,6 +41,7 @@ public class OAuth2ServerConfig {
                     .and()
                     .authorizeRequests()
                     .antMatchers("/auth/openid").permitAll()
+                    .antMatchers("/auth/bind").permitAll()
                     .antMatchers("/auth/**").authenticated();
             // @formatter:on
         }
