@@ -1,6 +1,7 @@
 package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.service.ExpressService;
 import finley.gmair.service.OrderService;
 import finley.gmair.util.RequestUtil;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/order")
@@ -116,7 +118,7 @@ public class OrderController {
                 result.setDescription("订单查询忙，请稍后再试");
             }
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
+            result.setData(((List<PlatformOrder>)response.getData()).get(0));
             return result;
         }
         return result;
