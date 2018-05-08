@@ -15,6 +15,7 @@ public class CoreDaoImpl extends BaseDao implements CoreDao {
         ResultData result = new ResultData();
         try {
               mongoTemplate.insert(null);
+
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
