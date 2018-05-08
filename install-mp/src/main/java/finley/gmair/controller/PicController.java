@@ -12,6 +12,8 @@ import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,12 +30,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/install-mp/pic")
+@PropertySource(value = "classpath:/install.properties")
 public class PicController {
     @Autowired
     PicService picService;
 
     @Autowired
     TempFileMapService tempFileMapService;
+
+    @Value("${RESOURCE_URL}")
+    private String RESOURCE_URL;
 
     //工人上传一张图片时触发
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
@@ -72,7 +78,7 @@ public class PicController {
         save(builder.toString(), filename, item);
 
         //fileUrl
-        String fileUrl = "https://microservice.gmair.net/resource/filemap/pic" + File.separator + filename;
+        String fileUrl = new StringBuffer(RESOURCE_URL).append(File.separator).append(filename).toString();
 
         //check if the file is already created
         String picPath = new StringBuffer(builder).append(File.separator).append(filename).toString();
