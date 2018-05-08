@@ -52,7 +52,7 @@ public class PicController {
         }
 
         //actualPath
-        String basePath = File.separator + "Users" + File.separator + "wjq" + File.separator + "desktop" + File.separator + "uploadIMG";
+        String basePath = File.separator + "root" + File.separator + "Material" + File.separator + "install" ;
         String time = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
         String actualPath = basePath + File.separator + time;
         StringBuilder builder = new StringBuilder(actualPath);
