@@ -90,8 +90,8 @@ public class PicController {
         }
 
         //get memberPhone and save pic information
-        //String memberPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String memberPhone = "123";
+        String memberPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //String memberPhone = "123";
         Pic pic = new Pic(fileUrl, memberPhone);
         try {
             String picMd5 = DigestUtils.md5Hex(new FileInputStream(picPath));
