@@ -47,3 +47,7 @@ ALTER TABLE `gmair_install`.`install_snapshot`
   ADD COLUMN `pic_path` LONGTEXT NOT NULL AFTER `member_phone`;
 
 alter table reconnaissance_list modify recon_date date default null;
+
+ALTER TABLE `gmair_install`.`install_assign`
+  CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ,
+  ADD COLUMN `assign_status` TINYINT(1) NOT NULL AFTER `member_id`;
