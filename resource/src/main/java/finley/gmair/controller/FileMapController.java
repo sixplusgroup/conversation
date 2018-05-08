@@ -73,7 +73,7 @@ public class FileMapController {
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/pic/{filename}")
+    @RequestMapping(method = RequestMethod.GET, value = "/pic/{filename:.+}")
     public ResultData getPicByUrl(HttpServletRequest request, HttpServletResponse response, @PathVariable("filename") String filename) {
         ResultData result=new ResultData();
         //通过fileUrl得到文件真实路径
@@ -98,11 +98,10 @@ public class FileMapController {
             result.setDescription("find pic by url");
         }
 
-        response.setContentType("image/jpeg");
         //根据真实路径把图片里写到response里
         FileMap fileMap = ((List<FileMap>)res.getData()).get(0);
         String filePath = new StringBuffer(fileMap.getActualPath()).append(File.separator).append(fileMap.getFileName()).toString();
-        System.out.println(filePath);
+        response.setContentType("image/jpg");
         try {
             File f = new File(filePath);
             BufferedImage bi = ImageIO.read(f);

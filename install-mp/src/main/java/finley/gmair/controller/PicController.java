@@ -72,7 +72,7 @@ public class PicController {
         save(builder.toString(), filename, item);
 
         //fileUrl
-        String fileUrl = "localhost:8011//resource/filemap/pic" + File.separator + filename;
+        String fileUrl = "https://microservice.gmair.net/resource/filemap/pic" + File.separator + filename;
 
         //check if the file is already created
         String picPath = new StringBuffer(builder).append(File.separator).append(filename).toString();
