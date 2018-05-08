@@ -88,7 +88,7 @@ public class FileMapController {
         }
         else if(res.getResponseCode() == ResponseCode.RESPONSE_NULL)
         {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("no pic found by url");
             return result;
         }
@@ -98,10 +98,11 @@ public class FileMapController {
             result.setDescription("find pic by url");
         }
 
+        response.setContentType("image/jpeg");
         //根据真实路径把图片里写到response里
         FileMap fileMap = ((List<FileMap>)res.getData()).get(0);
         String filePath = new StringBuffer(fileMap.getActualPath()).append(File.separator).append(fileMap.getFileName()).toString();
-        response.setContentType("image/jpeg");
+        System.out.println(filePath);
         try {
             File f = new File(filePath);
             BufferedImage bi = ImageIO.read(f);
@@ -110,6 +111,7 @@ public class FileMapController {
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
