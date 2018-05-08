@@ -81,4 +81,14 @@ public class OrderController {
         result.setData(response.getData());
         return result;
     }
+
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.GET, value = "/qrcode/{qrcode}")
+    public ResultData orderByQrcode(@PathVariable String qrcode) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("qrcode", qrcode);
+        condition.put("blockFlag", false);
+        return result;
+    }
 }
