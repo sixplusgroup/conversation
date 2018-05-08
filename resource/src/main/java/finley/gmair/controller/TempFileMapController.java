@@ -3,6 +3,7 @@ package finley.gmair.controller;
 
 import finley.gmair.model.resource.FileMap;
 import finley.gmair.service.TempFileMapService;
+import finley.gmair.util.FileUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +79,54 @@ public class TempFileMapController {
         return result;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "getinvalid")
+    public ResultData getInvalidMap(){
+        ResultData result = new ResultData();
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("createAt", "2018-1-1");
+        condition.put("blockFlag", false);
+        ResultData response = tempFileMapService.fetchTempFileMap(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to get invalid map");
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get invalid map");
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("no map found");
+        }
+        return result;
+    }
+    @RequestMapping(method = RequestMethod.GET, value = "/deleteinvalid")
+    public ResultData deleteInValidPicAndMap()
+    {
+        ResultData result = new ResultData();
+        //删除大于7天的临时文件
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("createAt", "2018-1-1");
+        condition.put("blockFlag", false);
+        List<FileMap> tempfilemapList = (List<FileMap>) (tempFileMapService.fetchTempFileMap(condition)).getData();
+        if (tempfilemapList != null) {
+            for (FileMap fm : tempfilemapList) {
+                String actualPath = fm.getActualPath() + File.separator + fm.getFileName();
+                System.out.println("start to delete " + actualPath);
+                FileUtil.deleteFile(actualPath);
+            }
+        }
+
+        //删除表中大于7天的临时数据表记录
+        condition.clear();
+        condition.put("createAt", "2018-1-1");
+        tempFileMapService.deleteTempFileMap(condition);
+        return result;
+    }
 
 }
