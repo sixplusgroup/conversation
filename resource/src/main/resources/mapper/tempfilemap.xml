@@ -36,7 +36,7 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
-        <if test="createAt != null">
+        <if test="dateFlag != null">
             AND DATEDIFF(CURRENT_DATE ,create_time) &gt; 7
         </if>
     </select>
@@ -70,7 +70,7 @@
         <if test="fileUrl != null">
             OR file_url = #{fileUrl}
         </if>
-        <if test="createAt != null">
+        <if test="dateFlag != null">
             OR DATEDIFF(CURRENT_DATE ,create_time) &gt; 7
         </if>
     </delete>

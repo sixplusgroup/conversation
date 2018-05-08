@@ -23,6 +23,7 @@ public class TempFileMapController {
     @Autowired
     private TempFileMapService tempFileMapService;
 
+    //创建一个临时TempFileMap
     @RequestMapping(method = RequestMethod.POST, value = "/createpic")
     public ResultData createPicMap(String fileUrl, String actualPath, String fileName) {
 
@@ -41,6 +42,7 @@ public class TempFileMapController {
         return result;
     }
 
+    //从TempFileMap表中删除有效的Map
     @RequestMapping(method = RequestMethod.POST, value = "/deletevalid")
     public ResultData deleteValidPicMapFromTempFileMap(String fileUrl) {
         ResultData result = new ResultData();
@@ -55,6 +57,7 @@ public class TempFileMapController {
         return result;
     }
 
+    //通过url获取图片的本地存储路径,返回值包含图片本身的名字
     @RequestMapping(method = RequestMethod.GET, value = "/actualpath")
     public ResultData actualPath(String url) {
         ResultData result = new ResultData();
@@ -79,12 +82,13 @@ public class TempFileMapController {
         return result;
     }
 
+    //获取TempFileMap表中七天前的无效的Map,以便installation知道要删除哪些url记录
     @RequestMapping(method = RequestMethod.GET, value = "getinvalid")
     public ResultData getInvalidMap(){
         ResultData result = new ResultData();
 
         Map<String, Object> condition = new HashMap<>();
-        condition.put("createAt", "2018-1-1");
+        condition.put("dateFlag", true);
         condition.put("blockFlag", false);
         ResultData response = tempFileMapService.fetchTempFileMap(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
@@ -105,13 +109,15 @@ public class TempFileMapController {
         }
         return result;
     }
+
+    //删除TempFileMap表中无效记录和对应的图片文件.
     @RequestMapping(method = RequestMethod.GET, value = "/deleteinvalid")
     public ResultData deleteInValidPicAndMap()
     {
         ResultData result = new ResultData();
         //删除大于7天的临时文件
         Map<String, Object> condition = new HashMap<>();
-        condition.put("createAt", "2018-1-1");
+        condition.put("dateFlag", true);
         condition.put("blockFlag", false);
         List<FileMap> tempfilemapList = (List<FileMap>) (tempFileMapService.fetchTempFileMap(condition)).getData();
         if (tempfilemapList != null) {
@@ -124,7 +130,7 @@ public class TempFileMapController {
 
         //删除表中大于7天的临时数据表记录
         condition.clear();
-        condition.put("createAt", "2018-1-1");
+        condition.put("dateFlag", true);
         tempFileMapService.deleteTempFileMap(condition);
         return result;
     }

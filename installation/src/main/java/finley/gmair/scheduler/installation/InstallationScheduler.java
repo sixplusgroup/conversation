@@ -24,21 +24,19 @@ public class InstallationScheduler {
 
         System.out.println("start--------------------");
 
-        //删除installation的pic表中的临时记录
+        //删除installation模块的pic表中的临时记录
         List<Object> tempfilemapList = (ArrayList<Object>) (tempFileMapService.getInvalidMap()).getData();
         if (tempfilemapList == null) {
             System.out.println("暂时没有需要删除的临时记录");
             return;
         }
-
-        //删除installation本地的无效的url
         Map<String, Object> condition = new HashMap<>();
         for (Iterator it = tempfilemapList.iterator(); it.hasNext(); ) {
             condition.put("picAddress", ((LinkedHashMap<String, String>) it.next()).get("fileUrl"));
             picService.deletePic(condition);
         }
 
-        //调用resource接口,删除无效本地文件,删除无效map
+        //调用resource接口,删除无效TempFileMap记录和对应的图片文件
         tempFileMapService.deleteInValidPicAndMap();
     }
 }
