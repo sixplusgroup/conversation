@@ -101,12 +101,12 @@ public class FileMapController {
         //根据真实路径把图片里写到response里
         FileMap fileMap = ((List<FileMap>)res.getData()).get(0);
         String filePath = new StringBuffer(fileMap.getActualPath()).append(File.separator).append(fileMap.getFileName()).toString();
-        response.setContentType("image/jpg");
+        response.setContentType("image/png");
         try {
             File f = new File(filePath);
             BufferedImage bi = ImageIO.read(f);
             OutputStream out = response.getOutputStream();
-            ImageIO.write(bi, "jpg", out);
+            ImageIO.write(bi, "png", out);
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
