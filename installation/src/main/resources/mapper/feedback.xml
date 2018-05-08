@@ -23,7 +23,7 @@
         <if test="feedbackId != null">
             AND feedback_id = #{feedbackId}
         </if>
-        <if test="qrcode != null">
+        <if test="assignId != null">
             AND assign_id = #{assignId}
         </if>
         <if test="memberPhone !=null">

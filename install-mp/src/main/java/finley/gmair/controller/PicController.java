@@ -72,7 +72,7 @@ public class PicController {
         save(builder.toString(), filename, item);
 
         //fileUrl
-        String fileUrl = "http://192.168.1.1:8012" + File.separator + "InstallPic" + File.separator + filename;
+        String fileUrl = "localhost:8011//resource/filemap/pic" + File.separator + filename;
 
         //check if the file is already created
         String picPath = new StringBuffer(builder).append(File.separator).append(filename).toString();
