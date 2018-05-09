@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.model.installation.Pic;
 import finley.gmair.service.PicService;
 import finley.gmair.service.TempFileMapService;
@@ -52,7 +53,13 @@ public class PicController {
         FileItem item;
         try {
             List<FileItem> items = upload.parseRequest(new ServletRequestContext(request));
-            item = items.get(0);
+            if (!items.isEmpty()) {
+                item = items.get(0);
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("No picture is found");
+                return result;
+            }
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to process the request");
