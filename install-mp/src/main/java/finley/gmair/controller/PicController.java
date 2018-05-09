@@ -19,10 +19,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,34 +45,32 @@ public class PicController {
     @Value("${RESOURCE_URL}")
     private String RESOURCE_URL;
 
+    @Value("${STORAGE_PATH}")
+    private String STORAGE_PATH;
+
     //工人上传一张图片时触发
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
-    public ResultData upload(HttpServletRequest request) {
+    public ResultData upload(MultipartHttpServletRequest request) {
         ResultData result = new ResultData();
+        MultipartFile file = request.getFile("fileName");
 
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        upload.setHeaderEncoding("UTF-8");
-        FileItem item;
+        //check the file not empty.
         try {
-            List<FileItem> items = upload.parseRequest(new ServletRequestContext(request));
-            if (!items.isEmpty()) {
-                item = items.get(0);
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("No picture is found");
+            if (file == null || file.getBytes().length == 0) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("file empty");
                 return result;
             }
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to process the request");
+            result.setDescription(e.getMessage());
             return result;
         }
 
         //actualPath
-        String basePath = new StringBuffer(File.separator).append("root").append(File.separator).append("Material").append(File.separator).append("install").toString();
         String time = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
-        StringBuilder builder = new StringBuilder(basePath).append(File.separator).append(time);
+        String actualPath = new StringBuffer(STORAGE_PATH).append(File.separator).append(time).toString();
+        StringBuilder builder = new StringBuilder(actualPath);
 
         //according to the actualPath,create a directory.
         File directory = new File(builder.toString());
@@ -78,17 +79,26 @@ public class PicController {
         }
 
         //fileName
-        String suffix = "png";
+        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
         String key = IDGenerator.generate("PIC");
-        String filename = key + suffix;
-
-        save(builder.toString(), filename, item);
+        String fileName = key + suffix;
 
         //fileUrl
-        String fileUrl = new StringBuffer(RESOURCE_URL).append(File.separator).append(filename).toString();
+        String fileUrl = new StringBuffer(RESOURCE_URL).append(File.separator).append(fileName).toString();
 
-        //check if the file is already created
-        String picPath = new StringBuffer(builder).append(File.separator).append(filename).toString();
+        //transfer to the disk
+        File temp = new File(builder.append(File.separator).append(fileName).toString());
+        try {
+            file.transferTo(temp);
+            result.setData(fileUrl);
+        } catch (IOException e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            return result;
+        }
+
+        //save the installation fileUrl
+        String picPath = actualPath + File.separator + fileName;
         File picFile = new File(picPath);
         if (picFile.exists() == false) {
             return result;
@@ -117,8 +127,9 @@ public class PicController {
             result.setDescription(e.getMessage());
         }
 
+
         //save the temp fileUrl-actualPath map
-        ResultData response = tempFileMapService.createPicMap(fileUrl, builder.toString(), filename);
+        ResultData response = tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to save tempFilemap");
@@ -128,14 +139,5 @@ public class PicController {
         }
         result.setData(fileUrl);
         return result;
-    }
-
-    private void save(String base, String filename, FileItem item) {
-        File target = new File(new StringBuffer(base).append(File.separator).append(filename).toString());
-        try {
-            item.write(target);
-        } catch (Exception e) {
-            //log if any error when it failed to save the image file
-        }
     }
 }
