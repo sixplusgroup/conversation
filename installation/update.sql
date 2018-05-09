@@ -57,7 +57,10 @@ ADD COLUMN `consumer_consignee` VARCHAR(45) NOT NULL AFTER `create_time`,
 ADD COLUMN `consumer_phone` VARCHAR(45) NOT NULL AFTER `consumer_consignee`,
 ADD COLUMN `consumer_address` VARCHAR(255) NOT NULL AFTER `consumer_phone`;
 
-#20180509 install assign default team id can be null
+#20180509 install assign default team id and assigndate can be null
 
 ALTER TABLE `gmair_install`.`install_assign`
 CHANGE COLUMN `team_id` `team_id` VARCHAR(20) NULL ;
+
+ALTER TABLE `gmair_install`.`install_assign`
+CHANGE COLUMN `assign_date` `assign_date` DATETIME NULL ;
