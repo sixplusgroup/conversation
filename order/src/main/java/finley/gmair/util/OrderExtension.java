@@ -8,4 +8,6 @@ public class OrderExtension {
     public final static String[] HEADER = {"渠道来源", "订单号", "机器型号", "数量", "下单日期", "用户姓名", "联系方式", "地址", "附加服务"};
 
     public final static String[] EXPRESS_HEADER = {"物流公司", "物流单号"};
+
+    public final static String[] MACHINE_HEADER = {"是否包含机器"};
 }

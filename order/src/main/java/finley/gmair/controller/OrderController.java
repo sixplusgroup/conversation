@@ -1,8 +1,10 @@
 package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.order.OrderStatus;
 import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.service.ExpressService;
+import finley.gmair.service.InstallService;
 import finley.gmair.service.OrderService;
 import finley.gmair.util.RequestUtil;
 import finley.gmair.util.ResponseCode;
@@ -25,6 +27,9 @@ public class OrderController {
 
     @Autowired
     private ExpressService expressService;
+
+    @Autowired
+    private InstallService installService;
 
     /**
      * This method is aimed to handle the order spreadsheet and store the records
@@ -121,6 +126,52 @@ public class OrderController {
             result.setData(((List<PlatformOrder>)response.getData()).get(0));
             return result;
         }
+        return result;
+    }
+
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.POST, value = "/deliver")
+    public ResultData orderDeliver(@RequestParam("orderId") String orderId,
+                                   @RequestParam(value = "qrcode", required = false) String qrcode,
+                                   @RequestParam(value = "access_token") String access_token){
+        ResultData result = new ResultData();
+        if (null == orderId) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("parameter orderId is required.");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchPlatformOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("订单服务器忙，请稍后再试！");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("该订单不存在，请确认订单号");
+            return result;
+        }
+        PlatformOrder order = ((List<PlatformOrder>) response.getData()).get(0);
+
+        // create install order
+        if (null != qrcode) {
+            response = installService.create(qrcode, order.getConsignee(), order.getPhone(), order.getAddress(), access_token);
+
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("安装服务器忙，请稍后再试！");
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("该订单不存在，请确认订单号");
+                return result;
+            } else {
+                result.setData(response.getData());
+            }
+        }
+
         return result;
     }
 }

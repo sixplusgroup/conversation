@@ -138,8 +138,14 @@ public class OrderServiceImpl implements OrderService {
                 return result;
             }
             int[] expressIndex = index(OrderExtension.EXPRESS_HEADER, header);
+            int[] machineIndex = index(OrderExtension.MACHINE_HEADER, header);
+            if (machineIndex == null) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Please make sure that you use the expected template");
+                return result;
+            }
             new Thread(() -> {
-                List<PlatformOrder> list = process(workbook, index, expressIndex);
+                List<PlatformOrder> list = process(workbook, index, expressIndex, machineIndex);
                 new Thread(() -> list.forEach(item -> createPlatformOrder(item))).start();
             }).start();
         } catch (Exception e) {
@@ -149,7 +155,7 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
-    private List<PlatformOrder> process(Workbook workbook, int[] index, int[] expressIndex) {
+    private List<PlatformOrder> process(Workbook workbook, int[] index, int[] expressIndex, int[] machineIndex) {
         Sheet sheet = workbook.getSheetAt(0);
         List<PlatformOrder> list = new ArrayList<>();
         int row = 1;
@@ -222,7 +228,15 @@ public class OrderServiceImpl implements OrderService {
             }
             // create reconnaissance
             try {
-                ResultData reconnaissanceResult = reconnaissanceService.createReconnaissance(order.getOrderId());
+                //if the order does not contains machine
+                if (stringValue(0, machineIndex, current).equals("否")) {
+
+                }
+                //if the order contains machine, create install and reconnaissance form
+                else {
+
+                    ResultData reconnaissanceResult = reconnaissanceService.createReconnaissance(order.getOrderId());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
