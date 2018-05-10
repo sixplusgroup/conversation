@@ -146,7 +146,7 @@ public class OrderServiceImpl implements OrderService {
             }
             new Thread(() -> {
                 List<PlatformOrder> list = process(workbook, index, expressIndex, machineIndex);
-                new Thread(() -> list.forEach(item -> createPlatformOrder(item))).start();
+                list.forEach(item -> createPlatformOrder(item));
             }).start();
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
