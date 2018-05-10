@@ -1,6 +1,7 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.installation.Member;
+import finley.gmair.model.installation.MemberRole;
 import finley.gmair.service.MemberService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -107,6 +108,33 @@ public class MemberController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("Success to get member info.");
+        }
+        return result;
+    }
+
+    //根据微信号查询该工人是否有权限解绑机器二维码和用户的绑定
+    @RequestMapping(method = RequestMethod.GET, value = "/checkleader")
+    public ResultData checkLeader(String wechatId)
+    {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechatId",wechatId);
+        condition.put("memberRole",MemberRole.LEADER.getValue());
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetchMember(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now");
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setData(0);
+            result.setDescription("he is a ordinary worker");
+        }
+        else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(1);
+            result.setDescription("he is a leader worker");
         }
         return result;
     }

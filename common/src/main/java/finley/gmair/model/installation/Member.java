@@ -8,16 +8,18 @@ public class Member extends Entity {
     private String memberPhone;
     private String memberName;
     private String wechatId;
-    public Member()
-    {
+    private MemberRole memberRole;
+
+    public Member() {
         super();
     }
 
-    public Member(String teamId, String memberPhone, String memberName) {
+    public Member(String teamId, String memberPhone, String memberName, MemberRole memberRole) {
         this();
         this.teamId = teamId;
         this.memberPhone = memberPhone;
         this.memberName = memberName;
+        this.memberRole = memberRole;
     }
 
     public String getMemberId() {
@@ -58,5 +60,13 @@ public class Member extends Entity {
 
     public void setWechatId(String wechatId) {
         this.wechatId = wechatId;
+    }
+
+    public MemberRole getMemberRole() {
+        return memberRole;
+    }
+
+    public void setMemberRole(MemberRole memberRole) {
+        this.memberRole = memberRole;
     }
 }

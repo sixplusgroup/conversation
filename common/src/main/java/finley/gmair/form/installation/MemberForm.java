@@ -4,6 +4,7 @@ public class MemberForm {
     private String teamId;
     private String memberPhone;
     private String memberName;
+    private int memberRole;
 
     public String getTeamId() {
         return teamId;
@@ -27,5 +28,13 @@ public class MemberForm {
 
     public void setMemberName(String memberName) {
         this.memberName = memberName;
+    }
+
+    public int getMemberRole() {
+        return memberRole;
+    }
+
+    public void setMemberRole(int memberRole) {
+        this.memberRole = memberRole;
     }
 }

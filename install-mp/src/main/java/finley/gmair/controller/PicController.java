@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSON;
 import finley.gmair.model.installation.Pic;
 import finley.gmair.service.PicService;
 import finley.gmair.service.TempFileMapService;
@@ -8,10 +7,6 @@ import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.tomcat.util.http.fileupload.FileItem;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -22,14 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -67,46 +60,48 @@ public class PicController {
             return result;
         }
 
-        //actualPath
-        String time = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
-        String actualPath = new StringBuffer(STORAGE_PATH).append(File.separator).append(time).toString();
-        StringBuilder builder = new StringBuilder(actualPath);
+        //actualPath does not contains file name but picPath does
+        String actualPath = new StringBuffer(STORAGE_PATH)
+                .append(File.separator)
+                .append(new SimpleDateFormat("yyyyMMdd").format(new Date()))
+                .toString();
+        String fileName = new StringBuffer(IDGenerator.generate("PIC"))
+                .append(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.')))
+                .toString();
+        String fileUrl = new StringBuffer(RESOURCE_URL)
+                .append(File.separator)
+                .append(fileName)
+                .toString();
+        String picPath = new StringBuffer(actualPath)
+                .append(File.separator)
+                .append(fileName)
+                .toString();
+        String memberPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        //according to the actualPath,create a directory.
-        File directory = new File(builder.toString());
+        //create the pic-saving directory and save the pic to disk.
+        File directory = new File(actualPath);
         if (!directory.exists()) {
             directory.mkdirs();
         }
-
-        //fileName
-        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
-        String key = IDGenerator.generate("PIC");
-        String fileName = key + suffix;
-
-        //fileUrl
-        String fileUrl = new StringBuffer(RESOURCE_URL).append(File.separator).append(fileName).toString();
-
-        //transfer to the disk
-        File temp = new File(builder.append(File.separator).append(fileName).toString());
         try {
-            file.transferTo(temp);
-            result.setData(fileUrl);
+            file.transferTo(new File(picPath));
         } catch (IOException e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
             return result;
         }
 
-        //save the installation fileUrl
-        String picPath = actualPath + File.separator + fileName;
-        File picFile = new File(picPath);
-        if (picFile.exists() == false) {
-            return result;
-        }
+        //compute md5, save pic to install_pic, save temp url-path map to tempfile_location
+        new Thread(() -> {
+            solveMd5(fileUrl, picPath, memberPhone);
+            tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
+        }).start();
 
-        //get memberPhone and save pic information
-        String memberPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //String memberPhone = "123";
+        result.setData(fileUrl);
+        return result;
+    }
+
+    private void solveMd5(String fileUrl, String picPath, String memberPhone) {
         Pic pic = new Pic(fileUrl, memberPhone);
         try {
             String picMd5 = DigestUtils.md5Hex(new FileInputStream(picPath));
@@ -120,24 +115,9 @@ public class PicController {
                 pic.setCopyFlag(true);
             else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL)
                 pic.setCopyFlag(false);
-            //保存
             picService.createPic(pic);
         } catch (Exception e) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.getMessage());
+            e.printStackTrace();
         }
-
-
-        //save the temp fileUrl-actualPath map
-        ResultData response = tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to save tempFilemap");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to save tempFilemap");
-        }
-        result.setData(fileUrl);
-        return result;
     }
 }

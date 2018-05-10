@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import finley.gmair.form.installation.MemberForm;
 import finley.gmair.model.installation.Member;
+import finley.gmair.model.installation.MemberRole;
 import finley.gmair.service.MemberService;
 import finley.gmair.service.TeamService;
 import finley.gmair.util.ResponseCode;
@@ -23,16 +24,16 @@ public class MemberController {
     @Autowired
     private TeamService teamService;
 
-    @RequestMapping(method = RequestMethod.POST, value="/create")
-    public ResultData createMember(MemberForm form)
-    {
+    @RequestMapping(method = RequestMethod.POST, value = "/create")
+    public ResultData createMember(MemberForm form) {
         ResultData result = new ResultData();
         String teamId = form.getTeamId().trim();
         String memberPhone = form.getMemberPhone().trim();
         String memberName = form.getMemberName().trim();
+        MemberRole memberRole = form.getMemberRole()==1?MemberRole.LEADER:MemberRole.ORDINARY;
 
         //check whether input is empty
-        if(StringUtils.isEmpty(teamId) || StringUtils.isEmpty(memberName) || StringUtils.isEmpty(memberPhone) ){
+        if (StringUtils.isEmpty(teamId) || StringUtils.isEmpty(memberName) || StringUtils.isEmpty(memberPhone)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide all information");
             return result;
@@ -48,8 +49,7 @@ public class MemberController {
             result.setDescription("team is not exist");
             return result;
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR)
-        {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,please try again later");
             return result;
@@ -57,22 +57,21 @@ public class MemberController {
 
         //check weather the phone has been registered
         condition.clear();
-        condition.put("memberPhone",memberPhone);
-        condition.put("blockFlag",false);
+        condition.put("memberPhone", memberPhone);
+        condition.put("blockFlag", false);
         response = memberService.fetchMember(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("member phone has been registered");
             return result;
-        }
-        else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,try again later");
             return result;
         }
 
         //create the the member
-        Member member = new Member(teamId,memberPhone,memberName);
+        Member member = new Member(teamId, memberPhone, memberName, memberRole);
         response = memberService.createMember(member);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -83,4 +82,6 @@ public class MemberController {
         result.setData(response.getData());
         return result;
     }
+
+
 }

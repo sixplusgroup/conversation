@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.resource.FileMap;
 import finley.gmair.service.FileMapService;
 import finley.gmair.service.TempFileMapService;
@@ -16,18 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Result;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/resource/filemap")
+@RequestMapping("/resource")
 public class FileMapController {
 
     @Autowired

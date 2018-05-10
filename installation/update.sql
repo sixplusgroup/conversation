@@ -64,3 +64,9 @@ CHANGE COLUMN `team_id` `team_id` VARCHAR(20) NULL ;
 
 ALTER TABLE `gmair_install`.`install_assign`
 CHANGE COLUMN `assign_date` `assign_date` DATETIME NULL ;
+
+#20180510 add member_role
+
+ALTER TABLE `gmair_install`.`team_member`
+ADD COLUMN `member_role` TINYINT(1) NOT NULL AFTER `wechat_id`;
+
