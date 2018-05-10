@@ -13,7 +13,6 @@ public interface InstallService {
     ResultData create(@RequestParam("qrcode") String qrcode,
                       @RequestParam("consumerConsignee") String consumerConsignee,
                       @RequestParam("consumerPhone") String consumerPhone,
-                      @RequestParam("consumerAddress") String consumerAddress,
-                      @RequestParam("access_token") String access_token
+                      @RequestParam("consumerAddress") String consumerAddress
                       );
 }
