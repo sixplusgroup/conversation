@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.company.CompanyTransfer;
 import finley.gmair.form.express.ExpressCompanyForm;
 import finley.gmair.form.express.ExpressOrderForm;
 import finley.gmair.form.express.ExpressParcelForm;
@@ -24,6 +25,9 @@ public class ExpressController {
 
     @Autowired
     private ExpressService expressService;
+
+    @Autowired
+    private CompanyTransfer companyTransfer;
 
     /**
      * This method is used to add express company in the system
@@ -163,14 +167,17 @@ public class ExpressController {
         condition.put("blockFlag", false);
         ResultData response = expressService.fetchExpressOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            /*
-            获取快递路由信息
-             */
-            result.setData(null);
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            return result;
+            List<ExpressOrder> list= (List<ExpressOrder>) response.getData();
+            ExpressOrder expressOrder = list.get(0);
+            response = companyTransfer.transfer(expressOrder.getCompanyId(), expressOrder.getExpressNo(), true);
+            if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+                result.setData(response.getData());
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                return result;
+            }else{
+                return response;
+            }
         }else{
-
             return response;
         }
     }
