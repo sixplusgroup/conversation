@@ -32,10 +32,11 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-//        byte[] request = ((String) msg).getBytes();
-//        buffer.readBytes(request);
-//        String body = new String(request, "UTF-8");
-        System.out.println("body: " + msg);
+        ByteBuf buf = (ByteBuf) msg;
+        byte[] req = new byte[buf.readableBytes()];
+        buf.readBytes(req);
+        String body = new String(req, "UTF-8");
+        System.out.println("body: " + body);
         //save the channel in map(memcached)
         Channel channel = ctx.channel();
 
