@@ -53,10 +53,9 @@ public class FileMapController {
             condition.put("fileUrl", urls[i]);
             condition.put("blockFlag", false);
             ResultData response = tempFileMapService.fetchTempFileMap(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 continue;
             }
-
             //把获取到的map保存到fileMap表里
             String actualPath = ((List<FileMap>) response.getData()).get(0).getActualPath();
             String fileName = ((List<FileMap>) response.getData()).get(0).getFileName();
@@ -65,6 +64,7 @@ public class FileMapController {
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setData(new StringBuffer(urls[i] + ",") + result.getData().toString());
             }
+
         }
         result.setDescription("success to create the map for urls in data.");
         return result;

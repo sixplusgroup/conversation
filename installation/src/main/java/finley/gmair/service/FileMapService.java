@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "resource-agent")
 public interface FileMapService {
-    @RequestMapping(method = RequestMethod.POST, value = "/resource/filemap/createpic")
+    @RequestMapping(method = RequestMethod.POST, value = "/resource/createpic")
     ResultData createPicMap(@RequestParam("fileUrl") String fileUrl);
 }
