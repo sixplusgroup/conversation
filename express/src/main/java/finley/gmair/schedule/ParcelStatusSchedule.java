@@ -1,6 +1,11 @@
 package finley.gmair.schedule;
 
+import finley.gmair.company.CompanyTransfer;
+import finley.gmair.dao.ExpressCompanyDao;
+import finley.gmair.dao.ExpressOrderDao;
 import finley.gmair.dao.ExpressParcelDao;
+import finley.gmair.model.express.ExpressCompany;
+import finley.gmair.model.express.ExpressOrder;
 import finley.gmair.model.express.ExpressParcel;
 import finley.gmair.model.express.ExpressStatus;
 import finley.gmair.util.ResponseCode;
@@ -20,6 +25,15 @@ public class ParcelStatusSchedule {
 
     @Autowired
     private ExpressParcelDao expressParcelDao;
+
+    @Autowired
+    private ExpressOrderDao expressOrderDao;
+
+    @Autowired
+    private ExpressCompanyDao expressCompanyDao;
+
+    @Autowired
+    private CompanyTransfer companyTransfer;
 
     /**
      *This method is used to update express parcel status every hour
@@ -56,19 +70,47 @@ public class ParcelStatusSchedule {
         List<ExpressParcel> parcel_status_received = new ArrayList<>();
         List<ExpressParcel> parcel_status_returned = new ArrayList<>();
         for(ExpressParcel expressParcel : list){
-            /**
-             * query status ...  compare status  ...  set status
-             *
-             */
-            //expressParcel.setExpressStatus(ExpressStatus.RECEIVED);
-            boolean changed = true;
-            if(changed){
-                int value = expressParcel.getExpressStatus().getValue();
+            int currentStatus = expressParcel.getExpressStatus().getValue();
+            int queryStatus = currentStatus;
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("expressId", expressParcel.getParentExpress());
+            condition.put("blockFlag", false);
+            ResultData response = expressOrderDao.queryExpressOrder(condition);
+            if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+                List<ExpressOrder> listOrder = (List<ExpressOrder>) response.getData();
+                ExpressOrder expressOrder = listOrder.get(0);
+                condition.remove("expressId");
+                condition.put("companyId", expressOrder.getCompanyId());
+                response = expressCompanyDao.queryExpressCompany(condition);
+                if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+                    List<ExpressCompany> listCompany = (List<ExpressCompany>) response.getData();
+                    ExpressCompany expressCompany = listCompany.get(0);
+                    response = companyTransfer.transfer(expressCompany.getCompanyCode(), expressParcel.getExpressNo());
+                    if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+                        queryStatus = (int) response.getData();
+                    }
+                }
+
+            }
+            if(currentStatus != queryStatus){
+                int value = queryStatus;
                 switch(value){
-                    case 1 : parcel_status_picked.add(expressParcel);
-                    case 2 : parcel_status_shipping.add(expressParcel);
-                    case 3 : parcel_status_received.add(expressParcel);
-                    case 4 : parcel_status_returned.add(expressParcel);
+                    case 1 :
+                        expressParcel.setExpressStatus(ExpressStatus.PICKED);
+                        parcel_status_picked.add(expressParcel);
+                        break;
+                    case 2 :
+                        expressParcel.setExpressStatus(ExpressStatus.SHIPPING);
+                        parcel_status_shipping.add(expressParcel);
+                        break;
+                    case 3 :
+                        expressParcel.setExpressStatus(ExpressStatus.RECEIVED);
+                        parcel_status_received.add(expressParcel);
+                        break;
+                    case 4 :
+                        expressParcel.setExpressStatus(ExpressStatus.RETURNED);
+                        parcel_status_returned.add(expressParcel);
+                        break;
                 }
             }
         }
@@ -111,11 +153,9 @@ public class ParcelStatusSchedule {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
             }
             if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                System.out.println(response.getDescription());
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                System.out.println(response.getDescription());
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             }
         }

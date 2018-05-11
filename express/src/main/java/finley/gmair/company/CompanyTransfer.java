@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CompanyTransfer {
-    public ResultData transfer(String companyId, String expressNo){
+    public ResultData transfer(String companyCode, String expressNo){
         ResultData result = new ResultData();
-        switch(companyId){
+        switch(companyCode){
             case "jd":
                 JdService jdService = new JdService();
                 result = jdService.queryExpressStatus(expressNo);
@@ -21,15 +21,15 @@ public class CompanyTransfer {
                 break;
             default:
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription(new StringBuffer("Do not support status query of the company:").append(companyId).toString());
+                result.setDescription(new StringBuffer("Do not support status query of the company:").append(companyCode).toString());
                 break;
         }
         return result;
     }
 
-    public ResultData transfer(String companyId, String expressNo, boolean isRoute){
+    public ResultData transfer(String companyCode, String expressNo, boolean isRoute){
         ResultData result = new ResultData();
-        switch(companyId){
+        switch(companyCode){
             case "jd":
                 JdService jdService = new JdService();
                 result = jdService.queryExpressRoute(expressNo);
@@ -40,7 +40,7 @@ public class CompanyTransfer {
                 break;
             default:
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription(new StringBuffer("Do not support route query of the company:").append(companyId).toString());
+                result.setDescription(new StringBuffer("Do not support route query of the company:").append(companyCode).toString());
                 break;
         }
         return result;

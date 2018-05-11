@@ -21,8 +21,8 @@ public class SfService implements ExpressCompanyService {
     @Override
     public ResultData queryExpressStatus(String expressNo) {
         ResultData result = new ResultData();
-        String status = "123";
-        if(status.equals("ASSIGNED")||status.equals("PICKED")||status.equals("SHIPPING")||status.equals("RECEIVED")||status.equals("RETURNED")){
+        int status = -1;
+        if(status != -1){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(status);
         }else{

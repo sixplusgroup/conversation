@@ -1,6 +1,9 @@
 package finley.gmair.schedule;
 
+import finley.gmair.company.CompanyTransfer;
+import finley.gmair.dao.ExpressCompanyDao;
 import finley.gmair.dao.ExpressOrderDao;
+import finley.gmair.model.express.ExpressCompany;
 import finley.gmair.model.express.ExpressOrder;
 import finley.gmair.model.express.ExpressStatus;
 import finley.gmair.util.ResponseCode;
@@ -20,6 +23,13 @@ public class OrderStatusSchedule {
 
     @Autowired
     private ExpressOrderDao expressOrderDao;
+
+    @Autowired
+    private ExpressCompanyDao expressCompanyDao;
+
+    @Autowired
+    private CompanyTransfer companyTransfer;
+
 
     /**
      *This method is used to update express status every hour
@@ -56,19 +66,39 @@ public class OrderStatusSchedule {
         List<ExpressOrder> order_status_received = new ArrayList<>();
         List<ExpressOrder> order_status_returned = new ArrayList<>();
         for(ExpressOrder expressOrder : list){
-            /**
-             * query status ...  compare status  ...  set status
-             * 
-             */
-            expressOrder.setExpressStatus(ExpressStatus.RECEIVED);
-            boolean changed = true;
-            if(changed){
-                int value = expressOrder.getExpressStatus().getValue();
+            int currentStatus = expressOrder.getExpressStatus().getValue();
+            int queryStatus = currentStatus;
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("companyId", expressOrder.getCompanyId());
+            condition.put("blockFlag", false);
+            ResultData response = expressCompanyDao.queryExpressCompany(condition);
+            if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+                List<ExpressCompany> listCompany = (List<ExpressCompany>) response.getData();
+                ExpressCompany expressCompany = listCompany.get(0);
+                response = companyTransfer.transfer(expressCompany.getCompanyCode(), expressOrder.getExpressNo());
+                if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+                    queryStatus = (int) response.getData();
+                }
+            }
+            if(currentStatus != queryStatus){
+                int value = queryStatus;
                 switch(value){
-                    case 1 : order_status_picked.add(expressOrder);
-                    case 2 : order_status_shipping.add(expressOrder);
-                    case 3 : order_status_received.add(expressOrder);
+                    case 1 :
+                        expressOrder.setExpressStatus(ExpressStatus.PICKED);
+                        order_status_picked.add(expressOrder);
+                        break;
+                    case 2 :
+                        expressOrder.setExpressStatus(ExpressStatus.SHIPPING);
+                        order_status_shipping.add(expressOrder);
+                        break;
+                    case 3 :
+                        expressOrder.setExpressStatus(ExpressStatus.RECEIVED);
+                        order_status_received.add(expressOrder);
+                        break;
                     case 4 : order_status_returned.add(expressOrder);
+                        expressOrder.setExpressStatus(ExpressStatus.RETURNED);
+                        order_status_returned.add(expressOrder);
+                        break;
                 }
             }
         }
@@ -115,11 +145,9 @@ public class OrderStatusSchedule {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
             }
             if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                System.out.println(response.getDescription());
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                System.out.println(response.getDescription());
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             }
         }
