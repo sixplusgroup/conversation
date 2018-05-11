@@ -12,4 +12,4 @@ spring.datasource.password=
 memcached.cache.servers=127.0.0.1:11211
 memcached.cache.mode=static
 ##code will be expired with 5 minutes
-memcached.cache.expiration=300
+memcached.cache.expiration=300a
