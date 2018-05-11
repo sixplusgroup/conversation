@@ -11,11 +11,11 @@ public class CompanyTransfer {
     public ResultData transfer(String companyId, String expressNo){
         ResultData result = new ResultData();
         switch(companyId){
-            case "JD":
+            case "jd":
                 JdService jdService = new JdService();
                 result = jdService.queryExpressStatus(expressNo);
                 break;
-            case "SF":
+            case "sf":
                 SfService sfService = new SfService();
                 result = sfService.queryExpressStatus(expressNo);
                 break;
@@ -30,11 +30,11 @@ public class CompanyTransfer {
     public ResultData transfer(String companyId, String expressNo, boolean isRoute){
         ResultData result = new ResultData();
         switch(companyId){
-            case "JD":
+            case "jd":
                 JdService jdService = new JdService();
                 result = jdService.queryExpressRoute(expressNo);
                 break;
-            case "SF":
+            case "sf":
                 SfService sfService = new SfService();
                 result = sfService.queryExpressRoute(expressNo);
                 break;

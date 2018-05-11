@@ -169,11 +169,20 @@ public class ExpressController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             List<ExpressOrder> list= (List<ExpressOrder>) response.getData();
             ExpressOrder expressOrder = list.get(0);
-            response = companyTransfer.transfer(expressOrder.getCompanyId(), expressOrder.getExpressNo(), true);
+            condition.remove("expressNo");
+            condition.put("companyId", expressOrder.getCompanyId());
+            response = expressService.fetchExpressCompany(condition);
             if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
-                result.setData(response.getData());
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                return result;
+                List<ExpressCompany> listCompany = (List<ExpressCompany>) response.getData();
+                ExpressCompany expressCompany = listCompany.get(0);
+                response = companyTransfer.transfer(expressCompany.getCompanyCode(), expressOrder.getExpressNo(), true);
+                if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+                    result.setData(response.getData());
+                    result.setResponseCode(ResponseCode.RESPONSE_OK);
+                    return result;
+                }else{
+                    return response;
+                }
             }else{
                 return response;
             }

@@ -21,7 +21,7 @@ public class JdService implements ExpressCompanyService {
     @Override
     public ResultData queryExpressStatus(String expressNo) {
         ResultData result = new ResultData();
-        String status = "";
+        String status = "123";
         if(status.equals("ASSIGNED")||status.equals("PICKED")||status.equals("SHIPPING")||status.equals("RECEIVED")||status.equals("RETURNED")){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(status);
@@ -34,7 +34,16 @@ public class JdService implements ExpressCompanyService {
 
     @Override
     public ResultData queryExpressRoute(String expressNo) {
-        return null;
+        ResultData result = new ResultData();
+        if(true){
+           result.setResponseCode(ResponseCode.RESPONSE_OK);
+           result.setData(new StringBuffer("route:...").toString());
+        }else{
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Failed to query express route of express:").append(expressNo).toString());
+
+        }
+        return result;
     }
 
 
