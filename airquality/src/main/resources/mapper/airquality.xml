@@ -4,14 +4,14 @@
 
 
     <insert id="insert" parameterType="finley.gmair.model.air.AirQuality">
-        INSERT INTO `gmair_airquality`.`gmair_airquality`
+        INSERT INTO `gmair_airquality`.`city_daily_aqi_detail`
         (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
         ,block_flag, create_time)
         VALUES
         (
-        #{airQuality.cityId}, #{airQuality.aqi}, #{airQuality.aqiLevel}, #{airQuality.primePollution},
-        #{airQuality.pm25}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
-        #{airQuality.so2}, #{airQuality.recordTime}, #{airQuality.blockFlag}, #{airQuality.createAt}
+        #{cityId}, #{aqi}, #{aqiLevel}, #{primePollution},
+        #{pm25}, #{pm10}, #{co}, #{no2}, #{o3},
+        #{so2}, #{recordTime}, #{blockFlag}, #{createAt}
         )
     </insert>
 
@@ -35,9 +35,9 @@
         ,block_flag, create_time)
         VALUES
         (
-        #{airQuality.cityId}, #{airQuality.aqi}, #{airQuality.aqiLevel}, #{airQuality.primePollution},
-        #{airQuality.pm25}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
-        #{airQuality.so2}, #{airQuality.recordTime}, #{airQuality.blockFlag}, #{airQuality.createAt}
+        #{cityId}, #{aqi}, #{aqiLevel}, #{primePollution},
+        #{pm25}, #{pm10}, #{co}, #{no2}, #{o3},
+        #{so2}, #{recordTime}, #{blockFlag}, #{createAt}
         )
     </insert>
 
