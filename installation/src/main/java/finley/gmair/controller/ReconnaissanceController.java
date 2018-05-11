@@ -98,6 +98,9 @@ public class ReconnaissanceController {
             return result;
         }
         reconnaissance.setReconnaissanceDate(Timestamp.valueOf(LocalDateTime.of(reconDate, LocalTime.MIN)));
+        if (!StringUtils.isEmpty(form.getDescription())) {
+            reconnaissance.setDescription(form.getDescription());
+        }
 
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);

@@ -1,6 +1,8 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.order.OrderItem;
 import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.service.ExpressService;
 import finley.gmair.service.InstallService;
@@ -13,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +56,66 @@ public class OrderController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Orders are in process, please check it later");
+        return result;
+    }
+
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.POST, value = "/create")
+    public ResultData create(String order) {
+        ResultData result = new ResultData();
+        PlatformOrder platformOrder = new PlatformOrder();
+        List<OrderItem> list = new ArrayList<>();
+        JSONObject jsonObject = JSONObject.parseObject(order);
+        String channel = jsonObject.getString("channel");
+        String orderNo = jsonObject.getString("orderNo");
+        String orderDate = jsonObject.getString("orderDate");
+        String consignee = jsonObject.getString("consignee");
+        String phone = jsonObject.getString("phone");
+        String province = jsonObject.getString("province");
+        String city = jsonObject.getString("city");
+        String district = jsonObject.getString("district");
+        String address = jsonObject.getString("address");
+        double price = jsonObject.getDouble("price");
+        String description = jsonObject.getString("description");
+        JSONArray orderItemList = jsonObject.getJSONArray("orderItemList");
+        for (Object orderItem : orderItemList) {
+            OrderItem item = new OrderItem();
+            String commodityId = ((JSONObject) orderItem).getString("commodityId");
+            String itemName = ((JSONObject) orderItem).getString("commodityName");
+            int quantity = ((JSONObject) orderItem).getInteger("commodityQuantity");
+            double itemPrice = ((JSONObject) orderItem).getDouble("commodityPrice");
+            item.setCommodityId(commodityId);
+            item.setItemName(itemName);
+            item.setQuantity(quantity);
+            item.setItemPrice(itemPrice);
+            list.add(item);
+        }
+        platformOrder.setChannel(channel);
+        platformOrder.setOrderNo(orderNo);
+        platformOrder.setConsignee(consignee);
+        platformOrder.setPhone(phone);
+        platformOrder.setTotalPrice(price);
+        platformOrder.setProvince(province);
+        platformOrder.setCity(city);
+        platformOrder.setAddress(address);
+        platformOrder.setDistrict(district);
+        platformOrder.setDescription(description);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
+        LocalDate localDate = LocalDate.parse(orderDate, dateTimeFormatter);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
+        platformOrder.setCreateAt(Timestamp.valueOf(localDateTime));
+        platformOrder.setList(list);
+
+        ResultData response = orderService.createPlatformOrder(platformOrder);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务器忙，请稍后再试");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("无相关数据");
+        } else {
+            result.setData(response.getData());
+        }
         return result;
     }
 
