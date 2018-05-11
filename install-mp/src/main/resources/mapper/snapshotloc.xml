@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.installation.snapshotloc">
+    <resultMap id="SnapshotLoc" type="finley.gmair.model.installation.SnapshotLoc">
+        <result property="locationId" column="location_id" />
+        <result property="snapshotId" column="snapshot_id" />
+        <result property="locationLng" column="location_lng" />
+        <result property="locationLat" column="location_lat" />
+        <result property="locationPlace" column="location_place" />
+        <result property="blockFlag" column="block_flag" />
+        <result property="createAt" column="create_time" />
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.installation.SnapshotLoc" useGeneratedKeys="false">
+        INSERT INTO gmair_install.snapshot_location
+        VALUES (#{locationId},#{snapshotId},#{locationLng},#{locationLat},#{locationPlace},#{blockFlag},#{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="SnapshotLoc">
+        SELECT location_id,snapshot_id,location_lng,location_lat,location_place,block_flag,create_time
+        FROM gmair_install.snapshot_location
+        where 1 = 1
+        <if test="locationId != null">
+            AND location_id = #{locationId}
+        </if>
+        <if test="snapshotId != null">
+            AND snapshot_id = #{snapshotId}
+        </if>
+        <if test="locationLng != null">
+            AND location_lng = #{locationLng}
+        </if>
+        <if test="locationLat != null">
+            AND location_lat = #{locationLat}
+        </if>
+        <if test="locationPlace != null">
+            AND location_place = #{locationPlace}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+</mapper>

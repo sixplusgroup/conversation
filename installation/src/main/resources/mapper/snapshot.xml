@@ -18,7 +18,7 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="Snapshot">
-        SELECT *
+        SELECT snapshot_id,assign_id,code_value,wechat_id,member_phone,pic_path,block_flag,create_time
         FROM gmair_install.install_snapshot
         where 1 = 1
         <if test="snapshotId !=null">

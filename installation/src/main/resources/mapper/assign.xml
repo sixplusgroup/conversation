@@ -25,7 +25,8 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="Assign">
-        SELECT *
+        SELECT assign_id,code_value,team_id,member_id,assign_status,assign_date,
+        block_flag,create_time,consumer_consignee,consumer_phone,consumer_address
         FROM gmair_install.install_assign
         WHERE 1 = 1
         <if test="assignId != null">

@@ -1,10 +1,10 @@
 package finley.gmair.controller;
 
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.SnapshotForm;
-import finley.gmair.model.installation.Assign;
-import finley.gmair.model.installation.AssignStatus;
-import finley.gmair.model.installation.Member;
-import finley.gmair.model.installation.Snapshot;
+import finley.gmair.model.installation.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,14 +38,22 @@ public class SnapshotController {
     @Autowired
     private FileMapService fileMapService;
 
+    @Autowired
+    private SnapshotLocService snapshotLocService;
+
+    @Autowired
+    private LocationService locationService;
+
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     //工人提交所有图片和机器二维码时触发,创建snapshot表单
-    public ResultData create(SnapshotForm form) {
+    public ResultData create(SnapshotForm form, HttpServletRequest request) {
         ResultData result = new ResultData();
 
         String qrcode = form.getQrcode().trim();
         String wechatId = form.getWechatId().trim();
         String picPath = form.getPicPath().trim();
+        String locationLng = form.getLocationLng().trim();
+        String locationLat = form.getLocationLat().trim();
 
         //check whether input is empty
         if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(wechatId) || StringUtils.isEmpty(picPath)) {
@@ -107,8 +117,8 @@ public class SnapshotController {
         condition.clear();
         condition.put("assignId", assignId);
         condition.put("blockFlag", false);
-        final Map<String,Object> condition1 = condition;
-        new Thread(()->{
+        final Map<String, Object> condition1 = condition;
+        new Thread(() -> {
             final ResultData response1 = assignService.fetchAssign(condition1);
             if (response1.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 Assign assign = ((List<Assign>) response1.getData()).get(0);
@@ -117,12 +127,48 @@ public class SnapshotController {
             }
         }).start();
 
-        //new a thread to save the fileUrl-actualPath map
+        //new a thread to save information
+        String snapshotId = ((Snapshot) response.getData()).getSnapshotId();
+        String ip = request.getRemoteAddr();
         new Thread(() -> {
+            saveSnapshotLocation(snapshotId, locationLng, locationLat, ip);
             fileMapService.createPicMap(picPath);
             tempFileMapService.deleteValidPicMapFromTempFileMap(picPath);
         }).start();
 
         return result;
+    }
+
+    //@RequestMapping(method = RequestMethod.POST, value = "/snapshotloc")
+    private void saveSnapshotLocation(String snapshotId, String locationLng, String locationLat, String ip) {
+        double lng = 0.0, lat = 0.0;
+        String locationPlace = "";
+        //传过来的经纬度都不为空
+        if (!StringUtils.isEmpty(locationLng) && !StringUtils.isEmpty(locationLat)) {
+            try {
+                lng = Double.parseDouble(locationLng);
+                lat = Double.parseDouble(locationLat);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("输入了不可转换为double的字符串");
+            }
+            ResultData response = locationService.ll2description(locationLng, locationLat);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                LinkedHashMap<String, Object> locInformation = (LinkedHashMap<String, Object>) response.getData();
+                locationPlace = (String) locInformation.get("address");
+            }
+        } else {
+            ResultData response = locationService.ip2address(ip);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                LinkedHashMap<String, Object> locInformation = (LinkedHashMap<String, Object>) response.getData();
+                LinkedHashMap<String, Object> ad_info = (LinkedHashMap<String, Object>) locInformation.get("ad_info");
+                locationPlace = new StringBuilder((String) ad_info.get("nation"))
+                        .append((String) ad_info.get("province"))
+                        .append((String) ad_info.get("city"))
+                        .toString();
+            }
+        }
+        SnapshotLoc snapshotLoc = new SnapshotLoc(snapshotId, lng, lat, locationPlace);
+        snapshotLocService.createSnapshotLoc(snapshotLoc);
     }
 }

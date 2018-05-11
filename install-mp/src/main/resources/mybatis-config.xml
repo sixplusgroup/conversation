@@ -10,5 +10,6 @@
         <mapper resource="mapper/snapshot.xml" />
         <mapper resource="mapper/pic.xml" />
         <mapper resource="mapper/reconnaissance/reconnaissance.xml" />
+        <mapper resource="mapper/snapshotloc.xml" />
     </mappers>
 </configuration>

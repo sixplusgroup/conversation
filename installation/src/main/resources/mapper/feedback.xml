@@ -17,7 +17,7 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="Feedback">
-        SELECT *
+        SELECT feedback_id,assign_id,member_phone,feedback_content,status,block_flag,create_time
         FROM gmair_install.install_feedback
         WHERE 1 = 1
         <if test="feedbackId != null">

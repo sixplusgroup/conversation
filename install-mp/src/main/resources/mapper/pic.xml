@@ -19,7 +19,7 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="Pic">
-        SELECT *
+        SELECT pic_id,pic_address,pic_md5,member_phone,copy_flag,block_flag,create_time
         FROM gmair_install.install_pic
         WHERE 1 = 1
         <if test="picId != null">

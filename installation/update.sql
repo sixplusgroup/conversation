@@ -70,3 +70,17 @@ CHANGE COLUMN `assign_date` `assign_date` DATETIME NULL ;
 ALTER TABLE `gmair_install`.`team_member`
 ADD COLUMN `member_role` TINYINT(1) NOT NULL AFTER `wechat_id`;
 
+#20180511 add table snapshot_location
+
+CREATE TABLE `gmair_install`.`snapshot_location` (
+  `location_id` VARCHAR(20) NOT NULL,
+  `snapshot_id` VARCHAR(20) NOT NULL,
+  `location_lng` DOUBLE NULL,
+  `location_lat` DOUBLE NULL,
+  `location_place` VARCHAR(200) NULL,
+  PRIMARY KEY (`location_id`));
+
+ALTER TABLE `gmair_install`.`snapshot_location`
+ADD COLUMN `block_flag` TINYINT(1) NOT NULL AFTER `location_place`,
+ADD COLUMN `create_time` DATETIME NOT NULL AFTER `block_flag`;
+
