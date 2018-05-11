@@ -26,6 +26,8 @@ public class LocationApplication {
 
     private final static String TENCENT_GEO_URL = "http://apis.map.qq.com/ws/geocoder/v1/";
 
+    private final static String TENCENT_IP_URL = "http://apis.map.qq.com/ws/location/v1/ip";
+
     @Autowired
     private LocationService locationService;
 
@@ -49,14 +51,7 @@ public class LocationApplication {
         }
         String url = new StringBuffer(TENCENT_GEO_URL).append("?key=").append(LocationProperties.getValue("tencent_map_key")).append("&address=").append(address.trim()).toString();
         JSONObject response = JSON.parseObject(HttpDeal.getResponse(url));
-        if (!StringUtils.isEmpty(response) && response.getInteger("status") == 0) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getJSONObject("result"));
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("Cannot resolve the address at the moment");
-        }
-        return result;
+        return process(response);
     }
 
     /**
@@ -69,8 +64,14 @@ public class LocationApplication {
     @RequestMapping(method = RequestMethod.POST, value = "/ip/resolve")
     public ResultData ip2address(String ip) {
         ResultData result = new ResultData();
-
-        return result;
+        if (StringUtils.isEmpty(ip)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the ip is correct");
+            return result;
+        }
+        String url = new StringBuffer(TENCENT_IP_URL).append("?ip=").append(ip).append("&key=").append(LocationProperties.getValue("tencent_map_key")).toString();
+        JSONObject response = JSON.parseObject(HttpDeal.getResponse(url));
+        return process(response);
     }
 
     @CrossOrigin
@@ -134,6 +135,22 @@ public class LocationApplication {
         return result;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/ll/resolve")
+    public ResultData ll2description(String longitude, String latitude) {
+        ResultData result = new ResultData();
+        try {
+            double lng = Double.parseDouble(longitude);
+            double lat = Double.parseDouble(latitude);
+            String url = new StringBuffer(TENCENT_GEO_URL).append("?location=").append(lat).append(",").append(lng).append("&key=").append(LocationProperties.getValue("tencent_map_key")).toString();
+            JSONObject response = JSON.parseObject(HttpDeal.getResponse(url));
+            return process(response);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the longitude & latitude is correct");
+        }
+        return result;
+    }
+
     /**
      * This method is called to initialize the province, city, district information
      * Do not call this method if you do not know what you are doing
@@ -154,4 +171,17 @@ public class LocationApplication {
         }
         return result;
     }
+
+    private ResultData process(JSONObject response) {
+        ResultData result = new ResultData();
+        if (!StringUtils.isEmpty(response) && response.getInteger("status") == 0) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getJSONObject("result"));
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Cannot process the result at the moment");
+        }
+        return result;
+    }
+
 }
