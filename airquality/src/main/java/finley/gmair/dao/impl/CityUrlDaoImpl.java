@@ -20,14 +20,15 @@ public class CityUrlDaoImpl extends BaseDao implements CityUrlDao {
         ResultData result = new ResultData();
         try {
             List<CityUrlVo> cityUrlVoList = sqlSession.selectList("gmair.airquality.cityUrl.select", condition);
-            if (!cityUrlVoList.isEmpty()) {
-                result.setData(ResponseCode.RESPONSE_NULL);
+            if (cityUrlVoList.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
             } else {
                 result.setData(cityUrlVoList);
             }
 
             return result;
         } catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
