@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.SnapshotForm;
 import finley.gmair.model.installation.*;
 import finley.gmair.service.*;
+import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +130,7 @@ public class SnapshotController {
 
         //new a thread to save information
         String snapshotId = ((Snapshot) response.getData()).getSnapshotId();
-        String ip = request.getRemoteAddr();
+        String ip = IPUtil.getIP(request);
         new Thread(() -> {
             saveSnapshotLocation(snapshotId, locationLng, locationLat, ip);
             fileMapService.createPicMap(picPath);
