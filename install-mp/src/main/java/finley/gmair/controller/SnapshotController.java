@@ -53,8 +53,8 @@ public class SnapshotController {
         String qrcode = form.getQrcode().trim();
         String wechatId = form.getWechatId().trim();
         String picPath = form.getPicPath().trim();
-        String locationLng = form.getLocationLng().trim();
-        String locationLat = form.getLocationLat().trim();
+        String locationLng = form.getLongitude().trim();
+        String locationLat = form.getLatitude().trim();
 
         //check whether input is empty
         if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(wechatId) || StringUtils.isEmpty(picPath)) {

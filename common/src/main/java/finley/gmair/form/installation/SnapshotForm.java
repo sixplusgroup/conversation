@@ -4,8 +4,8 @@ public class SnapshotForm {
     private String qrcode;
     private String wechatId;
     private String picPath;
-    private String locationLng;
-    private String locationLat;
+    private String longitude;
+    private String latitude;
 
     public String getQrcode() {
         return qrcode;
@@ -31,19 +31,19 @@ public class SnapshotForm {
         this.picPath = picPath;
     }
 
-    public String getLocationLng() {
-        return locationLng;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setLocationLng(String locationLng) {
-        this.locationLng = locationLng;
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
-    public String getLocationLat() {
-        return locationLat;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setLocationLat(String locationLat) {
-        this.locationLat = locationLat;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 }
