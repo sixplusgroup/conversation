@@ -1,8 +1,6 @@
 package finley.gmair.controller;
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.SnapshotForm;
 import finley.gmair.model.installation.*;
 import finley.gmair.service.*;
@@ -44,6 +42,9 @@ public class SnapshotController {
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private PicService picService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     //工人提交所有图片和机器二维码时触发,创建snapshot表单
@@ -132,15 +133,16 @@ public class SnapshotController {
         String snapshotId = ((Snapshot) response.getData()).getSnapshotId();
         String ip = IPUtil.getIP(request);
         new Thread(() -> {
-            saveSnapshotLocation(snapshotId, locationLng, locationLat, ip);
-            fileMapService.createPicMap(picPath);
-            tempFileMapService.deleteValidPicMapFromTempFileMap(picPath);
+            fillSnapshotId(picPath,snapshotId);                                 //修改pic表
+            saveSnapshotLocation(snapshotId, locationLng, locationLat, ip);     //修改location表
+            fileMapService.createPicMap(picPath);                               //修改filemap表
+            tempFileMapService.deleteValidPicMapFromTempFileMap(picPath);       //修改tempfilemap表
         }).start();
 
         return result;
     }
 
-    //@RequestMapping(method = RequestMethod.POST, value = "/snapshotloc")
+    //根据经纬度解析地址并保存
     private void saveSnapshotLocation(String snapshotId, String locationLng, String locationLat, String ip) {
         double lng = 0.0, lat = 0.0;
         String locationPlace = "";
@@ -171,5 +173,25 @@ public class SnapshotController {
         }
         SnapshotLoc snapshotLoc = new SnapshotLoc(snapshotId, lng, lat, locationPlace);
         snapshotLocService.createSnapshotLoc(snapshotLoc);
+    }
+
+    //根据上传的picUrl来更新pic表中的snapshot_id那一列
+    private ResultData fillSnapshotId(String picUrl,String snapshotId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        String[] urls = picUrl.split(",");
+        for (String url : urls) {
+            condition.clear();
+            condition.put("pic_address", url);
+            ResultData response = picService.fetchPic(condition);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+                continue;
+            Pic pic = new Pic();
+            pic.setPicId(((List<Pic>)response.getData()).get(0).getPicId());
+            pic.setMemberPhone(snapshotId);
+            picService.updatePic(pic);
+            result.setDescription("success to fill the snapshotId to pic");
+        }
+        return result;
     }
 }

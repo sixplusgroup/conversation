@@ -49,4 +49,30 @@
             OR pic_address = #{picAddress}
         </if>
     </delete>
+
+    <update id="update" parameterType="finley.gmair.model.installation.Pic">
+        UPDATE gmair_install.install_pic
+        <set>
+            <if test="picId != null">
+                pic_id = #{picId},
+            </if>
+            <if test="picAddress != null">
+                pic_address = #{picAddress},
+            </if>
+            <if test="picMd5 != null">
+                pic_md5 = #{picMd5},
+            </if>
+            <if test="memberPhone != null">
+                member_phone = #{memberPhone},
+            </if>
+            <if test="copyFlag != null">
+                copy_flag = #{copyFlag},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            pic_id = #{picId}
+        </set>
+        WHERE pic_id = #{picId}
+    </update>
 </mapper>

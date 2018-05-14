@@ -11,4 +11,6 @@ public interface PicDao  {
     ResultData queryPic(Map<String, Object> condition);
 
     ResultData deletePic(Map<String, Object> condition);
+
+    ResultData updatePic(Pic pic);
 }
