@@ -39,6 +39,7 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
             }
             result.setData(list);
         } catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
