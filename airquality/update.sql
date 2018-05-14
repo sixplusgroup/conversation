@@ -19,5 +19,15 @@ create table `gmair_airquality`.`city_url` (
     city_url varchar(255) not null,
     block_flag tinyint(1) default 0,
     create_time datetime not null,
-    PRIMARY KEY (city_id)
+    PRIMARY KEY (city_id);
 )
+
+# 2018-05-11 create obscure city table
+CREATE TABLE `gmair_airquality`.`obscure_city` (
+  `oc_id` CHAR(20) NOT NULL,
+  `city_name` VARCHAR(31) NOT NULL ,
+  `city_id` VARCHAR(31) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`oc_id`),
+  UNIQUE INDEX `oc_id_UNIQUE` (`oc_id` ASC));

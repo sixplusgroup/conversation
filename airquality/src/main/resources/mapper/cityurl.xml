@@ -29,7 +29,7 @@
         select city_id, city_url, block_flag, create_time from `gmair_airquality`.`city_url`
         WHERE 1 = 1
         <if test="cityId != null">
-            city_id = #{cityId}
+            and city_id = #{cityId}
         </if>
     </select>
 

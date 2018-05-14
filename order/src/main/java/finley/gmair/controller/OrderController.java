@@ -7,6 +7,8 @@ import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.service.ExpressService;
 import finley.gmair.service.InstallService;
 import finley.gmair.service.OrderService;
+import finley.gmair.service.ReconnaissanceService;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.RequestUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -36,6 +38,9 @@ public class OrderController {
 
     @Autowired
     private InstallService installService;
+
+    @Autowired
+    private ReconnaissanceService reconnaissanceService;
 
     /**
      * This method is aimed to handle the order spreadsheet and store the records
@@ -78,8 +83,13 @@ public class OrderController {
         double price = jsonObject.getDouble("price");
         String description = jsonObject.getString("description");
         JSONArray orderItemList = jsonObject.getJSONArray("orderItemList");
+        boolean containsMachine = false;
         for (Object orderItem : orderItemList) {
             OrderItem item = new OrderItem();
+            String commodityType = ((JSONObject) orderItem).getString("commodityType");
+            if (!containsMachine && commodityType.equals("GUOMAI_XINFENG")) {
+                containsMachine = true;
+            }
             String commodityId = ((JSONObject) orderItem).getString("commodityId");
             String itemName = ((JSONObject) orderItem).getString("commodityName");
             int quantity = ((JSONObject) orderItem).getInteger("commodityQuantity");
@@ -115,6 +125,15 @@ public class OrderController {
             result.setDescription("无相关数据");
         } else {
             result.setData(response.getData());
+        }
+        //if order contains a machine
+        if (containsMachine) {
+            try {
+                PlatformOrder orderResponse = (PlatformOrder) response.getData();
+                response = reconnaissanceService.createReconnaissance(orderResponse.getOrderId());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return result;
     }

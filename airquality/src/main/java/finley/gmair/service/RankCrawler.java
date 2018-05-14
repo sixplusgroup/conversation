@@ -114,8 +114,9 @@ public class RankCrawler {
                         airQuality.setO3(Double.parseDouble(tds.get(9).text()));
                         airQuality.setSo2(Double.parseDouble(tds.get(11).text()));
                         airQuality.setRecordTime(timestamp);
-                        if (airQuality.getCityId() != null)
+                        if (airQuality.getCityId() != null) {
                             map.put(cityHref.text(), airQuality);
+                        }
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -140,7 +141,8 @@ public class RankCrawler {
     }
 
     private void insertCityAqiDetail(List<AirQuality> airQualityList) {
-        airQualityDao.insertBatch(airQualityList);
+        if (!airQualityList.isEmpty())
+            airQualityDao.insertBatch(airQualityList);
     }
 
     private void updateCityUrl(List<CityUrl> cityUrlList) {
@@ -158,7 +160,8 @@ public class RankCrawler {
             List<CityUrlVo> cityUrlVoList = (List<CityUrlVo>) response.getData();
             for (CityUrlVo cityUrlVo : cityUrlVoList) {
                 List<MonitorStation> monitorStations = fetchCityStation(cityUrlVo.getCityId(), cityUrlVo.getCityUrl());
-                monitorStationDao.insertBatch(monitorStations);
+                if (!monitorStations.isEmpty())
+                    monitorStationDao.insertBatch(monitorStations);
             }
         }
     }

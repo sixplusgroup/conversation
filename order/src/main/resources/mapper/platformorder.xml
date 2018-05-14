@@ -17,7 +17,23 @@
                 typeHandler="finley.gmair.mybatis.handler.OrderStatusHandler"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
+        <collection property="list" select="selectOrderItem" column="order_id"/>
     </resultMap>
+    
+    <resultMap id="orderItemVo" type="finley.gmair.model.order.OrderItem">
+        <result property="itemId" column="item_id"/>
+        <result property="itemName" column="item_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="itemPrice" column="item_price"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+
+    <select id="selectOrderItem" parameterType="java.lang.String" resultMap="orderItemVo">
+        SELECT item_id, item_name, item_price, quantity FROM `gmair_order`.`order_item`
+        WHERE
+        order_item.order_id = #{order_id}
+    </select>
 
     <insert id="insert" parameterType="finley.gmair.model.order.PlatformOrder" useGeneratedKeys="false">
         INSERT INTO gmair_order.platform_order (order_id, order_no, consignee, phone, address, province, city, district, total_price, order_channel, description, order_status, block_flag, create_time)
