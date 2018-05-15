@@ -21,6 +21,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelActive();
         String key = ctx.channel().remoteAddress().toString();
+        System.out.println("key: " + key);
         repository.push(key, ctx.channel());
     }
 
@@ -32,16 +33,8 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf buf = (ByteBuf) msg;
-        byte[] req = new byte[buf.readableBytes()];
-        buf.readBytes(req);
-        String body = new String(req, "UTF-8");
-        System.out.println("body: " + body);
-        //save the channel in map(memcached)
-        Channel channel = ctx.channel();
-
-        ByteBuf response = Unpooled.copiedBuffer(((String)msg).getBytes());
-        ctx.write(response);
+        String message = (String) msg;
+        System.out.println("message: " + message);
     }
 
     @Override

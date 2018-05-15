@@ -24,21 +24,21 @@ public class HeartbeatPacket {
 
     private String FRT;
 
-    public HeartbeatPacket(){
+    public HeartbeatPacket() {
 
     }
 
-    public HeartbeatPacket(String FRH, String CTF, String CID, String UID, long TIME, String LEN, String DATA, String CRC, String FRT){
+    public HeartbeatPacket(String FRH, String CTF, String CID, String UID, long TIME, String LEN, String DATA, String CRC, String FRT) {
         this();
-        this.FRH=FRH;
-        this.CTF=CTF;
-        this.CID=CID;
-        this.UID=UID;
-        this.TIME=TIME;
-        this.LEN=LEN;
-        this.DATA=DATA;
-        this.CRC=CRC;
-        this.FRT=FRT;
+        this.FRH = FRH;
+        this.CTF = CTF;
+        this.CID = CID;
+        this.UID = UID;
+        this.TIME = TIME;
+        this.LEN = LEN;
+        this.DATA = DATA;
+        this.CRC = CRC;
+        this.FRT = FRT;
     }
 
     public String getFRH() {
@@ -115,6 +115,6 @@ public class HeartbeatPacket {
 
     @Override
     public String toString() {
-        return JSONObject.toJSONString(this,SerializerFeature.DisableCircularReferenceDetect);
+        return JSONObject.toJSONString(this, SerializerFeature.DisableCircularReferenceDetect);
     }
 }
