@@ -39,19 +39,4 @@ public class PicController {
         }
         return result;
     }
-
-    //删除对应url的图片记录
-    @RequestMapping(method = RequestMethod.POST, value = "delete")
-    public ResultData deleteByUrl(String fileUrl){
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        String []urls=fileUrl.split(",");
-        for(String url:urls) {
-            condition.clear();
-            condition.put("picAddress",url);
-            picService.deletePic(condition);
-        }
-        return result;
-    }
-
 }

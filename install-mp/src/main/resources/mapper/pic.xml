@@ -5,7 +5,7 @@
         <result property="picId" column="pic_id" />
         <result property="picAddress" column="pic_address" />
         <result property="picMd5" column="pic_md5" />
-        <result property="memberPhone" column="member_phone" />
+        <result property="snapshotId" column="snapshot_id" />
         <result property="copyFlag" column="copy_flag" />
         <result property="blockFlag" column="block_flag" />
         <result property="createAt" column="create_time" />
@@ -14,12 +14,12 @@
     <insert id="insert" parameterType="finley.gmair.model.installation.Pic" useGeneratedKeys="false">
         INSERT INTO gmair_install.install_pic
         VALUES(
-          #{picId},#{picAddress},#{picMd5},#{memberPhone},#{copyFlag},#{blockFlag},#{createAt}
+          #{picId},#{picAddress},#{picMd5},#{snapshotId},#{copyFlag},#{blockFlag},#{createAt}
         )
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="Pic">
-        SELECT pic_id,pic_address,pic_md5,member_phone,copy_flag,block_flag,create_time
+        SELECT pic_id,pic_address,pic_md5,snapshot_id,copy_flag,block_flag,create_time
         FROM gmair_install.install_pic
         WHERE 1 = 1
         <if test="picId != null">
@@ -31,8 +31,8 @@
         <if test="picMd5 != null">
             AND pic_md5 = #{picMd5}
         </if>
-        <if test="memberPhone != null">
-            AND member_phone = #{memberPhone}
+        <if test="snapshotId != null">
+            AND snapshot_id = #{snapshotId}
         </if>
         <if test="copyFlag != null">
             AND copy_flag = #{copyFlag}
@@ -62,8 +62,8 @@
             <if test="picMd5 != null">
                 pic_md5 = #{picMd5},
             </if>
-            <if test="memberPhone != null">
-                member_phone = #{memberPhone},
+            <if test="snapshotId != null">
+                snapshot_id = #{snapshotId},
             </if>
             <if test="copyFlag != null">
                 copy_flag = #{copyFlag},

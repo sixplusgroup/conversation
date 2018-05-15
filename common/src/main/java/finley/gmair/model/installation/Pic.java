@@ -6,13 +6,13 @@ public class Pic extends Entity {
     private String picId;
     private String picAddress;
     private String picMd5;
-    private String memberPhone;
+    private String snapshotId;
     private boolean copyFlag;
     public Pic(){super();}
-    public Pic(String picAddress,String memberPhone){
+    public Pic(String picAddress,String snapshotId){
         this();
         this.picAddress=picAddress;
-        this.memberPhone=memberPhone;
+        this.snapshotId=snapshotId;
     }
 
     public String getPicId() {
@@ -39,12 +39,12 @@ public class Pic extends Entity {
         this.picMd5 = picMd5;
     }
 
-    public String getMemberPhone() {
-        return memberPhone;
+    public String getSnapshotId() {
+        return snapshotId;
     }
 
-    public void setMemberPhone(String memberPhone) {
-        this.memberPhone = memberPhone;
+    public void setSnapshotId(String snapshotId) {
+        this.snapshotId = snapshotId;
     }
 
     public boolean isCopyFlag() {

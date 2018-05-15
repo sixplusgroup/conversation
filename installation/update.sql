@@ -84,3 +84,7 @@ ALTER TABLE `gmair_install`.`snapshot_location`
 ADD COLUMN `block_flag` TINYINT(1) NOT NULL AFTER `location_place`,
 ADD COLUMN `create_time` DATETIME NOT NULL AFTER `block_flag`;
 
+#20180515 rename member_phone to snapshot_id
+
+ALTER TABLE `gmair_install`.`install_pic`
+CHANGE COLUMN `member_phone` `snapshot_id` VARCHAR(45) NOT NULL ;

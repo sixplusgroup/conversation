@@ -115,31 +115,43 @@ public class SnapshotController {
             return result;
         }
 
-        //new a thread to update the assign status.
-        condition.clear();
-        condition.put("assignId", assignId);
-        condition.put("blockFlag", false);
-        final Map<String, Object> condition1 = condition;
+        //new a thread to save information
+        final String assignID = assignId;
+        final String snapshotId = ((Snapshot) response.getData()).getSnapshotId();
+        final String ip = IPUtil.getIP(request);
         new Thread(() -> {
-            final ResultData response1 = assignService.fetchAssign(condition1);
-            if (response1.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                Assign assign = ((List<Assign>) response1.getData()).get(0);
-                assign.setAssignStatus(AssignStatus.FINISHED);
-                assignService.updateAssign(assign);
+            try {
+                updateToFinished(assignID);                                         //修改assign表
+                fillSnapshotId(picPath, snapshotId);                                //修改pic表
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                saveSnapshotLocation(snapshotId, locationLng, locationLat, ip);     //修改location表
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                //TODO
+                //该方法如果失败了,会导致没有把有用的记录从Tempfile表中删去,这会导致一些问题.
+                tempFileMapService.deleteValidPicMapFromTempFileMap(picPath);       //修改tempfilemap表
+                fileMapService.createPicMap(picPath);                               //修改filemap表
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
 
-        //new a thread to save information
-        String snapshotId = ((Snapshot) response.getData()).getSnapshotId();
-        String ip = IPUtil.getIP(request);
-        new Thread(() -> {
-            fillSnapshotId(picPath,snapshotId);                                 //修改pic表
-            saveSnapshotLocation(snapshotId, locationLng, locationLat, ip);     //修改location表
-            fileMapService.createPicMap(picPath);                               //修改filemap表
-            tempFileMapService.deleteValidPicMapFromTempFileMap(picPath);       //修改tempfilemap表
-        }).start();
-
         return result;
+    }
+
+    //把Assign表单状态更新为FINISHED
+    private void updateToFinished(String assignId) {
+        Assign assign = new Assign();
+        assign.setAssignId(assignId);
+        assign.setAssignStatus(AssignStatus.FINISHED);
+        assignService.updateAssign(assign);
     }
 
     //根据经纬度解析地址并保存
@@ -175,8 +187,8 @@ public class SnapshotController {
         snapshotLocService.createSnapshotLoc(snapshotLoc);
     }
 
-    //根据上传的picUrl来更新pic表中的snapshot_id那一列
-    private ResultData fillSnapshotId(String picUrl,String snapshotId) {
+    //根据上传的picUrl来填写对应的snapshot_id
+    private ResultData fillSnapshotId(String picUrl, String snapshotId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         String[] urls = picUrl.split(",");
@@ -187,8 +199,8 @@ public class SnapshotController {
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
                 continue;
             Pic pic = new Pic();
-            pic.setPicId(((List<Pic>)response.getData()).get(0).getPicId());
-            pic.setMemberPhone(snapshotId);
+            pic.setPicId(((List<Pic>) response.getData()).get(0).getPicId());
+            pic.setSnapshotId(snapshotId);
             picService.updatePic(pic);
             result.setDescription("success to fill the snapshotId to pic");
         }
