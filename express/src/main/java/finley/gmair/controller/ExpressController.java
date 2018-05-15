@@ -70,6 +70,27 @@ public class ExpressController {
     }
 
     /**
+     * This method is used to query all express companies in the system
+     *
+     * @return
+     */
+    @GetMapping("/company/query")
+    public ResultData queryCompany() {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = expressService.fetchExpressCompany(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }else{
+            return response;
+        }
+
+    }
+
+    /**
      * This method is used to add express order in the system
      *
      * @return
@@ -254,7 +275,7 @@ public class ExpressController {
     }
 
     /**
-     * This method is used to query orderId in the system
+     * This method is used to query orderId in the system by codeValue
      *
      * @return
      */
@@ -291,7 +312,7 @@ public class ExpressController {
     }
 
     /**
-     * This method is used to query codeValue in the system
+     * This method is used to query codeValue in the system by orderId
      *
      * @return
      */
