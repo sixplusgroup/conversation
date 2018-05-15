@@ -24,6 +24,12 @@
         <if test="expressId != null">
             AND express_id = #{expressId}
         </if>
+        <if test="parentExpress != null">
+            AND parent_express = #{parentExpress}
+        </if>
+        <if test="parcelType != null">
+            AND parcel_type = #{parcelType}
+        </if>
         <if test="expressNo != null">
             AND express_no = #{expressNo}
         </if>

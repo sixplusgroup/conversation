@@ -1,5 +1,8 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.mysql.cj.xdevapi.JsonArray;
 import finley.gmair.company.CompanyTransfer;
 import finley.gmair.form.express.ExpressCompanyForm;
 import finley.gmair.form.express.ExpressOrderForm;
@@ -255,7 +258,7 @@ public class ExpressController {
      *
      * @return
      */
-    @GetMapping("/parcel/query/{codeValue}")
+    @GetMapping("/parcel/query/order/{codeValue}")
     public ResultData getOrderId(@PathVariable String codeValue) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(codeValue)){
@@ -271,11 +274,56 @@ public class ExpressController {
             ExpressParcel parcel = ((List<ExpressParcel>) response.getData()).get(0);
             condition.clear();
             condition.put("expressId", parcel.getParentExpress());
+            condition.put("blockFlag", false);
             response = expressService.fetchExpressOrder(condition);
             if(response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 ExpressOrder order = ((List<ExpressOrder>) response.getData()).get(0);
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setData(order);
+                return result;
+            }else{
+                return response;
+            }
+
+        }else{
+            return response;
+        }
+    }
+
+    /**
+     * This method is used to query codeValue in the system
+     *
+     * @return
+     */
+    @GetMapping("/order/query/parcel/{orderId}")
+    public ResultData getCodeValue(@PathVariable String orderId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the order_id is specified");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = expressService.fetchExpressOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            ExpressOrder expressOrder = ((List<ExpressOrder>) response.getData()).get(0);
+            condition.clear();
+            condition.put("parentExpress", expressOrder.getExpressId());
+            condition.put("parcelType", 0);
+            condition.put("blockFlag", false);
+            response = expressService.fetchExpressParcel(condition);
+            if(response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<ExpressParcel> expressParcels = (List<ExpressParcel>) response.getData();
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                JSONArray json = new JSONArray();
+                for(ExpressParcel expressParcel : expressParcels){
+                    JSONObject temp = new JSONObject();
+                    temp.put("codeValue", expressParcel.getCodeValue());
+                    json.add(temp);
+                }
+                result.setData(json);
                 return result;
             }else{
                 return response;
