@@ -25,7 +25,7 @@ public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
 
         byte[] CID = new byte[]{0x00};
 
-        byte[] UID = new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        byte[] UID = new byte[]{0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41};
 
         long time = System.currentTimeMillis();
 
@@ -37,9 +37,7 @@ public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
 
         byte[] request = packet.convert2bytearray();
 
-        ByteBuf response = Unpooled.copiedBuffer(request);
-        System.out.println("");
-        ctx.writeAndFlush("hello\r\n");
+        ctx.writeAndFlush(request);
     }
 
     @Override

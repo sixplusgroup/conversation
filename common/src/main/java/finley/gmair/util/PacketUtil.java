@@ -1,8 +1,8 @@
 package finley.gmair.util;
 
-import finley.gmair.model.packet.AbstractPacketV2;
-import finley.gmair.model.packet.HeartBeatPacket;
-import finley.gmair.model.packet.ProbePacket;
+import finley.gmair.model.packet.*;
+
+import java.lang.reflect.Field;
 
 public class PacketUtil {
     public static AbstractPacketV2 transferV2(byte[] source) {
@@ -27,6 +27,30 @@ public class PacketUtil {
         byte[] CRC = new byte[]{source[24 + length], source[25 + length]};
         ProbePacket packet = new ProbePacket(CTF, CID, UID, TIM, LEN, DAT);
         packet.setCRC(CRC);
+        return packet;
+    }
+
+    public static HeartBeatPacket generateHeartBeat(String client) {
+        byte[] CTF = new byte[]{0x02};
+        byte[] CID = new byte[]{0x00};
+        byte[] SID = new byte[12];
+        byte[] temp = client.getBytes();
+        for (int i = 0; i < temp.length; i++) {
+            SID[SID.length - 1 - i] = temp[temp.length - 1 - i];
+        }
+        long time = System.currentTimeMillis();
+        byte[] TIM = ByteUtil.long2byte(time, 8);
+        byte[] LEN = new byte[]{0x00};
+        HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, SID, TIM, LEN);
+        return packet;
+    }
+
+    public static ProbePacket generateProbe(Action action, String command, String client) {
+        ProbePacket packet = null;
+        Field[] fields = PacketInfo.class.getDeclaredFields();
+        for (Field field : fields) {
+            
+        }
         return packet;
     }
 }

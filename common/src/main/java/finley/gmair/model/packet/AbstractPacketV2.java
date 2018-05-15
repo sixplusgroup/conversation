@@ -61,4 +61,8 @@ public abstract class AbstractPacketV2 {
     public void setCRC(byte[] CRC) {
         this.CRC = CRC;
     }
+
+    public String getUID() {
+        return new String(UID);
+    }
 }

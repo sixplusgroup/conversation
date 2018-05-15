@@ -6,14 +6,15 @@ import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.netty.GMRepository;
 import finley.gmair.util.PacketUtil;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 @ChannelHandler.Sharable
@@ -26,8 +27,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelActive();
-        String key = ctx.channel().remoteAddress().toString();
-        repository.push(key, ctx.channel());
     }
 
     @Override
@@ -44,13 +43,24 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
         //judge the header, if match 0xFF, then it should be the 2nd version packet
         if (request[0] == (byte) 0xFF && request[request.length - 1] == (byte) 0xEE) {
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
+            String uid = packet.getUID().trim();
+            if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
+                System.out.println("refresh connection");
+                repository.push(uid, ctx);
+            }
             if (packet instanceof HeartBeatPacket) {
+                //give a heart beat packet as response
+                HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
+                ctx.writeAndFlush(response.convert2bytearray());
                 System.out.println("heart beat packet: ");
+
             }
             if (packet instanceof ProbePacket) {
                 System.out.println("probe packet: ");
             }
+
         } else {
+            ctx.writeAndFlush("ccccc");
             return;
         }
         System.out.println("message: ");

@@ -1,75 +1,249 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.core.HeartbeatPacket;
+import com.alibaba.fastjson.JSON;
+import finley.gmair.model.packet.HeartBeatPacket;
+import finley.gmair.netty.GMRepository;
 import finley.gmair.service.HeartbeatPacketService;
+import finley.gmair.util.CoreProperties;
+import finley.gmair.util.PacketUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.xml.transform.Result;
 
 
 @RestController
 @RequestMapping("/core")
 public class CommunicationController {
 
-//    @Autowired
-//    @Qualifier("repository")
-//    private GMRepository repository;
+    @Autowired
+    private GMRepository repository;
 
     @Autowired
     private HeartbeatPacketService heartbeatPacketService;
 
-    @GetMapping("/one")
-    public String test() {
-        return null;
-    }
-
     /**
-     * This method is used to create heartbeat packet in the system
+     * This will issue a heartbeat packet to the target uid
+     * if the uid does not exist in the cache, it will not send the packet
      *
+     * @param uid
      * @return
      */
-    @PostMapping("/heartbeatPacket/create")
-    public ResultData addHeartbeatPacket(HeartbeatPacket form){
+    @GetMapping("/com/heartbeat")
+    public ResultData heartbeat(String uid) {
         ResultData result = new ResultData();
-        String FRH = form.getFRH();
-        String CTF = form.getCTF();
-        String CID = form.getCID();
-        String UID = form.getUID();
-        long TIME = form.getTIME();
-        String LEN = form.getLEN();
-        String DATA = form.getDATA();
-        String CRC = form.getCRC();
-        String FRT = form.getFRT();
-        HeartbeatPacket heartbeatPacket = new HeartbeatPacket(FRH, CTF, CID, UID, TIME, LEN, DATA, CRC, FRT);
-        ResultData response = heartbeatPacketService.createHeartbeatPacket(heartbeatPacket);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        HeartBeatPacket packet = PacketUtil.generateHeartBeat(uid);
+        ChannelHandlerContext ctx = repository.retrieve(uid);
+        if (StringUtils.isEmpty(ctx)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("Fail to add heartbeat packet with UID: ").append(UID).toString());
+            result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
+            return result;
         }
+        ctx.writeAndFlush(packet.convert2bytearray());
+        result.setDescription(new StringBuffer("Succeed to send a heart beat packet to the target uid: ").append(uid).toString());
         return result;
     }
 
     /**
-     * This method is used to query heartbeat packet by UID
+     * This will issue a probe packet to the target uid asking for the probe data
+     * if the uid does not exist in the cache, it will not send the packet
      *
+     * @param uid
      * @return
      */
-    @GetMapping("/heartbeatPacket/query/{UID}")
-    public ResultData queryHeartbeatPacket(@PathVariable String UID){
+    @GetMapping("/com/probe")
+    public ResultData probe(String uid) {
         ResultData result = new ResultData();
-        ResultData response = heartbeatPacketService.fetchHeartbeatPacket(UID);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setData(response.getData());
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            return result;
-        }else{
-            return response;
-        }
+
+        return result;
     }
 
+    @PostMapping("/com/config/address")
+    public ResultData configAddress(String uid, String address) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/address")
+    public ResultData probeAddress(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/port")
+    public ResultData configPort(String uid, int port) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/port")
+    public ResultData probePort(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/heartbeat")
+    public ResultData configHeartbeatCycle(String uid, int interval) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/heartbeat")
+    public ResultData probeHeartbeatCycle(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/power")
+    public ResultData configPower(String uid, int power) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/power")
+    public ResultData probePower(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/mode")
+    public ResultData configMode(String uid, int mode) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/mode")
+    public ResultData probeMode(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/speed")
+    public ResultData configSpeed(String uid, int speed) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/speed")
+    public ResultData probeSpeed(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/sterilise")
+    public ResultData configSterilise(String uid, int mode) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/sterilise")
+    public ResultData probeSterilise(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/sterilises")
+    public ResultData configHeat(String uid, int heat) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/heat")
+    public ResultData probeHeat(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/circulation")
+    public ResultData configCirculation(String uid, int circulation) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/circulation")
+    public ResultData probeCirculation(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/light")
+    public ResultData configLight(String uid, int light) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/light")
+    public ResultData probeLight(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/reboot")
+    public ResultData reboot(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/com/config/lock")
+    public ResultData configLock(String uid, int lock) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/lock")
+    public ResultData probeLock(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/classification")
+    public ResultData probeClassification() {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/firmware")
+    public ResultData probeFirmware(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @GetMapping("/com/probe/hardware")
+    public ResultData probeHardware(String uid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
 }
