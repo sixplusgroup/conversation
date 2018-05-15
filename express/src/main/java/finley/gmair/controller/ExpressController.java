@@ -74,6 +74,7 @@ public class ExpressController {
      *
      * @return
      */
+    @CrossOrigin
     @GetMapping("/company/query")
     public ResultData queryCompany() {
         ResultData result = new ResultData();
