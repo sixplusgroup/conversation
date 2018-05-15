@@ -58,4 +58,8 @@ public abstract class AbstractPacketV2 {
     public byte[] convert2bytearray() {
         return ByteUtil.concat(FRH, source(), CRC, FRT);
     }
+
+    public void setCRC(byte[] CRC) {
+        this.CRC = CRC;
+    }
 }

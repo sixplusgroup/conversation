@@ -30,4 +30,20 @@ public class ByteUtil {
         }
         return result;
     }
+
+    public static int byte2int(byte[] value) {
+        int result = 0;
+        for (int i = 0; i < value.length; i++) {
+            result |= value[value.length - 1 - i] & 0xFF << 8 * i;
+        }
+        return result;
+    }
+
+    public static long byte2long(byte[] value) {
+        int result = 0;
+        for (int i = 0; i < value.length; i++) {
+            result |= value[value.length - 1 - i] & 0xFF << 8 * i;
+        }
+        return result;
+    }
 }

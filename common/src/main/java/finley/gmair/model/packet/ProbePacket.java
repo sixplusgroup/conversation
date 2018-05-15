@@ -6,6 +6,11 @@ public class ProbePacket extends AbstractPacketV2 {
 
     protected byte[] DAT;
 
+    public ProbePacket(byte[] CTF, byte[] CID, byte[] UID, byte[] TIM, byte[] LEN, byte[] DAT) {
+        super(CTF, CID, UID, TIM, LEN);
+        this.DAT = DAT;
+    }
+
     public ProbePacket(byte[] FRH, byte[] CTF, byte[] CID, byte[] UID, byte[] TIM, byte[] LEN, byte[] DAT, byte[] CRC, byte[] FRT) {
         super(FRH, CTF, CID, UID, TIM, LEN, CRC, FRT);
         this.DAT = DAT;

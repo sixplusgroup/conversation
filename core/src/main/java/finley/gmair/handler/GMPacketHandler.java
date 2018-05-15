@@ -1,6 +1,10 @@
 package finley.gmair.handler;
 
+import finley.gmair.model.packet.AbstractPacketV2;
+import finley.gmair.model.packet.HeartBeatPacket;
+import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.netty.GMRepository;
+import finley.gmair.util.PacketUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -23,7 +27,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelActive();
         String key = ctx.channel().remoteAddress().toString();
-        System.out.println("key: " + key);
         repository.push(key, ctx.channel());
     }
 
@@ -36,8 +39,20 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf byteBuf = (ByteBuf) msg;
-        byte[] req = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(req);
+        byte[] request = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(request);
+        //judge the header, if match 0xFF, then it should be the 2nd version packet
+        if (request[0] == (byte) 0xFF && request[request.length - 1] == (byte) 0xEE) {
+            AbstractPacketV2 packet = PacketUtil.transferV2(request);
+            if (packet instanceof HeartBeatPacket) {
+                System.out.println("heart beat packet: ");
+            }
+            if (packet instanceof ProbePacket) {
+                System.out.println("probe packet: ");
+            }
+        } else {
+            return;
+        }
         System.out.println("message: ");
     }
 
