@@ -31,7 +31,6 @@ public abstract class AbstractPacketV2 {
         this.UID = UID;
         this.TIM = TIM;
         this.LEN = LEN;
-        this.CRC = ByteUtil.int2byte(CRC16.CRCCheck(source()), 2);
     }
 
     public AbstractPacketV2(byte[] FRH, byte[] CTF, byte[] CID, byte[] UID, byte[] TIM, byte[] LEN, byte[] CRC, byte[] FRT) {
@@ -61,5 +60,9 @@ public abstract class AbstractPacketV2 {
 
     public void setCRC(byte[] CRC) {
         this.CRC = CRC;
+    }
+
+    public void calculateCRC() {
+        this.CRC = ByteUtil.int2byte(CRC16.CRCCheck(source()), 2);
     }
 }
