@@ -4,6 +4,7 @@ import finley.gmair.netty.GMRepository;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
+@ChannelHandler.Sharable
 public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Autowired
@@ -33,8 +35,10 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        String message = (String) msg;
-        System.out.println("message: " + message);
+        ByteBuf byteBuf = (ByteBuf) msg;
+        byte[] req = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(req);
+        System.out.println("message: ");
     }
 
     @Override

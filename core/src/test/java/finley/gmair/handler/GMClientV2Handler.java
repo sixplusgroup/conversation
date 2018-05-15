@@ -4,9 +4,11 @@ import finley.gmair.model.packet.HeartBeatPacket;
 import finley.gmair.util.ByteUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+@ChannelHandler.Sharable
 public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
     public GMClientV2Handler() {
 
@@ -36,12 +38,13 @@ public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
         byte[] request = packet.convert2bytearray();
 
         ByteBuf response = Unpooled.copiedBuffer(request);
-
-        ctx.writeAndFlush(response);
+        System.out.println("");
+        ctx.writeAndFlush("hello\r\n");
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        System.out.println(cause.getMessage());
         super.exceptionCaught(ctx, cause);
     }
 }
