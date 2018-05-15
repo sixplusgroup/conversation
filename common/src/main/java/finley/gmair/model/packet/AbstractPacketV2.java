@@ -61,8 +61,4 @@ public abstract class AbstractPacketV2 {
     public void setCRC(byte[] CRC) {
         this.CRC = CRC;
     }
-
-    public void calculateCRC() {
-        this.CRC = ByteUtil.int2byte(CRC16.CRCCheck(source()), 2);
-    }
 }
