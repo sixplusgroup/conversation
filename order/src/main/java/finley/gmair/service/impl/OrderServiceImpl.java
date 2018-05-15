@@ -10,6 +10,7 @@ import finley.gmair.form.express.ExpressOrderForm;
 import finley.gmair.model.location.OrderLocationRetryCount;
 import finley.gmair.model.order.OrderChannel;
 import finley.gmair.model.order.OrderItem;
+import finley.gmair.model.order.OrderStatus;
 import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.service.ExpressService;
 import finley.gmair.service.LocationService;
@@ -221,6 +222,7 @@ public class OrderServiceImpl implements OrderService {
                 if (!StringUtils.isEmpty(expressCompany) && !StringUtils.isEmpty(expressNo)) {
                     try {
                         ResultData expressResult = expressService.addOrder(order.getOrderId(), expressCompany, expressNo);
+                        order.setStatus(OrderStatus.PROCESSING);
                     } catch (Exception e) {
 
                     }

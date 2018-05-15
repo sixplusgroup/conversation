@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.order.OrderItem;
+import finley.gmair.model.order.OrderStatus;
 import finley.gmair.model.order.PlatformOrder;
 import finley.gmair.service.ExpressService;
 import finley.gmair.service.InstallService;
@@ -215,8 +216,8 @@ public class OrderController {
     }
 
     @CrossOrigin
-    @RequestMapping(method = RequestMethod.POST, value = "/deliver")
-    public ResultData orderDeliver(@RequestParam("orderId") String orderId,
+    @RequestMapping(method = RequestMethod.POST, value = "/installCreation")
+    public ResultData orderInstall(@RequestParam("orderId") String orderId,
                                    @RequestParam(value = "qrcode", required = false) String qrcode
                                    ){
         ResultData result = new ResultData();
@@ -255,6 +256,45 @@ public class OrderController {
             } else {
                 result.setData(response.getData());
             }
+        }
+
+        return result;
+    }
+
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.POST, value = "/deliver")
+    public ResultData orderDeliver(@RequestParam("orderId") String orderId,
+                                   @RequestParam("company") String company,
+                                   @RequestParam("expressNo") String expressNo)
+    {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchPlatformOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("订单服务器忙，请稍后再试！");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("该订单不存在，请确认订单号");
+            return result;
+        }
+        PlatformOrder order = ((List<PlatformOrder>) response.getData()).get(0);
+        order.setStatus(OrderStatus.PROCESSING);
+        response = orderService.updatePlatformOrder(order);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("更新订单状态失败");
+            return result;
+        }
+
+        response = expressService.addOrder(orderId, company, expressNo);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("创建快递单失败");
+            return result;
         }
 
         return result;
