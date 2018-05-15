@@ -29,60 +29,6 @@ public class AssignController {
     @Autowired
     private MemberService memberService;
 
-    //工人确认带货安装时触发,创建安装任务表单
-    @RequestMapping(method = RequestMethod.POST, value = "/withmachine")
-    public ResultData withmachine(String wechatId, String qrcode) {
-        ResultData result = new ResultData();
-
-        wechatId = wechatId.trim();
-        qrcode = qrcode.trim();
-
-        //check whether input is empty
-        if (StringUtils.isEmpty(wechatId) || StringUtils.isEmpty(qrcode)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all information");
-            return result;
-        }
-
-        //according to wechatId,find the member.
-        Member member = new Member();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("wechatId", wechatId);
-        condition.put("blockFlag", false);
-        ResultData response = memberService.fetchMember(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            member = ((List<Member>) response.getData()).get(0);
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the member with wechatId");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,please try again later");
-        }
-
-        //create the assign and save
-        Assign assign = new Assign();
-        assign.setQrcode(qrcode);
-        assign.setTeamId(member.getTeamId());
-        assign.setMemberId(member.getMemberId());
-        assign.setAssignStatus(AssignStatus.PROCESSING);
-        assign.setAssignDate(new Timestamp(System.currentTimeMillis()));
-        assign.setConsumerConsignee("");
-        assign.setConsumerPhone("");
-        assign.setConsumerAddress("");
-        response = assignService.createAssign(assign);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription("Success to create the assign.");
-            return result;
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to create the assign.");
-            return result;
-        }
-    }
-
     //工人选择安装时间并提交时触发,修改任务状态,安装日期
     @RequestMapping(method = RequestMethod.POST, value = "/date")
     public ResultData date(InstallDateForm form) {

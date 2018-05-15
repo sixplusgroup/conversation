@@ -24,6 +24,7 @@ public class MemberController {
     @Autowired
     private TeamService teamService;
 
+    //管理员在后台选择创建一个工人时触发
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public ResultData createMember(MemberForm form) {
         ResultData result = new ResultData();
