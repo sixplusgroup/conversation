@@ -152,6 +152,7 @@ public class ExpressController {
      *
      * @return
      */
+    @CrossOrigin
     @GetMapping("/order/query/{orderId}")
     public ResultData queryOrder(@PathVariable String orderId) {
         ResultData result = new ResultData();
@@ -179,6 +180,7 @@ public class ExpressController {
      *
      * @return
      */
+    @CrossOrigin
     @GetMapping("/query/{expressNo}")
     public ResultData queryRoute(@PathVariable String expressNo) {
         ResultData result = new ResultData();
