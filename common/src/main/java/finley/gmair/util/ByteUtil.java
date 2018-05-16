@@ -31,6 +31,16 @@ public class ByteUtil {
         return result;
     }
 
+    public static byte[] string2byte(String value, int size) {
+        byte[] source = value.getBytes();
+        byte[] result = new byte[size];
+        int length = (source.length < size) ? source.length : size;
+        for (int i = 0; i < length; i++) {
+            result[result.length - 1 - i] = source[source.length - 1 - i];
+        }
+        return result;
+    }
+
     public static int byte2int(byte[] value) {
         int result = 0;
         for (int i = 0; i < value.length; i++) {

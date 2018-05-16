@@ -1,6 +1,8 @@
 package finley.gmair.util;
 
+import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.packet.*;
+import org.apache.commons.codec.binary.StringUtils;
 
 import java.lang.reflect.Field;
 
@@ -33,24 +35,96 @@ public class PacketUtil {
     public static HeartBeatPacket generateHeartBeat(String client) {
         byte[] CTF = new byte[]{0x02};
         byte[] CID = new byte[]{0x00};
-        byte[] SID = new byte[12];
-        byte[] temp = client.getBytes();
-        for (int i = 0; i < temp.length; i++) {
-            SID[SID.length - 1 - i] = temp[temp.length - 1 - i];
-        }
+        byte[] UID = ByteUtil.string2byte(client, 12);
         long time = System.currentTimeMillis();
         byte[] TIM = ByteUtil.long2byte(time, 8);
         byte[] LEN = new byte[]{0x00};
-        HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, SID, TIM, LEN);
+        HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
         return packet;
     }
 
-    public static ProbePacket generateProbe(Action action, String command, String client) {
-        ProbePacket packet = null;
+    public static HeartBeatPacket generateProbe(String client) {
+        byte[] CTF = new byte[0x00];
+        byte[] CID = new byte[0x00];
+        byte[] UID = ByteUtil.string2byte(client, 12);
+        long time = System.currentTimeMillis();
+        byte[] TIM = ByteUtil.long2byte(time, 8);
+        byte[] LEN = new byte[]{0x00};
+        HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
+        return packet;
+    }
+
+    public static <T> AbstractPacketV2 generateDetailProbe(Action action, String command, T input, String client) {
+        AbstractPacketV2 packet = null;
         Field[] fields = PacketInfo.class.getDeclaredFields();
+        byte[] CTF = new byte[]{action.getSignal()};
+        byte[] CID, UID, TIM, LEN;
         for (Field field : fields) {
-            
+            if (field.isAnnotationPresent(PacketConfig.class)) {
+                PacketConfig pf = field.getAnnotation(PacketConfig.class);
+                if (!command.equals(pf.name())) {
+                    continue;
+                }
+                CID = ByteUtil.int2byte(pf.command(), 1);
+                UID = ByteUtil.string2byte(client, 12);
+                long time = System.currentTimeMillis();
+                TIM = ByteUtil.long2byte(time, 8);
+                if (action == Action.PROBE) {
+                    LEN = new byte[]{0x00};
+                    packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
+                }
+                if (action == Action.CONFIG) {
+                    LEN = ByteUtil.int2byte(pf.length(), 1);
+                    byte[] DAT = new byte[pf.length()];
+                    if (input instanceof Integer) {
+                        DAT = ByteUtil.int2byte((int) input, pf.length());
+                    }
+                    if (input instanceof Long) {
+                        DAT = ByteUtil.long2byte((long) input, pf.length());
+                    }
+                    if (input instanceof byte[]) {
+                        DAT = (byte[]) input;
+                    }
+                    if (input instanceof String) {
+                        DAT = ByteUtil.string2byte((String) input, pf.length());
+                    }
+                    packet = new ProbePacket(CTF, CID, UID, TIM, LEN, DAT);
+                }
+            }
         }
+        return packet;
+    }
+
+    public static HeartBeatPacket generateReboot(String client) {
+        byte[] CTF = new byte[]{0x01};
+        byte[] CID = new byte[]{0x0B};
+        byte[] UID = ByteUtil.string2byte(client, 12);
+        long time = System.currentTimeMillis();
+        byte[] TIM = ByteUtil.long2byte(time, 8);
+        byte[] LEN = new byte[]{0x00};
+        HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
+        return packet;
+    }
+
+    public static HeartBeatPacket generateClassification(String client) {
+        return generate(new byte[]{(byte)0xFD}, client);
+    }
+
+    public static HeartBeatPacket generateFirmware(String client) {
+        return generate(new byte[]{(byte)0xFE}, client);
+    }
+
+    public static HeartBeatPacket generateHardware(String client) {
+        return generate(new byte[]{(byte)0xFF}, client);
+    }
+
+    private static HeartBeatPacket generate(byte[] CID, String client) {
+        byte[] CTF = new byte[]{0x00};
+        byte[] UID = ByteUtil.string2byte(client, 12);
+        long time = System.currentTimeMillis();
+        byte[] TIM = ByteUtil.long2byte(time, 8);
+        byte[] LEN = new byte[]{0x00};
+        HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
         return packet;
     }
 }
