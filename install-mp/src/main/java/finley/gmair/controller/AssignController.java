@@ -244,7 +244,7 @@ public class AssignController {
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
+        result.setData(((List<Assign>)response.getData()).get(0).getAssignId());
 
         //检查该工人是否能安装这台机器
         String memberId = ((List<Assign>) response.getData()).get(0).getMemberId();

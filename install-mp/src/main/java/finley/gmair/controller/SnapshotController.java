@@ -166,6 +166,7 @@ public class SnapshotController {
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("输入了不可转换为double的字符串");
+                return;
             }
             ResultData response = locationService.ll2description(locationLng, locationLat);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
