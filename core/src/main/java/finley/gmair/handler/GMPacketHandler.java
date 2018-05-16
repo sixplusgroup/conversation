@@ -45,25 +45,20 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
             String uid = packet.getUID().trim();
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
-                System.out.println("refresh connection");
                 repository.push(uid, ctx);
             }
             if (packet instanceof HeartBeatPacket) {
                 //give a heart beat packet as response
                 HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
                 ctx.writeAndFlush(response.convert2bytearray());
-                System.out.println("heart beat packet: ");
-
             }
             if (packet instanceof ProbePacket) {
-                System.out.println("probe packet: ");
+                HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
+                ctx.writeAndFlush(response.convert2bytearray());
             }
-
         } else {
-            ctx.writeAndFlush("ccccc");
             return;
         }
-        System.out.println("message: ");
     }
 
     @Override

@@ -44,8 +44,8 @@ public class PacketUtil {
     }
 
     public static HeartBeatPacket generateProbe(String client) {
-        byte[] CTF = new byte[0x00];
-        byte[] CID = new byte[0x00];
+        byte[] CTF = new byte[]{0x00};
+        byte[] CID = new byte[]{0x00};
         byte[] UID = ByteUtil.string2byte(client, 12);
         long time = System.currentTimeMillis();
         byte[] TIM = ByteUtil.long2byte(time, 8);

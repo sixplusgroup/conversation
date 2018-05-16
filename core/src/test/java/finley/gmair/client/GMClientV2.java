@@ -20,8 +20,8 @@ public class GMClientV2 {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true).handler(new ChannelInitializer<SocketChannel>() {
                 public void initChannel(SocketChannel channel) throws Exception {
-                    channel.pipeline().addLast(new ByteArrayEncoder());
                     channel.pipeline().addLast(new ByteArrayDecoder());
+                    channel.pipeline().addLast(new ByteArrayEncoder());
                     channel.pipeline().addLast(new GMClientV2Handler());
                 }
             });

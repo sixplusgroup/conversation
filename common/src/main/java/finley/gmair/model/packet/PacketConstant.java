@@ -5,7 +5,7 @@ public class PacketConstant {
 
     public final static String COM_PORT = "port";
 
-    public final static String HEARTBEAT_INTERVAL = "interval";
+    public final static String HEARTBEAT_INTERVAL = "heartbeat_interval";
 
     public final static String POWER_MODE = "power";
 
@@ -22,4 +22,6 @@ public class PacketConstant {
     public final static String LIGHT = "light";
 
     public final static String CHILD_LOCK = "lock";
+
+    public final static String PROBE_INTERVAL = "probe_interval";
 }
