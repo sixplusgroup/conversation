@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ExpressService {
     @RequestMapping(value = "/express/order/create", method = RequestMethod.POST)
     ResultData addOrder(@RequestParam("orderId") String orderId,
-                               @RequestParam("companyId") String companyId,
+                               @RequestParam("companyName") String companyId,
                                @RequestParam("expressNo") String expressNo);
 
     @RequestMapping(value = "/express/parcel/query/{codeValue}", method = RequestMethod.GET)

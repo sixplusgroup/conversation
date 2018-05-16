@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.config", "finley.gmair.scheduler.installation"})
+@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.config", "finley.gmair.sf.config","finley.gmair.scheduler.installation"})
 @RestController
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @RequestMapping("/installation")
