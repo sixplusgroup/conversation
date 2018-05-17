@@ -34,6 +34,16 @@ public class GMRepository {
         return this;
     }
 
+    @Cacheable("cache")
+    public GMRepository remove(ChannelHandlerContext ctx) {
+        for (String key : cache.keySet()) {
+            if (cache.get(key).equals(ctx)) {
+                return remove(key);
+            }
+        }
+        return this;
+    }
+
     public ResultData list() {
         ResultData result = new ResultData();
         Iterator it = cache.entrySet().iterator();

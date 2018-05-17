@@ -31,8 +31,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        String key = ctx.channel().remoteAddress().toString();
-        repository.remove(key);
+        repository.remove(ctx);
     }
 
     @Override
@@ -68,6 +67,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        repository.remove(ctx);
         ctx.close();
     }
 }
