@@ -9,10 +9,10 @@ public abstract class AbstractLog {
 
     private Timestamp createAt;
 
-    public AbstractLog(String logDetail, String ip, Timestamp createAt) {
+    public AbstractLog(String logDetail, String ip) {
         this.logDetail = logDetail;
         this.ip = ip;
-        this.createAt = createAt;
+        this.createAt = new Timestamp(System.currentTimeMillis());
     }
 
     public String getLogDetail() {
