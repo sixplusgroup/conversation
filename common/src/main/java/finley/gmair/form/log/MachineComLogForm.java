@@ -1,6 +1,6 @@
 package finley.gmair.form.log;
 
-public class LogMachineComLogForm {
+public class MachineComLogForm {
     private String uid;
 
     private String action;
