@@ -15,11 +15,13 @@ import java.util.Map;
 @Repository
 public class LogDaoImpl extends BaseDao implements LogDao {
 
+    private final static String Collection_MachineComLog = "machinecom_log";
+
     @Override
     public ResultData insertMachineComLog(MachineComLog machineComLog) {
         ResultData result = new ResultData();
         try {
-            mongoTemplate.insert(machineComLog, "machinecom_log");
+            mongoTemplate.insert(machineComLog, Collection_MachineComLog);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
@@ -33,9 +35,9 @@ public class LogDaoImpl extends BaseDao implements LogDao {
         try {
             List<MachineComLog> list;
             if(condition.containsKey("uid")) {
-                list = mongoTemplate.find(new Query(Criteria.where("uid").is(condition.get("uid"))), MachineComLog.class, "machinecom_log");
+                list = mongoTemplate.find(new Query(Criteria.where("uid").is(condition.get("uid"))), MachineComLog.class, Collection_MachineComLog);
             }else{
-                list = mongoTemplate.findAll(MachineComLog.class, "machinecom_log");
+                list = mongoTemplate.findAll(MachineComLog.class, Collection_MachineComLog);
             }
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
