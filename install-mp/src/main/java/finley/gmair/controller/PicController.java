@@ -96,8 +96,18 @@ public class PicController {
 
         //compute md5, save pic to install_pic, save temp url-path map to tempfile_location
         new Thread(() -> {
-            solveMd5(fileUrl, picPath, memberPhone);
-            tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
+            try {
+                solveMd5(fileUrl, picPath, memberPhone);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+            try{
+                tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }).start();
 
         result.setData(fileUrl);

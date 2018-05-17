@@ -135,10 +135,16 @@ public class SnapshotController {
             }
 
             try {
-                //TODO
-                //该方法如果失败了,会导致没有把有用的记录从Tempfile表中删去,这会导致一些问题.
-                tempFileMapService.deleteValidPicMapFromTempFileMap(picPath);       //修改tempfilemap表
                 fileMapService.createPicMap(picPath);                               //修改filemap表
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                //TODO
+                //该方法如果失败了,会导致没有把有用的记录从Tempfile表中删去,这会导致冗余数据.
+                tempFileMapService.deleteValidPicMapFromTempFileMap(picPath);       //修改tempfilemap表
             } catch (Exception e) {
                 e.printStackTrace();
             }
