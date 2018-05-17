@@ -14,7 +14,7 @@ public class LogDaoImpl extends BaseDao implements LogDao {
     public ResultData insertMachineComLog(MachineComLog machineComLog) {
         ResultData result = new ResultData();
         try {
-            mongoTemplate.insert(machineComLog, "MachineComLog");
+            mongoTemplate.insert(machineComLog, "machinecom_log");
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
