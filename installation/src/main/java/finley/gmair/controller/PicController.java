@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.installation.Pic;
 import finley.gmair.model.installation.Snapshot;
 import finley.gmair.service.PicService;
@@ -49,7 +51,7 @@ public class PicController {
     }
 
     //根据snapshotId查是否重复图片
-    @RequestMapping(method = RequestMethod.GET, value = "duplicate")
+    @RequestMapping(method = RequestMethod.POST, value = "duplicate")
     public ResultData duplicate(String snapshotId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
@@ -71,27 +73,38 @@ public class PicController {
         List<Pic> picList = (List<Pic>) response.getData();
         List<String> picCopyWho = new ArrayList<>();
         for (Pic pic : picList) {
-            //首先找到重复图片的第一个出现的..
+            //首先找到该重复图片是抄袭的哪张图片,一条pic记录..
             condition.clear();
-            condition.put("md5", pic.getPicMd5());
-            condition.put("copyFlag", 0);
+            condition.put("picMd5", pic.getPicMd5());
+            condition.put("copyFlag", false);
             condition.put("blockFlag", false);
             response = picService.fetchPic(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+
+            //然后拿出该抄袭图片的assignId并保存..
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                picCopyWho.add("");
                 continue;
+            }
             Pic firstPic = ((List<Pic>) response.getData()).get(0);
-            //找到该重复图片的AssignId
             condition.clear();
             condition.put("snapshotId", firstPic.getSnapshotId());
             condition.put("blockFlag", false);
             response = snapshotService.fetchSnapshot(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                picCopyWho.add("");
                 continue;
+            }
             picCopyWho.add(((List<Snapshot>) response.getData()).get(0).getAssignId());
         }
-        result.setData(picList);
-        //TODO
-        //还没有把重复图片放进去
+
+        JSONObject picL = new JSONObject();
+        picL.put("picList", picList);
+        JSONObject copyL = new JSONObject();
+        copyL.put("copyPicList", picCopyWho);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(picL);
+        jsonArray.add(copyL);
+        result.setData(jsonArray);
         return result;
     }
 }

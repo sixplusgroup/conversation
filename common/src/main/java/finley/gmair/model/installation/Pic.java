@@ -8,6 +8,7 @@ public class Pic extends Entity {
     private String picMd5;
     private String snapshotId;
     private boolean copyFlag;
+    private boolean occupied;
     public Pic(){super();}
     public Pic(String picAddress,String snapshotId){
         this();
@@ -53,5 +54,13 @@ public class Pic extends Entity {
 
     public void setCopyFlag(boolean copyFlag) {
         this.copyFlag = copyFlag;
+    }
+
+    public boolean isOccupied() {
+        return occupied;
+    }
+
+    public void setOccupied(boolean occupied) {
+        this.occupied = occupied;
     }
 }

@@ -76,7 +76,10 @@ public class PicController {
                 .append(File.separator)
                 .append(fileName)
                 .toString();
-        String memberPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String memberPhone = (String) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
 
         //create the pic-saving directory and save the pic to disk.
         File directory = new File(actualPath);
@@ -102,13 +105,17 @@ public class PicController {
     }
 
     private void solveMd5(String fileUrl, String picPath, String memberPhone) {
-        Pic pic = new Pic(fileUrl, memberPhone);
+        Pic pic = new Pic(fileUrl, "0");
+        pic.setPicAddress(fileUrl);
+        pic.setOccupied(false);
+        pic.setSnapshotId("0");
         try {
             String picMd5 = DigestUtils.md5Hex(new FileInputStream(picPath));
             pic.setPicMd5(picMd5);
             //compute copyFlag
             Map<String, Object> condition = new HashMap<>();
             condition.put("picMd5", picMd5);
+            condition.put("occupied", true);
             condition.put("blockFlag", false);
             ResultData response = picService.fetchPic(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK)

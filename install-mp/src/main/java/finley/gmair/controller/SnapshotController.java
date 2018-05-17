@@ -188,22 +188,22 @@ public class SnapshotController {
         snapshotLocService.createSnapshotLoc(snapshotLoc);
     }
 
-    //根据上传的picUrl来填写对应的snapshot_id
+    //根据上传的picUrl来填写对应的snapshot_id,并更新occupied状态位
     private ResultData fillSnapshotId(String picUrl, String snapshotId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         String[] urls = picUrl.split(",");
         for (String url : urls) {
             condition.clear();
-            condition.put("pic_address", url);
+            condition.put("picAddress", url);
             ResultData response = picService.fetchPic(condition);
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
                 continue;
-            Pic pic = new Pic();
-            pic.setPicId(((List<Pic>) response.getData()).get(0).getPicId());
+            Pic pic = ((List<Pic>) response.getData()).get(0);
             pic.setSnapshotId(snapshotId);
+            pic.setOccupied(true);
             picService.updatePic(pic);
-            result.setDescription("success to fill the snapshotId to pic");
+            result.setDescription("success to update pic");
         }
         return result;
     }
