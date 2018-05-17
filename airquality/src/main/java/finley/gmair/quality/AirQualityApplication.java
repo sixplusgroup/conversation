@@ -15,7 +15,7 @@ import javax.xml.transform.Result;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.service", "finley.gmair.dao"})
+@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.config"})
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @EnableScheduling
 public class AirQualityApplication {

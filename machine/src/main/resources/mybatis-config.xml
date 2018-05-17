@@ -4,9 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <mappers>
-        <mapper resource="mapper/cityairquality.xml"/>
-        <mapper resource="mapper/monitorstation.xml"/>
-        <mapper resource="mapper/cityurl.xml"/>
-        <mapper resource="mapper/obscurecity.xml"/>
+        <mapper resource="mapper/machineairquality.xml"/>
     </mappers>
 </configuration>

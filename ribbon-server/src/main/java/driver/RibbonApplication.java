@@ -11,7 +11,7 @@ import serviceConfiguration.ComputeServiceConfiguration;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"controller", "serviceConfiguration"}, basePackageClasses = ComputeServiceConfiguration.class)
+@ComponentScan(basePackages = {"finley.gmair.controller", "serviceConfiguration"}, basePackageClasses = ComputeServiceConfiguration.class)
 public class RibbonApplication {
 
     @Bean

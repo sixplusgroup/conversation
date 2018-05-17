@@ -4,7 +4,7 @@ import finley.gmair.model.Entity;
 
 import java.sql.Timestamp;
 
-public class AirQuality extends Entity{
+public class CityAirQuality extends Entity{
 
     private String cityId;
     private String url;

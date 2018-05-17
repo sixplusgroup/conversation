@@ -1,4 +1,4 @@
-package controller;
+package finley.gmair.controller;
 
 
 import serviceConfiguration.ComputeServiceConfiguration;

@@ -1,6 +1,6 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.model.air.AirQuality;
+import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.service.AirQualityCacheService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -15,11 +15,11 @@ import java.util.Map;
 public class AirQualityCacheServiceImpl implements AirQualityCacheService{
 
         //cache map to store city name and airQuality
-        private Map<String, AirQuality> airQualityMap = new HashMap<>();
+        private Map<String, CityAirQuality> airQualityMap = new HashMap<>();
 
         @Cacheable("airQualityMap")
         @Override
-        public ResultData generate(AirQuality airQuality) {
+        public ResultData generate(CityAirQuality airQuality) {
             ResultData result = new ResultData();
             airQualityMap.put(airQuality.getCityId(), airQuality);
             return result;
@@ -27,10 +27,10 @@ public class AirQualityCacheServiceImpl implements AirQualityCacheService{
 
         @Cacheable("airQualityMap")
         @Override
-        public ResultData generate(Map<String, AirQuality> map) {
+        public ResultData generate(Map<String, CityAirQuality> map) {
             ResultData result = new ResultData();
             for (Map.Entry entry : map.entrySet()) {
-                    map.put((String) entry.getKey(), (AirQuality) entry.getValue());
+                    map.put((String) entry.getKey(), (CityAirQuality) entry.getValue());
             }
             return result;
         }
@@ -39,7 +39,7 @@ public class AirQualityCacheServiceImpl implements AirQualityCacheService{
         @Override
         public ResultData fetch(String cityId) {
             ResultData result = new ResultData();
-            AirQuality airQuality = airQualityMap.get(cityId);
+            CityAirQuality airQuality = airQualityMap.get(cityId);
             if (airQuality == null) {
                     result.setResponseCode(ResponseCode.RESPONSE_NULL);
             } else {

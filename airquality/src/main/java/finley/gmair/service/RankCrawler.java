@@ -1,11 +1,10 @@
 package finley.gmair.service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.dao.AirQualityDao;
+import finley.gmair.dao.CityAirQualityDao;
 import finley.gmair.dao.CityUrlDao;
 import finley.gmair.dao.MonitorStationDao;
-import finley.gmair.model.air.AirQuality;
+import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.model.air.CityUrl;
 import finley.gmair.model.air.MonitorStation;
 import finley.gmair.service.feign.LocationFeign;
@@ -44,7 +43,7 @@ public class RankCrawler {
     CityUrlDao cityUrlDao;
 
     @Autowired
-    AirQualityDao airQualityDao;
+    CityAirQualityDao airQualityDao;
 
     @Autowired
     MonitorStationDao monitorStationDao;
@@ -55,7 +54,7 @@ public class RankCrawler {
      */
     @Scheduled(cron = "* 0/30 * * * *")
     public void rank() {
-        Map<String, AirQuality> map = new HashMap<>();
+        Map<String, CityAirQuality> map = new HashMap<>();
         int count = 1;
         while (count > 0) {
             count--;
@@ -68,7 +67,7 @@ public class RankCrawler {
                 Elements trs = tableBody.getElementsByTag("tr");
                 for (Element tr : trs) {
                     Elements tds = tr.getElementsByTag("td");
-                    AirQuality airQuality = new AirQuality();
+                    CityAirQuality airQuality = new CityAirQuality();
                     try {
                         Element cityHref = tds.get(1).getElementsByTag("a").first();
                         String obscureCityName = cityHref.text();
@@ -135,12 +134,12 @@ public class RankCrawler {
         List<CityUrl> cityUrlList = map.values().stream()
                 .map(e -> new CityUrl(e.getCityId(), AIR_URL + e.getUrl()))
                 .collect(Collectors.toList());
-        List<AirQuality> airQualityList = map.values().stream().collect(Collectors.toList());
+        List<CityAirQuality> airQualityList = map.values().stream().collect(Collectors.toList());
         insertCityAqiDetail(airQualityList);
         updateCityUrl(cityUrlList);
     }
 
-    private void insertCityAqiDetail(List<AirQuality> airQualityList) {
+    private void insertCityAqiDetail(List<CityAirQuality> airQualityList) {
         if (!airQualityList.isEmpty())
             airQualityDao.insertBatch(airQualityList);
     }

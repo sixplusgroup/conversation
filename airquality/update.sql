@@ -31,3 +31,15 @@ CREATE TABLE `gmair_airquality`.`obscure_city` (
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`oc_id`),
   UNIQUE INDEX `oc_id_UNIQUE` (`oc_id` ASC));
+
+# 2018-05-17 create machine air quality
+CREATE TABLE `gmair_airquality`.`machine_airquality` (
+  `ma_id` CHAR(31) NOT NULL,
+  `qrcode` CHAR (31) NOT NULL ,
+  `pm_25` DECIMAL(10, 4) NOT NULL,
+  `temperature` DECIMAL(10, 4) NOT NULL,
+  `humidity` DECIMAL(10, 4) NOT NULL,
+  `co2` DECIMAL(10, 4) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`ma_id`));
