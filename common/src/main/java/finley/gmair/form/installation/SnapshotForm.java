@@ -6,6 +6,7 @@ public class SnapshotForm {
     private String picPath;
     private String longitude;
     private String latitude;
+    private boolean net;
 
     public String getQrcode() {
         return qrcode;
@@ -45,5 +46,13 @@ public class SnapshotForm {
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    public boolean isNet() {
+        return net;
+    }
+
+    public void setNet(boolean net) {
+        this.net = net;
     }
 }

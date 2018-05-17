@@ -8,17 +8,18 @@
         <result property="wechatId" column="wechat_id" />
         <result property="memberPhone" column="member_phone" />
         <result property="picPath" column="pic_path" />
+        <result property="net" column="net" />
         <result property="blockFlag" column="block_flag"/>
         <result property="createAt" column="create_time" />
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Snapshot" useGeneratedKeys="false">
         REPLACE INTO gmair_install.install_snapshot
-        VALUES (#{snapshotId},#{assignId},#{qrcode},#{wechatId},#{memberPhone},#{picPath},#{blockFlag},#{createAt})
+        VALUES (#{snapshotId},#{assignId},#{qrcode},#{wechatId},#{memberPhone},#{picPath},#{net},#{blockFlag},#{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="Snapshot">
-        SELECT snapshot_id,assign_id,code_value,wechat_id,member_phone,pic_path,block_flag,create_time
+        SELECT snapshot_id,assign_id,code_value,wechat_id,member_phone,pic_path,net,block_flag,create_time
         FROM gmair_install.install_snapshot
         where 1 = 1
         <if test="snapshotId !=null">
@@ -35,6 +36,9 @@
         </if>
         <if test="memberPhone !=null">
             AND member_phone = #{memberPhone}
+        </if>
+        <if test="net != null">
+            AND net = #{net}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}

@@ -56,6 +56,7 @@ public class SnapshotController {
         String picPath = form.getPicPath().trim();
         String locationLng = form.getLongitude().trim();
         String locationLat = form.getLatitude().trim();
+        boolean net = form.isNet();
 
         //check whether input is empty
         if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(wechatId) || StringUtils.isEmpty(picPath)) {
@@ -103,7 +104,7 @@ public class SnapshotController {
         }
 
         //create the Snapshot
-        Snapshot snapshot = new Snapshot(assignId, qrcode, wechatId, memberPhone, picPath);
+        Snapshot snapshot = new Snapshot(assignId, qrcode, wechatId, memberPhone, picPath, net);
         response = snapshotService.createSnapshot(snapshot);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);

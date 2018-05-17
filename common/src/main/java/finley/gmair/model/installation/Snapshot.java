@@ -10,20 +10,22 @@ public class Snapshot extends Entity {
     private String wechatId;
     private String memberPhone;
     private String picPath;
+    private boolean net;
 
-    public Snapshot()
-    {
+    public Snapshot() {
         super();
     }
 
-    public Snapshot(String assignId, String qrcode, String wechatId, String memberPhone, String picPath){
+    public Snapshot(String assignId, String qrcode, String wechatId, String memberPhone, String picPath, boolean net) {
         this();
         this.assignId = assignId;
         this.qrcode = qrcode;
         this.wechatId = wechatId;
         this.memberPhone = memberPhone;
         this.picPath = picPath;
+        this.net = net;
     }
+
     public String getSnapshotId() {
         return snapshotId;
     }
@@ -70,5 +72,13 @@ public class Snapshot extends Entity {
 
     public void setPicPath(String picPath) {
         this.picPath = picPath;
+    }
+
+    public boolean isNet() {
+        return net;
+    }
+
+    public void setNet(boolean net) {
+        this.net = net;
     }
 }

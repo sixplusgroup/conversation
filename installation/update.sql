@@ -89,8 +89,10 @@ ADD COLUMN `create_time` DATETIME NOT NULL AFTER `block_flag`;
 ALTER TABLE `gmair_install`.`install_pic`
 CHANGE COLUMN `member_phone` `snapshot_id` VARCHAR(45) NOT NULL ;
 
-#20180517 add column occupied to install_pic
+#20180517 add column occupied to install_pic, add column net to install_snapshot
 
 ALTER TABLE `gmair_install`.`install_pic`
 ADD COLUMN `occupied` TINYINT(1) NOT NULL DEFAULT '0' AFTER `copy_flag`;
 
+ALTER TABLE `gmair_install`.`install_snapshot`
+ADD COLUMN `net` TINYINT(1) NOT NULL AFTER `pic_path`;
