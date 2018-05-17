@@ -6,9 +6,12 @@ import finley.gmair.model.log.MachineComLog;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.Null;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/log")
@@ -47,46 +50,22 @@ public class LogController {
      *
      * @return
      */
-    @GetMapping("/machinecom/query/{uid}")
-    public ResultData queryMachineComLog(@PathVariable String uid) {
+    @GetMapping(value = {"/machinecom/query/{uid}", "/machinecom/query"})
+    public ResultData queryMachineComLog(@PathVariable(required = false) String uid) {
         ResultData result = new ResultData();
-        ResultData response = logService.fetchMachineComLog(uid);
+        Map<String, Object> condition = new HashMap<>();
+        if(uid != null){
+            condition.put("uid", uid);
+        }
+        ResultData response = logService.fetchMachineComLog(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             return result;
-        } else {
+        }else{
             return response;
         }
 
     }
 
-    /**
-     * This method is used to query all machineComLogs in the database
-     *
-     * @return
-     */
-    @GetMapping("/machinecom/query")
-    public ResultData queryAllMachineComLog() {
-        ResultData result = new ResultData();
-        ResultData response = logService.fetchgAllMachineComLog();
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            return result;
-        } else {
-            return response;
-        }
-
-    }
-
-    @GetMapping("/machinecom/query/{uid}")
-    public ResultData machineComLog(@PathVariable("uid") String uid) {
-        ResultData result = new ResultData();
-        if (uid != null) {
-
-        }
-
-        return result;
-    }
 }
