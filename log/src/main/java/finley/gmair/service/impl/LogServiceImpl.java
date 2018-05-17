@@ -28,4 +28,42 @@ public class LogServiceImpl implements LogService {
         result.setData(response.getData());
         return result;
     }
+
+    @Override
+    public ResultData fetchMachineComLog(String uid) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryMachineComLog(uid);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No MachineComlog found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to fetch MachineComLog from database");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData fetchgAllMachineComLog() {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryAllMachineComLog();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No MachineComlog found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to fetch MachineComLog from database");
+        }
+        return result;
+    }
 }

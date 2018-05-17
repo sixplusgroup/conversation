@@ -7,12 +7,12 @@ public abstract class AbstractLog {
 
     private String ip;
 
-    private Timestamp createAt;
+    private long createAt;
 
     public AbstractLog(String logDetail, String ip) {
         this.logDetail = logDetail;
         this.ip = ip;
-        this.createAt = new Timestamp(System.currentTimeMillis());
+        this.createAt = System.currentTimeMillis();
     }
 
     public String getLogDetail() {
@@ -31,11 +31,11 @@ public abstract class AbstractLog {
         this.ip = ip;
     }
 
-    public Timestamp getCreateAt() {
+    public long getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Timestamp createAt) {
+    public void setCreateAt(long createAt) {
         this.createAt = createAt;
     }
 }

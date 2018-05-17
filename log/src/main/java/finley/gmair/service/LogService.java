@@ -6,4 +6,8 @@ import finley.gmair.util.ResultData;
 
 public interface LogService {
     ResultData createMachineComLog(MachineComLog machineComLog);
+
+    ResultData fetchMachineComLog(String uid);
+
+    ResultData fetchgAllMachineComLog();
 }
