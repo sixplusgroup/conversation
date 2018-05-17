@@ -13,5 +13,11 @@
     <artifactId>http-common</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka-server</artifactId>
+            <version>1.4.3.RELEASE</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -1,7 +1,5 @@
 package finley.gmair.model.log;
 
-import java.sql.Timestamp;
-
 public class MachineComLog extends AbstractLog {
 
     private String uid;

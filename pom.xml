@@ -36,6 +36,8 @@
         <module>command</module>
         <module>timing</module>
         <module>log</module>
+        <module>mongo-common</module>
+        <module>http-common</module>
     </modules>
 
     <parent>
