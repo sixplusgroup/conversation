@@ -1,9 +1,14 @@
 package finley.gmair.handler;
 
+import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.model.packet.AbstractPacketV2;
 import finley.gmair.model.packet.HeartBeatPacket;
 import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.netty.GMRepository;
+import finley.gmair.service.CommunicationService;
+import finley.gmair.service.LogService;
+import finley.gmair.util.IDGenerator;
+import finley.gmair.util.IPUtil;
 import finley.gmair.util.PacketUtil;
 import finley.gmair.util.TimeUtil;
 import io.netty.buffer.ByteBuf;
@@ -12,10 +17,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.net.InetSocketAddress;
 
 @Component
 @ChannelHandler.Sharable
@@ -24,6 +29,12 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     @Qualifier("repository")
     private GMRepository repository;
+
+    @Autowired
+    private CommunicationService communicationService;
+
+    @Autowired
+    private LogService logService;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -47,6 +58,9 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             /* if match 0xFF, then it should be the 2nd version packet */
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
             String uid = packet.getUID().trim();
+            new Thread(() -> {
+                logService.createMachineComLog(uid, "connection", "connected to server", ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress());
+            }).start();
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
                 repository.push(uid, ctx);
             }
@@ -60,10 +74,10 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             new Thread(() -> {
                 if (packet instanceof HeartBeatPacket) {
                     //give a heart beat packet as response
-                    
+
                 }
                 if (packet instanceof ProbePacket) {
-
+                    communicationService.create(new MachineStatus(IDGenerator.generate(""), 1, 26, 20, 12, 100, 100, 0, 1));
                 }
             }).start();
         } else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {
