@@ -2,8 +2,7 @@ package finley.gmair.model.machine;
 
 import finley.gmair.model.Entity;
 
-public class MachineStatusV2 extends Entity {
-
+public class MachineStatus extends Entity {
     private String uid;
 
     private int pm2_5;
@@ -21,6 +20,23 @@ public class MachineStatusV2 extends Entity {
     private int power;
 
     private int mode;
+
+    public MachineStatus() {
+        super();
+    }
+
+    public MachineStatus(String uid, int pm2_5, int temp, int humid, int hcho, int co2, int volume, int power, int mode) {
+        this();
+        this.uid = uid;
+        this.pm2_5 = pm2_5;
+        this.temp = temp;
+        this.humid = humid;
+        this.hcho = hcho;
+        this.co2 = co2;
+        this.volume = volume;
+        this.power = power;
+        this.mode = mode;
+    }
 
     public String getUid() {
         return uid;
