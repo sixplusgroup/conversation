@@ -33,6 +33,9 @@
         <module>menu</module>
         <module>resource</module>
         <module>install-mp</module>
+        <module>command</module>
+        <module>timing</module>
+        <module>log</module>
     </modules>
 
     <parent>

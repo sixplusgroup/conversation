@@ -1,13 +1,10 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSON;
 import finley.gmair.model.packet.AbstractPacketV2;
 import finley.gmair.model.packet.Action;
 import finley.gmair.model.packet.HeartBeatPacket;
 import finley.gmair.model.packet.PacketConstant;
 import finley.gmair.netty.GMRepository;
-import finley.gmair.service.HeartbeatPacketService;
-import finley.gmair.util.CoreProperties;
 import finley.gmair.util.PacketUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -18,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.xml.transform.Result;
 
 
 @RestController
@@ -133,7 +128,7 @@ public class CommunicationController {
         return result;
     }
 
-    @PostMapping("/com/config/heartbeat")
+    @PostMapping("/com/config/heartbeat/interval")
     public ResultData configHeartbeatCycle(String uid, int interval) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
@@ -148,7 +143,7 @@ public class CommunicationController {
         return result;
     }
 
-    @GetMapping("/com/probe/heartbeat")
+    @GetMapping("/com/probe/heartbeat/interval")
     public ResultData probeHeartbeatCycle(String uid) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
@@ -160,6 +155,36 @@ public class CommunicationController {
         AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.PROBE, PacketConstant.HEARTBEAT_INTERVAL, null, uid);
         ctx.writeAndFlush(packet.convert2bytearray());
         result.setDescription(new StringBuffer("Succeed to send a probe packet(query heartbeat interval) to the target uid: ").append(uid).toString());
+        return result;
+    }
+
+    @PostMapping("/com/config/probe/interval")
+    public ResultData configProbeCycle(String uid, int interval) {
+        ResultData result = new ResultData();
+        ChannelHandlerContext ctx = repository.retrieve(uid);
+        if (StringUtils.isEmpty(ctx)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
+            return result;
+        }
+        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.PROBE_INTERVAL, interval, uid);
+        ctx.writeAndFlush(packet.convert2bytearray());
+        result.setDescription(new StringBuffer("Succeed to send a probe packet(config probe interval: ").append(interval).append(") to the target uid: ").append(uid).toString());
+        return result;
+    }
+
+    @GetMapping("/com/probe/probe/interval")
+    public ResultData probeProbeCycle(String uid) {
+        ResultData result = new ResultData();
+        ChannelHandlerContext ctx = repository.retrieve(uid);
+        if (StringUtils.isEmpty(ctx)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
+            return result;
+        }
+        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.PROBE, PacketConstant.PROBE_INTERVAL, null, uid);
+        ctx.writeAndFlush(packet.convert2bytearray());
+        result.setDescription(new StringBuffer("Succeed to send a probe packet(query probe interval) to the target uid: ").append(uid).toString());
         return result;
     }
 
@@ -313,7 +338,7 @@ public class CommunicationController {
         return result;
     }
 
-    @PostMapping("/com/config/circulation")
+    @PostMapping("c")
     public ResultData configCirculation(String uid, int circulation) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);

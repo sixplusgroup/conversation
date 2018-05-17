@@ -5,6 +5,7 @@ import finley.gmair.model.packet.HeartBeatPacket;
 import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.netty.GMRepository;
 import finley.gmair.util.PacketUtil;
+import finley.gmair.util.TimeUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,12 +28,13 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelActive();
+        //log the active status
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        String key = ctx.channel().remoteAddress().toString();
-        repository.remove(key);
+        repository.remove(ctx);
+        //log the inactive status
     }
 
     @Override
@@ -40,30 +42,34 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
         ByteBuf byteBuf = (ByteBuf) msg;
         byte[] request = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(request);
-        //judge the header, if match 0xFF, then it should be the 2nd version packet
+        //judge the header
         if (request[0] == (byte) 0xFF && request[request.length - 1] == (byte) 0xEE) {
+            /* if match 0xFF, then it should be the 2nd version packet */
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
             String uid = packet.getUID().trim();
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
-                System.out.println("refresh connection");
                 repository.push(uid, ctx);
             }
-            if (packet instanceof HeartBeatPacket) {
-                //give a heart beat packet as response
-                HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
-                ctx.writeAndFlush(response.convert2bytearray());
-                System.out.println("heart beat packet: ");
-
+            //check the timestamp of the packet, if longer that 1 minute, abort it
+            if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 30) {
+                return;
             }
-            if (packet instanceof ProbePacket) {
-                System.out.println("probe packet: ");
-            }
+            //the packet is valid, give response to the client and process the packet in a new thread
+            HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
+            ctx.writeAndFlush(response.convert2bytearray());
+            new Thread(() -> {
+                if (packet instanceof HeartBeatPacket) {
+                    //give a heart beat packet as response
+                    
+                }
+                if (packet instanceof ProbePacket) {
 
-        } else {
-            ctx.writeAndFlush("ccccc");
+                }
+            }).start();
+        } else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {
+            /* if match 0xFF, then it should be the 1st version packet */
             return;
         }
-        System.out.println("message: ");
     }
 
     @Override
@@ -73,6 +79,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        repository.remove(ctx);
         ctx.close();
     }
 }

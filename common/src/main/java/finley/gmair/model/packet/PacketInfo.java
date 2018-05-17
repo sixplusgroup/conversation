@@ -10,7 +10,7 @@ public class PacketInfo {
     private int port;
 
     @PacketConfig(command = 0x03, name = PacketConstant.HEARTBEAT_INTERVAL, length = 1)
-    private int interval;
+    private int heartbeat_interval;
 
     @PacketConfig(command = 0x04, name = PacketConstant.POWER_MODE, length = 1)
     private int power;
@@ -35,4 +35,7 @@ public class PacketInfo {
 
     @PacketConfig(command = 0x0C, name = PacketConstant.CHILD_LOCK, length = 1)
     private int lock;
+
+    @PacketConfig(command = 0x0D, name = PacketConstant.PROBE_INTERVAL, length = 1)
+    private int probe_interval;
 }

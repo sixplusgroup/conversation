@@ -1,6 +1,7 @@
 package finley.gmair.util;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 
 public class ByteUtil {
     public static byte[] concat(byte[]... partial) {
@@ -42,18 +43,16 @@ public class ByteUtil {
     }
 
     public static int byte2int(byte[] value) {
-        int result = 0;
-        for (int i = 0; i < value.length; i++) {
-            result |= value[value.length - 1 - i] & 0xFF << 8 * i;
-        }
-        return result;
+        byte[] source = new byte[4];
+        System.arraycopy(value, 0, source, source.length - value.length, value.length);
+        ByteBuffer bb = ByteBuffer.wrap(source);
+        return bb.getInt();
     }
 
     public static long byte2long(byte[] value) {
-        int result = 0;
-        for (int i = 0; i < value.length; i++) {
-            result |= value[value.length - 1 - i] & 0xFF << 8 * i;
-        }
-        return result;
+        byte[] source = new byte[8];
+        System.arraycopy(value, 0, source, source.length - value.length, value.length);
+        ByteBuffer bb = ByteBuffer.wrap(source);
+        return bb.getLong();
     }
 }
