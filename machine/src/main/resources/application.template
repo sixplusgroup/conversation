@@ -1,5 +1,5 @@
 spring.application.name=machine-agent
-server.port=80012
+server.port=8012
 eureka.client.healthcheck=true
 eureka.client.service-url.defaultZone=http://localhost:8000/eureka/
 mybatis.config-location=classpath:mybatis-config.xml
