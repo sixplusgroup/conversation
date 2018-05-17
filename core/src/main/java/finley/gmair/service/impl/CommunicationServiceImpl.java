@@ -1,4 +1,30 @@
 package finley.gmair.service.impl;
 
-public class CommunicationServiceImpl {
+import com.alibaba.fastjson.JSON;
+import finley.gmair.dao.CommunicationDao;
+import finley.gmair.model.machine.MachineStatus;
+import finley.gmair.service.CommunicationService;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CommunicationServiceImpl implements CommunicationService {
+
+    @Autowired
+    private CommunicationDao communicationDao;
+
+    @Override
+    public ResultData create(MachineStatus status) {
+        ResultData result = new ResultData();
+        ResultData response = communicationDao.insert(status);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to insert ").append(JSON.toJSONString(status)).toString());
+        }
+        return result;
+    }
 }

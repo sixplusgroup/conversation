@@ -1,6 +1,7 @@
 package finley.gmair.handler;
 
 import finley.gmair.model.packet.HeartBeatPacket;
+import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.util.ByteUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -31,9 +32,11 @@ public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
 
         byte[] TIM = ByteUtil.long2byte(time, 8);
 
-        byte[] LEN = new byte[]{0x00};
+        byte[] LEN = new byte[]{0x01};
 
-        HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
+        byte[] DAT = new byte[]{0x01};
+
+        ProbePacket packet = new ProbePacket(CTF, CID, UID, TIM, LEN, DAT);
 
         byte[] request = packet.convert2bytearray();
 

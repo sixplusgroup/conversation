@@ -1,14 +1,12 @@
 package finley.gmair.controller;
 
 
-import finley.gmair.dao.LogDao;
-import finley.gmair.form.log.LogMachineComLogForm;
+import finley.gmair.form.log.MachineComLogForm;
 import finley.gmair.model.log.MachineComLog;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,8 +22,8 @@ public class LogController {
      *
      * @return
      */
-    @PostMapping("/machinecomlog/create")
-    public ResultData addMachineComLog(LogMachineComLogForm form) {
+    @PostMapping("/machinecom/create")
+    public ResultData addMachineComLog(MachineComLogForm form) {
         ResultData result = new ResultData();
         String uid = form.getUid().trim();
         String action = form.getAction().trim();
