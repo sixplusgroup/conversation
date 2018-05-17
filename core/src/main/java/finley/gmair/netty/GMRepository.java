@@ -1,14 +1,19 @@
 package finley.gmair.netty;
 
 import com.alibaba.fastjson.JSONArray;
+import com.netflix.discovery.converters.Auto;
+import finley.gmair.pool.CorePool;
+import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,6 +21,9 @@ import java.util.Map;
 @Service
 public class GMRepository {
     private Map<String, ChannelHandlerContext> cache = new HashMap<>();
+
+    @Autowired
+    private LogService logService;
 
     @Cacheable("cache")
     public GMRepository push(String key, ChannelHandlerContext value) {
@@ -38,6 +46,7 @@ public class GMRepository {
     public GMRepository remove(ChannelHandlerContext ctx) {
         for (String key : cache.keySet()) {
             if (cache.get(key).equals(ctx)) {
+                CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
                 return remove(key);
             }
         }

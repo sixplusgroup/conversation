@@ -6,6 +6,7 @@ import finley.gmair.model.log.MachineComLog;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,7 +55,7 @@ public class LogController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             return result;
-        }else{
+        } else {
             return response;
         }
 
@@ -73,9 +74,19 @@ public class LogController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             return result;
-        }else{
+        } else {
             return response;
         }
 
+    }
+
+    @GetMapping("/machinecom/query/{uid}")
+    public ResultData machineComLog(@PathVariable("uid") String uid) {
+        ResultData result = new ResultData();
+        if (uid != null) {
+
+        }
+
+        return result;
     }
 }

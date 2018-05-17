@@ -22,4 +22,16 @@ public class ProbePacket extends AbstractPacketV2 {
     byte[] source() {
         return ByteUtil.concat(CTF, CID, UID, TIM, LEN, DAT);
     }
+
+    public byte[] getDAT() {
+        return DAT;
+    }
+
+    public byte[] getCTF() {
+        return this.CTF;
+    }
+
+    public byte[] getCID() {
+        return this.CID;
+    }
 }
