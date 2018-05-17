@@ -13,5 +13,5 @@ memcached.cache.mode=static
 memcached.cache.expiration=300
 
 ##mongodb
-spring.data.mongodb.uri=mongodb://localhost:27017/gmair_machinecomlog
+spring.data.mongodb.uri=mongodb://localhost:27017/gmair_log
 
