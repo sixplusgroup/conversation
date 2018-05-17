@@ -65,4 +65,8 @@ public abstract class AbstractPacketV2 {
     public String getUID() {
         return new String(UID);
     }
+
+    public long getTime() {
+        return ByteUtil.byte2long(TIM);
+    }
 }

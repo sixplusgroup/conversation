@@ -5,6 +5,7 @@ import finley.gmair.model.packet.HeartBeatPacket;
 import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.netty.GMRepository;
 import finley.gmair.util.PacketUtil;
+import finley.gmair.util.TimeUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -46,6 +47,11 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
                 repository.push(uid, ctx);
             }
+            //check the timestamp of the packet, if longer that 1 minute, abort it
+            if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 10) {
+                return;
+            }
+            //no data
             if (packet instanceof HeartBeatPacket) {
                 //give a heart beat packet as response
                 HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
