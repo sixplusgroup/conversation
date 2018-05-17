@@ -146,7 +146,8 @@ public class RankCrawler {
     }
 
     private void updateCityUrl(List<CityUrl> cityUrlList) {
-        cityUrlDao.replaceBatch(cityUrlList);
+        if (!cityUrlList.isEmpty())
+            cityUrlDao.replaceBatch(cityUrlList);
     }
 
     /**
