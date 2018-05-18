@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 
 import finley.gmair.form.installation.SnapshotForm;
+import finley.gmair.form.message.MessageForm;
 import finley.gmair.model.installation.*;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
@@ -45,6 +46,9 @@ public class SnapshotController {
 
     @Autowired
     private PicService picService;
+
+    @Autowired
+    private MessageService messageService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     //工人提交所有图片和机器二维码时触发,创建snapshot表单
@@ -148,6 +152,12 @@ public class SnapshotController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            try{
+                sendMessage(snapshotId);                                            //发送短信
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }).start();
 
         return result;
@@ -213,5 +223,28 @@ public class SnapshotController {
             result.setDescription("success to update pic");
         }
         return result;
+    }
+
+    //给用户发短信
+    @RequestMapping(method = RequestMethod.POST, value = "/send")
+    private void sendMessage(String snapshotId){
+        Map<String,Object> condtion = new HashMap<>();
+        condtion.put("snapshotId",snapshotId);
+        condtion.put("blockFlag",false);
+        ResultData response = snapshotService.fetchSnapshot(condtion);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK)
+            return;
+
+        String assignId = ((List<Snapshot>)response.getData()).get(0).getAssignId();
+
+        condtion.clear();
+        condtion.put("assignId",assignId);
+        condtion.put("blockFlag",false);
+        response = assignService.fetchAssign(condtion);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK)
+            return;
+        String phone = ((List<Assign>)response.getData()).get(0).getConsumerPhone();
+        String text = "尊敬的用户,你们家的新风设备已经安装完毕,请对本次安装过程做一个反馈:1.满意 2.一般 3.不满意";
+        messageService.sendOne(phone,text);
     }
 }
