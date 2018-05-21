@@ -7,37 +7,49 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class MachineStatus extends Entity {
     private String uid;
 
+    /*length = 2*/
     private int pm2_5;
 
+    /*length = 1*/
     private int temp;
 
+    /*length = 1*/
     private int humid;
 
-    private int hcho;
-
+    /*length = 2*/
     private int co2;
 
+    /*length = 2*/
     private int volume;
 
+    /*length = 1*/
     private int power;
 
+    /*length = 1*/
     private int mode;
+
+    /*length = 1*/
+    private int heat;
+
+    /*light = 1*/
+    private int light;
 
     public MachineStatus() {
         super();
     }
 
-    public MachineStatus(String uid, int pm2_5, int temp, int humid, int hcho, int co2, int volume, int power, int mode) {
+    public MachineStatus(String uid, int pm2_5, int temp, int humid, int co2, int volume, int power, int mode, int heat, int light) {
         this();
         this.uid = uid;
         this.pm2_5 = pm2_5;
         this.temp = temp;
         this.humid = humid;
-        this.hcho = hcho;
         this.co2 = co2;
         this.volume = volume;
         this.power = power;
         this.mode = mode;
+        this.heat = heat;
+        this.light = light;
     }
 
     public String getUid() {
@@ -72,14 +84,6 @@ public class MachineStatus extends Entity {
         this.humid = humid;
     }
 
-    public int getHcho() {
-        return hcho;
-    }
-
-    public void setHcho(int hcho) {
-        this.hcho = hcho;
-    }
-
     public int getCo2() {
         return co2;
     }
@@ -110,5 +114,21 @@ public class MachineStatus extends Entity {
 
     public void setMode(int mode) {
         this.mode = mode;
+    }
+
+    public int getHeat() {
+        return heat;
+    }
+
+    public void setHeat(int heat) {
+        this.heat = heat;
+    }
+
+    public int getLight() {
+        return light;
+    }
+
+    public void setLight(int light) {
+        this.light = light;
     }
 }
