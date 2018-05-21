@@ -86,7 +86,7 @@ public class MemberController {
 
     //
     @RequestMapping(method = RequestMethod.GET, value = "/members")
-    public ResultData memberlist(String teamId) {
+    public ResultData members(String teamId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if(!StringUtils.isEmpty(teamId)) {
