@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.order.OrderItem;
@@ -23,10 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequestMapping("/order")
 @RestController
@@ -156,7 +154,22 @@ public class OrderController {
             result.setDescription("Fail to retrieve the order information, please try again later");
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
+        JSONObject data = (JSONObject) JSON.toJSON(((List<PlatformOrder>) response.getData()).get(0));
+
+        response = expressService.queryCodeValue(orderId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            ArrayList<Object> jsonArray = (ArrayList<Object>) response.getData();
+            JSONArray assignArray = new JSONArray();
+            for (Object jsonObject : jsonArray) {
+                String qrcode = (new JSONObject((LinkedHashMap) jsonObject)).getString("codeValue");
+                ResultData assignResponse = installService.getAssign(qrcode);
+                if (assignResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    assignArray.add(((ArrayList)assignResponse.getData()).get(0));
+                }
+            }
+            data.put("installAssign", assignArray);
+        }
+        result.setData(data);
         return result;
     }
 
@@ -299,4 +312,6 @@ public class OrderController {
 
         return result;
     }
+
+
 }

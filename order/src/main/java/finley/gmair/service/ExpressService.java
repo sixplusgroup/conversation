@@ -17,4 +17,9 @@ public interface ExpressService {
     @RequestMapping(value = "/express/parcel/query/{codeValue}", method = RequestMethod.GET)
     ResultData getOrderByQrcode(@PathVariable("codeValue")  String codeValue) ;
 
+    @RequestMapping(value = "/express/order/query/{orderId}", method = RequestMethod.GET)
+    ResultData queryExpress(@PathVariable("orderId") String orderId);
+
+    @RequestMapping(value = "/express/order/query/parcel/{orderId}", method = RequestMethod.GET)
+    ResultData queryCodeValue(@PathVariable("orderId") String orderId);
 }
