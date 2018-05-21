@@ -2,6 +2,7 @@ package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import finley.gmair.dao.CommunicationDao;
+import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.service.CommunicationService;
 import finley.gmair.util.ResponseCode;
@@ -17,6 +18,19 @@ public class CommunicationServiceImpl implements CommunicationService {
 
     @Override
     public ResultData create(MachineStatus status) {
+        ResultData result = new ResultData();
+        ResultData response = communicationDao.insert(status);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to insert ").append(JSON.toJSONString(status)).toString());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData create(MachinePartialStatus status) {
         ResultData result = new ResultData();
         ResultData response = communicationDao.insert(status);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

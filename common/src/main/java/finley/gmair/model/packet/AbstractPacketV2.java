@@ -46,10 +46,15 @@ public abstract class AbstractPacketV2 {
             return false;
         }
         byte[] expected = ByteUtil.int2byte(CRC16.CRCCheck(source()), 2);
-        if (this.CRC == expected) {
-            return true;
+        if (this.CRC.length != expected.length) {
+            return false;
         }
-        return false;
+        for (int i = 0; i < expected.length; i ++) {
+            if (this.CRC[i] != expected[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     abstract byte[] source();

@@ -1,6 +1,7 @@
 package finley.gmair.handler;
 
 import finley.gmair.annotation.PacketConfig;
+import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.model.packet.*;
 import finley.gmair.netty.GMRepository;
@@ -55,7 +56,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             /* if match 0xFF, then it should be the 2nd version packet */
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
             String uid = packet.getUID().trim();
-            new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())).start();
+            CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
                 repository.push(uid, ctx);
             }
@@ -76,11 +77,12 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     //decode packet
                     byte[] CTF = ((ProbePacket) packet).getCTF();
                     //judge whether the packet is a data packet
-                    if (CTF != new byte[]{0x03}) return;
+                    if (CTF[0] != (byte) 0x03) return;
                     int command = ByteUtil.byte2int(((ProbePacket) packet).getCID());
                     //if it belongs to a normal probe packet
                     if (command == 0x00) {
-                        //decode the data byte array
+                        //decode the data byte array, it should be confirmed with Jay Gao
+
                     } else {
                         Field[] fields = PacketInfo.class.getDeclaredFields();
                         for (Field field : fields) {
@@ -89,24 +91,20 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                 if (command != pf.command()) {
                                     continue;
                                 }
-                                String vt = field.getGenericType().getTypeName();
+                                String name = pf.name();
                                 byte[] data = ((ProbePacket) packet).getDAT();
-                                switch (vt) {
+                                String type = field.getGenericType().getTypeName();
+                                switch (type) {
                                     case "int":
-                                        ByteUtil.byte2int(data);
-                                        break;
-                                    case "long":
-                                        ByteUtil.byte2int(data);
+                                        communicationService.create(new MachinePartialStatus(uid, name, ByteUtil.byte2int(data)));
                                         break;
                                     case "String":
-                                        new String(data);
+                                        communicationService.create(new MachinePartialStatus(uid, name, new String(data)));
+                                        break;
                                 }
-
                             }
                         }
                     }
-                    byte[] data = ((ProbePacket) packet).getDAT();
-                    CorePool.getLogExecutor().execute(new Thread(() -> communicationService.create(new MachineStatus(IDGenerator.generate(""), 1, 26, 20, 12, 100, 100, 0, 1))));
                 }
             }).start();
         } else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {

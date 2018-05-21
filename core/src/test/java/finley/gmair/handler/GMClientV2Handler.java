@@ -1,10 +1,7 @@
 package finley.gmair.handler;
 
-import finley.gmair.model.packet.HeartBeatPacket;
 import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.util.ByteUtil;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -22,7 +19,7 @@ public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        byte[] CTF = new byte[]{0x02};
+        byte[] CTF = new byte[]{0x03};
 
         byte[] CID = new byte[]{0x00};
 
