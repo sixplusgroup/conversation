@@ -84,5 +84,28 @@ public class MemberController {
         return result;
     }
 
+    //
+    @RequestMapping(method = RequestMethod.GET, value = "/members")
+    public ResultData memberlist(String teamId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if(!StringUtils.isEmpty(teamId)) {
+            condition.put("teamId", teamId);
+        }
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetchMember(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("no member found ");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now, please try again later  ");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to get the member list");
+        }
+        return result;
+    }
 
 }
