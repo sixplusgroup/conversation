@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.xml.transform.Result;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -265,4 +266,26 @@ public class AssignController {
         }
         return result;
     }
+
+    //由order模块调用触发,通过qrcode查询安装单
+    @RequestMapping(method = RequestMethod.GET, value = "/byqrcode")
+    public ResultData byqrcode(String qrcode) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("qrcode",qrcode);
+        condition.put("blockFlag",false);
+        ResultData response = assignService.fetchAssign(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("no finished assign found ");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now, please try again later  ");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to get the finished assign list by qrcode");
+        }
+        return result;
+     }
 }
