@@ -67,10 +67,10 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             //the packet is valid, give response to the client and process the packet in a new thread
             HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
             ctx.writeAndFlush(response.convert2bytearray());
-            new Thread(() -> {
+            CorePool.getComExecutor().execute(new Thread(() -> {
                 //nothing to do with heartbeat packet
                 if (packet instanceof HeartBeatPacket) {
-                    //give a heart beat packet as response
+                    //actions that need to be implement if this is a no-data packet
                 }
                 //
                 if (packet instanceof ProbePacket && packet.isValid()) {
@@ -82,7 +82,19 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     //if it belongs to a normal probe packet
                     if (command == 0x00) {
                         //decode the data byte array, it should be confirmed with Jay Gao
-
+                        byte[] data = ((ProbePacket) packet).getDAT();
+                        if (data.length != 12) return;
+                        byte[] pm2_5 = new byte[]{data[0], data[1]};
+                        byte[] temp = new byte[]{data[2]};
+                        byte[] humid = new byte[]{data[3]};
+                        byte[] co2 = new byte[]{data[4], data[5]};
+                        byte[] volume = new byte[]{data[6], data[7]};
+                        byte[] power = new byte[]{data[8]};
+                        byte[] mode = new byte[]{data[9]};
+                        byte[] heat = new byte[]{data[10]};
+                        byte[] light = new byte[]{data[11]};
+                        MachineStatus status = new MachineStatus(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temp), ByteUtil.byte2int(humid), ByteUtil.byte2int(co2), ByteUtil.byte2int(volume), ByteUtil.byte2int(power), ByteUtil.byte2int(mode), ByteUtil.byte2int(heat), ByteUtil.byte2int(light));
+                        communicationService.create(status);
                     } else {
                         Field[] fields = PacketInfo.class.getDeclaredFields();
                         for (Field field : fields) {
@@ -96,17 +108,17 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                 String type = field.getGenericType().getTypeName();
                                 switch (type) {
                                     case "int":
-                                        communicationService.create(new MachinePartialStatus(uid, name, ByteUtil.byte2int(data)));
+                                        communicationService.create(new MachinePartialStatus(uid, name, ByteUtil.byte2int(data), packet.getTime()));
                                         break;
-                                    case "String":
-                                        communicationService.create(new MachinePartialStatus(uid, name, new String(data)));
+                                    case "java.lang.String":
+                                        communicationService.create(new MachinePartialStatus(uid, name, new String(data), packet.getTime()));
                                         break;
                                 }
                             }
                         }
                     }
                 }
-            }).start();
+            }));
         } else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {
             /* if match 0xFF, then it should be the 1st version packet */
             return;

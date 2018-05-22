@@ -1,6 +1,5 @@
 package finley.gmair.model.machine;
 
-import finley.gmair.model.Entity;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "machine_partial_status")
@@ -20,6 +19,11 @@ public class MachinePartialStatus extends Entity {
         this.uid = uid;
         this.name = name;
         this.data = data;
+    }
+
+    public MachinePartialStatus(String uid, String name, Object data, long timestamp) {
+        this(uid, name, data);
+        this.setCreateAt(timestamp);
     }
 
     public String getUid() {
