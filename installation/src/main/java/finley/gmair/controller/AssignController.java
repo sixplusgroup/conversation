@@ -120,7 +120,8 @@ public class AssignController {
 
         //according to the memberName,find the memberId.
         String memberId = "";
-        condition = new HashMap<>();
+        condition.clear();
+        condition.put("teamId", teamId);
         condition.put("memberName", memberName);
         condition.put("blockFlag", false);
         response = memberService.fetchMember(condition);
