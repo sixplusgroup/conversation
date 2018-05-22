@@ -131,6 +131,10 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,please try again later");
             return result;
+        } else if( response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the member.");
+            return result;
         }
 
         //according to the assignId,find the assign record.
