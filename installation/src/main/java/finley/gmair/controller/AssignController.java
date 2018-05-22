@@ -84,17 +84,21 @@ public class AssignController {
     public ResultData allocate(AllocateForm form) {
         ResultData result = new ResultData();
 
-        String assignId = form.getAssignId().trim();
-        String teamName = form.getTeamName().trim();
-        String memberName = form.getMemberName().trim();
-        String installTime = form.getInstallDate().trim();
-
         //check empty input
-        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(teamName)) {
+        if (StringUtils.isEmpty(form.getAssignId()) || StringUtils.isEmpty(form.getAssignId().trim()) || StringUtils.isEmpty(form.getTeamName()) || StringUtils.isEmpty(form.getTeamName().trim())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide all information");
             return result;
         }
+
+        String assignId = form.getAssignId().trim();
+        String teamName = form.getTeamName().trim();
+        String memberName = null;
+        String installTime = null;
+        if(form.getMemberName() != null)
+            memberName = form.getMemberName().trim();
+        if(form.getInstallDate() != null)
+            installTime = form.getInstallDate().trim();
 
         //according to the teamName,find the teamId.
         String teamId = "";
