@@ -9,6 +9,7 @@ import finley.gmair.model.installation.Team;
 import finley.gmair.service.AssignService;
 import finley.gmair.service.MemberService;
 import finley.gmair.service.TeamService;
+import finley.gmair.util.DateFormatUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.transform.Result;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +87,7 @@ public class AssignController {
         String assignId = form.getAssignId().trim();
         String teamName = form.getTeamName().trim();
         String memberName = form.getMemberName().trim();
+        String installTime = form.getInstallDate().trim();
 
         //check empty input
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(teamName)) {
@@ -141,7 +149,13 @@ public class AssignController {
         //update the assign
         assign.setTeamId(teamId);
         assign.setMemberId(memberId);
-        assign.setAssignStatus(AssignStatus.ASSIGNED);
+        if (StringUtils.isEmpty(installTime) || DateFormatUtil.convertToLocalDate(installTime) == null)
+            assign.setAssignStatus(AssignStatus.ASSIGNED);
+        else {
+            assign.setAssignStatus(AssignStatus.PROCESSING);
+            LocalDateTime localDateTime = LocalDateTime.of(DateFormatUtil.convertToLocalDate(installTime), LocalTime.MIN);
+            assign.setAssignDate(Timestamp.valueOf(localDateTime));
+        }
         response = assignService.updateAssign(assign);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -272,8 +286,8 @@ public class AssignController {
     public ResultData byqrcode(String qrcode) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("qrcode",qrcode);
-        condition.put("blockFlag",false);
+        condition.put("qrcode", qrcode);
+        condition.put("blockFlag", false);
         ResultData response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -287,5 +301,5 @@ public class AssignController {
             result.setDescription("success to get the finished assign list by qrcode");
         }
         return result;
-     }
+    }
 }

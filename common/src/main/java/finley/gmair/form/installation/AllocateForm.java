@@ -4,6 +4,7 @@ public class AllocateForm {
     private String assignId;
     private String teamName;
     private String memberName;
+    private String installDate;
 
     public String getAssignId() {
         return assignId;
@@ -27,5 +28,13 @@ public class AllocateForm {
 
     public void setMemberName(String memberName) {
         this.memberName = memberName;
+    }
+
+    public String getInstallDate() {
+        return installDate;
+    }
+
+    public void setInstallDate(String installDate) {
+        this.installDate = installDate;
     }
 }
