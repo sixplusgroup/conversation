@@ -156,19 +156,48 @@ public class OrderController {
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         JSONObject data = (JSONObject) JSON.toJSON(((List<PlatformOrder>) response.getData()).get(0));
 
-        response = expressService.queryCodeValue(orderId);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            ArrayList<Object> jsonArray = (ArrayList<Object>) response.getData();
-            JSONArray assignArray = new JSONArray();
-            for (Object jsonObject : jsonArray) {
-                String qrcode = (new JSONObject((LinkedHashMap) jsonObject)).getString("codeValue");
-                ResultData assignResponse = installService.getAssign(qrcode);
-                if (assignResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    assignArray.add(((ArrayList)assignResponse.getData()).get(0));
+        // get install assign info
+        try {
+            response = expressService.queryCodeValue(orderId);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                ArrayList<Object> jsonArray = (ArrayList<Object>) response.getData();
+                JSONArray assignArray = new JSONArray();
+                for (Object jsonObject : jsonArray) {
+                    String qrcode = (new JSONObject((LinkedHashMap) jsonObject)).getString("codeValue");
+                    ResultData assignResponse = installService.getAssign(qrcode);
+                    if (assignResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        assignArray.add(((ArrayList)assignResponse.getData()).get(0));
+                    }
                 }
+                data.put("installAssign", assignArray);
+            } else {
+                data.put("installAssign", new JSONArray());
             }
-            data.put("installAssign", assignArray);
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.put("installAssign", new JSONArray());
         }
+
+        // get express info
+        try {
+            response = expressService.queryExpress(orderId);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                data.put("expressInfo", new JSONObject((LinkedHashMap) response.getData()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //get reconnaissance info
+        try {
+            response = reconnaissanceService.getReconnaissance(orderId);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                data.put("reconnaissanceInfo", new JSONObject((LinkedHashMap) response.getData()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         result.setData(data);
         return result;
     }

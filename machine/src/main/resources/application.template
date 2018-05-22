@@ -6,4 +6,10 @@ mybatis.config-location=classpath:mybatis-config.xml
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 spring.datasource.url=jdbc:mysql://127.0.0.1:3306/gmair_airquality?useLegacyDatetimeCode=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
 spring.datasource.username=root
-spring.datasource.password=131250179
+spring.datasource.password=
+
+##memcache configuration
+memcached.cache.servers=127.0.0.1:11211
+memcached.cache.mode=static
+##code will be expired with 5 minutes
+memcached.cache.expiration=300

@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -74,7 +75,7 @@ public class ReconnaissanceController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
         } else {
-            result.setData(response.getData());
+            result.setData(((List<Reconnaissance>)response.getData()).get(0));
         }
 
         return result;

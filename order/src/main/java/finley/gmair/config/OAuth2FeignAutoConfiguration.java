@@ -27,7 +27,6 @@ public class OAuth2FeignAutoConfiguration {
             public void apply(RequestTemplate requestTemplate) {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();
-                System.out.println("token value is " + details.getTokenValue());
                 requestTemplate.header("Authorization", "Bearer " + details.getTokenValue());
             }
         };
