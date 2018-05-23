@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.transform.Result;
@@ -25,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,18 +49,17 @@ public class AssignController {
     public ResultData create(AssignForm form) {
         ResultData result = new ResultData();
 
-        String qrcode = form.getQrcode().trim();
-        String consumerConsignee = form.getConsumerConsignee().trim();
-        String consumerPhone = form.getConsumerPhone().trim();
-        String consumerAddress = form.getConsumerAddress().trim();
-
         //check whether input is empty
-        if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(consumerConsignee)
-                || StringUtils.isEmpty(consumerPhone) || StringUtils.isEmpty(consumerAddress)) {
+        if (StringUtils.isEmpty(form.getQrcode()) || StringUtils.isEmpty(form.getConsumerConsignee())
+                || StringUtils.isEmpty(form.getConsumerPhone()) || StringUtils.isEmpty(form.getConsumerAddress())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide all the information");
             return result;
         }
+        String qrcode = form.getQrcode().trim();
+        String consumerConsignee = form.getConsumerConsignee().trim();
+        String consumerPhone = form.getConsumerPhone().trim();
+        String consumerAddress = form.getConsumerAddress().trim();
 
         //create the the assign and save
         Assign assign = new Assign();
@@ -95,9 +96,9 @@ public class AssignController {
         String teamName = form.getTeamName().trim();
         String memberName = null;
         String installTime = null;
-        if(form.getMemberName() != null)
+        if (form.getMemberName() != null)
             memberName = form.getMemberName().trim();
-        if(form.getInstallDate() != null)
+        if (form.getInstallDate() != null)
             installTime = form.getInstallDate().trim();
 
         //according to the teamName,find the teamId.
@@ -131,7 +132,7 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,please try again later");
             return result;
-        } else if( response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find the member.");
             return result;
@@ -294,6 +295,11 @@ public class AssignController {
     @RequestMapping(method = RequestMethod.GET, value = "/byqrcode")
     public ResultData byqrcode(String qrcode) {
         ResultData result = new ResultData();
+        //check empty
+        if(StringUtils.isEmpty(qrcode)){
+            result.setDescription("please provide qrcode");
+            return result;
+        }
         Map<String, Object> condition = new HashMap<>();
         condition.put("qrcode", qrcode);
         condition.put("blockFlag", false);
@@ -316,6 +322,12 @@ public class AssignController {
     @RequestMapping(method = RequestMethod.GET, value = "/finishedinfo")
     public ResultData finishedinfo(String assignId) {
         ResultData result = new ResultData();
+        //check empty
+        if(StringUtils.isEmpty(assignId)){
+            result.setDescription("please provide assignId");
+            return result;
+        }
+
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignId", assignId);
         condition.put("blockFlag", false);
@@ -333,4 +345,22 @@ public class AssignController {
         }
         return result;
     }
+
+    //计算各个状态安装单的数量
+    @RequestMapping(method = RequestMethod.GET, value = "/count")
+    public ResultData countAssign() {
+        ResultData result = new ResultData();
+        List<Integer> list = new ArrayList<>();
+        int todoassign = ((List<Assign>) (todolist().getData())).size();
+        int assigned = ((List<Assign>) (assignedlist().getData())).size();
+        int processing = ((List<Assign>) (processinglist().getData())).size();
+        int finished = ((List<Assign>) (finishedlist().getData())).size();
+        list.add(todoassign);
+        list.add(assigned);
+        list.add(processing);
+        list.add(finished);
+        result.setData(list);
+        return result;
+    }
+
 }
