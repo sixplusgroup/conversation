@@ -122,3 +122,24 @@ CREATE VIEW `gmair_install`.`assign_view` AS
 
 ALTER TABLE `gmair_install`.`install_snapshot`
 ADD COLUMN `install_type` VARCHAR(45) NOT NULL AFTER `net`;
+
+CREATE
+    ALGORITHM = UNDEFINED
+    DEFINER = `root`@`localhost`
+    SQL SECURITY DEFINER
+VIEW `gmair_install`.`finished_view` AS
+    SELECT
+        `gmair_install`.`install_assign`.`assign_id` AS `assign_id`,
+        `gmair_install`.`install_snapshot`.`pic_path` AS `pic_path`,
+        `gmair_install`.`install_snapshot`.`install_type` AS `install_type`,
+        `gmair_install`.`snapshot_location`.`location_place` AS `location_place`,
+        `gmair_install`.`install_assign`.`assign_date` AS `assign_date`,
+        `gmair_install`.`install_assign`.`block_flag` AS `block_flag`,
+        `gmair_install`.`install_assign`.`create_time` AS `create_time`
+    FROM
+        ((`gmair_install`.`install_assign`
+        JOIN `gmair_install`.`install_snapshot`)
+        JOIN `gmair_install`.`snapshot_location`)
+    WHERE
+        ((`gmair_install`.`install_assign`.`assign_id` = `gmair_install`.`install_snapshot`.`assign_id`)
+            AND (`gmair_install`.`install_snapshot`.`snapshot_id` = `gmair_install`.`snapshot_location`.`snapshot_id`))
