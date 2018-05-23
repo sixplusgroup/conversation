@@ -52,6 +52,27 @@ public class AssignServiceImpl implements AssignService {
     }
 
     @Override
+    public ResultData fetchAssign2(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = assignDao.queryAssign2(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("Success to fetch assignvo");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No assignvo found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to fetch assignvo");
+        }
+        return result;
+    }
+
+
+    @Override
     public ResultData updateAssign(Assign assign) {
         ResultData result = new ResultData();
         ResultData response = assignDao.updateAssign(assign);

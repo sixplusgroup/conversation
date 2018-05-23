@@ -11,5 +11,7 @@ public interface AssignDao {
 
     ResultData queryAssign(Map<String, Object> condition);
 
+    ResultData queryAssign2(Map<String, Object> condition);
+
     ResultData updateAssign(Assign assign);
 }

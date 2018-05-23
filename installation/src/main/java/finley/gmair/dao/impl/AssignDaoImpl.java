@@ -7,8 +7,10 @@ import finley.gmair.model.installation.AssignStatus;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.installation.AssignVo;
 import org.springframework.stereotype.Repository;
 
+import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,30 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
             } else {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription("Success to found assign");
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryAssign2(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        List<AssignVo> list = new ArrayList<>();
+        try {
+            list = sqlSession.selectList("gmair.installation.assign.query2", condition);
+            result.setData(list);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+
+        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+            if (list.isEmpty() == true) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No assignvo found");
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("Success to found assignvo");
             }
         }
         return result;

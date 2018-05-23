@@ -297,7 +297,7 @@ public class AssignController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("qrcode", qrcode);
         condition.put("blockFlag", false);
-        ResultData response = assignService.fetchAssign(condition);
+        ResultData response = assignService.fetchAssign2(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("no finished assign found ");

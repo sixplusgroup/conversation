@@ -96,3 +96,26 @@ ADD COLUMN `occupied` TINYINT(1) NOT NULL DEFAULT '0' AFTER `copy_flag`;
 
 ALTER TABLE `gmair_install`.`install_snapshot`
 ADD COLUMN `net` TINYINT(1) NOT NULL AFTER `pic_path`;
+
+#20180523 add view install_view
+
+CREATE VIEW `gmair_install`.`assign_view` AS
+    SELECT
+        `gmair_install`.`install_assign`.`assign_id` AS `assign_id`,
+        `gmair_install`.`install_assign`.`code_value` AS `code_value`,
+        `gmair_install`.`install_team`.`team_name` AS `team_name`,
+        `gmair_install`.`team_member`.`member_name` AS `member_name`,
+        `gmair_install`.`install_assign`.`assign_status` AS `assign_status`,
+        `gmair_install`.`install_assign`.`assign_date` AS `assign_date`,
+        `gmair_install`.`install_assign`.`block_flag` AS `block_flag`,
+        `gmair_install`.`install_assign`.`create_time` AS `create_time`,
+        `gmair_install`.`install_assign`.`consumer_consignee` AS `consumer_consignee`,
+        `gmair_install`.`install_assign`.`consumer_phone` AS `consumer_phone`,
+        `gmair_install`.`install_assign`.`consumer_address` AS `consumer_address`
+    FROM
+        ((`gmair_install`.`install_assign`
+        JOIN `gmair_install`.`install_team`)
+        JOIN `gmair_install`.`team_member`)
+    WHERE
+        ((`gmair_install`.`install_assign`.`team_id` = `gmair_install`.`install_team`.`team_id`)
+            AND (`gmair_install`.`install_assign`.`member_id` = `gmair_install`.`team_member`.`member_id`))
