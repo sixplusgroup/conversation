@@ -1,6 +1,5 @@
 package finley.gmair.model.machine;
 
-import finley.gmair.model.Entity;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "machine_status")

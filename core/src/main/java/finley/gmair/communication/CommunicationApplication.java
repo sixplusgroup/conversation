@@ -8,7 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@ComponentScan({ "finley.gmair.netty", "finley.gmair.handler", "finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.converter"})
+@ComponentScan({ "finley.gmair.netty", "finley.gmair.handler", "finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao"})
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "finley.gmair.repo")
 @EnableFeignClients(basePackages = "finley.gmair.service")

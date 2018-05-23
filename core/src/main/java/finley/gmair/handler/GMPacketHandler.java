@@ -1,5 +1,6 @@
 package finley.gmair.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachineStatus;
@@ -58,6 +59,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             String uid = packet.getUID().trim();
             CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
+                System.out.println(new StringBuffer(uid) + " is (re-)connected to the server");
                 repository.push(uid, ctx);
             }
             //check the timestamp of the packet, if longer that 0.5 minute, abort it
@@ -71,6 +73,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                 //nothing to do with heartbeat packet
                 if (packet instanceof HeartBeatPacket) {
                     //actions that need to be implement if this is a no-data packet
+                    System.out.println(new StringBuffer("A heart beat packet ").append(uid).append(" has been received"));
                 }
                 //
                 if (packet instanceof ProbePacket && packet.isValid()) {
@@ -94,6 +97,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                         byte[] heat = new byte[]{data[10]};
                         byte[] light = new byte[]{data[11]};
                         MachineStatus status = new MachineStatus(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temp), ByteUtil.byte2int(humid), ByteUtil.byte2int(co2), ByteUtil.byte2int(volume), ByteUtil.byte2int(power), ByteUtil.byte2int(mode), ByteUtil.byte2int(heat), ByteUtil.byte2int(light));
+                        System.out.println(new StringBuffer("Machine status received: " + JSONObject.toJSONString(status)));
                         communicationService.create(status);
                     } else {
                         Field[] fields = PacketInfo.class.getDeclaredFields();
@@ -106,12 +110,17 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                 String name = pf.name();
                                 byte[] data = ((ProbePacket) packet).getDAT();
                                 String type = field.getGenericType().getTypeName();
+                                MachinePartialStatus status = null;
                                 switch (type) {
                                     case "int":
-                                        communicationService.create(new MachinePartialStatus(uid, name, ByteUtil.byte2int(data), packet.getTime()));
+                                        status = new MachinePartialStatus(uid, name, ByteUtil.byte2int(data), packet.getTime());
+                                        communicationService.create(status);
+//                                        System.out.println(new StringBuffer("Machine partial status received: " + JSONObject.toJSONString(status)));
                                         break;
                                     case "java.lang.String":
-                                        communicationService.create(new MachinePartialStatus(uid, name, new String(data), packet.getTime()));
+                                        status = new MachinePartialStatus(uid, name, new String(data), packet.getTime());
+                                        communicationService.create(status);
+//                                        System.out.println(new StringBuffer("Machine partial status received: " + JSONObject.toJSONString(status)));
                                         break;
                                 }
                             }
