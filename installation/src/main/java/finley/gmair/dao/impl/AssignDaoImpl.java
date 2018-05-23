@@ -81,6 +81,30 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
     }
 
     @Override
+    public ResultData queryAssign3(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        List<AssignVo> list = new ArrayList<>();
+        try {
+            list = sqlSession.selectList("gmair.installation.assign.query3", condition);
+            result.setData(list);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+
+        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+            if (list.isEmpty() == true) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No finishedvo found");
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("Success to found finishedvo");
+            }
+        }
+        return result;
+    }
+
+    @Override
     public ResultData updateAssign(Assign assign) {
         ResultData result = new ResultData();
         try {

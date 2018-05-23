@@ -7,6 +7,7 @@ public class SnapshotForm {
     private String longitude;
     private String latitude;
     private boolean net;
+    private String installType;
 
     public String getQrcode() {
         return qrcode;
@@ -54,5 +55,13 @@ public class SnapshotForm {
 
     public void setNet(boolean net) {
         this.net = net;
+    }
+
+    public String getInstallType() {
+        return installType;
+    }
+
+    public void setInstallType(String installType) {
+        this.installType = installType;
     }
 }

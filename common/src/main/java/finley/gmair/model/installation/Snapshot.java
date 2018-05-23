@@ -11,12 +11,13 @@ public class Snapshot extends Entity {
     private String memberPhone;
     private String picPath;
     private boolean net;
+    private String installType;
 
     public Snapshot() {
         super();
     }
 
-    public Snapshot(String assignId, String qrcode, String wechatId, String memberPhone, String picPath, boolean net) {
+    public Snapshot(String assignId, String qrcode, String wechatId, String memberPhone, String picPath, boolean net,String installType) {
         this();
         this.assignId = assignId;
         this.qrcode = qrcode;
@@ -24,6 +25,7 @@ public class Snapshot extends Entity {
         this.memberPhone = memberPhone;
         this.picPath = picPath;
         this.net = net;
+        this.installType = installType;
     }
 
     public String getSnapshotId() {
@@ -80,5 +82,13 @@ public class Snapshot extends Entity {
 
     public void setNet(boolean net) {
         this.net = net;
+    }
+
+    public String getInstallType() {
+        return installType;
+    }
+
+    public void setInstallType(String installType) {
+        this.installType = installType;
     }
 }

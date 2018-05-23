@@ -31,6 +31,16 @@
         <result property="consumerAddress" column="consumer_address"></result>
     </resultMap>
 
+    <resultMap id="AssignFinishedVo" type="finley.gmair.vo.installation.AssignFinishedVo">
+        <result property="assignId" column="assign_id"></result>
+        <result property="picPath" column="pic_path"></result>
+        <result property="installType" column="install_type"></result>
+        <result property="locationPlace" column="location_place"></result>
+        <result property="assignDate" column="assign_date"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
     <insert id="insert" parameterType="finley.gmair.model.installation.Assign" useGeneratedKeys="false">
         INSERT INTO gmair_install.install_assign(assign_id, code_value, team_id, member_id, assign_status, assign_date, block_flag, create_time, consumer_consignee, consumer_phone, consumer_address)
         VALUES (#{assignId}, #{qrcode}, #{teamId}, #{memberId},
@@ -95,6 +105,29 @@
         </if>
     </select>
 
+    <select id="query3" parameterType="java.util.Map" resultMap="AssignFinishedVo">
+        SELECT assign_id,pic_path,install_type,location_place,assign_date,block_flag,create_time
+        FROM gmair_install.finished_view
+        WHERE 1 = 1
+        <if test="assignId != null">
+            AND assign_id = #{assignId}
+        </if>
+        <if test="pipPath != null">
+            AND pic_path = #{picPath}
+        </if>
+        <if test="installType != null">
+            AND install_type = #{installType}
+        </if>
+        <if test="locationPlace != null">
+            AND location_place = #{locationPlace}
+        </if>
+        <if test="assignDate != null">
+            AND assign_date = #{assignDate}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
     <update id="update" parameterType="finley.gmair.model.installation.Assign">
         UPDATE gmair_install.install_assign
         <set>

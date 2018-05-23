@@ -13,5 +13,8 @@ public interface AssignService {
 
     ResultData fetchAssign2(Map<String, Object> condition);
 
+    ResultData fetchAssign3(Map<String, Object> condition);
+
+
     ResultData updateAssign(Assign assign);
 }

@@ -119,3 +119,6 @@ CREATE VIEW `gmair_install`.`assign_view` AS
     WHERE
         ((`gmair_install`.`install_assign`.`team_id` = `gmair_install`.`install_team`.`team_id`)
             AND (`gmair_install`.`install_assign`.`member_id` = `gmair_install`.`team_member`.`member_id`))
+
+ALTER TABLE `gmair_install`.`install_snapshot`
+ADD COLUMN `install_type` VARCHAR(45) NOT NULL AFTER `net`;

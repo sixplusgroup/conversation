@@ -55,19 +55,22 @@ public class SnapshotController {
     public ResultData create(SnapshotForm form, HttpServletRequest request) {
         ResultData result = new ResultData();
 
+        //check whether input is empty
+        if (StringUtils.isEmpty(form.getQrcode()) || StringUtils.isEmpty(form.getWechatId()) || StringUtils.isEmpty(form.getPicPath()) || StringUtils.isEmpty(form.getInstallType())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide all information");
+            return result;
+        }
+
         String qrcode = form.getQrcode().trim();
         String wechatId = form.getWechatId().trim();
         String picPath = form.getPicPath().trim();
         String locationLng = form.getLongitude().trim();
         String locationLat = form.getLatitude().trim();
         boolean net = form.isNet();
+        String installType = form.getInstallType().trim();
 
-        //check whether input is empty
-        if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(wechatId) || StringUtils.isEmpty(picPath)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all information");
-            return result;
-        }
+
 
         //according to the qrcode,find the assignId.
         String assignId = "";
@@ -108,7 +111,7 @@ public class SnapshotController {
         }
 
         //create the Snapshot
-        Snapshot snapshot = new Snapshot(assignId, qrcode, wechatId, memberPhone, picPath, net);
+        Snapshot snapshot = new Snapshot(assignId, qrcode, wechatId, memberPhone, picPath, net, installType);
         response = snapshotService.createSnapshot(snapshot);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);

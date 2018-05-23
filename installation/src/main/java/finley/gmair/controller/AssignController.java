@@ -300,14 +300,36 @@ public class AssignController {
         ResultData response = assignService.fetchAssign2(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("no finished assign found ");
+            result.setDescription("no assign found ");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now, please try again later  ");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("success to get the finished assign list by qrcode");
+            result.setDescription("success to get the assign list by qrcode");
+        }
+        return result;
+    }
+
+    //查询Finished状态的安装单信息
+    @RequestMapping(method = RequestMethod.GET, value = "/finishedinfo")
+    public ResultData finishedinfo(String assignId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        ResultData response = assignService.fetchAssign3(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("no assign found!");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now, please try again later!");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to get the assign list by assignId");
         }
         return result;
     }
