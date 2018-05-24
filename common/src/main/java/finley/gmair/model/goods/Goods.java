@@ -2,7 +2,7 @@ package finley.gmair.model.goods;
 
 import finley.gmair.model.Entity;
 
-public abstract class AbstractGoods extends Entity {
+public class Goods extends Entity {
     private String goodsId;
 
     private String goodsName;
@@ -11,11 +11,11 @@ public abstract class AbstractGoods extends Entity {
 
     private double goodsPrice;
 
-    public AbstractGoods() {
+    public Goods() {
         super();
     }
 
-    public AbstractGoods(String goodsName, String goodsDescription, double goodsPrice) {
+    public Goods(String goodsName, String goodsDescription, double goodsPrice) {
         this();
         this.goodsName = goodsName;
         this.goodsDescription = goodsDescription;

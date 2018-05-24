@@ -1,6 +1,6 @@
 package finley.gmair.model.goods;
 
-public class OrderCommodity extends AbstractGoods{
+public class OrderCommodity extends Goods {
     private CommodityType commodityType;
 
     public CommodityType getCommodityType() {
