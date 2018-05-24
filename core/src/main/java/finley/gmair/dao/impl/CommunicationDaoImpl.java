@@ -2,7 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.CommunicationDao;
 import finley.gmair.model.machine.MachinePartialStatus;
-import finley.gmair.model.machine.MachineStatus;
+import finley.gmair.model.machine.v2.MachineLiveStatus;
 import finley.gmair.repo.MachinePartialStatusRepository;
 import finley.gmair.repo.MachineStatusRepository;
 import finley.gmair.util.ResponseCode;
@@ -20,7 +20,7 @@ public class CommunicationDaoImpl implements CommunicationDao {
     private MachinePartialStatusRepository machinePartialStatusRepository;
 
     @Override
-    public ResultData insert(MachineStatus status) {
+    public ResultData insert(MachineLiveStatus status) {
         ResultData result = new ResultData();
         try {
             machineStatusRepository.save(status);

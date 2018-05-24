@@ -1,4 +1,4 @@
-package finley.gmair.model.machine;
+package finley.gmair.model.machine.v2;
 
 public enum WorkMode {
     MANUAL, AUTO, CUSTOMIZE;

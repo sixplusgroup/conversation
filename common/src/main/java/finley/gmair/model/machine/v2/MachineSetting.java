@@ -1,4 +1,4 @@
-package finley.gmair.model.machine;
+package finley.gmair.model.machine.v2;
 
 import finley.gmair.model.Entity;
 

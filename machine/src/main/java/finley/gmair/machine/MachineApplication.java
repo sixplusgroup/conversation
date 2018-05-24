@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller", "finley.gmair.config"})
 @SpringBootApplication
 @EnableScheduling
-public class Machine {
+public class MachineApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Machine.class, args);
+        SpringApplication.run(MachineApplication.class, args);
     }
 }

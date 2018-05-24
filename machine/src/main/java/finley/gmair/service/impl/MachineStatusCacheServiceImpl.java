@@ -1,6 +1,6 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.model.machine.MachineStatus;
+import finley.gmair.model.machine.v2.MachineLiveStatus;
 import finley.gmair.service.MachineStatusCacheService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -14,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class MachineStatusCacheServiceImpl implements MachineStatusCacheService{
 
-    private Map<String, MachineStatus> machineStatusMap = new ConcurrentHashMap<>();
+    private Map<String, MachineLiveStatus> machineStatusMap = new ConcurrentHashMap<>();
 
 
     @Cacheable("machineStatus")
-    public ResultData generate(MachineStatus machineStatus) {
+    public ResultData generate(MachineLiveStatus machineStatus) {
         ResultData resultData = new ResultData();
         try {
             machineStatusMap.put(machineStatus.getUid(), machineStatus);

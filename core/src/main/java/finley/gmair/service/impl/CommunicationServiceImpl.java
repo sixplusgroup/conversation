@@ -3,7 +3,7 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSON;
 import finley.gmair.dao.CommunicationDao;
 import finley.gmair.model.machine.MachinePartialStatus;
-import finley.gmair.model.machine.MachineStatus;
+import finley.gmair.model.machine.v2.MachineLiveStatus;
 import finley.gmair.service.CommunicationService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -17,7 +17,7 @@ public class CommunicationServiceImpl implements CommunicationService {
     private CommunicationDao communicationDao;
 
     @Override
-    public ResultData create(MachineStatus status) {
+    public ResultData create(MachineLiveStatus status) {
         ResultData result = new ResultData();
         ResultData response = communicationDao.insert(status);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
