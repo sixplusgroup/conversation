@@ -20,6 +20,8 @@ USE `gmair_machine` ;
 CREATE TABLE IF NOT EXISTS `gmair_machine`.`goods` (
   `goods_id` VARCHAR(20) NOT NULL,
   `goods_name` VARCHAR(45) NOT NULL,
+  `goods_description` VARCHAR(50) NOT NULL,
+  `goods_price` DOUBLE NOT NULL,
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`goods_id`))
@@ -55,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `gmair_machine`.`qrcode` (
   `batch_value` VARCHAR(20) NOT NULL,
   `code_value` VARCHAR(45) NOT NULL,
   `code_url` VARCHAR(200) NOT NULL,
-  `code_occupied` TINYINT(1) NOT NULL DEFAULT 0,
+  `code_status` TINYINT(1) NOT NULL DEFAULT 0,
   `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`code_id`),
@@ -98,6 +100,7 @@ CREATE TABLE IF NOT EXISTS `gmair_machine`.`code_machine_bind` (
 CREATE TABLE IF NOT EXISTS `gmair_machine`.`consumer_code_bind` (
   `bind_id` VARCHAR(20) NOT NULL,
   `consumer_id` VARCHAR(20) NOT NULL,
+  `bind_name` VARCHAR(45) NOT NULL,
   `code_value` VARCHAR(45) NOT NULL,
   `ownership` TINYINT(1) NOT NULL,
   `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
@@ -111,6 +114,8 @@ CREATE TABLE IF NOT EXISTS `gmair_machine`.`consumer_code_bind` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `gmair_machine`.`machine_daily_status` (
   `machine_id` VARCHAR(20) NOT NULL,
+  `average_pm2_5` DOUBLE NULL,
+  `index` INT NOT NULL,
   `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`machine_id`))
@@ -122,19 +127,9 @@ CREATE TABLE IF NOT EXISTS `gmair_machine`.`machine_daily_status` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `gmair_machine`.`machine_monthly_status` (
   `machine_id` VARCHAR(20) NOT NULL,
+  `average_pm2_5` DOUBLE NOT NULL,
+  `record_date` DATE NOT NULL,
   `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
-  `create_time` DATETIME NOT NULL,
-  PRIMARY KEY (`machine_id`))
-  ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `gmair_machine`.`machine_yearly_status`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `gmair_machine`.`machine_yearly_status` (
-  `machine_id` INT NOT NULL,
-  `belong_year` INT NOT NULL,
-  `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`machine_id`))
   ENGINE = InnoDB;
@@ -150,6 +145,127 @@ CREATE TABLE IF NOT EXISTS `gmair_machine`.`pre_bind` (
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`bind_id`))
+  ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gmair_machine`.`machine_setting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`machine_setting` (
+  `setting_id` VARCHAR(20) NOT NULL,
+  `consumer_id` VARCHAR(20) NOT NULL,
+  `setting_name` VARCHAR(45) NOT NULL,
+  `code_value` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`setting_id`))
+  ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gmair_machine`.`volume_setting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`volume_setting` (
+  `setting_id` VARCHAR(20) NOT NULL,
+  `floor_pm2_5` INT NOT NULL,
+  `upper_pm2_5` INT NOT NULL,
+  `speed_value` INT NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`setting_id`),
+  CONSTRAINT `fk_volume_setting_machine_setting1`
+  FOREIGN KEY (`setting_id`)
+  REFERENCES `gmair_machine`.`machine_setting` (`setting_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+  ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gmair_machine`.`light_setting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`light_setting` (
+  `setting_id` VARCHAR(20) NOT NULL,
+  `light_value` INT NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`setting_id`),
+  CONSTRAINT `fk_light_setting_machine_setting1`
+  FOREIGN KEY (`setting_id`)
+  REFERENCES `gmair_machine`.`machine_setting` (`setting_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+  ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gmair_machine`.`power_setting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`power_setting` (
+  `setting_id` VARCHAR(20) NOT NULL,
+  `power_action` TINYINT(1) NOT NULL,
+  `trigger_hour` INT NOT NULL,
+  `trigger_minute` INT NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`setting_id`),
+  CONSTRAINT `fk_power_setting_machine_setting1`
+  FOREIGN KEY (`setting_id`)
+  REFERENCES `gmair_machine`.`machine_setting` (`setting_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+  ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gmair_machine`.`machine_hourly_status`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`machine_hourly_status` (
+  `status_id` VARCHAR(20) NOT NULL,
+  `average_pm2_5` DOUBLE NOT NULL,
+  `index` INT NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`status_id`))
+  ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gmair_machine`.`global_machine_setting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`global_machine_setting` (
+  `gms_id` VARCHAR(20) NOT NULL,
+  `gms_name` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`gms_id`))
+  ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gmair_machine`.`machine_notification`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`machine_notification` (
+  `notification_id` VARCHAR(20) NOT NULL,
+  `notification_title` VARCHAR(45) NOT NULL,
+  `notification_content` LONGTEXT NOT NULL,
+  `is_read` TINYINT(1) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`notification_id`))
+  ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gmair_machine`.`screen_record`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`screen_record` (
+  `record_id` VARCHAR(20) NOT NULL,
+  `code_value` VARCHAR(45) NOT NULL,
+  `refresh_date` DATE NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`record_id`))
   ENGINE = InnoDB;
 
 
