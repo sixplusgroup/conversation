@@ -19,11 +19,7 @@ public class MachineStatusCacheServiceImpl implements MachineStatusCacheService{
     public ResultData fetch(String uid) {
         System.out.println("fetch : " + uid);
         ResultData resultData = new ResultData();
-        try {
-            resultData.setData(machineStatusMap.get(uid));
-        } catch (Exception e) {
-            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        }
+        // get data from mongo
         return resultData;
     }
 }
