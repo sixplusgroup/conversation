@@ -25,7 +25,6 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
     LocationFeign locationFeign;
 
     @PostConstruct
-    @Cacheable("provinceCityMap")
     public void init() {
         ResultData response = locationFeign.province();
         List<LinkedHashMap> provinceList = (List<LinkedHashMap>) response.getData();
@@ -40,7 +39,6 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
         }
     }
 
-    @Cacheable("provinceCityMap")
     @Override
     public ResultData fetch(String cityName) {
         ResultData result = new ResultData();

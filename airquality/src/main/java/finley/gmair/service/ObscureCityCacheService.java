@@ -1,16 +1,18 @@
 package finley.gmair.service;
 
+import finley.gmair.model.air.ObscureCity;
 import finley.gmair.model.district.City;
 import finley.gmair.util.ResultData;
+import org.springframework.cache.annotation.CachePut;
 
 import java.util.Map;
 
 public interface ObscureCityCacheService {
 
-    ResultData generate(String cityName, String cityId);
 
-    ResultData generate(Map<String, String> map);
+    @CachePut(value = "ObscureCityMap", key = "#obscureCity.cityName", condition = "#obscureCity != null")
+    default void generate(ObscureCity obscureCity){};
 
-    ResultData fetch(String cityName);
+    ObscureCity fetch(String cityName);
 
 }

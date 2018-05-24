@@ -30,4 +30,11 @@ public class ObscureCity extends Entity{
     public void setCityId(String cityId) {
         this.cityId = cityId;
     }
+
+    public ObscureCity() {}
+
+    public ObscureCity(String cityName, String cityId) {
+        this.cityName = cityName;
+        this.cityId = cityId;
+    }
 }

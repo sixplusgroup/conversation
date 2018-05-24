@@ -7,6 +7,7 @@ import finley.gmair.dao.MonitorStationDao;
 import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.model.air.CityUrl;
 import finley.gmair.model.air.MonitorStation;
+import finley.gmair.model.air.ObscureCity;
 import finley.gmair.service.feign.LocationFeign;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -31,13 +32,7 @@ public class RankCrawler {
     private final static String AIR_URL = "http://pm25.in";
 
     @Autowired
-    LocationFeign locationFeign;
-
-    @Autowired
     ObscureCityCacheService obscureCityCacheService;
-
-    @Autowired
-    ProvinceCityCacheService provinceCityCacheService;
 
     @Autowired
     CityUrlDao cityUrlDao;
@@ -71,36 +66,11 @@ public class RankCrawler {
                     try {
                         Element cityHref = tds.get(1).getElementsByTag("a").first();
                         String obscureCityName = cityHref.text();
-                        ResultData response = obscureCityCacheService.fetch(obscureCityName);
-                        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        ObscureCity obscureCity = obscureCityCacheService.fetch(obscureCityName);
+                        if (obscureCity != null) {
                             // if we have city name in the cache
-                            String cityId = (String) response.getData();
+                            String cityId = obscureCity.getCityId();
                             airQuality.setCityId(cityId);
-                        } else {
-                            // if we do not have city in cache, we need to fetch using feign invoke
-                            response = locationFeign.geocoder(obscureCityName);
-                            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                JSONObject jsonObject = new JSONObject((LinkedHashMap<String, Object>) response.getData());
-                                if (!StringUtils.isEmpty(jsonObject.get("address_components"))) {
-                                    String accurateCity = jsonObject.getJSONObject("address_components").getString("city");
-                                    response = provinceCityCacheService.fetch(accurateCity);
-                                    if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                        String cityId = (String) response.getData();
-                                        airQuality.setCityId(cityId);
-                                        obscureCityCacheService.generate(obscureCityName, cityId);
-                                    } else {
-                                        System.out.println(accurateCity + " has been processed");
-                                    }
-                                }
-                            } else {
-                                System.out.println(response.getDescription() + obscureCityName);
-                                //the api endpoint can only be access 60 time in a second, so sleep 50 ms
-                            }
-                            try {
-                                Thread.sleep(500);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
                         }
                         airQuality.setUrl(cityHref.attr("href"));
                         airQuality.setAqi(Double.parseDouble(tds.get(2).text()));
