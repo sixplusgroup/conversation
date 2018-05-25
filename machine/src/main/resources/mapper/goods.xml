@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.goods">
+    <resultMap id="goodsVo" type="finley.gmair.model.goods.Goods">
+        <result property="goodsId" column="goods_id"></result>
+        <result property="goodsName" column="goods_name"></result>
+        <result property="goodsDescription" column="goods_description"></result>
+        <result property="goodsPrice" column="goods_price"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="goodsVo">
+        SELECT goods_id, goods_name, goods_description, goods_price, block_flag, create_time
+        FROM gmair_machine.goods
+        WHERE 1 = 1
+        <if test="goodsId != null">
+            AND goods_id = #{goodsId}
+        </if>
+        <if test="goodsName != null">
+            AND goods_name = #{goodsName}
+        </if>
+        <if test="goodsDescription != null">
+            AND goods_description = #{goodsDescription}
+        </if>
+        <if test="goodsPrice != null">
+            AND goods_price = #{goodsPrice}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.goods.Goods" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.goods(goods_id, goods_name, goods_description, goods_price, block_flag, create_time)
+        VALUES (#{goodsId}, #{goodsName}, #{goodsDescription}, #{goodsPrice}, #{blockFlag}, #{createAt})
+    </insert>
+</mapper>

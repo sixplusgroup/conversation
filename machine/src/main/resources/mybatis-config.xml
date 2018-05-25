@@ -5,5 +5,7 @@
 <configuration>
     <mappers>
         <mapper resource="mapper/machineairquality.xml"/>
+        <mapper resource="mapper/goods.xml"></mapper>
+        <mapper resource="mapper/goodsmodel.xml"></mapper>
     </mappers>
 </configuration>
