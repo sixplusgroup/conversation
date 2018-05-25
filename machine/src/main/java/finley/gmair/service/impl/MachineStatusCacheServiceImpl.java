@@ -1,15 +1,9 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.model.machine.v2.MachineLiveStatus;
 import finley.gmair.service.MachineStatusCacheService;
-import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service

@@ -2,7 +2,7 @@ package finley.gmair.model.machine.v2;
 
 import finley.gmair.model.Entity;
 
-public class MachineLiveStatus extends Entity {
+public class MachineStatus extends Entity {
     private String uid;
 
     private int pm2_5;

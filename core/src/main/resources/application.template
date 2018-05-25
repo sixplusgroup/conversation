@@ -15,3 +15,8 @@ memcached.cache.expiration=300
 ##mongodb
 spring.data.mongodb.uri=mongodb://localhost:27017/gmair_packet
 
+##rabbitmq
+spring.rabbitmq.host=
+spring.rabbitmq.port=
+spring.rabbitmq.username=
+spring.rabbitmq.password=

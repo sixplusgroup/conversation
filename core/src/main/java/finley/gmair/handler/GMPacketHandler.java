@@ -4,12 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachineStatus;
-import finley.gmair.model.packet.*;
+import finley.gmair.model.packet.AbstractPacketV2;
+import finley.gmair.model.packet.HeartBeatPacket;
+import finley.gmair.model.packet.PacketInfo;
+import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.netty.GMRepository;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.CommunicationService;
 import finley.gmair.service.LogService;
-import finley.gmair.util.*;
+import finley.gmair.util.ByteUtil;
+import finley.gmair.util.PacketUtil;
+import finley.gmair.util.TimeUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -59,7 +64,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             String uid = packet.getUID().trim();
             CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
-                System.out.println(new StringBuffer(uid) + " is (re-)connected to the server");
+//                System.out.println(new StringBuffer(uid) + " is (re-)connected to the server");
                 repository.push(uid, ctx);
             }
             //check the timestamp of the packet, if longer that 0.5 minute, abort it

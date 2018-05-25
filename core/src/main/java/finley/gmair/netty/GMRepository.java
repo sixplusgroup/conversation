@@ -1,48 +1,40 @@
 package finley.gmair.netty;
 
 import com.alibaba.fastjson.JSONArray;
-import com.netflix.discovery.converters.Auto;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GMRepository {
-    private Map<String, ChannelHandlerContext> cache = new HashMap<>();
+    private Map<String, ChannelHandlerContext> cache = new ConcurrentHashMap<>();
 
     @Autowired
     private LogService logService;
 
-    @Cacheable("cache")
     public GMRepository push(String key, ChannelHandlerContext value) {
         cache.put(key, value);
         return this;
     }
 
-    @Cacheable("cache")
     public ChannelHandlerContext retrieve(String key) {
         return cache.get(key);
     }
 
-    @Cacheable("cache")
     public GMRepository remove(String key) {
         cache.remove(key);
         return this;
     }
 
-    @Cacheable("cache")
     public GMRepository remove(ChannelHandlerContext ctx) {
         for (String key : cache.keySet()) {
             if (cache.get(key).equals(ctx)) {

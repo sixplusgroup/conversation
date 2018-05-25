@@ -11,6 +11,6 @@ public class MachineReceiver {
 
     @RabbitHandler
     public void process(String uid) {
-        System.out.println("uid");
+        System.out.println(uid);
     }
 }
