@@ -3,22 +3,28 @@ package finley.gmair.controller;
 
 import finley.gmair.form.air.MachineAirQualityForm;
 import finley.gmair.model.air.MachineAirQuality;
+import finley.gmair.model.machine.v2.MachineStatus;
 import finley.gmair.service.MachineAirQualityService;
+import finley.gmair.service.MachineStatusCacheService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/airquality")
+@RequestMapping("/machine")
 public class MachineAirQualityController {
 
     @Autowired
     private MachineAirQualityService machineAirQualityService;
 
-    @RequestMapping(value = "/machine/create", method = RequestMethod.POST)
+    @Autowired
+    private MachineStatusCacheService machineStatusCacheService;
+
+    @RequestMapping(value = "/qirquality/create", method = RequestMethod.POST)
     private ResultData createMachineAirQuality(MachineAirQualityForm form) {
         ResultData result = new ResultData();
 
@@ -49,4 +55,13 @@ public class MachineAirQualityController {
         return result;
     }
 
+    @RequestMapping (value = "/machinestatus/create", method = RequestMethod.POST)
+    public MachineStatus createMachineStatus(MachineStatus machineStatus) {
+        return machineStatusCacheService.generate(machineStatus);
+    }
+
+    @RequestMapping (value = "/machinestatus/{uid}", method = RequestMethod.GET)
+    public MachineStatus MachineStatus(@PathVariable("uid") String uid) {
+        return machineStatusCacheService.fetch(uid);
+    }
 }
