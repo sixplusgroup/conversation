@@ -19,3 +19,6 @@ spring.rabbitmq.host=localhost
 spring.rabbitmq.port=5672
 spring.rabbitmq.username=
 spring.rabbitmq.password=
+
+#mongo
+spring.data.mongodb.uri=mongodb://localhost:27017/gmair_packet

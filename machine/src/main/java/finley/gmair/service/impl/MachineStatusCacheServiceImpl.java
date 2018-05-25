@@ -1,6 +1,6 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.model.machine.v2.MachineStatus;
+import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.service.MachineStatusCacheService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

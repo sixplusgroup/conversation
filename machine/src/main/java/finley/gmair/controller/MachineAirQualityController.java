@@ -3,7 +3,7 @@ package finley.gmair.controller;
 
 import finley.gmair.form.air.MachineAirQualityForm;
 import finley.gmair.model.air.MachineAirQuality;
-import finley.gmair.model.machine.v2.MachineStatus;
+import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.service.MachineAirQualityService;
 import finley.gmair.service.MachineStatusCacheService;
 import finley.gmair.util.ResponseCode;

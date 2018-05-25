@@ -1,6 +1,6 @@
 package finley.gmair.service;
 
-import finley.gmair.model.machine.v2.MachineStatus;
+import finley.gmair.model.machine.MachineStatus;
 import org.springframework.cache.annotation.CachePut;
 
 public interface MachineStatusCacheService {
