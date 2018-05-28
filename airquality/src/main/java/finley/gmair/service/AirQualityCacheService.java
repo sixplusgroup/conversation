@@ -8,8 +8,10 @@ import java.util.Map;
 
 public interface AirQualityCacheService{
 
-    @CachePut(value = "airQualityMap", key = "#airQuality.cityId")
-    default void generate(CityAirQuality airQuality){};
+    @CachePut(value = "airQualityMap", key = "#airQuality.cityId", condition = "#airQuality != null ")
+    default CityAirQuality generate(CityAirQuality airQuality){
+        return airQuality;
+    };
 
-    ResultData fetch(String cityId);
+    CityAirQuality fetch(String cityId);
 }

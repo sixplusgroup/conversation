@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.CityAirQualityDao;
 import finley.gmair.dao.CityUrlDao;
 import finley.gmair.dao.MonitorStationDao;
@@ -8,7 +7,6 @@ import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.model.air.CityUrl;
 import finley.gmair.model.air.MonitorStation;
 import finley.gmair.model.air.ObscureCity;
-import finley.gmair.service.feign.LocationFeign;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.air.CityUrlVo;
@@ -19,11 +17,13 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +50,7 @@ public class RankCrawler {
     @Scheduled(cron = "* 0/30 * * * *")
     public void rank() {
         Map<String, CityAirQuality> map = new HashMap<>();
-        int count = 1;
+        int count = 2;
         while (count > 0) {
             count--;
             try {

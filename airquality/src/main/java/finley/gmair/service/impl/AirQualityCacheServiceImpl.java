@@ -14,13 +14,9 @@ import java.util.Map;
 @Service
 public class AirQualityCacheServiceImpl implements AirQualityCacheService{
 
-        @Cacheable({"airQualityMap"})
+        @Cacheable(value = {"airQualityMap"}, key = "#cityId", unless = "#result == null ")
         @Override
-        public ResultData fetch(String cityId) {
-            ResultData result = new ResultData();
-            return result;
+        public CityAirQuality fetch(String cityId) {
+            return null;
         }
-
-
-
 }
