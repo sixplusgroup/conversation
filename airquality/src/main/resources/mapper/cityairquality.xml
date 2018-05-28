@@ -4,7 +4,7 @@
 
 
     <insert id="insert" parameterType="finley.gmair.model.air.CityAirQuality">
-        INSERT INTO `gmair_airquality`.`city_daily_aqi_detail`
+        INSERT INTO `gmair_airquality`.`city_aqi_full`
         (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
         ,block_flag, create_time)
         VALUES
@@ -16,7 +16,7 @@
     </insert>
 
     <insert id="insertBatch" parameterType="java.util.List">
-        INSERT INTO `gmair_airquality`.`city_daily_aqi_detail`
+        INSERT INTO `gmair_airquality`.`city_aqi_full`
         (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
         ,block_flag, create_time)
         VALUES
@@ -42,7 +42,7 @@
     </insert>
 
     <insert id="insertLatestBatch" parameterType="java.util.List">
-        INSERT INTO `gmair_airquality`.`city_daily_aqi_detail`
+        INSERT INTO `gmair_airquality`.`city_latest_aqi`
         (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
         ,block_flag, create_time)
         VALUES

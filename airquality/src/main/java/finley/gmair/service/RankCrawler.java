@@ -43,6 +43,9 @@ public class RankCrawler {
     @Autowired
     MonitorStationDao monitorStationDao;
 
+    @Autowired
+    AirQualityCacheService airQualityCacheService;
+
     /**
      * get city rank and
      * every hour on half
@@ -110,6 +113,12 @@ public class RankCrawler {
     }
 
     private void insertCityAqiDetail(List<CityAirQuality> airQualityList) {
+        // step 1: update cache
+        for (CityAirQuality cityAirQuality : airQualityList) {
+            airQualityCacheService.generate(cityAirQuality);
+        }
+
+        // step 2: update database
         if (!airQualityList.isEmpty())
             airQualityDao.insertBatch(airQualityList);
     }
