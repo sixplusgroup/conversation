@@ -45,8 +45,10 @@ CREATE TABLE `gmair_airquality`.`machine_airquality` (
   PRIMARY KEY (`ma_id`));
 
 # 2018-05-28 rename table city_daily_aqi_sum
-DROP TABLE city_daily_aqi;
-CREATE TABLE `city_daily_aqi` (
+DROP TABLE `gmair_airquality`.`city_latest_aqi`;
+
+DROP TABLE `gmair_airquality`.`city_daily_aqi_sum`;
+CREATE TABLE `gmair_airquality`.`city_daily_aqi` (
   `city_id` int(11) NOT NULL,
   `pm_2_5` double NOT NULL,
   `block_flag` tinyint(1) NOT NULL,
@@ -54,8 +56,8 @@ CREATE TABLE `city_daily_aqi` (
   PRIMARY KEY (`city_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE city_aqi_full;
-CREATE TABLE `city_monthly_aqi` (
+drop table `gmair_airquality`.`city_monthly_aqi`;
+CREATE TABLE `gmair_airquality`.`city_monthly_aqi` (
   `city_id` varchar(20) NOT NULL,
   `pm_2_5` double NOT NULL DEFAULT '0',
   `block_flag` tinyint(1) NOT NULL DEFAULT '0',
@@ -63,11 +65,12 @@ CREATE TABLE `city_monthly_aqi` (
   PRIMARY KEY (`city_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE city_hourly_aqi;
-CREATE TABLE `city_hourly_aqi` (
+CREATE TABLE `gmair_airquality`.`city_hourly_aqi` (
   `city_id` varchar(20) NOT NULL,
   `pm_2_5` double NOT NULL DEFAULT '0',
   `block_flag` tinyint(1) NOT NULL DEFAULT '0',
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`city_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+rename TABLE `gmair_airquality`.`city_daily_aqi_detail` to `gmair_airquality`.`city_aqi_full`;
