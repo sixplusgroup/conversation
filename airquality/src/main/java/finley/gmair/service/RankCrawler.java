@@ -55,7 +55,6 @@ public class RankCrawler {
         Map<String, CityAirQuality> map = new HashMap<>();
         int count = 1;
         while (count > 0) {
-            count--;
             try {
                 Document page = Jsoup.connect(AIR_RANK).get();
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis() / (3600000) * 3600000);
@@ -93,6 +92,7 @@ public class RankCrawler {
                         System.out.println(e.getMessage());
                     }
                 }
+                count--;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             } finally {
@@ -114,9 +114,14 @@ public class RankCrawler {
 
     private void insertCityAqiDetail(List<CityAirQuality> airQualityList) {
         // step 1: update cache
-        for (CityAirQuality cityAirQuality : airQualityList) {
-            airQualityCacheService.generate(cityAirQuality);
+        try {
+            for (CityAirQuality cityAirQuality : airQualityList) {
+                airQualityCacheService.generate(cityAirQuality);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
 
         // step 2: update database
         if (!airQualityList.isEmpty())

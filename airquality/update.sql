@@ -74,3 +74,14 @@ CREATE TABLE `gmair_airquality`.`city_hourly_aqi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 rename TABLE `gmair_airquality`.`city_daily_aqi_detail` to `gmair_airquality`.`city_aqi_full`;
+
+#2018-05-29 rename table COLUMN
+ALTER TABLE `gmair_airquality`.`city_daily_aqi`
+CHANGE COLUMN `pm_2_5` `pm_25` DOUBLE NOT NULL ;
+
+ALTER TABLE `gmair_airquality`.city_hourly_aqi
+CHANGE COLUMN `pm_2_5` `pm_25` DOUBLE NOT NULL ;
+
+
+ALTER TABLE `gmair_airquality`.city_monthly_aqi
+CHANGE COLUMN `pm_2_5` `pm_25` DOUBLE NOT NULL ;
