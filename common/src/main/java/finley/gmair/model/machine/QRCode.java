@@ -15,6 +15,20 @@ public class QRCode extends Entity {
 
     private QRCodeStatus status;
 
+    public QRCode() {
+        super();
+        this.status = QRCodeStatus.CREATED;
+    }
+
+    public QRCode(String modelId, String batchValue, String codeValue, String codeUrl, QRCodeStatus status) {
+        this();
+        this.modelId = modelId;
+        this.batchValue = batchValue;
+        this.codeValue = codeValue;
+        this.codeUrl = codeUrl;
+        this.status = status;
+    }
+
     public String getCodeId() {
         return codeId;
     }

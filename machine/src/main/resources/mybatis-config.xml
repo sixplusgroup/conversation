@@ -7,5 +7,6 @@
         <mapper resource="mapper/machineairquality.xml"/>
         <mapper resource="mapper/goods.xml"></mapper>
         <mapper resource="mapper/goodsmodel.xml"></mapper>
+        <mapper resource="mapper/qrcode.xml"></mapper>
     </mappers>
 </configuration>

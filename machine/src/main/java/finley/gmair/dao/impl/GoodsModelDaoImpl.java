@@ -43,7 +43,7 @@ public class GoodsModelDaoImpl extends BaseDao implements GoodsModelDao {
     @Transactional
     public ResultData insert(GoodsModel model) {
         ResultData result = new ResultData();
-        model.setModelId(IDGenerator.generate("GMI"));
+        model.setModelId(IDGenerator.generate("MOD"));
         try {
             sqlSession.insert("gmair.machine.goodsmodel.insert", model);
             result.setData(model);
