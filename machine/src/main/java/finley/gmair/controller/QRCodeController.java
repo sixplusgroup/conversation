@@ -130,10 +130,6 @@ public class QRCodeController {
                 return e.getLocalizedMessage();
             }
         }
-        response = qrcodeService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return "";
-        }
         List<QRCode> list = (List<QRCode>) response.getData();
         File[] files = new File[list.size()];
         for (int i = 0; i < list.size(); i++) {
