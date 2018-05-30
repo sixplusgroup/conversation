@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@ComponentScan({"finley.gmair.config", "finley.gmair.sf.config", "finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.scheduler.order"})
+@ComponentScan({"finley.gmair.config", "finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.scheduler.order"})
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @EnableScheduling
 public class OrderApplication {

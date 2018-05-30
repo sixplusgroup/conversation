@@ -10,7 +10,6 @@ import finley.gmair.service.ExpressService;
 import finley.gmair.service.InstallService;
 import finley.gmair.service.OrderService;
 import finley.gmair.service.ReconnaissanceService;
-import finley.gmair.util.IDGenerator;
 import finley.gmair.util.RequestUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -217,6 +216,7 @@ public class OrderController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to retrieve the order information, please try again later");
+            return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
