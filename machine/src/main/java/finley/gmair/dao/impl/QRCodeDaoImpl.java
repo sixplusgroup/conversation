@@ -1,13 +1,11 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.QrcodeDao;
+import finley.gmair.dao.QRCodeDao;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +17,7 @@ import java.util.Map;
  * @date 2018/5/28
  */
 @Repository
-public class QrcodeDaoImpl extends BaseDao implements QrcodeDao {
-    private Logger logger = LoggerFactory.getLogger(QrcodeDaoImpl.class);
+public class QRCodeDaoImpl extends BaseDao implements QRCodeDao {
 
     @Override
     @Transactional
@@ -31,7 +28,7 @@ public class QrcodeDaoImpl extends BaseDao implements QrcodeDao {
             sqlSession.insert("gmair.machine.qrcode.insert", code);
             result.setData(code);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -48,7 +45,7 @@ public class QrcodeDaoImpl extends BaseDao implements QrcodeDao {
             }
             result.setData(list);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

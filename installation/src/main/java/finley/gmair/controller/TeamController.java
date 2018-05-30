@@ -19,20 +19,20 @@ public class TeamController {
     private TeamService teamService;
 
     //管理人员创建团队时触发
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public ResultData createTeam(TeamForm form) {
         ResultData result = new ResultData();
 
-        String teamName = form.getTeamName().trim();
-        String teamArea = form.getTeamArea().trim();
-        String teamDescription = form.getTeamDescription().trim();
-
-        //check whether input is empty
-        if (StringUtils.isEmpty(teamName) || StringUtils.isEmpty(teamArea)) {
+        if (StringUtils.isEmpty(form.getTeamName()) || StringUtils.isEmpty(form.getTeamArea())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all information");
+            result.setDescription("Please make sure all the required information is provided");
             return result;
         }
+
+        String teamName = form.getTeamName().trim();
+        String teamArea = form.getTeamArea().trim();
+        String teamDescription = (StringUtils.isEmpty(form.getTeamDescription())) ? "" : form.getTeamDescription().trim();
 
         //check whether the team name exist
         Map<String, Object> condition = new HashMap<>();
@@ -40,8 +40,8 @@ public class TeamController {
         condition.put("blockFlag", false);
         ResultData response = teamService.fetchTeam(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription(new StringBuffer("TeamController: Team: ").append(teamName).append(" already exist").toString());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Team ").append(teamName).append(" already exists").toString());
             return result;
         }
 

@@ -25,20 +25,21 @@ public class MemberController {
     private TeamService teamService;
 
     //管理员在后台选择创建一个工人时触发
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public ResultData createMember(MemberForm form) {
         ResultData result = new ResultData();
+
+        if (StringUtils.isEmpty(form.getTeamId()) || StringUtils.isEmpty(form.getMemberName()) || StringUtils.isEmpty(form.getMemberPhone()) || StringUtils.isEmpty(MemberRole.fromValue(form.getMemberRole()))) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure all the required information is provided.");
+            return result;
+        }
+
         String teamId = form.getTeamId().trim();
         String memberPhone = form.getMemberPhone().trim();
         String memberName = form.getMemberName().trim();
-        MemberRole memberRole = form.getMemberRole()==1?MemberRole.LEADER:MemberRole.ORDINARY;
-
-        //check whether input is empty
-        if (StringUtils.isEmpty(teamId) || StringUtils.isEmpty(memberName) || StringUtils.isEmpty(memberPhone)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all information");
-            return result;
-        }
+        MemberRole memberRole = MemberRole.fromValue(form.getMemberRole());
 
         //check whether the team exist
         Map<String, Object> condition = new HashMap<>();
@@ -46,13 +47,13 @@ public class MemberController {
         condition.put("blockFlag", false);
         ResultData response = teamService.fetchTeam(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("team is not exist");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the team you select is valid.");
             return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,please try again later");
+            result.setDescription("Fail to find the team information, please try again later.");
             return result;
         }
 
@@ -63,11 +64,11 @@ public class MemberController {
         response = memberService.fetchMember(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("member phone has been registered");
+            result.setDescription("The member phone has already been registered by another member.");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,try again later");
+            result.setDescription("Fail to find the phone information, please try again later.");
             return result;
         }
 
@@ -89,10 +90,10 @@ public class MemberController {
     public ResultData members(String teamId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if(!StringUtils.isEmpty(teamId)) {
+        if (!StringUtils.isEmpty(teamId)) {
             condition.put("teamId", teamId);
         }
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         ResultData response = memberService.fetchMember(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);

@@ -1,21 +1,16 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.GoodsModelDao;
-import finley.gmair.dao.QrcodeDao;
+import finley.gmair.dao.QRCodeDao;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.model.machine.QRCodeStatus;
-import finley.gmair.service.QrcodeService;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +19,9 @@ import java.util.Map;
  * @date 2018/5/28
  */
 @Service
-public class QrcodeServiceImpl implements QrcodeService {
+public class QRCodeServiceImpl implements QRCodeService {
     @Autowired
-    private QrcodeDao qrcodeDao;
+    private QRCodeDao qrCodeDao;
 
     @Autowired
     private GoodsModelDao goodsModelDao;
@@ -50,7 +45,7 @@ public class QrcodeServiceImpl implements QrcodeService {
                 String value = new StringBuffer(batchValue).append(principle.format(i)).append(QRSerialGenerator.generate()).toString();
                 String url = "http://" + MachineProperties.getValue("domain_url") + MachineProperties.getValue("qrcode_base") + "/" + value;
                 QRCode code = new QRCode(modelId, batchValue, value, url, QRCodeStatus.CREATED);
-                resposne = qrcodeDao.insert(code);
+                resposne = qrCodeDao.insert(code);
                 if (resposne.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_OK);
                     result.setData(resposne.getData());
@@ -69,7 +64,7 @@ public class QrcodeServiceImpl implements QrcodeService {
     @Override
     public ResultData fetch(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        ResultData response = qrcodeDao.query(condition);
+        ResultData response = qrCodeDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No qrcode found from database");
@@ -84,7 +79,4 @@ public class QrcodeServiceImpl implements QrcodeService {
         }
         return result;
     }
-
-
-
 }

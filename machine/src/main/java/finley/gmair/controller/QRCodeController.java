@@ -5,16 +5,14 @@ import finley.gmair.form.machine.QRCodeForm;
 import finley.gmair.model.goods.GoodsModel;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.GoodsService;
-import finley.gmair.service.QrcodeService;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,7 @@ import java.util.Map;
 public class QRCodeController {
 
     @Autowired
-    private QrcodeService qrcodeService;
+    private QRCodeService qrCodeService;
 
     @Autowired
     private GoodsService goodsService;
@@ -58,7 +56,7 @@ public class QRCodeController {
         }
         GoodsModel gmVo = ((List<GoodsModel>) response.getData()).get(0);
         String batch = new StringBuffer(gmVo.getModelCode()).append(form.getBatchValue()).toString();
-        response = qrcodeService.create(form.getGoodsId(), form.getModelId(), batch, 1);
+        response = qrCodeService.create(form.getGoodsId(), form.getModelId(), batch, 1);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setData(response.getData());
             return result;
@@ -92,7 +90,7 @@ public class QRCodeController {
         }
         GoodsModel gmVo = ((List<GoodsModel>) response.getData()).get(0);
         String batch = new StringBuffer(gmVo.getModelCode()).append(form.getBatchValue()).toString();
-        response = qrcodeService.create(form.getGoodsId(), form.getModelId(), batch, form.getNum());
+        response = qrCodeService.create(form.getGoodsId(), form.getModelId(), batch, form.getNum());
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             String filename = generateZip(batch);
             result.setData(filename);
@@ -110,7 +108,7 @@ public class QRCodeController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("batchValue", batchValue);
-        ResultData response = qrcodeService.fetch(condition);
+        ResultData response = qrCodeService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return "";
         }
@@ -137,5 +135,47 @@ public class QRCodeController {
             files[i] = file;
         }
         return tempSerial;
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/download/{filename}")
+    public void download(@PathVariable("filename") String filename, HttpServletResponse response) {
+        File file = null;
+        if (filename.startsWith("ZIP")) {
+            filename = filename + ".zip";
+            file = new File(PathUtil.retrivePath() + "/material/zip/" + filename);
+        }
+        BufferedInputStream bufferedInputStream = null;
+        BufferedOutputStream bufferedOutputStream = null;
+        try {
+            bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
+            byte[] buff = new byte[2048];
+            int bytesRead;
+            while (-1 != (bytesRead = bufferedInputStream.read(buff, 0, buff.length))) {
+                bufferedOutputStream.write(buff, 0, bytesRead);
+            }
+            bufferedOutputStream.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedInputStream != null) {
+                    bufferedInputStream.close();
+                }
+                if (bufferedOutputStream != null) {
+                    bufferedOutputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
