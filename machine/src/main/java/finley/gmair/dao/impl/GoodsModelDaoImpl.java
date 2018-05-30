@@ -6,8 +6,6 @@ import finley.gmair.model.goods.GoodsModel;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +18,6 @@ import java.util.Map;
  */
 @Repository
 public class GoodsModelDaoImpl extends BaseDao implements GoodsModelDao {
-    private Logger logger = LoggerFactory.getLogger(GoodsModelDaoImpl.class);
 
     @Override
     public ResultData query(Map<String, Object> condition) {
@@ -32,7 +29,7 @@ public class GoodsModelDaoImpl extends BaseDao implements GoodsModelDao {
             }
             result.setData(list);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -48,7 +45,7 @@ public class GoodsModelDaoImpl extends BaseDao implements GoodsModelDao {
             sqlSession.insert("gmair.machine.goodsmodel.insert", model);
             result.setData(model);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

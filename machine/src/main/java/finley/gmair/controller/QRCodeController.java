@@ -5,7 +5,7 @@ import finley.gmair.form.machine.QRCodeForm;
 import finley.gmair.model.goods.GoodsModel;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.GoodsService;
-import finley.gmair.service.QrcodeService;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class QRCodeController {
 
     @Autowired
-    private QrcodeService qrcodeService;
+    private QRCodeService qrCodeService;
 
     @Autowired
     private GoodsService goodsService;
@@ -56,7 +56,7 @@ public class QRCodeController {
         }
         GoodsModel gmVo = ((List<GoodsModel>) response.getData()).get(0);
         String batch = new StringBuffer(gmVo.getModelCode()).append(form.getBatchValue()).toString();
-        response = qrcodeService.create(form.getGoodsId(), form.getModelId(), batch, 1);
+        response = qrCodeService.create(form.getGoodsId(), form.getModelId(), batch, 1);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setData(response.getData());
             return result;
@@ -90,7 +90,7 @@ public class QRCodeController {
         }
         GoodsModel gmVo = ((List<GoodsModel>) response.getData()).get(0);
         String batch = new StringBuffer(gmVo.getModelCode()).append(form.getBatchValue()).toString();
-        response = qrcodeService.create(form.getGoodsId(), form.getModelId(), batch, form.getNum());
+        response = qrCodeService.create(form.getGoodsId(), form.getModelId(), batch, form.getNum());
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             String filename = generateZip(batch);
             result.setData(filename);
@@ -108,7 +108,7 @@ public class QRCodeController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("batchValue", batchValue);
-        ResultData response = qrcodeService.fetch(condition);
+        ResultData response = qrCodeService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return "";
         }

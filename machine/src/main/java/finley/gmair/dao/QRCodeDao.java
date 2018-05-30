@@ -9,7 +9,7 @@ import java.util.Map;
  * @author shenghaohu@hshvip.com
  * @date 2018/5/28
  */
-public interface QrcodeDao {
+public interface QRCodeDao {
     ResultData insert(QRCode code);
 
     ResultData query(Map<String, Object> condition);
