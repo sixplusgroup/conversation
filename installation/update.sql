@@ -124,9 +124,6 @@ ALTER TABLE `gmair_install`.`install_snapshot`
 ADD COLUMN `install_type` VARCHAR(45) NOT NULL AFTER `net`;
 
 CREATE
-    ALGORITHM = UNDEFINED
-    DEFINER = `root`@`localhost`
-    SQL SECURITY DEFINER
 VIEW `gmair_install`.`finished_view` AS
     SELECT
         `gmair_install`.`install_assign`.`assign_id` AS `assign_id`,
@@ -143,3 +140,33 @@ VIEW `gmair_install`.`finished_view` AS
     WHERE
         ((`gmair_install`.`install_assign`.`assign_id` = `gmair_install`.`install_snapshot`.`assign_id`)
             AND (`gmair_install`.`install_snapshot`.`snapshot_id` = `gmair_install`.`snapshot_location`.`snapshot_id`))
+
+##2018-05-30
+CREATE OR REPLACE VIEW `gmair_install`.`team_member_view` AS
+  SELECT
+    tm.member_id,
+    tm.member_name,
+    tm.member_phone,
+    tm.wechat_id,
+    tm.member_role,
+    it.team_name
+  FROM
+    gmair_install.team_member tm
+    LEFT JOIN
+    gmair_install.install_team it ON tm.block_flag = 0
+                                     AND it.team_id = tm.team_id
+
+CREATE OR REPLACE VIEW `gmair_install`.`team_view` AS
+  SELECT
+    it.team_id,
+    it.team_name,
+    team_area,
+    team_description,
+    IFNULL(COUNT(tm.member_id), 0) AS team_member_count
+  FROM
+    gmair_install.install_team it
+    LEFT JOIN
+    gmair_install.team_member tm ON it.team_id = tm.team_id
+                                    AND tm.block_flag = 0
+  GROUP BY it.team_id
+

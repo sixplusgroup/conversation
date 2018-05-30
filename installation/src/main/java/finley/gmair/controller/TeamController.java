@@ -60,12 +60,13 @@ public class TeamController {
     }
 
     //管理人员查看团队信息时触发,拉取所有团队列表
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public ResultData list() {
         ResultData result = new ResultData();
 
         Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFalg", false);
+        condition.put("blockFlag", false);
         ResultData response = teamService.fetchTeam(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

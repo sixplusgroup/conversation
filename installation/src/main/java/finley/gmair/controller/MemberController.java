@@ -86,6 +86,7 @@ public class MemberController {
     }
 
     //
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/members")
     public ResultData members(String teamId) {
         ResultData result = new ResultData();
