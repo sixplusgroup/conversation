@@ -46,7 +46,6 @@ public class OrderController {
      * @param
      * @return
      */
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResultData upload(MultipartHttpServletRequest request) {
         ResultData result = new ResultData();
@@ -61,11 +60,10 @@ public class OrderController {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public ResultData create(String order) {
         ResultData result = new ResultData();
-        PlatformOrder platformOrder = new PlatformOrder();
+
         List<OrderItem> list = new ArrayList<>();
         JSONObject jsonObject = JSONObject.parseObject(order);
         String channel = jsonObject.getString("channel");
@@ -97,21 +95,17 @@ public class OrderController {
             item.setItemPrice(itemPrice);
             list.add(item);
         }
-        platformOrder.setChannel(channel);
-        platformOrder.setOrderNo(orderNo);
-        platformOrder.setConsignee(consignee);
-        platformOrder.setPhone(phone);
+
+        PlatformOrder platformOrder = new PlatformOrder(list, orderNo, consignee, phone, address, channel, description);
         platformOrder.setTotalPrice(price);
         platformOrder.setProvince(province);
         platformOrder.setCity(city);
-        platformOrder.setAddress(address);
         platformOrder.setDistrict(district);
-        platformOrder.setDescription(description);
+
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
         LocalDate localDate = LocalDate.parse(orderDate, dateTimeFormatter);
         LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
         platformOrder.setCreateAt(Timestamp.valueOf(localDateTime));
-        platformOrder.setList(list);
 
         ResultData response = orderService.createPlatformOrder(platformOrder);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -135,7 +129,6 @@ public class OrderController {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/{orderId}/info")
     public ResultData info(@PathVariable("orderId") String orderId) {
         ResultData result = new ResultData();
@@ -164,7 +157,7 @@ public class OrderController {
                     String qrcode = (new JSONObject((LinkedHashMap) jsonObject)).getString("codeValue");
                     ResultData assignResponse = installService.getAssign(qrcode);
                     if (assignResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                        assignArray.add(((ArrayList)assignResponse.getData()).get(0));
+                        assignArray.add(((ArrayList) assignResponse.getData()).get(0));
                     }
                 }
                 data.put("installAssign", assignArray);
@@ -200,7 +193,6 @@ public class OrderController {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public ResultData list() {
         ResultData result = new ResultData();
@@ -222,7 +214,6 @@ public class OrderController {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/qrcode/{qrcode}")
     public ResultData orderByQrcode(@PathVariable String qrcode) {
         ResultData result = new ResultData();
@@ -233,7 +224,7 @@ public class OrderController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("没有二维码关联的机器");
-        }else {
+        } else {
             JSONObject jsonObject = JSONObject.parseObject(response.getData().toString());
             String orderId = jsonObject.getString("orderId");
             Map<String, Object> condition = new HashMap<>();
@@ -250,17 +241,16 @@ public class OrderController {
                 result.setDescription("订单查询忙，请稍后再试");
             }
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(((List<PlatformOrder>)response.getData()).get(0));
+            result.setData(((List<PlatformOrder>) response.getData()).get(0));
             return result;
         }
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/installCreation")
     public ResultData orderInstall(@RequestParam("orderId") String orderId,
                                    @RequestParam(value = "qrcode", required = false) String qrcode
-                                   ){
+    ) {
         ResultData result = new ResultData();
         if (null == orderId) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -302,12 +292,8 @@ public class OrderController {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/deliver")
-    public ResultData orderDeliver(@RequestParam("orderId") String orderId,
-                                   @RequestParam("company") String company,
-                                   @RequestParam("expressNo") String expressNo)
-    {
+    public ResultData orderDeliver(@RequestParam("orderId") String orderId, @RequestParam("company") String company, @RequestParam("expressNo") String expressNo) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -315,11 +301,11 @@ public class OrderController {
         ResultData response = orderService.fetchPlatformOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("订单服务器忙，请稍后再试！");
+            result.setDescription(new StringBuffer("Fail to retrieve order information for order: ").append(orderId).toString());
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("该订单不存在，请确认订单号");
+            result.setDescription(new StringBuffer("Order: ").append(orderId).append(" does not exist.").toString());
             return result;
         }
         PlatformOrder order = ((List<PlatformOrder>) response.getData()).get(0);
@@ -340,6 +326,4 @@ public class OrderController {
 
         return result;
     }
-
-
 }
