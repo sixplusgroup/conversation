@@ -9,14 +9,30 @@
         <result column="create_time" property="createTime" />
     </resultMap>
 
-    <insert id="insert" parameterType="finley.gmair.model.air.CityAirQualityStatistic">
+    <insert id="insertHourly" parameterType="finley.gmair.model.air.CityAirQualityStatistic">
+        INSERT INTO `gmair_airquality`.`city_hourly_aqi`
+        (city_id, pm_25, block_flag, create_time)
+        VALUES
+        (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <insert id="insertHourlyBatch" parameterType="java.util.List">
+        INSERT INTO `gmair_airquality`.`city_hourly_aqi`
+        (city_id, pm_25, block_flag, create_time)
+        VALUES
+        <foreach collection="list" item="CityAirQualityStatistic" separator="," index="index">
+            (#{CityAirQualityStatistic.cityId}, #{CityAirQualityStatistic.pm25}, #{CityAirQualityStatistic.blockFlag}, #{CityAirQualityStatistic.createAt})
+        </foreach>
+    </insert>
+
+    <insert id="insertDaily" parameterType="finley.gmair.model.air.CityAirQualityStatistic">
         INSERT INTO `gmair_airquality`.`city_daily_aqi`
         (city_id, pm_25, block_flag, create_time)
         VALUES
         (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
     </insert>
 
-    <insert id="insert" parameterType="java.util.List">
+    <insert id="insertDailyBatch" parameterType="java.util.List">
         INSERT INTO `gmair_airquality`.`city_daily_aqi`
         (city_id, pm_25, block_flag, create_time)
         VALUES
@@ -25,7 +41,39 @@
         </foreach>
     </insert>
 
-    <select id="select" resultMap="cityUrlVO" parameterType="java.util.Map">
+    <insert id="insertMonthly" parameterType="finley.gmair.model.air.CityAirQualityStatistic">
+        INSERT INTO `gmair_airquality`.`city_monthly_aqi`
+        (city_id, pm_25, block_flag, create_time)
+        VALUES
+        (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <insert id="insertMonthlyBatch" parameterType="java.util.List">
+        INSERT INTO `gmair_airquality`.`city_monthly_aqi`
+        (city_id, pm_25, block_flag, create_time)
+        VALUES
+        <foreach collection="list" item="CityAirQualityStatistic" separator="," index="index">
+            (#{CityAirQualityStatistic.cityId}, #{CityAirQualityStatistic.pm25}, #{CityAirQualityStatistic.blockFlag}, #{CityAirQualityStatistic.createAt})
+        </foreach>
+    </insert>
+
+    <select id="selectHourly" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
+        select city_id, city_url, block_flag, create_time from `gmair_airquality`.`city_url`
+        WHERE 1 = 1
+        <if test="cityId != null">
+            and city_id = #{cityId}
+        </if>
+    </select>
+
+    <select id="selectDaily" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
+        select city_id, city_url, block_flag, create_time from `gmair_airquality`.`city_url`
+        WHERE 1 = 1
+        <if test="cityId != null">
+            and city_id = #{cityId}
+        </if>
+    </select>
+
+    <select id="selectMonthly" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
         select city_id, city_url, block_flag, create_time from `gmair_airquality`.`city_url`
         WHERE 1 = 1
         <if test="cityId != null">
