@@ -58,7 +58,13 @@
         <dependency>
             <groupId>io.github.openfeign.form</groupId>
             <artifactId>feign-form</artifactId>
-            <version>2.0.5</version>
+            <version>3.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign.form</groupId>
+            <artifactId>feign-form-spring</artifactId>
+            <version>3.0.3</version>
         </dependency>
 
         <dependency>
@@ -66,5 +72,6 @@
             <artifactId>feign-jackson</artifactId>
             <version>8.18.0</version>
         </dependency>
+
     </dependencies>
 </project>

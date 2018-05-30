@@ -10,10 +10,10 @@ import finley.gmair.service.ExpressService;
 import finley.gmair.service.InstallService;
 import finley.gmair.service.OrderService;
 import finley.gmair.service.ReconnaissanceService;
-import finley.gmair.util.RequestUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -43,15 +43,14 @@ public class OrderController {
     /**
      * This method is aimed to handle the order spreadsheet and store the records
      *
-     * @param request
+     * @param
      * @return
      */
     @CrossOrigin
-    @RequestMapping(method = RequestMethod.POST, value = "/upload")
+    @RequestMapping(method = RequestMethod.POST, value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResultData upload(MultipartHttpServletRequest request) {
         ResultData result = new ResultData();
-        MultipartFile file = RequestUtil.getFile(request, "order_list");
-        ResultData response = orderService.process(file);
+        ResultData response = orderService.process(request.getFile("order_list"));
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to process the file");
