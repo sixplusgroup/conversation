@@ -7,6 +7,8 @@ public enum MemberRole implements EnumValue {
 
     private int value;
 
+    private static MemberRole[] roles = new MemberRole[]{ORDINARY, LEADER};
+
     MemberRole(int value) {
         this.value = value;
     }
@@ -14,5 +16,10 @@ public enum MemberRole implements EnumValue {
     @Override
     public int getValue() {
         return value;
+    }
+
+    public static MemberRole fromValue(int value) {
+        if (value > roles.length - 1 || value < 0) return null;
+        return roles[value];
     }
 }
