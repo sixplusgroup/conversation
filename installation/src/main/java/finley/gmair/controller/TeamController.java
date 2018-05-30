@@ -5,9 +5,12 @@ import finley.gmair.model.installation.Team;
 import finley.gmair.service.TeamService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +22,6 @@ public class TeamController {
     private TeamService teamService;
 
     //管理人员创建团队时触发
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public ResultData createTeam(TeamForm form) {
         ResultData result = new ResultData();
@@ -60,7 +62,6 @@ public class TeamController {
     }
 
     //管理人员查看团队信息时触发,拉取所有团队列表
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public ResultData list() {
         ResultData result = new ResultData();

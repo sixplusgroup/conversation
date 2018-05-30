@@ -9,10 +9,11 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,7 +26,6 @@ public class MemberController {
     private TeamService teamService;
 
     //管理员在后台选择创建一个工人时触发
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public ResultData createMember(MemberForm form) {
         ResultData result = new ResultData();
@@ -86,7 +86,6 @@ public class MemberController {
     }
 
     //
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/members")
     public ResultData members(String teamId) {
         ResultData result = new ResultData();

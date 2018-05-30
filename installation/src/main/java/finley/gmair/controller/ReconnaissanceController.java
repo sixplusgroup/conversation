@@ -9,9 +9,11 @@ import finley.gmair.util.DateFormatUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.datetime.joda.LocalDateParser;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -21,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/installation/reconnaissance")
 public class ReconnaissanceController {
@@ -37,15 +38,6 @@ public class ReconnaissanceController {
             reconnaissance.setDescription(form.getDescription());
         }
         reconnaissance.setStatus(ReconnaissanceStatus.TODO);
-
-//        LocalDate reconDate = DateFormatUtil.convertToLocalDate(form.getReconDate());
-//        if (reconDate == null) {
-//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-//            result.setDescription("勘测日期格式错误");
-//            return result;
-//        }
-//        reconnaissance.setReconnaissanceDate(Timestamp.valueOf(LocalDateTime.of(reconDate, LocalTime.MIN)));
-
 
         ResultData response = reconnaissanceService.createReconnaissance(reconnaissance);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -75,7 +67,7 @@ public class ReconnaissanceController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
         } else {
-            result.setData(((List<Reconnaissance>)response.getData()).get(0));
+            result.setData(((List<Reconnaissance>) response.getData()).get(0));
         }
 
         return result;
@@ -87,9 +79,14 @@ public class ReconnaissanceController {
         Reconnaissance reconnaissance = new Reconnaissance(form.getOrderId(), form.getSetupMethod());
         reconnaissance.setReconId(reconnaissanceId);
         switch (form.getReconStatus()) {
-            case 1: reconnaissance.setStatus(ReconnaissanceStatus.UNREACHABLE); break;
-            case 2: reconnaissance.setStatus(ReconnaissanceStatus.FINISHED); break;
-            default: reconnaissance.setStatus(ReconnaissanceStatus.TODO);
+            case 1:
+                reconnaissance.setStatus(ReconnaissanceStatus.UNREACHABLE);
+                break;
+            case 2:
+                reconnaissance.setStatus(ReconnaissanceStatus.FINISHED);
+                break;
+            default:
+                reconnaissance.setStatus(ReconnaissanceStatus.TODO);
         }
 
         LocalDate reconDate = DateFormatUtil.convertToLocalDate(form.getReconDate());
