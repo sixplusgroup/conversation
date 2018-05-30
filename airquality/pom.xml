@@ -74,11 +74,6 @@
             <version>6.0.6</version>
         </dependency>
 
-        <dependency>
-            <groupId>io.sixhours</groupId>
-            <artifactId>memcached-spring-boot-starter</artifactId>
-            <version>1.2.0</version>
-        </dependency>
 
         <dependency>
             <groupId>org.jsoup</groupId>
