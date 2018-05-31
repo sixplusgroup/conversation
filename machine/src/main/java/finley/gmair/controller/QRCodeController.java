@@ -72,7 +72,7 @@ public class QRCodeController {
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("Sorry, the qrcode is not generated as expected, please try again");
+        result.setDescription("Sorry, the qrCode is not generated as expected, please try again");
         return result;
     }
 
@@ -107,12 +107,12 @@ public class QRCodeController {
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("Sorry, the qrcodes are not generated as expected, please try again");
+        result.setDescription("Sorry, the qrCodes are not generated as expected, please try again");
         return result;
     }
 
     private String generateZip(String batchValue) {
-        // judge whether the batch no is illegal, including emptry and not exist
+        // judge whether the batch no is illegal, including empty and not exist
         if (StringUtils.isEmpty(batchValue)) {
             return "";
         }
@@ -122,7 +122,7 @@ public class QRCodeController {
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return "";
         }
-        // read all qrcodes in the batch, generate a zip file
+        // read all qrCodes in the batch, generate a zip file
         String base = PathUtil.retrivePath();
         File directory = new File(new StringBuffer(base).append("/material/zip").toString());
         if (!directory.exists()) {
@@ -213,7 +213,7 @@ public class QRCodeController {
             }
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("The preBind is failed, please try again");
+            result.setDescription("The qrCode preBind is failed, please try again");
         }
         return result;
     }
