@@ -2,7 +2,6 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.mysql.cj.xdevapi.JsonArray;
 import finley.gmair.company.CompanyTransfer;
 import finley.gmair.form.express.ExpressCompanyForm;
 import finley.gmair.form.express.ExpressOrderForm;
@@ -74,7 +73,6 @@ public class ExpressController {
      *
      * @return
      */
-    @CrossOrigin
     @GetMapping("/company/query")
     public ResultData queryCompany() {
         ResultData result = new ResultData();
@@ -152,7 +150,6 @@ public class ExpressController {
      *
      * @return
      */
-    @CrossOrigin
     @GetMapping("/order/query/{orderId}")
     public ResultData queryOrder(@PathVariable String orderId) {
         ResultData result = new ResultData();
@@ -180,7 +177,6 @@ public class ExpressController {
      *
      * @return
      */
-    @CrossOrigin
     @GetMapping("/query/{expressNo}")
     public ResultData queryRoute(@PathVariable String expressNo) {
         ResultData result = new ResultData();
