@@ -23,17 +23,22 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
 
     @PostConstruct
     public void init() {
-        ResultData response = locationFeign.province();
-        List<LinkedHashMap> provinceList = (List<LinkedHashMap>) response.getData();
-        for (int i = 0; i < provinceList.size(); i++) {
-            response = locationFeign.city((String) provinceList.get(i).get("provinceId"));
-            List<LinkedHashMap> cityList = (List<LinkedHashMap>) response.getData();
-            for (LinkedHashMap city : cityList) {
-                provinceCityMap.put((String) city.get("cityName"), (String) city.get("cityId"));
+        try {
+            ResultData response = locationFeign.province();
+            List<LinkedHashMap> provinceList = (List<LinkedHashMap>) response.getData();
+            for (int i = 0; i < provinceList.size(); i++) {
+                response = locationFeign.city((String) provinceList.get(i).get("provinceId"));
+                List<LinkedHashMap> cityList = (List<LinkedHashMap>) response.getData();
+                for (LinkedHashMap city : cityList) {
+                    provinceCityMap.put((String) city.get("cityName"), (String) city.get("cityId"));
+                }
+                provinceCityMap.put((String) provinceList.get(i).get("provinceName"),
+                        (String) provinceList.get(i).get("provinceId"));
             }
-            provinceCityMap.put((String) provinceList.get(i).get("provinceName"),
-                    (String) provinceList.get(i).get("provinceId"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     @Override
