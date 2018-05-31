@@ -86,7 +86,7 @@ public class MemberController {
     }
 
     //
-    @RequestMapping(method = RequestMethod.GET, value = "/members")
+    @RequestMapping(method = RequestMethod.GET, value = "/list")
     public ResultData members(String teamId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
