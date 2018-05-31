@@ -8,5 +8,7 @@
         <mapper resource="mapper/goods.xml"></mapper>
         <mapper resource="mapper/goodsmodel.xml"></mapper>
         <mapper resource="mapper/qrcode.xml"></mapper>
+        <mapper resource="mapper/prebind.xml"></mapper>
+        <mapper resource="mapper/idlemachine.xml"></mapper>
     </mappers>
 </configuration>
