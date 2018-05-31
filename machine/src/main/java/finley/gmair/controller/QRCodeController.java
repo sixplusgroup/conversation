@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.machine.PreBindForm;
 import finley.gmair.form.machine.QRCodeCreateForm;
 import finley.gmair.form.machine.QRCodeForm;
@@ -214,6 +216,126 @@ public class QRCodeController {
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("The qrCode preBind is failed, please try again");
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/check")
+    public ResultData check(String candidate) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(candidate)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please fill in the first three paragraphs");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("search", new StringBuffer(candidate).append("%").toString());
+        ResultData response = qrCodeService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("System query error, please try again later");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Can't get the matched qrCode with" + candidate + ", please inspect");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<QRCode> list = (List<QRCode>) response.getData();
+            if (list.size() > 1) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("Please fill in the third paragraph");
+                return result;
+            } else {
+                condition.clear();
+                condition.put("codeValue", candidate);
+                response = preBindService.fetch(condition);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                    QRCode qrCodeVo = list.get(0);
+                    result.setData(qrCodeVo);
+                } else {
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("The qrCode" + candidate + "has been prebind, please inspect");
+                }
+            }
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/prebind/check")
+    public ResultData preBindCheck(String candidate) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(candidate)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please fill in the first three paragraphs");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("search", new StringBuffer(candidate).append("%").toString());
+        ResultData response = preBindService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Don't query the matched bind record with" + candidate);
+            return result;
+        }
+        List<PreBindCode> list = (List<PreBindCode>) response.getData();
+        if (list.size() > 1) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Please fill in the third paragraph");
+            return result;
+        }
+        PreBindCode preBindCodeVo = list.get(0);
+        result.setData(preBindCodeVo);
+        return result;
+    }
+
+    @PostMapping(value = "/prebind/unbind/{codeValue}")
+    public ResultData deletePreBind(@PathVariable String codeValue) {
+        ResultData result = new ResultData();
+        ResultData response = preBindService.deletePreBind(codeValue);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("System error, please try again later");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("delete the prebind using code" + codeValue);
+        }
+        return result;
+    }
+
+    /**
+     * The method is used to get the prebind list for verify
+     *
+     * @return
+     **/
+    @GetMapping(value = "/prebind/list")
+    public ResultData getPreBindList(@RequestParam(required = false) String param) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(param)) {
+            JSONObject paramJson = JSON.parseObject(param);
+            if (!StringUtils.isEmpty(paramJson.get("startDate"))) {
+                condition.put("startTime", paramJson.getString("startDate"));
+            }
+            if (!StringUtils.isEmpty(paramJson.get("endDate"))) {
+                condition.put("endTime", paramJson.getString("endDate"));
+            }
+        }
+        condition.put("blockFlag", false);
+        ResultData response = preBindService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Prebind is empty");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Query error, please try again");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
         }
         return result;
     }
