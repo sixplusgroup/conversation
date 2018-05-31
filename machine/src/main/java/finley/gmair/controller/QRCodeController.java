@@ -1,10 +1,14 @@
 package finley.gmair.controller;
 
+import finley.gmair.form.machine.PreBindForm;
 import finley.gmair.form.machine.QRCodeCreateForm;
 import finley.gmair.form.machine.QRCodeForm;
 import finley.gmair.model.goods.GoodsModel;
+import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.GoodsService;
+import finley.gmair.service.IdleMachineService;
+import finley.gmair.service.PreBindService;
 import finley.gmair.service.QRCodeService;
 import finley.gmair.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,12 @@ public class QRCodeController {
     @Autowired
     private GoodsService goodsService;
 
+    @Autowired
+    private PreBindService preBindService;
+
+    @Autowired
+    private IdleMachineService idleMachineService;
+
     /**
      * This method is used to create a record of qrcode
      *
@@ -41,9 +51,9 @@ public class QRCodeController {
     public ResultData createOne(QRCodeForm form) {
         ResultData result = new ResultData();
         String modelId = form.getModelId();
-        if (StringUtils.isEmpty(modelId)) {
+        if (StringUtils.isEmpty(modelId) || StringUtils.isEmpty(form.getGoodsId()) || StringUtils.isEmpty(form.getBatchValue())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Empty modelId parameter: " + modelId);
+            result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
@@ -75,9 +85,9 @@ public class QRCodeController {
     public ResultData create(QRCodeCreateForm form) {
         ResultData result = new ResultData();
         String modelId = form.getModelId();
-        if (StringUtils.isEmpty(modelId)) {
+        if (StringUtils.isEmpty(modelId) || StringUtils.isEmpty(form.getBatchValue()) || StringUtils.isEmpty(form.getGoodsId()) || StringUtils.isEmpty(form.getNum())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Empty modelId parameter: " + modelId);
+            result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
@@ -177,5 +187,34 @@ public class QRCodeController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @PostMapping(value = "/prebind")
+    public ResultData preBind(PreBindForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getMachineId()) || StringUtils.isEmpty(form.getCodeValue())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        PreBindCode code = new PreBindCode(form.getMachineId(), form.getCodeValue());
+        ResultData response = preBindService.create(code);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+            //insert correct, then update idleMachine
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("machineId", form.getMachineId());
+            response = idleMachineService.modify(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("The idleMachine update is failed, please try again");
+            }
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("The preBind is failed, please try again");
+        }
+        return result;
     }
 }
