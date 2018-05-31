@@ -9,7 +9,6 @@ import finley.gmair.model.express.ExpressStatus;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -35,9 +34,8 @@ public class OrderStatusSchedule {
      *This method is used to update express status every hour
      *
      */
-    @Scheduled(cron = "0 * * * * ?")
-    public void update(){
-        System.out.println(new Timestamp(System.currentTimeMillis()));
+    public ResultData update(){
+        ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("expressStatus", 3);
         condition.put("blockFlag",false);
@@ -46,13 +44,20 @@ public class OrderStatusSchedule {
             List<ExpressOrder> list = (List<ExpressOrder>) response.getData();
             response = this.classify_order(list);
             if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
-                System.out.println(response.getDescription());
+                result.setDescription(response.getDescription());
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             }else{
-                System.out.println("order_express update successfully");
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("order_express update successfully");
             }
         }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
-            System.out.println("none of order_express need to update");
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("none of order_express need to update");
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
         }
+        return result;
     }
 
     /**

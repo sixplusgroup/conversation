@@ -10,6 +10,8 @@ import finley.gmair.model.express.ExpressCompany;
 import finley.gmair.model.express.ExpressOrder;
 import finley.gmair.model.express.ExpressParcel;
 import finley.gmair.model.express.ParcelType;
+import finley.gmair.schedule.OrderStatusSchedule;
+import finley.gmair.schedule.ParcelStatusSchedule;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -30,6 +32,12 @@ public class ExpressController {
 
     @Autowired
     private CompanyTransfer companyTransfer;
+
+    @Autowired
+    OrderStatusSchedule orderStatusSchedule;
+
+    @Autowired
+    ParcelStatusSchedule parcelStatusSchedule;
 
     /**
      * This method is used to add express company in the system
@@ -353,4 +361,27 @@ public class ExpressController {
             return response;
         }
     }
+
+    /**
+     *This method is used to update order status every hour
+     *
+     */
+    @PostMapping("/schedule/order")
+    public ResultData updateOrderStatus(){
+        ResultData result = new ResultData();
+        result = orderStatusSchedule.update();
+        return result;
+    }
+
+    /**
+     *This method is used to update parcel status every hour
+     *
+     */
+    @PostMapping("/schedule/parcel")
+    public ResultData updateParcelStatus(){
+        ResultData result = new ResultData();
+        result = parcelStatusSchedule.update();
+        return result;
+    }
+
 }
