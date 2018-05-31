@@ -58,26 +58,50 @@
     </insert>
 
     <select id="selectHourly" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
-        select city_id, city_url, block_flag, create_time from `gmair_airquality`.`city_url`
+        select city_id, pm_25, block_flag, create_time from `gmair_airquality`.`city_hourly_aqi`
         WHERE 1 = 1
         <if test="cityId != null">
             and city_id = #{cityId}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+              AND create_time <= #{createTimeLTE}
+            ]]>
         </if>
     </select>
 
     <select id="selectDaily" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
-        select city_id, city_url, block_flag, create_time from `gmair_airquality`.`city_url`
+        select city_id, pm_25, block_flag, create_time from `gmair_airquality`.`city_daily_aqi`
         WHERE 1 = 1
         <if test="cityId != null">
             and city_id = #{cityId}
         </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+              AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
     </select>
 
     <select id="selectMonthly" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
-        select city_id, city_url, block_flag, create_time from `gmair_airquality`.`city_url`
+        select city_id, pm_25, block_flag, create_time from `gmair_airquality`.`city_monthly_aqi`
         WHERE 1 = 1
         <if test="cityId != null">
             and city_id = #{cityId}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+              AND create_time <= #{createTimeLTE}
+            ]]>
         </if>
     </select>
 

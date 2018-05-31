@@ -1,13 +1,10 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.model.district.City;
-import finley.gmair.model.district.Province;
 import finley.gmair.service.ProvinceCityCacheService;
 import finley.gmair.service.feign.LocationFeign;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

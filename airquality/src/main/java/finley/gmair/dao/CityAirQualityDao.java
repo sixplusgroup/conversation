@@ -4,6 +4,7 @@ import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.util.ResultData;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CityAirQualityDao {
 
@@ -11,4 +12,6 @@ public interface CityAirQualityDao {
     ResultData insertLatest(CityAirQuality airQuality);
     ResultData insertBatch(List<CityAirQuality> list);
     ResultData insertLatestBatch(List<CityAirQuality> list);
+
+    ResultData select(Map<String, Object> condition);
 }

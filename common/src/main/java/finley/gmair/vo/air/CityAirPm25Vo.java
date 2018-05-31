@@ -1,10 +1,11 @@
-package finley.gmair.model.air;
+package finley.gmair.vo.air;
 
-import finley.gmair.model.Entity;
+import java.sql.Timestamp;
 
-public class CityAirQualityStatistic extends Entity{
+public class CityAirPm25Vo {
     private String cityId;
     private double pm25;
+    private Timestamp recordTime;
 
     public String getCityId() {
         return cityId;
@@ -22,8 +23,11 @@ public class CityAirQualityStatistic extends Entity{
         this.pm25 = pm25;
     }
 
-    public CityAirQualityStatistic(String cityId, double pm25) {
-        this.cityId = cityId;
-        this.pm25 = pm25;
+    public Timestamp getRecordTime() {
+        return recordTime;
+    }
+
+    public void setRecordTime(Timestamp recordTime) {
+        this.recordTime = recordTime;
     }
 }

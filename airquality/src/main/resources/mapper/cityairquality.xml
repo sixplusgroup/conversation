@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.airquality.cityairquality">
 
+    <resultMap id="CityAirPm25Vo" type="finley.gmair.vo.air.CityAirPm25Vo">
+        <result column="city_id" property="cityId"/>
+        <result column="pm_2_5" property="pm25"/>
+        <result column="record_time" property="recordTime"/>
+    </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.air.CityAirQuality">
         INSERT INTO `gmair_airquality`.`city_aqi_full`
@@ -29,31 +34,26 @@
         </foreach>
     </insert>
 
-    <insert id="insertLatest" parameterType="finley.gmair.model.air.CityAirQuality">
-        INSERT INTO `gmair_airquality`.`city_latest_aqi`
-        (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
-        ,block_flag, create_time)
-        VALUES
-        (
-        #{cityId}, #{aqi}, #{aqiLevel}, #{primePollution},
-        #{pm25}, #{pm10}, #{co}, #{no2}, #{o3},
-        #{so2}, #{recordTime}, #{blockFlag}, #{createAt}
-        )
-    </insert>
-
-    <insert id="insertLatestBatch" parameterType="java.util.List">
-        INSERT INTO `gmair_airquality`.`city_latest_aqi`
-        (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
-        ,block_flag, create_time)
-        VALUES
-        <foreach collection="list" separator="," index="index" item="airQuality">
-            (
-            #{airQuality.cityId}, #{airQuality.aqi}, #{airQuality.aqiLevel}, #{airQuality.primePollution},
-            #{airQuality.pm25}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
-            #{airQuality.so2}, #{airQuality.recordTime}, #{airQuality.blockFlag}, #{airQuality.createAt}
-            )
-        </foreach>
-    </insert>
+    <select id="select" parameterType="java.util.Map" resultMap="CityAirPm25Vo">
+        select
+        city_id, pm_2_5, record_time
+        FROM `gmair_airquality`.`city_aqi_full`
+        WHERE 1 = 1
+        <if test="cityId != null">
+            and city_id = #{cityId}
+        </if>
+        <if test="recordTime != null">
+            AND record_time = #{recordTime}
+        </if>
+        <if test="recordTimeGT != null">
+            AND record_time > #{recordTimeGT}
+        </if>
+        <if test="recordTimeLT != null">
+            <![CDATA[
+                AND record_time < #{recordTimeLT}
+            ]]>
+        </if>
+    </select>
 
     <delete id="empty">
         DELETE from `gmair_airquality`.`city_latest_aqi`;

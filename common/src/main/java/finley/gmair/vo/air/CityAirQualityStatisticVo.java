@@ -2,7 +2,7 @@ package finley.gmair.vo.air;
 
 public class CityAirQualityStatisticVo {
     private String cityId;
-    private double om25;
+    private double pm25;
 
     public String getCityId() {
         return cityId;
@@ -12,11 +12,16 @@ public class CityAirQualityStatisticVo {
         this.cityId = cityId;
     }
 
-    public double getOm25() {
-        return om25;
+    public double getPm25() {
+        return pm25;
     }
 
-    public void setOm25(double om25) {
-        this.om25 = om25;
+    public void setPm25(double pm25) {
+        this.pm25 = pm25;
+    }
+
+    public CityAirQualityStatisticVo(String cityId, double pm25) {
+        this.cityId = cityId;
+        this.pm25 = pm25;
     }
 }

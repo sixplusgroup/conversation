@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.config"})
+@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.config", "finley.gmair.controller"})
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @EnableScheduling
 @EnableCaching

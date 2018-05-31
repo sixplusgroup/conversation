@@ -85,3 +85,13 @@ CHANGE COLUMN `pm_2_5` `pm_25` DOUBLE NOT NULL ;
 
 ALTER TABLE `gmair_airquality`.city_monthly_aqi
 CHANGE COLUMN `pm_2_5` `pm_25` DOUBLE NOT NULL ;
+
+#2018-05-31
+ALTER TABLE `gmair_airquality`.`city_daily_aqi`
+DROP PRIMARY KEY;
+
+ALTER TABLE `gmair_airquality`.`city_hourly_aqi`
+DROP PRIMARY KEY;
+
+ALTER TABLE `gmair_airquality`.`city_monthly_aqi`
+DROP PRIMARY KEY;
