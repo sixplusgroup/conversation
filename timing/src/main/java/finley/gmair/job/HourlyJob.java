@@ -22,6 +22,7 @@ public class HourlyJob implements Job{
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        System.out.println("start schedule hourly..");
         airQualityFeignService.scheduleHourly();
         expressFeignService.updateOrderStatus();
         expressFeignService.updateParcelStatus();
