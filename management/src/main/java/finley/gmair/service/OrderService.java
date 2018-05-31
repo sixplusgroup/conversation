@@ -1,27 +1,30 @@
 package finley.gmair.service;
 
-import feign.codec.Encoder;
-import feign.form.spring.SpringFormEncoder;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestParam;
 
-
-@FeignClient(value = "order-agent", configuration = OrderService.MultipartSupportConfig.class)
+@FeignClient("order-agent")
 public interface OrderService {
-    @PostMapping(value = "/order/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResultData upload(MultipartFile file);
 
-    @Configuration
-    class MultipartSupportConfig {
-        @Bean
-        public Encoder feignFormEncoder() {
-            return new SpringFormEncoder();
-        }
-    }
+    @GetMapping("/order/channel/list")
+    ResultData channelList();
 
+    @GetMapping("/order/list")
+    ResultData orderList();
+
+    @PostMapping("/order/create")
+    ResultData orderCreate(@RequestParam("order") String order);
+
+    @GetMapping("/order/{orderId}/info")
+    ResultData orderInfo(@PathVariable("orderId") String orderId);
+
+    @GetMapping("/order/commodityList")
+    ResultData commodityList();
+
+    @PostMapping("/order/deliver")
+    ResultData orderDeliver(@RequestParam("orderId") String orderId, @RequestParam("company") String company, @RequestParam("expressNo") String expressNo);
 }
