@@ -1,6 +1,8 @@
 package finley.gmair.config;
 
-import finley.gmair.job.AirqualityHourlyJob;
+import finley.gmair.job.DailyJob;
+import finley.gmair.job.HourlyJob;
+import finley.gmair.job.MonthlyJob;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,7 +42,7 @@ public class ScheduledConfiguration {
         quartzScheduler.setDataSource(dataSource);
         quartzScheduler.setTransactionManager(transactionManager);
         quartzScheduler.setOverwriteExistingJobs(true);
-        quartzScheduler.setSchedulerName("jelies-quartz-scheduler");
+        quartzScheduler.setSchedulerName("gmair-quartz-scheduler");
 
         // custom job factory of spring with DI support for @Autowired!
         AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
@@ -49,7 +51,8 @@ public class ScheduledConfiguration {
 
         quartzScheduler.setQuartzProperties(quartzProperties());
 
-        Trigger[] triggers = { processHourlyTrigger().getObject() };
+        Trigger[] triggers = { processHourlyTrigger().getObject(),
+                processDailyTrigger().getObject(), processMonthlyTrigger().getObject() };
         quartzScheduler.setTriggers(triggers);
 
         return quartzScheduler;
@@ -60,7 +63,7 @@ public class ScheduledConfiguration {
     public JobDetailFactoryBean processHourlyJob() {
         JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
         jobDetailFactory.setDurability(true);
-        jobDetailFactory.setJobClass(AirqualityHourlyJob.class);
+        jobDetailFactory.setJobClass(HourlyJob.class);
         jobDetailFactory.setGroup("spring3-quartz");
         return jobDetailFactory;
     }
@@ -69,7 +72,43 @@ public class ScheduledConfiguration {
     public CronTriggerFactoryBean processHourlyTrigger() {
         CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
         cronTriggerFactoryBean.setJobDetail(processHourlyJob().getObject());
-        cronTriggerFactoryBean.setCronExpression("0 * * * * ?");
+        cronTriggerFactoryBean.setCronExpression("0 0 * * * ?");
+        cronTriggerFactoryBean.setGroup("spring3-quartz");
+        return cronTriggerFactoryBean;
+    }
+
+    @Bean(value = "dailyJob")
+    public JobDetailFactoryBean processDailyJob() {
+        JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+        jobDetailFactory.setDurability(true);
+        jobDetailFactory.setJobClass(DailyJob.class);
+        jobDetailFactory.setGroup("spring3-quartz");
+        return jobDetailFactory;
+    }
+
+    @Bean(value = "dailyTrigger")
+    public CronTriggerFactoryBean processDailyTrigger() {
+        CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
+        cronTriggerFactoryBean.setJobDetail(processDailyJob().getObject());
+        cronTriggerFactoryBean.setCronExpression("0 0 0 * * ?");
+        cronTriggerFactoryBean.setGroup("spring3-quartz");
+        return cronTriggerFactoryBean;
+    }
+
+    @Bean(value = "monthlyJob")
+    public JobDetailFactoryBean processMonthlyJob() {
+        JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+        jobDetailFactory.setDurability(true);
+        jobDetailFactory.setJobClass(MonthlyJob.class);
+        jobDetailFactory.setGroup("spring3-quartz");
+        return jobDetailFactory;
+    }
+
+    @Bean(value = "monthlyTrigger")
+    public CronTriggerFactoryBean processMonthlyTrigger() {
+        CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
+        cronTriggerFactoryBean.setJobDetail(processMonthlyJob().getObject());
+        cronTriggerFactoryBean.setCronExpression("0 0 0 1 * ?");
         cronTriggerFactoryBean.setGroup("spring3-quartz");
         return cronTriggerFactoryBean;
     }
