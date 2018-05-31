@@ -5,7 +5,6 @@
     <resultMap id="CityAirQualityStatisticVO" type="finley.gmair.vo.air.CityAirQualityStatisticVo">
         <result column="city_id" property="cityId" />
         <result column="pm_25" property="pm25" />
-        <result column="block_flag" property="blockFlag" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
@@ -58,7 +57,7 @@
     </insert>
 
     <select id="selectHourly" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
-        select city_id, pm_25, block_flag, create_time from `gmair_airquality`.`city_hourly_aqi`
+        select city_id, pm_25, create_time from `gmair_airquality`.`city_hourly_aqi`
         WHERE 1 = 1
         <if test="cityId != null">
             and city_id = #{cityId}
@@ -74,7 +73,7 @@
     </select>
 
     <select id="selectDaily" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
-        select city_id, pm_25, block_flag, create_time from `gmair_airquality`.`city_daily_aqi`
+        select city_id, pm_25, create_time from `gmair_airquality`.`city_daily_aqi`
         WHERE 1 = 1
         <if test="cityId != null">
             and city_id = #{cityId}
@@ -90,7 +89,7 @@
     </select>
 
     <select id="selectMonthly" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
-        select city_id, pm_25, block_flag, create_time from `gmair_airquality`.`city_monthly_aqi`
+        select city_id, pm_25, create_time from `gmair_airquality`.`city_monthly_aqi`
         WHERE 1 = 1
         <if test="cityId != null">
             and city_id = #{cityId}

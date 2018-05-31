@@ -7,6 +7,7 @@ import finley.gmair.service.AirQualityStatisticService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.air.CityAirPm25Vo;
+import finley.gmair.vo.air.CityAirQualityStatisticVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,10 +71,10 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
         ResultData response = airQualityStatisticDao.fetchHourlyData(condition);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<CityAirQualityStatistic> list = (List<CityAirQualityStatistic>) response.getData();
+            List<CityAirQualityStatisticVo> list = (List<CityAirQualityStatisticVo>) response.getData();
             Map<String, Double> cityAqiMap = list.stream().collect(
-                    Collectors.groupingBy(CityAirQualityStatistic::getCityId,
-                            Collectors.averagingDouble(CityAirQualityStatistic::getPm25)));
+                    Collectors.groupingBy(CityAirQualityStatisticVo::getCityId,
+                            Collectors.averagingDouble(CityAirQualityStatisticVo::getPm25)));
 
             List<CityAirQualityStatistic> airQualityStatisticList = cityAqiMap.entrySet().stream()
                     .map(e-> new CityAirQualityStatistic(e.getKey(), e.getValue()))
@@ -103,10 +104,10 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
         ResultData response = airQualityStatisticDao.fetchDailyData(condition);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<CityAirQualityStatistic> list = (List<CityAirQualityStatistic>) response.getData();
+            List<CityAirQualityStatisticVo> list = (List<CityAirQualityStatisticVo>) response.getData();
             Map<String, Double> cityAqiMap = list.stream().collect(
-                    Collectors.groupingBy(CityAirQualityStatistic::getCityId,
-                            Collectors.averagingDouble(CityAirQualityStatistic::getPm25)));
+                    Collectors.groupingBy(CityAirQualityStatisticVo::getCityId,
+                            Collectors.averagingDouble(CityAirQualityStatisticVo::getPm25)));
 
             List<CityAirQualityStatistic> airQualityStatisticList = cityAqiMap.entrySet().stream()
                     .map(e-> new CityAirQualityStatistic(e.getKey(), e.getValue()))

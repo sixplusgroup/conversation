@@ -26,4 +26,7 @@ public class CityAirQualityStatistic extends Entity{
         this.cityId = cityId;
         this.pm25 = pm25;
     }
+
+    public CityAirQualityStatistic() {
+    }
 }
