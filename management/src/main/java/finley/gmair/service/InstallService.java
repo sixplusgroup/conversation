@@ -3,6 +3,7 @@ package finley.gmair.service;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,4 +21,13 @@ public interface InstallService {
 
     @PostMapping("/installation/member/create")
     ResultData createMember(@RequestParam("teamId") String teamId, @RequestParam("memberPhone") String memberPhone, @RequestParam("memberName") String memberName, @RequestParam("memberRole") int memberRole);
+
+    @PostMapping("/installation/reconnaissance/{reconnaissanceId}/process")
+    ResultData reconnaissanceProcess(@PathVariable("reconnaissanceId") String reconnaissanceId,
+                                     @RequestParam("orderId") String orderId,
+                                     @RequestParam("setupMethod") String setupMethod,
+                                     @RequestParam("description") String description,
+                                     @RequestParam("reconDate") String reconDate,
+                                     @RequestParam("reconStatus") int reconStatus
+                                     );
 }
