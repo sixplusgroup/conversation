@@ -1,8 +1,6 @@
 package finley.gmair.controller;
 
-import finley.gmair.form.installation.MemberForm;
-import finley.gmair.form.installation.ReconnaissanceForm;
-import finley.gmair.form.installation.TeamForm;
+import finley.gmair.form.installation.*;
 import finley.gmair.service.InstallService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +33,20 @@ public class InstallController {
         return installService.createMember(form.getTeamId(), form.getMemberPhone(), form.getMemberName(), form.getMemberRole());
     }
 
-    @RequestMapping(value = "/reconnaissance/{reconnaissanceId}/process", method = RequestMethod.POST)
+    @PostMapping(value = "/reconnaissance/{reconnaissanceId}/process")
     public ResultData reconnaissanceProcess(@PathVariable String reconnaissanceId, ReconnaissanceForm form) {
         return installService.reconnaissanceProcess(reconnaissanceId, form.getOrderId(), form.getSetupMethod(),
                 form.getDescription(), form.getReconDate(), form.getReconStatus());
+    }
+
+    @PostMapping(value = "/assign/allocate")
+    public ResultData allocateInstallationAssign(AllocateForm allocateForm) {
+        return installService.allocateInstallationAssign(allocateForm.getAssignId(),
+                allocateForm.getTeamName(), allocateForm.getMemberName(), allocateForm.getInstallDate());
+    }
+
+    @GetMapping(value = "/assign/finishedinfo")
+    public ResultData getFinishedInfo(String assignId) {
+        return installService.finishedInfo(assignId);
     }
 }

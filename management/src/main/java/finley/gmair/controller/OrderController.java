@@ -46,7 +46,7 @@ public class OrderController {
         return orderService.commodityList();
     }
 
-    @PostMapping("/order/deliver")
+    @PostMapping("/deliver")
     public ResultData orderDeliver(String orderId, String company, String expressNo) {
         return orderService.orderDeliver(orderId, company, expressNo);
     }

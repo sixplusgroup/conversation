@@ -30,4 +30,14 @@ public interface InstallService {
                                      @RequestParam("reconDate") String reconDate,
                                      @RequestParam("reconStatus") int reconStatus
                                      );
+
+    @PostMapping("/installation/assign/allocate")
+    ResultData allocateInstallationAssign(@RequestParam("assignId") String assignId,
+                                          @RequestParam("teamName") String teamName,
+                                          @RequestParam("memberName") String memberName,
+                                          @RequestParam("installDate") String installDate);
+
+
+    @GetMapping("/installation/assign/finishedinfo")
+    ResultData finishedInfo(@RequestParam("assignId") String assignId);
 }

@@ -9,6 +9,6 @@ spring.datasource.username=root
 spring.datasource.password=
 
 spring.cache.type=caffeine
-spring.cache.caffeine.spec=maximumSize=500,expireAfterAccess=60s
+spring.cache.caffeine.spec=maximumSize=500,expireAfterAccess=3600s
 
 #security.oauth2.resource.user-info-uri=http://localhost:8004/auth/admin
