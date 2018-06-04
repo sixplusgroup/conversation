@@ -1,10 +1,14 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.*;
 import finley.gmair.service.InstallService;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/management/install")
@@ -48,5 +52,58 @@ public class InstallController {
     @GetMapping(value = "/assign/finishedinfo")
     public ResultData getFinishedInfo(String assignId) {
         return installService.finishedInfo(assignId);
+    }
+
+
+    @GetMapping("/assign/list")
+    public ResultData assignList() {
+        ResultData result = new ResultData();
+        JSONObject data = new JSONObject();
+        ResultData response = installService.todoAssignList();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            data.put("todo", ((List) response.getData()).size());
+        } else {
+            data.put("todo", 0);
+        }
+        response = installService.assignedList();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            data.put("assigned", ((List) response.getData()).size());
+        } else {
+            data.put("assigned", 0);
+        }
+        response = installService.processingAssignList();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            data.put("processing", ((List) response.getData()).size());
+        } else {
+            data.put("processing", 0);
+        }
+        response = installService.finishedList();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            data.put("finished", ((List) response.getData()).size());
+        } else {
+            data.put("finished", 0);
+        }
+        result.setData(data);
+        return result;
+    }
+
+    @GetMapping("/assign/todo")
+    public ResultData todoList() {
+        return installService.todoAssignList();
+    }
+
+    @GetMapping("/assign/assigned")
+    public ResultData assignedList() {
+        return installService.assignedList();
+    }
+
+    @GetMapping("/assign/processing")
+    public ResultData processingList() {
+        return installService.processingAssignList();
+    }
+
+    @GetMapping("/assign/finished")
+    public ResultData finishedList() {
+        return installService.finishedList();
     }
 }

@@ -29,7 +29,7 @@ public interface InstallService {
                                      @RequestParam("description") String description,
                                      @RequestParam("reconDate") String reconDate,
                                      @RequestParam("reconStatus") int reconStatus
-                                     );
+    );
 
     @PostMapping("/installation/assign/allocate")
     ResultData allocateInstallationAssign(@RequestParam("assignId") String assignId,
@@ -40,4 +40,17 @@ public interface InstallService {
 
     @GetMapping("/installation/assign/finishedinfo")
     ResultData finishedInfo(@RequestParam("assignId") String assignId);
+
+
+    @GetMapping("/installation/assign/todo")
+    ResultData todoAssignList();
+
+    @GetMapping("/installation/assign/assigned")
+    ResultData assignedList();
+
+    @GetMapping("/installation/assign/processing")
+    ResultData processingAssignList();
+
+    @GetMapping("/installation/assign/finished")
+    ResultData finishedList();
 }
