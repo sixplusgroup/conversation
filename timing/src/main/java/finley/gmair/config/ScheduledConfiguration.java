@@ -1,6 +1,7 @@
 package finley.gmair.config;
 
 import finley.gmair.job.DailyJob;
+import finley.gmair.job.HalfHourlyJob;
 import finley.gmair.job.HourlyJob;
 import finley.gmair.job.MonthlyJob;
 import org.quartz.Trigger;
@@ -51,13 +52,30 @@ public class ScheduledConfiguration {
 
         quartzScheduler.setQuartzProperties(quartzProperties());
 
-        Trigger[] triggers = { processHourlyTrigger().getObject(),
+        Trigger[] triggers = { processHalfHourlyTrigger().getObject(), processHourlyTrigger().getObject(),
                 processDailyTrigger().getObject(), processMonthlyTrigger().getObject() };
         quartzScheduler.setTriggers(triggers);
 
         return quartzScheduler;
     }
 
+    @Bean(value = "halfHourlyJob")
+    public JobDetailFactoryBean processHaflHourlyJob() {
+        JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+        jobDetailFactory.setDurability(true);
+        jobDetailFactory.setJobClass(HalfHourlyJob.class);
+        jobDetailFactory.setGroup("spring3-quartz");
+        return jobDetailFactory;
+    }
+
+    @Bean(value = "halfHourlyTrigger")
+    public CronTriggerFactoryBean processHalfHourlyTrigger() {
+        CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
+        cronTriggerFactoryBean.setJobDetail(processHaflHourlyJob().getObject());
+        cronTriggerFactoryBean.setCronExpression("0 0/30 * * * ?");
+        cronTriggerFactoryBean.setGroup("spring3-quartz");
+        return cronTriggerFactoryBean;
+    }
 
     @Bean(value = "hourlyJob")
     public JobDetailFactoryBean processHourlyJob() {
