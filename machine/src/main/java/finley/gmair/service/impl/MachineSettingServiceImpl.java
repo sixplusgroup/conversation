@@ -21,6 +21,7 @@ public class MachineSettingServiceImpl implements MachineSettingService{
     public ResultData fetchPowerActionMachine() {
         LocalDateTime localDateTime = LocalDateTime.now();
         int hour = localDateTime.getHour();
+        // see current minute is close to 0 or 30
         int minute = localDateTime.getMinute() < 30 ? 0 : 30;
 
         Map<String, Object> condition = new HashMap<>();

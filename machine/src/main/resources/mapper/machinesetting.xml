@@ -13,7 +13,7 @@
         <result column="trigger_minute" property="triggerMinute"/>
     </resultMap>
 
-       <select id="selectpowersetting" parameterType="java.util.Map">
+       <select id="selectpowersetting" parameterType="java.util.Map" resultMap="PowerSettingVo">
         SELECT
         setting_id,
         consumer_id,

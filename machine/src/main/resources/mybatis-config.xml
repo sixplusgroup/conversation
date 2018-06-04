@@ -10,5 +10,6 @@
         <mapper resource="mapper/qrcode.xml"></mapper>
         <mapper resource="mapper/prebind.xml"></mapper>
         <mapper resource="mapper/idlemachine.xml"></mapper>
+        <mapper resource="mapper/machinesetting.xml"></mapper>
     </mappers>
 </configuration>
