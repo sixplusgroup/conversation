@@ -11,7 +11,7 @@
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="goodsModelVo">
-        SELECT model_id, goods_id, model_code, model_name, blcok_flag, create_time
+        SELECT model_id, goods_id, model_code, model_name, block_flag, create_time
         FROM gmair_machine.goods_model
         WHERE 1 = 1
         <if test="modelId != null">
@@ -27,13 +27,13 @@
             AND model_name = #{modelName}
         </if>
         <if test="blockFlag != null">
-            AND blcok_flag = #{blockFlag}
+            AND block_flag = #{blockFlag}
         </if>
         ORDER BY create_time DESC
     </select>
 
-    <insert id="isnert" parameterType="finley.gmair.model.goods.GoodsModel" useGeneratedKeys="false">
-        INSERT INTO gmair_machine.goods_model(model_id, goods_id, model_code, model_name, blcok_flag, create_time)
+    <insert id="insert" parameterType="finley.gmair.model.goods.GoodsModel" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.goods_model(model_id, goods_id, model_code, model_name, block_flag, create_time)
         VALUES (#{modelId}, #{goodsId}, #{modelCode}, #{modelName}, #{blockFlag}, #{createAt})
     </insert>
 </mapper>
