@@ -60,7 +60,7 @@ public class ScheduledConfiguration {
     }
 
     @Bean(value = "halfHourlyJob")
-    public JobDetailFactoryBean processHaflHourlyJob() {
+    public JobDetailFactoryBean processHalfHourlyJob() {
         JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
         jobDetailFactory.setDurability(true);
         jobDetailFactory.setJobClass(HalfHourlyJob.class);
@@ -71,7 +71,7 @@ public class ScheduledConfiguration {
     @Bean(value = "halfHourlyTrigger")
     public CronTriggerFactoryBean processHalfHourlyTrigger() {
         CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
-        cronTriggerFactoryBean.setJobDetail(processHaflHourlyJob().getObject());
+        cronTriggerFactoryBean.setJobDetail(processHalfHourlyJob().getObject());
         cronTriggerFactoryBean.setCronExpression("0 0/30 * * * ?");
         cronTriggerFactoryBean.setGroup("spring3-quartz");
         return cronTriggerFactoryBean;
