@@ -1,0 +1,15 @@
+server.port=8013
+
+spring.application.name=installation-agent
+
+eureka.client.healthcheck=true
+eureka.client.service-url.defaultZone=http://localhost:8000/eureka/
+
+mybatis.config-location=classpath:mybatis-config.xml
+
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/gmair_schedule?useLegacyDatetimeCode=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+spring.datasource.username=root
+spring.datasource.password=
+
+quartz.enabled=true
