@@ -6,6 +6,7 @@ import finley.gmair.model.machine.QRCode;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.BatchVo;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,23 @@ public class QRCodeDaoImpl extends BaseDao implements QRCodeDao {
         ResultData result = new ResultData();
         try {
             List<QRCode> list = sqlSession.selectList("gmair.machine.qrcode.query", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryBatch(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<BatchVo> list = sqlSession.selectList("gmair.machine.qrcode.batchQuery", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }

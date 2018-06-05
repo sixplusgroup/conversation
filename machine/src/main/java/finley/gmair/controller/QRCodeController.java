@@ -235,4 +235,25 @@ public class QRCodeController {
         }
         return result;
     }
+
+    @PostMapping("/batch")
+    public ResultData getBatch(String modelId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(modelId)) {
+            condition.put("modelId", modelId);
+        }
+        ResultData response = qrCodeService.fetchBatch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        }
+        return result;
+    }
 }

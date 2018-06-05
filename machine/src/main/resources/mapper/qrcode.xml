@@ -13,6 +13,10 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="batchVo" type="finley.gmair.vo.machine.BatchVo">
+        <result property="batchValue" column="batch_value"></result>
+    </resultMap>
+
     <select id="query" parameterType="java.util.Map" resultMap="qrcodeVo">
         SELECT code_id, model_id, batch_value, code_value, code_url, code_status, block_flag, create_time
         FROM gmair_machine.qrcode
@@ -45,4 +49,13 @@
         INSERT INTO gmair_machine.qrcode(code_id, model_id, batch_value, code_value, code_url, code_status, block_flag, create_time)
         VALUES(#{codeId}, #{modelId}, #{batchValue}, #{codeValue}, #{codeUrl}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{blockFlag}, #{createAt})
     </insert>
+
+    <select id="batchQuery" parameterType="java.util.Map" resultMap="batchVo">
+        SELECT DISTINCT batch_value 
+        FROM gmair_machine.qrcode
+        WHERE 1 = 1
+        <if test="modelId != null">
+            AND model_id = #{modelId}
+        </if>
+    </select>
 </mapper>

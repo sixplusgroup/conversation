@@ -79,4 +79,9 @@ public class QRCodeServiceImpl implements QRCodeService {
         }
         return result;
     }
+
+    @Override
+    public ResultData fetchBatch(Map<String, Object> condition) {
+        return qrCodeDao.queryBatch(condition);
+    }
 }

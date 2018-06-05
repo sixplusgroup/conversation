@@ -13,4 +13,6 @@ public interface QRCodeDao {
     ResultData insert(QRCode code);
 
     ResultData query(Map<String, Object> condition);
+
+    ResultData queryBatch(Map<String, Object> condition);
 }

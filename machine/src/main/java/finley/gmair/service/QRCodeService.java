@@ -12,4 +12,6 @@ public interface QRCodeService {
     ResultData create(String goodsId, String modelId, String batchValue, int num);
 
     ResultData fetch(Map<String, Object> condition);
+
+    ResultData fetchBatch(Map<String, Object> condition);
 }
