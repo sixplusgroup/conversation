@@ -70,7 +70,8 @@ public class QRCodeController {
         String batch = new StringBuffer(gmVo.getModelCode()).append(form.getBatchValue()).toString();
         response = qrCodeService.create(form.getGoodsId(), form.getModelId(), batch, 1);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("The qrCode generated successfully");
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -104,8 +105,8 @@ public class QRCodeController {
         String batch = new StringBuffer(gmVo.getModelCode()).append(form.getBatchValue()).toString();
         response = qrCodeService.create(form.getGoodsId(), form.getModelId(), batch, form.getNum());
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            String filename = generateZip(batch);
-            result.setData(filename);
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("The qrCodes are generated successfully");
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -113,7 +114,7 @@ public class QRCodeController {
         return result;
     }
 
-    private String generateZip(String batchValue) {
+    /*private String generateZip(String batchValue) {
         // judge whether the batch no is illegal, including empty and not exist
         if (StringUtils.isEmpty(batchValue)) {
             return "";
@@ -137,13 +138,13 @@ public class QRCodeController {
             try {
                 zip.createNewFile();
             } catch (IOException e) {
-                return e.getLocalizedMessage();
+                return "";
             }
         }
         List<QRCode> list = (List<QRCode>) response.getData();
         File[] files = new File[list.size()];
         for (int i = 0; i < list.size(); i++) {
-            File file = new File(new StringBuffer(PathUtil.retrivePath()).append(list.get(i)).toString());
+            File file = new File(new StringBuffer(PathUtil.retrivePath()).append(list.get(i).).toString());
             files[i] = file;
         }
         return tempSerial;
@@ -189,7 +190,7 @@ public class QRCodeController {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 
     @PostMapping(value = "/prebind")
     public ResultData preBind(PreBindForm form) {
