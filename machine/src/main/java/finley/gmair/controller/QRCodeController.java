@@ -114,84 +114,6 @@ public class QRCodeController {
         return result;
     }
 
-    /*private String generateZip(String batchValue) {
-        // judge whether the batch no is illegal, including empty and not exist
-        if (StringUtils.isEmpty(batchValue)) {
-            return "";
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("batchValue", batchValue);
-        ResultData response = qrCodeService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return "";
-        }
-        // read all qrCodes in the batch, generate a zip file
-        String base = PathUtil.retrivePath();
-        File directory = new File(new StringBuffer(base).append("/material/zip").toString());
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        String tempSerial = IDGenerator.generate("ZIP");
-        File zip = new File(
-                new StringBuffer(base).append("/material/zip/").append(tempSerial).append(".zip").toString());
-        if (!zip.exists()) {
-            try {
-                zip.createNewFile();
-            } catch (IOException e) {
-                return "";
-            }
-        }
-        List<QRCode> list = (List<QRCode>) response.getData();
-        File[] files = new File[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            File file = new File(new StringBuffer(PathUtil.retrivePath()).append(list.get(i).).toString());
-            files[i] = file;
-        }
-        return tempSerial;
-    }
-
-    @ResponseBody
-    @GetMapping(value = "/download/{filename}")
-    public void download(@PathVariable("filename") String filename, HttpServletResponse response) {
-        File file = null;
-        if (filename.startsWith("ZIP")) {
-            filename = filename + ".zip";
-            file = new File(PathUtil.retrivePath() + "/material/zip/" + filename);
-        }
-        BufferedInputStream bufferedInputStream = null;
-        BufferedOutputStream bufferedOutputStream = null;
-        try {
-            bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-disposition", "attachment; filename=" + filename);
-            bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
-            byte[] buff = new byte[2048];
-            int bytesRead;
-            while (-1 != (bytesRead = bufferedInputStream.read(buff, 0, buff.length))) {
-                bufferedOutputStream.write(buff, 0, bytesRead);
-            }
-            bufferedOutputStream.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (bufferedInputStream != null) {
-                    bufferedInputStream.close();
-                }
-                if (bufferedOutputStream != null) {
-                    bufferedOutputStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
     @PostMapping(value = "/prebind")
     public ResultData preBind(PreBindForm form) {
         ResultData result = new ResultData();
@@ -261,33 +183,6 @@ public class QRCodeController {
                 }
             }
         }
-        return result;
-    }
-
-    @PostMapping(value = "/prebind/check")
-    public ResultData preBindCheck(String candidate) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(candidate)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please fill in the first three paragraphs");
-            return result;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("search", new StringBuffer(candidate).append("%").toString());
-        ResultData response = preBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("Don't query the matched bind record with" + candidate);
-            return result;
-        }
-        List<PreBindCode> list = (List<PreBindCode>) response.getData();
-        if (list.size() > 1) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("Please fill in the third paragraph");
-            return result;
-        }
-        PreBindCode preBindCodeVo = list.get(0);
-        result.setData(preBindCodeVo);
         return result;
     }
 
