@@ -22,7 +22,7 @@ import java.util.Map;
  * @date 2018/5/24
  */
 @RestController
-@RequestMapping("/goods")
+@RequestMapping("/machine/goods")
 public class GoodsController {
     @Autowired
     private GoodsService goodsService;
