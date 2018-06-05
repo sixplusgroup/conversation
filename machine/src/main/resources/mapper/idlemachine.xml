@@ -27,13 +27,13 @@
 
     <update id="update">
         UPDATE gmair_machine.idle_machine
-        SET block_flag = 0
+        SET block_flag = 1
         WHERE machine_id = #{machineId}
     </update>
 
     <update id="updateIdle">
         UPDATE gmair_machine.idle_machine
-        SET block_flag = 0
+        SET block_flag = 1
         WHERE idle_machine.machine_id IN
         (SELECT machine_id FROM gmair_machine.code_machine_bind)
     </update>
