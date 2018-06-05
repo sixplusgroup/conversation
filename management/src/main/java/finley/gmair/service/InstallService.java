@@ -37,6 +37,12 @@ public interface InstallService {
                                           @RequestParam("memberName") String memberName,
                                           @RequestParam("installDate") String installDate);
 
+    @PostMapping("/installation/assign/create")
+    ResultData createInstallationAssign(@RequestParam("qrcode") String qrcode,
+                                        @RequestParam("consumerConsignee") String consumerConsignee,
+                                        @RequestParam("consumerPhone") String consumerPhone,
+                                        @RequestParam("consumerAddress") String consumerAddress);
+
 
     @GetMapping("/installation/assign/finishedinfo")
     ResultData finishedInfo(@RequestParam("assignId") String assignId);

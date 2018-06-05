@@ -293,7 +293,7 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/deliver")
-    public ResultData orderDeliver(@RequestParam("orderId") String orderId, @RequestParam("company") String company, @RequestParam("expressNo") String expressNo) {
+    public ResultData orderDeliver(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -314,13 +314,6 @@ public class OrderController {
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("更新订单状态失败");
-            return result;
-        }
-
-        response = expressService.addOrder(orderId, company, expressNo);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("创建快递单失败");
             return result;
         }
 

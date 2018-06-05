@@ -170,3 +170,26 @@ CREATE OR REPLACE VIEW `gmair_install`.`team_view` AS
                                     AND tm.block_flag = 0
   GROUP BY it.team_id
 
+# update view
+DROP  VIEW assign_view;
+CREATE
+    ALGORITHM = UNDEFINED
+    DEFINER = `root`@`localhost`
+    SQL SECURITY DEFINER
+VIEW `assign_view` AS
+    SELECT
+        `install_assign`.`assign_id` AS `assign_id`,
+        `install_assign`.`code_value` AS `code_value`,
+        `install_team`.`team_name` AS `team_name`,
+        `team_member`.`member_name` AS `member_name`,
+        `install_assign`.`assign_status` AS `assign_status`,
+        `install_assign`.`assign_date` AS `assign_date`,
+        `install_assign`.`block_flag` AS `block_flag`,
+        `install_assign`.`create_time` AS `create_time`,
+        `install_assign`.`consumer_consignee` AS `consumer_consignee`,
+        `install_assign`.`consumer_phone` AS `consumer_phone`,
+        `install_assign`.`consumer_address` AS `consumer_address`
+    FROM
+        ((`install_assign`
+        LEFT JOIN `install_team` ON ((`install_assign`.`team_id` = `install_team`.`team_id`)))
+        LEFT JOIN `team_member` ON ((`install_assign`.`member_id` = `team_member`.`member_id`)));

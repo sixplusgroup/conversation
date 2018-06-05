@@ -12,7 +12,7 @@ public interface ExpressService {
 
     ResultData fetchExpressCompany(Map<String, Object> condition);
 
-    ResultData createExpressOrder(ExpressOrder order);
+    ResultData createExpressOrder(ExpressOrder order, String[] qrcodeList);
 
     ResultData fetchExpressOrder(Map<String, Object> condition);
 
