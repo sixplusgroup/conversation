@@ -3,9 +3,7 @@ package finley.gmair.service.impl;
 import finley.gmair.dao.ExpressCompanyDao;
 import finley.gmair.dao.ExpressOrderDao;
 import finley.gmair.dao.ExpressParcelDao;
-import finley.gmair.model.express.ExpressCompany;
-import finley.gmair.model.express.ExpressOrder;
-import finley.gmair.model.express.ExpressParcel;
+import finley.gmair.model.express.*;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -60,13 +58,23 @@ public class ExpressServiceImpl implements ExpressService {
     }
 
     @Override
-    public ResultData createExpressOrder(ExpressOrder order) {
+    public ResultData createExpressOrder(ExpressOrder order, String[] qrcodeList) {
         ResultData result = new ResultData();
         ResultData response = expressOrderDao.insertExpressOrder(order);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("Fail to store express order with id: ").append(order.getExpressId()).toString());
+            result.setDescription(new StringBuilder("Fail to store express order with id: ").append(order.getExpressId()).toString());
             return result;
+        }
+        ExpressOrder expressOrder = (ExpressOrder) response.getData();
+        for (String qrcode : qrcodeList) {
+            ExpressParcel parcel = new ExpressParcel();
+            parcel.setCodeValue(qrcode);
+            parcel.setExpressStatus(ExpressStatus.ASSIGNED);
+            parcel.setParentExpress(expressOrder.getExpressId());
+            parcel.setExpressNo(expressOrder.getExpressNo());
+            parcel.setParcelType(ParcelType.MACHINE);
+            response = expressParcelDao.insertExpressParcel(parcel);
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());

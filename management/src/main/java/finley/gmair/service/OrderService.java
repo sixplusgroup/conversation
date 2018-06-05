@@ -26,5 +26,5 @@ public interface OrderService {
     ResultData commodityList();
 
     @PostMapping("/order/deliver")
-    ResultData orderDeliver(@RequestParam("orderId") String orderId, @RequestParam("company") String company, @RequestParam("expressNo") String expressNo);
+    ResultData orderDeliver(@RequestParam("orderId") String orderId);
 }

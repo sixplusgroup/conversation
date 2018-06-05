@@ -141,7 +141,11 @@ public class ExpressController {
             return result;
         }
         ExpressOrder order = new ExpressOrder(orderId, companyId, expressNo);
-        response = expressService.createExpressOrder(order);
+        try {
+            response = expressService.createExpressOrder(order, form.getQrcode().split(","));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
