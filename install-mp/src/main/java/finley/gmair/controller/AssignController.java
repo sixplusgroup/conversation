@@ -11,6 +11,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,39 +31,43 @@ public class AssignController {
     private MemberService memberService;
 
     //工人选择安装时间并提交时触发,修改任务状态,安装日期
+
+    /**
+     * This method is called when the member specified the installation date
+     * A text message will be sent to notify the customer when this method is called
+     *
+     * @param form
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/date")
     public ResultData date(InstallDateForm form) {
-
         ResultData result = new ResultData();
+
+        //check empty input
+        if (StringUtils.isEmpty(form.getAssignId()) || StringUtils.isEmpty(form.getInstallDate())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide all required information");
+            return result;
+        }
 
         String assignId = form.getAssignId().trim();
         String installDate = form.getInstallDate().trim();
 
-        //check empty input
-        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(installDate)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all information");
-            return result;
-        }
-
-
-        //according to the assignId,find the assign record.
-        Assign assign = new Assign();
+        //according to the assignId,find the assign record
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignId", assignId);
         condition.put("blockFlag", false);
         ResultData response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the assign");
+            result.setDescription(new StringBuffer("No install assign with id: ").append(assignId).append(" found").toString());
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,please try again later!");
+            result.setDescription("Fail to find install assign");
             return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            assign = ((List<Assign>) response.getData()).get(0);
         }
+        Assign assign = ((List<Assign>) response.getData()).get(0);
 
         //update the assign
         if (assign.getAssignStatus().getValue() < AssignStatus.PROCESSING.getValue()) {
@@ -84,142 +89,95 @@ public class AssignController {
         return result;
     }
 
-    //工人选择反馈界面时触发,拉取可反馈安装任务列表.
-    @RequestMapping(method = RequestMethod.GET, value = "/feedbacklist")
-    public ResultData feedbacklist(String wechatId) {
+    /**
+     * @param wechatId
+     * @param status
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/list")
+    public ResultData assign(String wechatId, int status) {
         ResultData result = new ResultData();
 
-        wechatId = wechatId.trim();
-
-        //check empty input
-        if (StringUtils.isEmpty(wechatId)) {
+        if (StringUtils.isEmpty(wechatId) || StringUtils.isEmpty(status)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the memberId");
+            result.setDescription("Please make sure all required information is provided");
             return result;
         }
 
-        //according to wechatId, find memberId
-        String memberId = "";
+        wechatId = wechatId.trim();
+        //fetch member by wechat id
+
         Map<String, Object> condition = new HashMap<>();
         condition.put("wechatId", wechatId);
         condition.put("blockFlag", false);
         ResultData response = memberService.fetchMember(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            memberId = ((List<Member>) response.getData()).get(0).getMemberId();
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not found the member");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
-            return result;
-        }
-
-        //fetch the PROCESSING assign list.
-        condition.clear();
-        condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
-        condition.put("memberId", memberId);
-        condition.put("blockFlag", false);
-        response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("no assign found");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now, please try again later!  ");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription("success to get the assigned list");
-        }
-        return result;
-    }
-
-    //工人查看分配给自己的安装任务时触发.
-    @RequestMapping(method = RequestMethod.GET, value = "/workertodo")
-    public ResultData workertodo(String wechatId) {
-        ResultData result = new ResultData();
-
-        wechatId = wechatId.trim();
-
-        //check empty input
-        if (StringUtils.isEmpty(wechatId)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the memberId");
-            return result;
-        }
-
-        //according to wechatId, find memberId
-        String memberId = "";
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("wechatId", wechatId);
-        condition.put("blockFlag", false);
-        ResultData response = memberService.fetchMember(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            memberId = ((List<Member>) response.getData()).get(0).getMemberId();
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not found the member!");
+            result.setDescription(new StringBuffer("No member with openid: ").append(wechatId).append(" found").toString());
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now");
             return result;
         }
+
+        String memberId = ((List<Member>) response.getData()).get(0).getMemberId();
+
+        condition.clear();
 
         //fetch the assigned assign list.
-        condition.clear();
-        condition.put("assignStatus", AssignStatus.ASSIGNED.getValue());
+        condition.put("assignStatus", status);
         condition.put("memberId", memberId);
         condition.put("blockFlag", false);
         response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("no assign found");
+            result.setDescription(new StringBuffer("No install assign found with status: ").append(status).append(" for member: ").append(memberId).toString());
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now, please try again later  ");
+            result.setDescription("Fail to find install assign");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("success to get the assigned list");
         }
         return result;
     }
 
-    //工人查看分配给自己的团队但没有指定具体人的安装任务时触发
-    @RequestMapping(method = RequestMethod.GET, value = "/teamtodo")
-    public ResultData teamtodo(String teamId) {
+    /**
+     * This method is used to fetch assigned tasks for a team
+     *
+     * @param teamId
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/team/todo")
+    public ResultData teamTodo(String teamId) {
         ResultData result = new ResultData();
-
-        teamId = teamId.trim();
 
         //check empty input
         if (StringUtils.isEmpty(teamId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide the teamId");
+            result.setDescription("Please make sure all required information is provided");
             return result;
         }
+
+        teamId = teamId.trim();
 
         //fetch the assign list
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignStatus", AssignStatus.ASSIGNED.getValue());
-        condition.put("memberId", "");
         condition.put("teamId", teamId);
         condition.put("blockFlag", false);
 
         ResultData response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("no assign found ");
+            result.setDescription(new StringBuffer("No assign found for team id: ").append(teamId).toString());
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now, please try again later");
+            result.setDescription("Fail to find assign");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("success to get the assigned list");
         }
 
         return result;
@@ -244,7 +202,7 @@ public class AssignController {
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(((List<Assign>)response.getData()).get(0).getAssignId());
+        result.setData(((List<Assign>) response.getData()).get(0).getAssignId());
 
         //检查该工人是否能安装这台机器
         String memberId = ((List<Assign>) response.getData()).get(0).getMemberId();
@@ -273,4 +231,10 @@ public class AssignController {
         return result;
     }
 
+    @PostMapping("/postpone")
+    public ResultData postpone(String assignId, String date) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
 }

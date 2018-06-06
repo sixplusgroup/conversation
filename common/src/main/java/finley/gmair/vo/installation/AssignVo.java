@@ -7,17 +7,26 @@ import java.sql.Timestamp;
 public class AssignVo {
 
     private String assignId;
+
     private String qrcode;
+
     private String teamName;
+
     private String memberName;
+
     private AssignStatus assignStatus;
-    private Timestamp assignDate;
-    private boolean blockFlag;
-    private Timestamp createAt;
+
     private String consumerConsignee;
+
     private String consumerPhone;
+
     private String consumerAddress;
 
+    private Timestamp assignDate;
+
+    private boolean blockFlag;
+
+    private Timestamp createAt;
 
     public String getAssignId() {
         return assignId;
@@ -66,6 +75,7 @@ public class AssignVo {
     public void setAssignDate(Timestamp assignDate) {
         this.assignDate = assignDate;
     }
+
     public boolean isBlockFlag() {
         return blockFlag;
     }

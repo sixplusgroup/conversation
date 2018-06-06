@@ -1,9 +1,13 @@
 package finley.gmair.form.installation;
 
 public class AllocateForm {
+
     private String assignId;
+
     private String teamName;
+
     private String memberName;
+    
     private String installDate;
 
     public String getAssignId() {

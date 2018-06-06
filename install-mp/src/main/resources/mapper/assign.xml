@@ -3,7 +3,7 @@
 <mapper namespace="gmair.installation.assign">
     <resultMap id="Assign" type="finley.gmair.model.installation.Assign">
         <result property="assignId" column="assign_id"></result>
-        <result property="qrcode" column="code_value"></result>
+        <result property="codeValue" column="code_value"></result>
         <result property="teamId" column="team_id"></result>
         <result property="memberId" column="member_id"></result>
         <result property="assignStatus" column="assign_status"
@@ -18,7 +18,7 @@
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Assign" useGeneratedKeys="false">
         INSERT INTO gmair_install.install_assign(assign_id, code_value, team_id, member_id, assign_status, assign_date, block_flag, create_time, consumer_consignee, consumer_phone, consumer_address)
-        VALUES (#{assignId}, #{qrcode}, #{teamId}, #{memberId},
+        VALUES (#{assignId}, #{codeValue}, #{teamId}, #{memberId},
         #{assignStatus,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
         #{assignDate}, #{blockFlag}, #{createAt}, #{consumerConsignee},
         #{consumerPhone}, #{consumerAddress})
@@ -32,8 +32,8 @@
         <if test="assignId != null">
             AND assign_id = #{assignId}
         </if>
-        <if test="qrcode != null">
-            AND code_value = #{qrcode}
+        <if test="codeValue != null">
+            AND code_value = #{codeValue}
         </if>
         <if test="teamId != null">
             AND team_id = #{teamId}
@@ -58,8 +58,8 @@
             <if test="assignId != null">
                 assign_id = #{assignId},
             </if>
-            <if test="qrcode != null">
-                code_value = #{qrcode},
+            <if test="codeValue != null">
+                code_value = #{codeValue},
             </if>
             <if test="teamId != null">
                 team_id = #{teamId},

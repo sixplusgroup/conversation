@@ -6,23 +6,39 @@ import java.sql.Timestamp;
 
 public class Assign extends Entity {
     private String assignId;
-    private String qrcode;
+
+    private String codeValue;
+
     private String teamId;
+
     private String memberId;
+
     private AssignStatus assignStatus;
-    private Timestamp assignDate;
+
     private String consumerConsignee;
+
     private String consumerPhone;
+
     private String consumerAddress;
-    public Assign()
-    {
+
+    private Timestamp assignDate;
+
+    public Assign() {
         super();
         this.assignStatus = AssignStatus.TODOASSIGN;
     }
 
-    public Assign(String qrcode, String teamId, String memberId, Timestamp assignDate, String consumerConsignee, String consumerPhone, String consumerAddress) {
+    public Assign(String codeValue, String consumerConsignee, String consumerPhone, String consumerAddress) {
         this();
-        this.qrcode = qrcode;
+        this.codeValue = codeValue;
+        this.consumerConsignee = consumerConsignee;
+        this.consumerPhone = consumerPhone;
+        this.consumerAddress = consumerAddress;
+    }
+
+    public Assign(String codeValue, String teamId, String memberId, Timestamp assignDate, String consumerConsignee, String consumerPhone, String consumerAddress) {
+        this();
+        this.codeValue = codeValue;
         this.teamId = teamId;
         this.memberId = memberId;
         this.assignDate = assignDate;
@@ -39,12 +55,12 @@ public class Assign extends Entity {
         this.assignId = assignId;
     }
 
-    public String getQrcode() {
-        return qrcode;
+    public String getCodeValue() {
+        return codeValue;
     }
 
-    public void setQrcode(String qrcode) {
-        this.qrcode = qrcode;
+    public void setCodeValue(String codeValue) {
+        this.codeValue = codeValue;
     }
 
     public String getTeamId() {

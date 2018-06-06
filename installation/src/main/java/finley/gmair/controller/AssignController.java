@@ -14,18 +14,14 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.xml.transform.Result;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +40,13 @@ public class AssignController {
     private MemberService memberService;
 
 
-    //订单发货时由order模块调用触发,创建安装任务表单
+    /**
+     * This is the method to create an install assignment for a machine
+     * machine is represented by the qrcode
+     *
+     * @param form
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public ResultData create(AssignForm form) {
         ResultData result = new ResultData();
@@ -53,7 +55,7 @@ public class AssignController {
         if (StringUtils.isEmpty(form.getQrcode()) || StringUtils.isEmpty(form.getConsumerConsignee())
                 || StringUtils.isEmpty(form.getConsumerPhone()) || StringUtils.isEmpty(form.getConsumerAddress())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all the information");
+            result.setDescription("Please provide all required information");
             return result;
         }
         String qrcode = form.getQrcode().trim();
@@ -62,66 +64,65 @@ public class AssignController {
         String consumerAddress = form.getConsumerAddress().trim();
 
         //create the the assign and save
-        Assign assign = new Assign();
-        assign.setQrcode(qrcode);
-        assign.setConsumerConsignee(consumerConsignee);
-        assign.setConsumerPhone(consumerPhone);
-        assign.setConsumerAddress(consumerAddress);
+        Assign assign = new Assign(qrcode, consumerConsignee, consumerPhone, consumerAddress);
         ResultData response = assignService.createAssign(assign);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("Success to create the assign");
+            result.setDescription(new StringBuffer("Install assign for ").append(form.getQrcode()).append(" has been created.").toString());
             return result;
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to create the assign");
+            result.setDescription(new StringBuffer("Fail to create install assign for ").append(form.getQrcode()).toString());
             return result;
         }
     }
 
-    //管理人员分配安装任务时触发,修改任务状态,队伍,人员
+    /**
+     * This method is used to assign tasks to target install team & member
+     *
+     * @param form
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/allocate")
     public ResultData allocate(AllocateForm form) {
         ResultData result = new ResultData();
 
         //check empty input
-        if (StringUtils.isEmpty(form.getAssignId()) || StringUtils.isEmpty(form.getAssignId().trim()) || StringUtils.isEmpty(form.getTeamName()) || StringUtils.isEmpty(form.getTeamName().trim())) {
+        if (StringUtils.isEmpty(form.getAssignId()) || StringUtils.isEmpty(form.getTeamName())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all information");
+            result.setDescription("Please provide all required information");
             return result;
         }
 
         String assignId = form.getAssignId().trim();
         String teamName = form.getTeamName().trim();
-        String memberName = null;
-        String installTime = null;
-        if (form.getMemberName() != null)
-            memberName = form.getMemberName().trim();
-        if (form.getInstallDate() != null)
-            installTime = form.getInstallDate().trim();
+
+        String memberName = StringUtils.isEmpty(form.getMemberName()) ? "" : form.getMemberName().trim();
+        String installTime = StringUtils.isEmpty(form.getInstallDate()) ? "" : form.getInstallDate().trim();
 
         //according to the teamName,find the teamId.
-        String teamId = "";
         Map<String, Object> condition = new HashMap<>();
         condition.put("teamName", teamName);
         condition.put("blockFlag", false);
+        String teamId = "";
         ResultData response = teamService.fetchTeam(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             teamId = ((List<Team>) response.getData()).get(0).getTeamId();
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("no teamName found");
+            result.setDescription(new StringBuffer("No team with name: ").append(teamName).append(" found").toString());
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,please try again later");
+            result.setDescription("Fail to find install team");
             return result;
         }
 
+        condition.clear();
+
         //according to the memberName,find the memberId.
         String memberId = "";
-        condition.clear();
         condition.put("teamId", teamId);
         condition.put("memberName", memberName);
         condition.put("blockFlag", false);
@@ -130,17 +131,17 @@ public class AssignController {
             memberId = ((List<Member>) response.getData()).get(0).getMemberId();
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,please try again later");
+            result.setDescription("Fail to find team member");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the member.");
+            result.setDescription(new StringBuffer("No member with name: ").append(memberName).append(" found").toString());
             return result;
         }
 
-        //according to the assignId,find the assign record.
-        Assign assign = new Assign();
         condition.clear();
+
+        //according to the assignId,find the assign record.
         condition.put("assignId", assignId);
         condition.put("blockFlag", false);
         response = assignService.fetchAssign(condition);
@@ -152,9 +153,9 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now,please try again later");
             return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            assign = ((List<Assign>) response.getData()).get(0);
         }
+
+        Assign assign = ((List<Assign>) response.getData()).get(0);
 
         //update the assign
         assign.setTeamId(teamId);
@@ -166,31 +167,38 @@ public class AssignController {
             LocalDateTime localDateTime = LocalDateTime.of(DateFormatUtil.convertToLocalDate(installTime), LocalTime.MIN);
             assign.setAssignDate(Timestamp.valueOf(localDateTime));
         }
+
         response = assignService.updateAssign(assign);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to update assign");
+            result.setDescription("Succeed to update the install assign information.");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to update assign");
+            result.setDescription("Fail to update current install assign");
         }
         return result;
     }
 
-    //管理员查看所有安装任务时触发,拉取所有安装任务列表.
+    /**
+     * This method is used to retrieve corresponding assign information
+     *
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/list")
-    public ResultData list() {
+    public ResultData list(String status) {
         ResultData result = new ResultData();
-
         Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(status)) {
+            condition.put("assignStatus", status);
+        }
         condition.put("blockFlag", false);
         ResultData response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("no assign found");
+            result.setDescription(new StringBuffer("No install assignment found").toString());
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,please try again later");
+            result.setDescription(new StringBuffer("Fail to find any install assign").toString());
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -199,7 +207,11 @@ public class AssignController {
         return result;
     }
 
-    //管理员查看待分配安装任务时触发,拉取待分配的安装任务列表.
+    /**
+     * This method is used to retrieve all todo assign information
+     *
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/todolist")
     public ResultData todolist() {
         ResultData result = new ResultData();
@@ -296,7 +308,7 @@ public class AssignController {
     public ResultData byqrcode(String qrcode) {
         ResultData result = new ResultData();
         //check empty
-        if(StringUtils.isEmpty(qrcode)){
+        if (StringUtils.isEmpty(qrcode)) {
             result.setDescription("please provide qrcode");
             return result;
         }
@@ -323,7 +335,7 @@ public class AssignController {
     public ResultData finishedinfo(String assignId) {
         ResultData result = new ResultData();
         //check empty
-        if(StringUtils.isEmpty(assignId)){
+        if (StringUtils.isEmpty(assignId)) {
             result.setDescription("please provide assignId");
             return result;
         }
@@ -360,6 +372,47 @@ public class AssignController {
         list.add(processing);
         list.add(finished);
         result.setData(list);
+        return result;
+    }
+
+    @PostMapping("/postpone")
+    public ResultData postpone(String assignId, String date) {
+        ResultData result = new ResultData();
+
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(date)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure all required information is provided");
+            return result;
+        }
+
+        //fetch the assign
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
+        condition.put("blockFlag", false);
+        ResultData response = assignService.fetchAssign(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to fetch assign: ").append(assignId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No assign found with assign id: ").append(assignId).toString());
+            return result;
+        }
+        Assign assign = ((List<Assign>) response.getData()).get(0);
+        LocalDateTime localDateTime = LocalDateTime.of(DateFormatUtil.convertToLocalDate(date), LocalTime.MIN);
+        assign.setAssignDate(Timestamp.valueOf(localDateTime));
+        response = assignService.updateAssign(assign);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(assign);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update assign");
+        }
         return result;
     }
 

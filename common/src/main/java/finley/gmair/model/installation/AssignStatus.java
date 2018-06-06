@@ -3,7 +3,7 @@ package finley.gmair.model.installation;
 import finley.gmair.model.EnumValue;
 
 public enum AssignStatus implements EnumValue {
-    TODOASSIGN(0), ASSIGNED(1), PROCESSING(2), FINISHED(3);
+    TODOASSIGN(0), ASSIGNED(1), PROCESSING(2), FINISHED(3), CLOSED(4);
 
     private int value;
 

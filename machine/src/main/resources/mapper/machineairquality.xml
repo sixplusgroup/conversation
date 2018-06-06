@@ -4,17 +4,17 @@
 
     <insert id="insert" parameterType="finley.gmair.model.air.MachineAirQuality">
         INSERT INTO `gmair_airquality`.`machine_airquality`
-        (ma_id, qrcode, pm_25, temperature, humidity, co2, block_flag, create_time)
+        (ma_id, codeValue, pm_25, temperature, humidity, co2, block_flag, create_time)
         VALUES
-        (#{maId}, #{qrcode}, #{pm25}, #{temperature}, #{humidity}, #{co2}, #{blockFlag}, #{createAt})
+        (#{maId}, #{codeValue}, #{pm25}, #{temperature}, #{humidity}, #{co2}, #{blockFlag}, #{createAt})
     </insert>
 
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO `gmair_airquality`.`machine_airquality`
-        (ma_id, qrcode, pm_25, temperature, humidity, co2, block_flag, create_time)
+        (ma_id, codeValue, pm_25, temperature, humidity, co2, block_flag, create_time)
         VALUES
         <foreach collection="list" separator="," item="airQuality" index="index">
-            (#{airQuality.maId}, #{airQuality.qrcode}, #{airQuality.pm25m}, #{airQuality.temperature},
+            (#{airQuality.maId}, #{airQuality.codeValue}, #{airQuality.pm25m}, #{airQuality.temperature},
              #{airQuality.humidity}, #{airQuality.co2}, #{airQuality.blockFlag}, #{airQuality.createAt}
             )
         </foreach>

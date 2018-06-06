@@ -49,9 +49,9 @@ CREATE TABLE IF NOT EXISTS `gmair_machine`.`goods_model` (
 
 
 -- -----------------------------------------------------
--- Table `gmair_machine`.`qrcode`
+-- Table `gmair_machine`.`codeValue`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `gmair_machine`.`qrcode` (
+CREATE TABLE IF NOT EXISTS `gmair_machine`.`codeValue` (
   `code_id` VARCHAR(20) NOT NULL,
   `model_id` VARCHAR(20) NOT NULL,
   `batch_value` VARCHAR(20) NOT NULL,

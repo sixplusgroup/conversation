@@ -1,9 +1,13 @@
 package finley.gmair.form.installation;
 
 public class AssignForm {
+
     private String qrcode;
+
     private String consumerConsignee;
+
     private String consumerPhone;
+
     private String consumerAddress;
 
     public String getQrcode() {
