@@ -416,4 +416,44 @@ public class AssignController {
         return result;
     }
 
+    @PostMapping("/cancel")
+    public ResultData cancel(String assignId, String description) {
+        ResultData result = new ResultData();
+        //check the input
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(description)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure all required information is provided.");
+            return result;
+        }
+
+        //fetch assign using assignId
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
+        condition.put("blockFlag", false);
+
+        ResultData response = assignService.fetchAssign(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to find install assign.");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No install assign with id: ").append(assignId).toString());
+            return result;
+        }
+        Assign assign = ((List<Assign>) response.getData()).get(0);
+        assign.setAssignStatus(AssignStatus.CLOSED);
+
+        response = assignService.updateAssign(assign);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to cancel assign: ").append(assignId).toString());
+            return result;
+        }
+        result.setData(assign);
+        return result;
+    }
+
 }
