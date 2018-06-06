@@ -24,4 +24,9 @@ public class ExpressController {
     public ResultData orderFetch(@PathVariable("orderId") String orderId) {
         return expressService.orderQuery(orderId);
     }
+
+    @GetMapping("/parcel/query/{parentExpress}")
+    public ResultData queryAllParcels(@PathVariable("parentExpress") String parentExpress){
+        return expressService.queryAllParcels(parentExpress);
+    }
 }

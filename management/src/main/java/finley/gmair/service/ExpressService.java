@@ -21,4 +21,7 @@ public interface ExpressService {
                                  @RequestParam("companyName") String companyName,
                                  @RequestParam("expressNo") String expressNo,
                                  @RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/express/parcel/query/{parentExpress}")
+    public ResultData queryAllParcels(@PathVariable("parentExpress") String parentExpress);
 }
