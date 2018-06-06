@@ -2,13 +2,18 @@ package finley.gmair.controller;
 
 
 import finley.gmair.form.log.MachineComLogForm;
+import finley.gmair.form.log.SystemEventLogForm;
 import finley.gmair.model.log.MachineComLog;
+import finley.gmair.model.log.SystemEventLog;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,6 +70,34 @@ public class LogController {
             return response;
         }
 
+    }
+
+    /**
+     * This method is used to add systemEventLog in the system
+     *
+     * @return
+     */
+    @PostMapping("/system/create")
+    public ResultData createModuleLog(SystemEventLogForm logForm) {
+        ResultData result = new ResultData();
+
+        String module = logForm.getModule().trim();
+        String eventStatus = logForm.getEventStatus().trim();
+        long time = System.currentTimeMillis();
+        String logDetail = logForm.getLogDetail().trim();
+        String ip = logForm.getIp().trim();
+
+        SystemEventLog systemEventLog = new SystemEventLog(module, eventStatus, time, logDetail, ip);
+        ResultData response = logService.createModuleLog(systemEventLog);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to add machineComLog");
+        }
+        return result;
     }
 
 }

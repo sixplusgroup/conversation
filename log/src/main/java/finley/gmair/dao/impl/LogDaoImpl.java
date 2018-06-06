@@ -3,6 +3,8 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.LogDao;
 import finley.gmair.model.log.MachineComLog;
+import finley.gmair.model.log.SystemEventLog;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -16,6 +18,8 @@ import java.util.Map;
 public class LogDaoImpl extends BaseDao implements LogDao {
 
     private final static String Collection_MachineComLog = "machinecom_log";
+
+    private final static String Collection_SystemEventLog = "SystemEvent_log";
 
     @Override
     public ResultData insertMachineComLog(MachineComLog machineComLog) {
@@ -45,6 +49,21 @@ public class LogDaoImpl extends BaseDao implements LogDao {
             }
             result.setData(list);
         } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData insertModuleLog(SystemEventLog systemEventLog) {
+        ResultData result = new ResultData();
+        systemEventLog.setEventId(IDGenerator.generate("SEL"));
+        try {
+            mongoTemplate.insert(systemEventLog, Collection_SystemEventLog);
+            result.setData(systemEventLog);
+        } catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

@@ -3,6 +3,7 @@ package finley.gmair.service.impl;
 import finley.gmair.dao.LogDao;
 import finley.gmair.model.express.ExpressCompany;
 import finley.gmair.model.log.MachineComLog;
+import finley.gmair.model.log.SystemEventLog;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -47,6 +48,20 @@ public class LogServiceImpl implements LogService {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to fetch MachineComLog from database");
         }
+        return result;
+    }
+
+    @Override
+    public ResultData createModuleLog(SystemEventLog systemEventLog) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.insertModuleLog(systemEventLog);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to store systemLog");
         return result;
     }
 
