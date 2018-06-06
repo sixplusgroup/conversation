@@ -1,15 +1,13 @@
 package finley.gmair.service;
 
-import finley.gmair.model.installation.Feedback;
 import finley.gmair.util.ResultData;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Map;
-
+@FeignClient("install-agent")
 public interface FeedbackService {
 
-    ResultData createFeedback(Feedback feedback);
-
-    ResultData fetchFeedback(Map<String, Object> condition);
-
-    //ResultData updateFeedback(Feedback feedback);
+    @PostMapping("/installation/feedback/create")
+    ResultData createFeedback(@RequestParam("assignId") String assignId, @RequestParam("feedbackContent") String feedbackContent);
 }

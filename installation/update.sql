@@ -193,3 +193,11 @@ VIEW `assign_view` AS
         ((`install_assign`
         LEFT JOIN `install_team` ON ((`install_assign`.`team_id` = `install_team`.`team_id`)))
         LEFT JOIN `team_member` ON ((`install_assign`.`member_id` = `team_member`.`member_id`)));
+
+#2018.06.06
+ALTER TABLE `gmair_install`.`install_feedback`
+  DROP COLUMN `status`,
+  DROP COLUMN `member_phone`, RENAME TO  `gmair_install`.`install_cancel_feedback` ;
+
+ALTER TABLE `gmair_install`.`install_cancel_feedback`
+RENAME TO  `gmair_install`.`install_feedback` ;
