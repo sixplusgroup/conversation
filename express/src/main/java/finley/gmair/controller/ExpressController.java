@@ -367,6 +367,32 @@ public class ExpressController {
     }
 
     /**
+     * This method is used to query all parcels of order
+     *
+     * @return
+     */
+    @GetMapping("/parcel/query/{parentExpress}")
+    public ResultData queryAllParcels(@PathVariable String parentExpress) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(parentExpress)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the parent express is specified");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("parentExpress", parentExpress);
+        condition.put("blockFlag", false);
+        ResultData response = expressService.fetchExpressParcel(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }else{
+            return response;
+        }
+    }
+
+    /**
      *This method is used to update order status every hour
      *
      */
