@@ -2,13 +2,18 @@ package finley.gmair.controller;
 
 
 import finley.gmair.form.log.MachineComLogForm;
+import finley.gmair.form.log.Server2MachineLogForm;
 import finley.gmair.form.log.SystemEventLogForm;
+import finley.gmair.form.log.UserActionLogForm;
 import finley.gmair.model.log.MachineComLog;
+import finley.gmair.model.log.Server2MachineLog;
 import finley.gmair.model.log.SystemEventLog;
+import finley.gmair.model.log.UserActionLog;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -96,8 +101,13 @@ public class LogController {
         return result;
     }
 
-    @GetMapping(value = {"/system/query/{module}", "/system/query"})
-    public ResultData getModuleLog(@PathVariable(required = false) String module) {
+    /**
+     * This method is used to query module log in the database
+     *
+     * @return
+     */
+    @PostMapping(value = "/system/query")
+    public ResultData getModuleLog(String module) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (module != null) {
@@ -110,6 +120,126 @@ public class LogController {
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to query module log");
+        }
+        return result;
+    }
+
+    /**
+     * This method is used to add user action log in the database
+     *
+     * @return
+     */
+    @PostMapping(value = "/useraction/create")
+    public ResultData createUserActionLog(UserActionLogForm logForm) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(logForm.getUserId()) || StringUtils.isEmpty(logForm.getMachineValue()) ||
+                StringUtils.isEmpty(logForm.getComponent()) || StringUtils.isEmpty(logForm.getLogDetail())
+                || StringUtils.isEmpty(logForm.getIp())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+
+        String userId = logForm.getUserId().trim();
+        String machineValue = logForm.getMachineValue().trim();
+        long time = System.currentTimeMillis();
+        String component = logForm.getComponent().trim();
+        String logDetail = logForm.getLogDetail().trim();
+        String ip = logForm.getIp().trim();
+
+        UserActionLog userActionLog = new UserActionLog(userId, machineValue, time, component, logDetail, ip);
+        ResultData response = logService.createUserActionLog(userActionLog);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to add user action log");
+        }
+
+        return result;
+    }
+
+    /**
+     * This method is used to query user action log in the database
+     *
+     * @return
+     */
+    @PostMapping("/useraction/query")
+    public ResultData getUserActionLog(String userId, String machineValue) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(userId)) {
+            condition.put("userId", userId);
+        }
+        if (!StringUtils.isEmpty(machineValue)) {
+            condition.put("machineValue", machineValue);
+        }
+        ResultData response = logService.fetchUserActionLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query user action log");
+        }
+        return result;
+    }
+
+    /**
+     * This method is used to add server-machine in the database
+     *
+     * @return
+     */
+    @PostMapping(value = "/servermachine/create")
+    public ResultData createServerMachineLog(Server2MachineLogForm logForm) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(logForm.getMachineValue()) || StringUtils.isEmpty(logForm.getComponent())
+                || StringUtils.isEmpty(logForm.getLogDetail()) || StringUtils.isEmpty(logForm.getIp())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+
+        String machineValue = logForm.getMachineValue().trim();
+        String component = logForm.getComponent().trim();
+        long time = System.currentTimeMillis();
+        String logDetail = logForm.getLogDetail().trim();
+        String ip = logForm.getIp().trim();
+
+        Server2MachineLog server2MachineLog = new Server2MachineLog(machineValue, component, time, logDetail, ip);
+        ResultData response = logService.createServer2MachineLog(server2MachineLog);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to add user server-machine log");
+        }
+        return result;
+    }
+
+    /**
+     * This method is used to query server-machine log in the database
+     *
+     * @return
+     */
+    @PostMapping(value = "/servermachine/query")
+    public ResultData getServerMachineLog(String machineValue) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(machineValue)) {
+            condition.put("machineValue", machineValue);
+        }
+        ResultData response = logService.fetchServer2MachineLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query server-machine log");
         }
         return result;
     }

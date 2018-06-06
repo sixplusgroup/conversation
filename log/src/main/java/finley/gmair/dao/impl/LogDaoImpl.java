@@ -3,7 +3,9 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.LogDao;
 import finley.gmair.model.log.MachineComLog;
+import finley.gmair.model.log.Server2MachineLog;
 import finley.gmair.model.log.SystemEventLog;
+import finley.gmair.model.log.UserActionLog;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -21,6 +23,10 @@ public class LogDaoImpl extends BaseDao implements LogDao {
     private final static String Collection_MachineComLog = "machinecom_log";
 
     private final static String Collection_SystemEventLog = "SystemEvent_log";
+
+    private final static String Collection_UserActionLog = "UserAction_log";
+
+    private final static String Collection_Server2MachineLog = "ServerMachine_log";
 
     @Override
     public ResultData insertMachineComLog(MachineComLog machineComLog) {
@@ -61,7 +67,7 @@ public class LogDaoImpl extends BaseDao implements LogDao {
         ResultData result = new ResultData();
         systemEventLog.setEventId(IDGenerator.generate("SEL"));
         try {
-            mongoTemplate.insert(systemEventLog, Collection_SystemEventLog);
+            mongoTemplate.insert(systemEventLog, "SystemEvent_log");
             result.setData(systemEventLog);
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,6 +87,87 @@ public class LogDaoImpl extends BaseDao implements LogDao {
             } else {
                 list = mongoTemplate.findAll(SystemEventLog.class, Collection_SystemEventLog);
             }
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData insertUserActionLog(UserActionLog userActionLog) {
+        ResultData result = new ResultData();
+        userActionLog.setLogId(IDGenerator.generate("USL"));
+        try {
+            mongoTemplate.insert(userActionLog, "UserAction_log");
+            result.setData(userActionLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryUserActionLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<UserActionLog> list;
+            if (condition.containsKey("userId") && condition.containsKey("machineValue")) {
+                list = mongoTemplate.find(new Query(Criteria.where("userId").is(condition.get("userId"))
+                        .and("machineValue").is(condition.get("machineValue"))), UserActionLog.class, Collection_UserActionLog);
+            } else if (condition.containsKey("userId")) {
+                list = mongoTemplate.find(new Query(Criteria.where("userId").is(condition.get("userId"))), UserActionLog.class, Collection_UserActionLog);
+            } else if (condition.containsKey("machineValue")) {
+                list = mongoTemplate.find(new Query(Criteria.where("machineValue").is(condition.get("machineValue"))), UserActionLog.class, Collection_UserActionLog);
+            } else {
+                list = mongoTemplate.findAll(UserActionLog.class, Collection_UserActionLog);
+            }
+
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData insertServer2MachineLog(Server2MachineLog server2MachineLog) {
+        ResultData result = new ResultData();
+        server2MachineLog.setLogId(IDGenerator.generate("STM"));
+        try {
+            mongoTemplate.insert(server2MachineLog, "ServerMachine_log");
+            result.setData(server2MachineLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryServer2MachineLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<Server2MachineLog> list;
+            if (condition.containsKey("machineValue")) {
+                list = mongoTemplate.find(new Query(Criteria.where("machineValue").is(condition.get("machineValue"))), Server2MachineLog.class, Collection_Server2MachineLog);
+            } else {
+                list = mongoTemplate.findAll(Server2MachineLog.class, Collection_Server2MachineLog);
+            }
+
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
