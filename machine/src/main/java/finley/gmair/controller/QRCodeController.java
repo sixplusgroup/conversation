@@ -236,9 +236,9 @@ public class QRCodeController {
         return result;
     }
 
-    @GetMapping("/batch")
+    @GetMapping("/batch/list")
     @CrossOrigin
-    public ResultData getBatch(String modelId) {
+    public ResultData batchList(String modelId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(modelId)) {
