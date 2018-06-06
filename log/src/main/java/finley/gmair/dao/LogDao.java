@@ -13,4 +13,6 @@ public interface LogDao {
 
     ResultData insertModuleLog(SystemEventLog systemEventLog);
 
+    ResultData queryModuleLog(Map<String, Object> condition);
+
 }

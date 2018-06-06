@@ -80,7 +80,6 @@ public class LogController {
     @PostMapping("/system/create")
     public ResultData createModuleLog(SystemEventLogForm logForm) {
         ResultData result = new ResultData();
-
         String module = logForm.getModule().trim();
         String eventStatus = logForm.getEventStatus().trim();
         long time = System.currentTimeMillis();
@@ -100,4 +99,21 @@ public class LogController {
         return result;
     }
 
+    @GetMapping(value = {"/system/query/{module}", "/system/query"})
+    public ResultData getModuleLog(@PathVariable(required = false) String module) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (module != null) {
+            condition.put("module", module);
+        }
+        ResultData response = logService.fetchModuleLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query module log");
+        }
+        return result;
+    }
 }

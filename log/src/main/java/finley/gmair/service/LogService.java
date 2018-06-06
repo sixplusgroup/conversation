@@ -14,4 +14,6 @@ public interface LogService {
 
     ResultData createModuleLog(SystemEventLog systemEventLog);
 
+    ResultData fetchModuleLog(Map<String, Object> condition);
+
 }

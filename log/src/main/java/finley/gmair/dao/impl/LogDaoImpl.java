@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,28 @@ public class LogDaoImpl extends BaseDao implements LogDao {
         try {
             mongoTemplate.insert(systemEventLog, Collection_SystemEventLog);
             result.setData(systemEventLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryModuleLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<SystemEventLog> list;
+            if (condition.containsKey("module")) {
+                list = mongoTemplate.find(new Query(Criteria.where("module").is(condition.get("module"))), SystemEventLog.class, Collection_SystemEventLog);
+            } else {
+                list = mongoTemplate.findAll(SystemEventLog.class, Collection_SystemEventLog);
+            }
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

@@ -65,4 +65,23 @@ public class LogServiceImpl implements LogService {
         return result;
     }
 
+    @Override
+    public ResultData fetchModuleLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryModuleLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No moduleLog found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve moduleLog");
+        }
+        return result;
+    }
+
 }
