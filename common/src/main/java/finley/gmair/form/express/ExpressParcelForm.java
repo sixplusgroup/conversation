@@ -1,7 +1,5 @@
 package finley.gmair.form.express;
 
-import finley.gmair.model.express.ParcelType;
-
 public class ExpressParcelForm {
     private String parentExpress;
 
@@ -9,7 +7,7 @@ public class ExpressParcelForm {
 
     private String codeValue;
 
-    private ParcelType parcelType;
+    private int parcelType;
 
     public String getParentExpress() {
         return parentExpress;
@@ -35,11 +33,11 @@ public class ExpressParcelForm {
         this.codeValue = codeValue;
     }
 
-    public ParcelType getParcelType() {
+    public int getParcelType() {
         return parcelType;
     }
 
-    public void setParcelType(ParcelType parcelType) {
+    public void setParcelType(int parcelType) {
         this.parcelType = parcelType;
     }
 }

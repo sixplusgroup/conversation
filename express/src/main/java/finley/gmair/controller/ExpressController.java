@@ -237,13 +237,13 @@ public class ExpressController {
         String parentExpress = form.getParentExpress().trim();
         String expressNo = form.getExpressNo().trim();
         String codeValue = form.getCodeValue().trim();
-        ParcelType parcelType = form.getParcelType();
+        int parcelType = form.getParcelType();
         if(StringUtils.isEmpty(parentExpress)||StringUtils.isEmpty(parcelType)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure the parentExpress or parcelType is specified");
             return result;
         }
-        if(StringUtils.isEmpty(codeValue)&&parcelType.getValue() == 0){
+        if(StringUtils.isEmpty(codeValue)&&parcelType == 0){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure the codeValue is specified");
             return result;
@@ -272,7 +272,13 @@ public class ExpressController {
                 return response_order;
             }
         }
-        ExpressParcel expressParcel = new ExpressParcel(parentExpress,expressNo,codeValue,parcelType);
+        ParcelType temp;
+        if(parcelType == 0){
+            temp = ParcelType.MACHINE;
+        }else{
+            temp = ParcelType.ORDINARY;
+        }
+        ExpressParcel expressParcel = new ExpressParcel(parentExpress,expressNo,codeValue,temp);
         response = expressService.createExpressParcel(expressParcel);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
