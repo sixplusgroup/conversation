@@ -8,7 +8,7 @@ public class AssignVo {
 
     private String assignId;
 
-    private String qrcode;
+    private String codeValue;
 
     private String teamName;
 
@@ -36,12 +36,12 @@ public class AssignVo {
         this.assignId = assignId;
     }
 
-    public String getQrcode() {
-        return qrcode;
+    public String getCodeValue() {
+        return codeValue;
     }
 
-    public void setQrcode(String qrcode) {
-        this.qrcode = qrcode;
+    public void setCodeValue(String codeValue) {
+        this.codeValue = codeValue;
     }
 
     public String getTeamName() {
