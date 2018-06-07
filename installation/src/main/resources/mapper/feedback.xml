@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.installation.assigncancel">
-    <resultMap id="feedback" type="finley.gmair.model.installation.Feedback">
+    <resultMap id="feedbackVo" type="finley.gmair.model.installation.Feedback">
         <result property="feedbackId" column="feedback_id"></result>
         <result property="assignId" column="assign_id"></result>
         <result property="feedbackContent" column="feedback_content"></result>
@@ -14,7 +14,7 @@
         VALUES (#{feedbackId}, #{assignId}, #{feedbackContent}, #{blockFlag}, #{createAt})
     </insert>
 
-    <select id="query" parameterType="java.util.Map" resultMap="Feedback">
+    <select id="query" parameterType="java.util.Map" resultMap="feedbackVo">
         SELECT feedback_id, assign_id, feedback_content, block_flag, create_time
         FROM gmair_install.install_feedback
         WHERE 1 = 1
