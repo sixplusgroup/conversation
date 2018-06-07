@@ -6,6 +6,7 @@ import finley.gmair.model.installation.AssignStatus;
 import finley.gmair.model.installation.Member;
 import finley.gmair.service.AssignService;
 import finley.gmair.service.AssignServiceAgent;
+import finley.gmair.service.FeedbackService;
 import finley.gmair.service.MemberService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -33,6 +34,9 @@ public class AssignController {
 
     @Autowired
     private AssignServiceAgent assignServiceAgent;
+
+    @Autowired
+    private FeedbackService feedbackService;
 
     //工人选择安装时间并提交时触发,修改任务状态,安装日期
 
@@ -242,6 +246,19 @@ public class AssignController {
 
     @PostMapping("/cancel")
     public ResultData cancel(String assignId, String description) {
-        return assignServiceAgent.cancel(assignId, description);
+        ResultData result = new ResultData();
+        ResultData response = assignServiceAgent.cancel(assignId, description);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        response = feedbackService.createFeedback(assignId, description);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        return result;
     }
 }
