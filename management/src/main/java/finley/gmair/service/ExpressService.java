@@ -23,5 +23,11 @@ public interface ExpressService {
                                  @RequestParam("qrcode") String qrcode);
 
     @GetMapping("/express/parcel/query/{parentExpress}")
-    public ResultData queryAllParcels(@PathVariable("parentExpress") String parentExpress);
+    ResultData queryAllParcels(@PathVariable("parentExpress") String parentExpress);
+
+    @PostMapping("/express/parcel/create")
+    ResultData createParcel(@RequestParam("parentExpress") String parentExpress,
+                            @RequestParam("expressNo") String expressNo,
+                            @RequestParam("parcelType") int parcelType,
+                            @RequestParam("codeValue") String codeValue);
 }

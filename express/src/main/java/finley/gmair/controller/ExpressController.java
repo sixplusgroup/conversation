@@ -236,7 +236,7 @@ public class ExpressController {
         ResultData result = new ResultData();
         String parentExpress = form.getParentExpress().trim();
         String expressNo = form.getExpressNo().trim();
-        String codeValue = form.getCodeValue().trim();
+        String codeValue = form.getCodeValue();
         int parcelType = form.getParcelType();
         if(StringUtils.isEmpty(parentExpress)||StringUtils.isEmpty(parcelType)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
