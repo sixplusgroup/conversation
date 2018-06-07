@@ -35,7 +35,7 @@ CREATE TABLE `gmair_airquality`.`obscure_city` (
 # 2018-05-17 create machine air quality
 CREATE TABLE `gmair_airquality`.`machine_airquality` (
   `ma_id` CHAR(31) NOT NULL,
-  `qrcode` CHAR (31) NOT NULL ,
+  `codeValue` CHAR (31) NOT NULL ,
   `pm_25` DECIMAL(10, 4) NOT NULL,
   `temperature` DECIMAL(10, 4) NOT NULL,
   `humidity` DECIMAL(10, 4) NOT NULL,

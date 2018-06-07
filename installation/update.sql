@@ -173,9 +173,6 @@ CREATE OR REPLACE VIEW `gmair_install`.`team_view` AS
 # update view
 DROP  VIEW assign_view;
 CREATE
-    ALGORITHM = UNDEFINED
-    DEFINER = `root`@`localhost`
-    SQL SECURITY DEFINER
 VIEW `assign_view` AS
     SELECT
         `install_assign`.`assign_id` AS `assign_id`,
