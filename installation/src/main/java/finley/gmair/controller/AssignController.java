@@ -313,7 +313,7 @@ public class AssignController {
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("qrcode", qrcode);
+        condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = assignService.fetchAssign2(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
