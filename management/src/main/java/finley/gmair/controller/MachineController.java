@@ -4,6 +4,7 @@ import finley.gmair.service.MachineService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,12 @@ public class MachineController {
     }
 
     @GetMapping("/batch/list")
-    public ResultData batchList() {
-        return null;
+    public ResultData batchList(String modelId) {
+        return machineService.batchList(modelId);
+    }
+
+    @PostMapping("/qrcode/check")
+    public ResultData checkQrcode(String candidate) {
+        return machineService.check(candidate);
     }
 }
