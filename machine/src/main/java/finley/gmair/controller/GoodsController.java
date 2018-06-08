@@ -97,14 +97,22 @@ public class GoodsController {
             result.setDescription("please make sure you fill all the required fields");
             return result;
         }
-        GoodsModel model = new GoodsModel(modelForm.getGoodsId(), modelForm.getModelCode(), modelForm.getModelName());
-        ResultData response = goodsService.createModel(model);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to save goodsModel");
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("goodsId", modelForm.getGoodsId());
+        ResultData response = goodsService.fetchGoods(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            GoodsModel model = new GoodsModel(modelForm.getGoodsId(), modelForm.getModelCode(), modelForm.getModelName());
+            response = goodsService.createModel(model);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to save goodsModel");
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+            }
         } else {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Model is not matched with goods");
         }
         return result;
     }
