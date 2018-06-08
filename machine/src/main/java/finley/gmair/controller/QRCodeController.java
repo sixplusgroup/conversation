@@ -118,6 +118,12 @@ public class QRCodeController {
         return result;
     }
 
+    /**
+     * This method is used to generate the qrcode xls when create batch qrcode
+     * method is private, just called in create batch
+     *
+     * @return
+     */
     private String generateXls(String batch) {
         if (StringUtils.isEmpty(batch)) {
             return new StringBuffer("The request with no specified batchNo cannot be executed").toString();
@@ -192,6 +198,11 @@ public class QRCodeController {
         return tempSerial;
     }
 
+    /**
+     * This method is used to download a batch of qrcode
+     *
+     * @return
+     */
     @ResponseBody
     @GetMapping(value = "/download/{filename}")
     public void download(@PathVariable("filename") String filename, HttpServletResponse response) {
@@ -231,6 +242,12 @@ public class QRCodeController {
         }
     }
 
+    /**
+     * This method is used to create finish qrcode prebind
+     * update idle after prebind
+     *
+     * @return
+     */
     @PostMapping(value = "/prebind")
     public ResultData preBind(PreBindForm form) {
         ResultData result = new ResultData();
@@ -260,6 +277,11 @@ public class QRCodeController {
         return result;
     }
 
+    /**
+     * This method is used to check qrcode
+     *
+     * @return
+     */
     @PostMapping(value = "/check")
     public ResultData check(String candidate) {
         ResultData result = new ResultData();
@@ -303,6 +325,11 @@ public class QRCodeController {
         return result;
     }
 
+    /**
+     * This method is used to relieve the binding between qrcode and machine
+     *
+     * @return
+     */
     @PostMapping(value = "/prebind/unbind/{codeValue}")
     public ResultData deletePreBind(@PathVariable String codeValue) {
         ResultData result = new ResultData();
@@ -353,6 +380,11 @@ public class QRCodeController {
         return result;
     }
 
+    /**
+     * This method is used to get all batch with model in qrcode
+     *
+     * @return
+     */
     @GetMapping("/batch/list")
     @CrossOrigin
     public ResultData batchList(String modelId) {
