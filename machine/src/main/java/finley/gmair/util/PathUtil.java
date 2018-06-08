@@ -11,9 +11,10 @@ public class PathUtil {
 		} catch (Exception e) {
 			path = PathUtil.class.getResource(File.separator).getPath();
 		}
-		String temp = new StringBuffer(File.separator).append("WEB-INF").append(File.separator).append("classes")
-				.append(File.separator).toString();
-		int index = path.lastIndexOf(temp);
+		System.out.println(path);
+		//String temp = new StringBuffer(File.separator).append("target").append(File.separator).append("classes")
+				//.append(File.separator).toString();
+		int index = path.lastIndexOf("/target/classes/");
 		return path.substring(0, index);
 	}
 }
