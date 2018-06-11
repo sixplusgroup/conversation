@@ -33,7 +33,7 @@ public class GMClientV2 {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         int port = 8888;
         for (int i = 0; i < 200; i++) {
             new Thread(() -> {
