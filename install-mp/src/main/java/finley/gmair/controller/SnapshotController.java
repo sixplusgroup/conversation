@@ -75,7 +75,7 @@ public class SnapshotController {
         //according to the qrcode,find the assignId.
         String assignId = "";
         Map<String, Object> condition = new HashMap<>();
-        condition.put("qrcode", qrcode);
+        condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

@@ -6,7 +6,7 @@ public class Snapshot extends Entity {
 
     private String snapshotId;
     private String assignId;
-    private String qrcode;
+    private String codeValue;
     private String wechatId;
     private String memberPhone;
     private String picPath;
@@ -20,7 +20,7 @@ public class Snapshot extends Entity {
     public Snapshot(String assignId, String qrcode, String wechatId, String memberPhone, String picPath, boolean net,String installType) {
         this();
         this.assignId = assignId;
-        this.qrcode = qrcode;
+        this.codeValue = qrcode;
         this.wechatId = wechatId;
         this.memberPhone = memberPhone;
         this.picPath = picPath;
@@ -44,12 +44,12 @@ public class Snapshot extends Entity {
         this.assignId = assignId;
     }
 
-    public String getQrcode() {
-        return qrcode;
+    public String getCodeValue() {
+        return codeValue;
     }
 
-    public void setQrcode(String qrcode) {
-        this.qrcode = qrcode;
+    public void setCodeValue(String codeValue) {
+        this.codeValue = codeValue;
     }
 
     public String getWechatId() {

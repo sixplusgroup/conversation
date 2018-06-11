@@ -26,6 +26,7 @@ public class SnapshotDaoImpl extends BaseDao implements SnapshotDao {
         catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
+            System.out.println(new StringBuffer("Snapshot create failure: ").append(e.getMessage()).toString());
         }
         return result;
     }
