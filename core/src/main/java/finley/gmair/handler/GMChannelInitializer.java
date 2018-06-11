@@ -1,13 +1,10 @@
 package finley.gmair.handler;
 
-import finley.gmair.message.PacketEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +20,8 @@ public class GMChannelInitializer extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
-//        pipeline.addLast(new LineBasedFrameDecoder(1024));
-//        pipeline.addLast(new PacketEncoder());
         pipeline.addLast(new ByteArrayEncoder());
+        pipeline.addLast(new ByteArrayDecoder());
         pipeline.addLast(gmPacketHandler);
     }
 }
