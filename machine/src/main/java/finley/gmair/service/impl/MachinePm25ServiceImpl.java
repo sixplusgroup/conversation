@@ -53,7 +53,7 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
         Map<String, Object> condition = new HashMap<>();
         condition.put("createTimeGTE", lastDay);
         condition.put("createTimeLTE", today);
-        condition.put("blockFlag", false);
+        condition.put("blockFlag", 0);
         ResultData response = machineStatusStatisticsDao.selectHourly(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
@@ -96,7 +96,7 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
                     .map(e -> new MachinePm2_5(e.getKey(), month, e.getValue())).collect(Collectors.toList());
 
             if (!monthlyData.isEmpty()) {
-                response = machineStatusStatisticsDao.insertDailyBatch(monthlyData);
+                response = machineStatusStatisticsDao.insertMonthlyBatch(monthlyData);
             }
         }
         return result;

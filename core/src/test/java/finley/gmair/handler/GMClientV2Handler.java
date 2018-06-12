@@ -2,6 +2,7 @@ package finley.gmair.handler;
 
 import finley.gmair.model.packet.AbstractPacketV2;
 import finley.gmair.model.packet.HeartBeatPacket;
+import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.util.ByteUtil;
 import finley.gmair.util.PacketUtil;
 import finley.gmair.util.TimeUtil;
@@ -45,21 +46,23 @@ public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        byte[] CTF = new byte[]{0x02};
+        byte[] CTF = new byte[]{0x03};
 
         byte[] CID = new byte[]{0x00};
 
-        byte[] UID = ByteUtil.string2byte(UUID.randomUUID().toString().substring(0, 11), 12);
+        byte[] UID = new byte[]{0x63, 0x63, 0x63, 0x63, 0x63, (byte) 0x63, (byte) 0x63, (byte) 0x63, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61};
 
         long time = System.currentTimeMillis();
 
         byte[] TIM = ByteUtil.long2byte(time, 8);
 
-        byte[] LEN = new byte[]{0x00};
+        byte[] LEN = new byte[]{0x0C};
+
+        byte[] data = new byte[]{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
 
         while (true) {
 
-            HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
+            ProbePacket packet = new ProbePacket(CTF, CID, UID, TIM, LEN, data);
 
             byte[] request = packet.convert2bytearray();
 

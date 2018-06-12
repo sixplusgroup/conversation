@@ -54,10 +54,12 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao{
         ResultData result = new ResultData();
         long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
         long currentHour = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
-        Aggregation aggregation = newAggregation(group("uid").avg("pm2_5").as("pm25"),
-                match(Criteria.where("createAt").gte(lastHour).lt(currentHour)),
-                project("uid", "pm25")
-        );
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("createAt").gte(lastHour)),
+                match(Criteria.where("createAt").lte(currentHour)),
+                group("uid").avg("pm2_5").as("pm2_5"),
+                project().andExpression("_id").as("uid")
+                         .andExpression("pm2_5").as("pm2_5"));
 
         try {
             AggregationResults<MachinePm2_5> data = mongoTemplate

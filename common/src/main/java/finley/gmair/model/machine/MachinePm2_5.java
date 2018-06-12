@@ -3,9 +3,18 @@ package finley.gmair.model.machine;
 import finley.gmair.model.Entity;
 
 public class MachinePm2_5 extends Entity{
+    private String statusId;
     private String uid;
     private int index;
     private double pm2_5;
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
 
     public String getUid() {
         return uid;

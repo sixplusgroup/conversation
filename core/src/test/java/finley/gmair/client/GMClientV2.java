@@ -20,7 +20,7 @@ public class GMClientV2 {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true).handler(new ChannelInitializer<SocketChannel>() {
                 public void initChannel(SocketChannel channel) throws Exception {
-                    channel.pipeline().addLast(new ByteArrayDecoder());
+                    channel.pipeline().addLast(new ByteArrayEncoder());
                     channel.pipeline().addLast(new GMClientV2Handler());
                 }
             });
@@ -35,10 +35,10 @@ public class GMClientV2 {
 
     public static void main(String[] args) {
         int port = 8888;
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 100; i++) {
             new Thread(() -> {
                 try {
-                    new GMClientV2().connect(port, "118.31.78.254");
+                    new GMClientV2().connect(port, "127.0.0.1");
                     System.out.println("A new client has been created");
                 } catch (Exception e) {
                     e.printStackTrace();

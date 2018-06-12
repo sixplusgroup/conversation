@@ -4,40 +4,40 @@
 
     <resultMap id="machinePm2_5" type="finley.gmair.vo.machine.MachinePm2_5Vo">
         <result property="uid" column="machine_id"/>
-        <result property="pm2_5" column="average_pm_2_5" />
+        <result property="pm2_5" column="average_pm2_5" />
         <result property="index" column="index" />
         <result property="createTime" column="create_time"/>
     </resultMap>
 
     <insert id="insertHourly" parameterType="finley.gmair.model.machine.MachinePm2_5">
         INSERT INTO `gmair_machine`.`machine_hourly_status`
-        (machine_id, average_pm_2_5, index, block_flag, create_time)
+        (status_id, machine_id, average_pm2_5, `index`, block_flag, create_time)
         VALUES
-        (#{uid}, #{pm2_5}, #{index}, #{blockFlag}, #{createAt})
+        (#{statusId}, #{uid}, #{pm2_5}, #{index}, #{blockFlag}, #{createAt})
     </insert>
 
     <insert id="insertHourlyBatch" parameterType="java.util.List">
         INSERT INTO `gmair_machine`.`machine_hourly_status`
-        (machine_id, average_pm_2_5, index, block_flag, create_time)
+        (status_id, machine_id, average_pm2_5, `index`, block_flag, create_time)
         VALUES
-        <foreach collection="list" separator="," item="airQuality" index="index">
-            (#{airQuality.uid}, #{airQuality.pm2_5}, #{airQuality.index}, #{airQuality.blockFlag},
-             #{airQuality.createAt})
+        <foreach collection="list" separator="," item="MachinePm2_5" index="index">
+            (#{MachinePm2_5.statusId}, #{MachinePm2_5.uid}, #{MachinePm2_5.pm2_5}, #{MachinePm2_5.index},
+             #{MachinePm2_5.blockFlag}, #{MachinePm2_5.createAt})
         </foreach>
     </insert>
     
     <select id="selectHourly" parameterType="java.util.Map" resultMap="machinePm2_5">
-        SELECT machine_id, average_pm_2_5, index, create_time FROM `gmair_machine`.`machine_hourly_status`
+        SELECT machine_id, average_pm2_5, `index`, create_time FROM `gmair_machine`.`machine_hourly_status`
         WHERE 1 = 1
         <if test="uid != null">
             AND machine_id = #{uid}
         </if>
         <if test="indexGTE != null">
-            AND index >= #{indexGTE}
+            AND `index` >= #{indexGTE}
         </if>
         <if test="indexLTE != null">
             <![CDATA[
-                AND index <= #{indexGTE}
+                AND `index` <= #{indexGTE}
             ]]>
         </if>
         <if test="createTimeGTE != null">
@@ -55,33 +55,33 @@
 
     <insert id="insertDaily" parameterType="finley.gmair.model.machine.MachinePm2_5">
         INSERT INTO `gmair_machine`.`machine_daily_status`
-        (machine_id, average_pm_2_5, index, block_flag, create_time)
+        (status_id, machine_id, average_pm2_5, `index`, block_flag, create_time)
         VALUES
-        (#{uid}, #{pm2_5}, #{index}, #{blockFlag}, #{createAt})
+        (#{statusId}, #{uid}, #{pm2_5}, #{index}, #{blockFlag}, #{createAt})
     </insert>
 
     <insert id="insertDailyBatch" parameterType="java.util.List">
         INSERT INTO `gmair_machine`.`machine_daily_status`
-        (machine_id, average_pm_2_5, index, block_flag, create_time)
+        (status_id, machine_id, average_pm2_5, `index`, block_flag, create_time)
         VALUES
-        <foreach collection="list" separator="," item="airQuality" index="index">
-            (#{airQuality.uid}, #{airQuality.pm2_5}, #{airQuality.index}, #{airQuality.blockFlag},
-            #{airQuality.createAt})
+        <foreach collection="list" separator="," item="MachinePm2_5" index="index">
+            (#{MachinePm2_5.statusId}, #{MachinePm2_5.uid}, #{MachinePm2_5.pm2_5}, #{MachinePm2_5.index},
+            #{MachinePm2_5.blockFlag}, #{MachinePm2_5.createAt})
         </foreach>
     </insert>
 
     <select id="selectDaily" parameterType="java.util.Map" resultMap="machinePm2_5">
-        SELECT machine_id, average_pm_2_5, index, create_time FROM `gmair_machine`.`machine_daily_status`
+        SELECT machine_id, average_pm2_5, `index`, create_time FROM `gmair_machine`.`machine_daily_status`
         WHERE 1 = 1
         <if test="uid != null">
             AND machine_id = #{uid}
         </if>
         <if test="indexGTE != null">
-            AND index >= #{indexGTE}
+            AND `index` >= #{indexGTE}
         </if>
         <if test="indexLTE != null">
             <![CDATA[
-                AND index <= #{indexGTE}
+                AND `index` <= #{indexGTE}
             ]]>
         </if>
         <if test="createTimeGTE != null">
@@ -99,33 +99,33 @@
 
     <insert id="insertMonthly" parameterType="finley.gmair.model.machine.MachinePm2_5">
         INSERT INTO `gmair_machine`.`machine_monthly_status`
-        (machine_id, average_pm_2_5, index, block_flag, create_time)
+        (status_id, machine_id, average_pm2_5, `index`, block_flag, create_time)
         VALUES
-        (#{uid}, #{pm2_5}, #{index}, #{blockFlag}, #{createAt})
+        (#{statusId}, #{uid}, #{pm2_5}, #{index}, #{blockFlag}, #{createAt})
     </insert>
 
     <insert id="insertMonthlyBatch" parameterType="java.util.List">
         INSERT INTO `gmair_machine`.`machine_monthly_status`
-        (machine_id, average_pm_2_5, index, block_flag, create_time)
+        (status_id, machine_id, average_pm2_5, `index`, block_flag, create_time)
         VALUES
-        <foreach collection="list" separator="," item="airQuality" index="index">
-            (#{airQuality.uid}, #{airQuality.pm2_5}, #{airQuality.index}, #{airQuality.blockFlag},
-            #{airQuality.createAt})
+        <foreach collection="list" separator="," item="MachinePm2_5" index="index">
+            (#{MachinePm2_5.statusId}, #{MachinePm2_5.uid}, #{MachinePm2_5.pm2_5}, #{MachinePm2_5.index},
+            #{MachinePm2_5.blockFlag}, #{MachinePm2_5.createAt})
         </foreach>
     </insert>
 
     <select id="selectMonthly" parameterType="java.util.Map" resultMap="machinePm2_5">
-        SELECT machine_id, average_pm_2_5, index, create_time FROM `gmair_machine`.`machine_monthly_status`
+        SELECT machine_id, average_pm2_5, `index`, create_time FROM `gmair_machine`.`machine_monthly_status`
         WHERE 1 = 1
         <if test="uid != null">
             AND machine_id = #{uid}
         </if>
         <if test="indexGTE != null">
-            AND index >= #{indexGTE}
+            AND `index` >= #{indexGTE}
         </if>
         <if test="indexLTE != null">
             <![CDATA[
-                AND index <= #{indexGTE}
+                AND `index` <= #{indexGTE}
             ]]>
         </if>
         <if test="createTimeGTE != null">

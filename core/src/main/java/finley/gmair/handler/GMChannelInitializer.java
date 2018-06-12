@@ -21,7 +21,6 @@ public class GMChannelInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
         pipeline.addLast(new ByteArrayEncoder());
-        pipeline.addLast(new ByteArrayDecoder());
         pipeline.addLast(gmPacketHandler);
     }
 }
