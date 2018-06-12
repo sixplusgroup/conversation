@@ -11,5 +11,6 @@
         <mapper resource="mapper/prebind.xml"></mapper>
         <mapper resource="mapper/idlemachine.xml"></mapper>
         <mapper resource="mapper/machinesetting.xml"></mapper>
+        <mapper resource="mapper/machinepm25.xml"></mapper>
     </mappers>
 </configuration>

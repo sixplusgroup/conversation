@@ -14,3 +14,8 @@ gmair_machine.power_setting, gmair_machine.machine_setting
 where power_setting.setting_id = machine_setting.setting_id
 and power_setting.block_flag = 0
 and machine_setting.block_flag=0;
+
+
+# 2018-06-12 modify machine_monthly_status
+ALTER TABLE `gmair_machine`.`machine_monthly_status`
+CHANGE COLUMN `record_date` `index` INT NOT NULL ;

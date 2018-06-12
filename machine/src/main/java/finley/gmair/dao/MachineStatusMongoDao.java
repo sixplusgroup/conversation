@@ -9,4 +9,6 @@ public interface MachineStatusMongoDao {
 
     ResultData query(Map<String, Object> condition);
 
+    ResultData queryHourlyPm25();
+
 }
