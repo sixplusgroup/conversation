@@ -15,7 +15,7 @@ public class MessageController {
     private MessageService messageService;
 
     @PostMapping("/reconnaissance/send")
-    ResultData sendMessage(String phone) {
+    public ResultData sendMessage(String phone) {
         String text = "[果麦新风]勘测完成提醒";
         return messageService.sendMessage(phone, text);
     }
