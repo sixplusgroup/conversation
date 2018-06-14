@@ -125,6 +125,6 @@ public class InstallController {
 
     @GetMapping("/assign/feedback/info")
     public ResultData assignFeedback(String assignId) {
-        return  null;
+        return  installService.assignFeedback(assignId);
     }
 }
