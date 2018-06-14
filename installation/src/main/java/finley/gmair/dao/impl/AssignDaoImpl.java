@@ -57,14 +57,13 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
     }
 
     @Override
-    public ResultData queryAssign2(Map<String, Object> condition) {
+    public ResultData queryAssignWithDetailName(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        List<AssignVo> list = new ArrayList<>();
         try {
-            list = sqlSession.selectList("gmair.installation.assign.query2", condition);
+            List<AssignVo> list = sqlSession.selectList("gmair.installation.assign.queryAssignWithDetailName", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("No assignvo found");
+                result.setDescription("No assign with detail name found");
             } else {
                 result.setData(list);
             }

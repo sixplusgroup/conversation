@@ -8,7 +8,6 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -52,9 +51,9 @@ public class AssignServiceImpl implements AssignService {
     }
 
     @Override
-    public ResultData fetchAssign2(Map<String, Object> condition){
+    public ResultData fetchAssignWithDetailName(Map<String, Object> condition){
         ResultData result = new ResultData();
-        ResultData response = assignDao.queryAssign2(condition);
+        ResultData response = assignDao.queryAssignWithDetailName(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());

@@ -14,10 +14,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -303,19 +300,15 @@ public class AssignController {
         return result;
     }
 
-    //由order模块调用触发,通过qrcode查询安装单
-    @RequestMapping(method = RequestMethod.GET, value = "/byqrcode")
-    public ResultData byqrcode(String qrcode) {
+    @GetMapping("/detail/list")
+    public ResultData listWithDetailName(String qrcode) {
         ResultData result = new ResultData();
-        //check empty
-        if (StringUtils.isEmpty(qrcode)) {
-            result.setDescription("please provide qrcode");
-            return result;
-        }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
-        ResultData response = assignService.fetchAssign2(condition);
+        if(!StringUtils.isEmpty(qrcode)) {
+            condition.put("codeValue", qrcode);
+        }
+        ResultData response = assignService.fetchAssignWithDetailName(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("no assign found ");

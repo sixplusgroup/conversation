@@ -16,7 +16,7 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <resultMap id="AssignView" type="finley.gmair.vo.installation.AssignVo">
+    <resultMap id="assignWithNameVo" type="finley.gmair.vo.installation.AssignVo">
         <result property="assignId" column="assign_id"></result>
         <result property="codeValue" column="code_value"></result>
         <result property="teamName" column="team_name"></result>
@@ -77,9 +77,8 @@
         </if>
     </select>
 
-    <select id="query2" parameterType="java.util.Map" resultMap="AssignView">
-        SELECT assign_id,code_value,team_name,member_name,assign_status,assign_date,
-        block_flag,create_time,consumer_consignee,consumer_phone,consumer_address
+    <select id="queryAssignWithDetailName" parameterType="java.util.Map" resultMap="assignWithNameVo">
+        SELECT assign_id, code_value, team_name, member_name, assign_status, assign_date, block_flag, create_time, consumer_consignee, consumer_phone, consumer_address
         FROM gmair_install.assign_view
         WHERE 1 = 1
         <if test="assignId != null">

@@ -11,7 +11,7 @@ public interface AssignService {
 
     ResultData fetchAssign(Map<String, Object> condition);
 
-    ResultData fetchAssign2(Map<String, Object> condition);
+    ResultData fetchAssignWithDetailName(Map<String, Object> condition);
 
     ResultData fetchAssign3(Map<String, Object> condition);
 

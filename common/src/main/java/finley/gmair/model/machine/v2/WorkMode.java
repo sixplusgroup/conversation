@@ -1,11 +1,5 @@
 package finley.gmair.model.machine.v2;
 
-public class WorkMode {
-    Mode mode;
+public enum WorkMode {
 
-
-}
-
-enum Mode {
-    MANUAL, SLEEP, CUSTOMIZE
 }

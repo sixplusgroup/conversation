@@ -22,5 +22,5 @@ public class MachineStatus extends Entity {
 
     private HeatStatus hStatus;
 
-
+    private boolean lock;
 }
