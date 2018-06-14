@@ -16,6 +16,6 @@ public interface InstallService {
                       @RequestParam("consumerAddress") String consumerAddress
     );
 
-    @RequestMapping(value = "/installation/assign/byqrcode", method = RequestMethod.GET)
+    @RequestMapping(value = "/installation/assign/detail/list", method = RequestMethod.GET)
     ResultData getAssign(@RequestParam("qrcode") String qrcode);
 }
