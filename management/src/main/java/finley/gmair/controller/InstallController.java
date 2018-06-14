@@ -83,6 +83,12 @@ public class InstallController {
         } else {
             data.put("finished", 0);
         }
+        response = installService.closedList();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            data.put("closed", ((List) response.getData()).size());
+        } else {
+            data.put("closed", 0);
+        }
         result.setData(data);
         return result;
     }
@@ -105,5 +111,15 @@ public class InstallController {
     @GetMapping("/assign/finished")
     public ResultData finishedList() {
         return installService.finishedList();
+    }
+
+    @GetMapping("/assign/closed")
+    public ResultData closedList() {
+        return installService.closedList();
+    }
+
+    @GetMapping("/assign/detail/list")
+    public ResultData assignDetailList(int status) {
+        return installService.detailList(status);
     }
 }

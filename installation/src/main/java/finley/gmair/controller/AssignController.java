@@ -281,7 +281,6 @@ public class AssignController {
     @RequestMapping(method = RequestMethod.GET, value = "/finishedlist")
     public ResultData finishedlist() {
         ResultData result = new ResultData();
-
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignStatus", AssignStatus.FINISHED.getValue());
         condition.put("blockFlag", false);
@@ -300,13 +299,36 @@ public class AssignController {
         return result;
     }
 
+    @GetMapping("/closedlist")
+    public ResultData closedList() {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignStatus", AssignStatus.CLOSED.getValue());
+        condition.put("blockFlag", false);
+        ResultData response = assignService.fetchAssign(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No closed assign found.");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get closed assign.");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
     @GetMapping("/detail/list")
-    public ResultData listWithDetailName(String qrcode) {
+    public ResultData listWithDetailName(String qrcode, int status) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        if(!StringUtils.isEmpty(qrcode)) {
+        if (!StringUtils.isEmpty(qrcode)) {
             condition.put("codeValue", qrcode);
+        }
+        if (!StringUtils.isEmpty(status)) {
+            condition.put("assignStatus", status);
         }
         ResultData response = assignService.fetchAssignWithDetailName(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {

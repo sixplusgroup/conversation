@@ -48,15 +48,21 @@ public interface InstallService {
     ResultData finishedInfo(@RequestParam("assignId") String assignId);
 
 
-    @GetMapping("/installation/assign/todo")
+    @GetMapping("/installation/assign/todolist")
     ResultData todoAssignList();
 
-    @GetMapping("/installation/assign/assigned")
+    @GetMapping("/installation/assign/assignedlist")
     ResultData assignedList();
 
-    @GetMapping("/installation/assign/processing")
+    @GetMapping("/installation/assign/processinglist")
     ResultData processingAssignList();
 
-    @GetMapping("/installation/assign/finished")
+    @GetMapping("/installation/assign/finishedlist")
     ResultData finishedList();
+
+    @GetMapping("/installation/assign/closedlist")
+    ResultData closedList();
+
+    @GetMapping("/installation/assign/detail/list")
+    ResultData detailList(@RequestParam("status") int status);
 }
