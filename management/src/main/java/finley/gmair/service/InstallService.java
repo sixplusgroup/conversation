@@ -65,4 +65,7 @@ public interface InstallService {
 
     @GetMapping("/installation/assign/detail/list")
     ResultData detailList(@RequestParam("status") int status);
+
+    @GetMapping("/installation/feedback/info")
+    ResultData assignFeedback(@RequestParam("assignId") String assignId);
 }

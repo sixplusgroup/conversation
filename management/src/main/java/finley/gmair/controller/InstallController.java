@@ -122,4 +122,9 @@ public class InstallController {
     public ResultData assignDetailList(int status) {
         return installService.detailList(status);
     }
+
+    @GetMapping("/assign/feedback/info")
+    public ResultData assignFeedback(String assignId) {
+        return  null;
+    }
 }

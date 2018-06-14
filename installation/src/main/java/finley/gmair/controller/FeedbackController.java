@@ -59,4 +59,28 @@ public class FeedbackController {
         }
         return result;
     }
+
+    @GetMapping("/info")
+    public ResultData fetchFeedback(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure all required information is provided.");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        ResultData response = feedbackService.fetchFeedback(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
 }
