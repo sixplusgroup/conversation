@@ -13,7 +13,16 @@
         <result column="trigger_minute" property="triggerMinute"/>
     </resultMap>
 
-       <select id="selectpowersetting" parameterType="java.util.Map" resultMap="PowerSettingVo">
+    <resultMap id="MachineSettingVo" type="finley.gmair.model.machine.v2.MachineSetting">
+        <result column="setting_id" property="settingId"></result>
+        <result column="consumer_id" property="consumerId"></result>
+        <result column="setting_name" property="settingName"></result>
+        <result column="code_value" property="codeValue"></result>
+        <result column="block_flag" property="blockFlag"></result>
+        <result column="create_time" property="createAt"></result>
+    </resultMap>
+
+    <select id="selectpowersetting" parameterType="java.util.Map" resultMap="PowerSettingVo">
         SELECT
         setting_id,
         consumer_id,
@@ -40,4 +49,29 @@
         </if>
     </select>
 
+    <select id="queryMachineSetting" parameterType="java.util.Map" resultMap="MachineSettingVo">
+        SELECT setting_id, consumer_id, setting_name, code_value, block_flag, create_time
+        FROM gmair_machine.machine_setting
+        WHERE 1 = 1
+        <if test="settingId != null">
+            AND setting_id = #{settingId}
+        </if>
+        <if test="consumerId != null">
+            AND consumer_id = #{consumerId}
+        </if>
+        <if test="settingName != null">
+            AND setting_name = #{settingName}
+        </if>
+        <if test="codeValue != null">
+            AND code_value = #{codeValue}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <insert id="isnertMachineSetting" parameterType="finley.gmair.model.machine.v2.MachineSetting" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.machine_setting(setting_id, consumer_id, setting_name, code_value, block_flag, create_time)
+        VALUES(#{settingId}, #{consumerId}, #{settingName}, #{codeValue}, #{blockFlag}, #{createAt})
+    </insert>
 </mapper>

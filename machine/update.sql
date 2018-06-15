@@ -35,3 +35,21 @@ ADD COLUMN `status_id` VARCHAR(45) NOT NULL FIRST,
 DROP PRIMARY KEY,
 ADD PRIMARY KEY (`status_id`);
 
+## 2018-06-14 create machine volume setting view
+create view `gmair_machine`.`volume_setting_view`
+as
+SELECT
+volume_setting.setting_id as setting_id,
+machine_setting.consumer_id as consumer_id,
+machine_setting.setting_name as setting_name,
+machine_setting.code_value as code_value,
+volume_setting.floor_pm2_5 as floor_pm2_5,
+volume_setting.upper_pm2_5 as upper_pm2_5,
+volume_setting.speed_value as speed_value
+FROM
+gmair_machine.volume_setting, gmair_machine.machine_setting
+where volume_setting.setting_id = machine_setting.setting_id
+and volume_setting.block_flag = 0
+and machine_setting.block_flag=0;
+
+
