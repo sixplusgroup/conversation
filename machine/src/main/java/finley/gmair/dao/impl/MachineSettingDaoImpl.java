@@ -2,11 +2,13 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.MachineSettingDao;
+import finley.gmair.model.machine.v2.LightSetting;
 import finley.gmair.model.machine.v2.MachineSetting;
 import finley.gmair.model.machine.v2.VolumeSetting;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.LightSettingVo;
 import finley.gmair.vo.machine.PowerSettingVo;
 import org.springframework.stereotype.Repository;
 
@@ -53,6 +55,21 @@ public class MachineSettingDaoImpl extends BaseDao implements MachineSettingDao{
     }
 
     @Override
+    public ResultData insertMachineSetting(MachineSetting setting) {
+        ResultData result = new ResultData();
+        setting.setSettingId(IDGenerator.generate("MSS"));
+        try {
+            sqlSession.insert("gmair.machinesetting.isnertMachineSetting", setting);
+            result.setData(setting);
+        } catch (Exception e){
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData selectVolumeSetting(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
@@ -88,6 +105,51 @@ public class MachineSettingDaoImpl extends BaseDao implements MachineSettingDao{
         ResultData result = new ResultData();
         try {
             sqlSession.update("gmair.machine.volumesetting.update", setting);
+            result.setData(setting);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData selectLightSetting(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<LightSettingVo> list = sqlSession.selectList("gmair.machine.lightsetting.query", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData insertLightSetting(LightSetting setting) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.insert("gmair.machine.lightsetting.insert", setting);
+            result.setData(setting);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData updateLightSetting(LightSetting setting) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.machine.lightsetting.update", setting);
             result.setData(setting);
         } catch (Exception e) {
             e.printStackTrace();
