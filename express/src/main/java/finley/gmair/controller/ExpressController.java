@@ -93,10 +93,13 @@ public class ExpressController {
      *
      * @return
      */
-    @GetMapping("/company/query")
-    public ResultData queryCompany() {
+    @GetMapping({"/company/query", "/company/{companyId}/query"})
+    public ResultData queryCompany(@PathVariable(required = false, value = "companyId") String companyId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(companyId)) {
+            condition.put("companyId", companyId);
+        }
         condition.put("blockFlag", false);
         ResultData response = expressService.fetchExpressCompany(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
