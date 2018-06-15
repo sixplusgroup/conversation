@@ -1,6 +1,8 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.MachineSettingDao;
+import finley.gmair.model.machine.v2.LightSetting;
+import finley.gmair.model.machine.v2.MachineSetting;
 import finley.gmair.model.machine.v2.VolumeSetting;
 import finley.gmair.service.MachineSettingService;
 import finley.gmair.util.ResponseCode;
@@ -35,7 +37,50 @@ public class MachineSettingServiceImpl implements MachineSettingService{
 
     @Override
     public ResultData fetchMachineSetting(Map<String, Object> condition) {
-        return machineSettingDao.queryMachineSetting(condition);
+        ResultData result = new ResultData();
+        ResultData response = machineSettingDao.queryMachineSetting(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No machine setting found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve machine setting");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createMachineSetting(MachineSetting setting) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", setting.getCodeValue());
+        ResultData response = machineSettingDao.queryMachineSetting(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Machine setting already exist");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Query error, please try again");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            response = machineSettingDao.insertMachineSetting(setting);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to store machine setting");
+            }
+        }
+        return result;
     }
 
     @Override
@@ -95,6 +140,53 @@ public class MachineSettingServiceImpl implements MachineSettingService{
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         result.setDescription("Fail to update volume setting");
+        return result;
+    }
+
+    @Override
+    public ResultData fetchLightSetting(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = machineSettingDao.selectLightSetting(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No light setting found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve the light setting");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createLightSetting(LightSetting setting) {
+        ResultData result = new ResultData();
+        ResultData response = machineSettingDao.insertLightSetting(setting);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to store light setting to database");
+        return result;
+    }
+
+    @Override
+    public ResultData modifyLightSetting(LightSetting setting) {
+        ResultData result = new ResultData();
+        ResultData response = machineSettingDao.updateLightSetting(setting);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to update light setting");
         return result;
     }
 }

@@ -53,3 +53,19 @@ and volume_setting.block_flag = 0
 and machine_setting.block_flag=0;
 
 
+## 2018-06-15 create machine light setting view
+create view `gmair_machine`.`light_setting_view`
+as
+SELECT
+light_setting.setting_id as setting_id,
+machine_setting.consumer_id as consumer_id,
+machine_setting.setting_name as setting_name,
+machine_setting.code_value as code_value,
+light_setting.light_value as light_value
+FROM
+gmair_machine.light_setting, gmair_machine.machine_setting
+where light_setting.setting_id = machine_setting.setting_id
+and light_setting.block_flag = 0
+and machine_setting.block_flag=0;
+
+
