@@ -28,7 +28,7 @@ public class ExpressController {
 
     @GetMapping({"/company/query", "/company/{companyId}/query"})
     public ResultData companyFetch(@PathVariable(required = false, name = "companyId") String companyId) {
-        return StringUtils.isEmpty(companyId) ? expressService.companyQuery() : expressService.companyQuery();
+        return StringUtils.isEmpty(companyId) ? expressService.companyQuery() : expressService.companyQuery(companyId);
     }
 
     @GetMapping("/order/query/{orderId}")
