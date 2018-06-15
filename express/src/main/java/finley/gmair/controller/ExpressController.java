@@ -94,7 +94,7 @@ public class ExpressController {
      * @return
      */
     @GetMapping({"/company/query", "/company/{companyId}/query"})
-    public ResultData queryCompany(@PathVariable(required = false, value = "companyId") String companyId) {
+    public ResultData queryCompany(@PathVariable(required = false, name = "companyId") String companyId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(companyId)) {

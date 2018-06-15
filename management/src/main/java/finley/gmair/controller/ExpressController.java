@@ -8,6 +8,7 @@ import finley.gmair.service.OrderService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
@@ -25,9 +26,9 @@ public class ExpressController {
     @Autowired
     private OrderService orderService;
 
-    @GetMapping("/company/query")
-    public ResultData companyFetch() {
-        return expressService.companyQuery();
+    @GetMapping({"/company/query", "/company/{companyId}/query"})
+    public ResultData companyFetch(@PathVariable(required = false, name = "companyId") String companyId) {
+        return StringUtils.isEmpty(companyId) ? expressService.companyQuery() : expressService.companyQuery();
     }
 
     @GetMapping("/order/query/{orderId}")
@@ -36,7 +37,7 @@ public class ExpressController {
     }
 
     @GetMapping("/parcel/query/{parentExpress}")
-    public ResultData queryAllParcels(@PathVariable("parentExpress") String parentExpress){
+    public ResultData queryAllParcels(@PathVariable("parentExpress") String parentExpress) {
         return expressService.queryAllParcels(parentExpress);
     }
 

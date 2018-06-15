@@ -7,11 +7,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.ws.rs.PathParam;
+
 @FeignClient("express-agent")
 public interface ExpressService {
 
     @GetMapping("/express/company/query")
     ResultData companyQuery();
+
+    @GetMapping("/express/company/{companyId}/query")
+    ResultData companyQuery(@PathVariable("companyId") String companyId);
 
     @GetMapping("/express/order/query/{orderId}")
     ResultData orderQuery(@PathVariable("orderId") String orderId);
