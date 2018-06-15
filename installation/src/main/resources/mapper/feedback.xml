@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="gmair.installation.assigncancel">
+<mapper namespace="gmair.installation.feedback">
     <resultMap id="feedbackVo" type="finley.gmair.model.installation.Feedback">
         <result property="feedbackId" column="feedback_id"></result>
         <result property="assignId" column="assign_id"></result>

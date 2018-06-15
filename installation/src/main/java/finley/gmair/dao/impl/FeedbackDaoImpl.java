@@ -25,6 +25,7 @@ public class FeedbackDaoImpl extends BaseDao implements FeedbackDao {
             result.setData(feedback);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            System.out.println(new StringBuffer("Create feedback error: ").append(e.getMessage()).toString());
             result.setDescription(e.getMessage());
         }
         return result;

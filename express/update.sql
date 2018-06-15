@@ -17,5 +17,11 @@ ALTER TABLE `gmair_express`.`order_express`
 
 #2018.05.02 add express no in parcel express
 ALTER TABLE `gmair_express`.`parcel_express`
-  ADD COLUMN `express_no` VARCHAR(50) NOT NULL AFTER `parent_express`;
+  ADD COLUMN `express_no` VARCHAR(50) NOT NULL
+  AFTER `parent_express`;
+
+##2018.06.15 add company url in express
+ALTER TABLE `gmair_express`.`express_company`
+  ADD COLUMN `company_url` VARCHAR(100) NULL
+  AFTER `company_code`;
 
