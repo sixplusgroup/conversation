@@ -6,15 +6,19 @@
         <result property="parentExpress" column="parent_express"></result>
         <result property="expressNo" column="express_no"></result>
         <result property="codeValue" column="code_value"></result>
-        <result property="expressStatus" column="express_status" typeHandler="finley.gmair.handler.ExpressStatusHandler"></result>
-        <result property="parcelType" column="parcel_type" typeHandler="finley.gmair.handler.ExpressParcelTypeHandler"></result>
+        <result property="expressStatus" column="express_status"
+                typeHandler="finley.gmair.handler.ExpressStatusHandler"></result>
+        <result property="parcelType" column="parcel_type"
+                typeHandler="finley.gmair.handler.ExpressParcelTypeHandler"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.express.ExpressParcel" useGeneratedKeys="false">
-        INSERT INTO gmair_express.parcel_express(express_id, parent_express, express_no, code_value, express_status, parcel_type, block_flag, create_time)
-        VALUES (#{expressId}, #{parentExpress}, #{expressNo}, #{codeValue}, #{expressStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{parcelType, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{blockFlag}, #{createAt})
+        INSERT INTO gmair_express.parcel_express (express_id, parent_express, express_no, code_value, express_status, parcel_type, block_flag, create_time)
+        VALUES (#{expressId}, #{parentExpress}, #{expressNo}, #{codeValue},
+                #{expressStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+                #{parcelType, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="parcelVo">
@@ -45,6 +49,17 @@
     </select>
 
     <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_express.parcel_express
+        <set>
+            <if test="expressStatus != null">
+                express_status = #{expressStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+            </if>
+            express_id = #{expressId}
+        </set>
+        WHERE express_id = #{expressId}
+    </update>
+
+    <update id="updateBatch" parameterType="java.util.Map">
         UPDATE gmair_express.parcel_express
         SET
         express_status = #{expressStatus}

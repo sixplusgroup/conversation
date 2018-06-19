@@ -196,7 +196,7 @@ public class AssignController {
     public ResultData qrcode(String qrcode) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("qrcode", qrcode);
+        condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = assignService.fetchAssign(condition);
 

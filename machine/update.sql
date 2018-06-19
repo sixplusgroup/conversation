@@ -68,4 +68,13 @@ where light_setting.setting_id = machine_setting.setting_id
 and light_setting.block_flag = 0
 and machine_setting.block_flag=0;
 
+#2018-06-19 add table board_version
+CREATE TABLE `gmair_machine`.`board_version` (
+  `machine_id` VARCHAR(45) NOT NULL,
+  `board_version` INT NOT NULL DEFAULT 0,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`machine_id`));
+
+
 

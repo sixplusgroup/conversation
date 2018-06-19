@@ -11,5 +11,7 @@ public interface ExpressParcelDao {
 
     ResultData insertExpressParcel(ExpressParcel expressParcel);
 
+    ResultData updateSingle(Map<String, Object> condition);
+
     ResultData updateExpressParcel(Map<String, Object> condition);
 }

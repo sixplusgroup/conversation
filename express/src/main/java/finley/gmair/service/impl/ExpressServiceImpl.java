@@ -9,7 +9,9 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -101,9 +103,30 @@ public class ExpressServiceImpl implements ExpressService {
     }
 
     @Override
+    @Transactional
     public ResultData confirmReceive(String expressId) {
         ResultData result = new ResultData();
-
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("expressId", expressId);
+        condition.put("status", ExpressStatus.RECEIVED);
+        //update express order status to received
+        ResultData response = expressOrderDao.updateExpressOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to set order express status to received.");
+            System.out.println(new StringBuffer("Fail to set order ").append(expressId).append(" express status to received."));
+            return result;
+        }
+        //update express parcel status to received
+        condition.put("parentExpress", expressId);
+        condition.put("status", ExpressStatus.RECEIVED);
+        response = expressParcelDao.updateSingle(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to set parcel express status to received.");
+            System.out.println(new StringBuffer("Fail to set parcel express status of parent express: ").append(expressId).append(" to received."));
+            return result;
+        }
         return result;
     }
 

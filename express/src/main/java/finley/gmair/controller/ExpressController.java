@@ -6,10 +6,7 @@ import finley.gmair.company.CompanyTransfer;
 import finley.gmair.form.express.ExpressCompanyForm;
 import finley.gmair.form.express.ExpressOrderForm;
 import finley.gmair.form.express.ExpressParcelForm;
-import finley.gmair.model.express.ExpressCompany;
-import finley.gmair.model.express.ExpressOrder;
-import finley.gmair.model.express.ExpressParcel;
-import finley.gmair.model.express.ParcelType;
+import finley.gmair.model.express.*;
 import finley.gmair.schedule.OrderStatusSchedule;
 import finley.gmair.schedule.ParcelStatusSchedule;
 import finley.gmair.service.ExpressService;
@@ -414,17 +411,22 @@ public class ExpressController {
     }
 
     @PostMapping("/receive/confirm")
-    public ResultData confirmReceived(String expressId) {
+    public ResultData confirmReceived(String expressId, HttpServletRequest request) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(expressId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide all required information");
             return result;
         }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("expressId", expressId);
-        condition.put("blockFlag", false);
-
+        ResultData response = expressService.confirmReceive(expressId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update express status to received.");
+            logService.createSysLog("ERROR", "express", new StringBuffer("Fail to set the status for express id: ").append(expressId).append(" to received.").toString(), IPUtil.getIP(request));
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("Succeed to set express status to received.");
         return result;
     }
 
@@ -433,8 +435,7 @@ public class ExpressController {
      */
     @PostMapping("/schedule/order")
     public ResultData updateOrderStatus() {
-        ResultData result = new ResultData();
-        result = orderStatusSchedule.update();
+        ResultData result = orderStatusSchedule.update();
         return result;
     }
 
@@ -443,8 +444,7 @@ public class ExpressController {
      */
     @PostMapping("/schedule/parcel")
     public ResultData updateParcelStatus() {
-        ResultData result = new ResultData();
-        result = parcelStatusSchedule.update();
+        ResultData result = parcelStatusSchedule.update();
         return result;
     }
 

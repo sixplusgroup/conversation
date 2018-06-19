@@ -35,4 +35,7 @@ public interface ExpressService {
                             @RequestParam("expressNo") String expressNo,
                             @RequestParam("parcelType") int parcelType,
                             @RequestParam("codeValue") String codeValue);
+
+    @PostMapping("/express/receive/confirm")
+    ResultData confirmReceived(@RequestParam("expressId") String expressId);
 }

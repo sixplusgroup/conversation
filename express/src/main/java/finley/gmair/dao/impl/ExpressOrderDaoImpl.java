@@ -50,7 +50,7 @@ public class ExpressOrderDaoImpl extends BaseDao implements ExpressOrderDao {
     public ResultData updateExpressOrder(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.express.order.update",condition);
+            sqlSession.update("gmair.express.order.updateBatch",condition);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());

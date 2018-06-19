@@ -69,4 +69,8 @@ public class ExpressController {
         }
     }
 
+    @PostMapping("/parcel/receive/confirm")
+    public ResultData confirmDelivered(String expressId) {
+        return expressService.confirmReceived(expressId);
+    }
 }
