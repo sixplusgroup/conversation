@@ -135,6 +135,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             }));
         } else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {
             /* if match 0xFF, then it should be the 1st version packet */
+
             return;
         }
     }

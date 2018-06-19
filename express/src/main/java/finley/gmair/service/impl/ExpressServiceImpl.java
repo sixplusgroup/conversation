@@ -101,6 +101,13 @@ public class ExpressServiceImpl implements ExpressService {
     }
 
     @Override
+    public ResultData confirmReceive(String expressId) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @Override
     public ResultData createExpressParcel(ExpressParcel expressParcel) {
         ResultData result = new ResultData();
         ResultData response = expressParcelDao.insertExpressParcel(expressParcel);

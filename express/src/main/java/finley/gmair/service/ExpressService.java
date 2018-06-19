@@ -16,6 +16,8 @@ public interface ExpressService {
 
     ResultData fetchExpressOrder(Map<String, Object> condition);
 
+    ResultData confirmReceive(String expressId);
+
     ResultData createExpressParcel(ExpressParcel expressParcel);
 
     ResultData fetchExpressParcel(Map<String, Object> condition);

@@ -413,6 +413,21 @@ public class ExpressController {
         }
     }
 
+    @PostMapping("/receive/confirm")
+    public ResultData confirmReceived(String expressId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(expressId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please provide all required information");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("expressId", expressId);
+        condition.put("blockFlag", false);
+
+        return result;
+    }
+
     /**
      * This method is used to update order status every hour
      */
