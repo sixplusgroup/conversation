@@ -2,8 +2,6 @@ package finley.gmair.model.machine.v2;
 
 import finley.gmair.model.Entity;
 
-import java.util.Date;
-
 /**
  * @author shenghaohu@hshvip.com
  * @date 2018/6/19
