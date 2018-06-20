@@ -10,6 +10,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.sql.Timestamp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -108,9 +109,10 @@ public class ExpressServiceImpl implements ExpressService {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("expressId", expressId);
-        condition.put("status", ExpressStatus.RECEIVED);
+        condition.put("expressStatus", ExpressStatus.RECEIVED.getValue());
+        condition.put("receiveTime", new Timestamp(System.currentTimeMillis()));
         //update express order status to received
-        ResultData response = expressOrderDao.updateExpressOrder(condition);
+        ResultData response = expressOrderDao.updateSingleExpressOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to set order express status to received.");
@@ -119,7 +121,7 @@ public class ExpressServiceImpl implements ExpressService {
         }
         //update express parcel status to received
         condition.put("parentExpress", expressId);
-        condition.put("status", ExpressStatus.RECEIVED);
+        condition.put("expressStatus", ExpressStatus.RECEIVED.getValue());
         response = expressParcelDao.updateSingle(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

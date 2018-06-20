@@ -52,8 +52,8 @@
             <if test="expressNo != null">
                 express_no = #{expressNo},
             </if>
-            <if test="express_status != null">
-                express_status = #{expressStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+            <if test="expressStatus != null">
+                express_status = #{expressStatus},
             </if>
             <if test="deliverTime != null">
                 deliver_time = #{deliverTime},

@@ -47,13 +47,27 @@ public class ExpressOrderDaoImpl extends BaseDao implements ExpressOrderDao {
     }
 
     @Override
-    public ResultData updateExpressOrder(Map<String, Object> condition) {
+    public ResultData updateSingleExpressOrder(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.express.order.updateBatch",condition);
+            sqlSession.update("gmair.express.order.updateSingle", condition);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
+            System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData updateExpressOrder(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.express.order.updateBatch", condition);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            System.out.println(e.getMessage());
         }
         return result;
     }

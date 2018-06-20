@@ -10,5 +10,7 @@ public interface ExpressOrderDao {
 
     ResultData queryExpressOrder(Map<String, Object> condition);
 
+    ResultData updateSingleExpressOrder(Map<String, Object> condition);
+
     ResultData updateExpressOrder(Map<String, Object> condition);
 }

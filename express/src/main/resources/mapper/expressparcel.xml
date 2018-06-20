@@ -52,7 +52,7 @@
         UPDATE gmair_express.parcel_express
         <set>
             <if test="expressStatus != null">
-                express_status = #{expressStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+                express_status = #{expressStatus},
             </if>
             express_id = #{expressId}
         </set>
