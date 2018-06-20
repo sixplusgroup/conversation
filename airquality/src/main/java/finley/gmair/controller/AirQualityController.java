@@ -5,11 +5,9 @@ import finley.gmair.service.AirQualityStatisticService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +21,27 @@ public class AirQualityController {
     @RequestMapping(value = "/hourly/cityAqi", method = RequestMethod.POST)
     public ResultData scheduleHourlyCityAqi() {
         return airQualityStatisticService.handleAirQualityHourlyStatistic();
+    }
+
+    @GetMapping(value = "/hourly/cityAqi")
+    public ResultData getHourlyCityAqi() {
+
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        Timestamp lastHourTime = new Timestamp(System.currentTimeMillis() - 3600000);
+        condition.put("createTimeGTE", lastHourTime);
+
+        ResultData response = airQualityStatisticService.fetchAirQualityHourlyStatistic(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("The airQuality server is busy, please try again");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
     }
 
     @RequestMapping(value = "/hourly/cityAqi/{cityId}", method = RequestMethod.GET)
