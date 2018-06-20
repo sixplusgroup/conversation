@@ -268,7 +268,7 @@ public class MachineSettingController {
      * @return
      */
     @PostMapping(value = "/screen/record/create")
-    public ResultData createScreenRecord(String codeValue) throws Exception {
+    public ResultData createScreenRecord(String codeValue) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(codeValue)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
