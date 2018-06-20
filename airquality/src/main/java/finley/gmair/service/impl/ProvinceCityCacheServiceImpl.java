@@ -6,8 +6,8 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,7 +22,7 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
     @Autowired
     LocationFeign locationFeign;
 
-    @PostMapping
+    @PostConstruct
     public void init() {
         try {
             ResultData response = locationFeign.province();
@@ -35,6 +35,7 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
                     provinceCityMap.put((String) city.get("cityName"), (String) city.get("cityId"));
                     city2provinceMap.put((String) city.get("cityId"), provinceId);
                 }
+                city2provinceMap.put(provinceId, provinceId);
                 provinceCityMap.put((String) provinceList.get(i).get("provinceName"),
                         (String) provinceList.get(i).get("provinceId"));
             }

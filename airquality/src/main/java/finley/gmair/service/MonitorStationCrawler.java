@@ -1,0 +1,90 @@
+package finley.gmair.service;
+
+
+import finley.gmair.dao.CityUrlDao;
+import finley.gmair.dao.MonitorStationAirQualityDao;
+import finley.gmair.dao.MonitorStationDao;
+import finley.gmair.model.air.MonitorStationAirQuality;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
+import finley.gmair.vo.air.CityUrlVo;
+import finley.gmair.vo.air.MonitorStationVo;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+public class MonitorStationCrawler {
+
+    @Autowired
+    private CityUrlDao cityUrlDao;
+
+    @Autowired
+    private MonitorStationDao monitorStationDao;
+
+    @Autowired
+    private MonitorStationAirQualityDao monitorStationAirQualityDao;
+
+    public void craw() {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData cityUrlResponse = cityUrlDao.select(condition);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis() / (3600000) * 3600000);
+        Map<String, String> stationName2IdMap = fetchStationNameMap();
+        List<MonitorStationAirQuality> list = new LinkedList<>();
+        if (cityUrlResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<CityUrlVo> cityUrls = (List<CityUrlVo>) cityUrlResponse.getData();
+            try {
+                for (CityUrlVo cityUrlVo : cityUrls) {
+                    Document page = Jsoup.connect(cityUrlVo.getCityUrl()).get();
+                    Element rankTable = page.select("div.table").first();
+                    Element tableBody = rankTable.getElementsByTag("tbody").first();
+                    Elements trs = tableBody.getElementsByTag("tr");
+                    for (Element tr : trs) {
+                        Elements tds = tr.getElementsByTag("td");
+                        MonitorStationAirQuality airQuality = new MonitorStationAirQuality();
+                        airQuality.setStationId(stationName2IdMap.get(tds.get(1).text()));
+                        airQuality.setAqi(Double.parseDouble(tds.get(2).text()));
+                        airQuality.setAqiLevel(tds.get(3).text());
+                        airQuality.setPrimePollution(tds.get(4).text());
+                        airQuality.setPm2_5(Double.parseDouble(tds.get(5).text()));
+                        airQuality.setPm10(Double.parseDouble(tds.get(6).text()));
+                        airQuality.setCo(Double.parseDouble(tds.get(7).text()));
+                        airQuality.setNo2(Double.parseDouble(tds.get(8).text()));
+                        airQuality.setO3(Double.parseDouble(tds.get(9).text()));
+                        airQuality.setSo2(Double.parseDouble(tds.get(11).text()));
+                        airQuality.setRecordTime(timestamp);
+                        list.add(airQuality);
+                    }
+                    monitorStationAirQualityDao.insertBatch(list);
+                    monitorStationAirQualityDao.insertLatestBatch(list);
+                    list.clear();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Map<String, String> fetchStationNameMap() {
+        Map<String, Object> condition = new HashMap<>();
+        ResultData response = monitorStationDao.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<MonitorStationVo> list = (List<MonitorStationVo>) response.getData();
+            return list.stream().collect(
+                    Collectors.toMap(MonitorStationVo::getStationName, MonitorStationVo::getStationId));
+        } else {
+            return new HashMap<>();
+        }
+    }
+}

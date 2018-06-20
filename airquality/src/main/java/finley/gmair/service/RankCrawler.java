@@ -81,7 +81,7 @@ public class RankCrawler {
                         airQuality.setAqi(Double.parseDouble(tds.get(2).text()));
                         airQuality.setAqiLevel(tds.get(3).text());
                         airQuality.setPrimePollution(tds.get(4).text());
-                        airQuality.setPm25(Double.parseDouble(tds.get(5).text()));
+                        airQuality.setPm2_5(Double.parseDouble(tds.get(5).text()));
                         airQuality.setPm10(Double.parseDouble(tds.get(6).text()));
                         airQuality.setCo(Double.parseDouble(tds.get(7).text()));
                         airQuality.setNo2(Double.parseDouble(tds.get(8).text()));

@@ -7,7 +7,9 @@
         <mapper resource="mapper/cityairquality.xml"/>
         <mapper resource="mapper/cityairqualitystatistic.xml"/>
         <mapper resource="mapper/monitorstation.xml"/>
+        <mapper resource="mapper/monitorairquality.xml"/>
         <mapper resource="mapper/cityurl.xml"/>
         <mapper resource="mapper/obscurecity.xml"/>
+        <mapper resource="mapper/provinceairquality.xml"/>
     </mappers>
 </configuration>
