@@ -1,5 +1,6 @@
 package finley.gmair.quality;
 
+import finley.gmair.service.MonitorStationCrawler;
 import finley.gmair.service.RankCrawler;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.config", "finley.gmair.controller"})
+@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @EnableScheduling
 @EnableCaching
@@ -26,10 +27,18 @@ public class AirQualityApplication {
     @Autowired
     private RankCrawler rankCrawler;
 
+    @Autowired
+    private MonitorStationCrawler monitorStationCrawler;
+
     @RequestMapping("/airquality/crawler")
     public ResultData crawler() {
-        rankCrawler.rank();
+        rankCrawler.updateCityStation();
         return new ResultData();
     }
 
+    @RequestMapping("/airquality/monitorStationCrawler")
+    public ResultData monitorStationCrawler() {
+        monitorStationCrawler.craw();
+        return new ResultData();
+    }
 }

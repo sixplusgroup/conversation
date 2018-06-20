@@ -51,20 +51,24 @@ public class MonitorStationCrawler {
                     Element tableBody = rankTable.getElementsByTag("tbody").first();
                     Elements trs = tableBody.getElementsByTag("tr");
                     for (Element tr : trs) {
-                        Elements tds = tr.getElementsByTag("td");
-                        MonitorStationAirQuality airQuality = new MonitorStationAirQuality();
-                        airQuality.setStationId(stationName2IdMap.get(tds.get(1).text()));
-                        airQuality.setAqi(Double.parseDouble(tds.get(2).text()));
-                        airQuality.setAqiLevel(tds.get(3).text());
-                        airQuality.setPrimePollution(tds.get(4).text());
-                        airQuality.setPm2_5(Double.parseDouble(tds.get(5).text()));
-                        airQuality.setPm10(Double.parseDouble(tds.get(6).text()));
-                        airQuality.setCo(Double.parseDouble(tds.get(7).text()));
-                        airQuality.setNo2(Double.parseDouble(tds.get(8).text()));
-                        airQuality.setO3(Double.parseDouble(tds.get(9).text()));
-                        airQuality.setSo2(Double.parseDouble(tds.get(11).text()));
-                        airQuality.setRecordTime(timestamp);
-                        list.add(airQuality);
+                        try {
+                            Elements tds = tr.getElementsByTag("td");
+                            MonitorStationAirQuality airQuality = new MonitorStationAirQuality();
+                            airQuality.setStationId(stationName2IdMap.get(cityUrlVo.getCityId() + tds.get(0).text()));
+                            airQuality.setAqi(Double.parseDouble(tds.get(1).text()));
+                            airQuality.setAqiLevel(tds.get(2).text());
+                            airQuality.setPrimePollution(tds.get(3).text());
+                            airQuality.setPm2_5(Double.parseDouble(tds.get(4).text()));
+                            airQuality.setPm10(Double.parseDouble(tds.get(5).text()));
+                            airQuality.setCo(Double.parseDouble(tds.get(6).text()));
+                            airQuality.setNo2(Double.parseDouble(tds.get(7).text()));
+                            airQuality.setO3(Double.parseDouble(tds.get(8).text()));
+                            airQuality.setSo2(Double.parseDouble(tds.get(10).text()));
+                            airQuality.setRecordTime(timestamp);
+                            list.add(airQuality);
+                        } catch (Exception e) {
+
+                        }
                     }
                     monitorStationAirQualityDao.insertBatch(list);
                     monitorStationAirQualityDao.insertLatestBatch(list);
@@ -82,7 +86,7 @@ public class MonitorStationCrawler {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             List<MonitorStationVo> list = (List<MonitorStationVo>) response.getData();
             return list.stream().collect(
-                    Collectors.toMap(MonitorStationVo::getStationName, MonitorStationVo::getStationId));
+                    Collectors.toMap(e -> (e.getCityId() + e.getStationName()), e -> e.getStationId()));
         } else {
             return new HashMap<>();
         }

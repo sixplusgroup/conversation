@@ -20,7 +20,7 @@
 
     <insert id="insert" parameterType="finley.gmair.model.air.MonitorStationAirQuality">
         insert INTO `gmair_airquality`.`station_aqi_full`
-        (station_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, no_3, so_2, record_time, block_flag, create_time)
+        (station_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time, block_flag, create_time)
         VALUES
         (
          #{stationId}, #{aqi}, #{aqiLevel}, #{primePollution}, #{pm2_5}, #{pm10}, #{co}, #{no2}, #{o3}, #{so2},
@@ -30,7 +30,7 @@
 
     <insert id="insertBatch" parameterType="java.util.List">
         insert INTO `gmair_airquality`.`station_aqi_full`
-        (station_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, no_3, so_2, record_time, block_flag, create_time)
+        (station_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time, block_flag, create_time)
         VALUES
         <foreach collection="list" separator="," index="index" item="airQuality">
             (
@@ -43,7 +43,7 @@
 
     <insert id="insertLatest" parameterType="finley.gmair.model.air.MonitorStationAirQuality">
         replace INTO `gmair_airquality`.`station_aqi_latest`
-        (station_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, no_3, so_2, record_time, block_flag, create_time)
+        (station_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time, block_flag, create_time)
         VALUES
         (
          #{stationId}, #{aqi}, #{aqiLevel}, #{primePollution}, #{pm2_5}, #{pm10}, #{co}, #{no2}, #{o3}, #{so2},
@@ -52,8 +52,8 @@
     </insert>
 
     <insert id="insertLatestBatch" parameterType="java.util.List">
-        insert INTO `gmair_airquality`.`station_aqi_latest`
-        (station_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, no_3, so_2, record_time, block_flag, create_time)
+        replace INTO `gmair_airquality`.`station_aqi_latest`
+        (station_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time, block_flag, create_time)
         VALUES
         <foreach collection="list" separator="," index="index" item="airQuality">
             (
@@ -66,7 +66,7 @@
 
     <select id="selectLatest" parameterType="java.util.Map" resultMap="MonitorStationAirQualityVo">
         select
-        station_id, belong_city_id, station_name, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, no_3, so_2, record_time
+        station_id, belong_city_id, station_name, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
         FROM `gmair_airquality`.`monitor_station_latest_aqi_view`
         WHERE 1 = 1
         <if test="stationId != null">

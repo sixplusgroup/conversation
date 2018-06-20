@@ -30,7 +30,7 @@
     </insert>
     
     <select id="select" resultMap="MonitorStationVo">
-        select station_id, belong_city_id, station_name `gmair_airquality`.`monitor_station`
+        select station_id, belong_city_id, station_name from `gmair_airquality`.`monitor_station`
         where 1 = 1
         <if test="cityId != null">
             and belong_city_id = #{cityId}
