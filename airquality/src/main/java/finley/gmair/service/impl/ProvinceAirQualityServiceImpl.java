@@ -1,0 +1,53 @@
+package finley.gmair.service.impl;
+
+import finley.gmair.dao.ProvinceAirqualityDao;
+import finley.gmair.model.air.CityAirQuality;
+import finley.gmair.model.air.ProvinceAirQuality;
+import finley.gmair.service.ProvinceAirQualityService;
+import finley.gmair.service.ProvinceCityCacheService;
+import finley.gmair.util.ResultData;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+
+@Service
+public class ProvinceAirQualityServiceImpl implements ProvinceAirQualityService {
+
+    @Autowired
+    private ProvinceAirqualityDao provinceAirqualityDao;
+
+    @Autowired
+    private ProvinceCityCacheService provinceCityCacheService;
+
+    @Override
+    public ResultData generate(List<CityAirQuality> list) {
+        ResultData result = new ResultData();
+        if (list.isEmpty()) {
+            return result;
+        }
+
+        Map<String, Double> pm25Map = list.stream().map(e -> new ProvinceAirQuality(provinceCityCacheService.
+                                        fetchProvince(e.getCityId()), e.getAqi(), e.getPm25()))
+                                        .collect(Collectors.groupingBy(ProvinceAirQuality::getProvinceId,
+                                                Collectors.averagingDouble(ProvinceAirQuality::getPm2_5)));
+
+        Map<String, Double> aqiMap = list.stream().map(e -> new ProvinceAirQuality(provinceCityCacheService.
+                fetchProvince(e.getCityId()), e.getAqi(), e.getPm25()))
+                .collect(Collectors.groupingBy(ProvinceAirQuality::getProvinceId,
+                        Collectors.averagingDouble(ProvinceAirQuality::getAqi)));
+
+        List<ProvinceAirQuality> provinceAirQualityList = pm25Map.entrySet().stream()
+                .map(e-> new ProvinceAirQuality(e.getKey(), aqiMap.get(e.getKey()), e.getValue()))
+                .collect(Collectors.toList());
+        return provinceAirqualityDao.insertBatch(provinceAirQualityList);
+    }
+
+    @Override
+    public ResultData fetch(Map<String, Object> condition) {
+        return provinceAirqualityDao.select(condition);
+    }
+}

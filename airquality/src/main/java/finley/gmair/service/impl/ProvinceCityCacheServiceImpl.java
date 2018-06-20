@@ -6,8 +6,8 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,20 +17,23 @@ import java.util.Map;
 @Service
 public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
     private Map<String, String> provinceCityMap = new HashMap<>();
+    private Map<String, String> city2provinceMap = new HashMap<>();
 
     @Autowired
     LocationFeign locationFeign;
 
-    @PostConstruct
+    @PostMapping
     public void init() {
         try {
             ResultData response = locationFeign.province();
             List<LinkedHashMap> provinceList = (List<LinkedHashMap>) response.getData();
             for (int i = 0; i < provinceList.size(); i++) {
-                response = locationFeign.city((String) provinceList.get(i).get("provinceId"));
+                String provinceId = (String) provinceList.get(i).get("provinceId");
+                response = locationFeign.city(provinceId);
                 List<LinkedHashMap> cityList = (List<LinkedHashMap>) response.getData();
                 for (LinkedHashMap city : cityList) {
                     provinceCityMap.put((String) city.get("cityName"), (String) city.get("cityId"));
+                    city2provinceMap.put((String) city.get("cityId"), provinceId);
                 }
                 provinceCityMap.put((String) provinceList.get(i).get("provinceName"),
                         (String) provinceList.get(i).get("provinceId"));
@@ -57,5 +60,10 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
         ResultData result = new ResultData();
         result.setData(provinceCityMap);
         return result;
+    }
+
+    @Override
+    public String fetchProvince(String cityId) {
+        return city2provinceMap.get(cityId);
     }
 }

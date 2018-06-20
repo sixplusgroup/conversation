@@ -7,4 +7,6 @@ public interface ProvinceCityCacheService {
     ResultData fetch(String cityName);
 
     ResultData fetchAll();
+
+    String fetchProvince(String cityId);
 }

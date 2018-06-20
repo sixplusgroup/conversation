@@ -46,6 +46,9 @@ public class RankCrawler {
     @Autowired
     AirQualityCacheService airQualityCacheService;
 
+    @Autowired
+    private ProvinceAirQualityService provinceAirQualityService;
+
     /**
      * get city rank and
      * every hour on half
@@ -109,6 +112,7 @@ public class RankCrawler {
                 .collect(Collectors.toList());
         List<CityAirQuality> airQualityList = map.values().stream().collect(Collectors.toList());
         insertCityAqiDetail(airQualityList);
+        provinceAirQualityService.generate(airQualityList);
         updateCityUrl(cityUrlList);
     }
 
