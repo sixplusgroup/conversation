@@ -38,4 +38,9 @@ public interface ExpressService {
 
     @PostMapping("/express/receive/confirm")
     ResultData confirmReceived(@RequestParam("expressId") String expressId);
+
+    @PostMapping("/express/company/create")
+    ResultData createCompany(@RequestParam("expressCode") String expressCode,
+                             @RequestParam("expressName") String expressName,
+                             @RequestParam("expressUrl") String expressUrl);
 }

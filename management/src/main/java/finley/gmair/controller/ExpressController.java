@@ -1,6 +1,7 @@
 package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.form.express.ExpressCompanyForm;
 import finley.gmair.form.express.ExpressParcelForm;
 import finley.gmair.service.ExpressService;
 import finley.gmair.service.InstallService;
@@ -72,5 +73,11 @@ public class ExpressController {
     @PostMapping("/parcel/receive/confirm")
     public ResultData confirmDelivered(String expressId) {
         return expressService.confirmReceived(expressId);
+    }
+
+    @PostMapping("/company/create")
+    public ResultData createExpressCompany(ExpressCompanyForm expressCompanyForm) {
+        return expressService.createCompany(expressCompanyForm.getCompanyCode(),
+                expressCompanyForm.getCompanyName(), expressCompanyForm.getCompanyUrl());
     }
 }
