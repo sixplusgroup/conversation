@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.MachineSettingDao;
+import finley.gmair.model.machine.v2.GlobalMachineSetting;
 import finley.gmair.model.machine.v2.LightSetting;
 import finley.gmair.model.machine.v2.MachineSetting;
 import finley.gmair.model.machine.v2.VolumeSetting;
@@ -188,5 +189,38 @@ public class MachineSettingServiceImpl implements MachineSettingService{
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         result.setDescription("Fail to update light setting");
         return result;
+    }
+
+    @Override
+    public ResultData fetchGlobalMachineSetting(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = machineSettingDao.selectGlobalMachineSetting(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No global machine setting found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve the global machine setting");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createGlobalMachineSetting(GlobalMachineSetting setting) {
+        ResultData result = new ResultData();
+        ResultData response = machineSettingDao.insertGlobalMachineSetting(setting);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to insert global machine setting");
+        return null;
     }
 }
