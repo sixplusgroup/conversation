@@ -1,5 +1,6 @@
 package finley.gmair.dao;
 
+import finley.gmair.model.machine.v2.GlobalMachineSetting;
 import finley.gmair.model.machine.v2.LightSetting;
 import finley.gmair.model.machine.v2.MachineSetting;
 import finley.gmair.model.machine.v2.VolumeSetting;
@@ -25,4 +26,8 @@ public interface MachineSettingDao {
     ResultData insertLightSetting(LightSetting setting);
 
     ResultData updateLightSetting(LightSetting setting);
+
+    ResultData selectGlobalMachineSetting(Map<String, Object> condition);
+
+    ResultData insertGlobalMachineSetting(GlobalMachineSetting setting);
 }

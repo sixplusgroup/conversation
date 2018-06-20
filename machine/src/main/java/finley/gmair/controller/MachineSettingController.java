@@ -3,16 +3,18 @@ package finley.gmair.controller;
 import finley.gmair.form.machine.LightSettingForm;
 import finley.gmair.form.machine.MachineSettingForm;
 import finley.gmair.form.machine.VolumeSettingForm;
-import finley.gmair.model.machine.v2.LightSetting;
-import finley.gmair.model.machine.v2.MachineSetting;
-import finley.gmair.model.machine.v2.VolumeSetting;
+import finley.gmair.model.machine.v2.*;
 import finley.gmair.service.MachineSettingService;
+import finley.gmair.service.ScreenRecordService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,9 @@ public class MachineSettingController {
 
     @Autowired
     private MachineSettingService machineSettingService;
+
+    @Autowired
+    private ScreenRecordService screenRecordService;
 
     @GetMapping("/powerAction/list")
     public ResultData powerActionList() {
@@ -183,6 +188,107 @@ public class MachineSettingController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Query errors, please try again later");
         }
+        return result;
+    }
+
+    /**
+     * The method is called for getting the global setting in machine
+     *
+     * @return
+     */
+    @GetMapping("/global/list")
+    public ResultData globalMachineSettingList() {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        return machineSettingService.fetchGlobalMachineSetting(condition);
+    }
+
+    /**
+     * The method is called to set global machine setting
+     * Insert the setting to database
+     *
+     * @return
+     */
+    @PostMapping("/global/create")
+    public ResultData createGlobalMachineSetting(String settingName) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(settingName)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please fill in the required fields");
+            return result;
+        }
+        GlobalMachineSetting setting = new GlobalMachineSetting(settingName);
+        ResultData response = machineSettingService.createGlobalMachineSetting(setting);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to store global machine setting");
+        return result;
+    }
+
+    /**
+     * The method is called for getting the user's changing record of screen
+     * According to user's machine codeValue
+     *
+     * @return
+     */
+    @GetMapping(value = "/screen/record/list")
+    public ResultData screenRecordList(String codeValue) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+//        codeValue is not null, only query refer to codeValue
+//        codeValue is null, query all
+        if (!StringUtils.isEmpty(codeValue)) {
+            condition.put("codeValue", codeValue);
+        }
+        condition.put("blockFlag", false);
+        ResultData response = screenRecordService.fetchScreenRecord(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("Record list is empty");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    /**
+     * The method is called to add screen record when changing the screen
+     * Insert the record to database
+     *
+     * @return
+     */
+    @PostMapping(value = "/screen/record/create")
+    public ResultData createScreenRecord(String codeValue) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(codeValue)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please fill in the required fields");
+            return result;
+        }
+        // get current date
+        Date dateNow = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String date = dateFormat.format(dateNow);
+
+        ScreenRecord record = new ScreenRecord(codeValue, date);
+        ResultData response = screenRecordService.createScreenRecord(record);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to store record to database");
         return result;
     }
 }

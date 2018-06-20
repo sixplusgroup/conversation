@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.global.machine.setting">
+    <resultMap id="globalMachineSettingVo" type="finley.gmair.model.machine.v2.GlobalMachineSetting">
+        <result property="globalMachineSettingId" column="gms_id"></result>
+        <result property="globalMachineSettingName" column="gms_name"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="globalMachineSettingVo">
+        SELECT gms_id, gms_name, block_flag, create_time
+        FROM gmair_machine.global_machine_setting
+        WHERE 1 = 1
+        <if test="globalMachineSettingId != null">
+            AND gms_id = #{globalMachineSettingId}
+        </if>
+        <if test="globalMachineSettingName != null">
+            AND gms_name = #{globalMachineSettingName}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.machine.v2.GlobalMachineSetting" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.global_machine_setting(gms_id, gms_name, block_flag, create_time)
+        VALUES(#{globalMachineSettingId}, #{globalMachineSettingName}, #{blockFlag}, #{createAt})
+    </insert>
+</mapper>

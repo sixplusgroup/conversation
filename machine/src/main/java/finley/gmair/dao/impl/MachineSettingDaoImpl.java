@@ -2,6 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.MachineSettingDao;
+import finley.gmair.model.machine.v2.GlobalMachineSetting;
 import finley.gmair.model.machine.v2.LightSetting;
 import finley.gmair.model.machine.v2.MachineSetting;
 import finley.gmair.model.machine.v2.VolumeSetting;
@@ -150,6 +151,38 @@ public class MachineSettingDaoImpl extends BaseDao implements MachineSettingDao{
         ResultData result = new ResultData();
         try {
             sqlSession.update("gmair.machine.lightsetting.update", setting);
+            result.setData(setting);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData selectGlobalMachineSetting(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<GlobalMachineSetting> list = sqlSession.selectList("gmair.global.machine.setting.query", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData insertGlobalMachineSetting(GlobalMachineSetting setting) {
+        ResultData result = new ResultData();
+        setting.setGlobalMachineSettingId(IDGenerator.generate("GMS"));
+        try {
+            sqlSession.insert("gmair.global.machine.setting.insert", setting);
             result.setData(setting);
         } catch (Exception e) {
             e.printStackTrace();

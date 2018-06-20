@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.model.machine.v2.GlobalMachineSetting;
 import finley.gmair.model.machine.v2.LightSetting;
 import finley.gmair.model.machine.v2.MachineSetting;
 import finley.gmair.model.machine.v2.VolumeSetting;
@@ -25,4 +26,8 @@ public interface MachineSettingService {
     ResultData createLightSetting(LightSetting setting);
 
     ResultData modifyLightSetting(LightSetting setting);
+
+    ResultData fetchGlobalMachineSetting(Map<String, Object> condition);
+
+    ResultData createGlobalMachineSetting(GlobalMachineSetting setting);
 }

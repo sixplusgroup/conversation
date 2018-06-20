@@ -14,5 +14,7 @@
         <mapper resource="mapper/machinepm25.xml"></mapper>
         <mapper resource="mapper/volumesetting.xml"></mapper>
         <mapper resource="mapper/lightsetting.xml"></mapper>
+        <mapper resource="mapper/globalmachinesetting.xml"></mapper>
+        <mapper resource="mapper/screenrecord.xml"></mapper>
     </mappers>
 </configuration>
