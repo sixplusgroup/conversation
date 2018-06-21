@@ -42,6 +42,7 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
                 }
                 city2provinceMap.put(provinceId, provinceId);
                 provinceCityMap.put(provinceName, provinceId);
+                cityId2NameMap.put(provinceId, provinceName);
             }
         } catch (Exception e) {
             e.printStackTrace();

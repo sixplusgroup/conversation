@@ -1,9 +1,13 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.AirQualityStatisticDao;
 import finley.gmair.dao.CityAirQualityDao;
+import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.model.air.CityAirQualityStatistic;
 import finley.gmair.service.AirQualityStatisticService;
+import finley.gmair.service.ProvinceCityCacheService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.air.CityAirPm25Vo;
@@ -28,6 +32,9 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
 
     @Autowired
     private CityAirQualityDao cityAirQualityDao;
+
+    @Autowired
+    private ProvinceCityCacheService provinceCityCacheService;
 
     @Override
     public ResultData handleAirQualityHourlyStatistic() {
@@ -127,7 +134,25 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
 
     @Override
     public ResultData fetchAirQualityHourlyStatistic(Map<String, Object> condition) {
-        return airQualityStatisticDao.fetchHourlyData(condition);
+        ResultData result = new ResultData();
+        ResultData response = airQualityStatisticDao.fetchHourlyData(condition);
+
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<Object> list = (List<Object>) response.getData();
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < list.size(); i++) {
+                JSONObject jsonObject = (JSONObject) JSONObject.toJSON(list.get(i));
+                String cityId = jsonObject.getString("cityId");
+                jsonObject.put("cityName", provinceCityCacheService.fetchCityName(cityId));
+                jsonArray.add(jsonObject);
+            }
+            result.setData(jsonArray);
+        } else {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+        }
+
+        return result;
     }
 
     @Override

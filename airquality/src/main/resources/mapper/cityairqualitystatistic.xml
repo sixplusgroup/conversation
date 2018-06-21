@@ -4,7 +4,7 @@
 
     <resultMap id="CityAirQualityStatisticVO" type="finley.gmair.vo.air.CityAirQualityStatisticVo">
         <result column="city_id" property="cityId" />
-        <result column="pm_2_5" property="pm25" />
+        <result column="pm_25" property="pm25" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
