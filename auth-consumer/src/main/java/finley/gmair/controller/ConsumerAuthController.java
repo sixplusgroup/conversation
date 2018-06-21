@@ -12,6 +12,10 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -131,15 +135,18 @@ public class ConsumerAuthController {
      * @return
      */
     @RequestMapping(method = RequestMethod.GET, value = "/consumer/profile")
-    public ResultData profile(String phone) {
+    public ResultData profile() {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(phone)) {
+        SecurityContext ctx = SecurityContextHolder.getContext();
+        Authentication auth = ctx.getAuthentication();
+        User user = (User) auth.getPrincipal();
+        if (StringUtils.isEmpty(user)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure all required information is provided.");
+            result.setDescription("Please make sure you have logged on to the system");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("phone", phone);
+        condition.put("phone", user.getUsername());
         condition.put("blockFlag", false);
         ResultData response = consumerService.fetchConsumer(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -148,7 +155,7 @@ public class ConsumerAuthController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(new StringBuffer("No consumer with phone: ").append(phone).append(" found.").toString());
+            result.setDescription(new StringBuffer("No consumer with phone: ").append(user.getUsername()).append(" found.").toString());
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -197,5 +204,23 @@ public class ConsumerAuthController {
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public Principal user(Principal user) {
         return user;
+    }
+
+    private String currentConsumerId() {
+        SecurityContext ctx = SecurityContextHolder.getContext();
+        Authentication auth = ctx.getAuthentication();
+        User user = (User) auth.getPrincipal();
+        if (StringUtils.isEmpty(user)) {
+            return null;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("phone", user.getUsername());
+        condition.put("blockFlag", false);
+        ResultData response = consumerService.fetchConsumer(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return null;
+        }
+        ConsumerVo consumer = ((List<ConsumerVo>) response.getData()).get(0);
+        return consumer.getConsumerId();
     }
 }
