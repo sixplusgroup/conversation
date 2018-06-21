@@ -9,6 +9,7 @@ import finley.gmair.service.MessageService;
 import finley.gmair.service.SerialService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -117,6 +119,39 @@ public class ConsumerAuthController {
         messageService.sendOne(new MessageForm());
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Message sent, please check the code");
+        return result;
+    }
+
+    /**
+     * This method is called to fetch detailed information of a consumer
+     *
+     * @param phone
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/consumer/profile")
+    public ResultData profile(String phone) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(phone)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure all required information is provided.");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("phone", phone);
+        condition.put("blockFlag", false);
+        ResultData response = consumerService.fetchConsumer(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            ConsumerVo consumer = ((List<ConsumerVo>) response.getData()).get(0);
+            result.setData(consumer);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No consumer with phone: ").append(phone).append(" found.").toString());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to find the consumer");
+        }
         return result;
     }
 
