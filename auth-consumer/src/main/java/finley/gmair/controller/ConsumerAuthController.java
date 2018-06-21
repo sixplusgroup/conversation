@@ -1,6 +1,7 @@
 package finley.gmair.controller;
 
 import finley.gmair.form.consumer.ConsumerForm;
+import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.form.consumer.LoginForm;
 import finley.gmair.form.message.MessageForm;
 import finley.gmair.model.consumer.Consumer;
@@ -12,6 +13,7 @@ import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -152,6 +154,43 @@ public class ConsumerAuthController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to find the consumer");
         }
+        return result;
+    }
+
+    @PostMapping("/consumer/wechat/bind")
+    public ResultData bindWechat(String openid) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/consumer/wechat/unbind")
+    public ResultData unbindWechat() {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/consumer/edit/username")
+    public ResultData editUsername(String username) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
+    @PostMapping("/consumer/edit/location")
+    public ResultData editLocation(LocationForm form) {
+        ResultData result = new ResultData();
+        //fetch the user from context first
+
+        //change the location, if it is the only location item the user have, then made it preferred
+        return result;
+    }
+
+    @PostMapping("/consumer/edit/location/default")
+    public ResultData preferLocation(String locationId) {
+        ResultData result = new ResultData();
+
         return result;
     }
 
