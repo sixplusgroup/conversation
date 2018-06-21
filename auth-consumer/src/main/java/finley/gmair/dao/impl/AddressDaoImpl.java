@@ -6,9 +6,11 @@ import finley.gmair.model.consumer.Address;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -27,6 +29,34 @@ public class AddressDaoImpl extends BaseDao implements AddressDao{
             sqlSession.insert("gmair.consumer.address.insert", value);
             result.setData(address);
         }catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData update(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.consumer.address.update", condition);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData query(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<Address> list = sqlSession.selectList("gmair.consumer.address.query", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

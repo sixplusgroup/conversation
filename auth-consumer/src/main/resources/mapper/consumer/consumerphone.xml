@@ -32,6 +32,9 @@
             <if test="preferred != null">
                 mobile_preferred = #{preferred},
             </if>
+            <if test="number != null">
+                phone_number = #{number},
+            </if>
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},
             </if>

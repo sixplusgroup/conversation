@@ -32,7 +32,7 @@
         VALUES (#{address.addressId}, #{consumerId}, #{address.detail}, #{address.province}, #{address.city}, #{address.district}, #{address.preferred}, #{address.blockFlag}, #{address.createAt})
     </insert>
 
-    <update id="update" parameterType="finley.gmair.model.consumer.Address">
+    <update id="update" parameterType="java.util.Map">
         UPDATE gmair_userinfo.consumer_addr
         <set>
             <if test="detail != null">

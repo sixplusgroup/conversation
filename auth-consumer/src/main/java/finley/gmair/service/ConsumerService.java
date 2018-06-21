@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.model.consumer.Address;
 import finley.gmair.model.consumer.Consumer;
 import finley.gmair.util.ResultData;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,14 @@ public interface ConsumerService {
     ResultData createConsumer(Consumer consumer);
 
     ResultData fetchConsumer(Map<String, Object> condition);
+
+    ResultData modifyConsumer(Map<String, Object> condition);
+
+    ResultData fetchConsumerAddress(Map<String, Object> condition);
+
+    ResultData modifyConsumerAddress(Map<String, Object> condition);
+
+    ResultData createConsumerAddress(Address address, String consumerId);
 
     boolean exist(Map<String, Object> condition);
 }

@@ -4,6 +4,7 @@ import finley.gmair.form.consumer.ConsumerForm;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.form.consumer.LoginForm;
 import finley.gmair.form.message.MessageForm;
+import finley.gmair.model.consumer.Address;
 import finley.gmair.model.consumer.Consumer;
 import finley.gmair.service.ConsumerService;
 import finley.gmair.service.MessageService;
@@ -167,21 +168,65 @@ public class ConsumerAuthController {
     @PostMapping("/consumer/wechat/bind")
     public ResultData bindWechat(String openid) {
         ResultData result = new ResultData();
-
+        String consumerId = currentConsumerId();
+        if (StringUtils.isEmpty(consumerId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you have logged on to the system");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId", consumerId);
+        condition.put("blockFlag", false);
+        condition.put("wechat", openid);
+        ResultData response = consumerService.modifyConsumer(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         return result;
     }
 
     @PostMapping("/consumer/wechat/unbind")
     public ResultData unbindWechat() {
         ResultData result = new ResultData();
-
+        String consumerId = currentConsumerId();
+        if (StringUtils.isEmpty(consumerId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you have logged on to the system");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId", consumerId);
+        condition.put("blockFlag", true);
+        ResultData response = consumerService.modifyConsumer(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         return result;
     }
 
     @PostMapping("/consumer/edit/username")
     public ResultData editUsername(String username) {
         ResultData result = new ResultData();
-
+        String consumerId = currentConsumerId();
+        if (StringUtils.isEmpty(consumerId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you have logged on to the system");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId", consumerId);
+        condition.put("blockFlag", false);
+        condition.put("username", username);
+        ResultData response = consumerService.modifyConsumer(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         return result;
     }
 
@@ -189,15 +234,82 @@ public class ConsumerAuthController {
     public ResultData editLocation(LocationForm form) {
         ResultData result = new ResultData();
         //fetch the user from context first
+        String consumerId = currentConsumerId();
+        if (StringUtils.isEmpty(consumerId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you have logged on to the system");
+            return result;
+        }
 
         //change the location, if it is the only location item the user have, then made it preferred
+        if (form.isPreferred()) {
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("consumerId", consumerId);
+            condition.put("preferred", true);
+            ResultData rd = consumerService.fetchConsumerAddress(condition);
+            if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                Address addressVo = ((List<Address>) rd.getData()).get(0);
+                condition.clear();
+                condition.put("addressId", addressVo.getAddressId());
+                condition.put("preferred", false);
+                rd = consumerService.modifyConsumerAddress(condition);
+                if (rd.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("Fail to update old preferred address");
+                    return result;
+                }
+            }
+        }
+
+        Address address = new Address(form.getDetail(), form.getProvince(), form.getCity(), form.getDistrict());
+        address.setPreferred(form.isPreferred());
+        ResultData response = consumerService.createConsumerAddress(address, consumerId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription(response.getDescription());
         return result;
     }
 
     @PostMapping("/consumer/edit/location/default")
     public ResultData preferLocation(String locationId) {
         ResultData result = new ResultData();
+        String consumerId = currentConsumerId();
+        if (StringUtils.isEmpty(consumerId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you have logged on to the system");
+            return result;
+        }
 
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId", consumerId);
+        condition.put("preferred", true);
+        ResultData response = consumerService.fetchConsumerAddress(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("System error, please try later");
+            return result;
+        }
+        Address addressVo = ((List<Address>) response.getData()).get(0);
+        condition.clear();
+        condition.put("addressId", addressVo.getAddressId());
+        condition.put("preferred", false);
+        response = consumerService.modifyConsumerAddress(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            condition.clear();
+            condition.put("addressId", locationId);
+            condition.put("preferred", true);
+            response = consumerService.modifyConsumerAddress(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to change user's preferred address");
+            }
+        }
         return result;
     }
 

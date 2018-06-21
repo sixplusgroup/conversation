@@ -47,9 +47,14 @@ public class ConsumerDaoImpl extends BaseDao implements ConsumerDao {
     }
 
     @Override
-    public ResultData update(Consumer consumer) {
+    public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
-
+        try {
+            sqlSession.update("gmair.consumer.update", condition);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
         return result;
     }
 }
