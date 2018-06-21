@@ -1,12 +1,10 @@
 package finley.gmair.controller;
 
+import finley.gmair.service.CoreService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * This method is responsible to fetch response from machine-agent
@@ -17,6 +15,9 @@ public class MachineController {
 
     @Autowired
     private MachineService machineService;
+
+    @Autowired
+    private CoreService coreService;
 
     @GetMapping("/model/list")
     public ResultData modelList() {
@@ -31,5 +32,10 @@ public class MachineController {
     @PostMapping("/qrcode/check")
     public ResultData checkQrcode(String candidate) {
         return machineService.check(candidate);
+    }
+
+    @GetMapping("/core/repo/{machineId}/online")
+    public ResultData online(@PathVariable("machineId") String machineId) {
+        return coreService.isOnline(machineId);
     }
 }
