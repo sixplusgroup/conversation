@@ -18,6 +18,8 @@ import java.util.Map;
 public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
     private Map<String, String> provinceCityMap = new HashMap<>();
     private Map<String, String> city2provinceMap = new HashMap<>();
+    private Map<String, String> provinceId2NameMap = new HashMap<>();
+    private Map<String, String> cityId2NameMap = new HashMap<>();
 
     @Autowired
     LocationFeign locationFeign;
@@ -29,15 +31,17 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
             List<LinkedHashMap> provinceList = (List<LinkedHashMap>) response.getData();
             for (int i = 0; i < provinceList.size(); i++) {
                 String provinceId = (String) provinceList.get(i).get("provinceId");
+                String provinceName = (String) provinceList.get(i).get("provinceName");
+                provinceId2NameMap.put(provinceId, provinceName);
                 response = locationFeign.city(provinceId);
                 List<LinkedHashMap> cityList = (List<LinkedHashMap>) response.getData();
                 for (LinkedHashMap city : cityList) {
                     provinceCityMap.put((String) city.get("cityName"), (String) city.get("cityId"));
                     city2provinceMap.put((String) city.get("cityId"), provinceId);
+                    cityId2NameMap.put((String) city.get("cityId"), (String) city.get("cityName"));
                 }
                 city2provinceMap.put(provinceId, provinceId);
-                provinceCityMap.put((String) provinceList.get(i).get("provinceName"),
-                        (String) provinceList.get(i).get("provinceId"));
+                provinceCityMap.put(provinceName, provinceId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,5 +70,15 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
     @Override
     public String fetchProvince(String cityId) {
         return city2provinceMap.get(cityId);
+    }
+
+    @Override
+    public String fetchProvinceName(String provinceId) {
+        return provinceId2NameMap.get(provinceId);
+    }
+
+    @Override
+    public String fetchCityName(String cityId) {
+        return cityId2NameMap.get(cityId);
     }
 }

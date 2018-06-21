@@ -4,6 +4,7 @@ import finley.gmair.model.Entity;
 
 public class ProvinceAirQuality extends Entity {
     private String provinceId;
+    private String provinceName;
     private double aqi;
     private double pm2_5;
 
@@ -13,6 +14,14 @@ public class ProvinceAirQuality extends Entity {
 
     public void setProvinceId(String provinceId) {
         this.provinceId = provinceId;
+    }
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
     }
 
     public double getAqi() {
@@ -36,6 +45,13 @@ public class ProvinceAirQuality extends Entity {
 
     public ProvinceAirQuality(String provinceId, double aqi, double pm2_5) {
         this.provinceId = provinceId;
+        this.aqi = aqi;
+        this.pm2_5 = pm2_5;
+    }
+
+    public ProvinceAirQuality(String provinceId, String provinceName, double aqi, double pm2_5) {
+        this.provinceId = provinceId;
+        this.provinceName = provinceName;
         this.aqi = aqi;
         this.pm2_5 = pm2_5;
     }

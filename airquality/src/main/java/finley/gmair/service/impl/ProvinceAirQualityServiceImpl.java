@@ -41,7 +41,8 @@ public class ProvinceAirQualityServiceImpl implements ProvinceAirQualityService 
                         Collectors.averagingDouble(ProvinceAirQuality::getAqi)));
 
         List<ProvinceAirQuality> provinceAirQualityList = pm25Map.entrySet().stream()
-                .map(e-> new ProvinceAirQuality(e.getKey(), aqiMap.get(e.getKey()), e.getValue()))
+                .map(e-> new ProvinceAirQuality(e.getKey(), provinceCityCacheService.fetchProvinceName(e.getKey()),
+                        aqiMap.get(e.getKey()), e.getValue()))
                 .collect(Collectors.toList());
         return provinceAirqualityDao.insertBatch(provinceAirQualityList);
     }

@@ -46,7 +46,7 @@ public class ProvinceAirqualityDaoImpl extends BaseDao implements ProvinceAirqua
     public ResultData select(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<ProvinceAirQuality> list = sqlSession.selectList("gmair.airquality.province.insert", condition);
+            List<ProvinceAirQuality> list = sqlSession.selectList("gmair.airquality.province.select", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             } else {

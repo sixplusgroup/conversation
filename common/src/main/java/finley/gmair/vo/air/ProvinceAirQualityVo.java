@@ -2,6 +2,7 @@ package finley.gmair.vo.air;
 
 public class ProvinceAirQualityVo {
     private String provinceId;
+    private String provinceName;
     private double aqi;
     private double pm2_5;
 
@@ -11,6 +12,14 @@ public class ProvinceAirQualityVo {
 
     public void setProvinceId(String provinceId) {
         this.provinceId = provinceId;
+    }
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
     }
 
     public double getAqi() {
