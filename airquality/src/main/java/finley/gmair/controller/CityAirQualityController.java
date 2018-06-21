@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/airquality")
-public class AirQualityController {
+public class CityAirQualityController {
 
     @Autowired
     private AirQualityStatisticService airQualityStatisticService;
