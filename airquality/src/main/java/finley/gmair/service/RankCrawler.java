@@ -53,7 +53,6 @@ public class RankCrawler {
      * get city rank and
      * every hour on half
      */
-    @Scheduled(cron = "* 0/30 * * * *")
     public void rank() {
         Map<String, CityAirQuality> map = new HashMap<>();
         int count = 1;

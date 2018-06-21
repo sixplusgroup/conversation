@@ -30,13 +30,13 @@ public class AirQualityApplication {
     @Autowired
     private MonitorStationCrawler monitorStationCrawler;
 
-    @RequestMapping("/airquality/crawler")
+    @RequestMapping("/airquality/city/crawler")
     public ResultData crawler() {
-        rankCrawler.updateCityStation();
+        rankCrawler.rank();
         return new ResultData();
     }
 
-    @RequestMapping("/airquality/monitorStationCrawler")
+    @RequestMapping("/airquality/monitorStation/crawler")
     public ResultData monitorStationCrawler() {
         monitorStationCrawler.craw();
         return new ResultData();
