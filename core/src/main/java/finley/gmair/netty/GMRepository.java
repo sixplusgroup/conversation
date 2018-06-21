@@ -6,6 +6,8 @@ import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import io.netty.channel.ChannelHandlerContext;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,10 +18,19 @@ import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class GMRepository {
-    private Map<String, ChannelHandlerContext> cache = new ConcurrentHashMap<>();
+//    private Map<String, ChannelHandlerContext> cache = new ConcurrentHashMap<>();
+
+    private Map<String, ChannelHandlerContext> cache;
+
+    public GMRepository() {
+        super();
+        cache = ExpiringMap.builder().expiration(2, TimeUnit.MINUTES).expirationPolicy(ExpirationPolicy.ACCESSED).expirationListener((key, ctx) -> CorePool.getCleanPool().submit(() -> (((ChannelHandlerContext) ctx).close()))).build();
+    }
 
     @Autowired
     private LogService logService;
@@ -41,7 +52,7 @@ public class GMRepository {
     public GMRepository remove(ChannelHandlerContext ctx) {
         for (String key : cache.keySet()) {
             if (cache.get(key).equals(ctx)) {
-                CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
+                CorePool.getLogExecutor().execute(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress()));
                 return remove(key);
             }
         }
