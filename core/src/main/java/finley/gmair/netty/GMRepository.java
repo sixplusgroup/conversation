@@ -34,6 +34,9 @@ public class GMRepository {
     }
 
     public GMRepository push(String key, ChannelHandlerContext value) {
+        if (cache.get(key) != value) {
+            cache.get(key).close();
+        }
         cache.put(key, value);
         return this;
     }
@@ -68,6 +71,18 @@ public class GMRepository {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
         }
         result.setData(ja);
+        return result;
+    }
+
+    public ResultData isOnline(String machineId) {
+        ResultData result = new ResultData();
+        if (cache.containsKey(machineId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription(new StringBuffer("Machine: ").append(machineId).append(" is online at the moment.").toString());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("Machine: ").append(machineId).append(" is not available at the moment").toString());
+        }
         return result;
     }
 }
