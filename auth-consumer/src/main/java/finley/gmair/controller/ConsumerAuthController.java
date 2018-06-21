@@ -131,7 +131,7 @@ public class ConsumerAuthController {
     /**
      * This method is called to fetch detailed information of a consumer
      *
-     * @param phone
+     * @param
      * @return
      */
     @RequestMapping(method = RequestMethod.GET, value = "/consumer/profile")
