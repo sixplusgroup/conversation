@@ -70,8 +70,10 @@ public class MonitorStationCrawler {
 
                         }
                     }
-                    monitorStationAirQualityDao.insertBatch(list);
-                    monitorStationAirQualityDao.insertLatestBatch(list);
+                    if (!list.isEmpty()) {
+                        monitorStationAirQualityDao.insertBatch(list);
+                        monitorStationAirQualityDao.insertLatestBatch(list);
+                    }
                     list.clear();
                 }
             } catch (Exception e) {

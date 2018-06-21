@@ -15,7 +15,7 @@
         VALUES
         (
         #{cityId}, #{aqi}, #{aqiLevel}, #{primePollution},
-        #{pm25}, #{pm10}, #{co}, #{no2}, #{o3},
+        #{pm2_5}, #{pm10}, #{co}, #{no2}, #{o3},
         #{so2}, #{recordTime}, #{blockFlag}, #{createAt}
         )
     </insert>
@@ -28,7 +28,7 @@
         <foreach collection="list" separator="," index="index" item="airQuality">
             (
             #{airQuality.cityId}, #{airQuality.aqi}, #{airQuality.aqiLevel}, #{airQuality.primePollution},
-            #{airQuality.pm25}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
+            #{airQuality.pm2_5}, #{airQuality.pm10}, #{airQuality.co}, #{airQuality.no2}, #{airQuality.o3},
             #{airQuality.so2}, #{airQuality.recordTime}, #{airQuality.blockFlag}, #{airQuality.createAt}
             )
         </foreach>
