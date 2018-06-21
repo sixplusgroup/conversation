@@ -23,17 +23,15 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class GMRepository {
-//    private Map<String, ChannelHandlerContext> cache = new ConcurrentHashMap<>();
-
     private Map<String, ChannelHandlerContext> cache;
+
+    @Autowired
+    private LogService logService;
 
     public GMRepository() {
         super();
         cache = ExpiringMap.builder().expiration(2, TimeUnit.MINUTES).expirationPolicy(ExpirationPolicy.ACCESSED).expirationListener((key, ctx) -> CorePool.getCleanPool().submit(() -> (((ChannelHandlerContext) ctx).close()))).build();
     }
-
-    @Autowired
-    private LogService logService;
 
     public GMRepository push(String key, ChannelHandlerContext value) {
         cache.put(key, value);
