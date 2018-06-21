@@ -93,4 +93,8 @@ public class MonitorStationCrawler {
             return new HashMap<>();
         }
     }
+
+    public ResultData fetch(Map<String, Object> condition) {
+        return monitorStationAirQualityDao.selectLatest(condition);
+    }
 }
