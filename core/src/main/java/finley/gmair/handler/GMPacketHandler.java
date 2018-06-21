@@ -50,6 +50,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         repository.remove(ctx);
+        ctx.channel().close();
     }
 
     @Override
@@ -57,13 +58,14 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
         ByteBuf byteBuf = (ByteBuf) msg;
         byte[] request = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(request);
+        byteBuf.release();
         //judge the header
         if (request[0] == (byte) 0xFF && request[request.length - 1] == (byte) 0xEE) {
             /* if match 0xFF, then it should be the 2nd version packet */
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
             String uid = packet.getUID().trim();
             CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
-            if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx.channel()) {
+            if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx) {
 //                System.out.println(new StringBuffer(uid) + " is (re-)connected to the server");
                 repository.push(uid, ctx);
             }
@@ -115,7 +117,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                 String name = pf.name();
                                 byte[] data = ((ProbePacket) packet).getDAT();
                                 String type = field.getGenericType().getTypeName();
-                                MachinePartialStatus status = null;
+                                MachinePartialStatus status;
                                 switch (type) {
                                     case "int":
                                         status = new MachinePartialStatus(uid, name, ByteUtil.byte2int(data), packet.getTime());
@@ -148,6 +150,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         repository.remove(ctx);
-        ctx.close();
+        ctx.channel().close();
     }
 }

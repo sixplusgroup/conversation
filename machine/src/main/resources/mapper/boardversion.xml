@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.boardversion">
+    <resultMap id="boardVersionVo" type="finley.gmair.model.machine.BoardVersion">
+        <result property="machineId" column="machine_id"></result>
+        <result property="version" column="board_version"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.machine.BoardVersion" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.board_version (machine_id, board_version, block_flag, create_time)
+        VALUES (#{machineId}, #{version}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map">
+        SELECT machine_id, board_version, block_flag, create_time
+        FROM gmair_machine.board_version
+        WHERE 1 = 1
+        <if test="machineId != null">
+            AND machine_id = #{machineId}
+        </if>
+        <if test="version != null">
+            AND board_version = #{version}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+</mapper>
