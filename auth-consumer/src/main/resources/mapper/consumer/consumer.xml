@@ -38,7 +38,7 @@
         VALUES (#{consumerId}, #{name}, #{username}, #{wechat}, #{blockFlag}, #{createAt})
     </insert>
 
-    <update id="update" parameterType="finley.gmair.model.consumer.Consumer">
+    <update id="update" parameterType="java.util.Map">
         UPDATE gmair_userinfo.consumer_info
         <set>
             <if test="username != null">

@@ -12,5 +12,5 @@ public interface ConsumerDao {
 
     ResultData query(Map<String, Object> condition);
 
-    ResultData update(Consumer consumer);
+    ResultData update(Map<String, Object> condition);
 }

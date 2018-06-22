@@ -81,6 +81,55 @@ public class ConsumerServiceImpl implements ConsumerService {
         return result;
     }
 
+    @Override
+    public ResultData modifyConsumer(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = consumerDao.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update consumer information");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData fetchConsumerAddress(Map<String, Object> condition) {
+        return addressDao.query(condition);
+    }
+
+    @Override
+    public ResultData modifyConsumerAddress(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = addressDao.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update consumer address information");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createConsumerAddress(Address address, String consumerId) {
+        ResultData result = new ResultData();
+        ResultData response = addressDao.insert(address, consumerId);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store address information");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
     /**
      * This method is to query any result that match at least one of the conditions
      * @param condition
