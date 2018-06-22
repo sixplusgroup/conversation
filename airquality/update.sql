@@ -95,3 +95,50 @@ DROP PRIMARY KEY;
 
 ALTER TABLE `gmair_airquality`.`city_monthly_aqi`
 DROP PRIMARY KEY;
+
+#2018-06-22
+CREATE TABLE `gmair_airquality`.`station_aqi_full` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `station_id` varchar(20) NOT NULL,
+  `aqi_index` int(11) NOT NULL,
+  `aqi_level` varchar(45) NOT NULL,
+  `pri_pollut` varchar(45) NOT NULL,
+  `pm_2_5` double NOT NULL DEFAULT '0',
+  `pm_10` double NOT NULL DEFAULT '0',
+  `co` double NOT NULL DEFAULT '0',
+  `no_2` double NOT NULL DEFAULT '0',
+  `o_3` double NOT NULL DEFAULT '0',
+  `so_2` double NOT NULL DEFAULT '0',
+  `record_time` datetime NOT NULL,
+  `block_flag` tinyint(1) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3929 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `gmair_airquality`.`station_aqi_full` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `station_id` varchar(20) NOT NULL,
+  `aqi_index` int(11) NOT NULL,
+  `aqi_level` varchar(45) NOT NULL,
+  `pri_pollut` varchar(45) NOT NULL,
+  `pm_2_5` double NOT NULL DEFAULT '0',
+  `pm_10` double NOT NULL DEFAULT '0',
+  `co` double NOT NULL DEFAULT '0',
+  `no_2` double NOT NULL DEFAULT '0',
+  `o_3` double NOT NULL DEFAULT '0',
+  `so_2` double NOT NULL DEFAULT '0',
+  `record_time` datetime NOT NULL,
+  `block_flag` tinyint(1) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3929 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `gmair_airquality`.`province_airquality` (
+  `province_id` int(11) NOT NULL,
+  `province_name` varchar(45) NOT NULL,
+  `pm_2_5` double NOT NULL,
+  `aqi_index` double NOT NULL,
+  `block_flag` tinyint(1) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`province_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
