@@ -406,4 +406,40 @@ public class QRCodeController {
         }
         return result;
     }
+
+    /**
+     * This method is used to get model with qrcode
+     *
+     * @return
+     */
+    @GetMapping(value = "/model")
+    public ResultData getModel(String codeValue) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(codeValue)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure fill all the fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", codeValue);
+        ResultData response = qrCodeService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        QRCode qrCodeVo = ((List<QRCode>) response.getData()).get(0);
+        String modelId = qrCodeVo.getModelId();
+        condition.clear();
+        condition.put("modelId", modelId);
+        response = goodsService.fetchModel(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
 }
