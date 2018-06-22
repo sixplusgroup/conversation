@@ -10,5 +10,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface CoreService {
 
     @GetMapping("/core/repo/{machineId}/online")
-    ResultData isOnline(@PathVariable String machineId);
+    ResultData isOnline(@PathVariable("machineId") String machineId);
 }

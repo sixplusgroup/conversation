@@ -9,7 +9,7 @@
 
     <select id="select" parameterType="java.util.Map" resultMap="machineQrcodeBindVo">
         SELECT bind_id, code_value, machine_id
-        FROM gmair_machine.screen_record
+        FROM `gmair_machine`.`code_machine_bind`
         WHERE 1 = 1
         <if test="bindId != null">
             AND bind_id = #{bindId}
