@@ -31,8 +31,8 @@
     </insert>
 
     <select id="query" resultMap="controlOptionVo" parameterType="java.util.Map">
-        SELECT option_id, option_name, option_component, model_id, block_flag, create_time
-        FROM gmair_machine.control_option_view
+        SELECT option_id, option_name, option_component, block_flag, create_time
+        FROM gmair_machine.control_option
         WHERE 1 = 1
         <if test="controlId != null">
             AND option_id = #{controlId}
@@ -42,9 +42,6 @@
         </if>
         <if test="optionComponent != null">
             AND option_component = #{optionComponent}
-        </if>
-        <if test="modelId != null">
-            AND model_id = #{modelId}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
