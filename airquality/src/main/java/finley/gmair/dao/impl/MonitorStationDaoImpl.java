@@ -63,4 +63,17 @@ public class MonitorStationDaoImpl extends BaseDao implements MonitorStationDao 
         }
         return result;
     }
+
+    @Override
+    public ResultData empty() {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.airquality.monitorstation.empty");
+        }catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

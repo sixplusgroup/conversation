@@ -43,5 +43,7 @@
         </if>
     </select>
 
-
+    <delete id="empty">
+        delete from `gmair_airquality`.`monitor_station`;
+    </delete>
 </mapper>

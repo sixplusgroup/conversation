@@ -136,48 +136,5 @@ public class RankCrawler {
             cityUrlDao.replaceBatch(cityUrlList);
     }
 
-    /**
-     * update city monitor station, every month
-     */
-    @Scheduled(cron = "0 0 0 1 * *")
-    public void updateCityStation() {
-        Map<String, Object> condition = new HashMap<>();
-        ResultData response = cityUrlDao.select(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<CityUrlVo> cityUrlVoList = (List<CityUrlVo>) response.getData();
-            for (CityUrlVo cityUrlVo : cityUrlVoList) {
-                List<MonitorStation> monitorStations = fetchCityStation(cityUrlVo.getCityId(), cityUrlVo.getCityUrl());
-                if (!monitorStations.isEmpty())
-                    monitorStationDao.insertBatch(monitorStations);
-            }
-        }
-    }
 
-
-    public List<MonitorStation> fetchCityStation(String cityId, String url) {
-        List<MonitorStation> stations = new ArrayList<>();
-        try {
-            Document page = Jsoup.connect(url).get();
-            Element table = page.getElementById("detail-data");
-            Element tableBody = table.getElementsByTag("tbody").first();
-            Elements trs = tableBody.getElementsByTag("tr");
-            for (Element tr: trs) {
-                MonitorStation station = new MonitorStation();
-                Elements tds = tr.getElementsByTag("td");
-                station.setBelongCityId(cityId);
-                station.setStationName(tds.get(0).text());
-                stations.add(station);
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            //fail to connect to the page, have another try in 1 seconds
-            try {
-                Thread.sleep(1000);
-            } catch (Exception te) {
-
-            }
-        }
-
-        return stations;
-    }
 }

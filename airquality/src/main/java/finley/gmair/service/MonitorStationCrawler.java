@@ -4,6 +4,7 @@ package finley.gmair.service;
 import finley.gmair.dao.CityUrlDao;
 import finley.gmair.dao.MonitorStationAirQualityDao;
 import finley.gmair.dao.MonitorStationDao;
+import finley.gmair.model.air.MonitorStation;
 import finley.gmair.model.air.MonitorStationAirQuality;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -14,13 +15,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,5 +96,46 @@ public class MonitorStationCrawler {
 
     public ResultData fetch(Map<String, Object> condition) {
         return monitorStationAirQualityDao.selectLatest(condition);
+    }
+
+    public void updateCityStation() {
+        Map<String, Object> condition = new HashMap<>();
+        ResultData response = cityUrlDao.select(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<CityUrlVo> cityUrlVoList = (List<CityUrlVo>) response.getData();
+            monitorStationDao.empty();
+            for (CityUrlVo cityUrlVo : cityUrlVoList) {
+                List<MonitorStation> monitorStations = fetchCityStation(cityUrlVo.getCityId(), cityUrlVo.getCityUrl());
+                if (!monitorStations.isEmpty()) {
+                    monitorStationDao.insertBatch(monitorStations);
+                }
+            }
+        }
+    }
+
+
+    public List<MonitorStation> fetchCityStation(String cityId, String url) {
+        List<MonitorStation> stations = new ArrayList<>();
+        try {
+            Document page = Jsoup.connect(url).get();
+            Element table = page.getElementById("detail-data");
+            Element tableBody = table.getElementsByTag("tbody").first();
+            Elements trs = tableBody.getElementsByTag("tr");
+            for (Element tr: trs) {
+                MonitorStation station = new MonitorStation();
+                Elements tds = tr.getElementsByTag("td");
+                station.setBelongCityId(cityId);
+                station.setStationName(tds.get(0).text());
+                stations.add(station);
+            }
+        } catch (IOException e) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception te) {
+
+            }
+        }
+
+        return stations;
     }
 }

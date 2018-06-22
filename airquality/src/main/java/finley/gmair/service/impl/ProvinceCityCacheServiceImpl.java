@@ -70,7 +70,11 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
 
     @Override
     public String fetchProvince(String cityId) {
-        return city2provinceMap.get(cityId);
+        String province = city2provinceMap.get(cityId);
+        if (province == null) {
+            System.out.println(cityId);
+        }
+        return province;
     }
 
     @Override

@@ -12,4 +12,5 @@ public interface MonitorStationDao {
     ResultData insertBatch(List<MonitorStation> list);
 
     ResultData fetch(Map<String, Object> condition);
+    ResultData empty();
 }
