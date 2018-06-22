@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,6 +118,28 @@ public class CityAirQualityController {
         condition.put("cityId", cityId);
 
         ResultData response = airQualityStatisticService.fetchAirQualityMonthlyStatistic(condition);
+
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("the airquality server is busy, try later!");
+        } else {
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @GetMapping("/weekly/cityAqi/{cityId}")
+    public ResultData getWeeklyCityAqi(@PathVariable String cityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("cityId", cityId);
+        LocalDate today = LocalDateTime.now().toLocalDate();
+        LocalDate lastWeekDay = today.minusDays(7);
+        condition.put("createTimeGTE", lastWeekDay);
+
+        ResultData response = airQualityStatisticService.fetchAirQualityDailyStatistic(condition);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);

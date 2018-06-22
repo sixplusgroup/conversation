@@ -29,4 +29,7 @@ public interface AirQualityService {
 
     @GetMapping("/airquality/station/list")
     ResultData fetchLatestStationList();
+
+    @GetMapping("/airquality/weekly/cityAqi/{cityId}")
+    ResultData getWeeklyCityAqi(@PathVariable String cityId);
 }

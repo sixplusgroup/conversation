@@ -48,4 +48,9 @@ public class AirQualityController {
     ResultData fetchLatestStationList(){
         return airQualityService.fetchLatestStationList();
     }
+
+    @GetMapping("/airquality/weekly/cityAqi/{cityId}")
+    ResultData getWeeklyCityAqi(@PathVariable String cityId) {
+        return airQualityService.getWeeklyCityAqi(cityId);
+    }
 }

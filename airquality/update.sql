@@ -113,7 +113,7 @@ CREATE TABLE `gmair_airquality`.`station_aqi_full` (
   `block_flag` tinyint(1) NOT NULL,
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3929 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `gmair_airquality`.`station_aqi_full` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -141,4 +141,22 @@ CREATE TABLE `gmair_airquality`.`province_airquality` (
   `block_flag` tinyint(1) NOT NULL,
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`province_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+# add primary key
+ALTER TABLE `gmair_airquality`.`city_aqi_full`
+ADD COLUMN `id` INT NOT NULL AUTO_INCREMENT FIRST,
+ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `gmair_airquality`.`city_daily_aqi`
+ADD COLUMN `id` INT NOT NULL AUTO_INCREMENT FIRST,
+ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `gmair_airquality`.`city_hourly_aqi`
+ADD COLUMN `id` INT NOT NULL AUTO_INCREMENT FIRST,
+ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `gmair_airquality`.`city_monthly_aqi`
+ADD COLUMN `id` INT NOT NULL AUTO_INCREMENT FIRST,
+ADD PRIMARY KEY (`id`);
+
