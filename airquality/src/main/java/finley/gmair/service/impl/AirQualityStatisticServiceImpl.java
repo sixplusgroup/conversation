@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.AirQualityStatisticDao;
 import finley.gmair.dao.CityAirQualityDao;
+import finley.gmair.model.air.AirQuality;
 import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.model.air.CityAirQualityStatistic;
+import finley.gmair.service.AirQualityCacheService;
 import finley.gmair.service.AirQualityStatisticService;
 import finley.gmair.service.ProvinceCityCacheService;
 import finley.gmair.util.ResponseCode;
@@ -19,9 +21,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +35,9 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
 
     @Autowired
     private ProvinceCityCacheService provinceCityCacheService;
+
+    @Autowired
+    private AirQualityCacheService airQualityCacheService;
 
     @Override
     public ResultData handleAirQualityHourlyStatistic() {
@@ -133,6 +136,37 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
     }
 
     @Override
+    public ResultData fetchLatestAirQuality(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        List<JSONObject> list = new LinkedList<>();
+        if (condition.keySet().contains("cityId")) {
+            CityAirQuality cityAirQuality = airQualityCacheService.fetch((String) condition.get("cityId"));
+            if (cityAirQuality != null) {
+                JSONObject jsonObject = (JSONObject) JSONObject.toJSON(cityAirQuality);
+                String cityId = cityAirQuality.getCityId();
+                jsonObject.put("cityName", provinceCityCacheService.fetchCityName(cityId));
+                list.add(jsonObject);
+            }
+        } else {
+            Set<String> citySet = provinceCityCacheService.getAvailableCity();
+            for (String cityId : citySet) {
+                CityAirQuality cityAirQuality = airQualityCacheService.fetch(cityId);
+                if (cityAirQuality != null) {
+                    JSONObject jsonObject = (JSONObject) JSONObject.toJSON(cityAirQuality);
+                    jsonObject.put("cityName", provinceCityCacheService.fetchCityName(cityId));
+                    list.add(jsonObject);
+                }
+            }
+        }
+        if (list.isEmpty()) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else {
+            result.setData(list);
+        }
+        return result;
+    }
+
+    @Override
     public ResultData fetchAirQualityHourlyStatistic(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = airQualityStatisticDao.fetchHourlyData(condition);
@@ -154,6 +188,8 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
 
         return result;
     }
+
+
 
     @Override
     public ResultData fetchAirQualityDailyStatistic(Map<String, Object> condition) {

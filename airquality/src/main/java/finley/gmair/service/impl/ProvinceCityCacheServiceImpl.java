@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -20,6 +17,7 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
     private Map<String, String> city2provinceMap = new HashMap<>();
     private Map<String, String> provinceId2NameMap = new HashMap<>();
     private Map<String, String> cityId2NameMap = new HashMap<>();
+    private Set<String> citySet = new HashSet<>();
 
     @Autowired
     LocationFeign locationFeign;
@@ -39,10 +37,12 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
                     provinceCityMap.put((String) city.get("cityName"), (String) city.get("cityId"));
                     city2provinceMap.put((String) city.get("cityId"), provinceId);
                     cityId2NameMap.put((String) city.get("cityId"), (String) city.get("cityName"));
+                    citySet.add((String) city.get("cityId"));
                 }
                 city2provinceMap.put(provinceId, provinceId);
                 provinceCityMap.put(provinceName, provinceId);
                 cityId2NameMap.put(provinceId, provinceName);
+                citySet.add(provinceId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,5 +81,10 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
     @Override
     public String fetchCityName(String cityId) {
         return cityId2NameMap.get(cityId);
+    }
+
+    @Override
+    public Set<String> getAvailableCity() {
+        return citySet;
     }
 }

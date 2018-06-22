@@ -18,11 +18,26 @@ public class CityAirQualityController {
     @Autowired
     private AirQualityStatisticService airQualityStatisticService;
 
+    @CrossOrigin
+    @GetMapping(value = "/latest")
+    public ResultData getLatestCityAirQuality() {
+        return airQualityStatisticService.fetchLatestAirQuality(new HashMap<>());
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/latest/{cityId}")
+    public ResultData getLatestCityAirQuality(@PathVariable String cityId) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("cityId", cityId);
+        return airQualityStatisticService.fetchLatestAirQuality(condition);
+    }
+
     @RequestMapping(value = "/hourly/cityAqi", method = RequestMethod.POST)
     public ResultData scheduleHourlyCityAqi() {
         return airQualityStatisticService.handleAirQualityHourlyStatistic();
     }
 
+    @CrossOrigin
     @GetMapping(value = "/hourly/cityAqi")
     public ResultData getHourlyCityAqi() {
 

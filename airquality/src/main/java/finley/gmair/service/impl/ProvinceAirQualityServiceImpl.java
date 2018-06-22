@@ -30,10 +30,9 @@ public class ProvinceAirQualityServiceImpl implements ProvinceAirQualityService 
             return result;
         }
 
-        Map<String, Double> pm25Map = list.stream().map(e -> new ProvinceAirQuality(provinceCityCacheService.
-                                        fetchProvince(e.getCityId()), e.getAqi(), e.getPm2_5()))
-                                        .collect(Collectors.groupingBy(ProvinceAirQuality::getProvinceId,
-                                                Collectors.averagingDouble(ProvinceAirQuality::getPm2_5)));
+        Map<String, Double> pm25Map = list.stream().filter(e -> e != null)
+                .map(e -> new ProvinceAirQuality(provinceCityCacheService.fetchProvince(e.getCityId()), e.getAqi(), e.getPm2_5()))
+                .collect(Collectors.groupingBy(ProvinceAirQuality::getProvinceId, Collectors.averagingDouble(ProvinceAirQuality::getPm2_5)));
 
         Map<String, Double> aqiMap = list.stream().map(e -> new ProvinceAirQuality(provinceCityCacheService.
                 fetchProvince(e.getCityId()), e.getAqi(), e.getPm2_5()))

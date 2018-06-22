@@ -2,6 +2,8 @@ package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
 
+import java.util.Set;
+
 public interface ProvinceCityCacheService {
 
     ResultData fetch(String cityName);
@@ -13,4 +15,6 @@ public interface ProvinceCityCacheService {
     String fetchProvinceName(String provinceId);
 
     String fetchCityName(String cityId);
+
+    Set<String> getAvailableCity();
 }

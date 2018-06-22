@@ -10,6 +10,7 @@ public interface AirQualityStatisticService {
     ResultData handleAirQualityDailyStatistic();
     ResultData handleAirQualityMonthlyStatistic();
 
+    ResultData fetchLatestAirQuality(Map<String, Object> condition);
     ResultData fetchAirQualityHourlyStatistic(Map<String, Object> condition);
     ResultData fetchAirQualityDailyStatistic(Map<String, Object> condition);
     ResultData fetchAirQualityMonthlyStatistic(Map<String, Object> condition);
