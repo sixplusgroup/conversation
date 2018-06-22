@@ -17,5 +17,6 @@
         <mapper resource="mapper/globalmachinesetting.xml"></mapper>
         <mapper resource="mapper/screenrecord.xml"></mapper>
         <mapper resource="mapper/machineqrcodebind.xml"></mapper>
+        <mapper resource="mapper/controloption.xml"></mapper>
     </mappers>
 </configuration>
