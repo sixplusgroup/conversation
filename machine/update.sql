@@ -93,7 +93,7 @@ CREATE TABLE `gmair_machine`.`control_option_action` (
   `value_id`        VARCHAR(20) NOT NULL,
   `control_id`      VARCHAR(20) NOT NULL,
   `action_name`     VARCHAR(45) NOT NULL,
-  `action_operater` VARCHAR(45) NOT NULL,
+  `action_operator` VARCHAR(45) NOT NULL,
   `block_flag`      TINYINT(1)  NOT NULL DEFAULT 0,
   `create_time`     DATETIME    NOT NULL,
   PRIMARY KEY (`value_id`)
@@ -103,6 +103,23 @@ ALTER TABLE `gmair_machine`.`control_option_action`
   ADD COLUMN `model_id` VARCHAR(20) NOT NULL
   AFTER `control_id`;
 
-
+#2018-06-22 CREATE VIEW
+CREATE VIEW `gmair_machine`.`control_option_view`
+  AS
+    SELECT
+      control_option.option_id AS option_id,
+      control_option_action.value_id AS value_id,
+      control_option_action.model_id AS model_id,
+      control_option.option_name AS option_name,
+      control_option.option_component AS option_component,
+      control_option_action.action_name AS action_name,
+      control_option_action.action_operator AS action_operator,
+      control_option.block_flag AS block_flag,
+      control_option_action.create_time as create_time
+    FROM
+      gmair_machine.control_option, gmair_machine.control_option_action
+    WHERE control_option.option_id = control_option_action.control_id
+          AND control_option.block_flag = 0
+          AND control_option_action.block_flag = 0;
 
 
