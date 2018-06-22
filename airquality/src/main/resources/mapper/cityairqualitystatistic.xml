@@ -70,6 +70,7 @@
               AND create_time <= #{createTimeLTE}
             ]]>
         </if>
+        order by create_time asc
     </select>
 
     <select id="selectDaily" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
@@ -86,6 +87,7 @@
               AND create_time <= #{createTimeLTE}
             ]]>
         </if>
+        order by create_time asc
     </select>
 
     <select id="selectMonthly" resultMap="CityAirQualityStatisticVO" parameterType="java.util.Map">
@@ -102,6 +104,7 @@
               AND create_time <= #{createTimeLTE}
             ]]>
         </if>
+        order by create_time asc
     </select>
 
 </mapper>

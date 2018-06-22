@@ -130,6 +130,7 @@ public class CityAirQualityController {
         return result;
     }
 
+    @CrossOrigin
     @GetMapping("/weekly/cityAqi/{cityId}")
     public ResultData getWeeklyCityAqi(@PathVariable String cityId) {
         ResultData result = new ResultData();
