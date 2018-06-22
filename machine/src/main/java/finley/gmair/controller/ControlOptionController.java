@@ -66,10 +66,6 @@ public class ControlOptionController {
             }
             controlId = ((ControlOption) response.getData()).getControlId();
         }
-
-        /**
-         * create option action
-         * */
         ControlOptionAction action = new ControlOptionAction(controlId, form.getModelId(),
                 form.getActionName(), form.getActionOperator());
         response = controlOptionService.createControlOptionAction(action);
