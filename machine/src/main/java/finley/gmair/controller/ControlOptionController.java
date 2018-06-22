@@ -40,10 +40,6 @@ public class ControlOptionController {
         }
 
         String controlId = null;
-        /** query database, verify the option exist or not
-         *  if exist, don't create
-         *  if not, create
-         * */
         Map<String, Object> condition = new HashMap<>();
         condition.put("optionName", form.getOptionName());
         condition.put("optionComponent", form.getOptionComponent());
