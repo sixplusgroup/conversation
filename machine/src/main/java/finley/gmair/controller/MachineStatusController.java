@@ -3,9 +3,7 @@ package finley.gmair.controller;
 import finley.gmair.service.MachinePm25Service;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/machine/status")
@@ -28,4 +26,10 @@ public class MachineStatusController {
     ResultData handleMachineStatusMonthly() {
         return machinePm25Service.handleMonthly();
     }
+
+    @GetMapping("/isonline/{qrcode}")
+    ResultData isOnline(@PathVariable String qrcode) {
+
+    }
+
 }

@@ -16,5 +16,6 @@
         <mapper resource="mapper/lightsetting.xml"></mapper>
         <mapper resource="mapper/globalmachinesetting.xml"></mapper>
         <mapper resource="mapper/screenrecord.xml"></mapper>
+        <mapper resource="mapper/machineqrcodebind.xml"></mapper>
     </mappers>
 </configuration>
