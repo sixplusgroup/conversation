@@ -154,7 +154,7 @@ CREATE OR REPLACE VIEW `gmair_install`.`team_member_view` AS
     gmair_install.team_member tm
     LEFT JOIN
     gmair_install.install_team it ON tm.block_flag = 0
-                                     AND it.team_id = tm.team_id
+                                     AND it.team_id = tm.team_id;
 
 CREATE OR REPLACE VIEW `gmair_install`.`team_view` AS
   SELECT
@@ -168,7 +168,7 @@ CREATE OR REPLACE VIEW `gmair_install`.`team_view` AS
     LEFT JOIN
     gmair_install.team_member tm ON it.team_id = tm.team_id
                                     AND tm.block_flag = 0
-  GROUP BY it.team_id
+  GROUP BY it.team_id;
 
 # update view
 DROP  VIEW assign_view;

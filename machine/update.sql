@@ -103,7 +103,7 @@ ALTER TABLE `gmair_machine`.`control_option_action`
   ADD COLUMN `model_id` VARCHAR(20) NOT NULL
   AFTER `control_id`;
 
-
+#2018-06-25
 ALTER TABLE `gmair_machine`.`pre_bind`
   ADD COLUMN `board_version` INT NOT NULL DEFAULT 0 AFTER `code_value`;
 
