@@ -422,6 +422,7 @@ public class QRCodeController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", codeValue);
+        condition.put("blockFlag", false);
         ResultData response = qrCodeService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -432,6 +433,7 @@ public class QRCodeController {
         String modelId = qrCodeVo.getModelId();
         condition.clear();
         condition.put("modelId", modelId);
+        condition.put("blockFlag", false);
         response = goodsService.fetchModel(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());

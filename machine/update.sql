@@ -104,3 +104,7 @@ ALTER TABLE `gmair_machine`.`control_option_action`
   AFTER `control_id`;
 
 
+ALTER TABLE `gmair_machine`.`pre_bind`
+  ADD COLUMN `board_version` INT NOT NULL DEFAULT 0 AFTER `code_value`;
+
+
