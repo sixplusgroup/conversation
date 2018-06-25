@@ -18,5 +18,6 @@
         <mapper resource="mapper/screenrecord.xml"></mapper>
         <mapper resource="mapper/machineqrcodebind.xml"></mapper>
         <mapper resource="mapper/controloption.xml"></mapper>
+        <mapper resource="mapper/boardversion.xml"></mapper>
     </mappers>
 </configuration>

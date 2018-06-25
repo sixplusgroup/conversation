@@ -28,6 +28,7 @@ public class ControlOptionController {
     @Autowired
     private ControlOptionService controlOptionService;
 
+    //创建ControlOption
     @PostMapping(value = "/create")
     public ResultData setControlOption(ControlOptionForm form) {
         ResultData result = new ResultData();

@@ -23,6 +23,7 @@ public class BoardVersionController {
     @Autowired
     private BoardVersionService boardVersionService;
 
+    //绑定machineId(板子的id)和version(板子的版本)
     @PostMapping("/record/single")
     public ResultData recordSingleBoardVersion(BoardVersionForm form) {
         ResultData result = new ResultData();
@@ -42,6 +43,7 @@ public class BoardVersionController {
         return result;
     }
 
+    //通过machineId查找板子的版本
     @GetMapping("/record/list")
     public ResultData searchBoardVersion(String machineId) {
         ResultData result = new ResultData();

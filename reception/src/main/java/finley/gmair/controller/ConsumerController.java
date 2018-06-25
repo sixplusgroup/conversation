@@ -10,5 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/reception/consumer")
 public class ConsumerController {
-    
+
+
 }

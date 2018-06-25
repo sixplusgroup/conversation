@@ -24,6 +24,7 @@ public class GoodsController {
     @Autowired
     private GoodsService goodsService;
 
+    //列出Goods
     @GetMapping(value = "/list")
     public ResultData queryGoods() {
         ResultData result = new ResultData();
@@ -45,6 +46,7 @@ public class GoodsController {
         return result;
     }
 
+    //创建Goods
     @PostMapping(value = "/create")
     public ResultData createGoods(GoodsForm goodsForm) {
         ResultData result = new ResultData();

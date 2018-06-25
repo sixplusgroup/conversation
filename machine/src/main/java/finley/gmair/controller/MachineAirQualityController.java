@@ -55,11 +55,13 @@ public class MachineAirQualityController {
         return result;
     }
 
+    //写入缓存
     @RequestMapping (value = "/machinestatus/create", method = RequestMethod.POST)
     public MachineStatus createMachineStatus(MachineStatus machineStatus) {
         return machineStatusCacheService.generate(machineStatus);
     }
 
+    //从缓存中读取
     @RequestMapping (value = "/machinestatus/{uid}", method = RequestMethod.GET)
     public MachineStatus MachineStatus(@PathVariable("uid") String uid) {
         return machineStatusCacheService.fetch(uid);
