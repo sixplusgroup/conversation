@@ -10,4 +10,19 @@ public interface MachineService {
 
     @GetMapping("/machine/qrcode/model")
     ResultData findModel(@RequestParam("codeValue") String codeValue);
+
+
+    //ControlOptionController
+    @GetMapping("/machine/control/option/create")
+    ResultData setControlOption(@RequestParam("optionName") String optionName,
+                                @RequestParam("optionComponent") String optionComponent,
+                                @RequestParam("modelId") String modelId,
+                                @RequestParam("actionName") String actionName,
+                                @RequestParam("actionOperator") String actionOperator);
+
+    //MachineSettingController
+
+    //QrcodeController
+    @GetMapping("/machine/qrcode/findbyqrcode")
+    ResultData findMachineIdByCodeValue(@RequestParam("codeValue") String codeValue);
 }

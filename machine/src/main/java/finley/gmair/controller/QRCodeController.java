@@ -444,4 +444,27 @@ public class QRCodeController {
         result.setData(response.getData());
         return result;
     }
+
+    @GetMapping(value = "/findbyqrcode")
+    public ResultData findMachineIdByCodeValue(String codeValue) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", codeValue);
+        condition.put("blockFlag", false);
+        ResultData response = preBindService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the machineId by qrcode");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to find the machineId by qrcode");
+        }
+        return result;
+    }
 }

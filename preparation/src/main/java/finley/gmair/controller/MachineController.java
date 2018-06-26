@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MachineController {
 
     @Autowired
-    BindVersionService bindVersionService;
+    private BindVersionService bindVersionService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/bind")
     public ResultData bindVersion(String machineId, int version, String codeValue) {
