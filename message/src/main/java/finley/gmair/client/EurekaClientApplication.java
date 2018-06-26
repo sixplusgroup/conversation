@@ -148,6 +148,10 @@ public class EurekaClientApplication {
             return result;
         }
         MessageTemplate template = new MessageTemplate(MessageCatalog.fromValue(form.getCatalog()), form.getText());
+        ResultData response = messageTemplateService.createTemplate(template);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setDescription(new StringBuffer("Template for catalog ").append(form.getCatalog()).append(" has been created.").toString());
+        }
         return result;
     }
 }

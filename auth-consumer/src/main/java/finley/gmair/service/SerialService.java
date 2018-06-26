@@ -1,9 +1,9 @@
 package finley.gmair.service;
 
-import java.util.Map;
+import finley.gmair.model.auth.VerificationCode;
 
 public interface SerialService {
-    Map<String, String> generate(String phone);
+    VerificationCode generate(String phone);
 
-    Map<String, String> fetch(String phone);
+    VerificationCode fetch(String phone);
 }

@@ -1,7 +1,9 @@
 package finley.gmair.service.impl;
 
+import finley.gmair.model.auth.VerificationCode;
 import finley.gmair.service.SerialService;
 import finley.gmair.util.SerialUtil;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -11,27 +13,16 @@ import java.util.TreeMap;
 
 @Service
 public class SerialServiceImpl implements SerialService {
-    private Map<String, String> serials = new TreeMap<>();
 
     @Override
-    @Cacheable("serials")
-    public Map<String, String> generate(String phone) {
-        Map<String, String> result = new TreeMap<>();
-        String serial = SerialUtil.serial();
-        result.put(phone, serial);
-        serials.put(phone, serial);
-        return result;
+    @CachePut(value = "serials", key = "#phone", condition = "#phone != null")
+    public VerificationCode generate(String phone) {
+        return new VerificationCode(phone);
     }
 
     @Override
-    @Cacheable("serials")
-    public Map<String, String> fetch(String phone) {
-        Map<String, String> result = new TreeMap<>();
-        String serial = serials.get(phone);
-        if (StringUtils.isEmpty(serial)) {
-            return null;
-        }
-        result.put(phone, serial);
-        return result;
+    @Cacheable(value = "serials", key = "#phone", unless = "#result != null")
+    public VerificationCode fetch(String phone) {
+        return null;
     }
 }

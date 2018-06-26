@@ -4,6 +4,7 @@ import finley.gmair.form.consumer.ConsumerForm;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.form.consumer.LoginForm;
 import finley.gmair.form.message.MessageForm;
+import finley.gmair.model.auth.VerificationCode;
 import finley.gmair.model.consumer.Address;
 import finley.gmair.model.consumer.Consumer;
 import finley.gmair.service.ConsumerService;
@@ -100,14 +101,14 @@ public class ConsumerAuthController {
         if (!StringUtils.isEmpty(form.getPhone()) && !StringUtils.isEmpty(form.getCode())) {
             //verify whether the phone and code is correct
             String phone = form.getPhone();
-            Map<String, String> value = serialService.fetch(phone);
-            if (StringUtils.isEmpty(value) || !form.getCode().equals(value.get(phone))) {
+            VerificationCode code = serialService.fetch(phone);
+            if (StringUtils.isEmpty(code) || !form.getCode().equals(code.getSerial())) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("The phone and code is incorrect");
                 return result;
             }
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(value.get(phone));
+            result.setData(code);
         }
         return result;
     }
@@ -120,7 +121,7 @@ public class ConsumerAuthController {
             result.setDescription("Please enter your phone number correctly");
             return result;
         }
-        Map<String, String> value = serialService.generate(phone);
+        VerificationCode code = serialService.generate(phone);
         // call message agent to send the text to corresponding phone number
         // retrieve message template from database
         messageService.sendOne(new MessageForm());
