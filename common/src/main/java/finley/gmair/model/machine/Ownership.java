@@ -7,6 +7,8 @@ public enum Ownership implements EnumValue {
 
     private int value;
 
+    private static Ownership[] roles = new Ownership[]{OWNER, SHARE};
+
     Ownership(int value) {
         this.value = value;
     }
@@ -14,5 +16,10 @@ public enum Ownership implements EnumValue {
     @Override
     public int getValue() {
         return value;
+    }
+
+    public static Ownership fromValue(int value) {
+        if (value > roles.length - 1 || value < 0) return null;
+        return roles[value];
     }
 }

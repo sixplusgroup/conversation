@@ -12,9 +12,9 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <insert id="insert" parameterType="finley.gmair.model.machine.Ownership" useGeneratedKeys="false">
+    <insert id="insert" parameterType="finley.gmair.model.machine.ConsumerQRcodeBind" useGeneratedKeys="false">
         INSERT INTO gmair_machine.consumer_code_bind(bind_id, consumer_id, bind_name, code_value, ownership, block_flag, create_time)
-        VALUES (#{bindId}, #{consumerId}, #{codeValue}, #{bindName},
+        VALUES (#{bindId}, #{consumerId}, #{bindName}, #{codeValue},
         #{ownership,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
         #{blockFlag}, #{createAt})
     </insert>
