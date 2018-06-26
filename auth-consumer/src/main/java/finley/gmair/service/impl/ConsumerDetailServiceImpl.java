@@ -36,7 +36,7 @@ public class ConsumerDetailServiceImpl implements UserDetailsService{
         ResultData response = consumerService.fetchConsumer(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             ConsumerVo consumerVo = ((List<ConsumerVo>) response.getData()).get(0);
-            return new User(consumerVo.getPhone(), serialService.fetch(s).get(s), grantedAuthorities);
+            return new User(consumerVo.getPhone(), serialService.fetch(s).getSerial(), grantedAuthorities);
         } else {
             condition.clear();
             condition.put("wechat", s);

@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.form.consumer.ConsumerForm;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.form.consumer.LoginForm;
@@ -124,8 +125,10 @@ public class ConsumerAuthController {
         VerificationCode code = serialService.generate(phone);
         // call message agent to send the text to corresponding phone number
         // retrieve message template from database
-        messageService.sendOne(new MessageForm());
+        System.out.println(JSON.toJSONString(code));
+//        messageService.sendOne(new MessageForm());
         result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(code);
         result.setDescription("Message sent, please check the code");
         return result;
     }

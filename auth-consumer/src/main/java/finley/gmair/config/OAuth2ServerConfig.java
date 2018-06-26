@@ -24,8 +24,6 @@ public class OAuth2ServerConfig {
 
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) {
-//            resources.resourceId("compute").stateless(true);
-//            resources.resourceId("order").stateless(true);
         }
 
         @Override
@@ -41,6 +39,7 @@ public class OAuth2ServerConfig {
                     .anonymous()
                     .and()
                     .authorizeRequests()
+                    .antMatchers("/auth/consumer/request").permitAll()
                     .antMatchers("/auth/user/**").authenticated();
             // @formatter:on
         }
