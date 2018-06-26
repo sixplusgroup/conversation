@@ -38,7 +38,6 @@
         <module>log</module>
         <module>mongo-common</module>
         <module>http-common</module>
-        <module>machine-preparation</module>
         <module>preparation</module>
     </modules>
 
