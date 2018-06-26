@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.Result;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -22,9 +25,31 @@ public class MachineController {
     private RepositoryService repositoryService;
 
 
-    @GetMapping("/checkonline")
-    public ResultData checkOnline(String qrcode){
+    @PostMapping("/deviceinit")
+    public ResultData deviceInit(String qrcode,String deviceName){
         ResultData result = new ResultData();
+        //String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = "1";
+
+
+        return result;
+    }
+
+    /**
+     * This method helps to check whether the qrcode is online or not
+     *
+     * @return online result, RESPONSE_OK & RESPONSE_NULL
+     * @Param qrcode, the code value of the specified machine
+     */
+    @GetMapping("/checkonline")
+    public ResultData checkOnline(String qrcode) {
+        ResultData result = new ResultData();
+        //check empty
+        if(StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all the information");
+            return result;
+        }
         //check whether the qrcode is online
         ResultData response = machineService.findMachineIdByCodeValue(qrcode);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -34,20 +59,32 @@ public class MachineController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("is not online");
+            return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            String machineId = ((List<PreBindCode>)response.getData()).get(0).getMachineId();
+            List<Object> preBindCodeList = (ArrayList<Object>) response.getData();
+            LinkedHashMap<String, Object> linkedHashMap = (LinkedHashMap<String, Object>) (preBindCodeList.get(0));
+            String machineId = (String) linkedHashMap.get("machineId");
             response = repositoryService.isOnilne(machineId);
-            if(response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription("is online");
                 return result;
-            } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("is not online");
+                return result;
             }
         }
+
         return result;
     }
+
+    @PostMapping("/distribution")
+    public ResultData distribution(String consumerId) {
+        ResultData result = new ResultData();
+        return result;
+    }
+
     /**
      * This method is invoked to finish user-qrcode binding
      *

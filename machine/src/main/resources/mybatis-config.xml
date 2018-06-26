@@ -19,5 +19,6 @@
         <mapper resource="mapper/machineqrcodebind.xml"></mapper>
         <mapper resource="mapper/controloption.xml"></mapper>
         <mapper resource="mapper/boardversion.xml"></mapper>
+        <mapper resource="mapper/consumer_qrcode_bind.xml"></mapper>
     </mappers>
 </configuration>

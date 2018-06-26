@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("core-agent")
 public interface RepositoryService {
 
-    @GetMapping("/core/repo/{machineId}/onilne")
+    @GetMapping("/core/repo/{machineId}/online")
     ResultData isOnilne(@RequestParam("machineId") String machineId);
 }
