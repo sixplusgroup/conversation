@@ -136,6 +136,18 @@ public class EurekaClientApplication {
                 return result;
         }
         condition.put("blockFlag", false);
+        ResultData response = messageTemplateService.fetchTemplate(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get message template.");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No message template found.");
+            return result;
+        }
+        result.setData(response.getData());
         return result;
     }
 
@@ -150,7 +162,10 @@ public class EurekaClientApplication {
         MessageTemplate template = new MessageTemplate(MessageCatalog.fromValue(form.getCatalog()), form.getText());
         ResultData response = messageTemplateService.createTemplate(template);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setDescription(new StringBuffer("Template for catalog ").append(form.getCatalog()).append(" has been created.").toString());
+            result.setDescription(new StringBuffer("Template for catalog ").append(MessageCatalog.fromValue(form.getCatalog())).append(" has been created.").toString());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to create message template.");
         }
         return result;
     }

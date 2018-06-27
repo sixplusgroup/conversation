@@ -41,6 +41,7 @@ public class MessageTemplateDaoImpl extends BaseDao implements MessageTemplateDa
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            System.out.println(new StringBuffer("Message").append("-error-").append(e.getMessage()).toString());
             result.setDescription(e.getMessage());
         }
         return result;

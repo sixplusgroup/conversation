@@ -1,13 +1,14 @@
 package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.consumer.ConsumerForm;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.form.consumer.LoginForm;
-import finley.gmair.form.message.MessageForm;
 import finley.gmair.model.auth.VerificationCode;
 import finley.gmair.model.consumer.Address;
 import finley.gmair.model.consumer.Consumer;
+import finley.gmair.model.message.MessageCatalog;
 import finley.gmair.service.ConsumerService;
 import finley.gmair.service.MessageService;
 import finley.gmair.service.SerialService;
@@ -19,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.oauth2.client.token.RequestEnhancer;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -127,7 +127,19 @@ public class ConsumerAuthController {
         // call message agent to send the text to corresponding phone number
         // retrieve message template from database
         System.out.println(JSON.toJSONString(code));
-//        messageService.sendOne(new MessageForm());
+        ResultData response = messageService.template(String.valueOf(MessageCatalog.AUTHENTICATION));
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get registration message template.");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No existing registration message template.");
+            return result;
+        }
+        JSONObject template = JSON.parseObject(JSON.toJSONString(((List) response.getData()).get(0)));
+        messageService.sendOne(phone, template.getString("message").replace("###", code.getSerial()));
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(code);
         result.setDescription("Message sent, please check the code");
@@ -383,10 +395,10 @@ public class ConsumerAuthController {
         return result;
     }
 
-    @RequestMapping(value = "/consumer/check/existphone",method = RequestMethod.GET)
+    @RequestMapping(value = "/consumer/check/existphone", method = RequestMethod.GET)
     public ResultData checkPhoneExist(String phone) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(phone)){
+        if (StringUtils.isEmpty(phone)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all the information");
             return result;
@@ -394,17 +406,17 @@ public class ConsumerAuthController {
 
         Map<String, Object> condition = new HashMap<>();
         condition.put("number", phone);
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         ResultData response = consumerService.fetchConsumerPhone(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("find the same phone number");
             return result;
-        }else if(response.getResponseCode() ==ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find the same phone number");
             return result;
-        }else{
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now");
             return result;
