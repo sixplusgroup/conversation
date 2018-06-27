@@ -31,7 +31,7 @@ public class ConsumerDetailServiceImpl implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Map<String, Object> condition = new HashMap<>();
-        Set<GrantedAuthority> grantedAuthorities = Set.of();
+        List<GrantedAuthority> grantedAuthorities = List.of();
         condition.put("phone", s);
         ResultData response = consumerService.fetchConsumer(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
