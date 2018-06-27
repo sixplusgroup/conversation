@@ -1,15 +1,16 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.machine.PreBindCode;
+import finley.gmair.model.machine.Ownership;
+import finley.gmair.service.AuthConsumerService;
 import finley.gmair.service.MachineService;
 import finley.gmair.service.RepositoryService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,14 +25,23 @@ public class MachineController {
     @Autowired
     private RepositoryService repositoryService;
 
+    @Autowired
+    private AuthConsumerService authConsumerService;
 
     @PostMapping("/deviceinit")
-    public ResultData deviceInit(String qrcode,String deviceName){
+    public ResultData deviceInit(String qrcode, String deviceName) {
         ResultData result = new ResultData();
-        //String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = "1";
-
-
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        ResultData response = machineService.bindConsumerWithQRcode(consumerId,deviceName,qrcode,Ownership.OWNER.getValue());
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to init");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to init");
+        }
         return result;
     }
 
@@ -45,7 +55,7 @@ public class MachineController {
     public ResultData checkOnline(String qrcode) {
         ResultData result = new ResultData();
         //check empty
-        if(StringUtils.isEmpty(qrcode)){
+        if (StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all the information");
             return result;

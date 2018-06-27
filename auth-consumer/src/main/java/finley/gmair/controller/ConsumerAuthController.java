@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.client.token.RequestEnhancer;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -338,5 +339,28 @@ public class ConsumerAuthController {
         }
         ConsumerVo consumer = ((List<ConsumerVo>) response.getData()).get(0);
         return consumer.getConsumerId();
+    }
+
+    @RequestMapping(value = "/consumerid", method = RequestMethod.GET)
+    public ResultData getConsumerId(String phone) {
+        ResultData result = new ResultData();
+
+        if (StringUtils.isEmpty(phone)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("phone is empty");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("phone", phone);
+        condition.put("blockFlag", false);
+        ResultData response = consumerService.fetchConsumer(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error or null");
+            return result;
+        }
+        ConsumerVo consumer = ((List<ConsumerVo>) response.getData()).get(0);
+        result.setData(consumer.getConsumerId());
+        return result;
     }
 }
