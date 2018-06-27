@@ -17,7 +17,7 @@
             AND consumer_id = #{consumerId}
         </if>
         <if test="number != null">
-            AND phone_number #{number}
+            AND phone_number = #{number}
         </if>
     </select>
 

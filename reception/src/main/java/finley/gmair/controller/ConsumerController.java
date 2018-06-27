@@ -145,4 +145,26 @@ public class ConsumerController {
         }
         return result;
     }
+
+    @RequestMapping(value = "check/phoneused",  method = RequestMethod.GET)
+    public ResultData checkPhoneUsed(String phone) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(phone)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
+        ResultData response = authConsumerService.checkPhoneExist(phone);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("the phone number has been used");
+        } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(("the phone number has not been used"));
+        }else{
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now");
+        }
+        return result;
+    }
 }

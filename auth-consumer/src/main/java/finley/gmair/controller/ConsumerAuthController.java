@@ -382,4 +382,32 @@ public class ConsumerAuthController {
         result.setData(consumer.getConsumerId());
         return result;
     }
+
+    @RequestMapping(value = "/consumer/check/existphone",method = RequestMethod.GET)
+    public ResultData checkPhoneExist(String phone) {
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(phone)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all the information");
+            return result;
+        }
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("number", phone);
+        condition.put("blockFlag",false);
+        ResultData response = consumerService.fetchConsumerPhone(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("find the same phone number");
+            return result;
+        }else if(response.getResponseCode() ==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the same phone number");
+            return result;
+        }else{
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now");
+            return result;
+        }
+    }
 }

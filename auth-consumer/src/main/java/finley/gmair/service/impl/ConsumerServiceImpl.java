@@ -132,6 +132,26 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 
     @Override
+    public ResultData fetchConsumerPhone(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = phoneDao.query(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("ok");
+            result.setData(response.getData());
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("null");
+            return result;
+        }else{
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error");
+            return result;
+        }
+    }
+
+    @Override
     public ResultData modifyConsumerPhone(Map<String, Object> condition){
         ResultData result = new ResultData();
         ResultData response = phoneDao.update(condition);

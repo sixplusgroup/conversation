@@ -23,6 +23,8 @@ public interface ConsumerService {
 
     ResultData createConsumerAddress(Address address, String consumerId);
 
+    ResultData fetchConsumerPhone(Map<String, Object> condition);
+
     ResultData modifyConsumerPhone(Map<String, Object> condition);
 
     boolean exist(Map<String, Object> condition);

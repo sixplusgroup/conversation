@@ -37,5 +37,7 @@ public interface AuthConsumerService {
                             @RequestParam("detail") String detail,
                             @RequestParam("preferred") boolean preferred);
 
+    @GetMapping(value = "/auth/consumer/check/existphone")
+    ResultData checkPhoneExist(@RequestParam("phone") String phone);
 
 }
