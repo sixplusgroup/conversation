@@ -467,6 +467,28 @@ public class QRCodeController {
         }
         return result;
     }
+    @GetMapping(value = "/check/existmachineid")
+    public ResultData checkMachineIdExist(String machineId){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
+        ResultData response = preBindService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the machineId!");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to find the machineId");
+        }
+        return result;
+    }
 
     @GetMapping(value = "/check/existqrcode")
     public ResultData checkQRcodeExist(String codeValue) {
@@ -481,7 +503,7 @@ public class QRCodeController {
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the qrcode");
+            result.setDescription("can not find the qrcode.");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -490,4 +512,6 @@ public class QRCodeController {
         }
         return result;
     }
+
+
 }

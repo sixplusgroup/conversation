@@ -39,8 +39,19 @@ public class MachineController {
             result.setDescription("the codeValue is not exist");
             return result;
         }
+        //check if the machineId has been binded with qrcode(check the preBind)
+        response = bindVersionService.checkMachineIdExist(machineId);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("the machineId has binded with qrcode");
+            return result;
+        }
 
-        //check if the qrcode has been binded with machine(check the preBind)
+        //check if the qrcode has been binded with machineId(check the preBind)
         response = bindVersionService.findMachineIdByCodeValue(codeValue);
         if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
