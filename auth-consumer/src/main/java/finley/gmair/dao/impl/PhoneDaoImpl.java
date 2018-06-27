@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -22,7 +23,7 @@ public class PhoneDaoImpl extends BaseDao implements PhoneDao {
     public ResultData insert(Phone phone, String consumerId) {
         ResultData result = new ResultData();
         phone.setPhoneId(IDGenerator.generate("PHN"));
-        Map<String, Object> value = new TreeMap<>();
+        Map<String, Object> value = new HashMap<>();
         value.put("phone", phone);
         value.put("consumerId", consumerId);
         try {
@@ -45,6 +46,20 @@ public class PhoneDaoImpl extends BaseDao implements PhoneDao {
             }
             result.setData(list);
         } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData update(Map<String, Object> condition){
+        ResultData result = new ResultData();
+
+        try{
+            sqlSession.update("gmair.consumer.phone.update", condition);
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }catch(Exception e){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

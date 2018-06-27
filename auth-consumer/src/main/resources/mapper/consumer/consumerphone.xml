@@ -26,7 +26,7 @@
         VALUES (#{phone.phoneId}, #{consumerId}, #{phone.number}, #{phone.preferred}, #{phone.blockFlag}, #{phone.createAt})
     </insert>
 
-    <update id="update" parameterType="finley.gmair.model.consumer.Phone">
+    <update id="update" parameterType="java.util.Map">
         UPDATE gmair_userinfo.consumer_phone
         <set>
             <if test="preferred != null">
@@ -38,8 +38,8 @@
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},
             </if>
-            phone_id = #{phoneId}
+            consumer_id = #{consumerId}
         </set>
-        WHERE phone_id = #{phoneId}
+        WHERE consumer_id = #{consumerId}
     </update>
 </mapper>

@@ -48,7 +48,7 @@
                 address_district = #{district},
             </if>
             <if test="preferred != null">
-                address_preferred = #{preferred},
+                addr_preferred = #{preferred},
             </if>
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},

@@ -130,6 +130,21 @@ public class ConsumerServiceImpl implements ConsumerService {
         return result;
     }
 
+
+    @Override
+    public ResultData modifyConsumerPhone(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = phoneDao.update(condition);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to modify consumer phone");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
     /**
      * This method is to query any result that match at least one of the conditions
      * @param condition

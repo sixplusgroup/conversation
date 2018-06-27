@@ -141,18 +141,15 @@ public class ConsumerAuthController {
      * @return
      */
     @RequestMapping(method = RequestMethod.GET, value = "/consumer/profile")
-    public ResultData profile() {
+    public ResultData profile(String phone) {
         ResultData result = new ResultData();
-        SecurityContext ctx = SecurityContextHolder.getContext();
-        Authentication auth = ctx.getAuthentication();
-        User user = (User) auth.getPrincipal();
-        if (StringUtils.isEmpty(user)) {
+        if (StringUtils.isEmpty(phone)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure you have logged on to the system");
+            result.setDescription("phone empty");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("phone", user.getUsername());
+        condition.put("phone", phone);
         condition.put("blockFlag", false);
         ResultData response = consumerService.fetchConsumer(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -161,7 +158,7 @@ public class ConsumerAuthController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(new StringBuffer("No consumer with phone: ").append(user.getUsername()).append(" found.").toString());
+            result.setDescription(new StringBuffer("No consumer with phone: ").append(phone).append(" found.").toString());
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -171,9 +168,9 @@ public class ConsumerAuthController {
     }
 
     @PostMapping("/consumer/wechat/bind")
-    public ResultData bindWechat(String openid) {
+    public ResultData bindWechat(String phone, String openid) {
         ResultData result = new ResultData();
-        String consumerId = currentConsumerId();
+        String consumerId = (String) getConsumerId(phone).getData();
         if (StringUtils.isEmpty(consumerId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you have logged on to the system");
@@ -193,9 +190,9 @@ public class ConsumerAuthController {
     }
 
     @PostMapping("/consumer/wechat/unbind")
-    public ResultData unbindWechat() {
+    public ResultData unbindWechat(String phone) {
         ResultData result = new ResultData();
-        String consumerId = currentConsumerId();
+        String consumerId = (String) getConsumerId(phone).getData();
         if (StringUtils.isEmpty(consumerId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you have logged on to the system");
@@ -214,9 +211,9 @@ public class ConsumerAuthController {
     }
 
     @PostMapping("/consumer/edit/username")
-    public ResultData editUsername(String username) {
+    public ResultData editUsername(String phone, String username) {
         ResultData result = new ResultData();
-        String consumerId = currentConsumerId();
+        String consumerId = (String) getConsumerId(phone).getData();
         if (StringUtils.isEmpty(consumerId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you have logged on to the system");
@@ -235,11 +232,33 @@ public class ConsumerAuthController {
         return result;
     }
 
+    @PostMapping("consumer/edit/phone")
+    public ResultData editPhone(String oldPhone, String newPhone) {
+        ResultData result = new ResultData();
+        String consumerId = (String) getConsumerId(oldPhone).getData();
+        if (StringUtils.isEmpty(consumerId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you have logged on to the system");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId", consumerId);
+        condition.put("blockFlag", false);
+        condition.put("number", newPhone);
+        ResultData response = consumerService.modifyConsumerPhone(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        return result;
+    }
+
     @PostMapping("/consumer/edit/location")
-    public ResultData editLocation(LocationForm form) {
+    public ResultData editLocation(String phone, LocationForm form) {
         ResultData result = new ResultData();
         //fetch the user from context first
-        String consumerId = currentConsumerId();
+        String consumerId = (String) getConsumerId(phone).getData();
         if (StringUtils.isEmpty(consumerId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you have logged on to the system");

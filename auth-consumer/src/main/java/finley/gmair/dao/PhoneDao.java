@@ -11,4 +11,7 @@ public interface PhoneDao {
     ResultData insert(Phone phone, final String consumerId);
 
     ResultData query(Map<String, Object> condition);
+
+    ResultData update(Map<String, Object> condition);
+
 }
