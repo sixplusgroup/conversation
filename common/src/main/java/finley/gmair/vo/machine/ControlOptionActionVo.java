@@ -9,6 +9,8 @@ public class ControlOptionActionVo {
 
     private String actionOperator;
 
+    private int commandValue;
+
     private boolean blockFlag;
 
     private Timestamp createAt;
@@ -43,6 +45,14 @@ public class ControlOptionActionVo {
 
     public void setBlockFlag(boolean blockFlag) {
         this.blockFlag = blockFlag;
+    }
+
+    public int getCommandValue() {
+        return commandValue;
+    }
+
+    public void setCommandValue(int commandValue) {
+        this.commandValue = commandValue;
     }
 
     public Timestamp getCreateAt() {

@@ -21,10 +21,10 @@ public interface MachineService {
                                 @RequestParam("actionName") String actionName,
                                 @RequestParam("actionOperator") String actionOperator);
 
-    @PostMapping("/operate")
-    public ResultData chooseComponent(@RequestParam("qrcode") String qrcode,
-                                      @RequestParam("component") String component,
-                                      @RequestParam("operation") String operation);
+    @PostMapping("/machine/control/option/operate")
+    ResultData chooseComponent(@RequestParam("qrcode") String qrcode,
+                               @RequestParam("component") String component,
+                               @RequestParam("operation") String operation);
 
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")

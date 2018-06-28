@@ -15,6 +15,8 @@ public class ControlOptionForm {
 
     private String actionOperator;
 
+    private int commandValue;
+
     public String getOptionName() {
         return optionName;
     }
@@ -53,5 +55,13 @@ public class ControlOptionForm {
 
     public void setActionOperator(String actionOperator) {
         this.actionOperator = actionOperator;
+    }
+
+    public int getCommandValue() {
+        return commandValue;
+    }
+
+    public void setCommandValue(int commandValue) {
+        this.commandValue = commandValue;
     }
 }

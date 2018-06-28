@@ -13,16 +13,19 @@ public class ControlOptionAction extends Entity {
 
     private String actionOperator;
 
+    private int commandValue;
+
     public ControlOptionAction() {
         super();
     }
 
-    public ControlOptionAction(String controlId, String modelId, String actionName, String actionOperator) {
+    public ControlOptionAction(String controlId, String modelId, String actionName, String actionOperator, int commandValue) {
         this();
         this.controlId = controlId;
         this.modelId = modelId;
         this.actionName = actionName;
         this.actionOperator = actionOperator;
+        this.commandValue = commandValue;
     }
 
     public String getValueId() {
@@ -63,5 +66,13 @@ public class ControlOptionAction extends Entity {
 
     public void setActionOperator(String actionOperator) {
         this.actionOperator = actionOperator;
+    }
+
+    public int getCommandValue() {
+        return commandValue;
+    }
+
+    public void setCommandValue(int commandValue) {
+        this.commandValue = commandValue;
     }
 }

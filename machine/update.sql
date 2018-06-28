@@ -109,3 +109,7 @@ ALTER TABLE `gmair_machine`.`pre_bind`
 
 ALTER TABLE `gmair_machine`.`pre_bind`
 DROP COLUMN `board_version`;
+
+#2018-06-28
+ALTER TABLE `gmair_machine`.`control_option_action`
+ADD COLUMN `command_value` INT NOT NULL DEFAULT 0 AFTER `action_operator`;

@@ -130,6 +130,8 @@ public class MachineController {
         return result;
     }
 
+
+
     @PostMapping("/control/option/create")
     public ResultData setControlOption(String optionName, String optionComponent, String modelId, String actionName, String actionOperator) {
         ResultData result = new ResultData();

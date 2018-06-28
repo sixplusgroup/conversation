@@ -6,6 +6,7 @@ import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("core-agent")
 public interface CoreService {
@@ -14,14 +15,18 @@ public interface CoreService {
     ResultData isOnline(@PathVariable("machineId") String machineId);
 
     @PostMapping("/core/com/config/power")
-    ResultData configPower(String uid, int power);
+    ResultData configPower(@RequestParam("uid") String uid,
+                           @RequestParam("power") int power);
 
     @PostMapping("/core/com/config/lock")
-    ResultData configLock(String uid, int lock);
+    ResultData configLock(@RequestParam("uid") String uid,
+                          @RequestParam("lock") int lock);
 
     @PostMapping("/core/com/config/light")
-    ResultData configLight(String uid, int light);
+    ResultData configLight(@RequestParam("uid") String uid,
+                           @RequestParam("light") int light);
 
     @PostMapping("/core/com/config/heat")
-    ResultData configHeat(String uid, int heat);
+    ResultData configHeat(@RequestParam("uid") String uid,
+                          @RequestParam("heat") int heat);
 }

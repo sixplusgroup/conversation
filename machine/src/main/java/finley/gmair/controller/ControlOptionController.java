@@ -4,11 +4,11 @@ import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.model.machine.ControlOption;
 import finley.gmair.model.machine.ControlOptionAction;
 import finley.gmair.model.machine.PreBindCode;
-import finley.gmair.service.ControlOptionService;
-import finley.gmair.service.CoreService;
-import finley.gmair.service.PreBindService;
+import finley.gmair.model.machine.QRCode;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.ControlOptionActionVo;
 import finley.gmair.vo.machine.ControlOptionVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -36,6 +36,9 @@ public class ControlOptionController {
 
     @Autowired
     private CoreService coreService;
+
+    @Autowired
+    private QRCodeService qrCodeService;
 
     //创建ControlOption
     @PostMapping(value = "/create")
@@ -73,7 +76,7 @@ public class ControlOptionController {
             controlId = ((ControlOption) response.getData()).getControlId();
         }
         ControlOptionAction action = new ControlOptionAction(controlId, form.getModelId(),
-                form.getActionName(), form.getActionOperator());
+                form.getActionName(), form.getActionOperator(), form.getCommandValue());
         response = controlOptionService.createControlOptionAction(action);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -108,89 +111,62 @@ public class ControlOptionController {
         }
         String machineId = ((List<PreBindCode>) response.getData()).get(0).getMachineId();
 
-        //according the component and opration to control the machine
-        if (component.equals("power")) {
-            int power = 0;
-            if (operation.equals("off")) {
-                power = 0;
-            } else if (operation.equals("on")) {
-                power = 1;
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("power value must be 0 or 1");
-                return result;
-            }
-            ResultData optionResponse = coreService.configPower(machineId,power);
-            if(optionResponse.getResponseCode() == ResponseCode.RESPONSE_OK){
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("success");
-                return result;
-            }else if(optionResponse.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("No channel found for machine");
-                return result;
-            }
-
-        } else if (component.equals("lock")) {
-            int lock = 0;
-            if (operation.equals("off")) {
-                lock = 0;
-            } else if (operation.equals("on")) {
-                lock = 1;
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("lock value must be 0 or 1");
-                return result;
-            }
-            ResultData optionResponse = coreService.configLock(machineId,lock);
-            if(optionResponse.getResponseCode() == ResponseCode.RESPONSE_OK){
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("success.");
-                return result;
-            }else if(optionResponse.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("No channel found for machineId");
-                return result;
-            }
-        } else if (component.equals("light")) {
-            int light = 0;
-            if (operation.equals("0")) {
-                light = 0;
-            } else if (operation.equals("1")) {
-                light = 1;
-            } else if(operation.equals("2")){
-                light = 2;
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("light value must be 0 or 1 or 2");
-                return result;
-            }
-            ResultData optionResponse = coreService.configLight(machineId,light);
-            if(optionResponse.getResponseCode() == ResponseCode.RESPONSE_OK){
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("success!");
-                return result;
-            }else if(optionResponse.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("No channel found for machineId");
-                return result;
-            }
-        } else if (component.equals("heat")) {
-            int heat = 0;
-            if(operation.equals("0")){
-                heat = 0;
-            } else if (operation.equals("500")){
-                heat = 1;
-            } else if (operation.equals("1000")){
-                heat = 2;
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("heat value must be 0 or 500 or 1000");
-                return result;
-            }
-        } else {
+        //according to qrcode find the modelId
+        response = qrCodeService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("no component");
+            result.setDescription("sorry, can not find the qrcode or server is busy");
+            return result;
+        }
+        String modelId = ((List<QRCode>) response.getData()).get(0).getModelId();
+
+        //according to the component find the control_id
+        condition.clear();
+        condition.put("optionComponent",component);
+        condition.put("blockFlag",false);
+        response = controlOptionService.fetchControlOption(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("sorry, can not find the option or server is busy");
+            return result;
+        }
+        String controlId= ((List<ControlOptionVo>) response.getData()).get(0).getControlId();
+
+        //according the  controlId,modelId and operation find the commandValue
+        condition.clear();
+        condition.put("controlId",controlId);
+        condition.put("modelId", modelId);
+        condition.put("actionOperator", operation);
+        condition.put("blockFlag", false);
+        response = controlOptionService.fetchControlOptionAction(condition);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("sorry, can not find the action value or server is busy now");
+            return result;
+        }
+        int commandValue = ((List<ControlOptionActionVo>) response.getData()).get(0).getCommandValue();
+
+        //according the value to control the machine
+        if (component.equals("power"))
+            response = coreService.configPower(machineId, commandValue);
+        else if (component.equals("lock"))
+            response = coreService.configLock(machineId, commandValue);
+        else if (component.equals("light"))
+            response = coreService.configLight(machineId, commandValue);
+        else if (component.equals("heat"))
+            response = coreService.configHeat(machineId, commandValue);
+        else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("no such component");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to operate the machine");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to operate the machine");
             return result;
         }
         return result;

@@ -15,6 +15,7 @@
         <result property="valueId" column="value_id"></result>
         <result property="actionName" column="action_name"></result>
         <result property="actionOperator" column="action_operator"></result>
+        <result property="commandValue" column="command_value"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
@@ -50,11 +51,17 @@
     </select>
 
     <select id="queryAction" parameterType="java.util.Map" resultMap="controlOptionActionVo">
-        SELECT value_id, action_name, action_operator, block_flag, create_time
+        SELECT value_id, action_name, action_operator, command_value, block_flag, create_time
         FROM gmair_machine.control_option_action
         WHERE 1 = 1
         <if test="valueId != null">
             AND value_id = #{valueId}
+        </if>
+        <if test="controlId != null">
+            AND control_id = #{controlId}
+        </if>
+        <if test="modelId != null">
+            AND model_id = #{modelId}
         </if>
         <if test="actionName != null">
             AND action_name = #{actionName}
@@ -69,7 +76,7 @@
     </select>
 
     <insert id="insertAction" parameterType="finley.gmair.model.machine.ControlOptionAction">
-        INSERT INTO gmair_machine.control_option_action(value_id, control_id, model_id, action_name, action_operator, block_flag, create_time)
-        VALUES(#{valueId}, #{controlId}, #{modelId}, #{actionName}, #{actionOperator}, #{blockFlag}, #{createAt})
+        INSERT INTO gmair_machine.control_option_action(value_id, control_id, model_id, action_name, action_operator,command_value, block_flag, create_time)
+        VALUES(#{valueId}, #{controlId}, #{modelId}, #{actionName}, #{actionOperator},#{commandValue}, #{blockFlag}, #{createAt})
     </insert>
 </mapper>
