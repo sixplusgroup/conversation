@@ -24,7 +24,7 @@ public class CommunicationController {
     @Autowired
     private GMRepository repository;
 
-    /**
+    /** 心跳包
      * This will issue a heartbeat packet to the target uid
      * if the uid does not exist in the cache, it will not send the packet
      *
@@ -68,6 +68,7 @@ public class CommunicationController {
         return result;
     }
 
+    //设置板子的IP地址
     @PostMapping("/com/config/address")
     public ResultData configAddress(String uid, String address) {
         ResultData result = new ResultData();
@@ -83,6 +84,7 @@ public class CommunicationController {
         return result;
     }
 
+    //查询
     @GetMapping("/com/probe/address")
     public ResultData probeAddress(String uid) {
         ResultData result = new ResultData();
@@ -218,6 +220,7 @@ public class CommunicationController {
         return result;
     }
 
+    //配置主板工作模式
     @PostMapping("/com/config/mode")
     public ResultData configMode(String uid, int mode) {
         ResultData result = new ResultData();
@@ -233,6 +236,7 @@ public class CommunicationController {
         return result;
     }
 
+    //查询工作模式
     @GetMapping("/com/probe/mode")
     public ResultData probeMode(String uid) {
         ResultData result = new ResultData();
@@ -248,6 +252,7 @@ public class CommunicationController {
         return result;
     }
 
+    //风量
     @PostMapping("/com/config/speed")
     public ResultData configSpeed(String uid, int speed) {
         ResultData result = new ResultData();
@@ -278,6 +283,7 @@ public class CommunicationController {
         return result;
     }
 
+    //废弃
     @PostMapping("/com/config/sterilise")
     public ResultData configSterilise(String uid, int mode) {
         ResultData result = new ResultData();
@@ -338,6 +344,7 @@ public class CommunicationController {
         return result;
     }
 
+    //废弃
     @PostMapping("c")
     public ResultData configCirculation(String uid, int circulation) {
         ResultData result = new ResultData();
@@ -368,6 +375,7 @@ public class CommunicationController {
         return result;
     }
 
+    //屏显
     @PostMapping("/com/config/light")
     public ResultData configLight(String uid, int light) {
         ResultData result = new ResultData();
@@ -398,6 +406,7 @@ public class CommunicationController {
         return result;
     }
 
+    //重启
     @PostMapping("/com/reboot")
     public ResultData reboot(String uid) {
         ResultData result = new ResultData();

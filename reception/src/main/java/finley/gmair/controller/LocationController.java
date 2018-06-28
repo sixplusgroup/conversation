@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.LocationService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -28,11 +29,14 @@ public class LocationController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             LinkedHashMap<String, Object> locInformation = (LinkedHashMap<String, Object>) response.getData();
             LinkedHashMap<String, Object> ad_info = (LinkedHashMap<String, Object>) locInformation.get("ad_info");
-            locationPlace = new StringBuilder((String) ad_info.get("nation"))
-                    .append((String) ad_info.get("province"))
-                    .append((String) ad_info.get("city"))
-                    .toString();
-            result.setData(locationPlace);
+//            locationPlace = new StringBuilder((String) ad_info.get("nation"))
+//                    .append((String) ad_info.get("province"))
+//                    .append((String) ad_info.get("city"))
+//                    .toString();
+            JSONObject json = new JSONObject();
+            json.put("province", ad_info.get("province"));
+            json.put("city", ad_info.get("city"));
+            result.setData(json);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to locate the ip address");
         } else {

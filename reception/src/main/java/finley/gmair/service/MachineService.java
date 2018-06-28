@@ -21,7 +21,10 @@ public interface MachineService {
                                 @RequestParam("actionName") String actionName,
                                 @RequestParam("actionOperator") String actionOperator);
 
-    //MachineSettingController
+    @PostMapping("/operate")
+    public ResultData chooseComponent(@RequestParam("qrcode") String qrcode,
+                                      @RequestParam("component") String component,
+                                      @RequestParam("operation") String operation);
 
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")
@@ -33,5 +36,6 @@ public interface MachineService {
                                       @RequestParam("bindName") String bindName,
                                       @RequestParam("qrcode") String qrcode,
                                       @RequestParam("ownership") int ownership);
+
 
 }

@@ -33,7 +33,7 @@ public class MachineController {
         ResultData result = new ResultData();
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
-        ResultData response = machineService.bindConsumerWithQRcode(consumerId,deviceName,qrcode,Ownership.OWNER.getValue());
+        ResultData response = machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to init");
@@ -108,11 +108,22 @@ public class MachineController {
     }
 
     @PostMapping("/{component}/{operation}")
-    public ResultData configComponentStatus(@PathVariable("operation") String operation, String qrcode) {
+    public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(operation) || StringUtils.isEmpty(qrcode)) {
+        if (StringUtils.isEmpty(component) || StringUtils.isEmpty(operation) || StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure all required information is provided");
+            return result;
+        }
+
+        ResultData response = machineService.chooseComponent(qrcode,component,operation);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to operate");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to operate");
             return result;
         }
 
