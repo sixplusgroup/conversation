@@ -122,24 +122,24 @@ public class ControlOptionController {
 
         //according to the component find the control_id
         condition.clear();
-        condition.put("optionComponent",component);
-        condition.put("blockFlag",false);
+        condition.put("optionComponent", component);
+        condition.put("blockFlag", false);
         response = controlOptionService.fetchControlOption(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("sorry, can not find the option or server is busy");
             return result;
         }
-        String controlId= ((List<ControlOptionVo>) response.getData()).get(0).getControlId();
+        String controlId = ((List<ControlOptionVo>) response.getData()).get(0).getControlId();
 
         //according the  controlId,modelId and operation find the commandValue
         condition.clear();
-        condition.put("controlId",controlId);
+        condition.put("controlId", controlId);
         condition.put("modelId", modelId);
         condition.put("actionOperator", operation);
         condition.put("blockFlag", false);
         response = controlOptionService.fetchControlOptionAction(condition);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("sorry, can not find the action value or server is busy now");
             return result;
@@ -155,6 +155,8 @@ public class ControlOptionController {
             response = coreService.configLight(machineId, commandValue);
         else if (component.equals("heat"))
             response = coreService.configHeat(machineId, commandValue);
+        else if (component.equals("mode"))
+            response = coreService.configMode(machineId, commandValue);
         else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("no such component");

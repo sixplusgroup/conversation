@@ -29,4 +29,8 @@ public interface CoreService {
     @PostMapping("/core/com/config/heat")
     ResultData configHeat(@RequestParam("uid") String uid,
                           @RequestParam("heat") int heat);
+
+    @PostMapping("/core/com/config/mode")
+    ResultData configMode(@RequestParam("uid") String uid,
+                          @RequestParam("mode") int mode);
 }
