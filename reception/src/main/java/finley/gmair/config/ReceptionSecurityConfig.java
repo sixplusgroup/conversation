@@ -19,6 +19,7 @@ public class ReceptionSecurityConfig extends ResourceServerConfigurerAdapter{
             .and()
             .authorizeRequests()
             .antMatchers("/reception/location/ip/address").permitAll()
+            .antMatchers("/reception/consumer/check/phone").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic();

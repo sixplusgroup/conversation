@@ -146,24 +146,24 @@ public class ConsumerController {
         return result;
     }
 
-    @RequestMapping(value = "check/phone",  method = RequestMethod.GET)
+    @RequestMapping(value = "/check/phone",  method = RequestMethod.GET)
     public ResultData checkPhoneUsed(String phone) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(phone)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide all information");
+            result.setDescription("Please provide all required information");
             return result;
         }
         ResultData response = authConsumerService.checkPhoneExist(phone);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("the phone number has been used");
+            result.setDescription(new StringBuffer("The phone number ").append(phone).append(" has already been registered.").toString());
         } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(("the phone number has not been used"));
+            result.setDescription(("The phone number is available for registration"));
         }else{
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
+            result.setDescription("Fail to check whether the phone is used or not.");
         }
         return result;
     }
