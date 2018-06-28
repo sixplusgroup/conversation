@@ -47,7 +47,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(consumerDetailService);
-        authenticationProvider.setPasswordEncoder(new Md5Encoder());
         auth.authenticationProvider(authenticationProvider);
     }
 }

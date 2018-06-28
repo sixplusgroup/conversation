@@ -40,6 +40,7 @@ public class OAuth2ServerConfig {
                     .and()
                     .authorizeRequests()
                     .antMatchers("/auth/consumer/request").permitAll()
+                    .antMatchers("/auth/consumer/register").permitAll()
                     .antMatchers("/auth/user/**").authenticated();
             // @formatter:on
         }
