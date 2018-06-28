@@ -18,6 +18,7 @@ public class ReceptionSecurityConfig extends ResourceServerConfigurerAdapter{
             .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
             .and()
             .authorizeRequests()
+            .antMatchers("/reception/location/ip/address").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic();

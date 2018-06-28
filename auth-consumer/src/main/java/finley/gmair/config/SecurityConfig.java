@@ -1,6 +1,5 @@
 package finley.gmair.config;
 
-import finley.gmair.encoder.Md5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

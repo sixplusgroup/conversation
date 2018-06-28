@@ -21,10 +21,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -115,8 +112,8 @@ public class ConsumerAuthController {
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/consumer/request")
-    public ResultData request(String phone) {
+    @RequestMapping(method = RequestMethod.POST, value = "/consumer/{action}/request")
+    public ResultData request(String phone, @PathVariable("action") String action) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(phone)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -127,7 +124,7 @@ public class ConsumerAuthController {
         // call message agent to send the text to corresponding phone number
         // retrieve message template from database
         System.out.println(JSON.toJSONString(code));
-        ResultData response = messageService.template(String.valueOf(MessageCatalog.AUTHENTICATION));
+        ResultData response = messageService.template(String.valueOf(action.toUpperCase()));
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to get registration message template.");

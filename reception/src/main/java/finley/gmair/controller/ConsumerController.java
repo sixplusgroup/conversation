@@ -146,7 +146,7 @@ public class ConsumerController {
         return result;
     }
 
-    @RequestMapping(value = "check/phoneused",  method = RequestMethod.GET)
+    @RequestMapping(value = "check/phone",  method = RequestMethod.GET)
     public ResultData checkPhoneUsed(String phone) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(phone)){
