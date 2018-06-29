@@ -45,7 +45,7 @@ public class MachineAirQualityController {
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("服务器忙，请稍后再试");
+            result.setDescription("服务器忙，请稍后再试.");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
         } else {
@@ -64,6 +64,7 @@ public class MachineAirQualityController {
     //从缓存中读取
     @RequestMapping (value = "/machinestatus/{uid}", method = RequestMethod.GET)
     public MachineStatus MachineStatus(@PathVariable("uid") String uid) {
-        return machineStatusCacheService.fetch(uid);
+        MachineStatus result = machineStatusCacheService.fetch(uid);
+        return result;
     }
 }

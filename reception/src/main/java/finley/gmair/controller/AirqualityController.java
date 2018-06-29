@@ -1,8 +1,50 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.machine.v2.MachineStatus;
+import finley.gmair.service.MachineService;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-public class AirqualityController {
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
+
+@RestController
+@RequestMapping("/reception/airquality")
+public class AirqualityController {
+    @Autowired
+    private MachineService machineService;
+
+    @RequestMapping(value = "/probe", method = RequestMethod.GET)
+    public ResultData getAirQuality(String qrcode) {
+        ResultData result = new ResultData();
+        ResultData response = machineService.findMachineIdByCodeValue(qrcode);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the qrcode");
+            return result;
+        }
+        List<Object> preBindCodeList = (ArrayList<Object>) response.getData();
+        LinkedHashMap<String, Object> linkedHashMap = (LinkedHashMap<String, Object>) (preBindCodeList.get(0));
+        String machineId = (String) linkedHashMap.get("machineId");
+
+        MachineStatus machineStatus = machineService.MachineStatus(machineId);
+        if (machineStatus != null) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(machineStatus);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("can not find");
+        }
+        return result;
+    }
 }

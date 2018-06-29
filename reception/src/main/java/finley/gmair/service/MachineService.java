@@ -1,10 +1,9 @@
 package finley.gmair.service;
 
+import finley.gmair.model.machine.v2.MachineStatus;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient("machine-agent")
 public interface MachineService {
@@ -36,6 +35,8 @@ public interface MachineService {
                                       @RequestParam("bindName") String bindName,
                                       @RequestParam("qrcode") String qrcode,
                                       @RequestParam("ownership") int ownership);
-
+    //MachineAirQualityController
+    @GetMapping(value = "machine/machinestatus/{uid}")
+    MachineStatus MachineStatus(@RequestParam("uid") String uid);
 
 }
