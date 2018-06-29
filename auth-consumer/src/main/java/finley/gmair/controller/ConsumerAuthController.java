@@ -55,12 +55,12 @@ public class ConsumerAuthController {
             consumer.setUsername(form.getUsername());
         }
         //Check whether the user already exist, from perspective of wechat, phone
-        if (form.getWechat() != null || form.getPhone() != null) {
+        if (!StringUtils.isEmpty(form.getWechat()) || !StringUtils.isEmpty(form.getPhone())) {
             Map<String, Object> condition = new HashMap<>();
-            if (form.getWechat() != null) {
+            if (!StringUtils.isEmpty(form.getWechat())) {
                 condition.put("wechat", form.getWechat());
             }
-            if (form.getPhone() != null) {
+            if (!StringUtils.isEmpty(form.getPhone())) {
                 condition.put("phone", form.getPhone());
             }
             if (consumerService.exist(condition)) {
