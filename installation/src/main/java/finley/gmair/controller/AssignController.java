@@ -320,7 +320,7 @@ public class AssignController {
     }
 
     @GetMapping("/detail/list")
-    public ResultData listWithDetailName(String qrcode, int status) {
+    public ResultData listWithDetailName(String qrcode, Integer status) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
