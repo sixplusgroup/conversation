@@ -89,9 +89,31 @@ public class MachineController {
         return result;
     }
 
-    @PostMapping("/distribution")
-    public ResultData distribution(String consumerId) {
+
+
+    @PostMapping("/status")
+    public ResultData findStatusByQRcode(String qrcode) {
         ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all the information");
+            return result;
+        }
+        ResultData response = machineService.checkQRcodeExist(qrcode);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now,please try again later");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("sorry,we can't find the qrcode");
+            return result;
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to get the status by qrcode");
+        }
         return result;
     }
 

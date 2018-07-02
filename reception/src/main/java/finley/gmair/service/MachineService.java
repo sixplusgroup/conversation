@@ -29,14 +29,20 @@ public interface MachineService {
     @GetMapping("/machine/qrcode/findbyqrcode")
     ResultData findMachineIdByCodeValue(@RequestParam("codeValue") String codeValue);
 
+    @GetMapping("/machine/qrcode/check/existqrcode")
+    ResultData checkQRcodeExist(@RequestParam("codeValue") String codeValue);
+
     //ConsumerQRcodeController
     @PostMapping("/machine/consumer/bindwithqrcode")
     ResultData bindConsumerWithQRcode(@RequestParam("consumerId") String consumerId,
                                       @RequestParam("bindName") String bindName,
                                       @RequestParam("qrcode") String qrcode,
                                       @RequestParam("ownership") int ownership);
+
     //MachineAirQualityController
-    @RequestMapping (value = "machine/status/{uid}",method = RequestMethod.GET)
+    @GetMapping("/machine/status/{uid}")
     ResultData machineStatus(@RequestParam("uid") String uid);
+
+
 
 }
