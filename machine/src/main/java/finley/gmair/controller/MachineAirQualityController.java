@@ -67,4 +67,18 @@ public class MachineAirQualityController {
         MachineStatus result = machineStatusCacheService.fetch(uid);
         return result;
     }
+    @RequestMapping (value = "/status/{uid}",method = RequestMethod.GET)
+    public ResultData machineStatus(@PathVariable("uid") String uid) {
+        ResultData result = new ResultData();
+        MachineStatus machineStatus = machineStatusCacheService.fetch(uid);
+        if(machineStatus==null){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("can not find");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(machineStatusCacheService.fetch(uid));
+        result.setDescription("success to find");
+        return result;
+    }
 }

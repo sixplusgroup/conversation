@@ -37,14 +37,16 @@ public class AirqualityController {
         LinkedHashMap<String, Object> linkedHashMap = (LinkedHashMap<String, Object>) (preBindCodeList.get(0));
         String machineId = (String) linkedHashMap.get("machineId");
 
-        MachineStatus machineStatus = machineService.MachineStatus(machineId);
-        if (machineStatus != null) {
+        response = machineService.machineStatus(machineId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(machineStatus);
+            result.setDescription("success to get air quality");
+            result.setData(response.getData());
+            return result;
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("can not find");
+            return result;
         }
-        return result;
     }
 }
