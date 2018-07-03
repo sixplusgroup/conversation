@@ -91,7 +91,7 @@ public class MachineController {
 
 
 
-    @PostMapping("/status")
+    @PostMapping("/qrcode/status")
     public ResultData findStatusByQRcode(String qrcode) {
         ResultData result = new ResultData();
         //check empty

@@ -118,7 +118,7 @@ CREATE VIEW `gmair_install`.`assign_view` AS
         JOIN `gmair_install`.`team_member`)
     WHERE
         ((`gmair_install`.`install_assign`.`team_id` = `gmair_install`.`install_team`.`team_id`)
-            AND (`gmair_install`.`install_assign`.`member_id` = `gmair_install`.`team_member`.`member_id`))
+            AND (`gmair_install`.`install_assign`.`member_id` = `gmair_install`.`team_member`.`member_id`));
 
 ALTER TABLE `gmair_install`.`install_snapshot`
 ADD COLUMN `install_type` VARCHAR(45) NOT NULL AFTER `net`;
@@ -139,7 +139,7 @@ VIEW `gmair_install`.`finished_view` AS
         JOIN `gmair_install`.`snapshot_location`)
     WHERE
         ((`gmair_install`.`install_assign`.`assign_id` = `gmair_install`.`install_snapshot`.`assign_id`)
-            AND (`gmair_install`.`install_snapshot`.`snapshot_id` = `gmair_install`.`snapshot_location`.`snapshot_id`))
+            AND (`gmair_install`.`install_snapshot`.`snapshot_id` = `gmair_install`.`snapshot_location`.`snapshot_id`));
 
 ##2018-05-30
 CREATE OR REPLACE VIEW `gmair_install`.`team_member_view` AS
