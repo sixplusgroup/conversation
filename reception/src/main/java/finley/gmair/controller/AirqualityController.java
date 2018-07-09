@@ -20,6 +20,7 @@ public class AirqualityController {
     @Autowired
     private MachineService machineService;
 
+    //根据当前的qrcode查询这台机器machine status
     @RequestMapping(value = "/probe", method = RequestMethod.GET)
     public ResultData getAirQuality(String qrcode) {
         ResultData result = new ResultData();

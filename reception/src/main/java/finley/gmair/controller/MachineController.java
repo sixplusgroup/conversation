@@ -28,6 +28,29 @@ public class MachineController {
     @Autowired
     private AuthConsumerService authConsumerService;
 
+    @GetMapping("/check/existname")
+    public ResultData checkDeviceNameExist(String qrcode, String deviceName) {
+        ResultData result = new ResultData();
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = "hsdhasj";
+        ResultData response = machineService.checkDeviceNameExist(consumerId,qrcode,deviceName);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("can not be done because the qrcode or device name exist");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("this device name can be used");
+            return result;
+        }
+        return result;
+    }
+
     @PostMapping("/deviceinit")
     public ResultData deviceInit(String qrcode, String deviceName) {
         ResultData result = new ResultData();

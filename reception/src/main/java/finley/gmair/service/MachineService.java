@@ -39,6 +39,11 @@ public interface MachineService {
                                       @RequestParam("qrcode") String qrcode,
                                       @RequestParam("ownership") int ownership);
 
+    @GetMapping("/machine/consumer/check/devicename/exist")
+    ResultData checkDeviceNameExist(@RequestParam("consumerId") String consumerId,
+                                    @RequestParam("bindName") String bindName,
+                                    @RequestParam("qrcode") String qrcode);
+
     //MachineAirQualityController
     @GetMapping("/machine/status/{uid}")
     ResultData machineStatus(@RequestParam("uid") String uid);
