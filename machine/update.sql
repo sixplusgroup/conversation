@@ -113,3 +113,20 @@ DROP COLUMN `board_version`;
 #2018-06-28
 ALTER TABLE `gmair_machine`.`control_option_action`
 ADD COLUMN `command_value` INT NOT NULL DEFAULT 0 AFTER `action_operator`;
+
+
+#2018-07-11 add table machine_default_location
+CREATE TABLE `gmair_machine`.`machine_default_location` (
+  `location_id` INT NOT NULL,
+  `city_id` VARCHAR(20) NOT NULL,
+  `code_value` VARCHAR(45) NOT NULL,
+  `block_flag` VARCHAR(45) NOT NULL,
+  `create_time` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`location_id`));
+
+ALTER TABLE `gmair_machine`.`machine_default_location`
+CHANGE COLUMN `location_id` `location_id` VARCHAR(20) NOT NULL ;
+
+ALTER TABLE `gmair_machine`.`machine_default_location`
+CHANGE COLUMN `block_flag` `block_flag` TINYINT(1) NOT NULL ,
+CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ;

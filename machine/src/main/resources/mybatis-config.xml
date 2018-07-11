@@ -20,5 +20,6 @@
         <mapper resource="mapper/controloption.xml"></mapper>
         <mapper resource="mapper/boardversion.xml"></mapper>
         <mapper resource="mapper/consumer_qrcode_bind.xml"></mapper>
+        <mapper resource="mapper/machine_default_location.xml"></mapper>
     </mappers>
 </configuration>

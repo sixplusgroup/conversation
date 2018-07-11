@@ -97,5 +97,34 @@ public class ConsumerQRcodeController {
 
     }
 
+    @RequestMapping(value="/machinelist", method = RequestMethod.GET)
+    public ResultData getMachineListByConsumerId(String consumerId){
+        ResultData result = new ResultData();
+        //check empty
+        if( StringUtils.isEmpty(consumerId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId",consumerId);
+        condition.put("blockFlag",false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not found any one");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success");
+        }
+        return result;
+    }
 
 }

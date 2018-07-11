@@ -44,10 +44,12 @@ public interface MachineService {
                                     @RequestParam("bindName") String bindName,
                                     @RequestParam("qrcode") String qrcode);
 
+    @GetMapping("/machine/consumer/machinelist")
+    ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
+
     //MachineAirQualityController
     @GetMapping("/machine/status/{uid}")
     ResultData machineStatus(@RequestParam("uid") String uid);
-
 
 
 }
