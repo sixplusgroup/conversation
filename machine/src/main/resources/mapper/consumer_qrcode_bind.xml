@@ -19,7 +19,7 @@
         #{blockFlag}, #{createAt})
     </insert>
 
-    <select id="query" parameterType="java.util.Map">
+    <select id="query" parameterType="java.util.Map" resultMap="consumer_qrcode_bind">
         SELECT bind_id, consumer_id, bind_name, code_value, ownership, block_flag, create_time
         FROM gmair_machine.consumer_code_bind
         WHERE 1 = 1
@@ -28,6 +28,9 @@
         </if>
         <if test="consumerId != null">
             AND consumer_id = #{consumerId}
+        </if>
+        <if test="bindName != null">
+            AND bind_name = #{bindName}
         </if>
         <if test="codeValue != null">
             AND code_value = #{codeValue}

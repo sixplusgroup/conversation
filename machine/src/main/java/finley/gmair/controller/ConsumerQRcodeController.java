@@ -65,6 +65,7 @@ public class ConsumerQRcodeController {
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
             result.setDescription("exist qrcode");
             return result;
         }else if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR){
@@ -76,11 +77,12 @@ public class ConsumerQRcodeController {
         //check bindName exist
         condition.clear();
         condition.put("consumerId",consumerId);
-        condition.put("codeValue",qrcode);
+        condition.put("bindName",bindName);
         condition.put("blockFlag",false);
         response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
             result.setDescription("exist device name");
             return result;
         }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
