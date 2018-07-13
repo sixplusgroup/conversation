@@ -190,7 +190,7 @@ public class MachineController {
     }
 
 
-    //根据当前的qrcode查询这台机器machine status
+    //根据当前的qrcode查询这台机器的各种值(co2,pm2.5等)
     @RequestMapping(value = "/info/probe", method = RequestMethod.GET)
     public ResultData getMachineInfo(String qrcode) {
         ResultData result = new ResultData();
@@ -220,4 +220,29 @@ public class MachineController {
             return result;
         }
     }
+
+    //根据consumerId获取用户的machine list
+    @RequestMapping(value = "/devicelist", method = RequestMethod.GET)
+    public ResultData getUserDeviceList(){
+        ResultData result = new ResultData();
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        ResultData response = machineService.getMachineListByConsumerId(consumerId);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to get machine list");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find");
+            return result;
+        }else{
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy");
+            return result;
+        }
+    }
+
+
 }

@@ -19,7 +19,6 @@ public interface MachineService {
                                 @RequestParam("modelId") String modelId,
                                 @RequestParam("actionName") String actionName,
                                 @RequestParam("actionOperator") String actionOperator);
-
     @PostMapping("/machine/control/option/operate")
     ResultData chooseComponent(@RequestParam("qrcode") String qrcode,
                                @RequestParam("component") String component,
@@ -28,7 +27,6 @@ public interface MachineService {
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")
     ResultData findMachineIdByCodeValue(@RequestParam("codeValue") String codeValue);
-
     @GetMapping("/machine/qrcode/check/existqrcode")
     ResultData checkQRcodeExist(@RequestParam("codeValue") String codeValue);
 
@@ -38,12 +36,10 @@ public interface MachineService {
                                       @RequestParam("bindName") String bindName,
                                       @RequestParam("qrcode") String qrcode,
                                       @RequestParam("ownership") int ownership);
-
     @GetMapping("/machine/consumer/check/devicename/exist")
     ResultData checkDeviceNameExist(@RequestParam("consumerId") String consumerId,
                                     @RequestParam("bindName") String bindName,
                                     @RequestParam("qrcode") String qrcode);
-
     @GetMapping("/machine/consumer/machinelist")
     ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
 
@@ -51,5 +47,11 @@ public interface MachineService {
     @GetMapping("/machine/status/{uid}")
     ResultData machineStatus(@RequestParam("uid") String uid);
 
+    //MachineDefaultLocationController
+    @GetMapping(value="/machine/default/location/probe/cityid")
+    ResultData probeCityIdByQRcode(@RequestParam("qrcode") String qrcode);
 
+    @PostMapping(value="/machine/default/location/update/cityid")
+    ResultData updateCityIdByQRcode(@RequestParam("cityId") String cityId,
+                                    @RequestParam("qrcode") String qrcode);
 }

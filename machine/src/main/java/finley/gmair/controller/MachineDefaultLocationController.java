@@ -23,15 +23,32 @@ public class MachineDefaultLocationController {
     @RequestMapping(value="/bind/cityid",method=RequestMethod.POST)
     public ResultData bindCityIdWithQRcode(String cityId,String qrcode){
         ResultData result = new ResultData();
+        //check empty
         if(StringUtils.isEmpty(cityId)||StringUtils.isEmpty(qrcode)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all information");
             return result;
         }
+        //check exist qrcode
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        ResultData response = machineDefaultLocationService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("exist qrcode");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy now");
+            return result;
+        }
+        //insert (cityId,qrcode) into database
         MachineDefaultLocation machineDefaultLocation = new MachineDefaultLocation();
         machineDefaultLocation.setCityId(cityId);
         machineDefaultLocation.setCodeValue(qrcode);
-        ResultData response = machineDefaultLocationService.create(machineDefaultLocation);
+        response = machineDefaultLocationService.create(machineDefaultLocation);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
