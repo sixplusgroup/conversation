@@ -52,7 +52,7 @@ public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
 
         //byte[] UID = ByteUtil.string2byte(UUID.randomUUID().toString().replaceAll("-", "").substring(0, 12), 12);
 
-        byte[] UID = ByteUtil.string2byte("qweqwe", 12);
+        byte[] UID = ByteUtil.string2byte("zxczxc", 12);
 
 
         long time = System.currentTimeMillis();

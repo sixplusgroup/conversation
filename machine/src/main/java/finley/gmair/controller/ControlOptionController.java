@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.netflix.discovery.converters.Auto;
 import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.model.machine.ControlOption;
 import finley.gmair.model.machine.ControlOptionAction;
@@ -10,6 +11,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.ControlOptionActionVo;
 import finley.gmair.vo.machine.ControlOptionVo;
+import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +29,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/machine/control/option")
 public class ControlOptionController {
+
+    @Autowired
+    private MachineQrcodeBindService machineQrcodeBindService;
 
     @Autowired
     private ControlOptionService controlOptionService;
@@ -101,15 +106,15 @@ public class ControlOptionController {
 
         //according to qrcode find the machineId
         Map<String, Object> condition = new HashMap<>();
-        condition.put("qrcode", qrcode);
+        condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
-        ResultData response = preBindService.fetch(condition);
+        ResultData response = machineQrcodeBindService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("sorry, can not find the qrcode or server is busy");
             return result;
         }
-        String machineId = ((List<PreBindCode>) response.getData()).get(0).getMachineId();
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
         //according to qrcode find the modelId
         response = qrCodeService.fetch(condition);

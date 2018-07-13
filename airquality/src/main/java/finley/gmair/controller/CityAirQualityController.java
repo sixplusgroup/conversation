@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 @RestController
 @RequestMapping(value = "/airquality")
@@ -66,9 +67,12 @@ public class CityAirQualityController {
 
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
+
+        //当前时间去掉分钟和秒数 比如 2018-08-01 23:54:32:221 变为 2018-08-01 23:00:00:000
+        long time = System.currentTimeMillis()/(1000*60*60)*(1000*60*60);
         condition.put("cityId", cityId);
-        condition.put("createTimeGTE", new Timestamp(System.currentTimeMillis()-24*60*60*1000));
-        condition.put("createTimeLTE", new Timestamp(System.currentTimeMillis()));
+        condition.put("createTimeGTE", new Timestamp(time-24*60*60*1000));
+        condition.put("createTimeLTE", new Timestamp(time));
         ResultData response = airQualityStatisticService.fetchAirQualityHourlyStatistic(condition);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
@@ -90,9 +94,12 @@ public class CityAirQualityController {
     @RequestMapping(value = "/daily/cityAqi/{cityId}", method = RequestMethod.GET)
     public ResultData getDailyCityAqi(@PathVariable("cityId") String cityId) {
         ResultData result = new ResultData();
+        long current=System.currentTimeMillis();//当前时间毫秒数
+        long zero=(current/(1000*3600*24))*(1000*3600*24) - TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
         Map<String, Object> condition = new HashMap<>();
         condition.put("cityId", cityId);
-
+        condition.put("createTimeGTE", new Timestamp(zero-7*24*60*60*1000));
+        condition.put("createTimeLTE", new Timestamp(zero));
         ResultData response = airQualityStatisticService.fetchAirQualityDailyStatistic(condition);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {

@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.ctc.wstx.util.StringUtil;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.service.AuthConsumerService;
+import finley.gmair.service.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.transform.Result;
@@ -24,6 +26,40 @@ public class ConsumerController {
 
     @Autowired
     private AuthConsumerService authConsumerService;
+
+    @Autowired
+    private MachineService machineService;
+
+    @RequestMapping(value= "/check/right/qrcode",method = RequestMethod.GET)
+    public ResultData checkUserAccessToQRcode(String qrcode){
+        ResultData result = new ResultData();
+        //check empty
+        if(StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
+        //check this consumerId and the qrcode has been binded.
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+
+        ResultData response = machineService.checkConsumerAccesstoQRcode(consumerId,qrcode);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("this consumer has access to the machine(qrcode).");
+            return result;
+        }else if(response.getResponseCode() ==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to check the consumerId access to the qrcode");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("this consumer has no access to the machine");
+            return result;
+        }
+
+        return result;
+    }
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ResultData profile() {

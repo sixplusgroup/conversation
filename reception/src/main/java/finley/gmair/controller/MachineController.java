@@ -51,6 +51,7 @@ public class MachineController {
         return result;
     }
 
+    //设备初始化时 将qrcode和consumerId绑定
     @PostMapping("/deviceinit")
     public ResultData deviceInit(String qrcode, String deviceName) {
         ResultData result = new ResultData();
@@ -152,6 +153,7 @@ public class MachineController {
         return result;
     }
 
+    //发送遥控信息
     @PostMapping("/{component}/{operation}")
     public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode) {
         ResultData result = new ResultData();

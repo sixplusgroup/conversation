@@ -20,6 +20,39 @@ public class ConsumerQRcodeController {
     @Autowired
     private ConsumerQRcodeBindService consumerQRcodeBindService;
 
+    @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
+    public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode){
+        ResultData result = new ResultData();
+        //check empty
+        if(StringUtils.isEmpty(consumerId)||StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
+
+        //find if the consumerid-qrcode  exist in table consumer_qrcode_bind
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId",consumerId);
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("this consumer have access to the qrcode");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find the codeValue by the consumerId");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to check the consumer access to qrcode.");
+            return result;
+        }
+        return result;
+    }
+
     @RequestMapping(value = "/bindwithqrcode", method = RequestMethod.POST)
     public ResultData bindConsumerWithQRcode(String consumerId, String bindName, String qrcode, int ownership) {
         ResultData result = new ResultData();
@@ -47,6 +80,8 @@ public class ConsumerQRcodeController {
         }
         return result;
     }
+
+
 
     @RequestMapping(value = "/check/devicename/exist", method = RequestMethod.GET)
     public ResultData checkDeviceNameExist(String consumerId, String bindName, String qrcode) {

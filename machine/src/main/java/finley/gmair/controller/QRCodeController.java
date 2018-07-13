@@ -469,6 +469,7 @@ public class QRCodeController {
         return result;
     }
 
+    //根据codeValue查询code_machine_bind表
     @GetMapping(value = "/findbyqrcode/consumer")
     public ResultData findMachineIdByCodeValueFacetoConsumer(String codeValue) {
         ResultData result = new ResultData();
