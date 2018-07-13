@@ -27,6 +27,10 @@ public interface MachineService {
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")
     ResultData findMachineIdByCodeValue(@RequestParam("codeValue") String codeValue);
+
+    @GetMapping("/machine/qrcode/findbyqrcode/consumer")
+    ResultData findMachineIdByCodeValueFacetoConsumer(@RequestParam("codeValue") String codeValue);
+
     @GetMapping("/machine/qrcode/check/existqrcode")
     ResultData checkQRcodeExist(@RequestParam("codeValue") String codeValue);
 
@@ -48,10 +52,10 @@ public interface MachineService {
     ResultData machineStatus(@RequestParam("uid") String uid);
 
     //MachineDefaultLocationController
-    @GetMapping(value="/machine/default/location/probe/cityid")
+    @GetMapping("/machine/default/location/probe/cityid")
     ResultData probeCityIdByQRcode(@RequestParam("qrcode") String qrcode);
 
-    @PostMapping(value="/machine/default/location/update/cityid")
+    @PostMapping("/machine/default/location/update/cityid")
     ResultData updateCityIdByQRcode(@RequestParam("cityId") String cityId,
                                     @RequestParam("qrcode") String qrcode);
 }

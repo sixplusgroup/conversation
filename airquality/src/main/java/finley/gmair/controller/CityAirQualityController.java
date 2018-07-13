@@ -67,7 +67,8 @@ public class CityAirQualityController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("cityId", cityId);
-
+        condition.put("createTimeGTE", new Timestamp(System.currentTimeMillis()-24*60*60*1000));
+        condition.put("createTimeLTE", new Timestamp(System.currentTimeMillis()));
         ResultData response = airQualityStatisticService.fetchAirQualityHourlyStatistic(condition);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {

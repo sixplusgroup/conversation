@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.netflix.discovery.converters.Auto;
 import finley.gmair.form.machine.PreBindForm;
 import finley.gmair.form.machine.QRCodeCreateForm;
 import finley.gmair.form.machine.QRCodeForm;
@@ -9,10 +10,7 @@ import finley.gmair.model.goods.GoodsModel;
 import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.model.machine.QRCodeStatus;
-import finley.gmair.service.GoodsService;
-import finley.gmair.service.IdleMachineService;
-import finley.gmair.service.PreBindService;
-import finley.gmair.service.QRCodeService;
+import finley.gmair.service.*;
 import finley.gmair.util.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -45,6 +43,9 @@ public class QRCodeController {
 
     @Autowired
     private IdleMachineService idleMachineService;
+
+    @Autowired
+    private MachineQrcodeBindService machineQrcodeBindService;
 
     /**
      * This method is used to create a record of qrcode
@@ -467,6 +468,30 @@ public class QRCodeController {
         }
         return result;
     }
+
+    @GetMapping(value = "/findbyqrcode/consumer")
+    public ResultData findMachineIdByCodeValueFacetoConsumer(String codeValue) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", codeValue);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the machineId by qrcode");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to find the machineId by qrcode");
+        }
+        return result;
+    }
+
     @GetMapping(value = "/check/existmachineid")
     public ResultData checkMachineIdExist(String machineId){
         ResultData result = new ResultData();

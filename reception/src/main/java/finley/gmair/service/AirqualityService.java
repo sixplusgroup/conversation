@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient("airquality-agent")
 public interface AirqualityService {
 
+    @CrossOrigin
+    @GetMapping(value = "/airquality/latest/{cityId}")
+    ResultData getLatestCityAirQuality(@RequestParam("cityId") String cityId);
+
     @GetMapping("/airquality/hourly/cityAqi/{cityId}")
     ResultData getHourlyCityAqi(@RequestParam("cityId") String cityId);
 

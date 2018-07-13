@@ -33,17 +33,17 @@ public class GMClientV2 {
         }
     }
 
+
+
     public static void main(String[] args) {
         int port = 8888;
-        for (int i = 0; i < 100; i++) {
-            new Thread(() -> {
-                try {
-                    new GMClientV2().connect(port, "118.31.78.254");
-                    System.out.println("A new client has been created");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
+        new Thread(() -> {
+            try {
+                new GMClientV2().connect(port, "118.31.78.254");
+                System.out.println("A new client has been created");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }

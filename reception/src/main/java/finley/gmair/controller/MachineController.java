@@ -194,7 +194,7 @@ public class MachineController {
     @RequestMapping(value = "/info/probe", method = RequestMethod.GET)
     public ResultData getMachineInfo(String qrcode) {
         ResultData result = new ResultData();
-        ResultData response = machineService.findMachineIdByCodeValue(qrcode);
+        ResultData response = machineService.findMachineIdByCodeValueFacetoConsumer(qrcode);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
