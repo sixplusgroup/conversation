@@ -37,9 +37,6 @@ public class ControlOptionController {
     private ControlOptionService controlOptionService;
 
     @Autowired
-    private PreBindService preBindService;
-
-    @Autowired
     private CoreService coreService;
 
     @Autowired

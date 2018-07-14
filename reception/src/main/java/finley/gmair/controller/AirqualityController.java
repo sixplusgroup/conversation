@@ -1,23 +1,15 @@
 package finley.gmair.controller;
 
-import com.sun.research.ws.wadl.Link;
-import finley.gmair.model.machine.MachineDefaultLocation;
-import finley.gmair.model.machine.v2.MachineStatus;
 import finley.gmair.service.AirqualityService;
-import finley.gmair.service.AuthConsumerService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.xml.transform.Result;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -112,7 +104,7 @@ public class AirqualityController {
         return result;
     }
 
-    //根据qrcode给出那个城市当天的pm2.5记录
+    //根据qrcode给出那个城市过去24小时的pm2.5记录
     @RequestMapping(value="/city/hourly/aqi",method = RequestMethod.GET)
     ResultData getCityHourlyAqi(String qrcode) {
         ResultData result = new ResultData();
@@ -153,7 +145,7 @@ public class AirqualityController {
         }
         return result;
     }
-    //根据qrcode给出那个城市当周的pm2.5记录
+    //根据qrcode给出那个城市过去一周的pm2.5记录
     @RequestMapping(value="/city/daily/aqi",method = RequestMethod.GET)
     ResultData getCityDailyAqi(String qrcode){
         ResultData result = new ResultData();
