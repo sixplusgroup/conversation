@@ -45,7 +45,8 @@ public class ControlOptionController {
     @Autowired
     private QRCodeService qrCodeService;
 
-    //创建ControlOption
+    //先查control_option表,如果对应的操作不存在,则创建.
+    //如果存在,取出controlId,并根据传入的值新建control_option_action配置.
     @PostMapping(value = "/create")
     public ResultData setControlOption(ControlOptionForm form) {
         ResultData result = new ResultData();
@@ -104,7 +105,7 @@ public class ControlOptionController {
             return result;
         }
 
-        //according to qrcode find the machineId
+        //根据qrcode 查 code_machine_bind表,取出machineId
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
@@ -116,7 +117,7 @@ public class ControlOptionController {
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
-        //according to qrcode find the modelId
+        //根据qrcode 查 qrcode表, 取出机器型号modelId
         response = qrCodeService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -125,19 +126,19 @@ public class ControlOptionController {
         }
         String modelId = ((List<QRCode>) response.getData()).get(0).getModelId();
 
-        //according to the component find the control_id
+        //根据component查control_option表, 取出component对应的controlId
         condition.clear();
         condition.put("optionComponent", component);
         condition.put("blockFlag", false);
         response = controlOptionService.fetchControlOption(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the option or server is busy");
+            result.setDescription("sorry, can not find the controlId with component");
             return result;
         }
         String controlId = ((List<ControlOptionVo>) response.getData()).get(0).getControlId();
 
-        //according the  controlId,modelId and operation find the commandValue
+        //根据controlId,modelId and operation查control_action表, 取出应传给core模块的值commandValue
         condition.clear();
         condition.put("controlId", controlId);
         condition.put("modelId", modelId);
@@ -146,7 +147,7 @@ public class ControlOptionController {
         response = controlOptionService.fetchControlOptionAction(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the action value or server is busy now");
+            result.setDescription("sorry, can not find the action value with controlId,modelId,actionOperator");
             return result;
         }
         int commandValue = ((List<ControlOptionActionVo>) response.getData()).get(0).getCommandValue();
@@ -173,7 +174,7 @@ public class ControlOptionController {
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to operate the machine");
+            result.setDescription("No channel found for the uid");
             return result;
         }
         return result;

@@ -166,7 +166,7 @@ public class MachineController {
         ResultData response = machineService.chooseComponent(qrcode,component,operation);
         if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to operate");
+            result.setDescription(response.getDescription());
             return result;
         }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
