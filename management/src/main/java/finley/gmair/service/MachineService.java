@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,4 +18,12 @@ public interface MachineService {
 
     @PostMapping("/machine/qrcode/check")
     ResultData check(@RequestParam("candidate") String candidate);
+
+    @PostMapping("/machine/control/option/create")
+    ResultData setControlOption(@RequestParam("optionName") String optionName,
+                                @RequestParam("optionComponent") String optionComponent,
+                                @RequestParam("modelId") String modelId,
+                                @RequestParam("actionName") String actionName,
+                                @RequestParam("actionOperator") String actionOperator,
+                                @RequestParam("commandValue") String commandValue);
 }
