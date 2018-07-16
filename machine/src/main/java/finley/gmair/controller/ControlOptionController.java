@@ -91,6 +91,33 @@ public class ControlOptionController {
         return result;
     }
 
+    @PostMapping(value = "/probe/bymodelid")
+    public ResultData probeControlOptionByModelId(String modelId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(modelId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the modelId");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("modelId",modelId);
+        condition.put("blockFlag",false);
+        ResultData response = controlOptionService.fetchControlOption(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to probe control option by modelId");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find control option by modelId");
+            return result;
+        }
+        result.setData(response.getData());
+        result.setDescription("success to find control option by modelId");
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        return result;
+    }
+
     //用户操作机器
     @PostMapping("/operate")
     public ResultData chooseComponent(String qrcode, String component, String operation) {

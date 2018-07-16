@@ -178,7 +178,7 @@ public class MachineController {
     }
 
 
-
+    //设置配置项
     @PostMapping("/control/option/create")
     public ResultData setControlOption(String optionName, String optionComponent, String modelId, String actionName, String actionOperator) {
         ResultData result = new ResultData();
@@ -191,6 +191,11 @@ public class MachineController {
         return result;
     }
 
+    //根据modelId查询ControlOption
+    @GetMapping("/control/option/probe")
+    public ResultData probeControlOption(String modelId){
+        return machineService.probeControlOptionByModelId(modelId);
+    }
 
     //根据当前的qrcode查询这台机器的各种值(co2,pm2.5等)
     @RequestMapping(value = "/info/probe", method = RequestMethod.GET)

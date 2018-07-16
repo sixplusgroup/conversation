@@ -19,6 +19,8 @@ public interface MachineService {
                                 @RequestParam("modelId") String modelId,
                                 @RequestParam("actionName") String actionName,
                                 @RequestParam("actionOperator") String actionOperator);
+    @PostMapping("/machine/control/option/probe/bymodelid")
+    ResultData probeControlOptionByModelId(@RequestParam("modelId") String modelId);
     @PostMapping("/machine/control/option/operate")
     ResultData chooseComponent(@RequestParam("qrcode") String qrcode,
                                @RequestParam("component") String component,
