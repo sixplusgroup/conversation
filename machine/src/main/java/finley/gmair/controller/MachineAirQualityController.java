@@ -67,6 +67,7 @@ public class MachineAirQualityController {
         MachineStatus result = machineStatusCacheService.fetch(uid);
         return result;
     }
+    //与上面这个从缓存中读取接口功能相同,但返回值改成ResultData方便通过Feign调用
     @RequestMapping (value = "/status/{uid}",method = RequestMethod.GET)
     public ResultData machineStatus(@PathVariable("uid") String uid) {
         ResultData result = new ResultData();
