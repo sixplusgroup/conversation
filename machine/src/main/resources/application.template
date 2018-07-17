@@ -8,12 +8,6 @@ spring.datasource.url=jdbc:mysql://127.0.0.1:3306/gmair_airquality?useLegacyDate
 spring.datasource.username=root
 spring.datasource.password=
 
-##memcache configuration
-memcached.cache.servers=127.0.0.1:11211
-memcached.cache.mode=static
-##code will be expired with 5 minutes
-memcached.cache.expiration=300
-
 #rabbitmq configuration
 spring.rabbitmq.host=localhost
 spring.rabbitmq.port=5672
@@ -22,3 +16,7 @@ spring.rabbitmq.password=
 
 #mongo
 spring.data.mongodb.uri=mongodb://localhost:27017/gmair_packet
+
+#spring cache
+spring.cache.type=caffeine
+spring.cache.caffeine.spec=expireAfterAccess=60s
