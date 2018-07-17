@@ -66,7 +66,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             String uid = packet.getUID().trim();
             CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx) {
-//                System.out.println(new StringBuffer(uid) + " is (re-)connected to the server");
                 repository.push(uid, ctx);
             }
             //check the timestamp of the packet, if longer that 0.5 minute, abort it

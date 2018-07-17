@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.util.Iterator;
@@ -34,7 +35,7 @@ public class GMRepository {
     }
 
     public GMRepository push(String key, ChannelHandlerContext value) {
-        if (cache.get(key) != value) {
+        if (cache.get(key) != value && !StringUtils.isEmpty(cache.get(key))) {
             cache.get(key).close();
         }
         cache.put(key, value);
