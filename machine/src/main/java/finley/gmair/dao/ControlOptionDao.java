@@ -13,4 +13,6 @@ public interface ControlOptionDao {
     ResultData insert(ControlOption option);
 
     ResultData query(Map<String, Object> condition);
+
+    ResultData queryByModelId(Map<String, Object> condition);
 }

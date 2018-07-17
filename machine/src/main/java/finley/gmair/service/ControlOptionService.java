@@ -18,4 +18,6 @@ public interface ControlOptionService {
     ResultData createControlOptionAction(ControlOptionAction optionAction);
 
     ResultData fetchControlOptionAction(Map<String, Object> condition);
+
+    ResultData fetchControlOptionActionByModelId(Map<String, Object> condition);
 }

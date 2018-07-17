@@ -102,7 +102,7 @@ public class ControlOptionController {
         Map<String,Object> condition = new HashMap<>();
         condition.put("modelId",modelId);
         condition.put("blockFlag",false);
-        ResultData response = controlOptionService.fetchControlOption(condition);
+        ResultData response = controlOptionService.fetchControlOptionActionByModelId(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to probe control option by modelId");
