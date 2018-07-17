@@ -39,6 +39,7 @@ public class GMClientV2 {
         int port = 8888;
         new Thread(() -> {
             try {
+                //服务器host: 118.31.78.254     my host: 192.168.2.59
                 new GMClientV2().connect(port, "118.31.78.254");
                 System.out.println("A new client has been created");
             } catch (Exception e) {

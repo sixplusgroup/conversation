@@ -11,7 +11,7 @@ public interface MachineStatusCacheService {
 
     @CachePut(value = "machineStatus", key = "#machineStatus.uid", condition = "#machineStatus != null")
     default MachineStatus generate(MachineStatus machineStatus) {
-        System.out.println("时间戳:"+new Timestamp(System.currentTimeMillis())+",此方法被执行!");
+        //System.out.println("时间戳:"+new Timestamp(System.currentTimeMillis())+",此方法被执行!");
         return machineStatus;
     }
 
