@@ -73,7 +73,7 @@ public class MachineAirQualityController {
         ResultData result = new ResultData();
         MachineStatus machineStatus = machineStatusCacheService.fetch(uid);
         if(machineStatus==null){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find");
             return result;
         }

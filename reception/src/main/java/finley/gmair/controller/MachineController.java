@@ -221,11 +221,16 @@ public class MachineController {
             result.setDescription("success to get air quality");
             result.setData(response.getData());
             return result;
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find");
             return result;
+        } else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the air quality which machine recorded");
+            return result;
         }
+        return result;
     }
 
     //根据consumerId获取用户的machine list
