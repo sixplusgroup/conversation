@@ -55,15 +55,14 @@ public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
         byte[] UID = ByteUtil.string2byte("zxczxc", 12);
 
 
-        long time = System.currentTimeMillis();
-
-        byte[] TIM = ByteUtil.long2byte(time, 8);
-
-        byte[] LEN = new byte[]{0x0C};
-
-        byte[] data = new byte[]{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
+        byte[] data = new byte[]{0x05, 0x03, 0x02, 0x03, 0x07, 0x04, 0x03, 0x02, 0x09, 0x02, 0x03, 0x04};
 
         while (true) {
+
+            long time = System.currentTimeMillis();
+            byte[] TIM = ByteUtil.long2byte(time, 8);
+
+            byte[] LEN = new byte[]{0x0C};
 
             ProbePacket packet = new ProbePacket(CTF, CID, UID, TIM, LEN, data);
 

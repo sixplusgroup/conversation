@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
+import java.sql.Timestamp;
 
 @Component
 @ChannelHandler.Sharable
@@ -64,10 +65,13 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             /* if match 0xFF, then it should be the 2nd version packet */
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
             String uid = packet.getUID().trim();
+            //System.out.println(uid + "send packet!");
             CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx) {
                 repository.push(uid, ctx);
             }
+
+            //System.out.println("current time: "+new Timestamp(System.currentTimeMillis()) + "... packet time:" + new Timestamp(packet.getTime()));
             //check the timestamp of the packet, if longer that 0.5 minute, abort it
             if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 30) {
                 return;
@@ -103,7 +107,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                         byte[] heat = new byte[]{data[10]};
                         byte[] light = new byte[]{data[11]};
                         MachineStatus status = new MachineStatus(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temp), ByteUtil.byte2int(humid), ByteUtil.byte2int(co2), ByteUtil.byte2int(volume), ByteUtil.byte2int(power), ByteUtil.byte2int(mode), ByteUtil.byte2int(heat), ByteUtil.byte2int(light));
-                        System.out.println(new StringBuffer("Machine status received: " + JSONObject.toJSONString(status)));
+//                        System.out.println(new StringBuffer("Machine status received: " + JSONObject.toJSONString(status)));
                         communicationService.create(status);
                     } else {
                         Field[] fields = PacketInfo.class.getDeclaredFields();
