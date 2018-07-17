@@ -160,7 +160,7 @@ public class ControlOptionController {
             result.setDescription("sorry, can not find the controlId with component");
             return result;
         }
-        String controlId = ((List<ControlOptionVo>) response.getData()).get(0).getControlId();
+        String controlId = ((List<ControlOption>) response.getData()).get(0).getControlId();
 
         //根据controlId,modelId and operation查control_action表, 取出应传给core模块的值commandValue
         condition.clear();
@@ -169,9 +169,14 @@ public class ControlOptionController {
         condition.put("actionOperator", operation);
         condition.put("blockFlag", false);
         response = controlOptionService.fetchControlOptionAction(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find the action value with controlId,modelId,actionOperator");
+            return result;
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the action value with controlId,modelId,actionOperator");
+            result.setDescription("fail to find the action value with controlId,modelId,actionOperator");
             return result;
         }
         int commandValue = ((List<ControlOptionActionVo>) response.getData()).get(0).getCommandValue();

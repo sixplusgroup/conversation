@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.machine.control.option">
-    <resultMap id="controlOptionVo" type="finley.gmair.vo.machine.ControlOptionVo">
+    <resultMap id="controlOption" type="finley.gmair.model.machine.ControlOption">
         <result property="controlId" column="option_id"></result>
         <result property="optionName" column="option_name"></result>
         <result property="optionComponent" column="option_component"></result>
-        <result property="modelId" column="model_id"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
-        <collection property="actions" select="getActions" column="controlId = option_id,modelId = model_id"></collection>
     </resultMap>
 
     <resultMap id="controlOptionActionVo" type="finley.gmair.vo.machine.ControlOptionActionVo">
@@ -18,6 +16,16 @@
         <result property="commandValue" column="command_value"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <resultMap id="controlOptionVo" type="finley.gmair.vo.machine.ControlOptionVo">
+        <result property="controlId" column="option_id"></result>
+        <result property="optionName" column="option_name"></result>
+        <result property="optionComponent" column="option_component"></result>
+        <result property="modelId" column="model_id"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+        <collection property="actions" select="getActions" column="controlId = option_id,modelId = model_id"></collection>
     </resultMap>
     
     <select id="getActions" resultMap="controlOptionActionVo">
@@ -31,7 +39,7 @@
         VALUES(#{controlId}, #{optionName}, #{optionComponent}, #{blockFlag}, #{createAt})
     </insert>
 
-    <select id="query" resultMap="controlOptionVo" parameterType="java.util.Map">
+    <select id="query" resultMap="controlOption" parameterType="java.util.Map">
         SELECT option_id, option_name, option_component, block_flag, create_time
         FROM gmair_machine.control_option
         WHERE 1 = 1
