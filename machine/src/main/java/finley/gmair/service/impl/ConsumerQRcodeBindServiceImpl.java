@@ -8,6 +8,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.transform.Result;
 import java.util.Map;
 
 @Service
@@ -48,4 +49,18 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
         return result;
     }
 
+    @Override
+    public ResultData modifyConsumerQRcodeBind(Map<String, Object> condition){
+        ResultData result= new ResultData();
+        ResultData response = consumerQRcodeBindDao.update(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK)
+        {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to modify bind");
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to modify bind");
+        }
+        return result;
+    }
 }

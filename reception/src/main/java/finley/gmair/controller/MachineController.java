@@ -55,18 +55,27 @@ public class MachineController {
     @PostMapping("/deviceinit")
     public ResultData deviceInit(String qrcode, String deviceName) {
         ResultData result = new ResultData();
+        if(StringUtils.isEmpty(qrcode)||StringUtils.isEmpty(deviceName)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
-        ResultData response = machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
+    }
+
+    @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
+    public ResultData unbindConsumerWithQRcode(String qrcode){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(qrcode)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to init");
+            result.setDescription("please provide all information");
             return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to init");
         }
-        return result;
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        return machineService.unbindConsumerWithQRcode(consumerId,qrcode);
     }
 
     /**

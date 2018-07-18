@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.xml.transform.Result;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,10 +23,10 @@ public class ConsumerQRcodeController {
     private ConsumerQRcodeBindService consumerQRcodeBindService;
 
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
-    public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode){
+    public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
         ResultData result = new ResultData();
         //check empty
-        if(StringUtils.isEmpty(consumerId)||StringUtils.isEmpty(qrcode)){
+        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all information");
             return result;
@@ -32,28 +34,28 @@ public class ConsumerQRcodeController {
 
         //find if the consumerid-qrcode  exist in table consumer_qrcode_bind
         Map<String, Object> condition = new HashMap<>();
-        condition.put("consumerId",consumerId);
-        condition.put("codeValue",qrcode);
-        condition.put("blockFlag",false);
+        condition.put("consumerId", consumerId);
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("this consumer have access to the qrcode");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find the codeValue by the consumerId");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to check the consumer access to qrcode.");
+            result.setDescription("fail to check whether the consumer access to qrcode.");
             return result;
         }
         return result;
     }
 
-    @RequestMapping(value = "/bindwithqrcode", method = RequestMethod.POST)
+    @RequestMapping(value = "/qrcode/bind", method = RequestMethod.POST)
     public ResultData bindConsumerWithQRcode(String consumerId, String bindName, String qrcode, int ownership) {
         ResultData result = new ResultData();
         //check empty
@@ -62,14 +64,27 @@ public class ConsumerQRcodeController {
             result.setDescription("please provide all the information");
             return result;
         }
+        //check whether the bind exist
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId",consumerId);
+        condition.put("codeValue",qrcode);
+        condition.put("ownership",ownership);
+        condition.put("blockFlag",false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("exist bind,don't have to bind again");
+            return result;
+        }
 
-        //create
+        //create bind
         ConsumerQRcodeBind consumerQRcodeBind = new ConsumerQRcodeBind();
         consumerQRcodeBind.setConsumerId(consumerId);
         consumerQRcodeBind.setBindName(bindName.trim());
         consumerQRcodeBind.setCodeValue(qrcode);
         consumerQRcodeBind.setOwnership(Ownership.fromValue(ownership));
-        ResultData response = consumerQRcodeBindService.createConsumerQRcodeBind(consumerQRcodeBind);
+        response = consumerQRcodeBindService.createConsumerQRcodeBind(consumerQRcodeBind);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
@@ -81,29 +96,77 @@ public class ConsumerQRcodeController {
         return result;
     }
 
+    @RequestMapping(value = "/qrcode/unbind", method = RequestMethod.POST)
+    public ResultData unbindConsumerWithQRcode(String consumerId, String qrcode) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
 
+        //find the consumerId-codeValue correspond record in consumer_qrcode_bind table
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId", consumerId);
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get consumer code bind");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find consumer code bind");
+            return result;
+        }
+        ConsumerQRcodeBind consumerQRcodeBind = ((List<ConsumerQRcodeBind>) response.getData()).get(0);
+
+        //according to the onwership,update the consumer_qrcode_bind table
+        if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
+            condition.clear();
+            condition.put("codeValue",qrcode);
+            condition.put("blockFlag",true);
+        } else {
+            condition.clear();
+            condition.put("consumerId",consumerId);
+            condition.put("codeValue",qrcode);
+            condition.put("blockFlag",true);
+        }
+        response=consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to unbind the consumer with the qrcode");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to unbind the consumer with the qrcode");
+        }
+        return result;
+    }
 
     @RequestMapping(value = "/check/devicename/exist", method = RequestMethod.GET)
     public ResultData checkDeviceNameExist(String consumerId, String bindName, String qrcode) {
         ResultData result = new ResultData();
         //check empty
-        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(bindName) || StringUtils.isEmpty(qrcode)){
+        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(bindName) || StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all the information");
             return result;
         }
 
         //check qrcode exist
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("codeValue",qrcode);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("exist qrcode");
             return result;
-        }else if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now");
             return result;
@@ -111,20 +174,20 @@ public class ConsumerQRcodeController {
 
         //check bindName exist
         condition.clear();
-        condition.put("consumerId",consumerId);
-        condition.put("bindName",bindName);
-        condition.put("blockFlag",false);
+        condition.put("consumerId", consumerId);
+        condition.put("bindName", bindName);
+        condition.put("blockFlag", false);
         response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("exist device name");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now");
             return result;
-        }else{
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("this device name has not been used");
         }
@@ -132,34 +195,35 @@ public class ConsumerQRcodeController {
 
     }
 
-    @RequestMapping(value="/machinelist", method = RequestMethod.GET)
-    public ResultData getMachineListByConsumerId(String consumerId){
+    @RequestMapping(value = "/machinelist", method = RequestMethod.GET)
+    public ResultData getMachineListByConsumerId(String consumerId) {
         ResultData result = new ResultData();
         //check empty
-        if( StringUtils.isEmpty(consumerId)){
+        if (StringUtils.isEmpty(consumerId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all information");
             return result;
         }
 
         Map<String, Object> condition = new HashMap<>();
-        condition.put("consumerId",consumerId);
-        condition.put("blockFlag",false);
+        condition.put("consumerId", consumerId);
+        condition.put("blockFlag", false);
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not found any one");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("success");
         }
         return result;
     }
+
 
 }

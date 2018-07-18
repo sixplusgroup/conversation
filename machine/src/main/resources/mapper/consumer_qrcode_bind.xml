@@ -40,4 +40,30 @@
         </if>
 
     </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_machine.consumer_code_bind
+        <set>
+            <if test="consumerId != null">
+                consumer_id = #{consumerId},
+            </if>
+            <if test="bindName != null">
+                bind_name = #{bindName},
+            </if>
+            <if test="codeValue != null">
+                code_value = #{codeValue},
+            </if>
+            <if test="ownership != null">
+                ownership = #{ownership,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            code_value = #{codeValue}
+        </set>
+        WHERE code_value = #{codeValue}
+        <if test="consumerId != null">
+            AND consumer_id = #{consumerId}
+        </if>
+    </update>
 </mapper>

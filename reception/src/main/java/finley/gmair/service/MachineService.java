@@ -37,22 +37,25 @@ public interface MachineService {
     ResultData checkQRcodeExist(@RequestParam("codeValue") String codeValue);
 
     //ConsumerQRcodeController
-    @PostMapping("/machine/consumer/bindwithqrcode")
+    @PostMapping("/machine/consumer/qrcode/bind")
     ResultData bindConsumerWithQRcode(@RequestParam("consumerId") String consumerId,
                                       @RequestParam("bindName") String bindName,
                                       @RequestParam("qrcode") String qrcode,
                                       @RequestParam("ownership") int ownership);
+    @PostMapping("/machine/consumer/qrcode/unbind")
+    ResultData unbindConsumerWithQRcode(@RequestParam("consumerId") String consumerId,
+                                        @RequestParam("qrcode") String qrcode);
     @GetMapping("/machine/consumer/check/devicename/exist")
     ResultData checkDeviceNameExist(@RequestParam("consumerId") String consumerId,
                                     @RequestParam("bindName") String bindName,
                                     @RequestParam("qrcode") String qrcode);
-
     @PostMapping("/machine/consumer/check/consumerid/accessto/qrcode")
     ResultData checkConsumerAccesstoQRcode(@RequestParam("consumerId") String consumerId,
                                            @RequestParam("qrcode") String qrcode);
-
     @GetMapping("/machine/consumer/machinelist")
     ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
+
+
 
     //MachineAirQualityController
     @GetMapping("/machine/status/{uid}")
@@ -61,7 +64,6 @@ public interface MachineService {
     //MachineDefaultLocationController
     @GetMapping("/machine/default/location/probe/cityid")
     ResultData probeCityIdByQRcode(@RequestParam("qrcode") String qrcode);
-
     @PostMapping("/machine/default/location/update/cityid")
     ResultData updateCityIdByQRcode(@RequestParam("cityId") String cityId,
                                     @RequestParam("qrcode") String qrcode);

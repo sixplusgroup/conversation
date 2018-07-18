@@ -9,4 +9,6 @@ public interface ConsumerQRcodeBindService {
     ResultData createConsumerQRcodeBind(ConsumerQRcodeBind consumerQRcodeBind);
 
     ResultData fetchConsumerQRcodeBind(Map<String, Object> condition);
+
+    ResultData modifyConsumerQRcodeBind(Map<String, Object> condition);
 }
