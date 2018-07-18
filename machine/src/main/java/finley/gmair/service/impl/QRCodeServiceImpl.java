@@ -43,7 +43,7 @@ public class QRCodeServiceImpl implements QRCodeService {
             DecimalFormat principle = new DecimalFormat("000");
             for (int i = 0; i < num; i++) {
                 String value = new StringBuffer(batchValue).append(principle.format(i)).append(QRSerialGenerator.generate()).toString();
-                String url = "http://" + MachineProperties.getValue("domain_url") + MachineProperties.getValue("qrcode_base") + "/" + value;
+                String url = "https://" + MachineProperties.getValue("domain_url") + MachineProperties.getValue("qrcode_base") + value;
                 QRCode code = new QRCode(modelId, batchValue, value, url, QRCodeStatus.CREATED);
                 resposne = qrCodeDao.insert(code);
                 if (resposne.getResponseCode() == ResponseCode.RESPONSE_OK) {
