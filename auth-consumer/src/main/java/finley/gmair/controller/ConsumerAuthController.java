@@ -9,9 +9,11 @@ import finley.gmair.model.auth.VerificationCode;
 import finley.gmair.model.consumer.Address;
 import finley.gmair.model.consumer.Consumer;
 import finley.gmair.model.message.MessageCatalog;
+import finley.gmair.model.wechat.WechatUser;
 import finley.gmair.service.ConsumerService;
 import finley.gmair.service.MessageService;
 import finley.gmair.service.SerialService;
+import finley.gmair.service.WechatService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerVo;
@@ -39,6 +41,9 @@ public class ConsumerAuthController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private WechatService wechatService;
 
 
     /**
@@ -416,6 +421,68 @@ public class ConsumerAuthController {
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now");
+            return result;
+        }
+    }
+
+    /**
+     * This method is called to get consumer information from wechat
+     * and update it to consumer_info table
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/consumer/update")
+    public ResultData updateConsumer(String openId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(openId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill the fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechat", openId);
+        ResultData response = consumerService.fetchConsumer(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        String consumerId = ((List<Consumer>) response.getData()).get(0).getConsumerId();
+
+        response = wechatService.findConsumer(openId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Consumer fetch error, please try again later");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("No consumer");
+            return result;
+        }
+        WechatUser user = ((List<WechatUser>) response.getData()).get(0);
+        condition.clear();
+        condition.put("consumerId", consumerId);
+        condition.put("username", user.getNickName());
+        condition.put("wechat", user.getWechatId());
+        response = consumerService.modifyConsumer(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            condition.clear();
+            condition.put("consumerId", consumerId);
+            condition.put("province", user.getUserProvince());
+            condition.put("city", user.getUserCity());
+            response = consumerService.modifyConsumerAddress(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                return result;
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to update consumer address");
+                return result;
+            }
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update consumer info");
             return result;
         }
     }

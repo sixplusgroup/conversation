@@ -40,6 +40,26 @@ public class WechatUserController {
         return result;
     }
 
+    @PostMapping(value = "/getByOpenId")
+    public ResultData getUserById(String openId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("wechatId", openId);
+        ResultData response = wechatUserService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No consumer found");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Consumer query error");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
     @PostMapping(value = "/openid")
     public ResultData openid(String code) {
         ResultData result = new ResultData();
