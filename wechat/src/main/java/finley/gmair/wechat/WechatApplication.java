@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.consumer.Consumer;
-import finley.gmair.model.machine.ConsumerQRcodeBind;
+import finley.gmair.model.machine.v2.MachineStatus;
 import finley.gmair.model.wechat.*;
 import finley.gmair.model.wechat.Article;
 import finley.gmair.service.*;
@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @SpringBootApplication
@@ -150,22 +148,36 @@ public class WechatApplication {
                     if (emessage.getEvent().equals("CLICK") && emessage.getEventKey().equals("gmair")) {
                         try {
                             String openId = emessage.getFromUserName();
-                            ResultData data = authConsumerService.findConsumer(openId);
-                            if (data.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                Consumer consumerVo = ((List<Consumer>) data.getData()).get(0);
-                                data = machineService.findMachineList(consumerVo.getConsumerId());
-                                if (data.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                    JSONArray array = JSONArray.parseArray(JSON.toJSONString(data.getData()));
-                                    List<String> qrCodes = new ArrayList<>();
+                            ResultData resultData = authConsumerService.findConsumer(openId);
+                            if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                                Consumer consumerVo = ((List<Consumer>) resultData.getData()).get(0);
+                                resultData = machineService.findMachineList(consumerVo.getConsumerId());
+                                if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                                    JSONArray array = JSONArray.parseArray(JSON.toJSONString(resultData.getData()));
+                                    StringBuffer sb = new StringBuffer();
                                     for (Object item : array) {
-
+                                        JSONObject json = JSONObject.parseObject(JSON.toJSONString(item));
+                                        MachineStatus status = ((List<MachineStatus>) machineService.findMachineStatus(json.getString("codeValue")).getData()).get(0);
+                                        sb.append("PM2.5 :" + status.getPm2_5() + "µg/m³\n");
+                                        sb.append("室内温度:" + status.getTemperature() + "℃\n");
+                                        sb.append("室内湿度:" + status.getHumidity() + "%\n");
+                                        if (status.getCo2()> 0 && status.getCo2() != 2000) {
+                                            sb.append("二氧化碳:" + status.getCo2() + "ppm\n");
+                                        }
+                                        sb.append("风机风量:" + status.getVolume() + "m³/h\n");
+                                        if (status.gethStatus().equals("ON")) {
+                                            sb.append("设备辅热:开\n");
+                                        } else {
+                                            sb.append("设备辅热:关\n");
+                                        }
+                                        sb.append("\n\n");
                                     }
                                     List<Article> list = new ArrayList<>();
                                     Article article = new Article();
                                     article.setTitle("果麦新风");
                                     article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
                                     article.setUrl(new StringBuffer("https://reception.gmair.net/machine/list").toString());
-                                    article.setDescription("温度、湿度、风量、辅热……");
+                                    article.setDescription(sb.toString());
                                     list.add(article);
                                     ArticleOutMessage result = initial(list, emessage);
                                     content.alias("xml", ArticleOutMessage.class);
@@ -173,7 +185,9 @@ public class WechatApplication {
                                     String xml = content.toXML(result);
                                     return xml;
                                 }
-                                if (data.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                                if (resultData.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                                    content.alias("xml", TextOutMessage.class);
+                                    TextOutMessage result = new TextOutMessage();
 
                                 }
                             }
