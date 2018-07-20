@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface AuthConsumerService {
 
     @PostMapping("/auth/probe/consumerid/by/openid")
-    ResultData findConsumer(@RequestParam("openId") String openId);
+    ResultData findConsumer(@RequestParam("openid") String openid);
 
 }

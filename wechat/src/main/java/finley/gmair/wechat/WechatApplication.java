@@ -146,60 +146,36 @@ public class WechatApplication {
                         return xml;
                     }
                     if (emessage.getEvent().equals("CLICK") && emessage.getEventKey().equals("gmair")) {
-                        try {
-                            String openId = emessage.getFromUserName();
-                            ResultData resultData = authConsumerService.findConsumer(openId);
-                            if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                Consumer consumerVo = ((List<Consumer>) resultData.getData()).get(0);
-                                resultData = machineService.findMachineList(consumerVo.getConsumerId());
-                                if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                    JSONArray array = JSONArray.parseArray(JSON.toJSONString(resultData.getData()));
-                                    StringBuffer sb = new StringBuffer();
-                                    for (Object item : array) {
-                                        JSONObject json = JSONObject.parseObject(JSON.toJSONString(item));
-                                        MachineStatus status = ((List<MachineStatus>) machineService.findMachineStatus(json.getString("codeValue")).getData()).get(0);
-                                        sb.append("PM2.5 :" + status.getPm2_5() + "µg/m³\n");
-                                        sb.append("室内温度:" + status.getTemperature() + "℃\n");
-                                        sb.append("室内湿度:" + status.getHumidity() + "%\n");
-                                        if (status.getCo2()> 0 && status.getCo2() != 2000) {
-                                            sb.append("二氧化碳:" + status.getCo2() + "ppm\n");
-                                        }
-                                        sb.append("风机风量:" + status.getVolume() + "m³/h\n");
-                                        if (status.gethStatus().equals("ON")) {
-                                            sb.append("设备辅热:开\n");
-                                        } else {
-                                            sb.append("设备辅热:关\n");
-                                        }
-                                        sb.append("\n\n");
-                                    }
-                                    List<Article> list = new ArrayList<>();
-                                    Article article = new Article();
-                                    article.setTitle("果麦新风");
-                                    article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
-                                    article.setUrl(new StringBuffer("https://reception.gmair.net/machine/list").toString());
-                                    article.setDescription(sb.toString());
-                                    list.add(article);
-                                    ArticleOutMessage result = initial(list, emessage);
-                                    content.alias("xml", ArticleOutMessage.class);
-                                    content.alias("item", Article.class);
-                                    String xml = content.toXML(result);
-                                    return xml;
-                                }
-                                if (resultData.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                                    content.alias("xml", TextOutMessage.class);
-                                    TextOutMessage result = new TextOutMessage();
-
-                                }
-                            }
-                        }catch(Exception e){
-                                e.printStackTrace();
+                        String openId = emessage.getFromUserName();
+                        response = authConsumerService.findConsumer(openId);
+                        System.out.println("response " + JSON.toJSONString(response));
+                        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                            //register article
+                            return "";
+                        }
+                        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                            List<Article> list = new ArrayList<>();
+                            Article article = new Article();
+                            article.setTitle("果麦新风");
+                            article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
+                            article.setUrl(new StringBuffer("https://reception.gmair.net/machine/list").toString());
+//                                    article.setDescription(sb.toString());
+                            list.add(article);
+                            ArticleOutMessage result = initial(list, emessage);
+                            content.alias("xml", ArticleOutMessage.class);
+                            content.alias("item", Article.class);
+                            String xml = content.toXML(result);
+                            return xml;
                         }
                     }
                     break;
                 default:
                     return "";
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e)
+
+        {
             e.printStackTrace();
         }
         return "";
