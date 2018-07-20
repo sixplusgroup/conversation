@@ -12,6 +12,16 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="articleReplyVo" type="finley.gmair.vo.wechat.ArticleReplyVo">
+        <result property="templateId" column="template_id"></result>
+        <result property="messageType" column="message_type"></result>
+        <result property="keyword" column="keyword"></result>
+        <result property="articleTitle" column="article_title"></result>
+        <result property="articleUrl" column="article_url"></result>
+        <result property="pictureUrl" column="picture_url"></result>
+        <result property="descriptionContent" column="description_content"></result>
+    </resultMap>
+
     <insert id="insert" parameterType="finley.gmair.model.wechat.ArticleTemplate" useGeneratedKeys="false">
         INSERT INTO gmair_wechat.article_template(template_id, article_title, description_type, description_content, picture_url, article_url, block_flag, create_time)
         VALUES (#{templateId}, #{articleTitle}, #{descriptionType, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{descriptionContent}, #{pictureUrl}, #{articleUrl}, #{blockFlag}, #{createAt})
@@ -45,4 +55,30 @@
         ORDER BY create_time DESC
     </select>
 
+    <select id="articleReplyQuery" parameterType="java.util.Map" resultMap="articleReplyVo">
+        SELECT template_id, message_type, keyword, article_title, article_url, picture_url, description_content
+        FROM gmair_wechat.article_reply_view
+        WHERE 1 = 1
+        <if test="templateId != null">
+            AND template_id = #{templateId}
+        </if>
+        <if test="messageType != null">
+            and message_type = #{messageType}
+        </if>
+        <if test="keyword != null">
+            and keyword = #{keyword}
+        </if>
+        <if test="articleTitle != null">
+            AND article_title = #{articleTitle}
+        </if>
+        <if test="articleUrl != null">
+            AND article_url = #{articleUrl}
+        </if>
+        <if test="pictureUrl != null">
+            AND picture_url = #{pictureUrl}
+        </if>
+        <if test="descriptionContent != null">
+            AND description_content = #{descriptionContent}
+        </if>
+    </select>
 </mapper>

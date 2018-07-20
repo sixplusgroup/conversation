@@ -6,6 +6,8 @@ import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
+import finley.gmair.vo.wechat.PictureReplyVo;
+import finley.gmair.vo.wechat.TextReplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -181,10 +183,10 @@ public class WechatApplication {
     }
 
     private String textResponse(Map<String, Object> condition) {
-        ResultData response = textTemplateService.fetch(condition);
+        ResultData response = textTemplateService.fetchTextReply(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            TextTemplate template = ((List<TextTemplate>) response.getData()).get(0);
-            String result = template.getResponse();
+            TextReplyVo vo = ((List<TextReplyVo>) response.getData()).get(0);
+            String result = vo.getResponse();
             return result;
         } else {
             return "";
@@ -192,10 +194,10 @@ public class WechatApplication {
     }
 
     private String pictureUrl(Map<String, Object> condition) {
-        ResultData rd = pictureTemplateService.fetch(condition);
+        ResultData rd = pictureTemplateService.fetchPictureReply(condition);
         if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            PictureTemplate template = ((List<PictureTemplate>) rd.getData()).get(0);
-            String result = template.getPictureUrl();
+            PictureReplyVo vo = ((List<PictureReplyVo>) rd.getData()).get(0);
+            String result = vo.getPictureUrl();
             return result;
         } else {
             return "";

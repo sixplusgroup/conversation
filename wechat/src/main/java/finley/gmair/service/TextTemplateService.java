@@ -9,4 +9,6 @@ public interface TextTemplateService {
     ResultData create(TextTemplate template);
 
     ResultData fetch(Map<String, Object> condition);
+
+    ResultData fetchTextReply(Map<String, Object> condition);
 }

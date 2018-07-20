@@ -51,4 +51,23 @@ public class PictureTemplateServiceImpl implements PictureTemplateService {
         }
         return result;
     }
+
+    @Override
+    public ResultData fetchPictureReply(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = pictureTemplateDao.queryPictureReply(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No picture reply found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve picture reply information from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
 }

@@ -9,4 +9,6 @@ public interface PictureTemplateDao {
     ResultData insert(PictureTemplate pictureTemplate);
 
     ResultData query(Map<String, Object> condition);
+
+    ResultData queryPictureReply(Map<String, Object> condition);
 }

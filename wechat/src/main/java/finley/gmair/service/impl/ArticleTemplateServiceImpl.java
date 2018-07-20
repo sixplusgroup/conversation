@@ -50,4 +50,23 @@ public class ArticleTemplateServiceImpl implements ArticleTemplateService {
         }
         return result;
     }
+
+    @Override
+    public ResultData fetchArticleReply(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = articleTemplateDao.queryArticleReply(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No article reply found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve article reply from database");
+        }
+        return result;
+    }
 }

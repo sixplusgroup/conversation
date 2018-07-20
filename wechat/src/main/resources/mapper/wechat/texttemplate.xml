@@ -9,6 +9,13 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="textReplyVo" type="finley.gmair.vo.wechat.TextReplyVo">
+        <result property="keyword" column="keyword"></result>
+        <result property="messageType" column="message_type"></result>
+        <result property="templateId" column="template_id"></result>
+        <result property="response" column="response"></result>
+    </resultMap>
+
     <insert id="insert" parameterType="finley.gmair.model.wechat.TextTemplate" useGeneratedKeys="false">
         INSERT INTO gmair_wechat.text_template(template_id, message_type, response, block_flag, create_time)
         VALUES (#{templateId}, #{messageType}, #{response}, #{blockFlag}, #{createAt})
@@ -33,4 +40,21 @@
         ORDER BY create_time DESC
     </select>
 
+    <select id="textReplyQuery" parameterType="java.util.Map" resultMap="textReplyVo">
+        select  keyword, message_type, template_id, response
+        from gmair_wechat.text_reply_view
+        where 1 = 1
+        <if test="keyword != null">
+            and keyword = #{keyword}
+        </if>
+        <if test="messageType != null">
+            and message_type = #{messageType}
+        </if>
+        <if test="templateId != null">
+            and template_id = #{templateId}
+        </if>
+        <if test="response != null">
+            and response = #{response}
+        </if>
+    </select>
 </mapper>

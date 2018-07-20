@@ -9,4 +9,6 @@ public interface ArticleTemplateDao {
     ResultData insert(ArticleTemplate articleTemplate);
 
     ResultData query(Map<String, Object> condition);
+
+    ResultData queryArticleReply(Map<String, Object> condition);
 }

@@ -8,6 +8,13 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="pictureReplyVo" type="finley.gmair.vo.wechat.PictureReplyVo">
+        <result property="templateId" column="template_id"></result>
+        <result property="messageType" column="message_type"></result>
+        <result property="keyword" column="keyword"></result>
+        <result property="pictureUrl" column="picture_url"></result>
+    </resultMap>
+
     <insert id="insert" parameterType="finley.gmair.model.wechat.PictureTemplate" useGeneratedKeys="false">
         INSERT INTO gmair_wechat.picture_template(template_id, picture_url, block_flag, create_time)
         VALUES (#{templateId}, #{pictureUrl}, #{blockFlag}, #{createAt})
@@ -29,4 +36,21 @@
         ORDER BY create_time DESC
     </select>
 
+    <select id="pictureReplyQuery" parameterType="java.util.Map" resultMap="pictureReplyVo">
+        select template_id, message_type, keyword, picture_url
+        from gmair_wechat.picture_reply_view
+        where 1 = 1
+        <if test="templateId != null">
+            and template_id = #{templateId}
+        </if>
+        <if test="messageType != null">
+            and message_type = #{messageType}
+        </if>
+        <if test="keyword != null">
+            and keyword = #{keyword}
+        </if>
+        <if test="pictureUrl != null">
+            and pciture_url = #{pictureUrl}
+        </if>
+    </select>
 </mapper>
