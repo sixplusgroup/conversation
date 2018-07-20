@@ -486,4 +486,33 @@ public class ConsumerAuthController {
             return result;
         }
     }
+
+    @PostMapping("/probe/consumerid/by/openid")
+    public ResultData probeConsumerIdByOpenId(String openid){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(openid)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechat",openid);
+        condition.put("blockFlag",false);
+        ResultData response = consumerService.fetchConsumer(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get consumer info by openid");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find consumer info by openid");
+            return result;
+        }else{
+            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to find consumer info by openid");
+            return result;
+        }
+    }
+
 }

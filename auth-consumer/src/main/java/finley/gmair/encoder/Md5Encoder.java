@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Md5Encoder implements PasswordEncoder {
     @Override
     public String encode(CharSequence charSequence) {
+        if (charSequence.length() == 0)
+            return "";
         return Encryption.md5(charSequence.toString());
     }
 
@@ -13,6 +15,7 @@ public class Md5Encoder implements PasswordEncoder {
     public boolean matches(CharSequence charSequence, String s) {
         if (charSequence.length() == 0)
             return true;
+
         return this.encode(charSequence).equals(s);
     }
 }
