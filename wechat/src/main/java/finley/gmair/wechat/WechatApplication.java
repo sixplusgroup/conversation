@@ -1,8 +1,11 @@
 package finley.gmair.wechat;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
+import finley.gmair.model.consumer.Consumer;
+import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.wechat.*;
 import finley.gmair.model.wechat.Article;
 import finley.gmair.service.*;
@@ -12,6 +15,7 @@ import finley.gmair.vo.wechat.TextReplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @SpringBootApplication
+@EnableFeignClients({"finley.gmair.service"})
 @RestController
 @ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
@@ -42,6 +47,12 @@ public class WechatApplication {
 
     @Autowired
     private ArticleTemplateService articleTemplateService;
+
+    @Autowired
+    private AuthConsumerService authConsumerService;
+
+    @Autowired
+    private MachineService machineService;
 
 
     public static void main(String[] args) {
@@ -138,20 +149,36 @@ public class WechatApplication {
                     }
                     if (emessage.getEvent().equals("CLICK") && emessage.getEventKey().equals("gmair")) {
                         try {
-                            List<Article> list = new ArrayList<>();
-                            Article article = new Article();
-                            article.setTitle("果麦新风");
-                            article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
-                            article.setUrl(new StringBuffer("https://reception.gmair.net/login").toString());
-                            article.setDescription("温度、湿度、风量、辅热……");
-                            list.add(article);
-                            ArticleOutMessage result = initial(list, emessage);
-                            content.alias("xml", ArticleOutMessage.class);
-                            content.alias("item", Article.class);
-                            String xml = content.toXML(result);
-                            return xml;
-                        }catch (Exception e) {
-                            e.printStackTrace();
+                            String openId = emessage.getFromUserName();
+                            ResultData data = authConsumerService.findConsumer(openId);
+                            if (data.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                                Consumer consumerVo = ((List<Consumer>) data.getData()).get(0);
+                                data = machineService.findMachineList(consumerVo.getConsumerId());
+                                if (data.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                                    JSONArray array = JSONArray.parseArray(JSON.toJSONString(data.getData()));
+                                    List<String> qrCodes = new ArrayList<>();
+                                    for (Object item : array) {
+
+                                    }
+                                    List<Article> list = new ArrayList<>();
+                                    Article article = new Article();
+                                    article.setTitle("果麦新风");
+                                    article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
+                                    article.setUrl(new StringBuffer("https://reception.gmair.net/machine/list").toString());
+                                    article.setDescription("温度、湿度、风量、辅热……");
+                                    list.add(article);
+                                    ArticleOutMessage result = initial(list, emessage);
+                                    content.alias("xml", ArticleOutMessage.class);
+                                    content.alias("item", Article.class);
+                                    String xml = content.toXML(result);
+                                    return xml;
+                                }
+                                if (data.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+
+                                }
+                            }
+                        }catch(Exception e){
+                                e.printStackTrace();
                         }
                     }
                     break;
