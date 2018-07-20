@@ -15,8 +15,8 @@ public class WechatController {
     @Autowired
     private WechatService wechatService;
 
-    @PostMapping("/login/bycode")
-    public ResultData loginByCode(String code){
+    @PostMapping("/openid/bycode")
+    public ResultData getOpenIdByCode(String code){
         ResultData result=new ResultData();
         //check empty
         if(StringUtils.isEmpty(code)){
