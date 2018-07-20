@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
+import finley.gmair.model.wechat.Article;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.wechat.PictureReplyVo;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @SpringBootApplication
@@ -139,11 +142,7 @@ public class WechatApplication {
                         map.clear();
                         map.put("wechatId", openId);
                         ResultData rd = wechatUserService.fetch(map);
-                        WechatUser WVo = ((List<WechatUser>) rd.getData()).get(0);
-                        if (WVo != null && WVo.getWechatId() != null) {
-                            //new machine don't finish, function of this condition can't achieve, return null
-                            return "";
-                        } else {
+                        if (rd.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                             map.clear();
                             map.put("messageType", "event");
                             map.put("Keyword", "NoId");
@@ -151,6 +150,30 @@ public class WechatApplication {
                             content.alias("xml", TextOutMessage.class);
                             String xml = content.toXML(result);
                             return xml;
+                        }
+                        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                            WechatUser WVo = ((List<WechatUser>) rd.getData()).get(0);
+                            if (WVo != null && WVo.getWechatId() != null) {
+                                List<Article> list = new ArrayList<>();
+
+                                Article article = new Article();
+                                article.setTitle("果麦新风");
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+                                Calendar c = Calendar.getInstance();
+                                String time = sdf.format(c.getTime());
+                                article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png?" + time);
+                                String value = "https://reception.gmair.net/login";
+                                article.setUrl("https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +
+                                        WechatProperties.getValue("wechat_appid") + "&redirect_uri=" + URLEncoder.encode(value, "utf-8") +
+                                        "&response_type=code&scope=snsapi_base&state=gmair#wechat_redirect");
+                                article.setDescription("温度、湿度、风量、辅热……");
+
+                                list.add(article);
+                                ArticleOutMessage result = initial(list, emessage);
+                                content.alias("xml", ArticleOutMessage.class);
+                                String xml = content.toXML(result);
+                                return xml;
+                            }
                         }
                     }
                     break;
@@ -179,6 +202,16 @@ public class WechatApplication {
         result.setToUserName(message.getFromUserName());
         result.setCreateTime(new Date().getTime());
         result.setMediaId(mediaId);
+        return result;
+    }
+
+    private ArticleOutMessage initial(List<Article> list, InMessage message) {
+        ArticleOutMessage result = new ArticleOutMessage();
+        result.setFromUserName(message.getToUserName());
+        result.setToUserName(message.getFromUserName());
+        result.setCreateTime(new Date().getTime());
+        result.setArticles(list);
+        result.setArticleCount(list.size());
         return result;
     }
 
