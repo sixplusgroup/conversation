@@ -209,37 +209,7 @@ public class MachineController {
     //根据当前的qrcode查询这台机器的各种值(co2,pm2.5等)
     @RequestMapping(value = "/info/probe", method = RequestMethod.GET)
     public ResultData getMachineInfo(String qrcode) {
-        ResultData result = new ResultData();
-        ResultData response = machineService.findMachineIdByCodeValueFacetoConsumer(qrcode);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the qrcode");
-            return result;
-        }
-        List<Object> preBindCodeList = (ArrayList<Object>) response.getData();
-        LinkedHashMap<String, Object> linkedHashMap = (LinkedHashMap<String, Object>) (preBindCodeList.get(0));
-        String machineId = (String) linkedHashMap.get("machineId");
-
-        response = machineService.machineStatus(machineId);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to get air quality");
-            result.setData(response.getData());
-            return result;
-        } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find");
-            return result;
-        } else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find the air quality which machine recorded");
-            return result;
-        }
-        return result;
+        return machineService.getMachineStatusByQRcode(qrcode);
     }
 
     //根据consumerId获取用户的machine list

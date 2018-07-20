@@ -55,11 +55,9 @@ public interface MachineService {
     @GetMapping("/machine/consumer/machinelist")
     ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
 
-
-
     //MachineAirQualityController
-    @GetMapping("/machine/status/{uid}")
-    ResultData machineStatus(@RequestParam("uid") String uid);
+    @GetMapping ("/machine/status/byqrcode")
+    ResultData getMachineStatusByQRcode(@RequestParam("qrcode") String qrcode);
 
     //MachineDefaultLocationController
     @GetMapping("/machine/default/location/probe/cityid")
