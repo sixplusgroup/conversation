@@ -142,8 +142,7 @@ public class WechatApplication {
                             Article article = new Article();
                             article.setTitle("果麦新风");
                             article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
-                            String value = "https://reception.gmair.net/login";
-                            article.setUrl(new StringBuffer("https://open.weixin.qq.com/connect/oauth2/authorize?appid=").append(WechatProperties.getValue("wechat_appid")).append("&redirect_uri=").append(URLEncoder.encode(value, "utf-8")).append("&response_type=code&scope=snsapi_base&state=gmair#wechat_redirect").toString());
+                            article.setUrl(new StringBuffer("https://reception.gmair.net/login").toString());
                             article.setDescription("温度、湿度、风量、辅热……");
                             list.add(article);
                             ArticleOutMessage result = initial(list, emessage);
