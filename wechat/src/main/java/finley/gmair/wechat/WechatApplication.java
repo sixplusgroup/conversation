@@ -76,7 +76,6 @@ public class WechatApplication {
             int end = input.indexOf("</MsgType>");
 
             String type = input.substring(start + "<MsgType>".length(), end).replace("<![CDATA[", "").replace("]]>", "");
-
             switch (type) {
                 case "text":
                     XStream content = XStreamFactory.init(false);
@@ -137,22 +136,24 @@ public class WechatApplication {
                         }).start();
                         return xml;
                     }
-                    if (emessage.getEventKey().equals("gmair")) {
-                        List<Article> list = new ArrayList<>();
-                        Article article = new Article();
-                        article.setTitle("果麦新风");
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-                        Calendar c = Calendar.getInstance();
-                        String time = sdf.format(c.getTime());
-                        article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png?" + time);
-                        String value = "https://reception.gmair.net/login";
-                        article.setUrl(new StringBuffer("https://open.weixin.qq.com/connect/oauth2/authorize?appid=").append(WechatProperties.getValue("wechat_appid")).append("&redirect_uri=").append(URLEncoder.encode(value, "utf-8")).append("&response_type=code&scope=snsapi_base&state=gmair#wechat_redirect").toString());
-                        article.setDescription("温度、湿度、风量、辅热……");
-                        list.add(article);
-                        ArticleOutMessage result = initial(list, emessage);
-                        content.alias("xml", ArticleOutMessage.class);
-                        String xml = content.toXML(result);
-                        return xml;
+                    if (emessage.getEvent().equals("CLICK") && emessage.getEventKey().equals("gmair")) {
+                        try {
+                            List<Article> list = new ArrayList<>();
+                            Article article = new Article();
+                            article.setTitle("果麦新风");
+                            article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
+                            String value = "https://reception.gmair.net/login";
+                            article.setUrl(new StringBuffer("https://open.weixin.qq.com/connect/oauth2/authorize?appid=").append(WechatProperties.getValue("wechat_appid")).append("&redirect_uri=").append(URLEncoder.encode(value, "utf-8")).append("&response_type=code&scope=snsapi_base&state=gmair#wechat_redirect").toString());
+                            article.setDescription("温度、湿度、风量、辅热……");
+                            list.add(article);
+                            ArticleOutMessage result = initial(list, emessage);
+                            content.alias("xml", ArticleOutMessage.class);
+                            content.alias("item", Article.class);
+                            String xml = content.toXML(result);
+                            return xml;
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
                 default:
