@@ -13,7 +13,7 @@ public class MachineStatusCacheServiceImpl implements MachineStatusCacheService{
 
     @Cacheable(value = "machineStatus", key = "#uid", unless = "#result == null")
     public MachineStatus fetch(String uid) {
-        System.out.println("fetch : " + uid);
+        //System.out.println("fetch : " + uid);
         return null;
     }
 }

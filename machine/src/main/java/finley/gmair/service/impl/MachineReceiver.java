@@ -33,7 +33,7 @@ public class MachineReceiver {
         condition.put("createAtGTE", current - 30 * 1000);
         ResultData resultData = machineStatusMongoDao.query(condition);
         if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            System.out.println(JSONObject.toJSON(resultData.getData()));
+            //System.out.println(JSONObject.toJSON(resultData.getData()));
             machineStatusCacheService.generate((MachineStatus) resultData.getData());
         }
     }
