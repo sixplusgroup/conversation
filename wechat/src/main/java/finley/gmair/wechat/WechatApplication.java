@@ -161,8 +161,8 @@ public class WechatApplication {
                             String xml = content.toXML(result);
                             return xml;
                         }
-                        JSONObject json = JSON.parseObject(JSON.toJSONString(response.getData()));
-                        String consumerId = json.getString("consumerId");
+                        JSONArray json = JSON.parseArray(JSON.toJSONString(response.getData()));
+                        String consumerId = json.getJSONObject(0).getString("consumerId");
                         response = machineService.findMachineList(consumerId);
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                             return "";
