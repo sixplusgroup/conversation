@@ -199,6 +199,7 @@ public class WechatApplication {
                             response = machineService.findMachineStatus(codeValue);
                             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                                 sb.append("设备状态:离线\n");
+                                continue;
                             }
                             JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(response.getData()));
                             sb.append("pm2.5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
