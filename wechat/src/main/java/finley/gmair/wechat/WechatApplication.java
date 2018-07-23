@@ -61,6 +61,10 @@ public class WechatApplication {
 
     private final static String title = "果麦新风";
 
+    private final static String register_description = "抱歉，您还没有注册果麦新风，请先注册";
+
+    private final static String machine_description = "抱歉，当前无与您相关机器列表";
+
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
     }
@@ -154,69 +158,25 @@ public class WechatApplication {
                         return xml;
                     }
                     if (emessage.getEvent().equals("CLICK") && emessage.getEventKey().equals("gmair")) {
-                        List<Article> list = new ArrayList<>();
-                        Article article = new Article();
-
                         String openId = emessage.getFromUserName();
                         response = authConsumerService.findConsumer(openId);
-
-                        //如果为空，提示用户先注册，点击跳转到注册页
+                        //如果consumer为空，提示用户先注册，点击跳转到注册页
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            article.setTitle(title);
-                            article.setPicUrl(pictureUrl);
-                            article.setUrl(registerUrl);
-                            article.setDescription("抱歉，您还没有注册果麦新风，请先注册\n");
-                            list.add(article);
-                            ArticleOutMessage result = initial(list, emessage);
-                            content.alias("xml", ArticleOutMessage.class);
-                            content.alias("item", Article.class);
-                            String xml = content.toXML(result);
+                            String xml = getXml(registerUrl, register_description, emessage);
                             return xml;
                         }
+
                         JSONArray json = JSON.parseArray(JSON.toJSONString(response.getData()));
                         String consumerId = json.getJSONObject(0).getString("consumerId");
                         response = machineService.findMachineList(consumerId);
-
-                        //如果为空，提示用户无机器列表（未购买或未绑定）
+                        //如果machine为空，提示用户无机器列表（未购买或未绑定）
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            article.setTitle(title);
-                            article.setPicUrl(pictureUrl);
-                            article.setUrl(machineListUrl);
-                            article.setDescription("抱歉，当前无与您相关机器列表\n");
-                            list.add(article);
-                            ArticleOutMessage result = initial(list, emessage);
-                            content.alias("xml", ArticleOutMessage.class);
-                            content.alias("item", Article.class);
-                            String xml = content.toXML(result);
+                            String xml = getXml(machineListUrl, machine_description, emessage);
                             return xml;
                         }
-                        //如果不空，遍历机器，提取机器相关信息
+                        //如果machine不空，遍历机器，提取机器相关信息
                         JSONArray array = JSONArray.parseArray(JSON.toJSONString(response.getData()));
-                        StringBuffer sb = new StringBuffer();
-                        for (Object item : array) {
-                            JSONObject object = JSONObject.parseObject(JSON.toJSONString(item));
-                            String codeValue = object.getString("codeValue");
-                            response = machineService.findMachineStatus(codeValue);
-                            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                                sb.append("设备状态:离线\n");
-                                continue;
-                            }
-                            JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(response.getData()));
-                            sb.append("pm2.5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
-                            sb.append("室内温度: " + jsonObject.getIntValue("temp") + "℃\n");
-                            sb.append("室内湿度: " + jsonObject.getIntValue("humid") + "%\n");
-                            sb.append("风机风量: " + jsonObject.getIntValue("volume") + "m³/h\n");
-                            sb.append("\n");
-                        }
-                        article.setTitle(title);
-                        article.setPicUrl(pictureUrl);
-                        article.setUrl(machineListUrl);
-                        article.setDescription(sb.toString());
-                        list.add(article);
-                        ArticleOutMessage result = initial(list, emessage);
-                        content.alias("xml", ArticleOutMessage.class);
-                        content.alias("item", Article.class);
-                        String xml = content.toXML(result);
+                        String xml = getXml(machineListUrl, getDescription(array), emessage);
                         return xml;
                     }
                     break;
@@ -278,5 +238,56 @@ public class WechatApplication {
         } else {
             return "";
         }
+    }
+
+    private String getDescription(JSONArray array) {
+        StringBuffer sb = new StringBuffer();
+        List<Object> list = new ArrayList<>();
+        for (Object item : array) {
+            JSONObject json = JSON.parseObject(JSON.toJSONString(item));
+            String codeValue = json.getString("codeValue");
+            ResultData response = machineService.findMachineStatus(codeValue);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                list.add(item);
+            } else {
+                list.add(0, item);
+            }
+        }
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject json = JSON.parseObject(JSON.toJSONString(list.get(i)));
+            String codeValue = json.getString("codeValue");
+            String bindName = json.getString("bindName");
+            ResultData response = machineService.findMachineStatus(codeValue);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(response.getData()));
+                sb.append(bindName + "(在线)\n");
+                sb.append("pm2.5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
+                sb.append("室内温度: " + jsonObject.getIntValue("temp") + "℃\n");
+                sb.append("室内湿度: " + jsonObject.getIntValue("humid") + "%\n");
+                sb.append("风机风量: " + jsonObject.getIntValue("volume") + "m³/h\n");
+            } else {
+                sb.append(bindName + "(离线)\n");
+            }
+            if (i != (list.size()-1)) {
+                sb.append("--------\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    private String getXml(String url, String description, InMessage message) {
+        XStream content = XStreamFactory.init(false);
+        List<Article> list = new ArrayList<>();
+        Article article = new Article();
+        article.setTitle(title);
+        article.setPicUrl(pictureUrl);
+        article.setUrl(url);
+        article.setDescription(description);
+        list.add(article);
+        ArticleOutMessage result = initial(list, message);
+        content.alias("xml", ArticleOutMessage.class);
+        content.alias("item", Article.class);
+        String xml = content.toXML(result);
+        return xml;
     }
 }
