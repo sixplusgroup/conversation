@@ -261,7 +261,6 @@ public class WechatApplication {
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(response.getData()));
                 sb.append(bindName + "(在线)\n");
-                sb.append("-----\n");
                 sb.append("pm2.5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
                 sb.append("室内温度: " + jsonObject.getIntValue("temp") + "℃\n");
                 sb.append("室内湿度: " + jsonObject.getIntValue("humid") + "%\n");
