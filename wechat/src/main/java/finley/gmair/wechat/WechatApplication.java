@@ -148,18 +148,12 @@ public class WechatApplication {
                     if (emessage.getEvent().equals("CLICK") && emessage.getEventKey().equals("gmair")) {
                         String openId = emessage.getFromUserName();
                         response = authConsumerService.findConsumer(openId);
-                        System.out.println("response " + JSON.toJSONString(response));
+                        //System.out.println("response " + JSON.toJSONString(response));
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            //register article
-                            return "";
-                        }
-                        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                             List<Article> list = new ArrayList<>();
                             Article article = new Article();
                             article.setTitle("果麦新风");
-                            article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
-                            article.setUrl(new StringBuffer("https://reception.gmair.net/machine/list").toString());
-//                                    article.setDescription(sb.toString());
+                            article.setUrl(new StringBuffer("https://reception.gmair.net/register").toString());
                             list.add(article);
                             ArticleOutMessage result = initial(list, emessage);
                             content.alias("xml", ArticleOutMessage.class);
@@ -167,15 +161,47 @@ public class WechatApplication {
                             String xml = content.toXML(result);
                             return xml;
                         }
+                        JSONObject json = JSON.parseObject(JSON.toJSONString(response.getData()));
+                        String consumerId = json.getString("consumerId");
+                        response = machineService.findMachineList(consumerId);
+                        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                            return "";
+                        }
+                        JSONArray array = JSONArray.parseArray(JSON.toJSONString(response.getData()));
+                        StringBuffer sb = new StringBuffer();
+                        for (Object item : array) {
+                            JSONObject object = JSONObject.parseObject(JSON.toJSONString(item));
+                            String codeValue = object.getString("codeValue");
+                            response = machineService.findMachineStatus(codeValue);
+                            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                                return "";
+                            }
+                            JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(response.getData()));
+
+                            //just for test, improve later
+                            sb.append("pm2.5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
+                            sb.append("室内温度: " + jsonObject.getIntValue("temp"));
+                            sb.append("风量: " + jsonObject.getIntValue("volume"));
+                            sb.append("\n\n");
+                        }
+                        List<Article> list = new ArrayList<>();
+                        Article article = new Article();
+                        article.setTitle("果麦新风");
+                        article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
+                        article.setUrl(new StringBuffer("https://reception.gmair.net/machine/list").toString());
+                        list.add(article);
+                        article.setDescription(sb.toString());
+                        ArticleOutMessage result = initial(list, emessage);
+                        content.alias("xml", ArticleOutMessage.class);
+                        content.alias("item", Article.class);
+                        String xml = content.toXML(result);
+                        return xml;
                     }
                     break;
                 default:
                     return "";
             }
-        } catch (
-                Exception e)
-
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";

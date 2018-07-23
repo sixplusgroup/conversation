@@ -12,5 +12,5 @@ public interface MachineService {
     ResultData findMachineList(@RequestParam("consumerId") String consumerId);
 
     @GetMapping("/machine/status/byqrcode")
-    ResultData findMachineStatus(@RequestParam("qrCode") String qrCode);
+    ResultData findMachineStatus(@RequestParam("qrcode") String qrcode);
 }
