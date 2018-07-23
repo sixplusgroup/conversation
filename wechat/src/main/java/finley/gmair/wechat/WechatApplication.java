@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
-import finley.gmair.model.consumer.Consumer;
-import finley.gmair.model.machine.v2.MachineStatus;
 import finley.gmair.model.wechat.*;
 import finley.gmair.model.wechat.Article;
 import finley.gmair.service.*;
@@ -17,7 +15,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -261,10 +258,10 @@ public class WechatApplication {
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(response.getData()));
                 sb.append(bindName + "(在线)\n");
-                sb.append("pm2.5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
-                sb.append("室内温度: " + jsonObject.getIntValue("temp") + "℃\n");
-                sb.append("室内湿度: " + jsonObject.getIntValue("humid") + "%\n");
-                sb.append("风机风量: " + jsonObject.getIntValue("volume") + "m³/h\n");
+                sb.append("PM2_5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
+                sb.append("室内温度:" + jsonObject.getIntValue("temp") + "℃\n");
+                sb.append("室内湿度:" + jsonObject.getIntValue("humid") + "%\n");
+                sb.append("风机风量:" + jsonObject.getIntValue("volume") + "m³/h\n");
             } else {
                 sb.append(bindName + "(离线)\n");
             }
