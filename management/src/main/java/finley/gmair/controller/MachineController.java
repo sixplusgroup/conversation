@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.CoreService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.ResponseCode;
@@ -43,23 +45,23 @@ public class MachineController {
     }
 
     @PostMapping("/config/control/option")
-    public ResultData configControlOption(String optionName,String optionComponent,String modelId,String actionName,String actionOperator,String commandValue){
+    public ResultData configControlOption(String optionName,String optionComponent,String modelId,String actions){
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(optionName)||StringUtils.isEmpty(optionComponent)||StringUtils.isEmpty(modelId)||StringUtils.isEmpty(actionName)||StringUtils.isEmpty(actionOperator)||StringUtils.isEmpty(commandValue)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide all information");
-            return result;
+        JSONArray actionList = JSONArray.parseArray(actions);
+        for (int i=0;i<actionList.size();i++){
+            JSONObject action = actionList.getJSONObject(i);
+            ResultData response = machineService.setControlOption(optionName,optionComponent,modelId,
+                    action.getString("actionName"),
+                    action.getString("actionOperator"),
+                    action.getString("commandValue"));
+            if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("some error happen when create control option");
+                return result;
+            }
         }
-        ResultData response = machineService.setControlOption(optionName,optionComponent,modelId,actionName,actionOperator,commandValue);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to config");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to config machine control option");
-            return result;
-        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("success to create control option with its actions");
         return result;
     }
 }

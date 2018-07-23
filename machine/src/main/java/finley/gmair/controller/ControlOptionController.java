@@ -66,7 +66,7 @@ public class ControlOptionController {
             return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            controlId = ((List<ControlOptionVo>) response.getData()).get(0).getControlId();
+            controlId = ((List<ControlOption>) response.getData()).get(0).getControlId();
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             ControlOption option = new ControlOption(form.getOptionName(), form.getOptionComponent());

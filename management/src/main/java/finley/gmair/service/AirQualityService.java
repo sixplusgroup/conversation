@@ -19,17 +19,17 @@ public interface AirQualityService {
     ResultData getLatestCityAirQuality();
 
     @GetMapping(value = "/airquality/latest/{cityId}")
-    ResultData getLatestCityAirQuality(@PathVariable String cityId);
+    ResultData getLatestCityAirQuality(@PathVariable("cityId") String cityId);
 
     @GetMapping("/airquality/station/{stationId}")
-    ResultData fetchLatestByStationId(@PathVariable String stationId);
+    ResultData fetchLatestByStationId(@PathVariable("stationId") String stationId);
 
     @GetMapping("/airquality/station/city/{cityId}")
-    ResultData fetchLatestByCityId(@PathVariable String cityId);
+    ResultData fetchLatestByCityId(@PathVariable("cityId") String cityId);
 
     @GetMapping("/airquality/station/list")
     ResultData fetchLatestStationList();
 
     @GetMapping("/airquality/weekly/cityAqi/{cityId}")
-    ResultData getWeeklyCityAqi(@PathVariable String cityId);
+    ResultData getWeeklyCityAqi(@PathVariable("cityId") String cityId);
 }
