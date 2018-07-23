@@ -159,12 +159,18 @@ public class WechatApplication {
 
                         String openId = emessage.getFromUserName();
                         response = authConsumerService.findConsumer(openId);
-                        StringBuffer sb = new StringBuffer();
 
                         //如果为空，提示用户先注册，点击跳转到注册页
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            sb.append("抱歉，您还没有注册果麦新风，请先注册\n");
-                            String xml = articleMessage(registerUrl, sb.toString(), emessage);
+                            article.setTitle(title);
+                            article.setPicUrl(pictureUrl);
+                            article.setUrl(registerUrl);
+                            article.setDescription("抱歉，您还没有注册果麦新风，请先注册\n");
+                            list.add(article);
+                            ArticleOutMessage result = initial(list, emessage);
+                            content.alias("xml", ArticleOutMessage.class);
+                            content.alias("item", Article.class);
+                            String xml = content.toXML(result);
                             return xml;
                         }
                         JSONArray json = JSON.parseArray(JSON.toJSONString(response.getData()));
@@ -173,12 +179,20 @@ public class WechatApplication {
 
                         //如果为空，提示用户无机器列表（未购买或未绑定）
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            sb.append("抱歉，当前无与您相关机器列表\n");
-                            String xml = articleMessage(machineListUrl, sb.toString(), emessage);
+                            article.setTitle(title);
+                            article.setPicUrl(pictureUrl);
+                            article.setUrl(registerUrl);
+                            article.setDescription("抱歉，当前无与您相关机器列表\n");
+                            list.add(article);
+                            ArticleOutMessage result = initial(list, emessage);
+                            content.alias("xml", ArticleOutMessage.class);
+                            content.alias("item", Article.class);
+                            String xml = content.toXML(result);
                             return xml;
                         }
                         //如果不空，遍历机器，提取机器相关信息
                         JSONArray array = JSONArray.parseArray(JSON.toJSONString(response.getData()));
+                        StringBuffer sb = new StringBuffer();
                         for (Object item : array) {
                             JSONObject object = JSONObject.parseObject(JSON.toJSONString(item));
                             String codeValue = object.getString("codeValue");
@@ -240,22 +254,6 @@ public class WechatApplication {
         result.setArticles(list);
         result.setArticleCount(list.size());
         return result;
-    }
-
-    private String articleMessage(String url, String description, InMessage message) {
-        List<Article> list = new ArrayList<>();
-        Article article = new Article();
-        XStream content = XStreamFactory.init(false);
-        article.setTitle(title);
-        article.setPicUrl(pictureUrl);
-        article.setUrl(url);
-        article.setDescription(description);
-        list.add(article);
-        ArticleOutMessage result = initial(list, message);
-        content.alias("xml", ArticleOutMessage.class);
-        content.alias("item", Article.class);
-        String xml = content.toXML(result);
-        return xml;
     }
 
     private String textResponse(Map<String, Object> condition) {
