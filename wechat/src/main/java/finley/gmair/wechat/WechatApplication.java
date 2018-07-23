@@ -181,7 +181,7 @@ public class WechatApplication {
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                             article.setTitle(title);
                             article.setPicUrl(pictureUrl);
-                            article.setUrl(registerUrl);
+                            article.setUrl(machineListUrl);
                             article.setDescription("抱歉，当前无与您相关机器列表\n");
                             list.add(article);
                             ArticleOutMessage result = initial(list, emessage);
