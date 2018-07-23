@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.model.machine.v2.MachineStatus;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +34,9 @@ public interface MachineService {
 
     @GetMapping("/machine/qrcode/check/existqrcode")
     ResultData checkQRcodeExist(@RequestParam("codeValue") String codeValue);
+
+    @PostMapping("machine/qrcode/probe/byurl")
+    ResultData probeQRcodeByUrl(@RequestParam("codeUrl") String codeUrl);
 
     //ConsumerQRcodeController
     @PostMapping("/machine/consumer/qrcode/bind")

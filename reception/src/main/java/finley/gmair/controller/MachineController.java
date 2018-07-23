@@ -236,4 +236,8 @@ public class MachineController {
     }
 
 
+    @RequestMapping(value="/probe/qrcode/byurl",method = RequestMethod.POST)
+    public ResultData probeQRcodeByUrl(String codeUrl){
+        return machineService.probeQRcodeByUrl(codeUrl);
+    }
 }

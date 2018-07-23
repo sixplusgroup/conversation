@@ -21,6 +21,7 @@ public class ReceptionSecurityConfig extends ResourceServerConfigurerAdapter{
             .antMatchers("/reception/location/ip/address").permitAll()
             .antMatchers("/reception/consumer/check/phone").permitAll()
             .antMatchers("/reception/wechat/openid/bycode").permitAll()
+            .antMatchers("/reception/machine/probe/qrcode/byurl").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic();

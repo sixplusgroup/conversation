@@ -2,14 +2,12 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.netflix.discovery.converters.Auto;
 import finley.gmair.form.machine.PreBindForm;
 import finley.gmair.form.machine.QRCodeCreateForm;
 import finley.gmair.form.machine.QRCodeForm;
 import finley.gmair.model.goods.GoodsModel;
 import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.model.machine.QRCode;
-import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import org.apache.poi.ss.usermodel.*;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -539,5 +536,28 @@ public class QRCodeController {
         return result;
     }
 
+    @PostMapping(value = "/probe/byurl")
+    public ResultData probeQRcodeByUrl(String codeUrl){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeUrl",codeUrl);
+        condition.put("blockFlag",false);
+        ResultData response = qrCodeService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get the qrcode by code url");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find the qrcode by code url");
+            return result;
+        }else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to find the qrcode by code url");
+            return result;
+        }
+
+    }
 
 }
