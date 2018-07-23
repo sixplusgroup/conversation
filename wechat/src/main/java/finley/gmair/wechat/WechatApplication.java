@@ -17,6 +17,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -148,12 +149,13 @@ public class WechatApplication {
                     if (emessage.getEvent().equals("CLICK") && emessage.getEventKey().equals("gmair")) {
                         String openId = emessage.getFromUserName();
                         response = authConsumerService.findConsumer(openId);
+                        List<Article> list = new ArrayList<>();
+                        Article article = new Article();
                         //System.out.println("response " + JSON.toJSONString(response));
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            List<Article> list = new ArrayList<>();
-                            Article article = new Article();
                             article.setTitle("果麦新风");
                             article.setUrl(new StringBuffer("https://reception.gmair.net/register").toString());
+                            article.setDescription("Please register first");
                             list.add(article);
                             ArticleOutMessage result = initial(list, emessage);
                             content.alias("xml", ArticleOutMessage.class);
@@ -180,17 +182,15 @@ public class WechatApplication {
 
                             //just for test, improve later
                             sb.append("pm2.5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
-                            sb.append("室内温度: " + jsonObject.getIntValue("temp"));
-                            sb.append("风量: " + jsonObject.getIntValue("volume"));
-                            sb.append("\n\n");
+                            sb.append("室内温度: " + jsonObject.getIntValue("temp") + "℃\n");
+                            sb.append("风量: " + jsonObject.getIntValue("volume") + "m³/h\n");
+                            sb.append("\n");
                         }
-                        List<Article> list = new ArrayList<>();
-                        Article article = new Article();
                         article.setTitle("果麦新风");
                         article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
                         article.setUrl(new StringBuffer("https://reception.gmair.net/machine/list").toString());
-                        list.add(article);
                         article.setDescription(sb.toString());
+                        list.add(article);
                         ArticleOutMessage result = initial(list, emessage);
                         content.alias("xml", ArticleOutMessage.class);
                         content.alias("item", Article.class);
