@@ -53,6 +53,13 @@ public class WechatApplication {
     @Autowired
     private MachineService machineService;
 
+    private final static String pictureUrl = "http://commander.gmair.net/reception/www/img/logo_blue.png";
+
+    private final static String machineListUrl = "https://reception.gmair.net/machine/list";
+
+    private final static String registerUrl = "https://reception.gmair.net/register";
+
+    private final static String title = "果麦新风";
 
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
@@ -147,48 +154,47 @@ public class WechatApplication {
                         return xml;
                     }
                     if (emessage.getEvent().equals("CLICK") && emessage.getEventKey().equals("gmair")) {
-                        String openId = emessage.getFromUserName();
-                        response = authConsumerService.findConsumer(openId);
                         List<Article> list = new ArrayList<>();
                         Article article = new Article();
-                        //System.out.println("response " + JSON.toJSONString(response));
+
+                        String openId = emessage.getFromUserName();
+                        response = authConsumerService.findConsumer(openId);
+                        StringBuffer sb = new StringBuffer();
+
+                        //如果为空，提示用户先注册，点击跳转到注册页
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            article.setTitle("果麦新风");
-                            article.setUrl(new StringBuffer("https://reception.gmair.net/register").toString());
-                            article.setDescription("Please register first");
-                            list.add(article);
-                            ArticleOutMessage result = initial(list, emessage);
-                            content.alias("xml", ArticleOutMessage.class);
-                            content.alias("item", Article.class);
-                            String xml = content.toXML(result);
+                            sb.append("抱歉，您还没有注册果麦新风，请先注册\n");
+                            String xml = articleMessage(registerUrl, sb.toString(), emessage);
                             return xml;
                         }
                         JSONArray json = JSON.parseArray(JSON.toJSONString(response.getData()));
                         String consumerId = json.getJSONObject(0).getString("consumerId");
                         response = machineService.findMachineList(consumerId);
+
+                        //如果为空，提示用户无机器列表（未购买或未绑定）
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            return "";
+                            sb.append("抱歉，当前无与您相关机器列表\n");
+                            String xml = articleMessage(machineListUrl, sb.toString(), emessage);
+                            return xml;
                         }
+                        //如果不空，遍历机器，提取机器相关信息
                         JSONArray array = JSONArray.parseArray(JSON.toJSONString(response.getData()));
-                        StringBuffer sb = new StringBuffer();
                         for (Object item : array) {
                             JSONObject object = JSONObject.parseObject(JSON.toJSONString(item));
                             String codeValue = object.getString("codeValue");
                             response = machineService.findMachineStatus(codeValue);
                             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                                return "";
+                                sb.append("设备状态:离线\n");
                             }
                             JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(response.getData()));
-
-                            //just for test, improve later
                             sb.append("pm2.5: " + jsonObject.getIntValue("pm2_5") + "µg/m³\n");
                             sb.append("室内温度: " + jsonObject.getIntValue("temp") + "℃\n");
                             sb.append("风量: " + jsonObject.getIntValue("volume") + "m³/h\n");
                             sb.append("\n");
                         }
-                        article.setTitle("果麦新风");
-                        article.setPicUrl("http://commander.gmair.net/reception/www/img/logo_blue.png");
-                        article.setUrl(new StringBuffer("https://reception.gmair.net/machine/list").toString());
+                        article.setTitle(title);
+                        article.setPicUrl(pictureUrl);
+                        article.setUrl(machineListUrl);
                         article.setDescription(sb.toString());
                         list.add(article);
                         ArticleOutMessage result = initial(list, emessage);
@@ -234,6 +240,22 @@ public class WechatApplication {
         result.setArticles(list);
         result.setArticleCount(list.size());
         return result;
+    }
+
+    private String articleMessage(String url, String description, InMessage message) {
+        List<Article> list = new ArrayList<>();
+        Article article = new Article();
+        XStream content = XStreamFactory.init(false);
+        article.setTitle(title);
+        article.setPicUrl(pictureUrl);
+        article.setUrl(url);
+        article.setDescription(description);
+        list.add(article);
+        ArticleOutMessage result = initial(list, message);
+        content.alias("xml", ArticleOutMessage.class);
+        content.alias("item", Article.class);
+        String xml = content.toXML(result);
+        return xml;
     }
 
     private String textResponse(Map<String, Object> condition) {
