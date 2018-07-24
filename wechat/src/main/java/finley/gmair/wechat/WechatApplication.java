@@ -8,6 +8,7 @@ import finley.gmair.model.wechat.*;
 import finley.gmair.model.wechat.Article;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
+import finley.gmair.vo.wechat.ArticleReplyVo;
 import finley.gmair.vo.wechat.PictureReplyVo;
 import finley.gmair.vo.wechat.TextReplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -49,18 +48,6 @@ public class WechatApplication {
 
     @Autowired
     private MachineService machineService;
-
-    private final static String pictureUrl = "http://commander.gmair.net/reception/www/img/logo_blue.png";
-
-    private final static String machineListUrl = "https://reception.gmair.net/machine/list";
-
-    private final static String registerUrl = "https://reception.gmair.net/register";
-
-    private final static String title = "果麦新风";
-
-    private final static String register_description = "抱歉，您还没有注册果麦新风，请先注册";
-
-    private final static String machine_description = "抱歉，当前无与您相关机器列表";
 
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
@@ -159,7 +146,11 @@ public class WechatApplication {
                         response = authConsumerService.findConsumer(openId);
                         //如果consumer为空，提示用户先注册，点击跳转到注册页
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            String xml = getXml(registerUrl, register_description, emessage);
+                            map.clear();
+                            map.put("messageType", "event");
+                            map.put("keyword", "register");
+                            ArticleReplyVo vo = getArticle(map);
+                            String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), emessage);
                             return xml;
                         }
 
@@ -168,12 +159,20 @@ public class WechatApplication {
                         response = machineService.findMachineList(consumerId);
                         //如果machine为空，提示用户无机器列表（未购买或未绑定）
                         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                            String xml = getXml(machineListUrl, machine_description, emessage);
+                            map.clear();
+                            map.put("messageType", "event");
+                            map.put("keyword", "machine");
+                            ArticleReplyVo vo = getArticle(map);
+                            String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), emessage);
                             return xml;
                         }
                         //如果machine不空，遍历机器，提取机器相关信息
                         JSONArray array = JSONArray.parseArray(JSON.toJSONString(response.getData()));
-                        String xml = getXml(machineListUrl, getDescription(array), emessage);
+                        map.clear();
+                        map.put("messageType", "event");
+                        map.put("keyword", "machineList");
+                        ArticleReplyVo vo = getArticle(map);
+                        String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), getDescription(array), emessage);
                         return xml;
                     }
                     break;
@@ -185,7 +184,6 @@ public class WechatApplication {
         }
         return "";
     }
-
 
     private TextOutMessage initialize(String content, InMessage message) {
         TextOutMessage result = new TextOutMessage();
@@ -237,6 +235,16 @@ public class WechatApplication {
         }
     }
 
+    private ArticleReplyVo getArticle(Map<String, Object> condition) {
+        ResultData result = articleTemplateService.fetchArticleReply(condition);
+        if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            ArticleReplyVo vo = ((List<ArticleReplyVo>) result.getData()).get(0);
+            return vo;
+        } else {
+            return null;
+        }
+    }
+
     private String getDescription(JSONArray array) {
         StringBuffer sb = new StringBuffer();
         List<Object> list = new ArrayList<>();
@@ -272,7 +280,7 @@ public class WechatApplication {
         return sb.toString();
     }
 
-    private String getXml(String url, String description, InMessage message) {
+    private String getXml(String url, String pictureUrl, String title, String description, InMessage message) {
         XStream content = XStreamFactory.init(false);
         List<Article> list = new ArrayList<>();
         Article article = new Article();
