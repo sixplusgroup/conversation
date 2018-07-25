@@ -130,3 +130,7 @@ CHANGE COLUMN `location_id` `location_id` VARCHAR(20) NOT NULL ;
 ALTER TABLE `gmair_machine`.`machine_default_location`
 CHANGE COLUMN `block_flag` `block_flag` TINYINT(1) NOT NULL ,
 CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ;
+
+#2018-07-25
+ALTER TABLE `gmair_machine`.`code_machine_bind`
+CHANGE COLUMN `bind_id` `bind_id` VARCHAR(45) NOT NULL ;
