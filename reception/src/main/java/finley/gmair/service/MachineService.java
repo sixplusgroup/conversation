@@ -38,6 +38,9 @@ public interface MachineService {
     @PostMapping("machine/qrcode/probe/byurl")
     ResultData probeQRcodeByUrl(@RequestParam("codeUrl") String codeUrl);
 
+    @PostMapping("/machine/qrcode/prebind/to/bind")
+    ResultData prebindToBind(@RequestParam("qrcode") String qrcode);
+
     //ConsumerQRcodeController
     @PostMapping("/machine/consumer/qrcode/bind")
     ResultData bindConsumerWithQRcode(@RequestParam("consumerId") String consumerId,

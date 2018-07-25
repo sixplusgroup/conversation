@@ -6,6 +6,8 @@ import finley.gmair.form.machine.PreBindForm;
 import finley.gmair.form.machine.QRCodeCreateForm;
 import finley.gmair.form.machine.QRCodeForm;
 import finley.gmair.model.goods.GoodsModel;
+import finley.gmair.model.machine.MachineQrcodeBind;
+import finley.gmair.model.machine.Ownership;
 import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.*;
@@ -44,6 +46,8 @@ public class QRCodeController {
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
 
+    @Autowired
+    private ConsumerQRcodeBindService consumerQRcodeBindService;
     /**
      * This method is used to create a record of qrcode
      *
@@ -490,6 +494,9 @@ public class QRCodeController {
         return result;
     }
 
+
+
+    //查prebind表,检查machineid 是否存在
     @GetMapping(value = "/check/existmachineid")
     public ResultData checkMachineIdExist(String machineId){
         ResultData result = new ResultData();
@@ -513,6 +520,7 @@ public class QRCodeController {
         return result;
     }
 
+    //查qrcode表,检查qrcode是否存在
     @GetMapping(value = "/check/existqrcode")
     public ResultData checkQRcodeExist(String codeValue) {
         ResultData result = new ResultData();
@@ -536,6 +544,7 @@ public class QRCodeController {
         return result;
     }
 
+    //查qrcode表,通过url查找qrcode
     @PostMapping(value = "/probe/byurl")
     public ResultData probeQRcodeByUrl(String codeUrl){
         ResultData result = new ResultData();
@@ -560,4 +569,64 @@ public class QRCodeController {
 
     }
 
+
+    //先查prebind表,通过qrcode获取machineid,再把这条记录写到code_machine_bind表里
+    @PostMapping(value = "/prebind/to/bind")
+    public ResultData prebindToBind(String qrcode,String consumerid){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the qrcode");
+            return result;
+        }
+
+        //check if this people's ownership is a ONWER
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("consumerId",consumerid);
+        condition.put("ownership",Ownership.OWNER);
+        condition.put("blockFlag",false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch the consumer qrcode bind");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("this OWNER consumer not exist in consumer code bind table");
+            return result;
+        }
+
+        //fetch the prebind by qrcode
+        condition.clear();
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        response = preBindService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch the prebind by qrcode");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find prebind by qrcode");
+            return result;
+        }
+        PreBindCode preBindCode = ((List<PreBindCode>)response.getData()).get(0);
+
+        //create a qrcode-machine bind in code_machine_bind table
+        MachineQrcodeBind machineQrcodeBind = new MachineQrcodeBind();
+        machineQrcodeBind.setCodeValue(preBindCode.getCodeValue());
+        machineQrcodeBind.setMachineId(preBindCode.getMachineId());
+        response = machineQrcodeBindService.insert(machineQrcodeBind);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setDescription("fail to insert a record to qrcode machine bind table");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(machineQrcodeBind);
+            result.setDescription("success to put the prebind into qrcode-machine-bind");
+            return result;
+        }
+        return result;
+    }
 }

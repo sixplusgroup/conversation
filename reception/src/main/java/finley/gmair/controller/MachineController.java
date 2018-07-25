@@ -159,7 +159,12 @@ public class MachineController {
     @PostMapping("/bind")
     public ResultData bind(String qrcode) {
         ResultData result = new ResultData();
-        return result;
+        if(StringUtils.isEmpty("qrcode")){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the qrcode");
+            return result;
+        }
+        return machineService.prebindToBind(qrcode);
     }
 
     //发送遥控信息
