@@ -58,4 +58,18 @@
             AND model_id = #{modelId}
         </if>
     </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_machine.qrcode
+        <set>
+            <if test="codeValue != null">
+              code_value = #{codeValue},
+            </if>
+            <if test="status != null">
+                code_status = #{status},
+            </if>
+        code_value = #{codeValue}
+        </set>
+        WHERE code_value = #{codeValue}
+    </update>
 </mapper>

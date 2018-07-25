@@ -69,4 +69,16 @@ public class QRCodeDaoImpl extends BaseDao implements QRCodeDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData updateByQRcode(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.machine.qrcode.update", condition);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

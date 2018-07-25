@@ -57,7 +57,7 @@ public class MachineController {
         ResultData result = new ResultData();
         if(StringUtils.isEmpty(qrcode)||StringUtils.isEmpty(deviceName)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide all information");
+            result.setDescription("please provide the qrcode and the device name.");
             return result;
         }
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

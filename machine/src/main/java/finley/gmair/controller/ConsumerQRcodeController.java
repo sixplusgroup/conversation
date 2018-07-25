@@ -2,7 +2,9 @@ package finley.gmair.controller;
 
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.Ownership;
+import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.service.ConsumerQRcodeBindService;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ import java.util.Map;
 public class ConsumerQRcodeController {
     @Autowired
     private ConsumerQRcodeBindService consumerQRcodeBindService;
+
+    @Autowired
+    private QRCodeService qrCodeService;
 
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
     public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
@@ -78,7 +83,7 @@ public class ConsumerQRcodeController {
             return result;
         }
 
-        //create bind
+        //save to consumer_qrcode_bind table
         ConsumerQRcodeBind consumerQRcodeBind = new ConsumerQRcodeBind();
         consumerQRcodeBind.setConsumerId(consumerId);
         consumerQRcodeBind.setBindName(bindName.trim());
@@ -93,7 +98,25 @@ public class ConsumerQRcodeController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to create bind");
         }
+
+        //update the qrcode table by qrcode, status  =>   QRCodeStatus.OCCUPIED
+        condition.clear();
+        condition.put("codeValue",qrcode);
+        condition.put("status",QRCodeStatus.OCCUPIED.getValue());
+        condition.put("blockFlag",false);
+        response = qrCodeService.modifyByQRcode(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to modify the qrcode status");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to modify the qrcode status");
+            return result;
+        }
         return result;
+
+
     }
 
     @RequestMapping(value = "/qrcode/unbind", method = RequestMethod.POST)
@@ -123,17 +146,18 @@ public class ConsumerQRcodeController {
         }
         ConsumerQRcodeBind consumerQRcodeBind = ((List<ConsumerQRcodeBind>) response.getData()).get(0);
 
-        //according to the onwership,update the consumer_qrcode_bind table
+
+        //according to the onwership,update the  consumer_qrcode_bind and qrcode table
+        condition.clear();
+        condition.put("codeValue",qrcode);
         if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
-            condition.clear();
-            condition.put("codeValue",qrcode);
-            condition.put("blockFlag",true);
+            condition.put("status", QRCodeStatus.ASSIGNED.getValue());
+            condition.put("blockFlag",false);
+            qrCodeService.modifyByQRcode(condition);
         } else {
-            condition.clear();
             condition.put("consumerId",consumerId);
-            condition.put("codeValue",qrcode);
-            condition.put("blockFlag",true);
         }
+        condition.put("blockFlag",true);
         response=consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

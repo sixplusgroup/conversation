@@ -15,4 +15,6 @@ public interface QRCodeDao {
     ResultData query(Map<String, Object> condition);
 
     ResultData queryBatch(Map<String, Object> condition);
+
+    ResultData updateByQRcode(Map<String, Object> condition);
 }

@@ -84,4 +84,19 @@ public class QRCodeServiceImpl implements QRCodeService {
     public ResultData fetchBatch(Map<String, Object> condition) {
         return qrCodeDao.queryBatch(condition);
     }
+
+    @Override
+    public ResultData modifyByQRcode(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = qrCodeDao.updateByQRcode(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to modify qrcode from database");
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("Success to modify qrcode from database");
+        }
+        return result;
+    }
 }
