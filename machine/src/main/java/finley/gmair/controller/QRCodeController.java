@@ -110,8 +110,9 @@ public class QRCodeController {
         response = qrCodeService.create(form.getGoodsId(), form.getModelId(), batch, form.getNum());
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            String filename = generateXls(batch);
-            result.setData(filename);
+            new Thread(() -> {
+                String filename = generateXls(batch);
+            }).start();
             result.setDescription("The qrCodes are generated successfully");
             return result;
         }
@@ -171,12 +172,12 @@ public class QRCodeController {
         }
 
         //open file and write data
-        String base = PathUtil.retrivePath();
+        String base = MachineProperties.getValue("qrcode_storage_path");
         File directory = new File(new StringBuffer(base).append(MachineProperties.getValue("qrcode_batch")).toString());
         if (!directory.exists()) {
             directory.mkdir();
         }
-        String tempSerial = IDGenerator.generate("QRCode");
+        String tempSerial = IDGenerator.generate("QRC");
         File file = new File(
                 new StringBuffer(base).append(MachineProperties.getValue("qrcode_batch")).append(tempSerial).append(".xlsx").toString());
         if (!file.exists()) {
@@ -209,9 +210,9 @@ public class QRCodeController {
     @GetMapping(value = "/download/{filename}")
     public void download(@PathVariable("filename") String filename, HttpServletResponse response) {
         File file = null;
-        if (filename.startsWith("QRCODE")) {
+        if (filename.startsWith("QRC")) {
             filename = filename + ".xlsx";
-            file = new File(PathUtil.retrivePath() + MachineProperties.getValue("qrcode_batch") + filename);
+            file = new File(MachineProperties.getValue("qrcode_storage_path") + MachineProperties.getValue("qrcode_batch") + filename);
         }
         BufferedInputStream inputStream = null;
         BufferedOutputStream outputStream = null;
