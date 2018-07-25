@@ -106,8 +106,9 @@ public class QRCodeController {
         response = qrCodeService.create(form.getGoodsId(), form.getModelId(), batch, form.getNum());
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            String filename = generateXls(batch);
-            result.setData(filename);
+            new Thread(() -> {
+                String filename = generateXls(batch);
+            }).start();
             result.setDescription("The qrCodes are generated successfully");
             return result;
         }
