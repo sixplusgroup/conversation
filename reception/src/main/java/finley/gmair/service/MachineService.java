@@ -52,8 +52,13 @@ public interface MachineService {
                                         @RequestParam("qrcode") String qrcode);
     @GetMapping("/machine/consumer/check/devicename/exist")
     ResultData checkDeviceNameExist(@RequestParam("consumerId") String consumerId,
-                                    @RequestParam("bindName") String bindName,
-                                    @RequestParam("qrcode") String qrcode);
+                                    @RequestParam("bindName") String bindName);
+
+    @GetMapping("/machine/consumer/check/device/binded")
+    ResultData checkDeviceBinded(@RequestParam("consumerId") String consumerId,
+                                 @RequestParam("qrcode") String qrcode);
+
+
     @PostMapping("/machine/consumer/check/consumerid/accessto/qrcode")
     ResultData checkConsumerAccesstoQRcode(@RequestParam("consumerId") String consumerId,
                                            @RequestParam("qrcode") String qrcode);

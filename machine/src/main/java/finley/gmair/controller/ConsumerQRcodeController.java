@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.transform.Result;
@@ -170,11 +171,12 @@ public class ConsumerQRcodeController {
         return result;
     }
 
-    @RequestMapping(value = "/check/devicename/exist", method = RequestMethod.GET)
-    public ResultData checkDeviceNameExist(String consumerId, String bindName, String qrcode) {
+
+    @RequestMapping(value = "/check/device/binded", method = RequestMethod.GET)
+    public ResultData checkDeviceBinded(String consumerId,String qrcode){
         ResultData result = new ResultData();
         //check empty
-        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(bindName) || StringUtils.isEmpty(qrcode)) {
+        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all the information");
             return result;
@@ -189,20 +191,37 @@ public class ConsumerQRcodeController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("exist consumerId-codeValue bind");
+            result.setDescription("the qrcode has been binded with this consumer");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy now");
             return result;
+        } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("the qrcode has not been binded with this consumer");
+            return result;
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/check/devicename/exist", method = RequestMethod.GET)
+    public ResultData checkDeviceNameExist(String consumerId, String bindName) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(bindName)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all the information");
+            return result;
         }
 
         //check bindName exist
+        Map<String, Object> condition = new HashMap<>();
         condition.clear();
         condition.put("consumerId", consumerId);
         condition.put("bindName", bindName);
         condition.put("blockFlag", false);
-        response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -210,14 +229,13 @@ public class ConsumerQRcodeController {
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
+            result.setDescription("fail to check the device name exist");
             return result;
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("this device name has not been used");
         }
         return result;
-
     }
 
     @RequestMapping(value = "/machinelist", method = RequestMethod.GET)

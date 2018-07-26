@@ -28,27 +28,20 @@ public class MachineController {
     @Autowired
     private AuthConsumerService authConsumerService;
 
-    @GetMapping("/check/existname")
-    public ResultData checkDeviceNameExist(String qrcode, String deviceName) {
+    @GetMapping("/check/device/name/binded")
+    public ResultData checkDeviceNameExist(String deviceName) {
         ResultData result = new ResultData();
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
-        ResultData response = machineService.checkDeviceNameExist(consumerId,deviceName,qrcode);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
-            return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription(response.getDescription());
-            return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("this device name can be used");
-            return result;
-        }
-        return result;
+        return machineService.checkDeviceNameExist(consumerId,deviceName);
+    }
+
+    @GetMapping("/check/device/binded")
+    public ResultData checkDeviceBinded (String qrcode){
+        ResultData result = new ResultData();
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        return machineService.checkDeviceBinded(consumerId,qrcode);
     }
 
     //设备初始化时 将qrcode和consumerId绑定
