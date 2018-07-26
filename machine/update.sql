@@ -133,5 +133,5 @@ CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ;
 
 #2018-07-25
 ALTER TABLE `gmair_machine`.`code_machine_bind`
-CHANGE COLUMN `bind_id` `bind_id` VARCHAR(45) NOT NULL ;
+CHANGE COLUMN `bind_id` `bind_id` VARCHAR(20) NOT NULL ;
 
