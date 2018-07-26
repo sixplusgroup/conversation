@@ -83,12 +83,12 @@ public class MachineAirQualityController {
         MachineStatus machineStatus = machineStatusCacheService.fetch(uid);
         if(machineStatus==null){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find");
+            result.setDescription("can not find machine status in cache");
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(machineStatusCacheService.fetch(uid));
-        result.setDescription("success to find");
+        result.setDescription("success to find machine status in cache");
         return result;
     }
 

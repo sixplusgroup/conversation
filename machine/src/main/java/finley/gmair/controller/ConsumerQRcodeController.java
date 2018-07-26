@@ -180,15 +180,16 @@ public class ConsumerQRcodeController {
             return result;
         }
 
-        //check qrcode exist
+        //check if the consumerId-codeValue has been created
         Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId", consumerId);
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("exist qrcode");
+            result.setDescription("exist consumerId-codeValue bind");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
