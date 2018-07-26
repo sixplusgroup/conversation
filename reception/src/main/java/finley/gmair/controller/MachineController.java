@@ -168,7 +168,7 @@ public class MachineController {
     }
 
     //发送遥控信息
-    @PostMapping("/{component}/{operation}")
+    @PostMapping("/operate/{component}/{operation}")
     public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(component) || StringUtils.isEmpty(operation) || StringUtils.isEmpty(qrcode)) {
