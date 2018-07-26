@@ -104,17 +104,20 @@ public class GoodsController {
         condition.put("blockFlag",false);
         ResultData response = goodsService.fetchModel(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            response.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            response.setDescription("fail to fetch the model by modelId");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch the model by modelId");
             return result;
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-            response.setResponseCode(ResponseCode.RESPONSE_NULL);
-            response.setDescription("not find the model by modelId");
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find the model by modelId");
+            return result;
+        }else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription("success to find the model");
             return result;
         }
-        result.setData(response.getData());
-        result.setDescription("success to find the model");
-        return result;
+
     }
 
     @PostMapping("/model/create")
