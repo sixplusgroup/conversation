@@ -70,4 +70,8 @@ public interface MachineService {
     @PostMapping("/machine/default/location/update/cityid")
     ResultData updateCityIdByQRcode(@RequestParam("cityId") String cityId,
                                     @RequestParam("qrcode") String qrcode);
+
+    //GoodsController
+    @GetMapping("/machine/goods/model/query/by/modelid")
+    ResultData queryModelByModelId(@RequestParam("modelId") String modelId);
 }

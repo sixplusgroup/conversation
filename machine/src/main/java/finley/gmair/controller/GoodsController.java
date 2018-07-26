@@ -90,6 +90,33 @@ public class GoodsController {
         return result;
     }
 
+    @GetMapping("/model/query/by/modelid")
+    public ResultData queryModelByModelId(String modelId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(modelId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the modelId");
+            return result;
+        }
+
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("modelId",modelId);
+        condition.put("blockFlag",false);
+        ResultData response = goodsService.fetchModel(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            response.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            response.setDescription("fail to fetch the model by modelId");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            response.setResponseCode(ResponseCode.RESPONSE_NULL);
+            response.setDescription("not find the model by modelId");
+            return result;
+        }
+        result.setData(response.getData());
+        result.setDescription("success to find the model");
+        return result;
+    }
+
     @PostMapping("/model/create")
     public ResultData createModel(ModelForm modelForm) {
         ResultData result = new ResultData();

@@ -245,4 +245,8 @@ public class MachineController {
     public ResultData probeQRcodeByUrl(String codeUrl){
         return machineService.probeQRcodeByUrl(codeUrl);
     }
+
+
+    @RequestMapping(value="/model/query/by/modelid",method = RequestMethod.GET)
+    public ResultData queryModelByModelId(String modelId){ return machineService.queryModelByModelId(modelId);}
 }
