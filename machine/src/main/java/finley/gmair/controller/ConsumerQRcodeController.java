@@ -179,13 +179,11 @@ public class ConsumerQRcodeController {
 
         //check if the consumerId-codeValue has been created
         Map<String, Object> condition = new HashMap<>();
-
+        condition.put("ownership", Ownership.OWNER);
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            condition.put("consumerId",consumerId);
-            response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("the qrcode has been binded with someone");
