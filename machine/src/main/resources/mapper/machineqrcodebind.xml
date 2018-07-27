@@ -30,4 +30,21 @@
         INSERT INTO `gmair_machine`.`code_machine_bind` (bind_id, code_value, machine_id, block_flag, create_time)
         VALUES(#{bindId}, #{codeValue}, #{machineId}, #{blockFlag}, #{createAt})
     </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_machine.code_machine_bind
+        <set>
+            <if test="codeValue != null">
+                code_value = #{codeValue},
+            </if>
+            <if test="machineId != null">
+                machine_id = #{machineId},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            code_value = #{codeValue}
+        </set>
+        WHERE code_value = #{codeValue}
+    </update>
 </mapper>

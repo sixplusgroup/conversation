@@ -1,9 +1,11 @@
 package finley.gmair.controller;
 
+import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.service.ConsumerQRcodeBindService;
+import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.service.QRCodeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -24,6 +26,9 @@ import java.util.Map;
 public class ConsumerQRcodeController {
     @Autowired
     private ConsumerQRcodeBindService consumerQRcodeBindService;
+
+    @Autowired
+    private MachineQrcodeBindService machineQrcodeBindService;
 
     @Autowired
     private QRCodeService qrCodeService;
@@ -146,7 +151,7 @@ public class ConsumerQRcodeController {
         ConsumerQRcodeBind consumerQRcodeBind = ((List<ConsumerQRcodeBind>) response.getData()).get(0);
 
 
-        //according to the onwership,update the  consumer_qrcode_bind and qrcode table
+        //according to the onwership,update the  consumer_qrcode_bind and qrcode table and code_machine_bind table
         condition.clear();
         condition.put("codeValue",qrcode);
         if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
@@ -154,6 +159,8 @@ public class ConsumerQRcodeController {
             condition.put("blockFlag",false);
             new Thread(()-> {
                 qrCodeService.modifyByQRcode(condition);
+                condition.put("blockFlag",true);
+                machineQrcodeBindService.modifyByQRcode(condition);
             }).start();
         } else {
             condition.put("consumerId",consumerId);
@@ -170,7 +177,6 @@ public class ConsumerQRcodeController {
         }
         return result;
     }
-
 
     @RequestMapping(value = "/check/device/binded", method = RequestMethod.GET)
     public ResultData checkDeviceBinded(String consumerId,String qrcode){

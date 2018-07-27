@@ -47,4 +47,21 @@ public class MachineQrcodeBindServiceImpl implements MachineQrcodeBindService {
 
         return machineQrcodeBindDao.insert(machineQrcodeBind);
     }
+
+    @Override
+    public ResultData modifyByQRcode(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = machineQrcodeBindDao.update(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to update the code-machine table");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to update the code-machine table");
+            return result;
+        }
+        return result;
+    }
+
 }
