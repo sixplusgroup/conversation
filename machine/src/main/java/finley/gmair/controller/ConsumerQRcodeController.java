@@ -70,6 +70,7 @@ public class ConsumerQRcodeController {
             result.setDescription("please provide all the information");
             return result;
         }
+
         //check whether the bind exist
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId",consumerId);
@@ -79,7 +80,7 @@ public class ConsumerQRcodeController {
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setData(response.getData());
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("exist bind,don't have to bind again");
             return result;
         }
@@ -93,11 +94,17 @@ public class ConsumerQRcodeController {
         response = consumerQRcodeBindService.createConsumerQRcodeBind(consumerQRcodeBind);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy");
+            result.setDescription("fail to save the bind information to table");
             return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find qrcode in prebind table");
+            return result;
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to create bind");
+            result.setData(response.getData());
+            result.setDescription("success to create bind information to table");
         }
 
         //update the qrcode table by qrcode, status  =>   QRCodeStatus.OCCUPIED
@@ -109,8 +116,6 @@ public class ConsumerQRcodeController {
             qrCodeService.modifyByQRcode(condition);
         }).start();
         return result;
-
-
     }
 
     @RequestMapping(value = "/qrcode/unbind", method = RequestMethod.POST)
@@ -190,7 +195,7 @@ public class ConsumerQRcodeController {
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
+            result.setDescription("fail to check if the device has been binded with someone");
             return result;
         } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -207,7 +212,7 @@ public class ConsumerQRcodeController {
         //check empty
         if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(bindName)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide all the information");
+            result.setDescription("please provide all the consumerId and bindName");
             return result;
         }
 
@@ -240,7 +245,7 @@ public class ConsumerQRcodeController {
         //check empty
         if (StringUtils.isEmpty(consumerId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide all information");
+            result.setDescription("please provide the consumerId");
             return result;
         }
 

@@ -32,7 +32,7 @@ public class MachineQrcodeBindServiceImpl implements MachineQrcodeBindService {
         ResultData response = machineQrcodeBindDao.select(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(String.format("machineId%s已经被绑定", machineQrcodeBind.getMachineId()));
+            result.setDescription(String.format("machineId %s 已经被绑定", machineQrcodeBind.getMachineId()));
             return result;
         }
         condition.clear();
@@ -41,7 +41,7 @@ public class MachineQrcodeBindServiceImpl implements MachineQrcodeBindService {
         response = machineQrcodeBindDao.select(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(String.format("二维码%s已经被绑定", machineQrcodeBind.getCodeValue()));
+            result.setDescription(String.format("二维码 %s 已经被绑定", machineQrcodeBind.getCodeValue()));
             return result;
         }
 

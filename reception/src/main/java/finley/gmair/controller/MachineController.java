@@ -101,22 +101,9 @@ public class MachineController {
         return result;
     }
 
-
-
     @PostMapping("/qrcode/status")
     public ResultData findStatusByQRcode(String qrcode) {
         return machineService.checkQRcodeExist(qrcode);
-    }
-
-    /**
-     * This method is invoked to finish user-qrcode binding
-     *
-     * @return bind result, RESPONSE_OK & RESPONSE_ERROR
-     * @Param qrcode, the code value of the specified machine
-     */
-    @PostMapping("/bind")
-    public ResultData bind(String qrcode) {
-        return machineService.prebindToBind(qrcode);
     }
 
     //发送遥控信息
