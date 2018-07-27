@@ -521,7 +521,7 @@ public class QRCodeController {
         return result;
     }
 
-    //查qrcode表,检查qrcode是否存在
+    //根据codeValue查qrcode表
     @GetMapping(value = "/check/existqrcode")
     public ResultData checkQRcodeExist(String codeValue) {
         ResultData result = new ResultData();
@@ -531,7 +531,7 @@ public class QRCodeController {
         ResultData response = qrCodeService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy");
+            result.setDescription("fail to find the qrcode by codeValue");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -545,7 +545,7 @@ public class QRCodeController {
         return result;
     }
 
-    //查qrcode表,通过url查找qrcode
+    //根据codeUrl查qrcode表
     @PostMapping(value = "/probe/byurl")
     public ResultData probeQRcodeByUrl(String codeUrl){
         ResultData result = new ResultData();

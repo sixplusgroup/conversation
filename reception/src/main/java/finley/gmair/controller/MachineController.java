@@ -30,7 +30,6 @@ public class MachineController {
 
     @GetMapping("/check/device/name/binded")
     public ResultData checkDeviceNameExist(String deviceName) {
-        ResultData result = new ResultData();
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
         return machineService.checkDeviceNameExist(consumerId,deviceName);
@@ -38,7 +37,6 @@ public class MachineController {
 
     @GetMapping("/check/device/binded")
     public ResultData checkDeviceBinded (String qrcode){
-        ResultData result = new ResultData();
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
         return machineService.checkDeviceBinded(consumerId,qrcode);
@@ -47,12 +45,6 @@ public class MachineController {
     //设备初始化时 将qrcode和consumerId绑定
     @PostMapping("/deviceinit")
     public ResultData deviceInit(String qrcode, String deviceName) {
-        ResultData result = new ResultData();
-        if(StringUtils.isEmpty(qrcode)||StringUtils.isEmpty(deviceName)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide the qrcode and the device name.");
-            return result;
-        }
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
         return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
@@ -60,12 +52,6 @@ public class MachineController {
 
     @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
     public ResultData unbindConsumerWithQRcode(String qrcode){
-        ResultData result = new ResultData();
-        if(StringUtils.isEmpty(qrcode)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide all information");
-            return result;
-        }
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
         return machineService.unbindConsumerWithQRcode(consumerId,qrcode);
@@ -119,28 +105,7 @@ public class MachineController {
 
     @PostMapping("/qrcode/status")
     public ResultData findStatusByQRcode(String qrcode) {
-        ResultData result = new ResultData();
-        //check empty
-        if (StringUtils.isEmpty(qrcode)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide all the information");
-            return result;
-        }
-        ResultData response = machineService.checkQRcodeExist(qrcode);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,please try again later");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("sorry,we can't find the qrcode");
-            return result;
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription("success to get the status by qrcode");
-        }
-        return result;
+        return machineService.checkQRcodeExist(qrcode);
     }
 
     /**
@@ -151,51 +116,20 @@ public class MachineController {
      */
     @PostMapping("/bind")
     public ResultData bind(String qrcode) {
-        ResultData result = new ResultData();
-        if(StringUtils.isEmpty("qrcode")){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide the qrcode");
-            return result;
-        }
         return machineService.prebindToBind(qrcode);
     }
 
     //发送遥控信息
     @PostMapping("/operate/{component}/{operation}")
     public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(component) || StringUtils.isEmpty(operation) || StringUtils.isEmpty(qrcode)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure all required information is provided");
-            return result;
-        }
-
-        ResultData response = machineService.chooseComponent(qrcode,component,operation);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
-            return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to operate");
-            return result;
-        }
-
-        return result;
+        return machineService.chooseComponent(qrcode,component,operation);
     }
 
 
     //设置配置项
     @PostMapping("/control/option/create")
     public ResultData setControlOption(String optionName, String optionComponent, String modelId, String actionName, String actionOperator) {
-        ResultData result = new ResultData();
-        ResultData response = machineService.setControlOption(optionName, optionComponent, modelId, actionName, actionOperator);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("error");
-            return result;
-        }
-        return result;
+        return machineService.setControlOption(optionName, optionComponent, modelId, actionName, actionOperator);
     }
 
     //根据modelId查询ControlOption
@@ -213,24 +147,9 @@ public class MachineController {
     //根据consumerId获取用户的machine list
     @RequestMapping(value = "/devicelist", method = RequestMethod.GET)
     public ResultData getUserDeviceList(){
-        ResultData result = new ResultData();
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
-        ResultData response = machineService.getMachineListByConsumerId(consumerId);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription("success to get machine list");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find");
-            return result;
-        }else{
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy");
-            return result;
-        }
+        return machineService.getMachineListByConsumerId(consumerId);
     }
 
 

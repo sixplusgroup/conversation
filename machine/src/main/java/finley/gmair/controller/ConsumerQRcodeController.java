@@ -101,20 +101,13 @@ public class ConsumerQRcodeController {
         }
 
         //update the qrcode table by qrcode, status  =>   QRCodeStatus.OCCUPIED
-        condition.clear();
-        condition.put("codeValue",qrcode);
-        condition.put("status",QRCodeStatus.OCCUPIED.getValue());
-        condition.put("blockFlag",false);
-        response = qrCodeService.modifyByQRcode(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to modify the qrcode status");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to modify the qrcode status");
-            return result;
-        }
+        new Thread(()-> {
+            condition.clear();
+            condition.put("codeValue", qrcode);
+            condition.put("status", QRCodeStatus.OCCUPIED.getValue());
+            condition.put("blockFlag", false);
+            qrCodeService.modifyByQRcode(condition);
+        }).start();
         return result;
 
 
@@ -154,7 +147,9 @@ public class ConsumerQRcodeController {
         if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
             condition.put("status", QRCodeStatus.ASSIGNED.getValue());
             condition.put("blockFlag",false);
-            qrCodeService.modifyByQRcode(condition);
+            new Thread(()-> {
+                qrCodeService.modifyByQRcode(condition);
+            }).start();
         } else {
             condition.put("consumerId",consumerId);
         }
@@ -184,14 +179,16 @@ public class ConsumerQRcodeController {
 
         //check if the consumerId-codeValue has been created
         Map<String, Object> condition = new HashMap<>();
-        condition.put("consumerId", consumerId);
+
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            condition.put("consumerId",consumerId);
+            response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("the qrcode has been binded with this consumer");
+            result.setDescription("the qrcode has been binded with someone");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -199,9 +196,10 @@ public class ConsumerQRcodeController {
             return result;
         } else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("the qrcode has not been binded with this consumer");
+            result.setDescription("the qrcode has not been binded with any consumer");
             return result;
         }
+
         return result;
     }
 
@@ -254,16 +252,16 @@ public class ConsumerQRcodeController {
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
+            result.setDescription("fail to find device list by consumerid");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not found any one");
+            result.setDescription("not find device list by consumerid");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("success");
+            result.setDescription("success to fetch device list by consumerid");
         }
         return result;
     }
