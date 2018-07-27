@@ -65,40 +65,7 @@ public class MachineController {
      */
     @GetMapping("/checkonline")
     public ResultData checkOnline(String qrcode) {
-        ResultData result = new ResultData();
-        //check empty
-        if (StringUtils.isEmpty(qrcode)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide all the information");
-            return result;
-        }
-        //check whether the qrcode is online
-        ResultData response = machineService.findMachineIdByCodeValue(qrcode);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now,please try again later");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("is not online");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<Object> preBindCodeList = (ArrayList<Object>) response.getData();
-            LinkedHashMap<String, Object> linkedHashMap = (LinkedHashMap<String, Object>) (preBindCodeList.get(0));
-            String machineId = (String) linkedHashMap.get("machineId");
-            response = repositoryService.isOnilne(machineId);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("is online");
-                return result;
-            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("is not online");
-                return result;
-            }
-        }
-
-        return result;
+        return machineService.checkOnline(qrcode);
     }
 
     @PostMapping("/qrcode/status")

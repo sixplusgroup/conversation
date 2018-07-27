@@ -12,6 +12,7 @@ import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
+import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class QRCodeController {
 
     @Autowired
     private ConsumerQRcodeBindService consumerQRcodeBindService;
+
+    @Autowired
+    private RepositoryService repositoryService;
     /**
      * This method is used to create a record of qrcode
      *
@@ -568,6 +572,43 @@ public class QRCodeController {
             return result;
         }
 
+    }
+
+    //check online
+    @GetMapping("/checkonline")
+    public ResultData checkOnline(String qrcode) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the qrcode");
+            return result;
+        }
+        //check whether the qrcode is online
+        ResultData response = findMachineIdByCodeValueFacetoConsumer(qrcode);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find machine id by qrcode in code machine bind table");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find machine id by qrcode in code machine bind table");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            String machineId = (String) ((List<MachineQrcodeBindVo>)response.getData()).get(0).getMachineId();
+            response = repositoryService.isOnilne(machineId);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("is online");
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("is not online");
+                return result;
+            }
+        }
+
+        return result;
     }
 
 }
