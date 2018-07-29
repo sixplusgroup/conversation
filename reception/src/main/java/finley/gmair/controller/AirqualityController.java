@@ -63,41 +63,23 @@ public class AirqualityController {
         }
 
         //update default location
-        response = machineService.updateCityIdByQRcode(cityId,qrcode);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setDescription(result.getDescription()+",and success to change the default city!");
-        }
-        else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            result.setDescription(result.getDescription()+",but fail to change the default city!");
-        }
+        new Thread(() -> {
+            machineService.updateCityIdByQRcode(cityId,qrcode);
+        }).start();
         return result;
     }
 
-    //根据qrcode给出那个城市过去24小时的pm2.5记录
+    //根据cityId给出那个城市过去24小时的pm2.5记录
     @RequestMapping(value="/city/hourly/aqi",method = RequestMethod.GET)
-    ResultData getCityHourlyAqi(String qrcode) {
+    ResultData getCityHourlyAqi(String cityId) {
         ResultData result = new ResultData();
         //check empty
-        if(StringUtils.isEmpty(qrcode)){
+        if(StringUtils.isEmpty(cityId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("input can not be empty");
+            result.setDescription("please provide cityId");
             return result;
         }
-
-        //find the cityId by qrcode
-        ResultData response = machineService.probeCityIdByQRcode(qrcode);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find.");
-            return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now.");
-            return result;
-        }
-        List<LinkedHashMap> linkedHashMaps = (List<LinkedHashMap>) response.getData();
-        String cityId = (String)linkedHashMaps.get(0).get("cityId");
-        response = airqualityService.getHourlyCityAqi(cityId);
+        ResultData response = airqualityService.getHourlyCityAqi(cityId);
         if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -114,33 +96,19 @@ public class AirqualityController {
         }
         return result;
     }
-    //根据qrcode给出那个城市过去一周的pm2.5记录
+    //根据cityId给出那个城市过去一周的pm2.5记录
     @RequestMapping(value="/city/daily/aqi",method = RequestMethod.GET)
-    ResultData getCityDailyAqi(String qrcode){
+    ResultData getCityDailyAqi(String cityId){
         ResultData result = new ResultData();
 
         //check empty
-        if(StringUtils.isEmpty(qrcode)){
+        if(StringUtils.isEmpty(cityId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("input can not be empty");
+            result.setDescription("please provide cityId");
             return result;
         }
 
-        //find the cityId by qrcode
-        ResultData response = machineService.probeCityIdByQRcode(qrcode);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find");
-            return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now.");
-            return result;
-        }
-        List<LinkedHashMap> linkedHashMaps = (List<LinkedHashMap>) response.getData();
-        String cityId = (String)linkedHashMaps.get(0).get("cityId");
-
-        response = airqualityService.getDailyCityAqi(cityId);
+        ResultData response = airqualityService.getDailyCityAqi(cityId);
         if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setData(response.getData());
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -148,7 +116,7 @@ public class AirqualityController {
             return result;
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
+            result.setDescription("fail to get city weekly airquality");
             return result;
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
