@@ -73,12 +73,14 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
             //System.out.println("current time: "+new Timestamp(System.currentTimeMillis()) + "... packet time:" + new Timestamp(packet.getTime()));
             //check the timestamp of the packet, if longer that 0.5 minute, abort it
-            if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 30) {
-                return;
-            }
+
             //the packet is valid, give response to the client and process the packet in a new thread
             HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
             ctx.writeAndFlush(response.convert2bytearray());
+
+            if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 30) {
+                return;
+            }
             CorePool.getComExecutor().execute(new Thread(() -> {
                 //nothing to do with heartbeat packet
                 if (packet instanceof HeartBeatPacket) {
