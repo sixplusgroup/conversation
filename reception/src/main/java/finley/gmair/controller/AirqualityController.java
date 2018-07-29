@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.LinkedHashMap;
@@ -25,46 +26,14 @@ public class AirqualityController {
 
     //根据qrcode获取那个城市最新的空气质量记录(包括pm2.5、pm10、co等等)
     @RequestMapping(value="/city/latest/aqi",method = RequestMethod.GET)
-    ResultData getCityLatestAirquality(String qrcode){
+    ResultData getCityLatestAirquality(String cityId){
         ResultData result = new ResultData();
-
-        //check empty
-        if(StringUtils.isEmpty(qrcode)){
+        if(StringUtils.isEmpty(cityId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("input can not be empty");
+            result.setDescription("please provide cityId");
             return result;
         }
-        //find the cityId by qrcode
-        ResultData response = machineService.probeCityIdByQRcode(qrcode);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find");
-            return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
-            return result;
-        }
-        List<LinkedHashMap> linkedHashMaps = (List<LinkedHashMap>) response.getData();
-        String cityId = (String)linkedHashMaps.get(0).get("cityId");
-
-        response = airqualityService.getLatestCityAirQuality(cityId);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setData(response.getData());
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to get city latest airquality");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("sorry,can not get any data");
-            return result;
-        }
-
-        return result;
+        return airqualityService.getLatestCityAirQuality(cityId);
     }
 
     //根据cityId获取那个城市最新的空气质量记录(包括pm2.5、pm10、co等等),并修改qrcode对应机器的默认城市位置

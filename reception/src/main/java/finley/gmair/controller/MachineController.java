@@ -115,4 +115,7 @@ public class MachineController {
 
     @RequestMapping(value="/model/query/by/modelid",method = RequestMethod.GET)
     public ResultData queryModelByModelId(String modelId){ return machineService.queryModelByModelId(modelId);}
+
+    @RequestMapping(value="/probe/cityId/byqrcode",method = RequestMethod.GET)
+    public ResultData probeCityIdByQRcode(String qrcode){return machineService.probeCityIdByQRcode(qrcode);}
 }
