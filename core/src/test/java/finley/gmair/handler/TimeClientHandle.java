@@ -89,7 +89,16 @@ public class TimeClientHandle implements Runnable{
             if (key.isConnectable()) {
                 if (sc.finishConnect()) {
                     sc.register(selector, SelectionKey.OP_READ);
-                    doWrite(sc);
+
+                    new Thread(() -> {
+                        try {
+                            doWrite(sc);
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+
+                    //doWrite(sc);
                 } else {
                     System.exit(1);
                 }
@@ -127,32 +136,38 @@ public class TimeClientHandle implements Runnable{
 
         byte[] CID = new byte[]{0x00};
 
-        byte[] UID = new byte[]{0x67, 0x63, 0x66, 0x62, 0x63, (byte) 0x62, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61};
-
-        long time = System.currentTimeMillis();
-
-        byte[] TIM = ByteUtil.long2byte(time, 8);
+        //byte[] UID = new byte[]{0x67, 0x63, 0x66, 0x62, 0x63, (byte) 0x62, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61};
+        byte[] UID = ByteUtil.string2byte("wjq-machine", 12);
 
         byte[] LEN = new byte[]{0x0C};
 
         byte[] data = new byte[]{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
 
-        ProbePacket packet = new ProbePacket(CTF, CID, UID, TIM, LEN, data);
-
-        byte[] req = packet.convert2bytearray();
 
 //        try {
 //            Thread.sleep(5 * 1000);
 //        } catch (InterruptedException e) {
 //
 //        }
+        while(true) {
+            long time = System.currentTimeMillis();
+            byte[] TIM = ByteUtil.long2byte(time, 8);
+            ProbePacket packet = new ProbePacket(CTF, CID, UID, TIM, LEN, data);
+            byte[] req = packet.convert2bytearray();
 
-        ByteBuffer writeBuffer = ByteBuffer.allocate(req.length);
-        writeBuffer.put(req);
-        writeBuffer.flip();
-        sc.write(writeBuffer);
-        if (!writeBuffer.hasRemaining()) {
-            System.out.println("send all......");
+            ByteBuffer writeBuffer = ByteBuffer.allocate(req.length);
+            writeBuffer.put(req);
+            writeBuffer.flip();
+            sc.write(writeBuffer);
+            if (!writeBuffer.hasRemaining()) {
+                System.out.println("send all......");
+            }
+
+            try{
+                Thread.sleep(10000);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }
