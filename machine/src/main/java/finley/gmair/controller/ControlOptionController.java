@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -208,6 +209,35 @@ public class ControlOptionController {
         }
         return result;
     }
+
+
+    //用户操作风量
+    @RequestMapping(value="/config/speed")
+    public ResultData configSpeed(String qrcode, int speed){
+
+        ResultData result = new ResultData();
+        //check empty
+        if (ControlOptionController.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("provide all the speed");
+            return result;
+        }
+
+        //根据qrcode 查 code_machine_bind表,取出machineId
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("sorry, can not find the qrcode or server is busy");
+            return result;
+        }
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+        return coreService.configSpeed(machineId,speed);
+
+    }
+
 
     public static boolean isEmpty(String... args) {
         for (String arg : args) {

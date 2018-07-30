@@ -79,6 +79,11 @@ public class MachineController {
         return machineService.chooseComponent(qrcode,component,operation);
     }
 
+    //配置风量
+    @PostMapping("/config/speed")
+    public ResultData configSpeed(String qrcode, int speed){
+        return machineService.configSpeed(qrcode,speed);
+    }
 
     //设置配置项
     @PostMapping("/control/option/create")

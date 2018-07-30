@@ -33,4 +33,8 @@ public interface CoreService {
     @PostMapping("/core/com/config/mode")
     ResultData configMode(@RequestParam("uid") String uid,
                           @RequestParam("mode") int mode);
+
+    @PostMapping("/core/com/config/speed")
+    ResultData configSpeed(@RequestParam("uid") String uid,
+                           @RequestParam("speed") int speed);
 }

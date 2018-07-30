@@ -24,6 +24,9 @@ public interface MachineService {
     ResultData chooseComponent(@RequestParam("qrcode") String qrcode,
                                @RequestParam("component") String component,
                                @RequestParam("operation") String operation);
+    @PostMapping("/machine/control/option/config/speed")
+    ResultData configSpeed(@RequestParam("qrcode") String qrcode, @RequestParam("speed") int speed);
+
 
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")
