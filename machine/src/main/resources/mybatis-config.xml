@@ -21,5 +21,6 @@
         <mapper resource="mapper/boardversion.xml"></mapper>
         <mapper resource="mapper/consumer_qrcode_bind.xml"></mapper>
         <mapper resource="mapper/machine_default_location.xml"></mapper>
+        <mapper resource="mapper/pm2_5_boundary.xml"></mapper>
     </mappers>
 </configuration>

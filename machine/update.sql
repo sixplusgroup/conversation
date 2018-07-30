@@ -135,3 +135,19 @@ CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ;
 ALTER TABLE `gmair_machine`.`code_machine_bind`
 CHANGE COLUMN `bind_id` `bind_id` VARCHAR(20) NOT NULL ;
 
+
+#2018-07-30 add table pm2_5_boundary
+CREATE TABLE `gmair_machine`.`pm2_5_boundary` (
+  `boundary_id` VARCHAR(20) NOT NULL,
+  `model_id` VARCHAR(20) NULL,
+  `pm2_5` DOUBLE NULL,
+  `create_time` DATETIME NULL,
+  `block_flag` TINYINT(1) NULL,
+  PRIMARY KEY (`boundary_id`));
+
+ALTER TABLE `gmair_machine`.`pm2_5_boundary`
+CHANGE COLUMN `model_id` `model_id` VARCHAR(20) NOT NULL ,
+CHANGE COLUMN `pm2_5` `pm2_5` DOUBLE NOT NULL ,
+CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ,
+CHANGE COLUMN `block_flag` `block_flag` TINYINT(1) NOT NULL ;
+
