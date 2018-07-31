@@ -24,4 +24,6 @@ public class PacketConstant {
     public final static String CHILD_LOCK = "lock";
 
     public final static String PROBE_INTERVAL = "probe_interval";
+
+    public final static String PARTIAL_PM2_5 = "partial_pm2_5";
 }

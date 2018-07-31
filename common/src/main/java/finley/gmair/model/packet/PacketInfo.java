@@ -38,4 +38,7 @@ public class PacketInfo {
 
     @PacketConfig(command = 0x0D, name = PacketConstant.PROBE_INTERVAL, length = 1)
     private int probe_interval;
+
+    @PacketConfig(command = 0x0E, name = PacketConstant.PARTIAL_PM2_5, length = 1)
+    private int partial_pm2_5;
 }

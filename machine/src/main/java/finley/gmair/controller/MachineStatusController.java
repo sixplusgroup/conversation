@@ -1,6 +1,9 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.machine.LatestPM2_5;
+import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.service.CoreService;
+import finley.gmair.service.LatestPM2_5Service;
 import finley.gmair.service.MachinePm25Service;
 import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.util.ResponseCode;
@@ -22,6 +25,9 @@ public class MachineStatusController {
 
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
+
+    @Autowired
+    private LatestPM2_5Service latestPM2_5Service;
 
     @Autowired
     private CoreService coreService;
@@ -61,6 +67,35 @@ public class MachineStatusController {
             MachineQrcodeBindVo machineQrcodeBindVo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
             return coreService.isOnline(machineQrcodeBindVo.getMachineId());
         }
+    }
+
+    @GetMapping("/partial/schedule/hourly")
+    public ResultData handleMachinePartialPM2_5Hourly() {
+        ResultData result = new ResultData();
+
+        //get the qrcode-machine-bind list
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(response.getResponseCode());
+            return result;
+        }
+        List<MachineQrcodeBindVo> machineQrcodeBindVoList = (List<MachineQrcodeBindVo>) response.getData();
+
+        //foreach the uid, get the partial pm2.5 from mongo, then save to database
+        StringBuffer sb = new StringBuffer("");
+        for (MachineQrcodeBindVo mqb : machineQrcodeBindVoList) {
+            sb.delete(0, sb.length());
+            sb.append(mqb.getMachineId());
+            response = machinePm25Service.fetchPartialLatestPm25(sb.toString(), "pm2_5");
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+                continue;
+            MachinePartialStatus status = ((List<MachinePartialStatus>) response.getData()).get(0);
+            LatestPM2_5 latestPM2_5 = new LatestPM2_5(mqb.getMachineId(), (double) status.getData());
+            latestPM2_5Service.create(latestPM2_5);
+        }
+        return result;
     }
 
 }

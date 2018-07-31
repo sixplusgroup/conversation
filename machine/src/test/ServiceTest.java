@@ -17,13 +17,15 @@ public class ServiceTest {
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
 
+    @Autowired
+    private LatestPM2_5Service latestPM2_5Service;
+
     @Test
     public void insert() {
-        MachineQrcodeBind machineQrcodeBind = new MachineQrcodeBind();
-        machineQrcodeBind.setBindId("123456789");
-        machineQrcodeBind.setCodeValue("35A108A123432");
-        machineQrcodeBind.setMachineId("123123");
-        ResultData response = machineQrcodeBindService.insert(machineQrcodeBind);
+        LatestPM2_5 latestPM2_5 = new LatestPM2_5();
+        latestPM2_5.setMachineId("123456789");
+        latestPM2_5.setPm2_5("123");
+        ResultData response = latestPM2_5Service.insert(latestPM2_5);
         System.out.println(response);
     }
 

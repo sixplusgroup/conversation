@@ -151,3 +151,11 @@ CHANGE COLUMN `pm2_5` `pm2_5` DOUBLE NOT NULL ,
 CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ,
 CHANGE COLUMN `block_flag` `block_flag` TINYINT(1) NOT NULL ;
 
+#2018-07-31 add table pm2_5_latest
+CREATE TABLE `gmair_machine`.`pm2_5_latest` (
+  `latest_id` VARCHAR(20) NOT NULL,
+  `machine_id` VARCHAR(20) NOT NULL,
+  `pm2_5` DOUBLE NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`latest_id`));

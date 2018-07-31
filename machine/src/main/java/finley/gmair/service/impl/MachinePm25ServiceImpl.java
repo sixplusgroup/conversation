@@ -2,6 +2,7 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.MachineStatusMongoDao;
 import finley.gmair.dao.MachineStatusStatisticsDao;
+import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachinePm2_5;
 import finley.gmair.service.MachinePm25Service;
 import finley.gmair.util.ResponseCode;
@@ -98,6 +99,21 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
             if (!monthlyData.isEmpty()) {
                 response = machineStatusStatisticsDao.insertMonthlyBatch(monthlyData);
             }
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData fetchPartialLatestPm25(String uid,String name) {
+        ResultData result = new ResultData();
+        ResultData response = machineStatusMongoDao.queryPartialLatestPm25(uid,name);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+        } else {
+            List<MachinePartialStatus> list = (List<MachinePartialStatus>) response.getData();
+            result.setData(list.get(0));
+            result.setDescription("success to fetch latest pm2.5 in machine_partial_status collection");
         }
         return result;
     }

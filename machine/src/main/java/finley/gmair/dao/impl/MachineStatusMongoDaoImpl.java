@@ -1,11 +1,13 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.MachineStatusMongoDao;
+import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachinePm2_5;
 import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -13,7 +15,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -76,6 +80,33 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao{
             e.printStackTrace();
         }
 
+        return result;
+    }
+
+
+    @Override
+    public ResultData queryPartialLatestPm25(String uid,String name){
+        ResultData result = new ResultData();
+        long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("uid").is(uid)),
+                match(Criteria.where("name").is(name)),
+                match(Criteria.where("createAt").gte(lastHour)),
+                sort(Sort.Direction.DESC,"createAt")
+        );
+        try {
+            AggregationResults<MachinePartialStatus> data = mongoTemplate
+                    .aggregate(aggregation, "machine_partial_status", MachinePartialStatus.class);
+            if (data.getMappedResults().isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            } else {
+                result.setData(data.getMappedResults());
+            }
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            e.printStackTrace();
+        }
         return result;
     }
 }

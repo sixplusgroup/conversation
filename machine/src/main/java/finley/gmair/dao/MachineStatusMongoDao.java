@@ -11,4 +11,6 @@ public interface MachineStatusMongoDao {
 
     ResultData queryHourlyPm25();
 
+    ResultData queryPartialLatestPm25(String uid,String name);
+
 }
