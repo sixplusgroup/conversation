@@ -29,7 +29,7 @@
     </resultMap>
     
     <select id="getActions" resultMap="controlOptionActionVo">
-        SELECT value_id, action_name, action_operator
+        SELECT value_id, action_name, action_operator, command_value
         FROM gmair_machine.control_option_action
         WHERE control_id = #{controlId} AND model_id=#{modelId} AND block_flag = 0
     </select>
@@ -90,7 +90,7 @@
 
     <!-- 2018.07.17 wjq add -->
     <select id="queryByModelId" parameterType="java.util.Map" resultMap="controlOptionVo">
-        SELECT co.option_id,co.option_name,co.option_component,coa.model_id,co.block_flag,co.create_time
+        SELECT co.option_id,co.option_name,co.option_component,coa.model_id, co.block_flag,co.create_time
         FROM gmair_machine.control_option_action AS coa, gmair_machine.control_option AS co
         WHERE co.option_id = coa.control_id AND coa.model_id = #{modelId} AND co.block_flag = 0 AND coa.block_flag = 0
         GROUP BY co.option_id
