@@ -5,12 +5,12 @@ import finley.gmair.model.Entity;
 public class LatestPM2_5 extends Entity {
     private String latestId;
     private String machineId;
-    private double pm2_5;
+    private int pm2_5;
     public LatestPM2_5(){
         super();
     }
 
-    public LatestPM2_5(String machineId, double pm2_5) {
+    public LatestPM2_5(String machineId, int pm2_5) {
         super();
         this.machineId = machineId;
         this.pm2_5 = pm2_5;
@@ -36,7 +36,7 @@ public class LatestPM2_5 extends Entity {
         return pm2_5;
     }
 
-    public void setPm2_5(double pm2_5) {
+    public void setPm2_5(int pm2_5) {
         this.pm2_5 = pm2_5;
     }
 }

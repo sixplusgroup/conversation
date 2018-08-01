@@ -21,7 +21,7 @@ public class BoundaryPM2_5Controller {
     private BoundaryPM2_5Service boundaryPM2_5Service;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResultData createBoundaryPM2_5(String modelId, double pm2_5) {
+    public ResultData createBoundaryPM2_5(String modelId, int pm2_5_info, int pm2_5_warning) {
 
         ResultData result = new ResultData();
         //check empty
@@ -32,7 +32,7 @@ public class BoundaryPM2_5Controller {
         }
 
         //create boundary pm2.5
-        BoundaryPM2_5 boundaryPM2_5 = new BoundaryPM2_5(modelId, pm2_5);
+        BoundaryPM2_5 boundaryPM2_5 = new BoundaryPM2_5(modelId, pm2_5_info, pm2_5_warning);
         ResultData response = boundaryPM2_5Service.create(boundaryPM2_5);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -77,7 +77,7 @@ public class BoundaryPM2_5Controller {
     }
 
     @RequestMapping(value = "/modify/by/modelId", method = RequestMethod.POST)
-    public ResultData modifyBoundaryPM2_5ByModelId(String modelId,String pm2_5) {
+    public ResultData modifyBoundaryPM2_5ByModelId(String modelId,String pm2_5_info,String pm2_5_warning) {
         ResultData result = new ResultData();
         //check empty
         if (StringUtils.isEmpty(modelId)) {
@@ -89,7 +89,8 @@ public class BoundaryPM2_5Controller {
         //modify
         Map<String, Object> condition = new HashMap<>();
         condition.put("modelId", modelId);
-        condition.put("pm2_5", pm2_5);
+        condition.put("pm2_5_info", pm2_5_info);
+        condition.put("pm2_5_warning", pm2_5_warning);
         condition.put("blockFlag", false);
         ResultData response = boundaryPM2_5Service.updateByModelId(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {

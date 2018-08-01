@@ -20,7 +20,7 @@ public class LatestPM2_5Controller {
     private LatestPM2_5Service latestPM2_5Service;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResultData createLatestPM2_5(String machineId, double pm2_5) {
+    public ResultData createLatestPM2_5(String machineId, int pm2_5) {
 
         ResultData result = new ResultData();
         //check empty
@@ -76,7 +76,7 @@ public class LatestPM2_5Controller {
     }
 
     @RequestMapping(value = "/modify/by/machineId", method = RequestMethod.POST)
-    public ResultData modifyLatestPM2_5ByModelId(String machineId,String pm2_5) {
+    public ResultData modifyLatestPM2_5ByModelId(String machineId,int pm2_5) {
         ResultData result = new ResultData();
         //check empty
         if (StringUtils.isEmpty(machineId)) {

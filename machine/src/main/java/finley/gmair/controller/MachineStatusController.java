@@ -92,7 +92,7 @@ public class MachineStatusController {
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
                 continue;
             MachinePartialStatus status = ((List<MachinePartialStatus>) response.getData()).get(0);
-            LatestPM2_5 latestPM2_5 = new LatestPM2_5(mqb.getMachineId(), (double) status.getData());
+            LatestPM2_5 latestPM2_5 = new LatestPM2_5(mqb.getMachineId(), (int) status.getData());
             latestPM2_5Service.create(latestPM2_5);
         }
         return result;

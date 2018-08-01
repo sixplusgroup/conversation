@@ -159,3 +159,11 @@ CREATE TABLE `gmair_machine`.`pm2_5_latest` (
   `create_time` DATETIME NOT NULL,
   `block_flag` TINYINT(1) NOT NULL,
   PRIMARY KEY (`latest_id`));
+
+#2018-08-01
+ALTER TABLE `gmair_machine`.`pm2_5_latest`
+CHANGE COLUMN `pm2_5` `pm2_5` INT NOT NULL ;
+
+ALTER TABLE `gmair_machine`.`pm2_5_boundary`
+CHANGE COLUMN `pm2_5` `pm2_5_info` INT NOT NULL ,
+ADD COLUMN `pm2_5_warning` INT NOT NULL AFTER `pm2_5_info`;
