@@ -28,26 +28,11 @@ public class MachineDefaultLocationController {
             result.setDescription("please provide all information");
             return result;
         }
-        //check exist qrcode
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("codeValue",qrcode);
-        condition.put("blockFlag",false);
-        ResultData response = machineDefaultLocationService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setData(response.getData());
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("exist qrcode");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
-            return result;
-        }
         //insert (cityId,qrcode) into database
         MachineDefaultLocation machineDefaultLocation = new MachineDefaultLocation();
         machineDefaultLocation.setCityId(cityId);
         machineDefaultLocation.setCodeValue(qrcode);
-        response = machineDefaultLocationService.create(machineDefaultLocation);
+        ResultData response = machineDefaultLocationService.create(machineDefaultLocation);
         if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -97,20 +82,47 @@ public class MachineDefaultLocationController {
             result.setDescription("please provide all information");
             return result;
         }
+
+        //查询qrcode是否已经存在于machine_default_location中,若不存在,则插入,若存在,则update
         Map<String,Object> condition = new HashMap<>();
-        condition.put("cityId",cityId);
         condition.put("codeValue",qrcode);
         condition.put("blockFlag",false);
-        ResultData response = machineDefaultLocationService.modify(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription("success to update");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to update");
-            return result;
+        ResultData response = machineDefaultLocationService.fetch(condition);
+
+        //qrcode已存在,则更新
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK) {
+            condition.clear();
+            condition.put("cityId", cityId);
+            condition.put("codeValue", qrcode);
+            condition.put("blockFlag", false);
+            response = machineDefaultLocationService.modify(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                result.setDescription("success to update");
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to update");
+                return result;
+            }
+        }
+        //qrcode不存在,则插入
+        else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            MachineDefaultLocation machineDefaultLocation = new MachineDefaultLocation();
+            machineDefaultLocation.setCityId(cityId);
+            machineDefaultLocation.setCodeValue(qrcode);
+            response = machineDefaultLocationService.create(machineDefaultLocation);
+            if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                result.setDescription("success to bind");
+                return result;
+            }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to create");
+                return result;
+            }
         }
         return result;
     }

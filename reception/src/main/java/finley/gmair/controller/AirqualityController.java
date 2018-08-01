@@ -25,7 +25,7 @@ public class AirqualityController {
     private AirqualityService airqualityService;
 
     //根据qrcode获取那个城市最新的空气质量记录(包括pm2.5、pm10、co等等)
-    @RequestMapping(value="/city/latest/aqi",method = RequestMethod.GET)
+    @RequestMapping(value="/city",method = RequestMethod.GET)
     ResultData getCityLatestAirquality(String cityId){
         ResultData result = new ResultData();
         if(StringUtils.isEmpty(cityId)){
@@ -37,7 +37,7 @@ public class AirqualityController {
     }
 
     //根据cityId获取那个城市最新的空气质量记录(包括pm2.5、pm10、co等等),并修改qrcode对应机器的默认城市位置
-    @RequestMapping(value="/city/latest/aqi/modifycity", method = RequestMethod.POST)
+    @RequestMapping(value="/city/modify", method = RequestMethod.POST)
     public ResultData getCityLatestAqiAndModifyDefaultCity(String qrcode, String cityId){
         ResultData result = new ResultData();
         //check empty
