@@ -272,3 +272,13 @@ CREATE TABLE IF NOT EXISTS `gmair_machine`.`screen_record` (
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+#create table to record volume setting for each model
+CREATE TABLE `gmair_machine`.`model_volume_config` (
+  `config_id` VARCHAR(20) NOT NULL,
+  `model_id` VARCHAR(20) NOT NULL,
+  `min_volume` INT NOT NULL,
+  `max_volume` INT NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`config_id`));
