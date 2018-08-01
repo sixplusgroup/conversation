@@ -1,1 +1,2 @@
-queue_name=machine-queue
+queue_name=
+partial_data_queue_name=

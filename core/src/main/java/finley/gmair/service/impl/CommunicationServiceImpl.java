@@ -43,7 +43,7 @@ public class CommunicationServiceImpl implements CommunicationService {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to insert partial status ").append(JSON.toJSONString(status)).toString());
         }
-        notifier.send(status.getUid());
+        notifier.sendPartialData(status.getUid());
         return result;
     }
 

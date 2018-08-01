@@ -132,17 +132,22 @@ public class TimeClientHandle implements Runnable{
     }
 
     private void doWrite(SocketChannel sc) throws IOException {
+        int flag = 1;
         byte[] CTF = new byte[]{0x03};
 
         byte[] CID = new byte[]{0x00};
 
         //byte[] UID = new byte[]{0x67, 0x63, 0x66, 0x62, 0x63, (byte) 0x62, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61};
-        byte[] UID = ByteUtil.string2byte("wjq-machine", 12);
+        byte[] UID = ByteUtil.string2byte("zxczxc", 12);
 
         byte[] LEN = new byte[]{0x0C};
 
         byte[] data = new byte[]{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
-
+        if(flag==1){
+            CID = new byte[]{0x0E};
+            LEN = new byte[]{0x01};
+            data = new byte[]{0x01};
+        }
 
 //        try {
 //            Thread.sleep(5 * 1000);

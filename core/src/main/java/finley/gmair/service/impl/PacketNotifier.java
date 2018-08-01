@@ -13,12 +13,21 @@ public class PacketNotifier {
     @Value("${queue_name}")
     private String queueName;
 
+    @Value("${partial_data_queue_name}")
+    private String partialDataQueueName;
+
     @Autowired
     AmqpTemplate template;
 
     public ResultData send(String uid) {
         ResultData result = new ResultData();
         this.template.convertAndSend(queueName, uid);
+        return result;
+    }
+
+    public ResultData sendPartialData(String uid){
+        ResultData result = new ResultData();
+        this.template.convertAndSend(partialDataQueueName,uid);
         return result;
     }
 }

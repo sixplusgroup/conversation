@@ -13,8 +13,18 @@ public class RabbitConfig {
     @Value("${queue_name}")
     private String queueName;
 
+    @Value("${partial_data_queue_name}")
+    private String partialDataQueueName;
+
     @Bean
     public Queue machineQueue() {
         return new Queue(queueName);
     }
+
+    @Bean
+    public Queue partialDataQueue() {
+        return new Queue(partialDataQueueName);
+    }
+
+
 }
