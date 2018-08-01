@@ -4,16 +4,11 @@ import finley.gmair.model.machine.Ownership;
 import finley.gmair.service.AuthConsumerService;
 import finley.gmair.service.MachineService;
 import finley.gmair.service.RepositoryService;
-import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/reception/machine")
@@ -123,4 +118,7 @@ public class MachineController {
 
     @RequestMapping(value="/probe/cityId/byqrcode",method = RequestMethod.GET)
     public ResultData probeCityIdByQRcode(String qrcode){return machineService.probeCityIdByQRcode(qrcode);}
+
+    @RequestMapping(value="/probe/volume",method = RequestMethod.GET)
+    public ResultData probeVolumeLimitationByModelId(String modelId){return machineService.probeModelVolumeByModelId(modelId);}
 }

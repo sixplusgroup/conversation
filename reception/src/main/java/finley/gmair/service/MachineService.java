@@ -83,4 +83,8 @@ public interface MachineService {
     //GoodsController
     @GetMapping("/machine/goods/model/query/by/modelid")
     ResultData queryModelByModelId(@RequestParam("modelId") String modelId);
+
+    //ModelVolumeController
+    @GetMapping(value = "/machine/model/volume/probe/by/modelId")
+    ResultData probeModelVolumeByModelId(@RequestParam("modelId") String modelId);
 }

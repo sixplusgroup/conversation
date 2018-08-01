@@ -88,7 +88,7 @@ public class MachineStatusController {
         for (MachineQrcodeBindVo mqb : machineQrcodeBindVoList) {
             sb.delete(0, sb.length());
             sb.append(mqb.getMachineId());
-            response = machinePm25Service.fetchPartialLatestPm25(sb.toString(), "pm2_5");
+            response = machinePm25Service.fetchPartialLatestPm25(sb.toString(), "partial_pm2_5");
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
                 continue;
             MachinePartialStatus status = ((List<MachinePartialStatus>) response.getData()).get(0);

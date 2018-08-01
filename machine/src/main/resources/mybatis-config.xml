@@ -23,5 +23,6 @@
         <mapper resource="mapper/machine_default_location.xml"></mapper>
         <mapper resource="mapper/pm2_5_boundary.xml"></mapper>
         <mapper resource="mapper/pm2_5_latest.xml"></mapper>
+        <mapper resource="mapper/modelvolume.xml"></mapper>
     </mappers>
 </configuration>

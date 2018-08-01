@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.modelvolume">
+    <resultMap id="ModelVolume" type="finley.gmair.model.machine.ModelVolume">
+        <result property="configId" column="config_id"></result>
+        <result property="modelId" column="model_id"></result>
+        <result property="minVolume" column="min_volume"></result>
+        <result property="maxVolume" column="max_volume"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.machine.ModelVolume" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.model_volume_config(config_id, model_id, min_volume,max_volume, create_time, block_flag)
+        VALUES(#{configId}, #{modelId}, #{minVolume},#{maxVolume}, #{createAt}, #{blockFlag})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="ModelVolume">
+        SELECT config_id,model_id,min_volume,max_volume,block_flag,create_time
+        FROM gmair_machine.model_volume_config
+        WHERE 1 = 1
+        <if test="configId != null">
+            AND config_id = #{configId}
+        </if>
+        <if test="modelId != null">
+            AND model_id = #{modelId}
+        </if>
+        <if test="minVolume != null">
+            AND min_volume = #{minVolume}
+        </if>
+        <if test="maxVolume != null">
+            AND max_volume = #{maxVolume}
+        </if>
+    </select>
+
+    <update id="updateByModelId" parameterType="java.util.Map">
+        UPDATE gmair_machine.model_volume_config
+        <set>
+            <if test="modelId != null">
+                model_id = #{modelId},
+            </if>
+            <if test="minVolume != null">
+                min_volume = #{minVolume},
+            </if>
+            <if test="pm2_5_warning != null">
+                max_volume = #{maxVolume},
+            </if>
+        model_id = #{modelId}
+        </set>
+        WHERE model_id = #{modelId}
+    </update>
+</mapper>
