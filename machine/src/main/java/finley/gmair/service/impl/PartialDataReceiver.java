@@ -66,36 +66,6 @@ public class PartialDataReceiver {
             return;
         }
 
-        //new a thread to compare the latest pm2_5 and the boundary pm2_5
 
-        //according the machineId,find the qrcode
-        condition.clear();
-        condition.put("machineId",uid);
-        condition.put("blockFlag",false);
-        response = machineQrcodeBindDao.select(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK)
-            return;
-        String qrcode = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getCodeValue();
-
-        //according the qrcode,find the modelId
-        condition.clear();
-        condition.put("codeValue",qrcode);
-        condition.put("blockFlag",false);
-        response = qrCodeDao.query(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK)
-            return;
-        String modelId = ((List<QRCode>)response.getData()).get(0).getModelId();
-
-        //according the modelId,find the boundary pm2.5
-        condition.clear();;
-        condition.put("modelId",modelId);
-        condition.put("blockFlag",false);
-        response = boundaryPM2_5Dao.query(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK)
-            return;
-        int pm2_5_info = ((List<BoundaryPM2_5>)response.getData()).get(0).getPm2_5_info();
-        int pm2_5_warning = ((List<BoundaryPM2_5>)response.getData()).get(0).getPm2_5_warning();
-
-        System.out.println(pm2_5_info+", "+pm2_5_warning);
     }
 }
