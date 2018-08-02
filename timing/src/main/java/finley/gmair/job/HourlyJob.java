@@ -31,5 +31,6 @@ public class HourlyJob implements Job{
         expressFeignService.updateOrderStatus();
         expressFeignService.updateParcelStatus();
         machineFeignService.handleMachineStatusHourly();
+        machineFeignService.probePartialPM2_5Hourly();
     }
 }

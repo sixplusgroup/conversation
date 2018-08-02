@@ -37,4 +37,7 @@ public interface CoreService {
     @PostMapping("/core/com/config/speed")
     ResultData configSpeed(@RequestParam("uid") String uid,
                            @RequestParam("speed") int speed);
+
+    @GetMapping("/core/com/probe/partial/pm25")
+    ResultData probePartialPm25(@RequestParam("uid") String uid);
 }

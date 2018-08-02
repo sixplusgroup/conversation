@@ -2,12 +2,9 @@ package finley.gmair.service.impl;
 
 
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.dao.LatestPM2_5Dao;
-import finley.gmair.dao.MachineQrcodeBindDao;
-import finley.gmair.dao.MachineStatusMongoDao;
-import finley.gmair.model.machine.LatestPM2_5;
-import finley.gmair.model.machine.MachinePartialStatus;
-import finley.gmair.model.machine.MachineStatus;
+import finley.gmair.dao.*;
+import finley.gmair.model.machine.*;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
@@ -32,6 +29,12 @@ public class PartialDataReceiver {
 
     @Autowired
     private MachineQrcodeBindDao machineQrcodeBindDao;
+
+    @Autowired
+    private BoundaryPM2_5Dao boundaryPM2_5Dao;
+
+    @Autowired
+    private QRCodeDao qrCodeDao;
 
     @RabbitHandler
     public void process(String uid) {
@@ -65,11 +68,34 @@ public class PartialDataReceiver {
 
         //new a thread to compare the latest pm2_5 and the boundary pm2_5
 
-        //according the machineId,find the modelId
+        //according the machineId,find the qrcode
         condition.clear();
         condition.put("machineId",uid);
         condition.put("blockFlag",false);
-        MachineQrcodeBindVo mqbvo = ((List<MachineQrcodeBindVo>)machineQrcodeBindDao.select(condition).getData()).get(0);
-        
+        response = machineQrcodeBindDao.select(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK)
+            return;
+        String qrcode = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getCodeValue();
+
+        //according the qrcode,find the modelId
+        condition.clear();
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        response = qrCodeDao.query(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK)
+            return;
+        String modelId = ((List<QRCode>)response.getData()).get(0).getModelId();
+
+        //according the modelId,find the boundary pm2.5
+        condition.clear();;
+        condition.put("modelId",modelId);
+        condition.put("blockFlag",false);
+        response = boundaryPM2_5Dao.query(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK)
+            return;
+        int pm2_5_info = ((List<BoundaryPM2_5>)response.getData()).get(0).getPm2_5_info();
+        int pm2_5_warning = ((List<BoundaryPM2_5>)response.getData()).get(0).getPm2_5_warning();
+
+        System.out.println(pm2_5_info+", "+pm2_5_warning);
     }
 }

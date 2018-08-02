@@ -70,7 +70,7 @@ public class MachineStatusController {
     }
 
     @GetMapping("/partial/schedule/hourly")
-    public ResultData handleMachinePartialPM2_5Hourly() {
+    public ResultData ProbePartialPM2_5Hourly() {
         ResultData result = new ResultData();
 
         //get the qrcode-machine-bind list
@@ -83,17 +83,12 @@ public class MachineStatusController {
         }
         List<MachineQrcodeBindVo> machineQrcodeBindVoList = (List<MachineQrcodeBindVo>) response.getData();
 
-        //foreach the uid, get the partial pm2.5 from mongo, then save to database
+        //foreach the uid, send the packet to probe partial pm2.5
         StringBuffer sb = new StringBuffer("");
         for (MachineQrcodeBindVo mqb : machineQrcodeBindVoList) {
             sb.delete(0, sb.length());
             sb.append(mqb.getMachineId());
-            response = machinePm25Service.fetchPartialLatestPm25(sb.toString(), "partial_pm2_5");
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
-                continue;
-            MachinePartialStatus status = ((List<MachinePartialStatus>) response.getData()).get(0);
-            LatestPM2_5 latestPM2_5 = new LatestPM2_5(mqb.getMachineId(), (int) status.getData());
-            latestPM2_5Service.create(latestPM2_5);
+            coreService.probePartialPm25(sb.toString());
         }
         return result;
     }
