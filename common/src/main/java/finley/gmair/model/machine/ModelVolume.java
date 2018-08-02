@@ -17,6 +17,12 @@ public class ModelVolume extends Entity {
         this.maxVolume = maxVolume;
     }
 
+    public ModelVolume(int minVolume, int maxVolume) {
+        this();
+        this.minVolume = minVolume;
+        this.maxVolume = maxVolume;
+    }
+
     public String getConfigId() {
         return configId;
     }

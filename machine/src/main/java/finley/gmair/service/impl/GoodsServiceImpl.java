@@ -2,8 +2,10 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.GoodsDao;
 import finley.gmair.dao.GoodsModelDao;
+import finley.gmair.dao.ModelVolumeDao;
 import finley.gmair.model.goods.Goods;
 import finley.gmair.model.goods.GoodsModel;
+import finley.gmair.model.machine.ModelVolume;
 import finley.gmair.service.GoodsService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -26,6 +28,9 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
     private GoodsModelDao goodsModelDao;
+
+    @Autowired
+    private ModelVolumeDao modelVolumeDao;
 
     @Override
     public ResultData fetchGoods(Map<String, Object> condition) {
@@ -92,22 +97,26 @@ public class GoodsServiceImpl implements GoodsService {
     @Transactional
     public ResultData createModel(GoodsModel model) {
         ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("goodsId", model.getGoodsId());
-        ResultData response = goodsModelDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        ResultData response = goodsModelDao.insert(model);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Goodsmodel already exist");
+            result.setData("Fail to store goodsmodel to database");
             return result;
         }
-        response = goodsModelDao.insert(model);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
+
+        //获取modelId, 构造ModelVolume实体
+        model = (GoodsModel) response.getData();
+        ModelVolume volume = model.getVolume();
+        volume.setModelId(model.getModelId());
+
+        response = modelVolumeDao.insert(volume);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setData("Fail to store model volume to database");
             return result;
         }
-        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("Fail to store goodsmodel to database");
+        model.setVolume((ModelVolume) response.getData());
+        result.setData(model);
         return result;
     }
 }

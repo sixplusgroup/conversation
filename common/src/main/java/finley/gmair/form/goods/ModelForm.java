@@ -11,6 +11,10 @@ public class ModelForm {
 
     private String modelName;
 
+    private int minVolume;
+
+    private int maxVolume;
+
     public String getGoodsId() {
         return goodsId;
     }
@@ -33,5 +37,21 @@ public class ModelForm {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+    public int getMinVolume() {
+        return minVolume;
+    }
+
+    public void setMinVolume(int minVolume) {
+        this.minVolume = minVolume;
+    }
+
+    public int getMaxVolume() {
+        return maxVolume;
+    }
+
+    public void setMaxVolume(int maxVolume) {
+        this.maxVolume = maxVolume;
     }
 }

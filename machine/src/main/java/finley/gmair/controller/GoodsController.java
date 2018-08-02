@@ -4,7 +4,9 @@ import finley.gmair.form.goods.GoodsForm;
 import finley.gmair.form.goods.ModelForm;
 import finley.gmair.model.goods.Goods;
 import finley.gmair.model.goods.GoodsModel;
+import finley.gmair.model.machine.ModelVolume;
 import finley.gmair.service.GoodsService;
+import finley.gmair.service.ModelVolumeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ import java.util.Map;
 public class GoodsController {
     @Autowired
     private GoodsService goodsService;
+
+    @Autowired
+    private ModelVolumeService modelVolumeService;
 
     //列出Goods
     @GetMapping(value = "/list")
@@ -124,7 +129,8 @@ public class GoodsController {
     public ResultData createModel(ModelForm modelForm) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(modelForm.getGoodsId()) || StringUtils.isEmpty(modelForm.getModelCode())
-                || StringUtils.isEmpty(modelForm.getModelName())) {
+                || StringUtils.isEmpty(modelForm.getModelName()) || StringUtils.isEmpty(modelForm.getMinVolume())
+                || StringUtils.isEmpty(modelForm.getMaxVolume())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -133,19 +139,19 @@ public class GoodsController {
         condition.put("goodsId", modelForm.getGoodsId());
         ResultData response = goodsService.fetchGoods(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            GoodsModel model = new GoodsModel(modelForm.getGoodsId(), modelForm.getModelCode(), modelForm.getModelName());
+            GoodsModel model = new GoodsModel(modelForm.getGoodsId(), modelForm.getModelCode(), modelForm.getModelName(), modelForm.getMinVolume(), modelForm.getMaxVolume());
             response = goodsService.createModel(model);
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("Fail to save goodsModel");
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setData(response.getData());
+                return result;
             }
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Model is not matched with goods");
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
         }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Model is not matched with goods");
         return result;
     }
 }

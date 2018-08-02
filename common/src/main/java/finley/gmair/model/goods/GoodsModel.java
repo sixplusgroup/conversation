@@ -1,6 +1,7 @@
 package finley.gmair.model.goods;
 
 import finley.gmair.model.Entity;
+import finley.gmair.model.machine.ModelVolume;
 
 /**
  * @author shenghaohu@hshvip.com
@@ -15,6 +16,8 @@ public class GoodsModel extends Entity {
 
     private String modelName;
 
+    private ModelVolume volume;
+
     public GoodsModel() {
         super();
     }
@@ -24,6 +27,11 @@ public class GoodsModel extends Entity {
         this.goodsId = goodsId;
         this.modelCode = modelCode;
         this.modelName = modelName;
+    }
+
+    public GoodsModel(String goodsId, String modelCode, String modelName, int minVolume, int maxVolume) {
+        this(goodsId, modelCode, modelName);
+        this.volume = new ModelVolume(minVolume, maxVolume);
     }
 
     public String getModelId() {
@@ -56,5 +64,13 @@ public class GoodsModel extends Entity {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+    public ModelVolume getVolume() {
+        return volume;
+    }
+
+    public void setVolume(ModelVolume volume) {
+        this.volume = volume;
     }
 }
