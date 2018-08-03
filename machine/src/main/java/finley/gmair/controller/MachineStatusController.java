@@ -2,10 +2,7 @@ package finley.gmair.controller;
 
 import finley.gmair.model.machine.LatestPM2_5;
 import finley.gmair.model.machine.MachinePartialStatus;
-import finley.gmair.service.CoreService;
-import finley.gmair.service.LatestPM2_5Service;
-import finley.gmair.service.MachinePm25Service;
-import finley.gmair.service.MachineQrcodeBindService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
@@ -28,6 +25,9 @@ public class MachineStatusController {
 
     @Autowired
     private LatestPM2_5Service latestPM2_5Service;
+
+    @Autowired
+    private RepositoryService repositoryService;
 
     @Autowired
     private CoreService coreService;
@@ -83,14 +83,17 @@ public class MachineStatusController {
         }
         List<MachineQrcodeBindVo> machineQrcodeBindVoList = (List<MachineQrcodeBindVo>) response.getData();
 
-        //foreach the uid, send the packet to probe partial pm2.5
+        //foreach the uid, send the packet to the online machine
         StringBuffer sb = new StringBuffer("");
         for (MachineQrcodeBindVo mqb : machineQrcodeBindVoList) {
+            response = repositoryService.isOnilne(mqb.getMachineId());
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+                continue;
+            System.out.println(mqb.getMachineId());
             sb.delete(0, sb.length());
             sb.append(mqb.getMachineId());
             coreService.probePartialPm25(sb.toString());
         }
         return result;
     }
-
 }
