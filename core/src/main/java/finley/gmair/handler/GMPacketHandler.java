@@ -98,7 +98,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     if (command == 0x00) {
                         //decode the data byte array, it should be confirmed with Jay Gao
                         byte[] data = ((ProbePacket) packet).getDAT();
-                        if (data.length != 12) return;
+                        if (data.length != 13) return;
                         byte[] pm2_5 = new byte[]{data[0], data[1]};
                         byte[] temp = new byte[]{data[2]};
                         byte[] humid = new byte[]{data[3]};
@@ -108,7 +108,8 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                         byte[] mode = new byte[]{data[9]};
                         byte[] heat = new byte[]{data[10]};
                         byte[] light = new byte[]{data[11]};
-                        MachineStatus status = new MachineStatus(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temp), ByteUtil.byte2int(humid), ByteUtil.byte2int(co2), ByteUtil.byte2int(volume), ByteUtil.byte2int(power), ByteUtil.byte2int(mode), ByteUtil.byte2int(heat), ByteUtil.byte2int(light));
+                        byte[] lock = new byte[]{data[12]};
+                        MachineStatus status = new MachineStatus(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temp), ByteUtil.byte2int(humid), ByteUtil.byte2int(co2), ByteUtil.byte2int(volume), ByteUtil.byte2int(power), ByteUtil.byte2int(mode), ByteUtil.byte2int(heat), ByteUtil.byte2int(light), ByteUtil.byte2int(lock));
 //                        System.out.println(new StringBuffer("Machine status received: " + JSONObject.toJSONString(status)));
                         communicationService.create(status);
                     } else {

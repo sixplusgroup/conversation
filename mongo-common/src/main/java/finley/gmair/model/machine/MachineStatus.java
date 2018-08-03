@@ -33,11 +33,13 @@ public class MachineStatus extends Entity {
     /*light = 1*/
     private int light;
 
+    private int lock;
+
     public MachineStatus() {
         super();
     }
 
-    public MachineStatus(String uid, int pm2_5, int temp, int humid, int co2, int volume, int power, int mode, int heat, int light) {
+    public MachineStatus(String uid, int pm2_5, int temp, int humid, int co2, int volume, int power, int mode, int heat, int light, int lock) {
         this();
         this.uid = uid;
         this.pm2_5 = pm2_5;
@@ -49,6 +51,7 @@ public class MachineStatus extends Entity {
         this.mode = mode;
         this.heat = heat;
         this.light = light;
+        this.lock = lock;
     }
 
     public String getUid() {
@@ -129,5 +132,13 @@ public class MachineStatus extends Entity {
 
     public void setLight(int light) {
         this.light = light;
+    }
+
+    public int getLock() {
+        return lock;
+    }
+
+    public void setLock(int lock) {
+        this.lock = lock;
     }
 }
