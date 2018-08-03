@@ -264,7 +264,7 @@ public class ControlOptionController {
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
-        return coreService.configSpeed(machineId,light);
+        return coreService.configLight(machineId,light);
 
     }
 
