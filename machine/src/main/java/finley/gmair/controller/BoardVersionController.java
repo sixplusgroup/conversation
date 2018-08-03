@@ -57,7 +57,7 @@ public class BoardVersionController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
         if (!StringUtils.isEmpty(machineId)) {
-            condition.put("machineId", false);
+            condition.put("machineId", machineId);
         }
         ResultData response = boardVersionService.fetchBoardVersion(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
