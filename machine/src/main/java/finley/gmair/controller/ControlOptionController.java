@@ -14,10 +14,7 @@ import finley.gmair.vo.machine.ControlOptionVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -212,7 +209,7 @@ public class ControlOptionController {
 
 
     //用户操作风量
-    @RequestMapping(value="/config/speed")
+    @RequestMapping(value="/config/speed",method = RequestMethod.POST)
     public ResultData configSpeed(String qrcode, int speed){
 
         ResultData result = new ResultData();
@@ -228,13 +225,48 @@ public class ControlOptionController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the qrcode or server is busy");
+            result.setDescription("sorry, can not find the qrcode");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the machine by qrcode");
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         return coreService.configSpeed(machineId,speed);
+
+    }
+
+    //用户调节亮度
+    @RequestMapping(value="/config/light",method = RequestMethod.POST)
+    public ResultData configLight(String qrcode, int light){
+
+        ResultData result = new ResultData();
+        //check empty
+        if (ControlOptionController.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the light");
+            return result;
+        }
+
+        //根据qrcode 查 code_machine_bind表,取出machineId
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("sorry, can not find the qrcode");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the machineId by qrcode");
+            return result;
+        }
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+        return coreService.configSpeed(machineId,light);
 
     }
 

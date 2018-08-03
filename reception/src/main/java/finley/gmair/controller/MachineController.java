@@ -80,6 +80,11 @@ public class MachineController {
         return machineService.configSpeed(qrcode, speed);
     }
 
+    @PostMapping("/config/light")
+    public ResultData configLight(String qrcode, int light) {
+        return machineService.configLight(qrcode, light);
+    }
+
     //设置配置项
     @PostMapping("/control/option/create")
     public ResultData setControlOption(String optionName, String optionComponent, String modelId, String actionName, String actionOperator) {

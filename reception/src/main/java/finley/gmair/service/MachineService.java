@@ -27,6 +27,8 @@ public interface MachineService {
     @PostMapping("/machine/control/option/config/speed")
     ResultData configSpeed(@RequestParam("qrcode") String qrcode, @RequestParam("speed") int speed);
 
+    @PostMapping("/machine/control/option/config/light")
+    ResultData configLight(@RequestParam("qrcode") String qrcode, @RequestParam("light") int light);
 
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")
