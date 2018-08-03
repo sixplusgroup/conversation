@@ -24,5 +24,6 @@
         <mapper resource="mapper/pm2_5_boundary.xml"></mapper>
         <mapper resource="mapper/pm2_5_latest.xml"></mapper>
         <mapper resource="mapper/modelvolume.xml"></mapper>
+        <mapper resource="mapper/modellight.xml"></mapper>
     </mappers>
 </configuration>

@@ -42,7 +42,7 @@
             <if test="minVolume != null">
                 min_volume = #{minVolume},
             </if>
-            <if test="pm2_5_warning != null">
+            <if test="maxVolume != null">
                 max_volume = #{maxVolume},
             </if>
         model_id = #{modelId}

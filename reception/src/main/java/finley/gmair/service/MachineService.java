@@ -88,6 +88,9 @@ public interface MachineService {
     @GetMapping(value = "/machine/model/volume/probe/by/modelId")
     ResultData probeModelVolumeByModelId(@RequestParam("modelId") String modelId);
 
+    //ModelLightController
+    @GetMapping(value = "/machine/model/light/probe/by/modelId")
+    ResultData probeModelLightByModelId(@RequestParam("modelId") String modelId);
 
     //BoardVersionController
 

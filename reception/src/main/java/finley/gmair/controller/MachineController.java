@@ -128,6 +128,12 @@ public class MachineController {
         return machineService.probeModelVolumeByModelId(modelId);
     }
 
+    @RequestMapping(value = "/probe/light", method = RequestMethod.GET)
+    public ResultData probeLightLimitationByModelId(String modelId) {
+        return machineService.probeModelLightByModelId(modelId);
+    }
+
+
     @RequestMapping(value = "/probe/board/version", method = RequestMethod.GET)
     public ResultData probeBoardVersionByQRcode(String qrcode) {
         return machineService.findBoardVersionByQRcode(qrcode);
