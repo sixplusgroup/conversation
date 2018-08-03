@@ -13,7 +13,7 @@
         VALUES (#{machineId}, #{version}, #{blockFlag}, #{createAt})
     </insert>
 
-    <select id="query" parameterType="java.util.Map">
+    <select id="query" parameterType="java.util.Map" resultMap="boardVersionVo">
         SELECT machine_id, board_version, block_flag, create_time
         FROM gmair_machine.board_version
         WHERE 1 = 1

@@ -27,14 +27,14 @@ public class MachineController {
     public ResultData checkDeviceNameExist(String deviceName) {
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
-        return machineService.checkDeviceNameExist(consumerId,deviceName);
+        return machineService.checkDeviceNameExist(consumerId, deviceName);
     }
 
     @GetMapping("/check/device/binded")
-    public ResultData checkDeviceBinded (String qrcode){
+    public ResultData checkDeviceBinded(String qrcode) {
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
-        return machineService.checkDeviceBinded(consumerId,qrcode);
+        return machineService.checkDeviceBinded(consumerId, qrcode);
     }
 
     //设备初始化时 将qrcode和consumerId绑定
@@ -46,10 +46,10 @@ public class MachineController {
     }
 
     @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
-    public ResultData unbindConsumerWithQRcode(String qrcode){
+    public ResultData unbindConsumerWithQRcode(String qrcode) {
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
-        return machineService.unbindConsumerWithQRcode(consumerId,qrcode);
+        return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
     }
 
     /**
@@ -71,13 +71,13 @@ public class MachineController {
     //发送遥控信息
     @PostMapping("/operate/{component}/{operation}")
     public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode) {
-        return machineService.chooseComponent(qrcode,component,operation);
+        return machineService.chooseComponent(qrcode, component, operation);
     }
 
     //配置风量
     @PostMapping("/config/speed")
-    public ResultData configSpeed(String qrcode, int speed){
-        return machineService.configSpeed(qrcode,speed);
+    public ResultData configSpeed(String qrcode, int speed) {
+        return machineService.configSpeed(qrcode, speed);
     }
 
     //设置配置项
@@ -88,7 +88,7 @@ public class MachineController {
 
     //根据modelId查询ControlOption
     @GetMapping("/control/option/probe")
-    public ResultData probeControlOption(String modelId){
+    public ResultData probeControlOption(String modelId) {
         return machineService.probeControlOptionByModelId(modelId);
     }
 
@@ -100,25 +100,36 @@ public class MachineController {
 
     //根据consumerId获取用户的machine list
     @RequestMapping(value = "/devicelist", method = RequestMethod.GET)
-    public ResultData getUserDeviceList(){
+    public ResultData getUserDeviceList() {
         String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
         return machineService.getMachineListByConsumerId(consumerId);
     }
 
 
-    @RequestMapping(value="/probe/qrcode/byurl",method = RequestMethod.POST)
-    public ResultData probeQRcodeByUrl(String codeUrl){
+    @RequestMapping(value = "/probe/qrcode/byurl", method = RequestMethod.POST)
+    public ResultData probeQRcodeByUrl(String codeUrl) {
         return machineService.probeQRcodeByUrl(codeUrl);
     }
 
 
-    @RequestMapping(value="/model/query/by/modelid",method = RequestMethod.GET)
-    public ResultData queryModelByModelId(String modelId){ return machineService.queryModelByModelId(modelId);}
+    @RequestMapping(value = "/model/query/by/modelid", method = RequestMethod.GET)
+    public ResultData queryModelByModelId(String modelId) {
+        return machineService.queryModelByModelId(modelId);
+    }
 
-    @RequestMapping(value="/probe/cityId/byqrcode",method = RequestMethod.GET)
-    public ResultData probeCityIdByQRcode(String qrcode){return machineService.probeCityIdByQRcode(qrcode);}
+    @RequestMapping(value = "/probe/cityId/byqrcode", method = RequestMethod.GET)
+    public ResultData probeCityIdByQRcode(String qrcode) {
+        return machineService.probeCityIdByQRcode(qrcode);
+    }
 
-    @RequestMapping(value="/probe/volume",method = RequestMethod.GET)
-    public ResultData probeVolumeLimitationByModelId(String modelId){return machineService.probeModelVolumeByModelId(modelId);}
+    @RequestMapping(value = "/probe/volume", method = RequestMethod.GET)
+    public ResultData probeVolumeLimitationByModelId(String modelId) {
+        return machineService.probeModelVolumeByModelId(modelId);
+    }
+
+    @RequestMapping(value = "/probe/board/version", method = RequestMethod.GET)
+    public ResultData probeBoardVersionByQRcode(String qrcode) {
+        return machineService.findBoardVersionByQRcode(qrcode);
+    }
 }

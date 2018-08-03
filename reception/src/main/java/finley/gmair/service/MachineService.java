@@ -87,4 +87,10 @@ public interface MachineService {
     //ModelVolumeController
     @GetMapping(value = "/machine/model/volume/probe/by/modelId")
     ResultData probeModelVolumeByModelId(@RequestParam("modelId") String modelId);
+
+
+    //BoardVersionController
+
+    @GetMapping("/machine/board/by/qrcode")
+    ResultData findBoardVersionByQRcode(@RequestParam("qrcode") String qrcode);
 }
