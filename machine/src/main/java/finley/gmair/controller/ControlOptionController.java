@@ -184,8 +184,6 @@ public class ControlOptionController {
             response = coreService.configPower(machineId, commandValue);
         else if (component.equals("lock"))
             response = coreService.configLock(machineId, commandValue);
-        else if (component.equals("light"))
-            response = coreService.configLight(machineId, commandValue);
         else if (component.equals("heat"))
             response = coreService.configHeat(machineId, commandValue);
         else if (component.equals("mode"))
