@@ -133,21 +133,26 @@ public class TimeClientHandle implements Runnable{
 
     private void doWrite(SocketChannel sc) throws IOException {
         int flag = 2;
+
+        //测试machine_status时,flag=0
         byte[] CTF = new byte[]{0x03};
 
         byte[] CID = new byte[]{0x00};
 
-        //byte[] UID = new byte[]{0x67, 0x63, 0x66, 0x62, 0x63, (byte) 0x62, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61, (byte) 0x61};
         byte[] UID = ByteUtil.string2byte("zxczxc", 12);
 
         byte[] LEN = new byte[]{0x0D};
 
         byte[] data = new byte[]{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
+
+        //测试0x0E(partial_pm2_5,滤网pm2.5)时,flag=1
         if(flag==1){
             CID = new byte[]{0x0E};
             LEN = new byte[]{0x01};
             data = new byte[]{0x01};
-        }else if(flag==2){
+        }
+        //测试0x0F(screen,警示灯)时,flag=2
+        else if(flag==2){
             CID = new byte[]{0x0F};
             LEN = new byte[]{0x01};
             data = new byte[]{0x01};
