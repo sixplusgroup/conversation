@@ -93,6 +93,12 @@ public class MachineStatusController {
             sb.delete(0, sb.length());
             sb.append(mqb.getMachineId());
             coreService.probePartialPm25(sb.toString());
+            try {
+                Thread.sleep(100);
+            }catch (Exception e){
+                result.setDescription(e.getMessage());
+            }
+
         }
         return result;
     }
