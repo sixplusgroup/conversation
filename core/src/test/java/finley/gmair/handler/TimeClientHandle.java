@@ -17,6 +17,8 @@ import java.util.Set;
 
 public class TimeClientHandle implements Runnable{
 
+    private long sleepTime;         //设置板子向服务器发送报的间隔时间
+
     private String host;
 
     private int port;
@@ -30,6 +32,7 @@ public class TimeClientHandle implements Runnable{
     public TimeClientHandle(String host, int port) {
         this.host = host == null ? "127.0.0.1" : host;
         this.port = port;
+        this.sleepTime = 10000;
 
         try {
             selector = Selector.open();
@@ -178,7 +181,7 @@ public class TimeClientHandle implements Runnable{
             }
 
             try{
-                Thread.sleep(100000);
+                Thread.sleep(sleepTime);
             }catch (Exception e){
                 e.printStackTrace();
             }
