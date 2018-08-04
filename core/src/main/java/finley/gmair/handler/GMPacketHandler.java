@@ -142,7 +142,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                         if (command == 0x10) {
                                             int[] volumes = new int[21];
                                             byte[] temp = new byte[2];
-                                            for (int i = 0; i < 21; i += 2) {
+                                            for (int i = 0; i < 42; i += 2) {
                                                 temp[0] = data[i];
                                                 temp[1] = data[i + 1];
                                                 volumes[i / 2] = ByteUtil.byte2int(temp);
