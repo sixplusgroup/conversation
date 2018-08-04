@@ -468,10 +468,10 @@ public class CommunicationController {
         JSONArray json = JSON.parseArray(map);
         byte[] volumes = new byte[42];
         byte[] temp;
-        for (int i = 0; i < Math.min(volumes.length, json.size()); i += 2) {
+        for (int i = 0; i < json.size(); i++) {
             temp = ByteUtil.int2byte(json.getIntValue(i), 2);
-            volumes[i] = temp[0];
-            volumes[i + 1] = temp[1];
+            volumes[i * 2] = temp[0];
+            volumes[i * 2 + 1] = temp[1];
         }
         AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.VOLUME_MAP, volumes, uid);
         ctx.writeAndFlush(packet.convert2bytearray());
