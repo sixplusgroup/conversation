@@ -1,5 +1,6 @@
 package finley.gmair.handler;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.machine.MachinePartialStatus;
@@ -124,6 +125,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                 byte[] data = ((ProbePacket) packet).getDAT();
                                 String type = field.getGenericType().getTypeName();
                                 MachinePartialStatus status;
+                                System.out.println(type);
                                 switch (type) {
                                     case "int":
                                         status = new MachinePartialStatus(uid, name, ByteUtil.byte2int(data), packet.getTime());
@@ -135,6 +137,20 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                         communicationService.create(status);
 //                                        System.out.println(new StringBuffer("Machine partial status received: " + JSONObject.toJSONString(status)));
                                         break;
+                                    case "int[]":
+                                        //format volumes
+                                        if (command == 0x10) {
+                                            int[] volumes = new int[21];
+                                            byte[] temp = new byte[2];
+                                            for (int i = 0; i < 21; i += 2) {
+                                                temp[0] = data[i];
+                                                temp[1] = data[i + 1];
+                                                volumes[i / 2] = ByteUtil.byte2int(temp);
+                                            }
+                                            status = new MachinePartialStatus(uid, name, JSON.toJSONString(volumes), packet.getTime());
+                                            communicationService.create(status);
+                                            break;
+                                        }
                                 }
                             }
                         }

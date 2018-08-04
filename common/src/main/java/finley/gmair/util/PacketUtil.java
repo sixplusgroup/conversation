@@ -13,10 +13,18 @@ public class PacketUtil {
         byte[] UID = new byte[]{source[3], source[4], source[5], source[6], source[7], source[8], source[9], source[10], source[11], source[12], source[13], source[14]};
         byte[] TIM = new byte[]{source[15], source[16], source[17], source[18], source[19], source[20], source[21], source[22]};
         byte[] LEN = new byte[]{source[23]};
+        System.out.println("CTF: " + CTF[0]);
+        System.out.println("CID: " + CID[0]);
+        System.out.println("UID: " + new String(UID));
+        System.out.println("TIM: " + ByteUtil.byte2long(TIM));
+        System.out.println("LEN: " + ByteUtil.byte2int(LEN));
+
+
         if (source[23] == 0x00) {
             byte[] CRC = new byte[]{source[24], source[25]};
             HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
             packet.setCRC(CRC);
+            System.out.println("Wrap a heartbeat packet");
             return packet;
         }
         int length = ByteUtil.byte2int(new byte[]{source[23]});
@@ -29,6 +37,7 @@ public class PacketUtil {
         byte[] CRC = new byte[]{source[24 + length], source[25 + length]};
         ProbePacket packet = new ProbePacket(CTF, CID, UID, TIM, LEN, DAT);
         packet.setCRC(CRC);
+        System.out.println("Wrap a probe packet");
         return packet;
     }
 

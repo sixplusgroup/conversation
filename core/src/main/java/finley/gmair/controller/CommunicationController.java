@@ -1,10 +1,13 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import finley.gmair.model.packet.AbstractPacketV2;
 import finley.gmair.model.packet.Action;
 import finley.gmair.model.packet.HeartBeatPacket;
 import finley.gmair.model.packet.PacketConstant;
 import finley.gmair.netty.GMRepository;
+import finley.gmair.util.ByteUtil;
 import finley.gmair.util.PacketUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -24,7 +27,8 @@ public class CommunicationController {
     @Autowired
     private GMRepository repository;
 
-    /** 心跳包
+    /**
+     * 心跳包
      * This will issue a heartbeat packet to the target uid
      * if the uid does not exist in the cache, it will not send the packet
      *
@@ -451,6 +455,45 @@ public class CommunicationController {
         result.setDescription(new StringBuffer("Succeed to send a probe packet(query child lock) to the target uid: ").append(uid).toString());
         return result;
     }
+
+    @PostMapping("/com/config/volumemap")
+    public ResultData configVolumeMap(String uid, String map) {
+        ResultData result = new ResultData();
+        ChannelHandlerContext ctx = repository.retrieve(uid);
+        if (StringUtils.isEmpty(ctx)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
+            return result;
+        }
+        JSONArray json = JSON.parseArray(map);
+        byte[] volumes = new byte[42];
+        byte[] temp;
+        for (int i = 0; i < Math.min(volumes.length, json.size()); i += 2) {
+            temp = ByteUtil.int2byte(json.getIntValue(i), 2);
+            volumes[i] = temp[0];
+            volumes[i + 1] = temp[1];
+        }
+        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.VOLUME_MAP, volumes, uid);
+        ctx.writeAndFlush(packet.convert2bytearray());
+        result.setDescription(new StringBuffer("Succeed to send a config packet(config volume map").append(map).append(") to the target uid: ").append(uid).toString());
+        return result;
+    }
+
+    @GetMapping("/com/probe/lock")
+    public ResultData probeVolumeMap(String uid) {
+        ResultData result = new ResultData();
+        ChannelHandlerContext ctx = repository.retrieve(uid);
+        if (StringUtils.isEmpty(ctx)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
+            return result;
+        }
+        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.PROBE, PacketConstant.VOLUME_MAP, null, uid);
+        ctx.writeAndFlush(packet.convert2bytearray());
+        result.setDescription(new StringBuffer("Succeed to send a probe packet(query volume map) to the target uid: ").append(uid).toString());
+        return result;
+    }
+
 
     @GetMapping("/com/probe/classification")
     public ResultData probeClassification(String uid) {

@@ -41,4 +41,7 @@ public class PacketInfo {
 
     @PacketConfig(command = 0x0E, name = PacketConstant.PARTIAL_PM2_5, length = 2)
     private int partial_pm2_5;
+
+    @PacketConfig(command = 0x10, name = PacketConstant.VOLUME_MAP, length = 42)
+    private int[] volumes;
 }
