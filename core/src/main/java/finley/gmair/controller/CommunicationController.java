@@ -479,7 +479,7 @@ public class CommunicationController {
         return result;
     }
 
-    @GetMapping("/com/probe/lock")
+    @GetMapping("/com/probe/volumemap")
     public ResultData probeVolumeMap(String uid) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
