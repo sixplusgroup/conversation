@@ -28,4 +28,6 @@ public class PacketConstant {
     public final static String PARTIAL_PM2_5 = "partial_pm2_5";
 
     public final static String VOLUME_MAP = "volume_map";
+
+    public final static String SCREEN = "screen";
 }

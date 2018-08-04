@@ -44,4 +44,7 @@ public class PacketInfo {
 
     @PacketConfig(command = 0x10, name = PacketConstant.VOLUME_MAP, length = 42)
     private int[] volumes;
+
+    @PacketConfig(command = 0x0F, name = PacketConstant.SCREEN, length = 1)
+    private int screen;
 }

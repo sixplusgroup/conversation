@@ -554,4 +554,34 @@ public class CommunicationController {
         result.setDescription(new StringBuffer("Succeed to send a partial pm2.5 query packet to the target uid: ").append(uid).toString());
         return result;
     }
+
+    @PostMapping("/com/config/screen")
+    public ResultData configScreen(String uid, int screen) {
+        ResultData result = new ResultData();
+        ChannelHandlerContext ctx = repository.retrieve(uid);
+        if (StringUtils.isEmpty(ctx)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
+            return result;
+        }
+        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.SCREEN, screen, uid);
+        ctx.writeAndFlush(packet.convert2bytearray());
+        result.setDescription(new StringBuffer("Succeed to send a probe packet(config screen: ").append(screen).append(") to the target uid: ").append(uid).toString());
+        return result;
+    }
+
+    @GetMapping("/com/probe/screen")
+    public ResultData probeScreen(String uid) {
+        ResultData result = new ResultData();
+        ChannelHandlerContext ctx = repository.retrieve(uid);
+        if (StringUtils.isEmpty(ctx)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
+            return result;
+        }
+        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.PROBE, PacketConstant.SCREEN, null, uid);
+        ctx.writeAndFlush(packet.convert2bytearray());
+        result.setDescription(new StringBuffer("Succeed to send a probe packet(query screen) to the target uid: ").append(uid).toString());
+        return result;
+    }
 }

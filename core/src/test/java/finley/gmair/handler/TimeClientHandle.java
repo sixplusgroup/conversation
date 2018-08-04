@@ -132,7 +132,7 @@ public class TimeClientHandle implements Runnable{
     }
 
     private void doWrite(SocketChannel sc) throws IOException {
-        int flag = 1;
+        int flag = 2;
         byte[] CTF = new byte[]{0x03};
 
         byte[] CID = new byte[]{0x00};
@@ -145,6 +145,10 @@ public class TimeClientHandle implements Runnable{
         byte[] data = new byte[]{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
         if(flag==1){
             CID = new byte[]{0x0E};
+            LEN = new byte[]{0x01};
+            data = new byte[]{0x01};
+        }else if(flag==2){
+            CID = new byte[]{0x0F};
             LEN = new byte[]{0x01};
             data = new byte[]{0x01};
         }
@@ -169,7 +173,7 @@ public class TimeClientHandle implements Runnable{
             }
 
             try{
-                Thread.sleep(10000);
+                Thread.sleep(100000);
             }catch (Exception e){
                 e.printStackTrace();
             }
