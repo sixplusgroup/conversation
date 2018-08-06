@@ -47,4 +47,14 @@ public class PacketInfo {
 
     @PacketConfig(command = 0x0F, name = PacketConstant.SCREEN, length = 1)
     private int screen;
+
+    @PacketConfig(command = 0xFD, name = PacketConstant.CLASSIFICATION, length = 1)
+    private int classification;
+
+
+    @PacketConfig(command = 0xFE, name = PacketConstant.FIRMWARE, length = 1)
+    private int firmware;
+
+    @PacketConfig(command = 0xFF, name = PacketConstant.HARDWARE, length = 1)
+    private int hardware;
 }

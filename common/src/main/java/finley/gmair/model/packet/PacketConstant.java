@@ -30,4 +30,10 @@ public class PacketConstant {
     public final static String VOLUME_MAP = "volume_map";
 
     public final static String SCREEN = "screen";
+
+    public final static String CLASSIFICATION = "classification";
+
+    public final static String FIRMWARE = "firmware";
+
+    public final static String HARDWARE = "hardware";
 }
