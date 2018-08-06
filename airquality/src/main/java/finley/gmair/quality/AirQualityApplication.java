@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,13 +31,13 @@ public class AirQualityApplication {
     @Autowired
     private MonitorStationCrawler monitorStationCrawler;
 
-    @RequestMapping("/airquality/city/crawler")
+    @PostMapping("/airquality/city/crawler")
     public ResultData crawler() {
         rankCrawler.rank();
         return new ResultData();
     }
 
-    @RequestMapping("/airquality/monitorStation/crawler")
+    @PostMapping("/airquality/monitorStation/crawler")
     public ResultData monitorStationCrawler() {
         monitorStationCrawler.craw();
         return new ResultData();
