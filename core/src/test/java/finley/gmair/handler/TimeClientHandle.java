@@ -135,7 +135,7 @@ public class TimeClientHandle implements Runnable{
     }
 
     private void doWrite(SocketChannel sc) throws IOException {
-        int flag = 0;
+        int flag = 1;
 
         //测试machine_status时,flag=0
         byte[] CTF = new byte[]{0x03};

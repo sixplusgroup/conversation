@@ -91,7 +91,8 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao{
                 match(Criteria.where("uid").is(uid)),
                 match(Criteria.where("name").is(name)),
                 match(Criteria.where("createAt").gte(lastHour)),
-                sort(Sort.Direction.DESC,"createAt")
+                sort(Sort.Direction.DESC,"createAt"),
+                limit(1)
         );
         try {
             AggregationResults<MachinePartialStatus> data = mongoTemplate
