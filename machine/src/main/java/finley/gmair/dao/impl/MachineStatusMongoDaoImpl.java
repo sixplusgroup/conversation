@@ -15,9 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -39,6 +37,7 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao{
 
         if (condition.get("createAtGTE") != null) {
             query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")));
+            query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "createAt")));
         }
 
         try {
