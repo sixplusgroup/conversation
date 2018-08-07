@@ -12,7 +12,7 @@ import java.util.*;
 
 
 @Service
-public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
+public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService {
     private Map<String, String> provinceCityMap = new HashMap<>();
     private Map<String, String> city2provinceMap = new HashMap<>();
     private Map<String, String> provinceId2NameMap = new HashMap<>();
@@ -53,10 +53,11 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService{
     @Override
     public ResultData fetch(String cityName) {
         ResultData result = new ResultData();
-        if (provinceCityMap.get(cityName) == null) {
+        String newCityName = cityName.replaceAll("市", "").replaceAll("地区", "");
+        if (provinceCityMap.get(newCityName) == null) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
         } else {
-            result.setData(provinceCityMap.get(cityName));
+            result.setData(provinceCityMap.get(newCityName));
         }
         return result;
     }
