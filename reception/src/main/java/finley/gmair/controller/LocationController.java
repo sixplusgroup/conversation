@@ -58,9 +58,4 @@ public class LocationController {
     public ResultData district(@PathVariable("cityId") String city) {
         return locationService.district(city);
     }
-
-    @GetMapping("/probe/provinceId")
-    public ResultData probeProvinceIdByCityId(String cityId) {
-        return locationService.probeProvinceIdByCityId(cityId);
-    }
 }
