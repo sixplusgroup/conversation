@@ -178,17 +178,17 @@ public class LocationApplication {
         Map<String, Object> condition = new HashMap<>();
         condition.put("cityId", cityId);
         ResultData response = locationService.fetchCity(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription(new StringBuffer("No city information found for city id: ").append(cityId).toString());
+            return result;
         }
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
         }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
         return result;
     }
 
