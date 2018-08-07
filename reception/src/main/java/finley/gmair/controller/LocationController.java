@@ -5,10 +5,7 @@ import finley.gmair.service.LocationService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import finley.gmair.util.IPUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,4 +58,7 @@ public class LocationController {
     public ResultData district(@PathVariable("cityId") String city) {
         return locationService.district(city);
     }
+
+    @GetMapping(value = "/city/profile")
+    public ResultData findCity(String cityId) { return locationService.getCity(cityId); }
 }
