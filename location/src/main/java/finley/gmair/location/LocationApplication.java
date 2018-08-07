@@ -172,6 +172,26 @@ public class LocationApplication {
         return result;
     }
 
+    @GetMapping("/city/profile")
+    public ResultData cityProfile(String cityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("cityId", cityId);
+        ResultData response = locationService.fetchCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No city information found for city id: ").append(cityId).toString());
+        }
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        }
+        return result;
+    }
+
     private ResultData process(JSONObject response) {
         ResultData result = new ResultData();
         if (!StringUtils.isEmpty(response) && response.getInteger("status") == 0) {
