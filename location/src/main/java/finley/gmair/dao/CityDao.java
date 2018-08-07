@@ -10,5 +10,7 @@ public interface CityDao {
 
     ResultData queryCity(Map<String, Object> condition);
 
+    ResultData queryProvinceIdByCityId(Map<String, Object> condition);
+
     ResultData updateCity(City city);
 }

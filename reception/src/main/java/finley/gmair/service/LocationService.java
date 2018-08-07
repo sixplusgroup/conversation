@@ -2,10 +2,7 @@ package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "location-agent")
 public interface LocationService {
@@ -23,4 +20,7 @@ public interface LocationService {
 
     @RequestMapping(method = RequestMethod.GET, value = "/location/{cityId}/districts")
     ResultData district(@PathVariable("cityId") String city);
+
+    @GetMapping("/location/probe/provinceId")
+    ResultData probeProvinceIdByCityId(@RequestParam("cityId") String cityId);
 }

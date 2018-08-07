@@ -5,10 +5,7 @@ import finley.gmair.service.LocationService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import finley.gmair.util.IPUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +45,7 @@ public class LocationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/province/list")
-    public ResultData province(){
+    public ResultData province() {
         return locationService.province();
     }
 
@@ -60,5 +57,10 @@ public class LocationController {
     @RequestMapping(method = RequestMethod.GET, value = "/{cityId}/districts")
     public ResultData district(@PathVariable("cityId") String city) {
         return locationService.district(city);
+    }
+
+    @GetMapping("/probe/provinceId")
+    public ResultData probeProvinceIdByCityId(String cityId) {
+        return locationService.probeProvinceIdByCityId(cityId);
     }
 }

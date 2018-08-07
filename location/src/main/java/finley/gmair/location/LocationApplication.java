@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jca.cci.CciOperationNotSupportedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -204,4 +205,31 @@ public class LocationApplication {
         return result;
     }
 
+
+    @GetMapping("/probe/provinceId")
+    public ResultData probeProvinceIdByCityId(String cityId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(cityId)){
+           result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+           result.setDescription("please provide cityId");
+           return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("cityId",cityId);
+        condition.put("blockFlag",false);
+        ResultData response = locationService.fetchProvinceIdByCityId(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No provinceId found by city id: ").append(cityId).toString());
+            return result;
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find provinceId by cityId");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
 }

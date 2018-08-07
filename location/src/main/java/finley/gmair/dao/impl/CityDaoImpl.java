@@ -52,6 +52,23 @@ public class CityDaoImpl extends BaseDao implements CityDao {
     }
 
     @Override
+    public ResultData queryProvinceIdByCityId(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        try {
+            List<City> list = sqlSession.selectList("gmair.location.city.queryProvinceId", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData updateCity(City city) {
         ResultData result = new ResultData();
         try {
