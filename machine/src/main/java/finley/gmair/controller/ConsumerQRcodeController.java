@@ -112,14 +112,20 @@ public class ConsumerQRcodeController {
             result.setDescription("success to create bind information to table");
         }
 
-        //update the qrcode table by qrcode, status  =>   QRCodeStatus.OCCUPIED
-        new Thread(()-> {
-            condition.clear();
-            condition.put("codeValue", qrcode);
-            condition.put("status", QRCodeStatus.OCCUPIED.getValue());
-            condition.put("blockFlag", false);
-            qrCodeService.modifyByQRcode(condition);
-        }).start();
+        /*
+        *update the qrcode table by qrcode, status  =>   QRCodeStatus.OCCUPIED
+        * if ownership = 0, update the qrcode status
+        * if ownership = 1, is sharer, no need to update
+         */
+        if (ownership == 0) {
+            new Thread(() -> {
+                condition.clear();
+                condition.put("codeValue", qrcode);
+                condition.put("status", QRCodeStatus.OCCUPIED.getValue());
+                condition.put("blockFlag", false);
+                qrCodeService.modifyByQRcode(condition);
+            }).start();
+        }
         return result;
     }
 
