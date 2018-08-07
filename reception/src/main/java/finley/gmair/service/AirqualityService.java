@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.*;
 public interface AirqualityService {
 
     @GetMapping(value = "/airquality/latest/{cityId}")
-    ResultData getLatestCityAirQuality(@RequestParam("cityId") String cityId);
+    ResultData getLatestCityAirQuality(@PathVariable("cityId") String cityId);
 
     @GetMapping("/airquality/hourly/cityAqi/{cityId}")
-    ResultData getHourlyCityAqi(@RequestParam("cityId") String cityId);
+    ResultData getHourlyCityAqi(@PathVariable("cityId") String cityId);
 
     @GetMapping("/airquality/daily/cityAqi/{cityId}")
-    ResultData getDailyCityAqi(@RequestParam("cityId") String cityId);
+    ResultData getDailyCityAqi(@PathVariable("cityId") String cityId);
 
     @GetMapping("/airquality/weekly/cityAqi/{cityId}")
-    ResultData getWeeklyCityAqi(@RequestParam("cityId")String cityId);
+    ResultData getWeeklyCityAqi(@PathVariable("cityId")String cityId);
 }
