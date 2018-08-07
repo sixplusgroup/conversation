@@ -20,4 +20,8 @@ public interface LocationService {
 
     @RequestMapping(method = RequestMethod.GET, value = "/location/{cityId}/districts")
     ResultData district(@PathVariable("cityId") String city);
+
+    @GetMapping("/location/probe/provinceId")
+    ResultData probeProvinceIdByCityId(@RequestParam("cityId") String cityId);
+
 }
