@@ -27,13 +27,10 @@ public class LocationController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             LinkedHashMap<String, Object> locInformation = (LinkedHashMap<String, Object>) response.getData();
             LinkedHashMap<String, Object> ad_info = (LinkedHashMap<String, Object>) locInformation.get("ad_info");
-//            locationPlace = new StringBuilder((String) ad_info.get("nation"))
-//                    .append((String) ad_info.get("province"))
-//                    .append((String) ad_info.get("city"))
-//                    .toString();
             JSONObject json = new JSONObject();
             json.put("province", ad_info.get("province"));
             json.put("city", ad_info.get("city"));
+            json.put("code", ad_info.get("adcode"));
             result.setData(json);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to locate the ip address");

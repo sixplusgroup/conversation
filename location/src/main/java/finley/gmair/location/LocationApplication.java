@@ -27,7 +27,7 @@ public class LocationApplication {
 
     private final static String TENCENT_GEO_URL = "http://apis.map.qq.com/ws/geocoder/v1/";
 
-    private final static String TENCENT_IP_URL = "http://apis.map.qq.com/ws/location/v1/ip";
+    private final static String TENCENT_IP_URL = "https://apis.map.qq.com/ws/location/v1/ip";
 
     @Autowired
     private LocationService locationService;
