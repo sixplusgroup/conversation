@@ -135,14 +135,14 @@ public class TimeClientHandle implements Runnable{
     }
 
     private void doWrite(SocketChannel sc) throws IOException {
-        int flag = 0;
+        int flag = 1;
 
         //测试machine_status时,flag=0
         byte[] CTF = new byte[]{0x03};
 
         byte[] CID = new byte[]{0x00};
 
-        byte[] UID = ByteUtil.string2byte("qweqwe", 12);
+        byte[] UID = ByteUtil.string2byte("zxczxc", 12);
 
         byte[] LEN = new byte[]{0x0D};
 

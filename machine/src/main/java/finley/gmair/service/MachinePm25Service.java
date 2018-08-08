@@ -10,4 +10,6 @@ public interface MachinePm25Service {
     ResultData handleMonthly();
 
     ResultData fetchPartialLatestPm25(String uid, String name);
+
+    ResultData fetchAveragePm25();
 }

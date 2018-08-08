@@ -40,4 +40,8 @@ public interface CoreService {
 
     @GetMapping("/core/com/probe/partial/pm25")
     ResultData probePartialPm25(@RequestParam("uid") String uid);
+
+    @PostMapping("core/com/config/screen")
+    ResultData configScreen(@RequestParam("uid") String uid,
+                            @RequestParam("screen") int screen);
 }

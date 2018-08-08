@@ -117,4 +117,19 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
         }
         return result;
     }
+
+    @Override
+    public ResultData fetchAveragePm25(){
+        ResultData result = new ResultData();
+        ResultData response = machineStatusMongoDao.queryPartialAveragePm25();
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+        } else {
+            result.setData(response.getData());
+            result.setDescription("success to fetch average pm2.5 in machine_partial_status collection");
+        }
+        return result;
+    }
+
 }

@@ -19,4 +19,7 @@ public interface MachineFeignService {
 
     @GetMapping("/machine/status/partial/schedule/hourly")
     ResultData probePartialPM2_5Hourly();
+
+    @PostMapping("/machine/status/screen/schedule/daily")
+    ResultData configScreenDaily();
 }

@@ -25,5 +25,6 @@ public class DailyJob implements Job{
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         airQualityFeignService.scheduleDaily();
         machineFeignService.handleMachineStatusDaily();
+        machineFeignService.configScreenDaily();
     }
 }

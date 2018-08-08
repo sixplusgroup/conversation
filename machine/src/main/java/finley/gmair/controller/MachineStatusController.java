@@ -89,7 +89,7 @@ public class MachineStatusController {
             response = repositoryService.isOnilne(mqb.getMachineId());
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
                 continue;
-            System.out.println(mqb.getMachineId());
+            //System.out.println(mqb.getMachineId());
             sb.delete(0, sb.length());
             sb.append(mqb.getMachineId());
             coreService.probePartialPm25(sb.toString());
@@ -100,6 +100,41 @@ public class MachineStatusController {
             }
 
         }
+        return result;
+    }
+
+    @PostMapping("/screen/schedule/daily")
+    public ResultData configScreenDaily() {
+        ResultData result = new ResultData();
+        ResultData response = machinePm25Service.fetchAveragePm25();
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch average partial pm2_5");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find average partial pm2_5");
+            return result;
+        }
+
+        for (MachinePartialStatus mps: (List<MachinePartialStatus>)response.getData()) {
+            //check online
+            response = repositoryService.isOnilne(mps.getUid());
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+                continue;
+
+            //if pm2.5 > 25, send the packet
+            if(((Double)mps.getData()).doubleValue() < 25.0)
+                continue;
+
+            try {
+                coreService.configScreen(mps.getUid(),1);
+                Thread.sleep(100);
+            }catch (Exception e){
+                result.setDescription(e.getMessage());
+            }
+        }
+
         return result;
     }
 }

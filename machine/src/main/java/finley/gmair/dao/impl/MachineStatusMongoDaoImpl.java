@@ -109,4 +109,33 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao{
         }
         return result;
     }
+
+    @Override
+    public ResultData queryPartialAveragePm25(){
+        ResultData result = new ResultData();
+        long last25Hour = (System.currentTimeMillis() - 1000 * 60 * 60 * 25) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        long forTestHour = System.currentTimeMillis();
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("createAt").gte(last25Hour)),
+                match(Criteria.where("createAt").lte(forTestHour)),
+                group("uid").avg("data").as("data"),
+                project().andExpression("_id").as("uid")
+                        .andExpression("data").as("data"));
+        try {
+            AggregationResults<MachinePartialStatus> data = mongoTemplate
+                    .aggregate(aggregation, "machine_partial_status", MachinePartialStatus.class);
+            if (data.getMappedResults().isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("not find data in mongo");
+            } else {
+                result.setData(data.getMappedResults());
+            }
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
 }
