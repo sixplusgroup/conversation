@@ -57,9 +57,12 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao{
         ResultData result = new ResultData();
         long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
         long currentHour = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
+        long forTestHour = System.currentTimeMillis();
+
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("createAt").gte(lastHour)),
                 match(Criteria.where("createAt").lte(currentHour)),
+                limit(10),
                 group("uid").avg("pm2_5").as("pm2_5"),
                 project().andExpression("_id").as("uid")
                          .andExpression("pm2_5").as("pm2_5"));
@@ -115,10 +118,10 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao{
         ResultData result = new ResultData();
         long last25Hour = (System.currentTimeMillis() - 1000 * 60 * 60 * 25) / (1000 * 60 * 60) * (1000 * 60 * 60);
         long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
-        long forTestHour = System.currentTimeMillis();
+        //long forTestHour = System.currentTimeMillis();
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("createAt").gte(last25Hour)),
-                match(Criteria.where("createAt").lte(forTestHour)),
+                match(Criteria.where("createAt").lte(lastHour)),
                 group("uid").avg("data").as("data"),
                 project().andExpression("_id").as("uid")
                         .andExpression("data").as("data"));
