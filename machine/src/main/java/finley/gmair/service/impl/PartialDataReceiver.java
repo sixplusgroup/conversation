@@ -43,8 +43,8 @@ public class PartialDataReceiver {
         ResultData resultData = machineStatusMongoDao.queryPartialLatestPm25(uid,"partial_pm2_5");
         if(resultData.getResponseCode() != ResponseCode.RESPONSE_OK)
             return;
-        List<MachinePartialStatus> list = (List<MachinePartialStatus>) resultData.getData();
-        int pm2_5 = (int) list.get(0).getData();
+        MachinePartialStatus machinePartialStatus = (MachinePartialStatus) resultData.getData();
+        int pm2_5 = (int) machinePartialStatus.getData();
 
         //check if machineId exist in pm_2_5_latest table
         Map<String, Object> condition = new HashMap<>();

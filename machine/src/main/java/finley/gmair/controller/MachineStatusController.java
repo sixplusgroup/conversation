@@ -116,8 +116,8 @@ public class MachineStatusController {
             result.setDescription("not find average partial pm2_5");
             return result;
         }
-
-        for (MachinePartialStatus mps: (List<MachinePartialStatus>)response.getData()) {
+        List<MachinePartialStatus> mpsList = (List<MachinePartialStatus>) response.getData();
+        for (MachinePartialStatus mps: mpsList) {
             //check online
             response = repositoryService.isOnilne(mps.getUid());
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
