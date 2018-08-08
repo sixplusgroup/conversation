@@ -97,7 +97,7 @@ public class MachineStatusController {
             coreService.probePartialPm25(sb.toString());
             try {
                 Thread.sleep(100);
-            }catch (Exception e){
+            } catch (Exception e) {
                 result.setDescription(e.getMessage());
             }
 
@@ -109,30 +109,30 @@ public class MachineStatusController {
     public ResultData configScreenDaily() {
         ResultData result = new ResultData();
         ResultData response = machinePm25Service.fetchAveragePm25();
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch average partial pm2_5");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find average partial pm2_5");
             return result;
         }
         List<MachinePartialStatus> mpsList = (List<MachinePartialStatus>) response.getData();
-        for (MachinePartialStatus mps: mpsList) {
+        for (MachinePartialStatus mps : mpsList) {
             //check online
             response = repositoryService.isOnilne(mps.getUid());
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
                 continue;
 
             //if pm2.5 > 25, send the packet
-            if(((Double)mps.getData()).doubleValue() < 25.0)
+            if (((Double) mps.getData()).doubleValue() < 25.0)
                 continue;
 
             try {
-                coreService.configScreen(mps.getUid(),1);
+                coreService.configScreen(mps.getUid(), 1);
                 Thread.sleep(100);
-            }catch (Exception e){
+            } catch (Exception e) {
                 result.setDescription(e.getMessage());
             }
         }
@@ -145,51 +145,111 @@ public class MachineStatusController {
     public ResultData fetchMachineHourlyPm2_5(String qrcode) {
 
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(qrcode)){
+        if (StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide qrcode");
             return result;
         }
         //according the qrcode ,find machine id
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("codeValue",qrcode);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to get machineId by qrcode");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find machineId by qrcode");
+            return result;
         }
-        String machineId = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getMachineId();
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
         //get the last 24 hour data from database
         Timestamp last24Hour = new Timestamp((System.currentTimeMillis() - 24 * 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60));
         Timestamp lastHour = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60) * (1000 * 60 * 60));
         condition.clear();
-        condition.put("uid",machineId);
-        condition.put("createTimeGTE",last24Hour);
-        condition.put("createTimeLTE",lastHour);
-        condition.put("blockFlag",false);
+        condition.put("uid", machineId);
+        condition.put("createTimeGTE", last24Hour);
+        condition.put("createTimeLTE", lastHour);
+        condition.put("blockFlag", false);
         response = machinePm25Service.fetchMachineHourlyPm25(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch machine hourly pm2.5");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find machine hourly pm2.5");
+            return result;
         }
 
         //if some data loss , just fill the 0.
-        List<MachinePm2_5Vo> list = (List<MachinePm2_5Vo>)response.getData();
+        List<MachinePm2_5Vo> list = (List<MachinePm2_5Vo>) response.getData();
         //+8 是因为东八区,下面这个方法,在数据库中对于某天某个小时有两条数据时就会出错
-        int last24Index = (int) ((last24Hour.getTime() / (1000 * 60 * 60) + 8) % 24 );
-        for(int i=0;i<24;i++){
-            if(list.size()==i || list.get(i).getIndex() != (last24Index+i)%24) {
-                list.add(i,new MachinePm2_5Vo(machineId,(last24Index+i)%24,0,new Timestamp(last24Hour.getTime()+(i+1)*60*60*1000)));
+        int last24Index = (int) ((last24Hour.getTime() / (1000 * 60 * 60) + 8) % 24);
+        for (int i = 0; i < 24; i++) {
+            if (list.size() == i || list.get(i).getIndex() != (last24Index + i) % 24) {
+                list.add(i, new MachinePm2_5Vo(machineId, (last24Index + i) % 24, 0, new Timestamp(last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)));
+            }
+        }
+        result.setData(list);
+        return result;
+    }
+
+    //获取machine过去七天的pm2.5记录
+    @GetMapping("/daily")
+    public ResultData fetchMachineDailyPm2_5(String qrcode) {
+
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide qrcode");
+            return result;
+        }
+        //according the qrcode ,find machine id
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get machineId by qrcode");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find machineId by qrcode.");
+            return result;
+        }
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+
+        //get the last 7 day data from database
+        Timestamp last7day = new Timestamp((System.currentTimeMillis() - 7 * 24 * 1000 * 60 * 60) / (1000 * 60 * 60 * 24) * (1000 * 60 * 60 * 24));
+        Timestamp lastday = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60 * 24) * (1000 * 60 * 60 * 24));
+        condition.clear();
+        condition.put("uid", machineId);
+        condition.put("createTimeGTE", last7day);
+        condition.put("createTimeLTE", lastday);
+        condition.put("blockFlag", false);
+        response = machinePm25Service.fetchMachineDailyPm25(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch machine daily pm2.5");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find machine daily pm2.5");
+            return result;
+        }
+
+        //if some data loss , just fill the 0.
+        List<MachinePm2_5Vo> list = (List<MachinePm2_5Vo>) response.getData();
+        //there is a question
+        int last7Index = (int) (last7day.getTime() / (1000 * 60 * 60 * 24) % 7);
+        for (int i = 0; i < 7; i++) {
+            if (list.size() == i || list.get(i).getIndex() != (last7Index + i) % 7) {
+                list.add(i, new MachinePm2_5Vo(machineId, (last7Index + i) % 7, 0, new Timestamp(last7day.getTime() + (i + 1) * 60 * 60 * 1000 * 24)));
             }
         }
         result.setData(list);
