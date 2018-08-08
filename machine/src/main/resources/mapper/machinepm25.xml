@@ -51,6 +51,7 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
+        order by create_time asc
     </select>
 
     <insert id="insertDaily" parameterType="finley.gmair.model.machine.MachinePm2_5">

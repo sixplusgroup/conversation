@@ -2,16 +2,18 @@ package finley.gmair.controller;
 
 import finley.gmair.model.machine.LatestPM2_5;
 import finley.gmair.model.machine.MachinePartialStatus;
+import finley.gmair.model.machine.MachinePm2_5;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.MachinePm2_5Vo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 
 @RestController
 @RequestMapping("/machine/status")
@@ -135,6 +137,62 @@ public class MachineStatusController {
             }
         }
 
+        return result;
+    }
+
+    //获取machine过去24小时的pm2.5记录
+    @GetMapping("/hourly")
+    public ResultData fetchMachineHourlyPm2_5(String qrcode) {
+
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide qrcode");
+            return result;
+        }
+        //according the qrcode ,find machine id
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get machineId by qrcode");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find machineId by qrcode");
+        }
+        String machineId = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getMachineId();
+
+        //get the last 24 hour data from database
+        Timestamp last24Hour = new Timestamp((System.currentTimeMillis() - 24 * 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60));
+        Timestamp lastHour = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60) * (1000 * 60 * 60));
+        condition.clear();
+        condition.put("uid",machineId);
+        condition.put("createTimeGTE",last24Hour);
+        condition.put("createTimeLTE",lastHour);
+        condition.put("blockFlag",false);
+        response = machinePm25Service.fetchMachineHourlyPm25(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch machine hourly pm2.5");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find machine hourly pm2.5");
+        }
+
+        //if some data loss , just fill the 0.
+        List<MachinePm2_5Vo> list = (List<MachinePm2_5Vo>)response.getData();
+        //+8 是因为东八区,下面这个方法,在数据库中对于某天某个小时有两条数据时就会出错
+        int last24Index = (int) ((last24Hour.getTime() / (1000 * 60 * 60) + 8) % 24 );
+        for(int i=0;i<24;i++){
+            if(list.size()==i || list.get(i).getIndex() != (last24Index+i)%24) {
+                list.add(i,new MachinePm2_5Vo(machineId,(last24Index+i)%24,0,new Timestamp(last24Hour.getTime()+(i+1)*60*60*1000)));
+            }
+        }
+        result.setData(list);
         return result;
     }
 }

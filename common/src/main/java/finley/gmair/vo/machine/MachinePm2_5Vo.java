@@ -9,6 +9,16 @@ public class MachinePm2_5Vo {
     private double pm2_5;
     private Timestamp createTime;
 
+    public MachinePm2_5Vo() {
+    }
+
+    public MachinePm2_5Vo(String uid, int index, double pm2_5, Timestamp createTime) {
+        this.uid = uid;
+        this.index = index;
+        this.pm2_5 = pm2_5;
+        this.createTime = createTime;
+    }
+
     public String getUid() {
         return uid;
     }

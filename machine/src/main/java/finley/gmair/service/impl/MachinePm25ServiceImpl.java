@@ -132,4 +132,40 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
         return result;
     }
 
+    @Override
+    public ResultData fetchMachineHourlyPm25(Map<String,Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = machineStatusStatisticsDao.selectHourly(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch hourly pm2.5 in machine_hourly_status table");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find hourly pm2.5 in machine_hourly_status table");
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
+    @Override
+    public ResultData fetchMachineDailyPm25(Map<String,Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = machineStatusStatisticsDao.selectDaily(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch daily pm2.5 in machine_daily_status table");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find daily pm2.5 in machine_daily_status table");
+            return result;
+        }
+        result.setData(response.getData());
+        result.setDescription("success to find daily pm2.5 in machine_daily_status table");
+        return result;
+    }
+
+
 }
