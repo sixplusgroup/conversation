@@ -143,4 +143,9 @@ public class MachineController {
     public ResultData probeBoardVersionByQRcode(String qrcode) {
         return machineService.findBoardVersionByQRcode(qrcode);
     }
+
+    @RequestMapping(value = "/probe/hourly/pm25", method = RequestMethod.GET)
+    public ResultData probeMachineHourlyPm2_5(String qrcode) {
+        return machineService.fetchMachineHourlyPm2_5(qrcode);
+    }
 }

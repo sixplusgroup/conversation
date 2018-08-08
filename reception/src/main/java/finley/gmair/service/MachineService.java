@@ -95,7 +95,10 @@ public interface MachineService {
     ResultData probeModelLightByModelId(@RequestParam("modelId") String modelId);
 
     //BoardVersionController
-
     @GetMapping("/machine/board/by/qrcode")
     ResultData findBoardVersionByQRcode(@RequestParam("qrcode") String qrcode);
+
+    //MachineStatusController
+    @GetMapping("/machine/status/hourly")
+    ResultData fetchMachineHourlyPm2_5(@RequestParam("qrcode") String qrcode);
 }
