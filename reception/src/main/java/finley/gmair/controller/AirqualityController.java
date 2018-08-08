@@ -46,25 +46,16 @@ public class AirqualityController {
             result.setDescription("please provide all the information");
             return result;
         }
-        //get city latest airquality
-        ResultData response = airqualityService.getLatestCityAirQuality(cityId);
+        ResultData response = machineService.updateCityIdByQRcode(cityId, qrcode);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setData(response.getData());
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to get city latest airquality.");
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now.");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("sorry,can not get any data.");
         }
-
-        //update default location
-        new Thread(() -> {
-            machineService.updateCityIdByQRcode(cityId, qrcode);
-        }).start();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        }
         return result;
     }
 

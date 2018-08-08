@@ -5,6 +5,7 @@ import finley.gmair.dao.CityDao;
 import finley.gmair.model.district.City;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.location.CityProvinceVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -55,7 +56,7 @@ public class CityDaoImpl extends BaseDao implements CityDao {
     public ResultData queryProvinceIdByCityId(Map<String, Object> condition){
         ResultData result = new ResultData();
         try {
-            List<City> list = sqlSession.selectList("gmair.location.city.queryProvinceId", condition);
+            List<CityProvinceVo> list = sqlSession.selectList("gmair.location.city.queryProvinceId", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
