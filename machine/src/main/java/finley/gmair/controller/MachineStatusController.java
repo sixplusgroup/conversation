@@ -105,6 +105,7 @@ public class MachineStatusController {
         return result;
     }
 
+    //每日调用该接口,检查滤网pm2.5超标的机器,发送警告信号灯
     @PostMapping("/screen/schedule/daily")
     public ResultData configScreenDaily() {
         ResultData result = new ResultData();
@@ -150,7 +151,7 @@ public class MachineStatusController {
             result.setDescription("please provide qrcode");
             return result;
         }
-        //according the qrcode ,find machine id
+        //1.according the qrcode ,find machine id
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
@@ -166,7 +167,7 @@ public class MachineStatusController {
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
-        //get the last 24 hour data from database
+        //2.get the last 24 hour data from database
         Timestamp last24Hour = new Timestamp((System.currentTimeMillis() - 24 * 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60));
         Timestamp lastHour = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60) * (1000 * 60 * 60));
         condition.clear();
@@ -185,12 +186,15 @@ public class MachineStatusController {
             return result;
         }
 
-        //if some data loss , just fill the 0.
+        //3.format data
         List<MachinePm2_5Vo> list = (List<MachinePm2_5Vo>) response.getData();
-        //+8 是因为东八区,下面这个方法,在数据库中对于某天某个小时有两条数据时就会出错
+        for (int i = 0; i < list.size(); i++) {
+            long thatTime = list.get(i).getCreateTime().getTime();
+            list.get(i).setCreateTime(new Timestamp((thatTime / (1000 * 60 * 60) * (1000 * 60 * 60))));
+        }
         int last24Index = (int) ((last24Hour.getTime() / (1000 * 60 * 60) + 8) % 24);
         for (int i = 0; i < 24; i++) {
-            if (list.size() == i || list.get(i).getIndex() != (last24Index + i) % 24) {
+            if (list.size() == i || list.get(i).getCreateTime().getTime() != (last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)) {
                 list.add(i, new MachinePm2_5Vo(machineId, (last24Index + i) % 24, 0, new Timestamp(last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)));
             }
         }
@@ -208,7 +212,7 @@ public class MachineStatusController {
             result.setDescription("please provide qrcode");
             return result;
         }
-        //according the qrcode ,find machine id
+        //根据qrcode查询machineId
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
@@ -224,13 +228,22 @@ public class MachineStatusController {
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
-        //get the last 7 day data from database
-        Timestamp last7day = new Timestamp((System.currentTimeMillis() - 7 * 24 * 1000 * 60 * 60) / (1000 * 60 * 60 * 24) * (1000 * 60 * 60 * 24));
-        Timestamp lastday = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60 * 24) * (1000 * 60 * 60 * 24));
+
+        //通过Calendar获取今日零点零分零秒的毫秒数
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long zero = cal.getTimeInMillis(); // 今天零点零分零秒的毫秒数
+        Timestamp lastDay = new Timestamp(zero);
+        Timestamp last7Day = new Timestamp(zero - 7 * 24 * 60 * 60 * 1000);
+
+        //查询数据库获取室内的过去七天的pm2.5
         condition.clear();
         condition.put("uid", machineId);
-        condition.put("createTimeGTE", last7day);
-        condition.put("createTimeLTE", lastday);
+        condition.put("createTimeGTE", last7Day);
+        condition.put("createTimeLTE", lastDay);
         condition.put("blockFlag", false);
         response = machinePm25Service.fetchMachineDailyPm25(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -243,13 +256,17 @@ public class MachineStatusController {
             return result;
         }
 
-        //if some data loss , just fill the 0.
         List<MachinePm2_5Vo> list = (List<MachinePm2_5Vo>) response.getData();
-        //there is a question
-        int last7Index = (int) (last7day.getTime() / (1000 * 60 * 60 * 24) % 7);
+        //格式化createTime
+        for (int i = 0; i < list.size(); i++) {
+            long thatTime = list.get(i).getCreateTime().getTime();
+            list.get(i).setCreateTime(new Timestamp(thatTime - (thatTime + 8 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000)));
+        }
+
+        //对缺失的时间补0
         for (int i = 0; i < 7; i++) {
-            if (list.size() == i || list.get(i).getIndex() != (last7Index + i) % 7) {
-                list.add(i, new MachinePm2_5Vo(machineId, (last7Index + i) % 7, 0, new Timestamp(last7day.getTime() + (i + 1) * 60 * 60 * 1000 * 24)));
+            if (list.size() == i || list.get(i).getCreateTime().getTime() != last7Day.getTime() + (i + 1) * 1000 * 60 * 60 * 24) {
+                list.add(i, new MachinePm2_5Vo(machineId, 0, 0, new Timestamp(last7Day.getTime() + (i + 1) * 1000 * 60 * 60 * 24)));
             }
         }
         result.setData(list);

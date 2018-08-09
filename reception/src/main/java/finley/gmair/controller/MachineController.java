@@ -148,4 +148,9 @@ public class MachineController {
     public ResultData probeMachineHourlyPm2_5(String qrcode) {
         return machineService.fetchMachineHourlyPm2_5(qrcode);
     }
+
+    @RequestMapping(value = "/probe/daily/pm25", method = RequestMethod.GET)
+    public ResultData probeMachineDailyPm2_5(String qrcode) {
+        return machineService.fetchMachineDailyPm2_5(qrcode);
+    }
 }

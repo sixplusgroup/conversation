@@ -101,4 +101,6 @@ public interface MachineService {
     //MachineStatusController
     @GetMapping("/machine/status/hourly")
     ResultData fetchMachineHourlyPm2_5(@RequestParam("qrcode") String qrcode);
+    @GetMapping("/machine/status/daily")
+    ResultData fetchMachineDailyPm2_5(@RequestParam("qrcode") String qrcode);
 }
