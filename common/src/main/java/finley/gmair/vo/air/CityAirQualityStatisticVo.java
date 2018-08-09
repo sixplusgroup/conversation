@@ -38,4 +38,10 @@ public class CityAirQualityStatisticVo {
 
     public CityAirQualityStatisticVo() {
     }
+
+    public CityAirQualityStatisticVo(String cityId, double pm25, Timestamp createTime) {
+        this.cityId = cityId;
+        this.pm25 = pm25;
+        this.createTime = createTime;
+    }
 }
