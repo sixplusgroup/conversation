@@ -82,6 +82,7 @@ public class CityAirQualityController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("the airquality server is busy, try later!");
+            return result;
         } else {
             JSONArray jsonArray = (JSONArray) response.getData();
             List<CityAirQualityStatisticVo> list = new ArrayList<>();
@@ -92,8 +93,8 @@ public class CityAirQualityController {
                 list.add(caqsvo);
             }
             for (int i = 0; i < 24; i++) {
-                if (list.size() == i || list.get(i).getCreateTime().getTime() != last24Hour.getTime() + (i+1) * 1000 * 60 * 60) {
-                    list.add(i, new CityAirQualityStatisticVo(cityId, 0, new Timestamp(last24Hour.getTime() + (i+1) * 1000 * 60 * 60)));
+                if (list.size() == i || list.get(i).getCreateTime().getTime() != last24Hour.getTime() + (i + 1) * 1000 * 60 * 60) {
+                    list.add(i, new CityAirQualityStatisticVo(cityId, 0, new Timestamp(last24Hour.getTime() + (i + 1) * 1000 * 60 * 60)));
                 }
             }
             result.setData(list);
@@ -109,21 +110,42 @@ public class CityAirQualityController {
     @RequestMapping(value = "/daily/cityAqi/{cityId}", method = RequestMethod.GET)
     public ResultData getDailyCityAqi(@PathVariable("cityId") String cityId) {
         ResultData result = new ResultData();
-        long current = System.currentTimeMillis();//当前时间毫秒数
-        long zero = (current / (1000 * 3600 * 24)) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
+
+        //通过Calendar获取今日零点零分零秒的毫秒数
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long zero = cal.getTimeInMillis(); // 今天零点零分零秒的毫秒数
+        Timestamp todayZero = new Timestamp(zero);
+        Timestamp last7dayZero = new Timestamp(zero - 7 * 24 * 60 * 60 * 1000);
+
+        //查询过去七天的pm2.5记录
         Map<String, Object> condition = new HashMap<>();
         condition.put("cityId", cityId);
-        condition.put("createTimeGTE", new Timestamp(zero - 7 * 24 * 60 * 60 * 1000));
-        condition.put("createTimeLTE", new Timestamp(zero));
+        condition.put("createTimeGTE", last7dayZero);
+        condition.put("createTimeLTE", todayZero);
         ResultData response = airQualityStatisticService.fetchAirQualityDailyStatistic(condition);
-
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("the airquality server is busy, try later!");
+            result.setDescription("fail to fetch city daily aqi");
+            return result;
         } else {
-            result.setData(response.getData());
+            //将查询结果格式化
+            List<CityAirQualityStatisticVo> list = (List<CityAirQualityStatisticVo>) response.getData();
+            for (int i = 0; i < list.size(); i++) {
+                long thatTime = list.get(i).getCreateTime().getTime();
+                list.get(i).setCreateTime(new Timestamp(thatTime - (thatTime + 8 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000)));
+            }
+            for (int i = 0; i < 7; i++) {
+                if (list.size() == i || list.get(i).getCreateTime().getTime() != last7dayZero.getTime() + (i + 1) * 1000 * 60 * 60 * 24) {
+                    list.add(i, new CityAirQualityStatisticVo(cityId, 0, new Timestamp(last7dayZero.getTime() + (i + 1) * 1000 * 60 * 60 * 24)));
+                }
+            }
+            result.setData(list);
         }
         return result;
     }
