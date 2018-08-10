@@ -214,7 +214,7 @@ public class ConsumerAuthController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", consumerId);
-        condition.put("blockFlag", true);
+        condition.put("wechat", "");
         ResultData response = consumerService.modifyConsumer(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
