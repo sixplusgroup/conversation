@@ -52,6 +52,13 @@ public class MachineController {
         return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
     }
 
+    @PostMapping("/device/bind/share")
+    public ResultData acquireControlOn(String qrcode, String deviceName) {
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.SHARE.getValue());
+    }
+
     /**
      * This method helps to check whether the qrcode is online or not
      *

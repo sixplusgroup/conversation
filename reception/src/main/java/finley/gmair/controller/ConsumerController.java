@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import com.ctc.wstx.util.StringUtil;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.service.AuthConsumerService;
 import finley.gmair.service.MachineService;
@@ -9,12 +8,10 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.xml.transform.Result;
 
 /**
  * ConsumerController is responsible for all operations done by consumer regarding his/her account information,
@@ -22,6 +19,7 @@ import javax.xml.transform.Result;
  */
 @RestController
 @RequestMapping("/reception/consumer")
+@CrossOrigin
 public class ConsumerController {
 
     @Autowired
@@ -140,7 +138,7 @@ public class ConsumerController {
         return result;
     }
 
-    @RequestMapping(value = "edit/phone", method = RequestMethod.POST)
+    @RequestMapping(value = "/edit/phone", method = RequestMethod.POST)
     public ResultData editPhone(String newPhone) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(newPhone)) {
@@ -161,7 +159,7 @@ public class ConsumerController {
         return result;
     }
 
-    @RequestMapping(value = "edit/location", method = RequestMethod.POST)
+    @RequestMapping(value = "/edit/location", method = RequestMethod.POST)
     public ResultData editLocation(LocationForm form) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getProvince()) || StringUtils.isEmpty(form.getCity()) || StringUtils.isEmpty(form.getDistrict()) || StringUtils.isEmpty(form.getDetail())) {
