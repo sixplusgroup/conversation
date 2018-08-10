@@ -5,7 +5,7 @@ public class PictureOutMessage {
     private String FromUserName;
     private long CreateTime;
     private String MsgType = "image";
-    private String MediaId;
+    private Image Image;
 
     public String getToUserName() {
         return ToUserName;
@@ -39,11 +39,11 @@ public class PictureOutMessage {
         MsgType = msgType;
     }
 
-    public String getMediaId() {
-        return MediaId;
+    public finley.gmair.model.wechat.Image getImage() {
+        return Image;
     }
 
-    public void setMediaId(String mediaId) {
-        MediaId = mediaId;
+    public void setImage(finley.gmair.model.wechat.Image image) {
+        Image = image;
     }
 }

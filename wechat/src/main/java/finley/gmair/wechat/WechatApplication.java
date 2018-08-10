@@ -9,6 +9,7 @@ import finley.gmair.model.wechat.Article;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.wechat.ArticleReplyVo;
+import finley.gmair.model.wechat.Image;
 import finley.gmair.vo.wechat.PictureReplyVo;
 import finley.gmair.vo.wechat.TextReplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,7 @@ public class WechatApplication {
                             condition.put("templateId", reply.getTemplateId());
                             PictureOutMessage result = init(pictureUrl(condition), tmessage);
                             content.alias("xml", PictureOutMessage.class);
+                            content.alias("Image", Image.class);
                             String xml = content.toXML(result);
                             return xml;
                         }
@@ -199,7 +201,7 @@ public class WechatApplication {
         result.setFromUserName(message.getToUserName());
         result.setToUserName(message.getFromUserName());
         result.setCreateTime(new Date().getTime());
-        result.setMediaId(mediaId);
+        result.setImage(new Image(mediaId));
         return result;
     }
 
@@ -273,7 +275,7 @@ public class WechatApplication {
             } else {
                 sb.append(bindName + "(离线)\n");
             }
-            if (i != (list.size()-1)) {
+            if (i != (list.size() - 1)) {
                 sb.append("--------\n");
             }
         }
