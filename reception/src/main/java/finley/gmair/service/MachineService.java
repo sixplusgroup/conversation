@@ -71,6 +71,10 @@ public interface MachineService {
     @GetMapping("/machine/consumer/machinelist")
     ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
 
+    @PostMapping("/machine/consumer/modify/bind/name")
+    ResultData modifyBindName(@RequestParam("qrcode") String qrcode,
+                              @RequestParam("bindName") String bindName);
+
     //MachineAirQualityController
     @GetMapping ("/machine/status/byqrcode")
     ResultData getMachineStatusByQRcode(@RequestParam("qrcode") String qrcode);

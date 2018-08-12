@@ -160,4 +160,9 @@ public class MachineController {
     public ResultData probeMachineDailyPm2_5(String qrcode) {
         return machineService.fetchMachineDailyPm2_5(qrcode);
     }
+
+    @RequestMapping(value = "/modify/bind/name", method = RequestMethod.POST)
+    public ResultData modifyBindName(String qrcode,String bindName){
+        return machineService.modifyBindName(qrcode,bindName);
+    }
 }

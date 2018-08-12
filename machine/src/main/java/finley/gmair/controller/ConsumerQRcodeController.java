@@ -281,5 +281,39 @@ public class ConsumerQRcodeController {
         return result;
     }
 
-
+    //修改设备名称
+    @RequestMapping(value = "/modify/bind/name", method = RequestMethod.POST)
+    public ResultData modifyBindName(String qrcode,String bindName){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(qrcode)||StringUtils.isEmpty(bindName)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please the qrcode and bindName");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find the qrcode");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the qrcode");
+            return result;
+        }
+        condition.put("bindName",bindName);
+        response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to modify the bind name");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to modify the bind name");
+            return result;
+        }
+        return result;
+    }
 }
