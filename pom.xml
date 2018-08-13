@@ -39,6 +39,7 @@
         <module>mongo-common</module>
         <module>http-common</module>
         <module>preparation</module>
+        <module>enterpriseselling</module>
     </modules>
 
     <parent>
