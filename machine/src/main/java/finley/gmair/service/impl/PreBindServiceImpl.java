@@ -77,4 +77,9 @@ public class PreBindServiceImpl implements PreBindService {
         ResultData result = preBindDao.delete(codeValue);
         return result;
     }
+
+    @Override
+    public ResultData fetchByDate(Map<String, Object> condition) {
+        return preBindDao.queryByDate(condition);
+    }
 }

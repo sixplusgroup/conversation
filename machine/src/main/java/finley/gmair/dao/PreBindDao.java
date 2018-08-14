@@ -17,4 +17,6 @@ public interface PreBindDao {
     ResultData delete(String codeValue);
 
     ResultData queryBy2Id(Map<String, Object> condition);
+
+    ResultData queryByDate(Map<String, Object> condition);
 }

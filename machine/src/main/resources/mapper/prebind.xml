@@ -39,6 +39,28 @@
         ORDER BY create_time DESC 
     </select>
 
+    <select id="queryByDate" parameterType="java.util.Map" resultMap="prebindVo">
+        select bind_id, machine_id, code_value, block_flag, create_time
+        from gmair_machine.pre_bind
+        where 1 = 1
+        <if test="bindId != null">
+            AND bind_id = #{bindId}
+        </if>
+        <if test="machineId != null">
+            AND machine_id = #{machineId}
+        </if>
+        <if test="codeValue != null">
+            AND code_value = #{codeValue}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test="dateNow != null">
+            AND date(create_time) = #{dateNow}
+        </if>
+        order by create_time desc
+    </select>
+
     <insert id="insert" parameterType="finley.gmair.model.machine.PreBindCode" useGeneratedKeys="false">
         INSERT INTO gmair_machine.pre_bind(bind_id, machine_id, code_value, block_flag, create_time)
         VALUES(#{bindId}, #{machineId}, #{codeValue}, #{blockFlag}, #{createAt})

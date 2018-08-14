@@ -24,6 +24,9 @@ public interface BindVersionService {
     ResultData findMachineIdByCodeValue(@RequestParam("codeValue") String codeValue);
 
     @RequestMapping(method = RequestMethod.GET, value = "/machine/qrcode/check/existmachineid")
-    ResultData  checkMachineIdExist(@RequestParam("machineId") String machineId);
+    ResultData checkMachineIdExist(@RequestParam("machineId") String machineId);
+
+    @GetMapping(value = "/machine/qrcode/prebind/list/now")
+    ResultData findPrebind();
 
 }
