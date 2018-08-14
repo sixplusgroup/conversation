@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.order.enterprise">
+
+    <resultMap id="enterpriseOrder" type="finley.gmair.model.order.EnterpriseOrder">
+        <result property="orderId" column="order_id"/>
+        <result property="merchantId" column="merchant_id"/>
+        <result property="modelName" column="model_name"/>
+        <result property="requireInstall" column="require_install" />
+        <result property="planConfirmed" column="plan_confirmed" />
+        <result property="description" column="description" />
+        <result property="blockFlag" column="block_flag" />
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="finley.gmair.model.order.EnterpriseOrder">
+        insert into gmair_order.enterprise_order(order_id, merchant_id, model_name, require_install, plan_confirmed, description, block_flag, create_time)
+        VALUES
+        (
+         #{orderId}, #{merchantId}, #{modelName}, #{requireInstall}, #{planConfirmed}, #{description}, #{blockFlag}, #{createAt}
+        )
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO gmair_order.enterprise_order(order_id, merchant_id, model_name, require_install, plan_confirmed, description, create_time)
+        VALUES
+        <foreach collection="list" index="index" separator="," item="EnterpriseOrder">
+            (
+            #{EnterpriseOrder.orderId}, #{EnterpriseOrder.merchantId}, #{EnterpriseOrder.modelName},
+            #{EnterpriseOrder.requireInstall}, #{EnterpriseOrder.planConfirmed}, #{EnterpriseOrder.description}
+            #{EnterpriseOrder.blockFlag}, #{OrderLocationRetryCount.createAt}
+            )
+        </foreach>
+    </insert>
+    
+    <select id="query" resultMap="enterpriseOrder" parameterType="java.util.Map">
+        select order_id,merchant_id,model_name,require_install,plan_confirmed,description,block_flag,create_time
+        from gmair_order.enterprise_order
+        WHERE
+        1 = 1
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="merchantId != null">
+            AND merchant_id = #{merchantId}
+        </if>
+        <if test="modelName != null">
+            AND model_name = #{modelName}
+        </if>
+        <if test="requireInstall != null">
+            AND require_install = #{requireInstall}
+        </if>
+        <if test="planConfirmed != null">
+            AND plan_confirmed = #{planConfirmed}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_order.enterprise_order
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag}
+            </if>
+            order_id = #{orderId}
+        </set>
+        WHERE
+        order_id = #{orderId}
+    </update>
+
+    <delete id="delete" parameterType="java.util.Map">
+        UPDATE `gmair_order`.`enterprise_order`
+        SET block_flag = 1
+        WHERE order_id = #{orderId}
+    </delete>
+
+</mapper>

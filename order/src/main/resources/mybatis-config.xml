@@ -11,5 +11,6 @@
         <mapper resource="mapper/setupprovider.xml" />
         <mapper resource="mapper/orderlocationretrycount.xml" />
         <mapper resource="mapper/ordercommodity.xml" />
+        <mapper resource="mapper/enterprise_order.xml" />
     </mappers>
 </configuration>
