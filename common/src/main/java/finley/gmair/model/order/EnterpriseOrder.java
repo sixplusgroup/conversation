@@ -11,9 +11,11 @@ public class EnterpriseOrder extends Entity {
     private String description;
 
     public EnterpriseOrder() {
+        super();
     }
 
     public EnterpriseOrder(String merchantId, String modelName, boolean requireInstall, boolean planConfirmed, String description) {
+        super();
         this.merchantId = merchantId;
         this.modelName = modelName;
         this.requireInstall = requireInstall;
