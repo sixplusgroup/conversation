@@ -316,32 +316,19 @@ public class ConsumerQRcodeController {
     }
 
     //根据二维码查qrcodeConsumerBind
-    @GetMapping("/probe/by/url")
-    public ResultData probeBindByUrl(String url){
+    @GetMapping("/probe/by/qrcode")
+    public ResultData probeBindByQRcode(String qrcode){
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(url)){
+        if(StringUtils.isEmpty(qrcode)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide the url");
+            result.setDescription("please provide the qrcode");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("codeUrl",url);
-        condition.put("blockFlag",false);
-        ResultData response = qrCodeService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find qrcode");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find qrcode");
-            return result;
-        }
-        String qrcode = ((List<QRCode>)response.getData()).get(0).getCodeValue();
         condition.clear();
         condition.put("codeValue",qrcode);
         condition.put("blockFlag",false);
-        response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find the bind");
