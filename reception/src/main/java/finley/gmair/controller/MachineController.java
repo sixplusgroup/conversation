@@ -165,4 +165,9 @@ public class MachineController {
     public ResultData modifyBindName(String qrcode,String bindName){
         return machineService.modifyBindName(qrcode,bindName);
     }
+
+    @RequestMapping(value = "/consumer/bind/probe/byurl",method = RequestMethod.GET)
+    public ResultData probeConsumerQRcodeBindByUrl(String url){
+        return machineService.probeBindByUrl(url);
+    }
 }

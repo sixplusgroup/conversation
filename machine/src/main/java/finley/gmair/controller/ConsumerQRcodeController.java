@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.Ownership;
+import finley.gmair.model.machine.QRCode;
 import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.service.ConsumerQRcodeBindService;
 import finley.gmair.service.MachineQrcodeBindService;
@@ -11,10 +12,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.xml.transform.Result;
 import java.util.HashMap;
@@ -312,6 +310,50 @@ public class ConsumerQRcodeController {
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to modify the bind name");
+            return result;
+        }
+        return result;
+    }
+
+    //根据二维码查qrcodeConsumerBind
+    @GetMapping("/probe/by/url")
+    public ResultData probeBindByUrl(String url){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(url)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the url");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeUrl",url);
+        condition.put("blockFlag",false);
+        ResultData response = qrCodeService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find qrcode");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find qrcode");
+            return result;
+        }
+        String qrcode = ((List<QRCode>)response.getData()).get(0).getCodeValue();
+        condition.clear();
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the bind");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find bind");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to find bind");
+            result.setData(response.getData());
             return result;
         }
         return result;

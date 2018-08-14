@@ -75,6 +75,9 @@ public interface MachineService {
     ResultData modifyBindName(@RequestParam("qrcode") String qrcode,
                               @RequestParam("bindName") String bindName);
 
+    @GetMapping("/machine/consumer/probe/by/url")
+    ResultData probeBindByUrl(@RequestParam("url") String url);
+
     //MachineAirQualityController
     @GetMapping ("/machine/status/byqrcode")
     ResultData getMachineStatusByQRcode(@RequestParam("qrcode") String qrcode);
