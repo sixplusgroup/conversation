@@ -80,7 +80,7 @@
             and city_id = #{cityId}
         </if>
         <if test="createTimeGTE != null">
-            AND create_time >= #{createTimeGTE}
+            AND create_time > #{createTimeGTE}
         </if>
         <if test="createTimeLTE != null">
             <![CDATA[
