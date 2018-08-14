@@ -5,6 +5,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -82,5 +83,10 @@ public class MachineController {
         result.setDescription("success to bind!!");
         return result;
 
+    }
+
+    @GetMapping(value = "/prebind/list/now")
+    public ResultData prebindList() {
+        return bindVersionService.findPrebind();
     }
 }

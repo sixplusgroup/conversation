@@ -82,4 +82,21 @@ public class PreBindDaoImpl extends BaseDao implements PreBindDao {
         return result;
     }
 
+    @Override
+    public ResultData queryByDate(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<PreBindCode> list = sqlSession.selectList("gmair.machine.prebind.queryByDate", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
 }
