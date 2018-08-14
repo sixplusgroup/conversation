@@ -162,12 +162,14 @@ public class MachineController {
     }
 
     @RequestMapping(value = "/modify/bind/name", method = RequestMethod.POST)
-    public ResultData modifyBindName(String qrcode,String bindName){
-        return machineService.modifyBindName(qrcode,bindName);
+    public ResultData modifyBindName(String qrcode, String bindName) {
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        return machineService.modifyBindName(qrcode, bindName, consumerId);
     }
 
-    @RequestMapping(value = "/consumer/bind/probe/byqrcode",method = RequestMethod.GET)
-    public ResultData probeConsumerQRcodeBindByUrl(String qrcode){
+    @RequestMapping(value = "/consumer/bind/probe/byqrcode", method = RequestMethod.GET)
+    public ResultData probeConsumerQRcodeBindInfo(String qrcode) {
         return machineService.probeBindByQRcode(qrcode);
     }
 }

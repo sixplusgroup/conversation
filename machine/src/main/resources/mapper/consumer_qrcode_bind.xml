@@ -13,10 +13,10 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.machine.ConsumerQRcodeBind" useGeneratedKeys="false">
-        INSERT INTO gmair_machine.consumer_code_bind(bind_id, consumer_id, bind_name, code_value, ownership, block_flag, create_time)
+        INSERT INTO gmair_machine.consumer_code_bind (bind_id, consumer_id, bind_name, code_value, ownership, block_flag, create_time)
         VALUES (#{bindId}, #{consumerId}, #{bindName}, #{codeValue},
-        #{ownership,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
-        #{blockFlag}, #{createAt})
+                #{ownership,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+                #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="consumer_qrcode_bind">
@@ -61,9 +61,6 @@
             </if>
             code_value = #{codeValue}
         </set>
-        WHERE code_value = #{codeValue}
-        <if test="consumerId != null">
-            AND consumer_id = #{consumerId}
-        </if>
+        WHERE bind_id = #{bindId}
     </update>
 </mapper>
