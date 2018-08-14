@@ -170,6 +170,8 @@ public class MachineController {
 
     @RequestMapping(value = "/consumer/bind/probe/byqrcode", method = RequestMethod.GET)
     public ResultData probeConsumerQRcodeBindInfo(String qrcode) {
-        return machineService.probeBindByQRcode(qrcode);
+        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        return machineService.probeBindByQRcode(qrcode, consumerId);
     }
 }

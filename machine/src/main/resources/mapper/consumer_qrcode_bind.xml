@@ -59,7 +59,7 @@
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},
             </if>
-            code_value = #{codeValue}
+            bind_id = #{bindId}
         </set>
         WHERE bind_id = #{bindId}
     </update>

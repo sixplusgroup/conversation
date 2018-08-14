@@ -320,7 +320,7 @@ public class ConsumerQRcodeController {
 
     //根据二维码查qrcodeConsumerBind
     @GetMapping("/probe/by/qrcode")
-    public ResultData probeBindByQRcode(String qrcode) {
+    public ResultData probeBindByQRcode(String qrcode, String consumerId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -330,6 +330,7 @@ public class ConsumerQRcodeController {
         Map<String, Object> condition = new HashMap<>();
         condition.clear();
         condition.put("codeValue", qrcode);
+        condition.put("consumerId", consumerId);
         condition.put("blockFlag", false);
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
