@@ -1,14 +1,14 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.BindVersionService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/preparation/machine")
@@ -23,7 +23,7 @@ public class MachineController {
         ResultData result = new ResultData();
 
         //check empty input
-        if (StringUtils.isEmpty(machineId)||StringUtils.isEmpty(version)||StringUtils.isEmpty(codeValue)) {
+        if (StringUtils.isEmpty(machineId) || StringUtils.isEmpty(version) || StringUtils.isEmpty(codeValue)) {
             result.setDescription("please provide all the information");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
@@ -31,22 +31,22 @@ public class MachineController {
 
         //check if the qrcode exist(check the qrcode table)
         ResultData response = bindVersionService.checkQRcodeExist(codeValue);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("the codeValue is not exist");
             return result;
         }
         //check if the machineId has been binded with qrcode(check the pre_bind table)
         response = bindVersionService.checkMachineIdExist(machineId);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("the machineId has binded with qrcode");
             return result;
@@ -54,27 +54,27 @@ public class MachineController {
 
         //check if the qrcode has been binded with machineId(check the pre_bind table)
         response = bindVersionService.findMachineIdByCodeValue(codeValue);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("the codeValue has binded with machine");
             return result;
         }
 
         //bind the machineId with version
-        response = bindVersionService.recordSingleBoardVersion(machineId,version);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        response = bindVersionService.recordSingleBoardVersion(machineId, version);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("error to bind the machineId with version");
             return result;
         }
 
         //bind the machineId with codeValue
-        response = bindVersionService.preBind(machineId,codeValue);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        response = bindVersionService.preBind(machineId, codeValue);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("error to bind the machineId with codeValue");
             return result;
@@ -88,5 +88,11 @@ public class MachineController {
     @GetMapping(value = "/prebind/list/now")
     public ResultData prebindList() {
         return bindVersionService.findPrebind();
+    }
+
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.POST, value = "/bind/batch")
+    public ResultData bindBatch(String bindList) {
+        return bindVersionService.bindBatchVersion(bindList);
     }
 }
