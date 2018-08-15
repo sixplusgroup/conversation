@@ -141,6 +141,7 @@ public class BoardVersionController {
 
             condition.clear();
             condition.put("machineId", jsonObject.getString("machineId"));
+            condition.put("blockFlag", false);
             response = preBindService.fetch(condition);
             if (response.getResponseCode() != ResponseCode.RESPONSE_NULL)
                 continue;
