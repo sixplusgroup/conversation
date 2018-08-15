@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class RankCrawler {
      * get city rank and
      * every hour on half
      */
+    @PostConstruct
     public void rank() {
         Map<String, CityAirQuality> map = new HashMap<>();
         int count = 1;

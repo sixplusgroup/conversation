@@ -45,6 +45,7 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
         Map<String, Object> condition = new HashMap<>();
         Timestamp lastHour = new Timestamp((System.currentTimeMillis() - 300000) / (3600000) * 3600000);
         condition.put("recordTime", lastHour);
+        //从city_aqi_full表中查找数据
         ResultData response = cityAirQualityDao.select(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             List<CityAirPm25Vo> list = (List<CityAirPm25Vo>) response.getData();

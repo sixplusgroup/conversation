@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface AirQualityCacheService{
 
-    //这个airQualityMap缓存里存储的是cityId和cityUrl的对应关系.
+    //这个airQualityMap缓存里存储的是cityId和CityAirQuality实体的对应关系.
     @CachePut(value = "airQualityMap", key = "#airQuality.cityId", condition = "#airQuality != null ")
     default CityAirQuality generate(CityAirQuality airQuality){
         return airQuality;

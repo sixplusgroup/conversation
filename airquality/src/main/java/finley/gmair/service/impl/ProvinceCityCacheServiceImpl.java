@@ -13,10 +13,19 @@ import java.util.*;
 
 @Service
 public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService {
+    //存储cityName和cityId的映射,key为cityName
     private Map<String, String> provinceCityMap = new HashMap<>();
+
+    //存储cityId和provinceId的映射,key为cityId
     private Map<String, String> city2provinceMap = new HashMap<>();
+
+    //存储provinceId和provinceName的映射,key为provinceId
     private Map<String, String> provinceId2NameMap = new HashMap<>();
+
+    //存储cityId和cityName的映射,key为cityId
     private Map<String, String> cityId2NameMap = new HashMap<>();
+
+    //存储city集合,集合元素为cityId
     private Set<String> citySet = new HashSet<>();
 
     @Autowired
