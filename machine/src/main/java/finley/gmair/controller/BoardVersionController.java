@@ -120,6 +120,18 @@ public class BoardVersionController {
             return result;
         }
         JSONArray jsonArray = JSONArray.parseArray(bindList);
+
+        //check whether the input data has correct format
+        for( int i = 0; i< jsonArray.size(); i++) {
+            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+            if (StringUtils.isEmpty(jsonObject.getString("codeValue"))
+                    || StringUtils.isEmpty(jsonObject.getString("machineId"))
+                    || StringUtils.isEmpty(jsonObject.getString("version"))) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("please make sure your input are correct");
+                return result;
+            }
+        }
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 
