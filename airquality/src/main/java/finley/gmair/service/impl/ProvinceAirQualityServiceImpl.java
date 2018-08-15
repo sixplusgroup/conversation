@@ -30,10 +30,12 @@ public class ProvinceAirQualityServiceImpl implements ProvinceAirQualityService 
             return result;
         }
 
+        //得到provinceId与pm25的对应关系Map,pm25的值是由该省份的城市的pm25取平均值得到
         Map<String, Double> pm25Map = list.stream().filter(e -> e != null)
                 .map(e -> new ProvinceAirQuality(provinceCityCacheService.fetchProvince(e.getCityId()), e.getAqi(), e.getPm2_5()))
                 .collect(Collectors.groupingBy(ProvinceAirQuality::getProvinceId, Collectors.averagingDouble(ProvinceAirQuality::getPm2_5)));
 
+        //得到provinceId与aqi的对应关系Map,pm25的值是由该省份的城市的pm25取平均值得到
         Map<String, Double> aqiMap = list.stream().map(e -> new ProvinceAirQuality(provinceCityCacheService.
                 fetchProvince(e.getCityId()), e.getAqi(), e.getPm2_5()))
                 .collect(Collectors.groupingBy(ProvinceAirQuality::getProvinceId,

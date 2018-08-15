@@ -110,8 +110,14 @@ public class RankCrawler {
                 .map(e -> new CityUrl(e.getCityId(), AIR_URL + e.getUrl()))
                 .collect(Collectors.toList());
         List<CityAirQuality> airQualityList = map.values().stream().collect(Collectors.toList());
+
+        //把爬取到的空气质量数据存入缓存airQualityMap,key为cityId,并插入city_aqi_full表中
         insertCityAqiDetail(airQualityList);
+
+        //根据城市pm25和aqiIndex计算平均值,统计出city对应province的数据,记录到province_airquality表中
         provinceAirQualityService.generate(airQualityList);
+
+        //把cityId和cityUrl的对应关系replace到city_url表中
         updateCityUrl(cityUrlList);
     }
 
