@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:rabbitmq.properties")
 public class PacketNotifier {
+
+    @Value("${machine_v1_queue_name}")
+    private String machineV1QueueName;
+
     @Value("${queue_name}")
     private String queueName;
 
@@ -18,6 +22,12 @@ public class PacketNotifier {
 
     @Autowired
     AmqpTemplate template;
+
+    public ResultData sendV1(String uid) {
+        ResultData result = new ResultData();
+        this.template.convertAndSend(machineV1QueueName,uid);
+        return result;
+    }
 
     public ResultData send(String uid) {
         ResultData result = new ResultData();

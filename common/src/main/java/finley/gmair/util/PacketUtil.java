@@ -5,8 +5,26 @@ import finley.gmair.model.packet.*;
 import org.apache.commons.codec.binary.StringUtils;
 
 import java.lang.reflect.Field;
+import java.util.Calendar;
 
 public class PacketUtil {
+    public static AbstractPacketV1 transferV1(byte[] source) {
+        byte[] CTF = new byte[]{source[1]};
+        byte[] CID = new byte[]{source[2]};
+        byte[] UID = new byte[]{source[3], source[4], source[5], source[6], source[7], source[8], source[9], source[10], source[11], source[12], source[13], source[14]};
+        byte[] LEN = new byte[]{source[15]};
+        int length = ByteUtil.byte2int(new byte[]{source[15]});
+        if(length <= 0){
+            return null;
+        }
+        byte[] DAT = new byte[length];
+        for (int i = 0; i < length; i++) {
+            DAT[i] = source[15 + i + 1];
+        }
+        byte[] CRC = new byte[]{source[16 + length], source[17 + length]};
+        HeartbeatPacketV1 packetV1 = new HeartbeatPacketV1(CTF,CID,UID,LEN,DAT,CRC);
+        return packetV1;
+    }
     public static AbstractPacketV2 transferV2(byte[] source) {
         byte[] CTF = new byte[]{source[1]};
         byte[] CID = new byte[]{source[2]};
@@ -135,5 +153,26 @@ public class PacketUtil {
         byte[] LEN = new byte[]{0x00};
         HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
         return packet;
+    }
+
+    public static HeartbeatPacketV1 generateHeartbeatPacketV1(HeartbeatPacketV1 packet){
+        packet.setLEN(new byte[]{0x20});
+        packet.setDAT(currentTimeByte());
+        packet.calCRC();
+        return packet;
+    }
+
+    public static byte[] currentTimeByte(){
+        Calendar calendar = Calendar.getInstance();
+        byte[] year = ByteUtil.int2byte(calendar.get(Calendar.YEAR) % 100, 1);
+        byte[] month = ByteUtil.int2byte(calendar.get(Calendar.MONTH) + 1, 1);
+        byte[] date = ByteUtil.int2byte(calendar.get(Calendar.DATE) , 1);
+        byte[] hour = ByteUtil.int2byte(calendar.get(Calendar.HOUR_OF_DAY) , 1);
+        byte[] minute = ByteUtil.int2byte(calendar.get(Calendar.MINUTE) , 1);
+        byte[] second = ByteUtil.int2byte(calendar.get(Calendar.SECOND) , 1);
+        byte[] reserve = new byte[26];
+
+        byte[] result = ByteUtil.concat(year, month, date, hour, minute, second, reserve);
+        return result;
     }
 }

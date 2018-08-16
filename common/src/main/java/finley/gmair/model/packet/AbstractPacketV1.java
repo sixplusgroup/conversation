@@ -63,10 +63,57 @@ public abstract class AbstractPacketV1 {
         this.CRC = CRC;
     }
 
-    public String getUID() {
+    public String getUID(){
         return new String(UID);
     }
 
+    public void setLEN(byte[] LEN) {
+        this.LEN = LEN;
+    }
+
+    public byte[] getFRH() {
+        return FRH;
+    }
+
+    public void setFRH(byte[] FRH) {
+        this.FRH = FRH;
+    }
+
+    public byte[] getCTF() {
+        return CTF;
+    }
+
+    public void setCTF(byte[] CTF) {
+        this.CTF = CTF;
+    }
+
+    public byte[] getCID() {
+        return CID;
+    }
+
+    public void setCID(byte[] CID) {
+        this.CID = CID;
+    }
+
+    public void setUID(byte[] UID) {
+        this.UID = UID;
+    }
+
+    public byte[] getLEN() {
+        return LEN;
+    }
+
+    public byte[] getCRC() {
+        return CRC;
+    }
+
+    public byte[] getFRT() {
+        return FRT;
+    }
+
+    public void setFRT(byte[] FRT) {
+        this.FRT = FRT;
+    }
 }
 
 

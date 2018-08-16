@@ -55,4 +55,12 @@ public class ByteUtil {
         ByteBuffer bb = ByteBuffer.wrap(source);
         return bb.getLong();
     }
+
+    public static String byte2Hex(byte[] input) {
+        StringBuffer sb = new StringBuffer();
+        for (byte b : input) {
+            sb.append(String.format("%02x", b).toUpperCase());
+        }
+        return sb.toString();
+    }
 }

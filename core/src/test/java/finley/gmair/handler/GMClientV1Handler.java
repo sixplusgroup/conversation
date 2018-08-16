@@ -3,6 +3,7 @@ package finley.gmair.handler;
 import finley.gmair.model.packet.HeartbeatPacketV1;
 import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.util.ByteUtil;
+import finley.gmair.util.CRC16;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -136,39 +137,19 @@ public class GMClientV1Handler implements Runnable{
     private void doWrite(SocketChannel sc) throws IOException {
         int flag = 1;
 
-        //测试machine_status时,flag=0
-        byte[] CTF = new byte[]{0x03};
-
+        byte[] CTF = new byte[]{0x02};
         byte[] CID = new byte[]{0x00};
-
         byte[] UID = ByteUtil.string2byte("zxczxc", 12);
+        //byte[] UID = new byte[]{-0x15,-0x34,0x11,0x11,0x11,0x22,0x00,0x00,0x22,0x00,0x00,0x07};
+        byte[] LEN = new byte[]{0x20};
+        byte[] DATA = new byte[]{0x00,0x02,0x33,0x22,0x01,0x11,0x11,0x11,0x00,0x11,0x01,0x01,0x01,0x01};
+        byte[] reserve = new byte[]{0x68,0x01,0x03,0x11,0x22,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
-        byte[] LEN = new byte[]{0x0D};
+        int check = CRC16.CRCCheck(ByteUtil.concat(CTF, CID, UID, LEN, DATA, reserve));
+        byte[] CRC = ByteUtil.int2byte(check, 2);
 
-        byte[] data = new byte[]{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
-
-        //测试0x0E(partial_pm2_5,滤网pm2.5)时,flag=1
-        if(flag==1){
-            CID = new byte[]{0x0E};
-            LEN = new byte[]{0x01};
-            data = new byte[]{0x01};
-        }
-        //测试0x0F(screen,警示灯)时,flag=2
-        else if(flag==2){
-            CID = new byte[]{0x0F};
-            LEN = new byte[]{0x01};
-            data = new byte[]{0x01};
-        }
-
-//        try {
-//            Thread.sleep(5 * 1000);
-//        } catch (InterruptedException e) {
-//
-//        }
         while(true) {
-            long time = System.currentTimeMillis();
-            byte[] TIM = ByteUtil.long2byte(time, 8);
-            HeartbeatPacketV1 packet = new HeartbeatPacketV1(CTF, CID, UID, LEN, data);
+            HeartbeatPacketV1 packet = new HeartbeatPacketV1(CTF, CID, UID, LEN, ByteUtil.concat(DATA, reserve), CRC);
             byte[] req = packet.convert2bytearray();
 
             ByteBuffer writeBuffer = ByteBuffer.allocate(req.length);

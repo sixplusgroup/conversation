@@ -2,18 +2,18 @@ package finley.gmair.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.annotation.AQIData;
 import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachineStatus;
-import finley.gmair.model.packet.AbstractPacketV2;
-import finley.gmair.model.packet.HeartBeatPacket;
-import finley.gmair.model.packet.PacketInfo;
-import finley.gmair.model.packet.ProbePacket;
+import finley.gmair.model.machine.MachineV1Status;
+import finley.gmair.model.packet.*;
 import finley.gmair.netty.GMRepository;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.CommunicationService;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ByteUtil;
+import finley.gmair.util.MethodUtil;
 import finley.gmair.util.PacketUtil;
 import finley.gmair.util.TimeUtil;
 import io.netty.buffer.ByteBuf;
@@ -26,8 +26,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Calendar;
 
 @Component
 @ChannelHandler.Sharable
@@ -157,11 +160,74 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
             }));
-        } else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {
-            /* if match 0xFF, then it should be the 1st version packet */
-
-            return;
         }
+
+        else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE)
+        {
+            /* if match 0xEF, then it should be the 1nd version packet */
+            AbstractPacketV1 packet = PacketUtil.transferV1(request);
+            String uid = packet.getUID().trim();
+            //System.out.println(uid + "send packet!");
+            //CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 1nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
+            if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx)
+            {
+                repository.push(uid, ctx);
+            }
+            //System.out.println("current time: "+new Timestamp(System.currentTimeMillis()) + "... packet time:" + new Timestamp(packet.getTime()));
+
+            //the packet is valid, give response to the client and process the packet in a new thread
+            HeartbeatPacketV1 response = PacketUtil.generateHeartbeatPacketV1((HeartbeatPacketV1) packet);
+            ctx.writeAndFlush(response.convert2bytearray());
+//            CorePool.getComExecutor().execute(new Thread(() ->
+//            {
+                if (packet instanceof HeartbeatPacketV1 && packet.isValid())
+                {
+                    //decode packet
+                    byte[] CTF = ((HeartbeatPacketV1) packet).getCTF();
+                    //judge whether the packet is a data packet
+                    if (CTF[0] != (byte) 0x02)
+                        return;
+
+                    //convert packet to MachineV1Status
+                    MachineV1Status machineV1Status = new MachineV1Status();
+                    machineV1Status.setMachineId(uid);
+                    byte[] data = ((HeartbeatPacketV1) packet).getDAT();
+                    Field[] fields = machineV1Status.getClass().getDeclaredFields();
+                    for (Field field : fields) {
+                        if(field.isAnnotationPresent(AQIData.class)){
+                            AQIData aqiData = field.getAnnotation(AQIData.class);
+                            //find value in byte
+                            int start = aqiData.start();
+                            int length = aqiData.length();
+                            //identify field name
+                            String name = aqiData.name();
+                            String type = field.getGenericType().getTypeName();
+                            byte[] valueArray = Arrays.copyOfRange(data, start, start+length);
+                            String setName = MethodUtil.setFieldGetMethod(name);
+                            try {
+                                if(type.equals("int")){
+                                    Method setMethod = machineV1Status.getClass().getDeclaredMethod(setName, int.class);
+                                    int value = ByteUtil.byte2int(valueArray);
+                                    setMethod.invoke(machineV1Status, value);
+                                }else if(type.equals("long")){
+                                    Method setMethod = machineV1Status.getClass().getDeclaredMethod(setName, long.class);
+                                    long value = ByteUtil.byte2long(valueArray);
+                                    setMethod.invoke(machineV1Status, value);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    String time = TimeUtil.getCurrentTime();
+                    machineV1Status.setTime(time);
+
+                    communicationService.create(machineV1Status);
+                }
+//            }));
+        }
+
     }
 
     @Override

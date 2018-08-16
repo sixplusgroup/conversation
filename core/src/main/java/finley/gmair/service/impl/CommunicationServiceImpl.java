@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import finley.gmair.dao.CommunicationDao;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachineStatus;
+import finley.gmair.model.machine.MachineV1Status;
 import finley.gmair.service.CommunicationService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -18,6 +19,20 @@ public class CommunicationServiceImpl implements CommunicationService {
 
     @Autowired
     private PacketNotifier notifier;
+
+    @Override
+    public ResultData create(MachineV1Status status){
+        ResultData result = new ResultData();
+        ResultData response = communicationDao.insertV1(status);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to insert machine status");
+        }
+        notifier.sendV1(status.getMachineId());
+        return result;
+    }
 
     @Override
     public ResultData create(MachineStatus status) {
