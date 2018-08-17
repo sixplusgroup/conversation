@@ -34,7 +34,11 @@ public class MachineReceiver {
         ResultData resultData = machineStatusMongoDao.query(condition);
         if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
             //System.out.println(JSONObject.toJSON(resultData.getData()));
-            machineStatusCacheService.generate((MachineStatus) resultData.getData());
+            try {
+                machineStatusCacheService.generate((MachineStatus) resultData.getData());
+            }catch (Exception e){
+
+            }
         }
     }
 }

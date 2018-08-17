@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.machine.BoardVersionForm;
+import finley.gmair.form.preparation.BatchBindForm;
 import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.model.machine.PreBindCode;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,31 +134,44 @@ public class BoardVersionController {
                 return result;
             }
         }
+
+        List<BatchBindForm> errorList = new ArrayList();
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 
-            //make sure codeValue exist in qrcode table,codeValue has not been binded (in pre_bind table)
-            //and machineId has not been binded (in pre_bind table)
+            //make sure :
+                //1.codeValue exist in qrcode table,
+                //2.codeValue has not been binded (in pre_bind table)
+                //3.machineId has not been binded (in pre_bind table)
             Map<String, Object> condition = new HashMap<>();
             condition.put("codeValue", jsonObject.getString("codeValue"));
             condition.put("blockFlag", false);
             ResultData response = qrCodeService.fetch(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK){
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                errorList.add(new BatchBindForm(jsonObject.getString("machineId"),jsonObject.getString("codeValue"),jsonObject.getIntValue("version")));
                 continue;
+            }
 
             condition.clear();
             condition.put("codeValue", jsonObject.getString("codeValue"));
             condition.put("blockFlag", false);
             response = preBindService.fetch(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL)
+            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL){
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                errorList.add(new BatchBindForm(jsonObject.getString("machineId"),jsonObject.getString("codeValue"),jsonObject.getIntValue("version")));
                 continue;
+            }
 
             condition.clear();
             condition.put("machineId", jsonObject.getString("machineId"));
             condition.put("blockFlag", false);
             response = preBindService.fetch(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL)
+            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL){
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                errorList.add(new BatchBindForm(jsonObject.getString("machineId"),jsonObject.getString("codeValue"),jsonObject.getIntValue("version")));
                 continue;
+            }
 
             //bind machineId with version
             BoardVersionForm boardVersionForm = new BoardVersionForm();
@@ -168,6 +183,7 @@ public class BoardVersionController {
             PreBindCode code = new PreBindCode(jsonObject.getString("machineId"), jsonObject.getString("codeValue"));
             preBindService.create(code);
         }
+        result.setData(errorList);
         return result;
     }
 }

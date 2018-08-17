@@ -33,11 +33,16 @@ public class MachineV1StautsReceiver {
         condition.put("createAtGTE", current - 30 * 1000);
         ResultData resultData = machineStatusMongoDao.queryMachineV1Status(condition);
         if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            MachineV1Status mv1s = (MachineV1Status)resultData.getData();
-            MachineStatus machineStatus = new MachineStatus(
-                    mv1s.getMachineId(),mv1s.getPm25(), mv1s.getTemperature(),mv1s.getHumidity(),mv1s.getCo2(),
-                    mv1s.getVelocity(),mv1s.getPower(),mv1s.getWorkMode(), mv1s.getLight(),mv1s.getHeat());
-            machineV1StatusCacheService.generate(machineStatus);
+            try {
+                MachineV1Status mv1s = (MachineV1Status) resultData.getData();
+                MachineStatus machineStatus = new MachineStatus(
+                        mv1s.getMachineId(), mv1s.getPm25(), mv1s.getTemperature(), mv1s.getHumidity(), mv1s.getCo2(),
+                        mv1s.getVelocity(), mv1s.getPower(), mv1s.getWorkMode(), mv1s.getLight(), mv1s.getHeat());
+                machineV1StatusCacheService.generate(machineStatus);
+            }
+            catch (Exception e){
+
+            }
         }
     }
 }

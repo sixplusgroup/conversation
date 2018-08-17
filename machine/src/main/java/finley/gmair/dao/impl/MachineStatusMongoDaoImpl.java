@@ -56,7 +56,7 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
     @Override
     public ResultData queryHourlyPm25() {
 
-        //fetch last hour's machine_status list from mongodb
+        //fetch last hour's v2 machine_status list from mongodb
         ResultData result = new ResultData();
         long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
         long currentHour = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
@@ -71,7 +71,6 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
             result.setDescription(e.getMessage());
             return result;
         }
-
 
         //group by uid and compute the average pm2.5
         List<MachinePm2_5> resultList = new ArrayList<>();
@@ -93,6 +92,37 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
             machinePm2_5.setPm2_5(sumPm2_5 / list.size());
             resultList.add(machinePm2_5);
         }
+
+        //fetch last hour's v1 machine_status list from mongodb
+        List<MachineV1Status> machineV1StatusList = new ArrayList<>();
+        try {
+            machineV1StatusList = mongoTemplate.find(query, MachineV1Status.class);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            return result;
+        }
+
+        //group by uid and compute the average pm2.5
+        Map<String, List<MachineV1Status>> groupByMachineId =
+                machineV1StatusList.stream().collect(Collectors.groupingBy(MachineV1Status::getMachineId));
+        Iterator iter2 = groupByMachineId.entrySet().iterator();
+        while (iter2.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter2.next();
+            String uid = (String) entry.getKey();
+            List<MachineV1Status> list = (List<MachineV1Status>) entry.getValue();
+            if (list.isEmpty())
+                continue;
+            double sumPm2_5 = 0.0;
+            for (MachineV1Status machineStatus : list) {
+                sumPm2_5 += machineStatus.getPm25();
+            }
+            MachinePm2_5 machinePm2_5 = new MachinePm2_5();
+            machinePm2_5.setUid(uid);
+            machinePm2_5.setPm2_5(sumPm2_5 / list.size());
+            resultList.add(machinePm2_5);
+        }
+
         result.setData(resultList);
         return result;
     }

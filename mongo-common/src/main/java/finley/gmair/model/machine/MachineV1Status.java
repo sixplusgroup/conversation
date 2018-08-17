@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-@Document(collection = "machine_status")
+@Document(collection = "machine_v1_status")
 public class MachineV1Status extends Entity {
     private String machineId;
     @AQIData(start=0x00,length=2,name=Constant.PM25)
