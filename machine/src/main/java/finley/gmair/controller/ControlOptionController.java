@@ -1,16 +1,11 @@
 package finley.gmair.controller;
 
-import com.netflix.discovery.converters.Auto;
 import finley.gmair.form.machine.ControlOptionForm;
-import finley.gmair.model.machine.ControlOption;
-import finley.gmair.model.machine.ControlOptionAction;
-import finley.gmair.model.machine.PreBindCode;
-import finley.gmair.model.machine.QRCode;
+import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.ControlOptionActionVo;
-import finley.gmair.vo.machine.ControlOptionVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -39,6 +34,9 @@ public class ControlOptionController {
 
     @Autowired
     private QRCodeService qrCodeService;
+
+    @Autowired
+    private BoardVersionService boardVersionService;
 
     //先查control_option表,如果对应的操作不存在,则创建.
     //如果存在,取出controlId,并根据传入的值新建control_option_action配置.
@@ -179,15 +177,31 @@ public class ControlOptionController {
         }
         int commandValue = ((List<ControlOptionActionVo>) response.getData()).get(0).getCommandValue();
 
+        //根据machineId查board_version表,获取version
+        condition.clear();
+        condition.put("machineId",machineId);
+        condition.put("blockFlag",false);
+        response = boardVersionService.fetchBoardVersion(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find board version by machineId");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find borad version by machineId");
+            return result;
+        }
+        int version = ((List<BoardVersion>)response.getData()).get(0).getVersion();
+
         //according the value to control the machine
         if (component.equals("power"))
-            response = coreService.configPower(machineId, commandValue);
+            response = coreService.configPower(machineId, commandValue, version);
         else if (component.equals("lock"))
             response = coreService.configLock(machineId, commandValue);
         else if (component.equals("heat"))
-            response = coreService.configHeat(machineId, commandValue);
+            response = coreService.configHeat(machineId, commandValue, version);
         else if (component.equals("mode"))
-            response = coreService.configMode(machineId, commandValue);
+            response = coreService.configMode(machineId, commandValue, version);
         else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("no such component");
@@ -233,7 +247,24 @@ public class ControlOptionController {
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
-        return coreService.configSpeed(machineId,speed);
+
+        //根据machineId查board_version表,获取version
+        condition.clear();
+        condition.put("machineId",machineId);
+        condition.put("blockFlag",false);
+        response = boardVersionService.fetchBoardVersion(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find board version by machineId");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find borad version by machineId");
+            return result;
+        }
+        int version = ((List<BoardVersion>)response.getData()).get(0).getVersion();
+
+        return coreService.configSpeed(machineId,speed,version);
 
     }
 
@@ -264,7 +295,23 @@ public class ControlOptionController {
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
-        return coreService.configLight(machineId,light);
+
+        //根据machineId查board_version表,获取version
+        condition.clear();
+        condition.put("machineId",machineId);
+        condition.put("blockFlag",false);
+        response = boardVersionService.fetchBoardVersion(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find board version by machineId");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find borad version by machineId");
+            return result;
+        }
+        int version = ((List<BoardVersion>)response.getData()).get(0).getVersion();
+        return coreService.configLight(machineId,light,version);
 
     }
 

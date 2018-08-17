@@ -16,7 +16,8 @@ public interface CoreService {
 
     @PostMapping("/core/com/config/power")
     ResultData configPower(@RequestParam("uid") String uid,
-                           @RequestParam("power") int power);
+                           @RequestParam("power") int power,
+                           @RequestParam("version") int version);
 
     @PostMapping("/core/com/config/lock")
     ResultData configLock(@RequestParam("uid") String uid,
@@ -24,19 +25,23 @@ public interface CoreService {
 
     @PostMapping("/core/com/config/light")
     ResultData configLight(@RequestParam("uid") String uid,
-                           @RequestParam("light") int light);
+                           @RequestParam("light") int light,
+                           @RequestParam("version") int version);
 
     @PostMapping("/core/com/config/heat")
     ResultData configHeat(@RequestParam("uid") String uid,
-                          @RequestParam("heat") int heat);
+                          @RequestParam("heat") int heat,
+                          @RequestParam("version") int version);
 
     @PostMapping("/core/com/config/mode")
     ResultData configMode(@RequestParam("uid") String uid,
-                          @RequestParam("mode") int mode);
+                          @RequestParam("mode") int mode,
+                          @RequestParam("version") int version);
 
     @PostMapping("/core/com/config/speed")
     ResultData configSpeed(@RequestParam("uid") String uid,
-                           @RequestParam("speed") int speed);
+                           @RequestParam("speed") int speed,
+                           @RequestParam("version") int version);
 
     @GetMapping("/core/com/probe/partial/pm25")
     ResultData probePartialPm25(@RequestParam("uid") String uid);

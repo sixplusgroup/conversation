@@ -2,15 +2,10 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import finley.gmair.model.packet.AbstractPacketV2;
-import finley.gmair.model.packet.Action;
-import finley.gmair.model.packet.HeartBeatPacket;
-import finley.gmair.model.packet.PacketConstant;
+import finley.gmair.model.machine.MachineV1Status;
+import finley.gmair.model.packet.*;
 import finley.gmair.netty.GMRepository;
-import finley.gmair.util.ByteUtil;
-import finley.gmair.util.PacketUtil;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
+import finley.gmair.util.*;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -194,8 +189,9 @@ public class CommunicationController {
         return result;
     }
 
+    //配置电源(v1,v2)
     @PostMapping("/com/config/power")
-    public ResultData configPower(String uid, int power) {
+    public ResultData configPower(String uid, int power, int version) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
         if (StringUtils.isEmpty(ctx)) {
@@ -203,9 +199,16 @@ public class CommunicationController {
             result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
             return result;
         }
-        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.POWER_MODE, power, uid);
-        ctx.writeAndFlush(packet.convert2bytearray());
-        result.setDescription(new StringBuffer("Succeed to send a probe packet(config power mode: ").append(power).append(") to the target uid: ").append(uid).toString());
+
+        if(version==1){
+            AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.POWER, power, uid, MachineV1Status.class);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }
+        else if(version==2) {
+            AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.POWER_MODE, power, uid);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }
+        result.setDescription(new StringBuffer("Succeed to send a config packet(config power mode: ").append(power).append(") to the target uid: ").append(uid).toString());
         return result;
     }
 
@@ -224,9 +227,9 @@ public class CommunicationController {
         return result;
     }
 
-    //配置主板工作模式
+    //配置主板工作模式(v1,v2)
     @PostMapping("/com/config/mode")
-    public ResultData configMode(String uid, int mode) {
+    public ResultData configMode(String uid, int mode, int version) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
         if (StringUtils.isEmpty(ctx)) {
@@ -234,13 +237,19 @@ public class CommunicationController {
             result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
             return result;
         }
-        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.WORK_MODE, mode, uid);
-        ctx.writeAndFlush(packet.convert2bytearray());
+
+        if(version==1){
+            AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.WORKMODE, mode, uid, MachineV1Status.class);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }
+        else if(version==2) {
+            AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.WORK_MODE, mode, uid);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }
         result.setDescription(new StringBuffer("Succeed to send a probe packet(config work mode: ").append(mode).append(") to the target uid: ").append(uid).toString());
         return result;
     }
 
-    //查询工作模式
     @GetMapping("/com/probe/mode")
     public ResultData probeMode(String uid) {
         ResultData result = new ResultData();
@@ -256,9 +265,9 @@ public class CommunicationController {
         return result;
     }
 
-    //风量
+    //配置风量(v1,v2)
     @PostMapping("/com/config/speed")
-    public ResultData configSpeed(String uid, int speed) {
+    public ResultData configSpeed(String uid, int speed, int version) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
         if (StringUtils.isEmpty(ctx)) {
@@ -266,8 +275,13 @@ public class CommunicationController {
             result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
             return result;
         }
-        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.FAN_SPEED, speed, uid);
-        ctx.writeAndFlush(packet.convert2bytearray());
+        if(version==1){
+            AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.VELOCITY, speed, uid, MachineV1Status.class);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }else if(version==2) {
+            AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.FAN_SPEED, speed, uid);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }
         result.setDescription(new StringBuffer("Succeed to send a probe packet(config fan speed: ").append(speed).append(") to the target uid: ").append(uid).toString());
         return result;
     }
@@ -318,8 +332,9 @@ public class CommunicationController {
         return result;
     }
 
+    //配置辅热
     @PostMapping("/com/config/heat")
-    public ResultData configHeat(String uid, int heat) {
+    public ResultData configHeat(String uid, int heat,int version) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
         if (StringUtils.isEmpty(ctx)) {
@@ -327,8 +342,13 @@ public class CommunicationController {
             result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
             return result;
         }
-        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.HEAT_MODE, heat, uid);
-        ctx.writeAndFlush(packet.convert2bytearray());
+        if(version==1){
+            AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.HEAT, heat, uid, MachineV1Status.class);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }else if(version==2) {
+            AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.HEAT_MODE, heat, uid);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }
         result.setDescription(new StringBuffer("Succeed to send a probe packet(config sterilise mode: ").append(heat).append(") to the target uid: ").append(uid).toString());
         return result;
     }
@@ -379,9 +399,9 @@ public class CommunicationController {
         return result;
     }
 
-    //屏显
+    //配置屏显亮度
     @PostMapping("/com/config/light")
-    public ResultData configLight(String uid, int light) {
+    public ResultData configLight(String uid, int light,int version) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
         if (StringUtils.isEmpty(ctx)) {
@@ -389,8 +409,13 @@ public class CommunicationController {
             result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
             return result;
         }
-        AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.LIGHT, light, uid);
-        ctx.writeAndFlush(packet.convert2bytearray());
+        if(version==1){
+            AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.LIGHT, light, uid, MachineV1Status.class);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }else if(version == 2) {
+            AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.LIGHT, light, uid);
+            ctx.writeAndFlush(packet.convert2bytearray());
+        }
         result.setDescription(new StringBuffer("Succeed to send a probe packet(config light mode: ").append(light).append(") to the target uid: ").append(uid).toString());
         return result;
     }

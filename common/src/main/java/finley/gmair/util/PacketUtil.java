@@ -1,5 +1,6 @@
 package finley.gmair.util;
 
+import finley.gmair.annotation.Command;
 import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.packet.*;
 import org.apache.commons.codec.binary.StringUtils;
@@ -25,6 +26,46 @@ public class PacketUtil {
         HeartbeatPacketV1 packetV1 = new HeartbeatPacketV1(CTF,CID,UID,LEN,DAT,CRC);
         return packetV1;
     }
+
+    public static <T> AbstractPacketV1 generateV1DetailProbe(Action action, String command, T input, String uid, Class clazz){
+        AbstractPacketV1 packet = null;
+        Field[] fields = clazz.getDeclaredFields();
+
+        byte[] CTF = new byte[]{action.getSignal()};
+        byte[] CID, UID, TIM, LEN;
+        byte[] data = null;
+
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(Command.class)) {
+                Command anno = field.getAnnotation(Command.class);
+                String name = anno.name();
+                if (! name.equals(command)) {
+                    continue;
+                }
+                int length = anno.length();
+                int cid = anno.id();
+
+                if (input instanceof Integer) {
+                    data = ByteUtil.int2byte((Integer)input, length);
+                }else if (input instanceof Long) {
+                    data = ByteUtil.long2byte((Long)input, length);
+                }else if (input instanceof String) {
+                    data = ByteUtil.string2byte((String) input, length);
+                }
+                CID = ByteUtil.int2byte(cid, 1);
+                UID = ByteUtil.string2byte(uid, 12);
+                LEN = ByteUtil.int2byte(length, 1);
+
+                byte[] combine = ByteUtil.concat(CTF, CID, UID, LEN, data);
+                int crcValue = CRC16.CRCCheck(combine);
+                byte[] CRC = ByteUtil.int2byte(crcValue, 2);
+                packet = new HeartbeatPacketV1(CTF, CID, UID, LEN, data, CRC);
+            }
+        }
+        return packet;
+    }
+
+
     public static AbstractPacketV2 transferV2(byte[] source) {
         byte[] CTF = new byte[]{source[1]};
         byte[] CID = new byte[]{source[2]};
