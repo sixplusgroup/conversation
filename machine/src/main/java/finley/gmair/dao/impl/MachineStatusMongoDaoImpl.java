@@ -4,6 +4,7 @@ import finley.gmair.dao.MachineStatusMongoDao;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachinePm2_5;
 import finley.gmair.model.machine.MachineStatus;
+import finley.gmair.model.machine.MachineV1Status;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,4 +159,26 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         result.setData(resultList);
         return result;
     }
+
+    public ResultData queryMachineV1Status(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        Query query = new Query();
+        if (condition.get("machineId") != null) {
+            query.addCriteria(Criteria.where("machineId").is(condition.get("machineId")));
+        }
+        if (condition.get("createAtGTE") != null) {
+            query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")));
+            query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "createAt")));
+        }
+
+        try {
+            MachineV1Status machineV1Status = mongoTemplate.findOne(query, MachineV1Status.class);
+            result.setData(machineV1Status);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 }

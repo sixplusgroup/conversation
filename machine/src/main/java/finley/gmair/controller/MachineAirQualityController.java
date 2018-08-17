@@ -3,10 +3,9 @@ package finley.gmair.controller;
 
 import finley.gmair.form.air.MachineAirQualityForm;
 import finley.gmair.model.air.MachineAirQuality;
+import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.machine.MachineStatus;
-import finley.gmair.service.MachineAirQualityService;
-import finley.gmair.service.MachineQrcodeBindService;
-import finley.gmair.service.MachineStatusCacheService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
@@ -32,6 +31,12 @@ public class MachineAirQualityController {
 
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
+
+    @Autowired
+    private MachineV1StatusCacheService machineV1StatusCacheService;
+
+    @Autowired
+    private BoardVersionService boardVersionService;
 
     @RequestMapping(value = "/qirquality/create", method = RequestMethod.POST)
     private ResultData createMachineAirQuality(MachineAirQualityForm form) {
@@ -64,21 +69,15 @@ public class MachineAirQualityController {
         return result;
     }
 
-    //写入缓存
+    //写入V2缓存-测试用的接口
     @RequestMapping (value = "/machinestatus/create", method = RequestMethod.POST)
-    public MachineStatus createMachineStatus(MachineStatus machineStatus) {
+    public MachineStatus createMachineV1Status(MachineStatus machineStatus) {
         return machineStatusCacheService.generate(machineStatus);
     }
 
-    //从缓存中读取
-    @RequestMapping (value = "/machinestatus/{uid}", method = RequestMethod.GET)
-    public MachineStatus MachineStatus(@PathVariable("uid") String uid) {
-        MachineStatus result = machineStatusCacheService.fetch(uid);
-        return result;
-    }
-    //与上面这个从缓存中读取接口功能相同,但返回值改成ResultData方便通过Feign调用
+    //从缓存中获取v2的machineStatus
     @RequestMapping (value = "/status/{uid}",method = RequestMethod.GET)
-    public ResultData machineStatus(@PathVariable("uid") String uid) {
+    public ResultData machineV2Status(@PathVariable("uid") String uid) {
         ResultData result = new ResultData();
         MachineStatus machineStatus = machineStatusCacheService.fetch(uid);
         if(machineStatus==null){
@@ -92,7 +91,23 @@ public class MachineAirQualityController {
         return result;
     }
 
-    //根据qrcode获取machineStatus
+    //才能够缓存中获取v1的machineStatus
+    @RequestMapping (value = "/v1/status", method = RequestMethod.GET)
+    public ResultData machineV1Status(String uid){
+        ResultData result = new ResultData();
+        finley.gmair.model.machine.v1.MachineStatus machineStatus = machineV1StatusCacheService.fetch(uid);
+        if(machineStatus==null){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find machine v1 status in cache");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(machineStatus);
+        result.setDescription("success to find machine v1 status in cache");
+        return result;
+    }
+
+    //根据qrcode解析machineId,version,进而通过缓存获取machineStatus
     @RequestMapping (value ="/status/byqrcode",method = RequestMethod.GET)
     public ResultData getMachineStatusByQRcode(String qrcode){
         ResultData result = new ResultData();
@@ -114,6 +129,27 @@ public class MachineAirQualityController {
             result.setDescription("success to find the machineId by qrcode.");
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
-        return machineStatus(machineId);
+        condition.clear();
+        condition.put("machineId",machineId);
+        condition.put("blockFlag",false);
+        response = boardVersionService.fetchBoardVersion(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find board version by machineId");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find borad version by machineId");
+            return result;
+        }
+        int version = ((List<BoardVersion>)response.getData()).get(0).getVersion();
+        switch (version){
+            case 1: return machineV1Status(machineId);
+            case 2: return machineV2Status(machineId);
+            default:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("this board version wrong");
+                return result;
+        }
     }
 }
