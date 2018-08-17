@@ -69,12 +69,6 @@ public class MachineAirQualityController {
         return result;
     }
 
-    //写入V2缓存-测试用的接口
-    @RequestMapping (value = "/machinestatus/create", method = RequestMethod.POST)
-    public MachineStatus createMachineV1Status(MachineStatus machineStatus) {
-        return machineStatusCacheService.generate(machineStatus);
-    }
-
     //从缓存中获取v2的machineStatus
     @RequestMapping (value = "/status/{uid}",method = RequestMethod.GET)
     public ResultData machineV2Status(@PathVariable("uid") String uid) {
