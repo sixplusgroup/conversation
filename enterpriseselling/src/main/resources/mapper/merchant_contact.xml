@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.enterprise_selling.merchant_contact">
+    <resultMap id="merchantContact" type="finley.gmair.model.enterpriseselling.MerchantContact">
+        <result property="contactId" column="contact_id"></result>
+        <result property="merchantId" column="merchant_id"></result>
+        <result property="contactName" column="contact_name"></result>
+        <result property="contactPhone" column="contact_phone"></result>
+        <result property="preferred" column="preferred"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.enterpriseselling.MerchantContact" useGeneratedKeys="false">
+        INSERT INTO gmair_enterprise.merchant_contact(contact_id,merchant_id, contact_name, contact_phone, preferred, block_flag, create_time)
+        VALUES(#{contactId}, #{merchantId}, #{contactName}, #{contactPhone}, #{preferred}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="merchantContact">
+        SELECT contact_id,merchant_id,contact_name,contact_phone,preferred,block_flag,create_time
+        FROM gmair_enterprise.merchant_contact
+        WHERE 1 = 1
+        <if test="contactId != null">
+            AND contact_id = #{contactId}
+        </if>
+        <if test="merchantId != null">
+            AND merchant_id = #{merchantId}
+        </if>
+        <if test="contactName != null">
+            AND contact_name = #{contactName}
+        </if>
+        <if test="contactPhone != null">
+            AND contact_phone = #{contactPhone}
+        </if>
+        <if test="preferred != null">
+            AND preferred = #{preferred}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_enterprise.merchant_profile
+        <set>
+            <if test="contactId != null">
+                contact_id = #{contactId},
+            </if>
+            <if test="merchantId != null">
+                merchant_id = #{merchantId},
+            </if>
+            <if test="contactName != null">
+                contact_name = #{contactName},
+            </if>
+            <if test="contactPhone != null">
+                contact_phone = #{contactPhone},
+            </if>
+            <if test="preferred != null">
+                preferred = #{preferred},
+            </if>
+        contact_id = #{contactId}
+        </set>
+        WHERE contact_id = #{contactId}
+    </update>
+</mapper>
