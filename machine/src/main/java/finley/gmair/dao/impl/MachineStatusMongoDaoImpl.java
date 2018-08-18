@@ -72,25 +72,27 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
             return result;
         }
 
-        //group by uid and compute the average pm2.5
         List<MachinePm2_5> resultList = new ArrayList<>();
-        Map<String, List<MachineStatus>> groupByUid =
-                machineStatusList.stream().collect(Collectors.groupingBy(MachineStatus::getUid));
-        Iterator iter = groupByUid.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String uid = (String) entry.getKey();
-            List<MachineStatus> list = (List<MachineStatus>) entry.getValue();
-            if (list.isEmpty())
-                continue;
-            double sumPm2_5 = 0.0;
-            for (MachineStatus machineStatus : list) {
-                sumPm2_5 += machineStatus.getPm2_5();
+        if(!machineStatusList.isEmpty()) {
+            //group by uid and compute the average pm2.5
+            Map<String, List<MachineStatus>> groupByUid =
+                    machineStatusList.stream().collect(Collectors.groupingBy(MachineStatus::getUid));
+            Iterator iter = groupByUid.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                String uid = (String) entry.getKey();
+                List<MachineStatus> list = (List<MachineStatus>) entry.getValue();
+                if (list.isEmpty())
+                    continue;
+                double sumPm2_5 = 0.0;
+                for (MachineStatus machineStatus : list) {
+                    sumPm2_5 += machineStatus.getPm2_5();
+                }
+                MachinePm2_5 machinePm2_5 = new MachinePm2_5();
+                machinePm2_5.setUid(uid);
+                machinePm2_5.setPm2_5(sumPm2_5 / list.size());
+                resultList.add(machinePm2_5);
             }
-            MachinePm2_5 machinePm2_5 = new MachinePm2_5();
-            machinePm2_5.setUid(uid);
-            machinePm2_5.setPm2_5(sumPm2_5 / list.size());
-            resultList.add(machinePm2_5);
         }
 
         //fetch last hour's v1 machine_status list from mongodb
@@ -104,26 +106,35 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         }
 
         //group by uid and compute the average pm2.5
-        Map<String, List<MachineV1Status>> groupByMachineId =
-                machineV1StatusList.stream().collect(Collectors.groupingBy(MachineV1Status::getMachineId));
-        Iterator iter2 = groupByMachineId.entrySet().iterator();
-        while (iter2.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter2.next();
-            String uid = (String) entry.getKey();
-            List<MachineV1Status> list = (List<MachineV1Status>) entry.getValue();
-            if (list.isEmpty())
-                continue;
-            double sumPm2_5 = 0.0;
-            for (MachineV1Status machineStatus : list) {
-                sumPm2_5 += machineStatus.getPm25();
+        if(!machineV1StatusList.isEmpty()) {
+            Map<String, List<MachineV1Status>> groupByMachineId =
+                    machineV1StatusList.stream().collect(Collectors.groupingBy(MachineV1Status::getMachineId));
+            Iterator iter2 = groupByMachineId.entrySet().iterator();
+            while (iter2.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter2.next();
+                String uid = (String) entry.getKey();
+                List<MachineV1Status> list = (List<MachineV1Status>) entry.getValue();
+                if (list.isEmpty())
+                    continue;
+                double sumPm2_5 = 0.0;
+                for (MachineV1Status machineStatus : list) {
+                    sumPm2_5 += machineStatus.getPm25();
+                }
+                MachinePm2_5 machinePm2_5 = new MachinePm2_5();
+                machinePm2_5.setUid(uid);
+                machinePm2_5.setPm2_5(sumPm2_5 / list.size());
+                resultList.add(machinePm2_5);
             }
-            MachinePm2_5 machinePm2_5 = new MachinePm2_5();
-            machinePm2_5.setUid(uid);
-            machinePm2_5.setPm2_5(sumPm2_5 / list.size());
-            resultList.add(machinePm2_5);
         }
 
+        if(resultList.isEmpty()){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("we can not collect any data in mongo to compute at this time");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(resultList);
+        result.setDescription("success to collect and compute the average pm2.5");
         return result;
     }
 
