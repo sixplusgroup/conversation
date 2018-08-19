@@ -24,4 +24,6 @@ public interface LocationService {
     @GetMapping("/location/probe/provinceId")
     ResultData probeProvinceIdByCityId(@RequestParam("cityId") String cityId);
 
+    @GetMapping("/location/probe/code/city")
+    ResultData probeCityId(@RequestParam("code") String code);
 }

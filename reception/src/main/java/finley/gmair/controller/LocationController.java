@@ -60,4 +60,9 @@ public class LocationController {
     public ResultData probeProvinceIdByCityId(String cityId) {
         return locationService.probeProvinceIdByCityId(cityId);
     }
+
+    @GetMapping("/probe/cityId")
+    public ResultData probeCityId(String code) {
+        return locationService.probeCityId(code);
+    }
 }
