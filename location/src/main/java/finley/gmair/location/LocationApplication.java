@@ -2,11 +2,13 @@ package finley.gmair.location;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.district.City;
 import finley.gmair.service.LocationService;
 import finley.gmair.util.HttpDeal;
 import finley.gmair.util.LocationProperties;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.location.DistrictCityVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -207,29 +210,52 @@ public class LocationApplication {
 
 
     @GetMapping("/probe/provinceId")
-    public ResultData probeProvinceIdByCityId(String cityId){
+    public ResultData probeProvinceIdByCityId(String cityId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(cityId)){
-           result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-           result.setDescription("please provide cityId");
-           return result;
+        if (StringUtils.isEmpty(cityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide cityId");
+            return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("cityId",cityId);
-        condition.put("blockFlag",false);
+        condition.put("cityId", cityId);
+        condition.put("blockFlag", false);
         ResultData response = locationService.fetchProvinceIdByCityId(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription(new StringBuffer("No provinceId found by city id: ").append(cityId).toString());
             return result;
-        }
-        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find provinceId by cityId");
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
+        return result;
+    }
+
+    @GetMapping("/probe/code/city")
+    public ResultData tellCityId(String code) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("cityId", code);
+        condition.put("blockFlag", false);
+        ResultData response = locationService.fetchCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            condition.clear();
+            condition.put("districtId", code);
+            response = locationService.fetchDistrictWithCity(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                DistrictCityVo vo = ((List<DistrictCityVo>) response.getData()).get(0);
+                result.setData(vo.getCityId());
+                return result;
+            }
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            City city = ((List<City>) response.getData()).get(0);
+            result.setData(city.getCityId());
+        }
         return result;
     }
 }

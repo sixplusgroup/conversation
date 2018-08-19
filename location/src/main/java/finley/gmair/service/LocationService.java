@@ -23,5 +23,7 @@ public interface LocationService {
 
     ResultData fetchProvinceIdByCityId(Map<String, Object> condition);
 
+    ResultData fetchDistrictWithCity(Map<String, Object> condition);
+
     void process(JSONObject response);
 }

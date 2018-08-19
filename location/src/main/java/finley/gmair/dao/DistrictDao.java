@@ -11,4 +11,6 @@ public interface DistrictDao {
     ResultData queryDistrict(Map<String, Object> condition);
 
     ResultData updateDistrict(District district);
+
+    ResultData queryDistrictCityVo(Map<String, Object> condition);
 }

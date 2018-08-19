@@ -8,6 +8,12 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="districtCityVo" type="finley.gmair.vo.location.DistrictCityVo">
+        <result property="districtId" column="district_id"></result>
+        <result property="cityId" column="city_id"></result>
+        <result property="districtName" column="district_name"></result>
+    </resultMap>
+
     <insert id="insert" parameterType="java.util.Map" useGeneratedKeys="false">
         INSERT INTO gmair_location.district_list (district_id, city_id, district_name, block_flag, create_time)
         VALUES
@@ -29,6 +35,15 @@
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <select id="queryCity" parameterType="java.util.Map" resultMap="districtCityVo">
+        SELECT district_id, city_id, district_name
+        FROM gmair_location.district_list
+        WHERE 1 = 1
+        <if test="districtId != null">
+            AND district_id = #{districtId}
         </if>
     </select>
 
