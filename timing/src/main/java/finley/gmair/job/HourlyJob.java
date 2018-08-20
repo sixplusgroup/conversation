@@ -3,6 +3,7 @@ package finley.gmair.job;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.ExpressFeignService;
 import finley.gmair.service.MachineFeignService;
+import finley.gmair.service.MachineModeFeignService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -24,6 +25,9 @@ public class HourlyJob implements Job{
     @Autowired
     private MachineFeignService machineFeignService;
 
+    @Autowired
+    private MachineModeFeignService machineModeFeignService;
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         System.out.println("start schedule hourly..");
@@ -32,5 +36,6 @@ public class HourlyJob implements Job{
         expressFeignService.updateParcelStatus();
         machineFeignService.handleMachineStatusHourly();
         machineFeignService.probePartialPM2_5Hourly();
+        machineModeFeignService.handleHourlyPowerSaving();
     }
 }

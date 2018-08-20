@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("machine-agent")
 public interface MachineService {
-    @GetMapping("/machine/status/last/hour/pm25/list")
-    ResultData fetchLastHourPM25ListByMachineIdList(@RequestParam("machineIdList") String machineIdList);
+    @GetMapping("/machine/status/last/hour/list")
+    ResultData fetchLastHourStatusListByMachineIdList(@RequestParam("machineIdList") String machineIdList);
 }
 

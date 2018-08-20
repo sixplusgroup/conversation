@@ -1,7 +1,6 @@
 package finley.gmair.service.impl;
 
 
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.MachineStatusMongoDao;
 import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.service.MachineStatusCacheService;

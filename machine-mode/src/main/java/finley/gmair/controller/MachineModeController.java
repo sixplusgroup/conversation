@@ -1,21 +1,24 @@
 package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONArray;
-import com.netflix.discovery.converters.Auto;
+import finley.gmair.agent.CoreService;
 import finley.gmair.agent.MachineService;
+
 import finley.gmair.model.mode.MachineMode;
 import finley.gmair.model.mode.ModeType;
 import finley.gmair.service.MachineModeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.machine.MachinePm2_5Vo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +31,9 @@ public class MachineModeController {
 
     @Autowired
     private MachineService machineService;
+
+    @Autowired
+    private CoreService coreService;
 
     @PostMapping("/create/or/update")
     public ResultData createOrUpdateMachineMode(String machineId, int type, boolean modeStatus) {
@@ -109,7 +115,7 @@ public class MachineModeController {
     public ResultData handleHourlyPowerSaving(){
         ResultData result = new ResultData();
 
-        //第一步,从表中选出  开着节能模式的机器,并转换成JSON字符串
+        //第一步,从表中找出开着节能模式的机器,并转换成machineIdList
         Map<String, Object> condition = new HashMap<>();
         condition.put("modeType",ModeType.POWER_SAVING.getValue());
         condition.put("modeStatus",1);
@@ -132,8 +138,8 @@ public class MachineModeController {
         }
         String json = jsonArray.toJSONString();
 
-        //从machine模块获取缓存中的记录
-        response = machineService.fetchLastHourPM25ListByMachineIdList(json);
+        //第二步,凭借machineIdList向 machine模块 获取在线机器的 machine status(存储在缓存中).
+        response = machineService.fetchLastHourStatusListByMachineIdList(json);
         if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             return result;
@@ -141,7 +147,46 @@ public class MachineModeController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
-        List<MachinePm2_5Vo> pm25List = (List<MachinePm2_5Vo>) response.getData();
+        List<Object> statusList =  (List<Object>)response.getData();
+
+        LocalDate today = LocalDate.now();
+        int month = today.getMonthValue();
+        int day = today.getDayOfMonth();
+
+        //第三步,对第一代机器做处理.
+        List<LinkedHashMap<String,Object>> machineV1StatusList = (List<LinkedHashMap<String, Object>>)statusList.get(0);
+        for (LinkedHashMap<String,Object> lhm:machineV1StatusList) {
+            String uid = (String)lhm.get("uid");
+            int pm2_5 = (int)lhm.get("pm2_5");
+            int co2 = (int)lhm.get("co2");
+            if(pm2_5 > 25 || co2 >1000){
+                coreService.configPower(uid,1,1);
+                coreService.configSpeed(uid,60,1);
+                if((month==10&&day>=15)||month>=11||month<=2||(month==3&&day<=15))
+                    coreService.configHeat(uid,2,1);
+            }
+            else if(pm2_5 <= 25 && co2 <= 1000){
+                coreService.configPower(uid,0,1);
+            }
+        }
+
+        //第四步,对第二代机器做处理.
+        List<LinkedHashMap<String,Object>> machineV2StatusList = (List<LinkedHashMap<String, Object>>)statusList.get(1);
+        for (LinkedHashMap<String,Object> lhm:machineV2StatusList) {
+            String uid = (String)lhm.get("uid");
+            int pm2_5 = (int)lhm.get("pm2_5");
+            int co2 = (int)lhm.get("co2");
+            if(pm2_5 > 25 || co2 >1000){
+                coreService.configPower(uid,1,2);
+                coreService.configSpeed(uid,60,2);
+                if((month==10&&day>=15)||month>=11||month<=2||(month==3&&day<=15))
+                    coreService.configHeat(uid,2,2);
+            }
+            else if(pm2_5 <= 25 && co2 <= 1000){
+                coreService.configPower(uid,0,2);
+            }
+        }
+
         return result;
     }
 

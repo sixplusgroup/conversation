@@ -3,7 +3,6 @@ package finley.gmair.controller;
 
 import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.machine.MachinePartialStatus;
-import finley.gmair.model.machine.MachineV1Status;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -26,9 +25,6 @@ public class MachineStatusController {
 
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
-
-    @Autowired
-    private LatestPM2_5Service latestPM2_5Service;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -286,8 +282,8 @@ public class MachineStatusController {
     }
 
     //根据machineId的List获取前一个小时的pm2.5的List
-    @GetMapping("/last/hour/pm25/list")
-    public ResultData fetchLastHourPM25ListByMachineIdList(String machineIdList) {
+    @GetMapping("/last/hour/list")
+    public ResultData fetchLastHourStatusListByMachineIdList(String machineIdList) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(machineIdList)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
