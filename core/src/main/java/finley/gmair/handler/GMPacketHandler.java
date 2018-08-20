@@ -178,8 +178,8 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             //the packet is valid, give response to the client and process the packet in a new thread
             HeartbeatPacketV1 response = PacketUtil.generateHeartbeatPacketV1((HeartbeatPacketV1) packet);
             ctx.writeAndFlush(response.convert2bytearray());
-//            CorePool.getComExecutor().execute(new Thread(() ->
-//            {
+            CorePool.getComExecutor().execute(new Thread(() ->
+            {
                 if (packet instanceof HeartbeatPacketV1 && packet.isValid())
                 {
                     //decode packet
@@ -225,7 +225,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
                     communicationService.create(machineV1Status);
                 }
-//            }));
+            }));
         }
 
     }

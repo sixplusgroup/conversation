@@ -49,9 +49,31 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             result.setDescription("fail to fetch prebind table");
             return result;
         }
+        PreBindCode preBindCode = ((List<PreBindCode>)response.getData()).get(0);
+
+        //check qrcode exist in qrcode_machine_bind table
+        condition.clear();
+        condition.put("codeValue",preBindCode.getCodeValue());
+        condition.put("blockFlag",false);
+        response = machineQrcodeBindDao.select(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("exist qrcode in code-machine-bind table");
+            return result;
+        }
+
+        //check machineId exist in qrcode_machine_bind table
+        condition.clear();
+        condition.put("machineId",preBindCode.getMachineId());
+        condition.put("blockFlag",false);
+        response = machineQrcodeBindDao.select(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("exist machineId in code-machine-bind table");
+            return result;
+        }
 
         //create qrcode-machine bind
-        PreBindCode preBindCode = ((List<PreBindCode>)response.getData()).get(0);
         MachineQrcodeBind machineQrcodeBind = new MachineQrcodeBind();
         machineQrcodeBind.setCodeValue(preBindCode.getCodeValue());
         machineQrcodeBind.setMachineId(preBindCode.getMachineId());

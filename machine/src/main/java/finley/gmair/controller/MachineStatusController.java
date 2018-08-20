@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.LatestPM2_5;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachinePm2_5;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -270,6 +273,47 @@ public class MachineStatusController {
             }
         }
         result.setData(list);
+        return result;
+    }
+
+    //根据machineId的List获取前一个小时的pm2.5的List
+    @GetMapping("/last/hour/pm25/list")
+    public ResultData fetchLastHourPM25ListByMachineIdList(String machineIdList) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(machineIdList)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the machineId list");
+            return result;
+        }
+
+        ResultData response = coreService.onlineList(machineIdList);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+            return result;
+        }
+
+        List<String> idList = (List<String>)response.getData();
+        //fetch hourly pm25
+        List<MachinePm2_5Vo> resultList = new ArrayList<>();
+        Map<String, Object> condition = new HashMap<>();
+        Timestamp currentHour = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60) * (1000 * 60 * 60));
+        Timestamp lastHour = new Timestamp(currentHour.getTime() - 1000 * 60 * 60);
+        condition.put("createTimeGTE", lastHour);
+        condition.put("createTimeLTE", currentHour);
+        condition.put("blockFlag", false);
+        for (String machineId : idList) {
+            condition.put("machineId", machineId);
+            response = machinePm25Service.fetchMachineHourlyPm25(condition);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+                continue;
+            resultList.add(((List<MachinePm2_5Vo>) response.getData()).get(0));
+        }
+        if(resultList.size()==0){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
+        }
+        result.setData(resultList);
         return result;
     }
 }

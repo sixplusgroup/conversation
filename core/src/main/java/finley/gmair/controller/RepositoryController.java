@@ -33,4 +33,9 @@ public class RepositoryController {
     public ResultData isOnline(@PathVariable("machineId") String machineId) {
         return repository.isOnline(machineId);
     }
+
+    @GetMapping("/online/list")
+    public ResultData onlineList(String machineIdList){
+        return repository.onlineList(machineIdList);
+    }
 }

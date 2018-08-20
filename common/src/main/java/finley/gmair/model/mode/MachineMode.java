@@ -21,6 +21,14 @@ public class MachineMode extends Entity {
         this.modeStatus = modeStatus;
     }
 
+    public MachineMode(String modeId, String machineId, ModeType modeType, String modeName, boolean modeStatus) {
+        this.modeId = modeId;
+        this.machineId = machineId;
+        this.modeType = modeType;
+        this.modeName = modeName;
+        this.modeStatus = modeStatus;
+    }
+
     public String getModeId() {
         return modeId;
     }

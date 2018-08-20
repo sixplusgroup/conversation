@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="gmair.machine.pm2_5_boundary">
+<mapper namespace="gmair.machine_mode">
     <resultMap id="machineMode" type="finley.gmair.model.mode.MachineMode">
         <result property="modeId" column="mode_id"></result>
         <result property="machineId" column="machine_id"></result>
-        <result property="modeType" column="mode_type"></result>
-        <result property="modeName" column="mode_name"></result>
-        <result property="modeStatus" column="mode_status"
+        <result property="modeType" column="mode_type"
                 typeHandler="finley.gmair.mybatis.handler.ModeTypeHandler"></result>
+        <result property="modeName" column="mode_name"></result>
+        <result property="modeStatus" column="mode_status"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.mode.MachineMode" useGeneratedKeys="false">
-        INSERT INTO gmair_mode.machine_mode(mode_id, machine_id, mode_type, mode_name, mode_status, create_time, block_flag)
-        VALUES(#{modeId}, #{machineId}, #{modeType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{modeName}, #{modeStatus}, #{createAt}, #{blockFlag})
+        INSERT INTO gmair_mode.machine_mode
+        (mode_id, machine_id, mode_type, mode_name, mode_status, block_flag, create_time)
+        VALUES(#{modeId}, #{machineId},
+        #{modeType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+        #{modeName}, #{modeStatus}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="machineMode">
@@ -39,12 +42,7 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
-        <if test="createTimeGTE != null">
-            AND create_time >= #{createTimeGTE}
-        </if>
-        <if test="createTimeLTE != null">
-            AND create_time <= #{createTimeLTE}
-        </if>
+
     </select>
 
     <update id="update" parameterType="java.util.Map">
@@ -62,8 +60,8 @@
             <if test="modeStatus != null">
                 mode_status = #{modeStatus},
             </if>
-        machine_id = #{machineId}
+        mode_id = #{modeId}
         </set>
-        WHERE machine_id = #{machineId}
+        WHERE mode_id = #{modeId}
     </update>
 </mapper>

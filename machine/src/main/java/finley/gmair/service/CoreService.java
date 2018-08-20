@@ -14,6 +14,9 @@ public interface CoreService {
     @GetMapping("/core/repo/{machineId}/online")
     ResultData isOnline(@PathVariable("machineId") String machineId);
 
+    @GetMapping("/core/repo/online/list")
+    ResultData onlineList(@RequestParam("machineIdList") String machineIdList);
+
     @PostMapping("/core/com/config/power")
     ResultData configPower(@RequestParam("uid") String uid,
                            @RequestParam("power") int power,

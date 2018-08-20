@@ -1,5 +1,6 @@
 package finley.gmair.netty;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.LogService;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -84,6 +87,37 @@ public class GMRepository {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription(new StringBuffer("Machine: ").append(machineId).append(" is not available at the moment").toString());
         }
+        return result;
+    }
+
+    public ResultData onlineList(String machineIdList){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(machineIdList)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        JSONArray array = new JSONArray();
+        try {
+            array = JSON.parseArray(machineIdList);
+        }catch (Exception e){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        if(array.isEmpty()){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
+        }
+
+        JSONArray onlineList = new JSONArray();
+        for (Object machineId:array){
+            if(cache.containsKey((String)machineId)){
+                onlineList.add(machineId);
+            }
+        }
+        if(onlineList.size()==0){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        result.setData(onlineList);
         return result;
     }
 }
