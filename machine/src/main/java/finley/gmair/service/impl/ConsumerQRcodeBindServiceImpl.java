@@ -33,66 +33,44 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
     @Override
     public ResultData createConsumerQRcodeBind(ConsumerQRcodeBind consumerQRcodeBind){
         ResultData result = new ResultData();
-
-        //check qrcode exist in prebind
-        HashMap<String, Object> condition = new HashMap<>();
-        condition.put("codeValue",consumerQRcodeBind.getCodeValue());
-        condition.put("blockFlag",false);
-        ResultData response = preBindDao.query(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setData(response.getData());
-            result.setDescription("not find qrcode in prebind");
-            return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to fetch prebind table");
-            return result;
-        }
-        PreBindCode preBindCode = ((List<PreBindCode>)response.getData()).get(0);
-
-        //check qrcode exist in qrcode_machine_bind table
-        condition.clear();
-        condition.put("codeValue",preBindCode.getCodeValue());
-        condition.put("blockFlag",false);
-        response = machineQrcodeBindDao.select(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("exist qrcode in code-machine-bind table");
-            return result;
-        }
-
-        //check machineId exist in qrcode_machine_bind table
-        condition.clear();
-        condition.put("machineId",preBindCode.getMachineId());
-        condition.put("blockFlag",false);
-        response = machineQrcodeBindDao.select(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("exist machineId in code-machine-bind table");
-            return result;
-        }
-
-        //create qrcode-machine bind
-        MachineQrcodeBind machineQrcodeBind = new MachineQrcodeBind();
-        machineQrcodeBind.setCodeValue(preBindCode.getCodeValue());
-        machineQrcodeBind.setMachineId(preBindCode.getMachineId());
-        response = machineQrcodeBindDao.insert(machineQrcodeBind);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to create qrcode-machine bind");
-            return result;
-        }
-
         //create consumer-qrcode bind
-        response = consumerQRcodeBindDao.insert(consumerQRcodeBind);
+        ResultData response = consumerQRcodeBindDao.insert(consumerQRcodeBind);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to create qrcode-consumer bind");
             return result;
         }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
+
+        //check qrcode exist in prebind
+        HashMap<String, Object> condition = new HashMap<>();
+        condition.put("codeValue",consumerQRcodeBind.getCodeValue());
+        condition.put("blockFlag",false);
+        response = preBindDao.query(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+
+        PreBindCode preBindCode = ((List<PreBindCode>)response.getData()).get(0);
+        //create qrcode-machine bind
+        condition.clear();
+        condition.put("codeValue",preBindCode.getCodeValue());
+        condition.put("blockFlag",false);
+        ResultData response1 = machineQrcodeBindDao.select(condition);
+        condition.clear();
+        condition.put("machineId",preBindCode.getMachineId());
+        condition.put("blockFlag",false);
+        ResultData response2 = machineQrcodeBindDao.select(condition);
+        if(response1.getResponseCode()==ResponseCode.RESPONSE_NULL&&
+                response2.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            MachineQrcodeBind machineQrcodeBind = new MachineQrcodeBind();
+            machineQrcodeBind.setCodeValue(preBindCode.getCodeValue());
+            machineQrcodeBind.setMachineId(preBindCode.getMachineId());
+            machineQrcodeBindDao.insert(machineQrcodeBind);
+        }
         return result;
     }
 
