@@ -17,8 +17,8 @@ public class RabbitMQConfig {
     @Value("${partial_data_queue_name}")
     private String partialDataQueue;
 
-    @Value("${machine_v1_queue_name}")
-    private String machineV1Queue;
+//    @Value("${machine_v1_queue_name}")
+//    private String machineV1Queue;
 
     @Bean
     public Queue queue() {
@@ -30,8 +30,8 @@ public class RabbitMQConfig {
         return new Queue(partialDataQueue);
     }
 
-    @Bean
-    public Queue machineV1Queue() {
-        return new Queue(machineV1Queue);
-    }
+//    @Bean
+//    public Queue machineV1Queue() {
+//        return new Queue(machineV1Queue);
+//    }
 }

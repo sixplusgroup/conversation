@@ -1,10 +1,9 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.machine.LatestPM2_5;
+
+import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.machine.MachinePartialStatus;
-import finley.gmair.model.machine.MachinePm2_5;
+import finley.gmair.model.machine.MachineV1Status;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -13,8 +12,8 @@ import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import finley.gmair.model.machine.MachineStatus;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -36,6 +35,16 @@ public class MachineStatusController {
 
     @Autowired
     private CoreService coreService;
+
+    @Autowired
+    private BoardVersionService boardVersionService;
+
+    @Autowired
+    private MachineV1StatusCacheService machineV1StatusCacheService;
+
+    @Autowired
+    private MachineStatusCacheService machineStatusCacheService;
+
 
     @PostMapping("/schedule/hourly")
     ResultData handleMachineStatusHourly() {
@@ -287,31 +296,51 @@ public class MachineStatusController {
         }
 
         ResultData response = coreService.onlineList(machineIdList);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
             return result;
         }
+        List<String> idList = (List<String>) response.getData();
 
-        List<String> idList = (List<String>)response.getData();
-        //fetch hourly pm25
-        List<MachinePm2_5Vo> resultList = new ArrayList<>();
+        //fetch latest status(pm25 co2)
+        List<Object> resultList = new ArrayList<>();
+        List<finley.gmair.model.machine.v1.MachineStatus> machineV1StatusList = new ArrayList<>();
+        List<MachineStatus> machineV2StatusList = new ArrayList<>();
         Map<String, Object> condition = new HashMap<>();
-        Timestamp currentHour = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60) * (1000 * 60 * 60));
-        Timestamp lastHour = new Timestamp(currentHour.getTime() - 1000 * 60 * 60);
-        condition.put("createTimeGTE", lastHour);
-        condition.put("createTimeLTE", currentHour);
         condition.put("blockFlag", false);
         for (String machineId : idList) {
             condition.put("machineId", machineId);
-            response = machinePm25Service.fetchMachineHourlyPm25(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+            response = boardVersionService.fetchBoardVersion(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("not find board version by machineId");
                 continue;
-            resultList.add(((List<MachinePm2_5Vo>) response.getData()).get(0));
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to find borad version by machineId");
+                continue;
+            }
+            int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+            switch (version) {
+                case 1:
+                    finley.gmair.model.machine.v1.MachineStatus machineStatusV1 = machineV1StatusCacheService.fetch(machineId);
+                    if (machineStatusV1 != null)
+                        machineV1StatusList.add(machineStatusV1);
+                    break;
+                case 2:
+                    MachineStatus machineStatusV2 = machineStatusCacheService.fetch(machineId);
+                    if (machineStatusV2 != null)
+                        machineV2StatusList.add(machineStatusV2);
+                    break;
+            }
         }
-        if(resultList.size()==0){
+        if (machineV1StatusList.size() == 0 && machineV2StatusList.size() == 0) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             return result;
+        }else{
+            resultList.add(machineV1StatusList);
+            resultList.add(machineV2StatusList);
         }
         result.setData(resultList);
         return result;

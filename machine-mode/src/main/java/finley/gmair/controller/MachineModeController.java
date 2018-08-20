@@ -132,7 +132,7 @@ public class MachineModeController {
         }
         String json = jsonArray.toJSONString();
 
-        //从machine模块获取在线的前一个小时有pm2.5记录的 machineId-pm2.5记录
+        //从machine模块获取缓存中的记录
         response = machineService.fetchLastHourPM25ListByMachineIdList(json);
         if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
