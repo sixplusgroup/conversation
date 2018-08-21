@@ -32,7 +32,7 @@ public class TimeClientHandle implements Runnable{
     public TimeClientHandle(String host, int port) {
         this.host = host == null ? "127.0.0.1" : host;
         this.port = port;
-        this.sleepTime = 10000;
+        this.sleepTime = 5000;
 
         try {
             selector = Selector.open();
@@ -92,7 +92,6 @@ public class TimeClientHandle implements Runnable{
             if (key.isConnectable()) {
                 if (sc.finishConnect()) {
                     sc.register(selector, SelectionKey.OP_READ);
-
                     new Thread(() -> {
                         try {
                             doWrite(sc);
@@ -113,8 +112,8 @@ public class TimeClientHandle implements Runnable{
                     readBuffer.flip();
                     byte[] bytes = new byte[readBuffer.remaining()];
                     readBuffer.get(bytes);
-                    String body = new String(bytes, "UTF-8");
-                    System.out.println("Now is : " + body);
+                    String body = new String(bytes);
+                    System.out.println("receive from server: " + body.trim());
                 } else if (readBytes < 0) {
                     key.cancel();
                     sc.close();
@@ -135,6 +134,9 @@ public class TimeClientHandle implements Runnable{
     }
 
     private void doWrite(SocketChannel sc) throws IOException {
+        // flag = 0  => 发送数据报文
+        // flag = 1  => 发送查询报文(查询滤网pm25探头记录的值)
+        // flag = 2  => 发送设置报文
         int flag = 0;
 
         //测试machine_status时,flag=0
@@ -176,8 +178,23 @@ public class TimeClientHandle implements Runnable{
             writeBuffer.put(req);
             writeBuffer.flip();
             sc.write(writeBuffer);
+
+            //模拟同时发送数据报文和心跳报文的场景
+            byte[] TIM2 = ByteUtil.long2byte(System.currentTimeMillis(), 8);
+            byte[] LEN2 = new byte[]{0x01};
+            HeartBeatPacket heartBeatPacket = new HeartBeatPacket(CTF,CID,UID,TIM2,LEN2);
+            byte[] req2 = heartBeatPacket.convert2bytearray();
+            ByteBuffer writeBuffer2 = ByteBuffer.allocate(req2.length);
+            writeBuffer2.put(req2);
+            writeBuffer2.flip();
+            sc.write(writeBuffer2);
+
             if (!writeBuffer.hasRemaining()) {
-                System.out.println("send all......");
+                System.out.println("send all......1");
+            }
+
+            if(!writeBuffer2.hasRemaining()){
+                System.out.println("send all......2");
             }
 
             try{

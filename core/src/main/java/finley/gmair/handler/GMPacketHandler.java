@@ -75,9 +75,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                 repository.push(uid, ctx);
             }
 
-            //System.out.println("current time: "+new Timestamp(System.currentTimeMillis()) + "... packet time:" + new Timestamp(packet.getTime()));
-            //check the timestamp of the packet, if longer that 0.5 minute, abort it
-
             //the packet is valid, give response to the client and process the packet in a new thread
             HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
             ctx.writeAndFlush(response.convert2bytearray());
@@ -226,6 +223,12 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     communicationService.create(machineV1Status);
                 }
             }));
+        } else {
+            System.out.println("unkown packet");
+            System.out.println("消息头:"+ ByteUtil.byte2Hex(new byte[]{request[0]}));
+            System.out.println("消息尾:"+ ByteUtil.byte2Hex(new byte[]{request[request.length-1]}));
+            System.out.println(request);
+            System.out.println(new String(request));
         }
 
     }
