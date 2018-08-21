@@ -7,6 +7,7 @@ import finley.gmair.dao.CityAirQualityDao;
 import finley.gmair.model.air.AirQuality;
 import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.model.air.CityAirQualityStatistic;
+import finley.gmair.model.air.CityAqiFull;
 import finley.gmair.service.AirQualityCacheService;
 import finley.gmair.service.AirQualityStatisticService;
 import finley.gmair.service.ProvinceCityCacheService;
@@ -148,6 +149,16 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
                 jsonObject.put("cityName", provinceCityCacheService.fetchCityName(cityId));
                 list.add(jsonObject);
             }
+            else {
+                ResultData response = cityAirQualityDao.selectAqiFull(condition);
+                if(response.getResponseCode()==ResponseCode.RESPONSE_OK) {
+                    CityAqiFull aqiFull = ((List<CityAqiFull>) response.getData()).get(0);
+                    JSONObject jsonObject = (JSONObject) JSONObject.toJSON(aqiFull);
+                    String cityId = aqiFull.getCityId();
+                    jsonObject.put("cityName", provinceCityCacheService.fetchCityName(cityId));
+                    list.add(jsonObject);
+                }
+            }
         } else {
             Set<String> citySet = provinceCityCacheService.getAvailableCity();
             for (String cityId : citySet) {
@@ -156,6 +167,18 @@ public class AirQualityStatisticServiceImpl implements AirQualityStatisticServic
                     JSONObject jsonObject = (JSONObject) JSONObject.toJSON(cityAirQuality);
                     jsonObject.put("cityName", provinceCityCacheService.fetchCityName(cityId));
                     list.add(jsonObject);
+                }
+                else {
+                    condition.clear();
+                    condition.put("cityId",cityId);
+                    condition.put("blockFlag",false);
+                    ResultData response = cityAirQualityDao.selectAqiFull(condition);
+                    if(response.getResponseCode()==ResponseCode.RESPONSE_OK) {
+                        CityAqiFull aqiFull = ((List<CityAqiFull>) response.getData()).get(0);
+                        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(aqiFull);
+                        jsonObject.put("cityName", provinceCityCacheService.fetchCityName(cityId));
+                        list.add(jsonObject);
+                    }
                 }
             }
         }

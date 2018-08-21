@@ -14,4 +14,5 @@ public interface CityAirQualityDao {
     ResultData insertLatestBatch(List<CityAirQuality> list);
 
     ResultData select(Map<String, Object> condition);
+    ResultData selectAqiFull(Map<String, Object> condition);
 }

@@ -8,6 +8,23 @@
         <result column="record_time" property="recordTime"/>
     </resultMap>
 
+    <resultMap id="CityAqiFull" type="finley.gmair.model.air.CityAqiFull">
+        <result column="city_id" property="cityId"></result>
+        <result column="aqi_index" property="aqi"></result>
+        <result column="aqi_level" property="aqiLevel"></result>
+        <result column="pri_pollut" property="primePollution"></result>
+        <result column="pm_2_5" property="pm2_5"></result>
+        <result column="pm_10" property="pm10"></result>
+        <result column="co" property="co"></result>
+        <result column="no_2" property="no2"></result>
+        <result column="o_3" property="o3"></result>
+        <result column="so_2" property="so2"></result>
+        <result column="record_time" property="recordTime"></result>
+        <result column="block_flag" property="blockFlag"></result>
+        <result column="create_time" property="createAt"></result>
+    </resultMap>
+
+
     <insert id="insert" parameterType="finley.gmair.model.air.CityAirQuality">
         INSERT INTO `gmair_airquality`.`city_aqi_full`
         (city_id, aqi_index, aqi_level, pri_pollut, pm_2_5, pm_10, co, no_2, o_3, so_2, record_time
@@ -53,6 +70,16 @@
                 AND record_time < #{recordTimeLT}
             ]]>
         </if>
+    </select>
+
+    <select id="selectAqiFull" parameterType="java.util.Map" resultMap="CityAqiFull">
+        select city_id,aqi_index,aqi_level,pri_pollut,pm_2_5,pm_10,co,no_2,o_3,so_2,record_time,block_flag,create_time
+        from gmair_airquality.city_aqi_full
+        where 1=1
+        <if test="cityId != null">
+            and city_id = #{cityId}
+        </if>
+        order by create_time desc
     </select>
 
     <delete id="empty">

@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.CityAirQualityDao;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.model.air.CityAirQuality;
+import finley.gmair.model.air.CityAqiFull;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.air.CityAirPm25Vo;
@@ -74,6 +75,24 @@ public class CityAirQualityDaoImpl extends BaseDao implements CityAirQualityDao 
         ResultData result = new ResultData();
         try {
             List<CityAirPm25Vo> list = sqlSession.selectList("gmair.airquality.cityairquality.select", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            } else {
+                result.setData(list);
+            }
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData selectAqiFull(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<CityAqiFull> list = sqlSession.selectList("gmair.airquality.cityairquality.selectAqiFull", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             } else {
