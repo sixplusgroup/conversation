@@ -135,7 +135,7 @@ public class RankCrawler {
 
 
         // step 2: update database
-        if (!airQualityList.isEmpty())
+        if (airQualityList.isEmpty())
             return;
         Timestamp timestamp = airQualityList.get(0).getRecordTime();
         Map<String, Object> condition = new HashMap();

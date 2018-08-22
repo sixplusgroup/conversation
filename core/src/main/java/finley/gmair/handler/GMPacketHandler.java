@@ -1,7 +1,6 @@
 package finley.gmair.handler;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.annotation.AQIData;
 import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.machine.MachinePartialStatus;
@@ -28,9 +27,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Calendar;
 
 @Component
 @ChannelHandler.Sharable
