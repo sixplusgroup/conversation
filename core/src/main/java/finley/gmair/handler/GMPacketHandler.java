@@ -16,6 +16,7 @@ import finley.gmair.util.MethodUtil;
 import finley.gmair.util.PacketUtil;
 import finley.gmair.util.TimeUtil;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -58,10 +59,42 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf byteBuf = (ByteBuf) msg;
+        System.out.println("缓冲区中的十六进制码流:" + ByteBufUtil.hexDump(byteBuf));
         byte[] request = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(request);
-        byteBuf.release();
-        //judge the header
+        byteBuf.readBytes(request).release();
+
+        //第一代板子
+        if (request[0] == (byte) 0xEF) {
+            handleRequest(request, ctx);
+        }
+        //第二代板子
+        if (request[0] == (byte) 0xFF) {
+            int FRH_LEN = 1;
+            int CTF_LEN = 1;
+            int CIT_LEN = 1;
+            int UID_LEN = 12;
+            int TIM_LEN = 8;
+            int LEN_LEN = 1;
+            int CRC_LEN = 2;
+            int FRT_LEN = 1;
+            int FIRST_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[23]});
+            int FIRST_PACKET_LEN = FRH_LEN + CTF_LEN + CIT_LEN + UID_LEN + TIM_LEN + LEN_LEN + FIRST_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
+//            byte[] first = new byte[FIRST_PACKET_LEN];
+//            System.arraycopy(request, 0, first, 0, FIRST_PACKET_LEN);
+            handleRequest(request, ctx);
+            if (request.length > FIRST_PACKET_LEN) {
+                int SECOND_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[FIRST_PACKET_LEN + 23]});
+                int SECOND_PACKET_LEN = FRH_LEN + CTF_LEN + CIT_LEN + UID_LEN + TIM_LEN + LEN_LEN + SECOND_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
+
+                byte[] second = new byte[SECOND_PACKET_LEN];
+                System.arraycopy(request, FIRST_PACKET_LEN, second, 0, SECOND_PACKET_LEN);
+                handleRequest(second, ctx);
+            }
+        }
+
+    }
+
+    private void handleRequest(byte[] request, ChannelHandlerContext ctx) {
         if (request[0] == (byte) 0xFF && request[request.length - 1] == (byte) 0xEE) {
             /* if match 0xFF, then it should be the 2nd version packet */
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
@@ -87,6 +120,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                 }
                 //
                 if (packet instanceof ProbePacket && packet.isValid()) {
+                    System.out.println(new StringBuffer("A probe packet ").append(uid).append(" has been received"));
                     //decode packet
                     byte[] CTF = ((ProbePacket) packet).getCTF();
                     //judge whether the packet is a data packet
@@ -154,17 +188,13 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
             }));
-        }
-
-        else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE)
-        {
+        } else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {
             /* if match 0xEF, then it should be the 1nd version packet */
             AbstractPacketV1 packet = PacketUtil.transferV1(request);
             String uid = packet.getUID().trim();
             //System.out.println(uid + "send packet!");
             //CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 1nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
-            if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx)
-            {
+            if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx) {
                 repository.push(uid, ctx);
             }
             //System.out.println("current time: "+new Timestamp(System.currentTimeMillis()) + "... packet time:" + new Timestamp(packet.getTime()));
@@ -174,8 +204,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             ctx.writeAndFlush(response.convert2bytearray());
             CorePool.getComExecutor().execute(new Thread(() ->
             {
-                if (packet instanceof HeartbeatPacketV1 && packet.isValid())
-                {
+                if (packet instanceof HeartbeatPacketV1 && packet.isValid()) {
                     //decode packet
                     byte[] CTF = ((HeartbeatPacketV1) packet).getCTF();
                     //judge whether the packet is a data packet
@@ -188,7 +217,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     byte[] data = ((HeartbeatPacketV1) packet).getDAT();
                     Field[] fields = machineV1Status.getClass().getDeclaredFields();
                     for (Field field : fields) {
-                        if(field.isAnnotationPresent(AQIData.class)){
+                        if (field.isAnnotationPresent(AQIData.class)) {
                             AQIData aqiData = field.getAnnotation(AQIData.class);
                             //find value in byte
                             int start = aqiData.start();
@@ -196,14 +225,14 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                             //identify field name
                             String name = aqiData.name();
                             String type = field.getGenericType().getTypeName();
-                            byte[] valueArray = Arrays.copyOfRange(data, start, start+length);
+                            byte[] valueArray = Arrays.copyOfRange(data, start, start + length);
                             String setName = MethodUtil.setFieldGetMethod(name);
                             try {
-                                if(type.equals("int")){
+                                if (type.equals("int")) {
                                     Method setMethod = machineV1Status.getClass().getDeclaredMethod(setName, int.class);
                                     int value = ByteUtil.byte2int(valueArray);
                                     setMethod.invoke(machineV1Status, value);
-                                }else if(type.equals("long")){
+                                } else if (type.equals("long")) {
                                     Method setMethod = machineV1Status.getClass().getDeclaredMethod(setName, long.class);
                                     long value = ByteUtil.byte2long(valueArray);
                                     setMethod.invoke(machineV1Status, value);
@@ -222,12 +251,10 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             }));
         } else {
             System.out.println("unkown packet");
-            System.out.println("消息头:"+ ByteUtil.byte2Hex(new byte[]{request[0]}));
-            System.out.println("消息尾:"+ ByteUtil.byte2Hex(new byte[]{request[request.length-1]}));
-            System.out.println(request);
+            System.out.println("消息头:" + ByteUtil.byte2Hex(new byte[]{request[0]}));
+            System.out.println("消息尾:" + ByteUtil.byte2Hex(new byte[]{request[request.length - 1]}));
             System.out.println(new String(request));
         }
-
     }
 
     @Override

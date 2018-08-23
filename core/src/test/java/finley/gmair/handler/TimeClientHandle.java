@@ -169,33 +169,32 @@ public class TimeClientHandle implements Runnable{
 //
 //        }
         while(true) {
+
+            //将数据包写入channel
             long time = System.currentTimeMillis();
             byte[] TIM = ByteUtil.long2byte(time, 8);
             ProbePacket packet = new ProbePacket(CTF, CID, UID, TIM, LEN, data);
             byte[] req = packet.convert2bytearray();
-
             ByteBuffer writeBuffer = ByteBuffer.allocate(req.length);
             writeBuffer.put(req);
             writeBuffer.flip();
             sc.write(writeBuffer);
-
-            //模拟同时发送数据报文和心跳报文的场景
-            byte[] TIM2 = ByteUtil.long2byte(System.currentTimeMillis(), 8);
-            byte[] LEN2 = new byte[]{0x01};
-            HeartBeatPacket heartBeatPacket = new HeartBeatPacket(CTF,CID,UID,TIM2,LEN2);
-            byte[] req2 = heartBeatPacket.convert2bytearray();
-            ByteBuffer writeBuffer2 = ByteBuffer.allocate(req2.length);
-            writeBuffer2.put(req2);
-            writeBuffer2.flip();
-            sc.write(writeBuffer2);
-
             if (!writeBuffer.hasRemaining()) {
                 System.out.println("send all......1");
             }
 
-            if(!writeBuffer2.hasRemaining()){
-                System.out.println("send all......2");
-            }
+//            //将心跳包写入channel
+//            byte[] TIM2 = ByteUtil.long2byte(System.currentTimeMillis(), 8);
+//            byte[] LEN2 = new byte[]{0x01};
+//            HeartBeatPacket heartBeatPacket = new HeartBeatPacket(CTF,CID,UID,TIM2,LEN2);
+//            byte[] req2 = heartBeatPacket.convert2bytearray();
+//            ByteBuffer writeBuffer2 = ByteBuffer.allocate(req2.length);
+//            writeBuffer2.put(req2);
+//            writeBuffer2.flip();
+//            sc.write(writeBuffer2);
+//            if(!writeBuffer2.hasRemaining()){
+//                System.out.println("send all......2");
+//            }
 
             try{
                 Thread.sleep(sleepTime);

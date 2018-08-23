@@ -83,7 +83,7 @@ public class PacketUtil {
             byte[] CRC = new byte[]{source[24], source[25]};
             HeartBeatPacket packet = new HeartBeatPacket(CTF, CID, UID, TIM, LEN);
             packet.setCRC(CRC);
-            System.out.println("Wrap a heartbeat packet");
+            //System.out.println("Wrap a heartbeat packet");
             return packet;
         }
         int length = ByteUtil.byte2int(new byte[]{source[23]});
