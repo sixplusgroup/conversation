@@ -65,7 +65,24 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
         //第一代板子
         if (request[0] == (byte) 0xEF) {
+            int FRH_LEN = 1;
+            int CTF_LEN = 1;
+            int CID_LEN = 1;
+            int UID_LEN = 12;
+            int LEN_LEN = 1;
+            int CRC_LEN = 2;
+            int FRT_LEN = 1;
+            int FIRST_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[15]});
+            int FIRST_PACKET_LEN = FRH_LEN + CTF_LEN + CID_LEN + UID_LEN + LEN_LEN + FIRST_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
             handleRequest(request, ctx);
+            if (request.length > FIRST_PACKET_LEN) {
+                int SECOND_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[FIRST_PACKET_LEN + 15]});
+                int SECOND_PACKET_LEN = FRH_LEN + CTF_LEN + CID_LEN + UID_LEN + LEN_LEN + SECOND_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
+
+                byte[] second = new byte[SECOND_PACKET_LEN];
+                System.arraycopy(request, FIRST_PACKET_LEN, second, 0, SECOND_PACKET_LEN);
+                handleRequest(second, ctx);
+            }
         }
         //第二代板子
         if (request[0] == (byte) 0xFF) {
