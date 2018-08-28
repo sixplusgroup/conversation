@@ -174,4 +174,9 @@ public class MachineController {
         String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
         return machineService.probeBindByQRcode(qrcode, consumerId);
     }
+
+    @RequestMapping(value = "/model/component/probe",method = RequestMethod.GET)
+    public ResultData fetchModelEnabledComponent(String modelId,String componentName){
+        return machineService.fetchModelEnabledComponent(modelId,componentName);
+    }
 }

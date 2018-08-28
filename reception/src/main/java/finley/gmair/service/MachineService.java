@@ -117,4 +117,9 @@ public interface MachineService {
 
     @GetMapping("/machine/status/daily")
     ResultData fetchMachineDailyPm2_5(@RequestParam("qrcode") String qrcode);
+
+    //ModelEnabledComponentController
+    @GetMapping("/machine/model/enabled/component/fetch")
+    ResultData fetchModelEnabledComponent(@RequestParam("modelId") String modelId,
+                                          @RequestParam("componentName") String componentName);
 }

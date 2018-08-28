@@ -177,3 +177,12 @@ CREATE TABLE `gmair_machine`.`model_light_config` (
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`config_id`));
+
+#2018-08-22 add table
+CREATE TABLE `gmair_machine`.`model_enabled_component` (
+  `mec_id` VARCHAR(25) NOT NULL,
+  `model_id` VARCHAR(45) NOT NULL,
+  `component_name` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT '0',
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`mec_id`));

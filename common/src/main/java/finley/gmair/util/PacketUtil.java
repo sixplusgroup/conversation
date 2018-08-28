@@ -32,7 +32,7 @@ public class PacketUtil {
         Field[] fields = clazz.getDeclaredFields();
 
         byte[] CTF = new byte[]{action.getSignal()};
-        byte[] CID, UID, TIM, LEN;
+        byte[] CID, UID, LEN;
         byte[] data = null;
 
         for (Field field : fields) {
