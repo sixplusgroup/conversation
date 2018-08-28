@@ -232,37 +232,40 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     MachineV1Status machineV1Status = new MachineV1Status();
                     machineV1Status.setMachineId(uid);
                     byte[] data = ((HeartbeatPacketV1) packet).getDAT();
-                    Field[] fields = machineV1Status.getClass().getDeclaredFields();
-                    for (Field field : fields) {
-                        if (field.isAnnotationPresent(AQIData.class)) {
-                            AQIData aqiData = field.getAnnotation(AQIData.class);
-                            //find value in byte
-                            int start = aqiData.start();
-                            int length = aqiData.length();
-                            //identify field name
-                            String name = aqiData.name();
-                            String type = field.getGenericType().getTypeName();
-                            byte[] valueArray = Arrays.copyOfRange(data, start, start + length);
-                            String setName = MethodUtil.setFieldGetMethod(name);
-                            try {
-                                if (type.equals("int")) {
-                                    Method setMethod = machineV1Status.getClass().getDeclaredMethod(setName, int.class);
-                                    int value = ByteUtil.byte2int(valueArray);
-                                    setMethod.invoke(machineV1Status, value);
-                                } else if (type.equals("long")) {
-                                    Method setMethod = machineV1Status.getClass().getDeclaredMethod(setName, long.class);
-                                    long value = ByteUtil.byte2long(valueArray);
-                                    setMethod.invoke(machineV1Status, value);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+                    if(data.length!=32){
+                        System.out.println("data length is not 32");
+                        return;
                     }
-
+                    byte[] pm2_5 = new byte[]{data[0], data[1]};
+                    byte[] temperature = new byte[]{data[2]};
+                    byte[] humidity = new byte[]{data[3]};
+                    byte[] hcho = new byte[]{data[4], data[5]};
+                    byte[] co2 = new byte[]{data[6], data[7]};
+                    byte[] velocity = new byte[]{data[8],data[9]};
+                    byte[] power = new byte[]{data[10]};
+                    byte[] workMode = new byte[]{data[11]};
+                    byte[] uv = new byte[]{data[12]};
+                    byte[] heat = new byte[]{data[13]};
+                    byte[] light = new byte[]{data[14]};
+                    byte[] cycle = new byte[]{data[15]};
+                    byte[] voc = new byte[]{data[16]};
+                    byte[] signal = new byte[]{data[17],data[18]};
                     String time = TimeUtil.getCurrentTime();
+                    machineV1Status.setPm25(ByteUtil.byte2int(pm2_5));
+                    machineV1Status.setTemperature(ByteUtil.byte2int(temperature));
+                    machineV1Status.setHumidity(ByteUtil.byte2int(humidity));
+                    machineV1Status.setHcho(ByteUtil.byte2int(hcho));
+                    machineV1Status.setCo2(ByteUtil.byte2int(co2));
+                    machineV1Status.setVelocity(ByteUtil.byte2int(velocity));
+                    machineV1Status.setPower(ByteUtil.byte2int(power));
+                    machineV1Status.setWorkMode(ByteUtil.byte2int(workMode));
+                    machineV1Status.setUv(ByteUtil.byte2int(uv));
+                    machineV1Status.setHeat(ByteUtil.byte2int(heat));
+                    machineV1Status.setLight(ByteUtil.byte2int(light));
+                    machineV1Status.setCycle(ByteUtil.byte2int(cycle));
+                    machineV1Status.setVoc(ByteUtil.byte2int(voc));
+                    machineV1Status.setSignal(ByteUtil.byte2int(signal));
                     machineV1Status.setTime(time);
-
                     communicationService.create(machineV1Status);
                 }
             }));
