@@ -59,7 +59,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf byteBuf = (ByteBuf) msg;
-        System.out.println("缓冲区中的十六进制码流:" + ByteBufUtil.hexDump(byteBuf));
+        //System.out.println("缓冲区中的十六进制码流:" + ByteBufUtil.hexDump(byteBuf));
         byte[] request = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(request).release();
 

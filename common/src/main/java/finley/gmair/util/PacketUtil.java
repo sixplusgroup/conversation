@@ -60,6 +60,7 @@ public class PacketUtil {
                 int crcValue = CRC16.CRCCheck(combine);
                 byte[] CRC = ByteUtil.int2byte(crcValue, 2);
                 packet = new HeartbeatPacketV1(CTF, CID, UID, LEN, data, CRC);
+                break;
             }
         }
         return packet;

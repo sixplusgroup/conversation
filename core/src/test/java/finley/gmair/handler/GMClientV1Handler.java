@@ -113,6 +113,7 @@ public class GMClientV1Handler implements Runnable{
                     readBuffer.flip();
                     byte[] bytes = new byte[readBuffer.remaining()];
                     readBuffer.get(bytes);
+
                     String body = new String(bytes, "UTF-8");
                     System.out.println("Now is : " + body);
                 } else if (readBytes < 0) {
