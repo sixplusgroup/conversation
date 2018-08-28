@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,8 +22,6 @@ public class ModelEnabledComponentController {
     @Autowired
     private ModelEnabledComponentService modelEnabledComponentService;
 
-    @Autowired
-    private QRCodeService qrCodeService;
 
     @PostMapping("/create")
     public ResultData createModelEnabledComponent(String modelId, String componentName) {
@@ -34,18 +31,28 @@ public class ModelEnabledComponentController {
             result.setDescription("please provide the modelId and componentName");
             return result;
         }
-        //todo--检查是否已经存在modelId-component对应关系
 
+        //check has been binded
+        ResultData response = fetchModelEnabledComponent(modelId,componentName);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("the modelId and component has been binded,do not have to bind again");
+            return result;
+        }
+
+        //bind the modelId with component
         ModelEnabledComponent modelEnabledComponent = new ModelEnabledComponent();
         modelEnabledComponent.setModelId(modelId);
         modelEnabledComponent.setComponentName(componentName);
-        ResultData response = modelEnabledComponentService.create(modelEnabledComponent);
+        response = modelEnabledComponentService.create(modelEnabledComponent);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to create model enabled component.");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
             result.setDescription("success to create model enabled component.");
             return result;
         }
