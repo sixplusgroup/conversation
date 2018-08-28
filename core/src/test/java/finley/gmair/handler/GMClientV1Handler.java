@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 
-public class GMClientV1Handler implements Runnable{
+public class GMClientV1Handler implements Runnable {
 
     private long sleepTime;         //设置板子向服务器发送报的间隔时间
 
@@ -96,7 +96,7 @@ public class GMClientV1Handler implements Runnable{
                     new Thread(() -> {
                         try {
                             doWrite(sc);
-                        }catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }).start();
@@ -115,7 +115,18 @@ public class GMClientV1Handler implements Runnable{
                     readBuffer.get(bytes);
 
                     String body = new String(bytes, "UTF-8");
-                    System.out.println("Now is : " + body);
+                    System.out.println("Now is : " + body.trim());
+                    String outBytes = ByteUtil.byte2Hex(bytes);
+                    System.out.println("十六进制码流:" + outBytes);
+                    System.out.println("FRH:" + outBytes.substring(0, 2));
+                    System.out.println("CTF:" + outBytes.substring(2, 4));
+                    System.out.println("CID:" + outBytes.substring(4, 6));
+                    System.out.println("UID:" + outBytes.substring(6, 30));
+                    System.out.println("LEN:" + outBytes.substring(30, 32));
+                    int length = Integer.valueOf(outBytes.substring(30, 32), 16);
+                    System.out.println("DAT:" + outBytes.substring(32, 32 + length * 2));
+                    System.out.println("CRC:" + outBytes.substring(32 + length * 2, 32 + length * 2 + 4));
+                    System.out.println("FRT:" + outBytes.substring(32 + length * 2 + 4, 32 + length * 2 + 6));
                 } else if (readBytes < 0) {
                     key.cancel();
                     sc.close();
@@ -143,13 +154,13 @@ public class GMClientV1Handler implements Runnable{
         byte[] UID = ByteUtil.string2byte("zxczxc", 12);
         //byte[] UID = new byte[]{-0x15,-0x34,0x11,0x11,0x11,0x22,0x00,0x00,0x22,0x00,0x00,0x07};
         byte[] LEN = new byte[]{0x20};
-        byte[] DATA = new byte[]{0x00,0x02,0x33,0x22,0x01,0x11,0x11,0x11,0x00,0x11,0x01,0x01,0x01,0x01};
-        byte[] reserve = new byte[]{0x68,0x01,0x03,0x11,0x22,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+        byte[] DATA = new byte[]{0x00, 0x02, 0x33, 0x22, 0x01, 0x11, 0x11, 0x11, 0x00, 0x11, 0x01, 0x01, 0x01, 0x01};
+        byte[] reserve = new byte[]{0x68, 0x01, 0x03, 0x11, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
         int check = CRC16.CRCCheck(ByteUtil.concat(CTF, CID, UID, LEN, DATA, reserve));
         byte[] CRC = ByteUtil.int2byte(check, 2);
 
-        while(true) {
+        while (true) {
             HeartbeatPacketV1 packet = new HeartbeatPacketV1(CTF, CID, UID, LEN, ByteUtil.concat(DATA, reserve), CRC);
             byte[] req = packet.convert2bytearray();
 
@@ -161,9 +172,9 @@ public class GMClientV1Handler implements Runnable{
                 System.out.println("send all......");
             }
 
-            try{
+            try {
                 Thread.sleep(sleepTime);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
