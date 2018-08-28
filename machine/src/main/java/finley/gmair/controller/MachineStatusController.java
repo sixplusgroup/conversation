@@ -33,6 +33,9 @@ public class MachineStatusController {
     private CoreService coreService;
 
     @Autowired
+    private CoreV1Service coreV1Service;
+
+    @Autowired
     private BoardVersionService boardVersionService;
 
     @Autowired
@@ -75,7 +78,26 @@ public class MachineStatusController {
             return result;
         } else {
             MachineQrcodeBindVo machineQrcodeBindVo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
-            return coreService.isOnline(machineQrcodeBindVo.getMachineId());
+            //根据machineId查board_version表,获取version
+            condition.clear();
+            condition.put("machineId", machineQrcodeBindVo.getMachineId());
+            condition.put("blockFlag", false);
+            response = boardVersionService.fetchBoardVersion(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("not find board version by machineId");
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to find borad version by machineId");
+                return result;
+            }
+            int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+            if (version == 2)
+                response = coreService.isOnline(machineQrcodeBindVo.getMachineId());
+            else if (version == 1)
+                response = coreV1Service.isOnline(machineQrcodeBindVo.getMachineId());
+            return response;
         }
     }
 
@@ -334,7 +356,7 @@ public class MachineStatusController {
         if (machineV1StatusList.size() == 0 && machineV2StatusList.size() == 0) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             return result;
-        }else{
+        } else {
             resultList.add(machineV1StatusList);
             resultList.add(machineV2StatusList);
         }

@@ -33,6 +33,9 @@ public class ControlOptionController {
     private CoreService coreService;
 
     @Autowired
+    private CoreV1Service coreV1Service;
+
+    @Autowired
     private QRCodeService qrCodeService;
 
     @Autowired
@@ -88,22 +91,22 @@ public class ControlOptionController {
     }
 
     @PostMapping(value = "/probe/bymodelid")
-    public ResultData probeControlOptionByModelId(String modelId){
+    public ResultData probeControlOptionByModelId(String modelId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(modelId)){
+        if (StringUtils.isEmpty(modelId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide the modelId");
             return result;
         }
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("modelId",modelId);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("modelId", modelId);
+        condition.put("blockFlag", false);
         ResultData response = controlOptionService.fetchControlOptionActionByModelId(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to probe control option by modelId");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find control option by modelId");
             return result;
@@ -165,12 +168,11 @@ public class ControlOptionController {
         condition.put("actionOperator", operation);
         condition.put("blockFlag", false);
         response = controlOptionService.fetchControlOptionAction(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find the action value with controlId,modelId,actionOperator");
             return result;
-        }
-        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find the action value with controlId,modelId,actionOperator");
             return result;
@@ -179,34 +181,47 @@ public class ControlOptionController {
 
         //根据machineId查board_version表,获取version
         condition.clear();
-        condition.put("machineId",machineId);
-        condition.put("blockFlag",false);
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
         response = boardVersionService.fetchBoardVersion(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find board version by machineId");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find borad version by machineId");
             return result;
         }
-        int version = ((List<BoardVersion>)response.getData()).get(0).getVersion();
+        int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
 
         //according the value to control the machine
-        if (component.equals("power"))
-            response = coreService.configPower(machineId, commandValue, version);
-        else if (component.equals("lock"))
-            response = coreService.configLock(machineId, commandValue);
-        else if (component.equals("heat"))
-            response = coreService.configHeat(machineId, commandValue, version);
-        else if (component.equals("mode"))
-            response = coreService.configMode(machineId, commandValue, version);
-        else {
+        if (component.equals("power")) {
+            if (version == 2)
+                response = coreService.configPower(machineId, commandValue, version);
+            else if (version == 1)
+                response = coreV1Service.configPower(machineId, commandValue, version);
+        } else if (component.equals("lock")) {
+            if (version == 2)
+                response = coreService.configLock(machineId, commandValue);
+            else if (version == 1)
+                response = coreV1Service.configLock(machineId, commandValue);
+        } else if (component.equals("heat")) {
+            if (version == 2)
+                response = coreService.configHeat(machineId, commandValue, version);
+            else if (version == 1)
+                response = coreV1Service.configHeat(machineId, commandValue, version);
+        } else if (component.equals("mode")) {
+            if (version == 2)
+                response = coreService.configMode(machineId, commandValue, version);
+            else if (version == 1)
+                response = coreV1Service.configMode(machineId, commandValue, version);
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("no such component");
             return result;
         }
+
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to operate the machine");
@@ -221,8 +236,8 @@ public class ControlOptionController {
 
 
     //用户操作风量
-    @RequestMapping(value="/config/speed",method = RequestMethod.POST)
-    public ResultData configSpeed(String qrcode, int speed){
+    @RequestMapping(value = "/config/speed", method = RequestMethod.POST)
+    public ResultData configSpeed(String qrcode, int speed) {
 
         ResultData result = new ResultData();
         //check empty
@@ -241,7 +256,7 @@ public class ControlOptionController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("sorry, can not find the qrcode");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find the machine by qrcode");
             return result;
@@ -250,27 +265,29 @@ public class ControlOptionController {
 
         //根据machineId查board_version表,获取version
         condition.clear();
-        condition.put("machineId",machineId);
-        condition.put("blockFlag",false);
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
         response = boardVersionService.fetchBoardVersion(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find board version by machineId");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find borad version by machineId");
             return result;
         }
-        int version = ((List<BoardVersion>)response.getData()).get(0).getVersion();
-
-        return coreService.configSpeed(machineId,speed,version);
-
+        int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+        if (version == 2)
+            response = coreService.configSpeed(machineId, speed, version);
+        else if (version == 1)
+            response = coreV1Service.configSpeed(machineId, speed, version);
+        return response;
     }
 
     //用户调节亮度
-    @RequestMapping(value="/config/light",method = RequestMethod.POST)
-    public ResultData configLight(String qrcode, int light){
+    @RequestMapping(value = "/config/light", method = RequestMethod.POST)
+    public ResultData configLight(String qrcode, int light) {
 
         ResultData result = new ResultData();
         //check empty
@@ -289,7 +306,7 @@ public class ControlOptionController {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("sorry, can not find the qrcode");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find the machineId by qrcode");
             return result;
@@ -298,20 +315,24 @@ public class ControlOptionController {
 
         //根据machineId查board_version表,获取version
         condition.clear();
-        condition.put("machineId",machineId);
-        condition.put("blockFlag",false);
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
         response = boardVersionService.fetchBoardVersion(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find board version by machineId");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find borad version by machineId");
             return result;
         }
-        int version = ((List<BoardVersion>)response.getData()).get(0).getVersion();
-        return coreService.configLight(machineId,light,version);
+        int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+        if (version == 2)
+            response = coreService.configLight(machineId, light, version);
+        else if (version == 1)
+            response = coreV1Service.configLight(machineId, light, version);
+        return response;
 
     }
 
