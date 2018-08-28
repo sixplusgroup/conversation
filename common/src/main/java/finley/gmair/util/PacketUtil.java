@@ -197,10 +197,11 @@ public class PacketUtil {
     }
 
     public static HeartbeatPacketV1 generateHeartbeatPacketV1(HeartbeatPacketV1 packet){
-        packet.setLEN(new byte[]{0x20});
-        packet.setDAT(currentTimeByte());
-        packet.calCRC();
-        return packet;
+        HeartbeatPacketV1 heartbeatPacketV1 = new HeartbeatPacketV1(packet.getCTF(),packet.getCID(),ByteUtil.string2byte(packet.getUID(),12),packet.getLEN(),packet.getDAT(),packet.getCRC());
+        heartbeatPacketV1.setLEN(new byte[]{0x20});
+        heartbeatPacketV1.setDAT(currentTimeByte());
+        heartbeatPacketV1.calCRC();
+        return heartbeatPacketV1;
     }
 
     public static byte[] currentTimeByte(){
