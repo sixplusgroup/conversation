@@ -59,7 +59,17 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf byteBuf = (ByteBuf) msg;
-        //System.out.println("缓冲区中的十六进制码流:" + ByteBufUtil.hexDump(byteBuf));
+        System.out.println("Hex:" + ByteBufUtil.hexDump(byteBuf));
+        String receivce = ByteBufUtil.hexDump(byteBuf);
+        System.out.println("FRH:"+ receivce.substring(0,2));
+        System.out.println("CTF:"+ receivce.substring(2,4));
+        System.out.println("CID:"+ receivce.substring(4,6));
+        System.out.println("UID:"+ receivce.substring(6,30));
+        System.out.println("LEN:"+ receivce.substring(30,32));
+        int length = Integer.valueOf(receivce.substring(30,32),16);
+        System.out.println("DAT:" + receivce.substring(32, 32 + length * 2));
+        System.out.println("CRC:" + receivce.substring(32 + length * 2, 32 + length * 2 + 4));
+        System.out.println("FRT:" + receivce.substring(32 + length * 2 + 4, 32 + length * 2 + 6));
         byte[] request = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(request).release();
 
@@ -215,7 +225,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             }
 
             //the packet is valid, give response to the client and process the packet in a new thread
-            HeartbeatPacketV1 response = PacketUtil.generateHeartbeatPacketV1((HeartbeatPacketV1) packet);
+            HeartbeatPacketV1 response = PacketUtil.generateHeartbeatPacketV1(uid);
             if(request[1]==0x02)
                 ctx.writeAndFlush(response.convert2bytearray());
             CorePool.getComExecutor().execute(new Thread(() ->

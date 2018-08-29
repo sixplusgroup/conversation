@@ -15,6 +15,12 @@ public class HeartbeatPacketV1 extends AbstractPacketV1{
 
     protected byte[] DAT;
 
+
+    public HeartbeatPacketV1(byte[] CTF, byte[] CID, byte[] UID, byte[] LEN, byte[] DAT){
+        super(CTF,CID,UID,LEN);
+        this.DAT=DAT;
+        calCRC();
+    }
     public HeartbeatPacketV1(byte[] CTF, byte[] CID, byte[] UID, byte[] LEN, byte[] DAT, byte[] CRC){
         super(CTF, CID, UID, LEN);
         this.LEN = LEN;

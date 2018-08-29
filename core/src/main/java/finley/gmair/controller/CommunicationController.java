@@ -276,7 +276,8 @@ public class CommunicationController {
             return result;
         }
         if(version==1){
-            AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.VELOCITY, speed, uid, MachineV1Status.class);
+            Integer speedInteger = speed;
+            AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.VELOCITY, speedInteger, uid, MachineV1Status.class);
             ctx.writeAndFlush(packet.convert2bytearray());
         }else if(version==2) {
             AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.FAN_SPEED, speed, uid);
