@@ -209,16 +209,15 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             /* if match 0xEF, then it should be the 1nd version packet */
             AbstractPacketV1 packet = PacketUtil.transferV1(request);
             String uid = packet.getUID().trim();
-            //System.out.println(uid + "send packet!");
             //CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 1nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx) {
                 repository.push(uid, ctx);
             }
-            //System.out.println("current time: "+new Timestamp(System.currentTimeMillis()) + "... packet time:" + new Timestamp(packet.getTime()));
 
             //the packet is valid, give response to the client and process the packet in a new thread
             HeartbeatPacketV1 response = PacketUtil.generateHeartbeatPacketV1((HeartbeatPacketV1) packet);
-            ctx.writeAndFlush(response.convert2bytearray());
+            if(request[1]==0x02)
+                ctx.writeAndFlush(response.convert2bytearray());
             CorePool.getComExecutor().execute(new Thread(() ->
             {
                 if (packet instanceof HeartbeatPacketV1 && packet.isValid()) {
