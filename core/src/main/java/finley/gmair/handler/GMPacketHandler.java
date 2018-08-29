@@ -59,17 +59,17 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf byteBuf = (ByteBuf) msg;
-        System.out.println("Hex:" + ByteBufUtil.hexDump(byteBuf));
-        String receivce = ByteBufUtil.hexDump(byteBuf);
-        System.out.println("FRH:"+ receivce.substring(0,2));
-        System.out.println("CTF:"+ receivce.substring(2,4));
-        System.out.println("CID:"+ receivce.substring(4,6));
-        System.out.println("UID:"+ receivce.substring(6,30));
-        System.out.println("LEN:"+ receivce.substring(30,32));
-        int length = Integer.valueOf(receivce.substring(30,32),16);
-        System.out.println("DAT:" + receivce.substring(32, 32 + length * 2));
-        System.out.println("CRC:" + receivce.substring(32 + length * 2, 32 + length * 2 + 4));
-        System.out.println("FRT:" + receivce.substring(32 + length * 2 + 4, 32 + length * 2 + 6));
+//        System.out.println("Hex:" + ByteBufUtil.hexDump(byteBuf));
+//        String receivce = ByteBufUtil.hexDump(byteBuf);
+//        System.out.println("FRH:"+ receivce.substring(0,2));
+//        System.out.println("CTF:"+ receivce.substring(2,4));
+//        System.out.println("CID:"+ receivce.substring(4,6));
+//        System.out.println("UID:"+ receivce.substring(6,30));
+//        System.out.println("LEN:"+ receivce.substring(30,32));
+//        int length = Integer.valueOf(receivce.substring(30,32),16);
+//        System.out.println("DAT:" + receivce.substring(32, 32 + length * 2));
+//        System.out.println("CRC:" + receivce.substring(32 + length * 2, 32 + length * 2 + 4));
+//        System.out.println("FRT:" + receivce.substring(32 + length * 2 + 4, 32 + length * 2 + 6));
         byte[] request = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(request).release();
 
@@ -143,11 +143,11 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                 //nothing to do with heartbeat packet
                 if (packet instanceof HeartBeatPacket) {
                     //actions that need to be implement if this is a no-data packet
-                    System.out.println(new StringBuffer("A heart beat packet ").append(uid).append(" has been received"));
+                    //System.out.println(new StringBuffer("A heart beat packet ").append(uid).append(" has been received"));
                 }
                 //
                 if (packet instanceof ProbePacket && packet.isValid()) {
-                    System.out.println(new StringBuffer("A probe packet ").append(uid).append(" has been received"));
+                    //System.out.println(new StringBuffer("A probe packet ").append(uid).append(" has been received"));
                     //decode packet
                     byte[] CTF = ((ProbePacket) packet).getCTF();
                     //judge whether the packet is a data packet
