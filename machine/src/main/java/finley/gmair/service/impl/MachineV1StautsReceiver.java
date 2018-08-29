@@ -37,7 +37,7 @@ public class MachineV1StautsReceiver {
                 MachineV1Status mv1s = (MachineV1Status) resultData.getData();
                 MachineStatus machineStatus = new MachineStatus(
                         mv1s.getMachineId(), mv1s.getPm25(), mv1s.getTemperature(), mv1s.getHumidity(), mv1s.getCo2(),
-                        mv1s.getVelocity(), mv1s.getPower(), mv1s.getWorkMode(), mv1s.getLight(), mv1s.getHeat());
+                        mv1s.getVelocity(), mv1s.getPower(), mv1s.getWorkMode(), mv1s.getHeat(), mv1s.getLight());
                 machineV1StatusCacheService.generate(machineStatus);
             }
             catch (Exception e){
