@@ -6,6 +6,7 @@ import finley.gmair.model.machine.MachineV1Status;
 import finley.gmair.model.packet.*;
 import finley.gmair.netty.GMRepository;
 import finley.gmair.util.*;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -278,6 +279,19 @@ public class CommunicationController {
         if(version==1){
             Integer speedInteger = speed;
             AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.VELOCITY, speedInteger, uid, MachineV1Status.class);
+
+            String receivce = ByteBufUtil.hexDump(packet.convert2bytearray());
+            System.out.println("server send config speed packet to client:");
+            System.out.println("FRH:"+ receivce.substring(0,2));
+            System.out.println("CTF:"+ receivce.substring(2,4));
+            System.out.println("CID:"+ receivce.substring(4,6));
+            System.out.println("UID:"+ receivce.substring(6,30));
+            System.out.println("LEN:"+ receivce.substring(30,32));
+            int length = Integer.valueOf(receivce.substring(30,32),16);
+            System.out.println("DAT:" + receivce.substring(32, 32 + length * 2));
+            System.out.println("CRC:" + receivce.substring(32 + length * 2, 32 + length * 2 + 4));
+            System.out.println("FRT:" + receivce.substring(32 + length * 2 + 4, 32 + length * 2 + 6));
+
             ctx.writeAndFlush(packet.convert2bytearray());
         }else if(version==2) {
             AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.FAN_SPEED, speed, uid);
