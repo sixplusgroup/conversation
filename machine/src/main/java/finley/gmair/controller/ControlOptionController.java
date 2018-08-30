@@ -4,6 +4,7 @@ import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.model.machine.*;
 import finley.gmair.model.machine.v1.MachineStatus;
 import finley.gmair.service.*;
+import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.ControlOptionActionVo;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.Mac;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,9 @@ public class ControlOptionController {
 
     @Autowired
     private MachineV1StatusCacheService machineV1StatusCacheService;
+
+    @Autowired
+    private RedisService redisService;
 
     //先查control_option表,如果对应的操作不存在,则创建.
     //如果存在,取出controlId,并根据传入的值新建control_option_action配置.
@@ -206,10 +211,10 @@ public class ControlOptionController {
             else if (version == 1) {
                 response = coreV1Service.configPower(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                    MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
                     if(machineV1Status!=null) {
                         machineV1Status.setPower(commandValue);
-                        machineV1StatusCacheService.generate(machineV1Status);
+                        redisService.set(machineId,machineV1Status,(long)120);
                     }
                 }
             }
@@ -227,10 +232,10 @@ public class ControlOptionController {
             else if (version == 1) {
                 response = coreV1Service.configHeat(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                    MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
                     if(machineV1Status!=null) {
                         machineV1Status.setHeat(commandValue);
-                        machineV1StatusCacheService.generate(machineV1Status);
+                        redisService.set(machineId,machineV1Status,(long)120);
                     }
                 }
             }
@@ -240,10 +245,10 @@ public class ControlOptionController {
             else if (version == 1) {
                 response = coreV1Service.configMode(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                    MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
                     if(machineV1Status!=null) {
                         machineV1Status.setMode(commandValue);
-                        machineV1StatusCacheService.generate(machineV1Status);
+                        redisService.set(machineId,machineV1Status,(long)120);
                     }
                 }
             }
@@ -322,10 +327,10 @@ public class ControlOptionController {
             response = coreV1Service.configSpeed(machineId, speed, version);
             //设置成功则更新缓存
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
                 if(machineV1Status!=null) {
                     machineV1Status.setVolume(speed);
-                    machineV1StatusCacheService.generate(machineV1Status);
+                    redisService.set(machineId,machineV1Status,(long)120);
                 }
             }
         }
@@ -382,10 +387,10 @@ public class ControlOptionController {
 
             //设置成功更新缓存
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
                 if(machineV1Status!=null) {
                     machineV1Status.setLight(light);
-                    machineV1StatusCacheService.generate(machineV1Status);
+                    redisService.set(machineId,machineV1Status,(long)120);
                 }
             }
         }
