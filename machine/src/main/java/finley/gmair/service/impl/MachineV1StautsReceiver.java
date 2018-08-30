@@ -25,6 +25,9 @@ public class MachineV1StautsReceiver {
     @Autowired
     MachineV1StatusCacheService machineV1StatusCacheService;
 
+    @Autowired
+    RedisService redisService;
+
     @RabbitHandler
     public void process(String machineId) {
         Map<String, Object> condition = new HashMap<>();
@@ -38,10 +41,11 @@ public class MachineV1StautsReceiver {
                 MachineStatus machineStatus = new MachineStatus(
                         mv1s.getMachineId(), mv1s.getPm25(), mv1s.getTemperature(), mv1s.getHumidity(), mv1s.getCo2(),
                         mv1s.getVelocity(), mv1s.getPower(), mv1s.getWorkMode(), mv1s.getHeat(), mv1s.getLight());
-                machineV1StatusCacheService.generate(machineStatus);
+                boolean flag=redisService.set(mv1s.getMachineId(),machineStatus,(long)120);
+
             }
             catch (Exception e){
-
+                e.printStackTrace();
             }
         }
     }

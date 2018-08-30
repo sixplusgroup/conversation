@@ -6,10 +6,11 @@ import finley.gmair.model.Entity;
 import finley.gmair.util.Constant;
 import finley.gmair.util.MethodUtil;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class MachineStatus extends Entity{
+public class MachineStatus extends Entity implements Serializable {
     private String uid;
     /*length = 2*/
     private int pm2_5;

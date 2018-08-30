@@ -24,6 +24,9 @@ public class MachineReceiver {
     @Autowired
     MachineStatusCacheService machineStatusCacheService;
 
+    @Autowired
+    RedisService redisService;
+
     @RabbitHandler
     public void process(String uid) {
         Map<String, Object> condition = new HashMap<>();
@@ -34,9 +37,9 @@ public class MachineReceiver {
         if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
             //System.out.println(JSONObject.toJSON(resultData.getData()));
             try {
-                machineStatusCacheService.generate((MachineStatus) resultData.getData());
+                redisService.set(((MachineStatus)resultData.getData()).getUid(),resultData.getData(),(long)120);
             }catch (Exception e){
-
+                e.printStackTrace();
             }
         }
     }

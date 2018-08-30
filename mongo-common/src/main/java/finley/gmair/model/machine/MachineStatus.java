@@ -2,8 +2,10 @@ package finley.gmair.model.machine;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 @Document(collection = "machine_status")
-public class MachineStatus extends Entity {
+public class MachineStatus extends Entity implements Serializable {
     private String uid;
 
     /*length = 2*/

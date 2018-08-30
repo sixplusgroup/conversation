@@ -6,6 +6,7 @@ import finley.gmair.model.air.MachineAirQuality;
 import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.service.*;
+import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
@@ -37,6 +38,9 @@ public class MachineAirQualityController {
 
     @Autowired
     private BoardVersionService boardVersionService;
+
+    @Autowired
+    private RedisService redisService;
 
     @RequestMapping(value = "/qirquality/create", method = RequestMethod.POST)
     private ResultData createMachineAirQuality(MachineAirQualityForm form) {
@@ -73,14 +77,14 @@ public class MachineAirQualityController {
     @RequestMapping (value = "/status/{uid}",method = RequestMethod.GET)
     public ResultData machineV2Status(@PathVariable("uid") String uid) {
         ResultData result = new ResultData();
-        MachineStatus machineStatus = machineStatusCacheService.fetch(uid);
+        MachineStatus machineStatus = (MachineStatus)redisService.get(uid);
         if(machineStatus==null){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find machine status in cache");
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(machineStatusCacheService.fetch(uid));
+        result.setData(machineStatus);
         result.setDescription("success to find machine status in cache");
         return result;
     }
@@ -89,7 +93,7 @@ public class MachineAirQualityController {
     @RequestMapping (value = "/v1/status", method = RequestMethod.GET)
     public ResultData machineV1Status(String uid){
         ResultData result = new ResultData();
-        finley.gmair.model.machine.v1.MachineStatus machineStatus = machineV1StatusCacheService.fetch(uid);
+        finley.gmair.model.machine.v1.MachineStatus machineStatus = (finley.gmair.model.machine.v1.MachineStatus)(redisService.get(uid));
         if(machineStatus==null){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find machine v1 status in cache");
