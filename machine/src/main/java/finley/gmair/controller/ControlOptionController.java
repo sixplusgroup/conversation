@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.model.machine.*;
+import finley.gmair.model.machine.v1.MachineStatus;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -40,6 +41,9 @@ public class ControlOptionController {
 
     @Autowired
     private BoardVersionService boardVersionService;
+
+    @Autowired
+    private MachineV1StatusCacheService machineV1StatusCacheService;
 
     //先查control_option表,如果对应的操作不存在,则创建.
     //如果存在,取出controlId,并根据传入的值新建control_option_action配置.
@@ -199,23 +203,44 @@ public class ControlOptionController {
         if (component.equals("power")) {
             if (version == 2)
                 response = coreService.configPower(machineId, commandValue, version);
-            else if (version == 1)
+            else if (version == 1) {
                 response = coreV1Service.configPower(machineId, commandValue, version);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                    machineV1Status.setPower(commandValue);
+                    machineV1StatusCacheService.generate(machineV1Status);
+                }
+            }
         } else if (component.equals("lock")) {
             if (version == 2)
                 response = coreService.configLock(machineId, commandValue);
-            else if (version == 1)
-                response = coreV1Service.configLock(machineId, commandValue);
+            else if (version == 1) {
+                response.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                response.setDescription("board v1 have no component lock");
+                return response;
+            }
         } else if (component.equals("heat")) {
             if (version == 2)
                 response = coreService.configHeat(machineId, commandValue, version);
-            else if (version == 1)
+            else if (version == 1) {
                 response = coreV1Service.configHeat(machineId, commandValue, version);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                    machineV1Status.setHeat(commandValue);
+                    machineV1StatusCacheService.generate(machineV1Status);
+                }
+            }
         } else if (component.equals("mode")) {
             if (version == 2)
                 response = coreService.configMode(machineId, commandValue, version);
-            else if (version == 1)
+            else if (version == 1) {
                 response = coreV1Service.configMode(machineId, commandValue, version);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                    machineV1Status.setMode(commandValue);
+                    machineV1StatusCacheService.generate(machineV1Status);
+                }
+            }
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("no such component");
@@ -287,7 +312,14 @@ public class ControlOptionController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             response = coreV1Service.configSpeed(machineId, speed, version);
+            //设置成功则更新缓存
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                machineV1Status.setVolume(speed);
+                machineV1StatusCacheService.generate(machineV1Status);
+            }
         }
         return response;
     }
@@ -337,8 +369,16 @@ public class ControlOptionController {
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
         if (version == 2)
             response = coreService.configLight(machineId, light, version);
-        else if (version == 1)
+        else if (version == 1) {
             response = coreV1Service.configLight(machineId, light, version);
+
+            //设置成功更新缓存
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
+                machineV1Status.setLight(light);
+                machineV1StatusCacheService.generate(machineV1Status);
+            }
+        }
         return response;
 
     }
