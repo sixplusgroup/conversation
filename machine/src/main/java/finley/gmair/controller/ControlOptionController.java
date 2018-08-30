@@ -280,8 +280,15 @@ public class ControlOptionController {
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
         if (version == 2)
             response = coreService.configSpeed(machineId, speed, version);
-        else if (version == 1)
+        else if (version == 1) {
+            coreV1Service.configMode(machineId, 2, version);
+            try {
+                new Thread().sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             response = coreV1Service.configSpeed(machineId, speed, version);
+        }
         return response;
     }
 
