@@ -11,6 +11,7 @@ import finley.gmair.netty.GMRepository;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.CommunicationService;
 import finley.gmair.service.LogService;
+import finley.gmair.service.MachineService;
 import finley.gmair.util.ByteUtil;
 import finley.gmair.util.MethodUtil;
 import finley.gmair.util.PacketUtil;
@@ -43,6 +44,9 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private MachineService machineService;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -278,6 +282,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     machineV1Status.setSignal(ByteUtil.byte2int(signal));
                     machineV1Status.setTime(time);
                     communicationService.create(machineV1Status);
+                    machineService.setV1Cache(uid,machineV1Status.getPm25(),machineV1Status.getTemperature(),machineV1Status.getHumidity(),machineV1Status.getCo2(),machineV1Status.getVelocity(),machineV1Status.getPower(),machineV1Status.getWorkMode(),machineV1Status.getHeat(),machineV1Status.getLight());
                 }
             }));
         } else {
