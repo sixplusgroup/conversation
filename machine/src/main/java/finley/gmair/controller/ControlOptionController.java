@@ -207,8 +207,10 @@ public class ControlOptionController {
                 response = coreV1Service.configPower(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
-                    machineV1Status.setPower(commandValue);
-                    machineV1StatusCacheService.generate(machineV1Status);
+                    if(machineV1Status!=null) {
+                        machineV1Status.setPower(commandValue);
+                        machineV1StatusCacheService.generate(machineV1Status);
+                    }
                 }
             }
         } else if (component.equals("lock")) {
@@ -226,8 +228,10 @@ public class ControlOptionController {
                 response = coreV1Service.configHeat(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
-                    machineV1Status.setHeat(commandValue);
-                    machineV1StatusCacheService.generate(machineV1Status);
+                    if(machineV1Status!=null) {
+                        machineV1Status.setHeat(commandValue);
+                        machineV1StatusCacheService.generate(machineV1Status);
+                    }
                 }
             }
         } else if (component.equals("mode")) {
@@ -237,8 +241,10 @@ public class ControlOptionController {
                 response = coreV1Service.configMode(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
-                    machineV1Status.setMode(commandValue);
-                    machineV1StatusCacheService.generate(machineV1Status);
+                    if(machineV1Status!=null) {
+                        machineV1Status.setMode(commandValue);
+                        machineV1StatusCacheService.generate(machineV1Status);
+                    }
                 }
             }
         } else {
@@ -317,8 +323,10 @@ public class ControlOptionController {
             //设置成功则更新缓存
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
-                machineV1Status.setVolume(speed);
-                machineV1StatusCacheService.generate(machineV1Status);
+                if(machineV1Status!=null) {
+                    machineV1Status.setVolume(speed);
+                    machineV1StatusCacheService.generate(machineV1Status);
+                }
             }
         }
         return response;
@@ -375,8 +383,10 @@ public class ControlOptionController {
             //设置成功更新缓存
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 MachineStatus machineV1Status = machineV1StatusCacheService.fetch(machineId);
-                machineV1Status.setLight(light);
-                machineV1StatusCacheService.generate(machineV1Status);
+                if(machineV1Status!=null) {
+                    machineV1Status.setLight(light);
+                    machineV1StatusCacheService.generate(machineV1Status);
+                }
             }
         }
         return response;

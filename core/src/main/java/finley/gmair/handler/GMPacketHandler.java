@@ -85,14 +85,14 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             int FIRST_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[15]});
             int FIRST_PACKET_LEN = FRH_LEN + CTF_LEN + CID_LEN + UID_LEN + LEN_LEN + FIRST_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
             handleRequest(request, ctx);
-            if (request.length > FIRST_PACKET_LEN) {
-                int SECOND_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[FIRST_PACKET_LEN + 15]});
-                int SECOND_PACKET_LEN = FRH_LEN + CTF_LEN + CID_LEN + UID_LEN + LEN_LEN + SECOND_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
-
-                byte[] second = new byte[SECOND_PACKET_LEN];
-                System.arraycopy(request, FIRST_PACKET_LEN, second, 0, SECOND_PACKET_LEN);
-                handleRequest(second, ctx);
-            }
+//            if (request.length > FIRST_PACKET_LEN) {
+//                int SECOND_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[FIRST_PACKET_LEN + 15]});
+//                int SECOND_PACKET_LEN = FRH_LEN + CTF_LEN + CID_LEN + UID_LEN + LEN_LEN + SECOND_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
+//
+//                byte[] second = new byte[SECOND_PACKET_LEN];
+//                System.arraycopy(request, FIRST_PACKET_LEN, second, 0, SECOND_PACKET_LEN);
+//                handleRequest(second, ctx);
+//            }
         }
         //第二代板子
         if (request[0] == (byte) 0xFF) {
@@ -279,9 +279,9 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                 }
             }));
         } else {
-            System.out.println("unkown packet");
-            System.out.println("消息头:" + ByteUtil.byte2Hex(new byte[]{request[0]}));
-            System.out.println("消息尾:" + ByteUtil.byte2Hex(new byte[]{request[request.length - 1]}));
+            System.out.println("unkown packet:"+ ByteUtil.byte2Hex(request));
+            System.out.println("head :" + ByteUtil.byte2Hex(new byte[]{request[0]}));
+            System.out.println("tail :" + ByteUtil.byte2Hex(new byte[]{request[request.length - 1]}));
             System.out.println(new String(request));
         }
     }
