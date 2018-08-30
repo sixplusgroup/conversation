@@ -30,6 +30,7 @@ public class MachineV1StautsReceiver {
 
     @RabbitHandler
     public void process(String machineId) {
+        System.out.println("start handle data!!!!");
         Map<String, Object> condition = new HashMap<>();
         condition.put("machineId", machineId);
         long current = System.currentTimeMillis();
