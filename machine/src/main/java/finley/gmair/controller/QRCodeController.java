@@ -6,10 +6,7 @@ import finley.gmair.form.machine.PreBindForm;
 import finley.gmair.form.machine.QRCodeCreateForm;
 import finley.gmair.form.machine.QRCodeForm;
 import finley.gmair.model.goods.GoodsModel;
-import finley.gmair.model.machine.MachineQrcodeBind;
-import finley.gmair.model.machine.Ownership;
-import finley.gmair.model.machine.PreBindCode;
-import finley.gmair.model.machine.QRCode;
+import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
@@ -52,7 +49,14 @@ public class QRCodeController {
     private ConsumerQRcodeBindService consumerQRcodeBindService;
 
     @Autowired
-    private RepositoryService repositoryService;
+    private BoardVersionService boardVersionService;
+
+    @Autowired
+    private CoreService coreService;
+
+    @Autowired
+    private CoreV1Service coreV1Service;
+
     /**
      * This method is used to create a record of qrcode
      *
@@ -501,10 +505,9 @@ public class QRCodeController {
     }
 
 
-
     //查prebind表,检查machineid 是否存在
     @GetMapping(value = "/check/existmachineid")
-    public ResultData checkMachineIdExist(String machineId){
+    public ResultData checkMachineIdExist(String machineId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("machineId", machineId);
@@ -552,21 +555,21 @@ public class QRCodeController {
 
     //根据codeUrl查qrcode表
     @PostMapping(value = "/probe/byurl")
-    public ResultData probeQRcodeByUrl(String codeUrl){
+    public ResultData probeQRcodeByUrl(String codeUrl) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("codeUrl",codeUrl);
-        condition.put("blockFlag",false);
+        condition.put("codeUrl", codeUrl);
+        condition.put("blockFlag", false);
         ResultData response = qrCodeService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to get the qrcode by code url");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find the qrcode by code url");
             return result;
-        }else {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("success to find the qrcode by code url");
@@ -596,8 +599,27 @@ public class QRCodeController {
             result.setDescription("can not find machine id by qrcode in code machine bind table");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            String machineId = (String) ((List<MachineQrcodeBindVo>)response.getData()).get(0).getMachineId();
-            response = repositoryService.isOnilne(machineId);
+            String machineId = (String) ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("machineId", machineId);
+            condition.put("blockFlag", false);
+            response = boardVersionService.fetchBoardVersion(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("not find board version by machineId");
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to find borad version by machineId");
+                return result;
+            }
+            int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+
+            if (version == 1)
+                response = coreV1Service.isOnline(machineId);
+            else if (version == 2)
+                response = coreService.isOnline(machineId);
+
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription("is online");
