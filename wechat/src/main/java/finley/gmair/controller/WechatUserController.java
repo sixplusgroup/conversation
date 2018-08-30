@@ -1,10 +1,10 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.wechat.WechatUser;
 import finley.gmair.service.WechatUserService;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
-import finley.gmair.util.WechatProperties;
-import finley.gmair.util.WechatUtil;
+import finley.gmair.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,6 +76,33 @@ public class WechatUserController {
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Code: ").append(code).append(" not valid").toString());
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/create/byopenId")
+    public ResultData createUser(String openId) {
+        ResultData result = new ResultData();
+        String accessToken = WechatProperties.getAccessToken();
+        String url = new StringBuffer("https://api.weixin.qq.com/cgi-bin/user/info?access_token=").append(accessToken)
+                .append("&openid=").append(openId).append("&lang=zh_CN").toString();
+        String resultStr = HttpDeal.getResponse(url);
+        JSONObject json = JSON.parseObject(resultStr);
+        WechatUser user = new WechatUser(openId,json);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechatId", openId);
+        ResultData response = wechatUserService.fetch(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_OK:
+                result = wechatUserService.modify(user);
+                break;
+            case RESPONSE_NULL:
+                result = wechatUserService.create(user);
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription(response.getDescription());
+                break;
         }
         return result;
     }
