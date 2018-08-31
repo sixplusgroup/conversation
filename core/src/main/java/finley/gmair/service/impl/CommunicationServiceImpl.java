@@ -44,7 +44,7 @@ public class CommunicationServiceImpl implements CommunicationService {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to insert machine status ").append(JSON.toJSONString(status)).toString());
         }
-        notifier.send(status.getUid());
+        //notifier.send(status.getUid());
         return result;
     }
 

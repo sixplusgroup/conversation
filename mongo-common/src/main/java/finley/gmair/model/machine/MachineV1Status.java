@@ -62,6 +62,25 @@ public class MachineV1Status extends Entity {
 
     private String time;
 
+    public MachineV1Status(String machineId, int pm25, int temperature, int humidity, int hcho, int co2, int velocity, int power, int workMode, int uv, int heat, int light, int cycle, int voc, int signal, String time) {
+        this.machineId = machineId;
+        this.pm25 = pm25;
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.hcho = hcho;
+        this.co2 = co2;
+        this.velocity = velocity;
+        this.power = power;
+        this.workMode = workMode;
+        this.uv = uv;
+        this.heat = heat;
+        this.light = light;
+        this.cycle = cycle;
+        this.voc = voc;
+        this.signal = signal;
+        this.time = time;
+    }
+
     public String getMachineId() {
         return machineId;
     }
