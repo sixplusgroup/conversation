@@ -138,11 +138,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-redis</artifactId>
-        </dependency>
-
         <!--  cache -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
