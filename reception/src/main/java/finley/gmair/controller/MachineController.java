@@ -3,7 +3,6 @@ package finley.gmair.controller;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.service.AuthConsumerService;
 import finley.gmair.service.MachineService;
-import finley.gmair.service.RepositoryService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,44 +17,36 @@ public class MachineController {
     private MachineService machineService;
 
     @Autowired
-    private RepositoryService repositoryService;
-
-    @Autowired
     private AuthConsumerService authConsumerService;
 
     @GetMapping("/check/device/name/binded")
     public ResultData checkDeviceNameExist(String deviceName) {
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.checkDeviceNameExist(consumerId, deviceName);
     }
 
     @GetMapping("/check/device/binded")
     public ResultData checkDeviceBinded(String qrcode) {
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.checkDeviceBinded(consumerId, qrcode);
     }
 
     //设备初始化时 将qrcode和consumerId绑定
     @PostMapping("/deviceinit")
     public ResultData deviceInit(String qrcode, String deviceName) {
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
     }
 
     @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
     public ResultData unbindConsumerWithQRcode(String qrcode) {
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
     }
 
     @PostMapping("/device/bind/share")
     public ResultData acquireControlOn(String qrcode, String deviceName) {
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.SHARE.getValue());
     }
 
@@ -113,8 +104,7 @@ public class MachineController {
     //根据consumerId获取用户的machine list
     @RequestMapping(value = "/devicelist", method = RequestMethod.GET)
     public ResultData getUserDeviceList() {
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.getMachineListByConsumerId(consumerId);
     }
 
@@ -163,15 +153,13 @@ public class MachineController {
 
     @RequestMapping(value = "/modify/bind/name", method = RequestMethod.POST)
     public ResultData modifyBindName(String qrcode, String bindName) {
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.modifyBindName(qrcode, bindName, consumerId);
     }
 
     @RequestMapping(value = "/consumer/bind/probe/byqrcode", method = RequestMethod.GET)
     public ResultData probeConsumerQRcodeBindInfo(String qrcode) {
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.probeBindByQRcode(qrcode, consumerId);
     }
 

@@ -38,8 +38,7 @@ public class ConsumerController {
             return result;
         }
         //check this consumerId and the qrcode has been binded.
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String consumerId = (String) authConsumerService.getConsumerId(phone).getData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         ResultData response = machineService.checkConsumerAccesstoQRcode(consumerId,qrcode);
         if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
@@ -62,8 +61,8 @@ public class ConsumerController {
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ResultData profile() {
         ResultData result = new ResultData();
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ResultData response = authConsumerService.profile(phone);
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ResultData response = authConsumerService.profile(consumerId);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
@@ -88,8 +87,8 @@ public class ConsumerController {
             result.setDescription("please provide all information");
             return result;
         }
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ResultData response = authConsumerService.bindWechat(phone,openid);
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ResultData response = authConsumerService.bindWechat(consumerId,openid);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
@@ -104,8 +103,8 @@ public class ConsumerController {
     @RequestMapping(value="/wechat/unbind",method = RequestMethod.POST)
     public ResultData unbindWechat(){
         ResultData result = new ResultData();
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ResultData response = authConsumerService.unbindWechat(phone);
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ResultData response = authConsumerService.unbindWechat(consumerId);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
@@ -125,8 +124,8 @@ public class ConsumerController {
             result.setDescription("please provide all information");
             return result;
         }
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ResultData response = authConsumerService.editUsername(phone, username);
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ResultData response = authConsumerService.editUsername(consumerId, username);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
@@ -146,8 +145,8 @@ public class ConsumerController {
             result.setDescription("please provide all information");
             return result;
         }
-        String oldPhone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ResultData response = authConsumerService.editPhone(oldPhone, newPhone);
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ResultData response = authConsumerService.editPhone(consumerId, newPhone);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");
@@ -167,8 +166,8 @@ public class ConsumerController {
             result.setDescription("please provide all information");
             return result;
         }
-        String phone = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ResultData response = authConsumerService.editLocation(phone, form.getProvince().trim(), form.getCity().trim(), form.getDistrict().trim(), form.getDetail().trim(), form.isPreferred());
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ResultData response = authConsumerService.editLocation(consumerId, form.getProvince().trim(), form.getCity().trim(), form.getDistrict().trim(), form.getDetail().trim(), form.isPreferred());
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("server is busy");

@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -8,29 +7,26 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient("consumer-auth-agent")
 public interface AuthConsumerService {
 
-    @GetMapping("/auth/consumerid")
-    ResultData getConsumerId(@RequestParam("phone") String phone);
-
     @GetMapping("/auth/consumer/profile")
-    ResultData profile(@RequestParam("phone") String phone);
+    ResultData profile(@RequestParam("consumerId") String consumerId);
 
     @PostMapping("/auth/consumer/wechat/bind")
-    ResultData bindWechat(@RequestParam("phone") String phone,
+    ResultData bindWechat(@RequestParam("consumerId") String consumerId,
                           @RequestParam("openid") String openid);
 
     @PostMapping("/auth/consumer/wechat/unbind")
-    ResultData unbindWechat(@RequestParam("phone") String phone);
+    ResultData unbindWechat(@RequestParam("consumerId") String consumerId);
 
     @PostMapping("/auth/consumer/edit/username")
-    ResultData editUsername(@RequestParam("phone") String phone,
+    ResultData editUsername(@RequestParam("consumerId") String consumerId,
                             @RequestParam("username") String username);
 
     @PostMapping("/auth/consumer/edit/phone")
-    ResultData editPhone(@RequestParam("oldPhone") String oldPhone,
+    ResultData editPhone(@RequestParam("consumerId") String consumerId,
                          @RequestParam("newPhone") String newPhone);
 
     @PostMapping("/auth/consumer/edit/location")
-    ResultData editLocation(@RequestParam("phone") String phone,
+    ResultData editLocation(@RequestParam("consumerId") String consumerId,
                             @RequestParam("province") String province,
                             @RequestParam("city") String city,
                             @RequestParam("district") String district,
