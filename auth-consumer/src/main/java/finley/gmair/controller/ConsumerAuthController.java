@@ -310,7 +310,7 @@ public class ConsumerAuthController {
     @PostMapping("/consumer/edit/location/default")
     public ResultData preferLocation(String locationId) {
         ResultData result = new ResultData();
-        String consumerId = currentConsumerId();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (StringUtils.isEmpty(consumerId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you have logged on to the system");
@@ -349,24 +349,6 @@ public class ConsumerAuthController {
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public Principal user(Principal user) {
         return user;
-    }
-
-    private String currentConsumerId() {
-        SecurityContext ctx = SecurityContextHolder.getContext();
-        Authentication auth = ctx.getAuthentication();
-        User user = (User) auth.getPrincipal();
-        if (StringUtils.isEmpty(user)) {
-            return null;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("phone", user.getUsername());
-        condition.put("blockFlag", false);
-        ResultData response = consumerService.fetchConsumer(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return null;
-        }
-        ConsumerVo consumer = ((List<ConsumerVo>) response.getData()).get(0);
-        return consumer.getConsumerId();
     }
 
     @RequestMapping(value = "/consumer/check/existphone", method = RequestMethod.GET)

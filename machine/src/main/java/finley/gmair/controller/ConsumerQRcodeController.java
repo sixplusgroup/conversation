@@ -152,31 +152,62 @@ public class ConsumerQRcodeController {
             return result;
         }
         ConsumerQRcodeBind consumerQRcodeBind = ((List<ConsumerQRcodeBind>) response.getData()).get(0);
+
         //according to the onwership,update the  consumer_qrcode_bind and qrcode table and code_machine_bind table
-        condition.clear();
-        condition.put("bindId", consumerQRcodeBind.getBindId());
-        condition.put("codeValue", qrcode);
         if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
-            condition.put("status", QRCodeStatus.ASSIGNED.getValue());
-            condition.put("blockFlag", false);
             new Thread(() -> {
+                condition.clear();
+                condition.put("codeValue", qrcode);
+                condition.put("status", QRCodeStatus.ASSIGNED.getValue());
+                condition.put("blockFlag", false);
                 qrCodeService.modifyByQRcode(condition);
+
+                condition.clear();
+                condition.put("codeValue", qrcode);
                 condition.put("blockFlag", true);
                 machineQrcodeBindService.modifyByQRcode(condition);
             }).start();
+
+
+            condition.clear();
+            condition.put("codeValue", qrcode);
+            condition.put("blockFlag", false);
+            ResultData temp = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+            if (temp.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<ConsumerQRcodeBind> list = (List<ConsumerQRcodeBind>) temp.getData();
+                for (ConsumerQRcodeBind cqb : list) {
+                    condition.put("bindId", cqb.getBindId());
+                    condition.put("blockFlag", true);
+                    response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
+                    if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+                        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                        result.setDescription("fail to set the bindId "+ cqb.getBindId()+"'s block flag = true");
+                        return result;
+                    }
+                }
+            } else if (temp.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to unbind the consumer list with qrcode");
+                return result;
+            } else if (temp.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("not find the consumer list with qrcode");
+                return result;
+            }
         } else {
             condition.put("consumerId", consumerId);
+            condition.put("blockFlag", true);
+            response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to unbind the consumer with the qrcode");
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("success to unbind the consumer with the qrcode");
+            }
         }
-        condition.put("blockFlag", true);
-        response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to unbind the consumer with the qrcode");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("success to unbind the consumer with the qrcode");
-        }
+
         return result;
     }
 
