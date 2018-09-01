@@ -1,9 +1,7 @@
 package finley.gmair.controller;
 
-import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.Ownership;
-import finley.gmair.model.machine.QRCode;
 import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.service.ConsumerQRcodeBindService;
 import finley.gmair.service.MachineQrcodeBindService;
@@ -14,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.transform.Result;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
