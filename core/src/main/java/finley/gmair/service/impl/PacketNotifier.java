@@ -25,7 +25,7 @@ public class PacketNotifier {
 
     public ResultData sendV1(String uid) {
         ResultData result = new ResultData();
-        this.template.convertAndSend(machineV1QueueName,uid);
+        this.template.convertAndSend(machineV1QueueName, uid);
         return result;
     }
 
@@ -35,9 +35,9 @@ public class PacketNotifier {
         return result;
     }
 
-    public ResultData sendPartialData(String uid){
+    public ResultData sendPartialData(String uid) {
         ResultData result = new ResultData();
-        this.template.convertAndSend(partialDataQueueName,uid);
+        this.template.convertAndSend(partialDataQueueName, uid);
         return result;
     }
 }
