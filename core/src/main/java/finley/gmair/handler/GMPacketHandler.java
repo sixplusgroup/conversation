@@ -7,6 +7,7 @@ import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.model.machine.MachineV1Status;
 import finley.gmair.model.packet.*;
 import finley.gmair.netty.GMRepository;
+import finley.gmair.netty.V1BoardRepository;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.CommunicationService;
 import finley.gmair.service.LogService;
@@ -34,6 +35,9 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     @Qualifier("repository")
     private GMRepository repository;
+
+    @Autowired
+    private V1BoardRepository v1BoardRepository;
 
     @Autowired
     private CommunicationService communicationService;
@@ -191,6 +195,13 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             //CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 1nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx) {
                 repository.push(uid, ctx);
+            }
+
+            //judge whether a packet has been received within limited time
+            if (!StringUtils.isEmpty(v1BoardRepository.retrieve(uid))) {
+                return;
+            } else {
+                v1BoardRepository.push(uid, uid);
             }
 
             //the packet is valid, give response to the client and process the packet in a new thread
