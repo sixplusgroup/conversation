@@ -14,4 +14,8 @@ public interface MessageService {
 
     @GetMapping("/message/template/list")
     ResultData findMessageTemplate();
+
+    @PostMapping("/message/send/group")
+    ResultData sendGroup(@RequestParam("phone") String phone,
+                         @RequestParam("text") String text);
 }

@@ -3,10 +3,7 @@ package finley.gmair.controller;
 import finley.gmair.service.MessageService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/management/message")
@@ -24,5 +21,10 @@ public class MessageController {
     @GetMapping("/template/list")
     public ResultData getMessage(){
         return messageService.findMessageTemplate();
+    }
+
+    @PostMapping("/send/group")
+    public ResultData sendGroup(String phone,String text){
+        return messageService.sendGroup(phone,text);
     }
 }
