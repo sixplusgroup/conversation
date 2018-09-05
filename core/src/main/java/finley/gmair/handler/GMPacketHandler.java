@@ -72,7 +72,12 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             int FIRST_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[15]});
             int FIRST_PACKET_LEN = FRH_LEN + CTF_LEN + CID_LEN + UID_LEN + LEN_LEN + FIRST_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
             byte[] first = new byte[FIRST_PACKET_LEN];
-            System.arraycopy(request, 0, first, 0, FIRST_PACKET_LEN);
+            try {
+                System.arraycopy(request, 0, first, 0, FIRST_PACKET_LEN);
+            }catch (Exception e){
+                System.out.println("error happen when the receive byte = " + ByteBufUtil.hexDump(request));
+                System.out.println("first_packet_len = "+ first.length);
+            }
             handleRequest(first, ctx);
         }
         //第二代板子

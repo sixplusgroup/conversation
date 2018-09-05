@@ -192,7 +192,7 @@ public class ConsumerQRcodeController {
                 return result;
             }
         } else {
-            condition.put("consumerId", consumerId);
+            condition.put("bindId", consumerQRcodeBind.getBindId());
             condition.put("blockFlag", true);
             response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
