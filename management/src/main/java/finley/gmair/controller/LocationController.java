@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/location")
+@RequestMapping("/management/location")
 public class LocationController {
 
     @Autowired
