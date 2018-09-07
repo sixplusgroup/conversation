@@ -1,3 +1,11 @@
 queue_name=
 partial_data_queue_name=
 machine_v1_queue_name=
+
+
+
+
+#wangjiaqi-config
+queue_name=machine-queue
+partial_data_queue_name=partial-data-queue
+machine_v1_queue_name=machine-v1-queue

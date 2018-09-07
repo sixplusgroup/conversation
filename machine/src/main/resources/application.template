@@ -20,3 +20,58 @@ spring.data.mongodb.uri=mongodb://localhost:27017/gmair_packet
 #spring cache
 spring.cache.type=caffeine
 spring.cache.caffeine.spec=expireAfterAccess=60s
+
+
+
+
+
+
+
+
+
+
+
+
+#wangjiaqi-config
+spring.application.name=machine-agent
+server.port=8012
+eureka.client.healthcheck=true
+eureka.client.service-url.defaultZone=http://localhost:8000/eureka/
+mybatis.config-location=classpath:mybatis-config.xml
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/gmair_machine?useLegacyDatetimeCode=false&serverTimezone=CTT&useUnicode=true&characterEncoding=UTF-8
+spring.datasource.username=root
+spring.datasource.password=z86118531
+
+#rabbitmq configuration
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=guest
+spring.rabbitmq.password=guest
+
+# spring cache
+spring.cache.type=caffeine
+spring.cache.caffeine.spec=maximumSize=500,expireAfterWrite=60s
+
+#mongo
+spring.data.mongodb.uri=mongodb://localhost:27017/gmair_packet
+
+
+# Redis数据库索引（默认为0）
+spring.redis.database=0
+# Redis服务器地址
+spring.redis.host=localhost
+# Redis服务器连接端口
+spring.redis.port=6379
+# Redis服务器连接密码（默认为空）
+spring.redis.password=
+# 连接池最大连接数（使用负值表示没有限制）
+spring.redis.pool.max-active=8
+# 连接池最大阻塞等待时间（使用负值表示没有限制）
+spring.redis.pool.max-wait=-1
+# 连接池中的最大空闲连接
+spring.redis.pool.max-idle=8
+# 连接池中的最小空闲连接
+spring.redis.pool.min-idle=0
+# 连接超时时间（毫秒）
+spring.redis.timeout=0

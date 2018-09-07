@@ -11,3 +11,12 @@ CREATE TABLE `gmair_order`.`enterprise_order` (
   `create_time`     DATETIME    NOT NULL,
   PRIMARY KEY (`order_id`)
 );
+
+#2018-09-06
+ALTER TABLE `gmair_order`.`platform_order`
+ADD COLUMN `latitude` DOUBLE NULL AFTER `district`,
+ADD COLUMN `longitude` DOUBLE NULL AFTER `latitude`;
+
+ALTER TABLE `gmair_order`.`platform_order`
+CHANGE COLUMN `latitude` `latitude` DOUBLE NULL DEFAULT '0' ,
+CHANGE COLUMN `longitude` `longitude` DOUBLE NULL DEFAULT '0' ;

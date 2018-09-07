@@ -196,11 +196,14 @@ public class OrderServiceImpl implements OrderService {
             try {
                 ResultData response = locationService.geocoder(address);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    JSONObject location = (JSON.parseObject(JSON.toJSONString(response.getData()))).getJSONObject("address_components");
-                    String province = location.getString("province");
-                    String city = location.getString("city");
-                    String district = location.getString("district");
-                    order.setLocation(province, city, district);
+                    JSONObject address_components = (JSON.parseObject(JSON.toJSONString(response.getData()))).getJSONObject("address_components");
+                    String province = address_components.getString("province");
+                    String city = address_components.getString("city");
+                    String district = address_components.getString("district");
+                    JSONObject location = (JSON.parseObject(JSON.toJSONString(response.getData()))).getJSONObject("location");
+                    double latitude = Double.parseDouble(location.getString("latitude"));
+                    double longitude = Double.parseDouble(location.getString("longitude"));
+                    order.setLocation(province, city, district, latitude, longitude);
                 } else {
                     insertOrderLocationRetryCount(order.getOrderId(), 1);
                 }

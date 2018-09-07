@@ -62,12 +62,17 @@ public class OrderScheduler {
                     ResultData locationResult = locationService.geocoder(address);
                     try {
                         if (locationResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                            JSONObject location = (JSON.parseObject(JSON.toJSONString(locationResult.getData()))).getJSONObject("address_components");
-                            String province = location.getString("province");
-                            String city = location.getString("city");
-                            String district = location.getString("district");
+                            JSONObject address_components = (JSON.parseObject(JSON.toJSONString(locationResult.getData()))).getJSONObject("address_components");
+                            String province = address_components.getString("province");
+                            String city = address_components.getString("city");
+                            String district = address_components.getString("district");
+
+                            JSONObject location = (JSON.parseObject(JSON.toJSONString(locationResult.getData()))).getJSONObject("location");
+                            double latitude = Double.parseDouble(location.getString("latitude"));
+                            double longitude = Double.parseDouble(location.getString("longitude"));
+
                             PlatformOrder orderUpdate = new PlatformOrder();
-                            orderUpdate.setLocation(province, city, district);
+                            orderUpdate.setLocation(province, city, district, latitude, longitude);
                             orderUpdate.setTotalPrice(order.getTotalPrice());
                             orderUpdate.setStatus(order.getStatus());
                             orderUpdate.setOrderId(order.getOrderId());

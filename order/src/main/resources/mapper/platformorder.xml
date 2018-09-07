@@ -10,6 +10,8 @@
         <result property="province" column="province"></result>
         <result property="city" column="city"></result>
         <result property="district" column="district"></result>
+        <result property="latitude" column="latitude"></result>
+        <result property="longitude" column="longitude"></result>
         <result property="totalPrice" column="total_price"></result>
         <result property="channel" column="order_channel"></result>
         <result property="description" column="description"></result>
@@ -43,7 +45,7 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        SELECT order_id, order_no, consignee, phone, address, province, city, district, total_price, order_channel,
+        SELECT order_id, order_no, consignee, phone, address, province, city, district, latitude, longitude, total_price, order_channel,
         description, order_status, block_flag, create_time
         FROM gmair_order.platform_order
         WHERE 1 = 1
@@ -78,6 +80,12 @@
             </if>
             <if test="district != null">
                 district = #{district},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
             </if>
             <if test="status != null">
                 order_status = #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},

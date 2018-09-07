@@ -11,6 +11,10 @@ public class PlatformOrder extends AbstractOrder {
 
     private String district;
 
+    private double latitude;
+
+    private double longitude;
+
     private String channel;
 
     private String description;
@@ -87,6 +91,14 @@ public class PlatformOrder extends AbstractOrder {
         this.district = district;
     }
 
+    public void setLocation(String province, String city, String district, double latitude, double longitude) {
+        this.province = province;
+        this.city = city;
+        this.district = district;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     public String getChannel() {
         return channel;
     }
@@ -109,5 +121,21 @@ public class PlatformOrder extends AbstractOrder {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }
