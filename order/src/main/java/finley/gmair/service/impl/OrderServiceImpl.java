@@ -255,7 +255,7 @@ public class OrderServiceImpl implements OrderService {
         return list;
     }
 
-    private ResultData insertOrderLocationRetryCount(String orderId, int retryCount) {
+    public ResultData insertOrderLocationRetryCount(String orderId, int retryCount) {
         OrderLocationRetryCount orderLocationRetryCount = new OrderLocationRetryCount();
         orderLocationRetryCount.setOrderId(orderId);
         orderLocationRetryCount.setRetryCount(retryCount);

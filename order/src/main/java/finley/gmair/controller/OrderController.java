@@ -39,6 +39,11 @@ public class OrderController {
     @Autowired
     private ReconnaissanceService reconnaissanceService;
 
+    @Autowired
+    private LocationService locationService;
+
+    @Autowired
+    private OrderLocationRetryCountService orderLocationRetryCountService;
     /**
      * This method is aimed to handle the order spreadsheet and store the records
      *
@@ -74,9 +79,36 @@ public class OrderController {
         String city = jsonObject.getString("city");
         String district = jsonObject.getString("district");
         String address = jsonObject.getString("address");
-
         double price = jsonObject.getDouble("price");
         String description = jsonObject.getString("description");
+
+        PlatformOrder platformOrder = new PlatformOrder(list, orderNo, consignee, phone, address, channel, description);
+        platformOrder.setTotalPrice(price);
+        platformOrder.setLocation(province,city,district);
+
+        //设置时间
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
+        LocalDate localDate = LocalDate.parse(orderDate, dateTimeFormatter);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
+        platformOrder.setCreateAt(Timestamp.valueOf(localDateTime));
+
+        //解析地址
+        ResultData locationResult = locationService.geocoder(address);
+        if (locationResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            JSONObject location = (JSON.parseObject(JSON.toJSONString(locationResult.getData()))).getJSONObject("location");
+            double latitude = 0.0,longitude = 0.0;
+            try {
+                latitude = Double.parseDouble(location.getString("lat"));
+                longitude = Double.parseDouble(location.getString("lng"));
+            }catch (Exception e){
+
+            }
+            platformOrder.setLatitude(latitude);
+            platformOrder.setLongitude(longitude);
+        } else {
+            orderService.insertOrderLocationRetryCount(platformOrder.getOrderId(), 1);
+        }
+
         JSONArray orderItemList = jsonObject.getJSONArray("orderItemList");
         boolean containsMachine = false;
         for (Object orderItem : orderItemList) {
@@ -95,17 +127,6 @@ public class OrderController {
             item.setItemPrice(itemPrice);
             list.add(item);
         }
-
-        PlatformOrder platformOrder = new PlatformOrder(list, orderNo, consignee, phone, address, channel, description);
-        platformOrder.setTotalPrice(price);
-        platformOrder.setProvince(province);
-        platformOrder.setCity(city);
-        platformOrder.setDistrict(district);
-
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
-        LocalDate localDate = LocalDate.parse(orderDate, dateTimeFormatter);
-        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
-        platformOrder.setCreateAt(Timestamp.valueOf(localDateTime));
 
         ResultData response = orderService.createPlatformOrder(platformOrder);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -319,4 +340,5 @@ public class OrderController {
 
         return result;
     }
+
 }
