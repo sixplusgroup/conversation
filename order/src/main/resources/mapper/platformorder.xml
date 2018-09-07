@@ -38,9 +38,9 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.order.PlatformOrder" useGeneratedKeys="false">
-        INSERT INTO gmair_order.platform_order (order_id, order_no, consignee, phone, address, province, city, district, total_price, order_channel, description, order_status, block_flag, create_time)
+        INSERT INTO gmair_order.platform_order (order_id, order_no, consignee, phone, address, province, city, district, latitude, longitude, total_price, order_channel, description, order_status, block_flag, create_time)
         VALUES
-            (#{orderId}, #{orderNo}, #{consignee}, #{phone}, #{address}, #{province}, #{city}, #{district},
+            (#{orderId}, #{orderNo}, #{consignee}, #{phone}, #{address}, #{province}, #{city}, #{district}, #{latitude}, #{longitude},
                          #{totalPrice}, #{channel}, #{description}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{blockFlag}, #{createAt})
     </insert>
 
