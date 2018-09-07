@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +41,12 @@ public class FitLatLonController {
         }
 
         List<PlatformOrder> platformOrderList = (List<PlatformOrder>) response.getData();
+        List<PlatformOrder> failList = new ArrayList<>();
         for (PlatformOrder order : platformOrderList) {
+            //1.过滤掉经纬度有值的数据
             if (order.getLatitude() != 0 || order.getLongitude() != 0)
                 continue;
+            //2.解析经纬度,并填充经纬度
             String address = order.getAddress();
             ResultData locationResult = locationService.geocoder(address);
             if (locationResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -52,8 +56,13 @@ public class FitLatLonController {
                 String district = address_components.getString("district");
 
                 JSONObject location = (JSON.parseObject(JSON.toJSONString(locationResult.getData()))).getJSONObject("location");
-                double latitude = Double.parseDouble(location.getString("latitude"));
-                double longitude = Double.parseDouble(location.getString("longitude"));
+                Double latitude = 0.0,longitude = 0.0;
+                try{
+                    latitude = Double.parseDouble(location.getString("lat"));
+                    longitude = Double.parseDouble(location.getString("lng"));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
                 PlatformOrder orderUpdate = new PlatformOrder();
                 orderUpdate.setLocation(province, city, district, latitude, longitude);
@@ -61,9 +70,13 @@ public class FitLatLonController {
                 orderUpdate.setStatus(order.getStatus());
                 orderUpdate.setOrderId(order.getOrderId());
                 response = orderService.updatePlatformOrder(orderUpdate);
+                if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+                    failList.add(order);
+                }
             }
-
         }
+        result.setData(failList);
+        result.setDescription("the data in response is the order whose lat=0 and lng=0 but fail to be filled");
         return result;
     }
 

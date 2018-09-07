@@ -6,7 +6,6 @@ import finley.gmair.dao.ChannelDao;
 import finley.gmair.dao.OrderDao;
 import finley.gmair.dao.OrderItemDao;
 import finley.gmair.dao.OrderLocationRetryCountDao;
-import finley.gmair.form.express.ExpressOrderForm;
 import finley.gmair.model.location.OrderLocationRetryCount;
 import finley.gmair.model.order.OrderChannel;
 import finley.gmair.model.order.OrderItem;
@@ -201,8 +200,13 @@ public class OrderServiceImpl implements OrderService {
                     String city = address_components.getString("city");
                     String district = address_components.getString("district");
                     JSONObject location = (JSON.parseObject(JSON.toJSONString(response.getData()))).getJSONObject("location");
-                    double latitude = Double.parseDouble(location.getString("latitude"));
-                    double longitude = Double.parseDouble(location.getString("longitude"));
+                    double latitude = 0.0,longitude = 0.0;
+                    try {
+                        latitude = Double.parseDouble(location.getString("lat"));
+                        longitude = Double.parseDouble(location.getString("lng"));
+                    }catch (Exception e){
+
+                    }
                     order.setLocation(province, city, district, latitude, longitude);
                 } else {
                     insertOrderLocationRetryCount(order.getOrderId(), 1);

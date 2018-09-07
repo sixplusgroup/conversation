@@ -68,8 +68,13 @@ public class OrderScheduler {
                             String district = address_components.getString("district");
 
                             JSONObject location = (JSON.parseObject(JSON.toJSONString(locationResult.getData()))).getJSONObject("location");
-                            double latitude = Double.parseDouble(location.getString("latitude"));
-                            double longitude = Double.parseDouble(location.getString("longitude"));
+                            double latitude=0.0,longitude=0.0;
+                            try{
+                                latitude = Double.parseDouble(location.getString("lat"));
+                                longitude = Double.parseDouble(location.getString("lng"));
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
 
                             PlatformOrder orderUpdate = new PlatformOrder();
                             orderUpdate.setLocation(province, city, district, latitude, longitude);
