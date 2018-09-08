@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * This method is responsible to fetch response from machine-agent
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/management/machine")
 public class MachineController {

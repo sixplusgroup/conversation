@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/management/order")
 public class OrderController {
