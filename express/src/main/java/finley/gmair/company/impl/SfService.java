@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Service
-@PropertySource(value = "classpath:/expressCompany.properties")
+@PropertySource(value = "classpath:/express.properties")
 public class SfService implements ExpressCompanyService {
 
     @Value("${SFappId}")

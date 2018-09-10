@@ -1,7 +1,6 @@
 package finley.gmair.company.impl;
 
 import finley.gmair.company.ExpressCompanyService;
-import finley.gmair.model.express.ExpressStatus;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Service
-@PropertySource(value = "classpath:/expressCompany.properties")
+@PropertySource(value = "classpath:/express.properties")
 public class JdService implements ExpressCompanyService {
 
     @Value("${JDappId}")
