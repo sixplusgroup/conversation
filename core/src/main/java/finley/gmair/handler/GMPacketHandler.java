@@ -74,9 +74,9 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             byte[] first = new byte[FIRST_PACKET_LEN];
             try {
                 System.arraycopy(request, 0, first, 0, FIRST_PACKET_LEN);
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("error happen when the receive byte = " + ByteBufUtil.hexDump(request));
-                System.out.println("first_packet_len = "+ first.length);
+                System.out.println("first_packet_len = " + first.length);
             }
             handleRequest(first, ctx);
         }
@@ -100,8 +100,10 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleRequest(byte[] request, ChannelHandlerContext ctx) {
+
+
+        //V2板子报文的接收、解析逻辑
         if (request[0] == (byte) 0xFF && request[request.length - 1] == (byte) 0xEE) {
-            /* if match 0xFF, then it should be the 2nd version packet */
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
             String uid = packet.getUID().trim();
             CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
@@ -122,7 +124,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     //actions that need to be implement if this is a no-data packet
                     //System.out.println(new StringBuffer("A heart beat packet ").append(uid).append(" has been received"));
                 }
-                //
                 if (packet instanceof ProbePacket && packet.isValid()) {
                     //System.out.println(new StringBuffer("A probe packet ").append(uid).append(" has been received"));
                     //decode packet
@@ -195,7 +196,11 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
             }));
-        } else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {
+        }
+
+
+        //V1板子报文的接收、解析逻辑
+        else if (request[0] == (byte) 0xEF && request[request.length - 1] == (byte) 0xEE) {
             /* if match 0xEF, then it should be the 1nd version packet */
             AbstractPacketV1 packet = PacketUtil.transferV1(request);
             String uid = packet.getUID().trim();
@@ -248,10 +253,15 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     MachineV1Status status = new MachineV1Status(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temperature), ByteUtil.byte2int(humidity), ByteUtil.byte2int(hcho), ByteUtil.byte2int(co2), ByteUtil.byte2int(velocity), ByteUtil.byte2int(power), ByteUtil.byte2int(workMode), ByteUtil.byte2int(uv), ByteUtil.byte2int(heat), ByteUtil.byte2int(light), ByteUtil.byte2int(cycle), ByteUtil.byte2int(voc), ByteUtil.byte2int(signal), time);
                     finley.gmair.model.machine.v1.MachineStatus machineV1Status = new finley.gmair.model.machine.v1.MachineStatus(uid, status.getPm25(), status.getTemperature(), status.getHumidity(), status.getCo2(), status.getVelocity(), status.getPower(), status.getWorkMode(), status.getHeat(), status.getLight());
                     communicationService.create(status);                //把接收到的全存mongo数据库
-                    redisService.set(uid, machineV1Status, (long) 120); //把接收到的数据去掉一些没用的字段,存入缓存
+                    CorePool.getComExecutor().execute(new Thread(() -> {
+                        redisService.set(uid, machineV1Status, (long) 120); //把接收到的数据去掉一些没用的字段,存入缓存
+                    }));
                 }
             }));
-        } else {
+        }
+
+        //未知报文
+        else {
             System.out.println("unkown packet:" + ByteUtil.byte2Hex(request));
             System.out.println("head :" + ByteUtil.byte2Hex(new byte[]{request[0]}));
             System.out.println("tail :" + ByteUtil.byte2Hex(new byte[]{request[request.length - 1]}));
