@@ -148,7 +148,9 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                         MachineStatus status = new MachineStatus(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temp), ByteUtil.byte2int(humid), ByteUtil.byte2int(co2), ByteUtil.byte2int(volume), ByteUtil.byte2int(power), ByteUtil.byte2int(mode), ByteUtil.byte2int(heat), ByteUtil.byte2int(light), ByteUtil.byte2int(lock));
 //                        System.out.println(new StringBuffer("Machine status received: " + JSONObject.toJSONString(status)));
                         communicationService.create(status);
-                        redisService.set(uid, status, (long) 120);
+                        CorePool.getComExecutor().execute(new Thread(() -> {
+                            redisService.set(uid, status, (long) 120);
+                        }));
                     } else {
                         Field[] fields = PacketInfo.class.getDeclaredFields();
                         for (Field field : fields) {
