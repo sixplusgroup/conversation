@@ -1,5 +1,8 @@
 package finley.gmair.controller;
-import finley.gmair.service.*;
+
+import finley.gmair.datastructrue.LimitQueue;
+import finley.gmair.service.BoardVersionService;
+import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -8,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,18 +26,20 @@ public class MachineStatusCacheController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private BoardVersionService boardVersionService;
+
     //通过uid获取缓存中v1或v2的机器状态
     @RequestMapping(value = "/status/byuid", method = RequestMethod.GET)
     public ResultData machineStatus(String uid) {
         ResultData result = new ResultData();
-        Object status = redisService.get(uid);
-        if (status == null) {
+        if (redisService.exists(uid) == false) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can't find machine status in redis cache");
             return result;
         }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(status);
+        LimitQueue<Object> statusQueue = (LimitQueue<Object>) redisService.get(uid);
+        result.setData(statusQueue.getLast());
         result.setDescription("success to find machine status in redis cache");
         return result;
     }

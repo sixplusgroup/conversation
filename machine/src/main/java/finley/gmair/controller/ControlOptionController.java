@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.model.machine.*;
 import finley.gmair.model.machine.v1.MachineStatus;
@@ -207,10 +208,12 @@ public class ControlOptionController {
             else if (version == 1) {
                 response = coreV1Service.configPower(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
-                    if(machineV1Status!=null) {
-                        machineV1Status.setPower(commandValue);
-                        redisService.set(machineId,machineV1Status,(long)120);
+                    if (redisService.exists(machineId) == true) {
+                        LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
+                        MachineStatus machineStatus = statusQueue.getLast();
+                        machineStatus.setPower(commandValue);
+                        statusQueue.offer(machineStatus);
+                        redisService.set(machineId, statusQueue, (long) 120);
                     }
                 }
             }
@@ -228,10 +231,12 @@ public class ControlOptionController {
             else if (version == 1) {
                 response = coreV1Service.configHeat(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
-                    if(machineV1Status!=null) {
-                        machineV1Status.setHeat(commandValue);
-                        redisService.set(machineId,machineV1Status,(long)120);
+                    if (redisService.exists(machineId) == true) {
+                        LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
+                        MachineStatus machineStatus = statusQueue.getLast();
+                        machineStatus.setHeat(commandValue);
+                        statusQueue.offer(machineStatus);
+                        redisService.set(machineId, statusQueue, (long) 120);
                     }
                 }
             }
@@ -241,10 +246,12 @@ public class ControlOptionController {
             else if (version == 1) {
                 response = coreV1Service.configMode(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
-                    if(machineV1Status!=null) {
-                        machineV1Status.setMode(commandValue);
-                        redisService.set(machineId,machineV1Status,(long)120);
+                    if (redisService.exists(machineId) == true) {
+                        LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
+                        MachineStatus machineStatus = statusQueue.getLast();
+                        machineStatus.setMode(commandValue);
+                        statusQueue.offer(machineStatus);
+                        redisService.set(machineId, statusQueue, (long) 120);
                     }
                 }
             }
@@ -323,10 +330,12 @@ public class ControlOptionController {
             response = coreV1Service.configSpeed(machineId, speed, version);
             //设置成功则更新缓存
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
-                if(machineV1Status!=null) {
-                    machineV1Status.setVolume(speed);
-                    redisService.set(machineId,machineV1Status,(long)120);
+                if (redisService.exists(machineId) == true) {
+                    LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
+                    MachineStatus machineStatus = statusQueue.getLast();
+                    machineStatus.setVolume(speed);
+                    statusQueue.offer(machineStatus);
+                    redisService.set(machineId, statusQueue, (long) 120);
                 }
             }
         }
@@ -383,10 +392,12 @@ public class ControlOptionController {
 
             //设置成功更新缓存
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                MachineStatus machineV1Status = (MachineStatus) redisService.get(machineId);
-                if(machineV1Status!=null) {
-                    machineV1Status.setLight(light);
-                    redisService.set(machineId,machineV1Status,(long)120);
+                if (redisService.exists(machineId) == true) {
+                    LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
+                    MachineStatus machineStatus = statusQueue.getLast();
+                    machineStatus.setLight(light);
+                    statusQueue.offer(machineStatus);
+                    redisService.set(machineId, statusQueue, (long) 120);
                 }
             }
         }

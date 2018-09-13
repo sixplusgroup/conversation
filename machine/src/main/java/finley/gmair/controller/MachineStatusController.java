@@ -1,8 +1,10 @@
 package finley.gmair.controller;
 
 
+import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.machine.MachinePartialStatus;
+import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
@@ -12,7 +14,6 @@ import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import finley.gmair.model.machine.MachineStatus;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -340,12 +341,13 @@ public class MachineStatusController {
             int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
             switch (version) {
                 case 1:
-                    finley.gmair.model.machine.v1.MachineStatus machineStatusV1 = (finley.gmair.model.machine.v1.MachineStatus)redisService.get(machineId);
-                    if (machineStatusV1 != null)
-                        machineV1StatusList.add(machineStatusV1);
+                    LimitQueue<finley.gmair.model.machine.v1.MachineStatus> machineStatusV1Queue = (LimitQueue<finley.gmair.model.machine.v1.MachineStatus>)redisService.get(machineId);
+                    if (machineStatusV1Queue != null)
+                        machineV1StatusList.add(machineStatusV1Queue.getLast());
                     break;
                 case 2:
-                    MachineStatus machineStatusV2 = (MachineStatus)redisService.get(machineId);
+                    LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>)redisService.get(machineId);
+                    MachineStatus machineStatusV2 = statusQueue.getLast();
                     if (machineStatusV2 != null)
                         machineV2StatusList.add(machineStatusV2);
                     break;

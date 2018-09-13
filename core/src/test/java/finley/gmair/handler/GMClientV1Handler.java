@@ -27,11 +27,14 @@ public class GMClientV1Handler implements Runnable {
 
     private SocketChannel socketChannel;
 
+    private String uid;
+
     private volatile boolean stop;
 
-    public GMClientV1Handler(String host, int port) {
+    public GMClientV1Handler(String host, int port, String uid) {
         this.host = host == null ? "127.0.0.1" : host;
         this.port = port;
+        this.uid = uid;
         this.sleepTime = 10000;
 
         try {
@@ -151,7 +154,7 @@ public class GMClientV1Handler implements Runnable {
 
         byte[] CTF = new byte[]{0x02};
         byte[] CID = new byte[]{0x00};
-        byte[] UID = ByteUtil.string2byte("zxczxc", 12);
+        byte[] UID = ByteUtil.string2byte(this.uid, 12);
         //byte[] UID = new byte[]{-0x15,-0x34,0x11,0x11,0x11,0x22,0x00,0x00,0x22,0x00,0x00,0x07};
         byte[] LEN = new byte[]{0x20};
         byte[] DATA = new byte[]{0x00, 0x02, 0x33, 0x22, 0x01, 0x11, 0x11, 0x11, 0x00, 0x11, 0x01, 0x01, 0x01, 0x01};

@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.MachineStatusMongoDao;
+import finley.gmair.dao.MachineStatusRedisDao;
 import finley.gmair.dao.MachineStatusStatisticsDao;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachinePm2_5;
@@ -27,11 +28,14 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
     @Autowired
     private MachineStatusStatisticsDao machineStatusStatisticsDao;
 
+    @Autowired
+    private MachineStatusRedisDao machineStatusRedisDao;
+
     @Override
     public ResultData handleHourly() {
         int lastHour = LocalDateTime.now().getHour() - 1;
         ResultData result = new ResultData();
-        ResultData response = machineStatusMongoDao.queryHourlyPm25();
+        ResultData response = machineStatusRedisDao.queryHourlyPm25();
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());

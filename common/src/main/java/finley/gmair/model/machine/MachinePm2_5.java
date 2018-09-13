@@ -48,4 +48,9 @@ public class MachinePm2_5 extends Entity{
         this.index = index;
         this.pm2_5 = pm2_5;
     }
+
+    public MachinePm2_5(String uid, double pm2_5) {
+        this.uid = uid;
+        this.pm2_5 = pm2_5;
+    }
 }

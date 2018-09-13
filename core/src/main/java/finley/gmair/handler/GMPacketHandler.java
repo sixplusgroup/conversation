@@ -1,6 +1,7 @@
 package finley.gmair.handler;
 
 import com.alibaba.fastjson.JSON;
+import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.model.machine.MachineStatus;
@@ -150,7 +151,16 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 //                        System.out.println(new StringBuffer("Machine status received: " + JSONObject.toJSONString(status)));
                         communicationService.create(status);
                         CorePool.getComExecutor().execute(new Thread(() -> {
-                            redisService.set(uid, status, (long) 120);
+                            LimitQueue<MachineStatus> queue = null;
+                            if(redisService.exists(uid)==false){
+                                queue = new LimitQueue<>(120);
+                                queue.offer(status);
+                            }else{
+                                queue = (LimitQueue<MachineStatus>)redisService.get(uid);
+                                queue.offer(status);
+                            }
+                            redisService.set(uid,queue,(long) 120);
+                            //redisService.set(uid, status, (long) 120);
                         }));
                     } else {
                         Field[] fields = PacketInfo.class.getDeclaredFields();
@@ -254,7 +264,16 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     finley.gmair.model.machine.v1.MachineStatus machineV1Status = new finley.gmair.model.machine.v1.MachineStatus(uid, status.getPm25(), status.getTemperature(), status.getHumidity(), status.getCo2(), status.getVelocity(), status.getPower(), status.getWorkMode(), status.getHeat(), status.getLight());
                     communicationService.create(status);                //把接收到的全存mongo数据库
                     CorePool.getComExecutor().execute(new Thread(() -> {
-                        redisService.set(uid, machineV1Status, (long) 120); //把接收到的数据去掉一些没用的字段,存入缓存
+                        LimitQueue<finley.gmair.model.machine.v1.MachineStatus> queue = null;
+                        if(redisService.exists(uid)==false){
+                            queue = new LimitQueue<>(720);
+                            queue.offer(machineV1Status);
+                        }else{
+                            queue = (LimitQueue<finley.gmair.model.machine.v1.MachineStatus>)redisService.get(uid);
+                            queue.offer(machineV1Status);
+                        }
+                        redisService.set(uid,queue,(long) 120);
+//                        redisService.set(uid, machineV1Status, (long) 120); //存入缓存
                     }));
                 }
             }));
