@@ -1,9 +1,7 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.machine.ModelEnabledComponent;
-import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.ModelEnabledComponentService;
-import finley.gmair.service.QRCodeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

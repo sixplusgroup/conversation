@@ -1,21 +1,13 @@
 package finley.gmair.controller;
-
-
-import finley.gmair.form.air.MachineAirQualityForm;
-import finley.gmair.model.air.MachineAirQuality;
-import finley.gmair.model.machine.BoardVersion;
-import finley.gmair.model.machine.MachineStatus;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.machine.BoardVersionForm;
 import finley.gmair.form.preparation.BatchBindForm;
 import finley.gmair.model.machine.BoardVersion;
-import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.service.BoardVersionService;
 import finley.gmair.service.MachineQrcodeBindService;
