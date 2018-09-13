@@ -1,25 +1,23 @@
 package finley.gmair.service.impl;
 
 
-import com.alibaba.fastjson.JSONObject;
-import finley.gmair.dao.*;
-import finley.gmair.model.machine.*;
-import finley.gmair.service.QRCodeService;
+import finley.gmair.dao.LatestPM2_5Dao;
+import finley.gmair.dao.MachineStatusMongoDao;
+import finley.gmair.model.machine.LatestPM2_5;
+import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
 @RabbitListener(queues = "partial-data-queue")
-public class PartialDataReceiver {
+public class V2PartialStatusReceiver {
 
     @Autowired
     MachineStatusMongoDao machineStatusMongoDao;
@@ -27,14 +25,6 @@ public class PartialDataReceiver {
     @Autowired
     private LatestPM2_5Dao latestPM2_5Dao;
 
-    @Autowired
-    private MachineQrcodeBindDao machineQrcodeBindDao;
-
-    @Autowired
-    private BoundaryPM2_5Dao boundaryPM2_5Dao;
-
-    @Autowired
-    private QRCodeDao qrCodeDao;
 
     @RabbitHandler
     public void process(String uid) {

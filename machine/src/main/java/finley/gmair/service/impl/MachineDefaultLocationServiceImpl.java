@@ -1,17 +1,13 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.dao.IdleMachineDao;
 import finley.gmair.dao.MachineDefaultLocationDao;
-import finley.gmair.model.machine.IdleMachine;
 import finley.gmair.model.machine.MachineDefaultLocation;
-import finley.gmair.service.IdleMachineService;
 import finley.gmair.service.MachineDefaultLocationService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 

@@ -3,7 +3,6 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.MachineStatusMongoDao;
 import finley.gmair.model.machine.MachineStatus;
-import finley.gmair.service.MachineStatusCacheService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -14,15 +13,14 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+
+//该方法暂时被废弃
 @Component
 @RabbitListener(queues = "machine-queue")
-public class MachineReceiver {
+public class MachineV2StatusReceiver {
 
     @Autowired
     MachineStatusMongoDao machineStatusMongoDao;
-
-    @Autowired
-    MachineStatusCacheService machineStatusCacheService;
 
     @Autowired
     RedisService redisService;

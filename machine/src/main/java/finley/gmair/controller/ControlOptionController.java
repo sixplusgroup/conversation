@@ -44,9 +44,6 @@ public class ControlOptionController {
     private BoardVersionService boardVersionService;
 
     @Autowired
-    private MachineV1StatusCacheService machineV1StatusCacheService;
-
-    @Autowired
     private RedisService redisService;
 
     //先查control_option表,如果对应的操作不存在,则创建.

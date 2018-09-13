@@ -4,6 +4,7 @@ package finley.gmair.controller;
 import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.machine.MachinePartialStatus;
 import finley.gmair.service.*;
+import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachinePm2_5Vo;
@@ -39,10 +40,7 @@ public class MachineStatusController {
     private BoardVersionService boardVersionService;
 
     @Autowired
-    private MachineV1StatusCacheService machineV1StatusCacheService;
-
-    @Autowired
-    private MachineStatusCacheService machineStatusCacheService;
+    private RedisService redisService;
 
 
     @PostMapping("/schedule/hourly")
@@ -342,12 +340,12 @@ public class MachineStatusController {
             int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
             switch (version) {
                 case 1:
-                    finley.gmair.model.machine.v1.MachineStatus machineStatusV1 = machineV1StatusCacheService.fetch(machineId);
+                    finley.gmair.model.machine.v1.MachineStatus machineStatusV1 = (finley.gmair.model.machine.v1.MachineStatus)redisService.get(machineId);
                     if (machineStatusV1 != null)
                         machineV1StatusList.add(machineStatusV1);
                     break;
                 case 2:
-                    MachineStatus machineStatusV2 = machineStatusCacheService.fetch(machineId);
+                    MachineStatus machineStatusV2 = (MachineStatus)redisService.get(machineId);
                     if (machineStatusV2 != null)
                         machineV2StatusList.add(machineStatusV2);
                     break;
