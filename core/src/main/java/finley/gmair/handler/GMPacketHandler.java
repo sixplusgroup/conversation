@@ -75,26 +75,32 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             byte[] first = new byte[FIRST_PACKET_LEN];
             try {
                 System.arraycopy(request, 0, first, 0, FIRST_PACKET_LEN);
+                handleRequest(first, ctx);
             } catch (Exception e) {
                 System.out.println("error happen when the receive byte = " + ByteBufUtil.hexDump(request));
                 System.out.println("first_packet_len = " + first.length);
             }
-            handleRequest(first, ctx);
         }
         //第二代板子
         if (request[0] == (byte) 0xFF) {
             int FRH_LEN = 1, CTF_LEN = 1, CIT_LEN = 1, UID_LEN = 12, TIM_LEN = 8, LEN_LEN = 1, CRC_LEN = 2, FRT_LEN = 1;
             int FIRST_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[23]});
             int FIRST_PACKET_LEN = FRH_LEN + CTF_LEN + CIT_LEN + UID_LEN + TIM_LEN + LEN_LEN + FIRST_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
-            byte[] first = new byte[FIRST_PACKET_LEN];
-            System.arraycopy(request, 0, first, 0, FIRST_PACKET_LEN);
+            //byte[] first = new byte[FIRST_PACKET_LEN];
+            //System.arraycopy(request, 0, first, 0, FIRST_PACKET_LEN);
             handleRequest(request, ctx);
+
+            //处理粘包
             if (request.length > FIRST_PACKET_LEN) {
                 int SECOND_PACKET_DAT_LEN = ByteUtil.byte2int(new byte[]{request[FIRST_PACKET_LEN + 23]});
                 int SECOND_PACKET_LEN = FRH_LEN + CTF_LEN + CIT_LEN + UID_LEN + TIM_LEN + LEN_LEN + SECOND_PACKET_DAT_LEN + CRC_LEN + FRT_LEN;
                 byte[] second = new byte[SECOND_PACKET_LEN];
-                System.arraycopy(request, FIRST_PACKET_LEN, second, 0, SECOND_PACKET_LEN);
-                handleRequest(second, ctx);
+                try {
+                    System.arraycopy(request, FIRST_PACKET_LEN, second, 0, SECOND_PACKET_LEN);
+                    handleRequest(second, ctx);
+                }catch (Exception e){
+
+                }
             }
         }
 
