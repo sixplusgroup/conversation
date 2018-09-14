@@ -55,8 +55,8 @@ public class PreBindDaoImpl extends BaseDao implements PreBindDao {
     public ResultData delete(String codeValue) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.machine.prebind.updateIdleMachine", codeValue);
             sqlSession.delete("gmair.machine.prebind.deletePrebind", codeValue);
+            sqlSession.update("gmair.machine.prebind.updateIdleMachine", codeValue);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

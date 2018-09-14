@@ -7,7 +7,8 @@ public class NIOServer {
     public static void main(String[] args) {
         int port = 8888;
         //服务器host: 118.31.78.254     my host: 192.168.2.59
-        TimeClientHandle server = new TimeClientHandle( null, port);
+        String uid = "asdasd";
+        TimeClientHandle server = new TimeClientHandle( null, port,uid,5000);
         new Thread(server, "server").start();
     }
 }

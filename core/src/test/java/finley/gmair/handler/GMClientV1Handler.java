@@ -31,11 +31,11 @@ public class GMClientV1Handler implements Runnable {
 
     private volatile boolean stop;
 
-    public GMClientV1Handler(String host, int port, String uid) {
+    public GMClientV1Handler(String host, int port, String uid, long sleepTime) {
         this.host = host == null ? "127.0.0.1" : host;
         this.port = port;
         this.uid = uid;
-        this.sleepTime = 10000;
+        this.sleepTime = sleepTime;
 
         try {
             selector = Selector.open();

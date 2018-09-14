@@ -15,6 +15,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -183,6 +184,45 @@ public class BoardVersionController {
             preBindService.create(code);
         }
         result.setData(errorList);
+        return result;
+    }
+
+    @Transactional
+    @PostMapping(value = "/bind/delete")
+    public ResultData deletePreBind(String qrcode,String machineId) {
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(qrcode)||StringUtils.isEmpty(machineId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the qrcode and machineId");
+            return result;
+        }
+
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("codeValue",qrcode);
+        condition.put("machineId",machineId);
+        ResultData response = preBindService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find the qrcode-machineId");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error to find the qrcode-machineId");
+            return result;
+        }
+        //new Thread(()->{
+            condition.clear();
+            condition.put("codeValue",qrcode);
+            condition.put("blockFlag",true);
+            machineQrcodeBindService.modifyByQRcode(condition);
+        //});
+        response=preBindService.deletePreBind(qrcode);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error to delete prebind");
+            return result;
+        }
+        result.setDescription("success to delete prebind and code_machine_bind");
         return result;
     }
 }

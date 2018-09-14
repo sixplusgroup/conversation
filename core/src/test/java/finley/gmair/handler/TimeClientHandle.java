@@ -23,16 +23,19 @@ public class TimeClientHandle implements Runnable{
 
     private int port;
 
+    private String uid;
+
     private Selector selector;
 
     private SocketChannel socketChannel;
 
     private volatile boolean stop;
 
-    public TimeClientHandle(String host, int port) {
+    public TimeClientHandle(String host, int port, String uid, long sleepTime) {
         this.host = host == null ? "127.0.0.1" : host;
         this.port = port;
-        this.sleepTime = 5000;
+        this.uid = uid;
+        this.sleepTime = sleepTime;
 
         try {
             selector = Selector.open();
@@ -144,7 +147,7 @@ public class TimeClientHandle implements Runnable{
 
         byte[] CID = new byte[]{0x00};
 
-        byte[] UID = ByteUtil.string2byte("asdasd", 12);
+        byte[] UID = ByteUtil.string2byte(this.uid, 12);
 
         byte[] LEN = new byte[]{0x0D};
 

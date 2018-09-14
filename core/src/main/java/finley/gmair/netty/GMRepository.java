@@ -49,18 +49,16 @@ public class GMRepository {
         return cache.get(key);
     }
 
-    public GMRepository remove(String key) {
-        cache.remove(key);
-        return this;
-    }
-
     public GMRepository remove(ChannelHandlerContext ctx) {
+        String removeKey = null;
         for (String key : cache.keySet()) {
             if (cache.get(key).equals(ctx)) {
                 CorePool.getLogExecutor().execute(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress()));
-                return remove(key);
+                removeKey = key;
             }
         }
+        if (removeKey != null)
+            cache.remove(removeKey);
         return this;
     }
 
@@ -90,31 +88,31 @@ public class GMRepository {
         return result;
     }
 
-    public ResultData onlineList(String machineIdList){
+    public ResultData onlineList(String machineIdList) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(machineIdList)){
+        if (StringUtils.isEmpty(machineIdList)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
         JSONArray array = new JSONArray();
         try {
             array = JSON.parseArray(machineIdList);
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
-        if(array.isEmpty()){
+        if (array.isEmpty()) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             return result;
         }
 
         JSONArray onlineList = new JSONArray();
-        for (Object machineId:array){
-            if(cache.containsKey((String)machineId)){
+        for (Object machineId : array) {
+            if (cache.containsKey((String) machineId)) {
                 onlineList.add(machineId);
             }
         }
-        if(onlineList.size()==0){
+        if (onlineList.size() == 0) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
         }
         result.setData(onlineList);

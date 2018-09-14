@@ -95,4 +95,10 @@ public class MachineController {
     public ResultData bindBatch(String bindList) {
         return bindVersionService.bindBatchVersion(bindList);
     }
+
+
+    @PostMapping(value = "/prebind/delete")
+    public ResultData deletePrebind(String qrcode, String machineId) {
+        return bindVersionService.deletePreBind(qrcode, machineId);
+    }
 }
