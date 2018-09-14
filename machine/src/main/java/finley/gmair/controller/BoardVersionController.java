@@ -210,12 +210,14 @@ public class BoardVersionController {
             result.setDescription("error to find the qrcode-machineId");
             return result;
         }
-        //new Thread(()->{
-            condition.clear();
-            condition.put("codeValue",qrcode);
-            condition.put("blockFlag",true);
-            machineQrcodeBindService.modifyByQRcode(condition);
-        //});
+
+        //先把machine-qrcode-bind表记录blockFlag置为1
+        condition.clear();
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",true);
+        machineQrcodeBindService.modifyByQRcode(condition);
+
+        //再删除prebind表中记录
         response=preBindService.deletePreBind(qrcode);
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
