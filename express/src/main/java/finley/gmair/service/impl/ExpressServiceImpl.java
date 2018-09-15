@@ -164,4 +164,14 @@ public class ExpressServiceImpl implements ExpressService {
         }
         return result;
     }
+
+    @Override
+    public ResultData deleteExpressOrder(String orderId) {
+        return expressOrderDao.deleteExpressOrder(orderId);
+    }
+
+    @Override
+    public ResultData deleteExpressParcel(String parent_express) {
+        return expressParcelDao.deleteExpressParcel(parent_express);
+    }
 }

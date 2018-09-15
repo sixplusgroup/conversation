@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "install-agent")
+@FeignClient(value = "installation-agent")
 public interface InstallService {
 
     @GetMapping("/installation/team/list")
@@ -68,4 +68,7 @@ public interface InstallService {
 
     @GetMapping("/installation/feedback/info")
     ResultData assignFeedback(@RequestParam("assignId") String assignId);
+
+    @PostMapping("/installation/assign/delete")
+    ResultData deleteAssign(@RequestParam("codeValue") String codeValue);
 }

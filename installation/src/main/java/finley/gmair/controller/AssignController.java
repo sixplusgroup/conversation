@@ -471,4 +471,23 @@ public class AssignController {
         return result;
     }
 
+    @PostMapping("/delete")
+    public ResultData delete(String codeValue) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(codeValue)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill the required fields");
+            return result;
+        }
+        ResultData response = assignService.deleteAssign(codeValue);
+        switch (response.getResponseCode()) {
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to delete installation assign");
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("Succeed to delete installation assign");
+        }
+        return result;
+    }
 }

@@ -110,4 +110,17 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData deleteAssign(String codeValue) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.installation.assign.delete", codeValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getLocalizedMessage());
+        }
+        return result;
+    }
 }

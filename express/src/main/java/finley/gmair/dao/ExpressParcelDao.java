@@ -14,4 +14,6 @@ public interface ExpressParcelDao {
     ResultData updateSingle(Map<String, Object> condition);
 
     ResultData updateExpressParcel(Map<String, Object> condition);
+
+    ResultData deleteExpressParcel(String parent_express);
 }

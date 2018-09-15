@@ -165,4 +165,9 @@
         </set>
         WHERE assign_id = #{assignId}
     </update>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from gmair_install.install_assign
+        where code_value = #{codeValue}
+    </delete>
 </mapper>

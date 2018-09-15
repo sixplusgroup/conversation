@@ -13,4 +13,6 @@ public interface ExpressOrderDao {
     ResultData updateSingleExpressOrder(Map<String, Object> condition);
 
     ResultData updateExpressOrder(Map<String, Object> condition);
+
+    ResultData deleteExpressOrder(String orderId);
 }

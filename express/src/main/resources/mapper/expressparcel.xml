@@ -68,4 +68,10 @@
             #{expressParcel.expressId}
         </foreach>
     </update>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from gmair_express.parcel_express
+        where
+        parent_express = #{parentExpress}
+    </delete>
 </mapper>

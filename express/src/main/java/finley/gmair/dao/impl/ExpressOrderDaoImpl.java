@@ -71,4 +71,17 @@ public class ExpressOrderDaoImpl extends BaseDao implements ExpressOrderDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData deleteExpressOrder(String orderId) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.express.order.delete", orderId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }
