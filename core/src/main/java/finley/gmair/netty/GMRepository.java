@@ -53,18 +53,18 @@ public class GMRepository {
         return cache.get(key);
     }
 
-    public GMRepository remove(ChannelHandlerContext ctx) {
-        String removeKey = null;
-        for (String key : cache.keySet()) {
-            if (cache.get(key).equals(ctx)) {
-                CorePool.getLogExecutor().execute(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress()));
-                removeKey = key;
-            }
-        }
-        if (removeKey != null)
-            cache.remove(removeKey);
-        return this;
-    }
+//    public GMRepository remove(ChannelHandlerContext ctx) {
+//        String removeKey = null;
+//        for (String key : cache.keySet()) {
+//            if (cache.get(key).equals(ctx)) {
+//                CorePool.getLogExecutor().execute(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress()));
+//                removeKey = key;
+//            }
+//        }
+//        if (removeKey != null)
+//            cache.remove(removeKey);
+//        return this;
+//    }
 
     public ResultData list() {
         ResultData result = new ResultData();

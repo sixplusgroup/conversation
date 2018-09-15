@@ -58,7 +58,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         ctx.channel().close();
-        repository.remove(ctx);
+        //repository.remove(ctx);
     }
 
     @Override
@@ -302,7 +302,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().close();
-        repository.remove(ctx);
+        //repository.remove(ctx);
     }
 
     private void outputHex(ByteBuf byteBuf) {
