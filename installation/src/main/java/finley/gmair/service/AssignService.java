@@ -17,4 +17,6 @@ public interface AssignService {
 
 
     ResultData updateAssign(Assign assign);
+
+    ResultData deleteAssign(String codeValue);
 }

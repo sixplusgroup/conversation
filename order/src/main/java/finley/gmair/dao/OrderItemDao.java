@@ -11,4 +11,6 @@ public interface OrderItemDao {
     ResultData query(Map<String, Object> condition);
 
     ResultData update(OrderItem item);
+
+    ResultData delete(String orderId);
 }

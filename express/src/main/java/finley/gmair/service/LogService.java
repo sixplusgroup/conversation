@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @CrossOrigin
 @FeignClient("log-agent")
 public interface LogService {
-    @PostMapping("/log/system/create")
-    ResultData createSysLog(@RequestParam("eventStatus") String eventStatus, @RequestParam("module") String module, @RequestParam("logDetail") String logDetail, @RequestParam("ip") String ip);
+    @PostMapping(value = "/log/system/create")
+    ResultData createSysLog(@RequestParam("eventStatus") String eventStatus,
+                            @RequestParam("module") String module,
+                            @RequestParam("logDetail") String logDetail,
+                            @RequestParam("ip") String ip);
 }

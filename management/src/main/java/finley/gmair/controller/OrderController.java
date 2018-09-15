@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.order.OrderDeliverForm;
 import finley.gmair.model.order.PlatformOrder;
@@ -94,6 +96,67 @@ public class OrderController {
             e.printStackTrace();
         }
 
+        return result;
+    }
+
+    @PostMapping("/reset")
+    public ResultData reset(String orderId) {
+        ResultData result = new ResultData();
+        try {
+            ResultData response = expressService.queryCodeValue(orderId);
+
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(response.getResponseCode());
+                result.setDescription(response.getDescription());
+                return result;
+            }
+            JSONArray jsonArray = JSON.parseArray(JSON.toJSONString(response.getData()));
+            for (Object item : jsonArray) {
+                JSONObject json = JSON.parseObject(JSON.toJSONString(item));
+                String codeValue = json.getString("codeValue");
+                response = installService.deleteAssign(codeValue);
+            }
+            response = expressService.deleteExpress(orderId);
+            response = orderService.resetOrder(orderId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/delete")
+    public ResultData delete(String orderId) {
+        ResultData result = new ResultData();
+        try {
+            ResultData response = expressService.queryCodeValue(orderId);
+
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(response.getResponseCode());
+                result.setDescription(response.getDescription());
+                return result;
+            }
+
+            List<Object> list = (List<Object>)response.getData();
+            new Thread(() -> {
+                ResultData rd = new ResultData();
+                for (Object item : list) {
+                    String codeValue = ((LinkedHashMap<String, Object>)item).get("codeValue").toString();
+                    rd = installService.deleteAssign(codeValue);
+                }
+            }).start();
+
+            new Thread(() -> {
+               ResultData rd = expressService.deleteExpress(orderId);
+          }).start();
+
+            response = orderService.deleteOrder(orderId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
         return result;
     }
 }

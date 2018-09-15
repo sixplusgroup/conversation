@@ -11,4 +11,8 @@ public interface OrderDao {
     ResultData queryOrder(Map<String, Object> condition);
 
     ResultData updateOrder(PlatformOrder order);
+
+    ResultData resetOrder(Map<String, Object> condition);
+
+    ResultData deleteOrder(String orderId);
 }

@@ -104,4 +104,9 @@ public class AssignServiceImpl implements AssignService {
         }
         return result;
     }
+
+    @Override
+    public ResultData deleteAssign(String codeValue) {
+        return assignDao.deleteAssign(codeValue);
+    }
 }

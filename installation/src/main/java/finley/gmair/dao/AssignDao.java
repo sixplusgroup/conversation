@@ -16,4 +16,6 @@ public interface AssignDao {
     ResultData queryAssign3(Map<String, Object> condition);
 
     ResultData updateAssign(Assign assign);
+
+    ResultData deleteAssign(String codeValue);
 }

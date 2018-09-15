@@ -21,4 +21,8 @@ public interface ExpressService {
     ResultData createExpressParcel(ExpressParcel expressParcel);
 
     ResultData fetchExpressParcel(Map<String, Object> condition);
+
+    ResultData deleteExpressOrder(String orderId);
+
+    ResultData deleteExpressParcel(String parent_express);
 }

@@ -59,4 +59,30 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData resetOrder(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.order.platform.reset", condition);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData deleteOrder(String orderId) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.order.platform.delete", orderId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

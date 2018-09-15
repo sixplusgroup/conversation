@@ -27,4 +27,10 @@ public interface OrderService {
 
     @PostMapping("/order/deliver")
     ResultData orderDeliver(@RequestParam("orderId") String orderId);
+
+    @PostMapping("/order/delete")
+    ResultData deleteOrder(@RequestParam("orderId") String orderId);
+
+    @PostMapping("/order/reset")
+    ResultData resetOrder(@RequestParam("orderId") String orderId);
 }

@@ -2,10 +2,7 @@ package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.PathParam;
 
@@ -43,4 +40,10 @@ public interface ExpressService {
     ResultData createCompany(@RequestParam("expressCode") String expressCode,
                              @RequestParam("expressName") String expressName,
                              @RequestParam("expressUrl") String expressUrl);
+
+    @RequestMapping(value = "/express/order/query/parcel/{orderId}", method = RequestMethod.GET)
+    ResultData queryCodeValue(@PathVariable("orderId") String orderId);
+
+    @PostMapping("/express/delete")
+    ResultData deleteExpress(@RequestParam("orderId") String orderId);
 }

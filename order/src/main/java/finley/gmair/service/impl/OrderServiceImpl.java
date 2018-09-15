@@ -263,6 +263,17 @@ public class OrderServiceImpl implements OrderService {
         return orderLocationRetryCountDao.insert(orderLocationRetryCount);
     }
 
+    @Override
+    public ResultData resetPlatformOrder(Map<String, Object> condition) {
+        return orderDao.resetOrder(condition);
+    }
+
+    @Override
+    public ResultData deletePlatformOrder(String orderId) {
+        orderItemDao.delete(orderId);
+        return orderDao.deleteOrder(orderId);
+    }
+
     private int[] index(final String[] header, Row row) {
         int[] index = new int[header.length];
         List<String> list = new ArrayList<>();

@@ -74,6 +74,7 @@ public class ExpressController {
         response = expressService.createExpressCompany(company);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            logService.createSysLog("SUCCESS", "express", new StringBuffer("Succeed to create a new express company named ").append(companyName).toString(), IPUtil.getIP(request));
             result.setData(response.getData());
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -81,7 +82,6 @@ public class ExpressController {
             logService.createSysLog("ERROR", "express", new StringBuffer("Fail to create a new express company named ").append(companyName).toString(), IPUtil.getIP(request));
             result.setDescription(new StringBuffer("Fail to add express company: ").append(companyName).toString());
         }
-        logService.createSysLog("SUCCESS", "express", new StringBuffer("Succeed to create a new express company named ").append(companyName).toString(), IPUtil.getIP(request));
         return result;
     }
 
@@ -264,7 +264,7 @@ public class ExpressController {
         ResultData response;
         if (!StringUtils.isEmpty(codeValue)) {
             condition.put("codeValue", codeValue);
-            condition.put("blockflag", false);
+            condition.put("blockFlag", false);
             response = expressService.fetchExpressParcel(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -427,6 +427,31 @@ public class ExpressController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Succeed to set express status to received.");
+        return result;
+    }
+
+    @PostMapping(value = "/delete")
+    public ResultData delete(String orderId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(orderId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill the required field");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        ResultData response = expressService.fetchExpressOrder(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve expressOrder, please try again later");
+            return result;
+        }
+        List<ExpressOrder> list = (List<ExpressOrder>) response.getData();
+        for (ExpressOrder expressOrder : list) {
+            String parent_express = expressOrder.getExpressId();
+            expressService.deleteExpressParcel(parent_express);
+        }
+        result = expressService.deleteExpressOrder(orderId);
         return result;
     }
 

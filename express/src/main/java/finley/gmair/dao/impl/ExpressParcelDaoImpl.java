@@ -69,4 +69,17 @@ public class ExpressParcelDaoImpl extends BaseDao implements ExpressParcelDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData deleteExpressParcel(String parent_express) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.express.parcel.delete", parent_express);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

@@ -13,6 +13,7 @@ import finley.gmair.util.ResultData;
 import finley.gmair.vo.location.OrderLocationRetryCountVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -341,4 +342,46 @@ public class OrderController {
         return result;
     }
 
+    @PostMapping(value = "/delete")
+    public ResultData deleteOrder(String orderId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(orderId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill the required fields");
+            return result;
+        }
+        ResultData response = orderService.deletePlatformOrder(orderId);
+        switch (response.getResponseCode()){
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to delete order");
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("Succeed to delete order");
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/reset")
+    public ResultData resetOrder(String orderId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(orderId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill the required fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("status", OrderStatus.PAYED.getValue());
+        ResultData response = orderService.resetPlatformOrder(condition);
+        switch (response.getResponseCode()){
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to reset order");
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("Succeed to reset order");
+        }
+        return result;
+    }
 }

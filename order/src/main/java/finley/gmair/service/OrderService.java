@@ -16,4 +16,8 @@ public interface OrderService {
     ResultData process(MultipartFile file);
 
     ResultData insertOrderLocationRetryCount(String orderId, int retryCount);
+
+    ResultData resetPlatformOrder(Map<String, Object> condition);
+
+    ResultData deletePlatformOrder(String orderId);
 }
