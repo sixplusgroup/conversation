@@ -34,7 +34,11 @@ public class GMRepository {
 
     public GMRepository() {
         super();
-        cache = ExpiringMap.builder().expiration(2, TimeUnit.MINUTES).expirationPolicy(ExpirationPolicy.ACCESSED).expirationListener((key, ctx) -> CorePool.getCleanPool().submit(() -> (((ChannelHandlerContext) ctx).close()))).build();
+        cache = ExpiringMap.builder()
+                .expiration(2, TimeUnit.MINUTES)
+                .expirationPolicy(ExpirationPolicy.ACCESSED)
+                .expirationListener((key, ctx) -> CorePool.getCleanPool().submit(() -> (((ChannelHandlerContext) ctx).close())))
+                .build();
     }
 
     public GMRepository push(String key, ChannelHandlerContext value) {
