@@ -85,6 +85,6 @@
     <delete id="delete" parameterType="java.lang.String">
         delete from gmair_express.order_express
         where
-        order_id = #{orderId}
+        express_id = #{expressId}
     </delete>
 </mapper>

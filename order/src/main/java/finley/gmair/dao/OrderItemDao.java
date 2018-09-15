@@ -12,5 +12,5 @@ public interface OrderItemDao {
 
     ResultData update(OrderItem item);
 
-    ResultData delete(String orderId);
+    ResultData delete(String itemId);
 }

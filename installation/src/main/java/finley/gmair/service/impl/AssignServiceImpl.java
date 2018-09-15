@@ -106,7 +106,7 @@ public class AssignServiceImpl implements AssignService {
     }
 
     @Override
-    public ResultData deleteAssign(String codeValue) {
-        return assignDao.deleteAssign(codeValue);
+    public ResultData deleteAssign(String assignId) {
+        return assignDao.deleteAssign(assignId);
     }
 }

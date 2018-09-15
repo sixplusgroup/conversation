@@ -22,7 +22,9 @@ public interface ExpressService {
 
     ResultData fetchExpressParcel(Map<String, Object> condition);
 
-    ResultData deleteExpressOrder(String orderId);
+    ResultData deleteExpressOrder(String expressId);
 
-    ResultData deleteExpressParcel(String parent_express);
+    ResultData deleteExpressParcel(String expressId);
+
+    ResultData fetchExpressToken(Map<String, Object> condition);
 }

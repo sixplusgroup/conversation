@@ -17,5 +17,5 @@ public interface AssignDao {
 
     ResultData updateAssign(Assign assign);
 
-    ResultData deleteAssign(String codeValue);
+    ResultData deleteAssign(String assignId);
 }

@@ -62,10 +62,10 @@ public class OrderItemDaoImpl extends BaseDao implements OrderItemDao {
     }
 
     @Override
-    public ResultData delete(String orderId) {
+    public ResultData delete(String itemId) {
         ResultData result = new ResultData();
         try {
-            sqlSession.delete("gmair.order.platform.item.delete", orderId);
+            sqlSession.delete("gmair.order.platform.item.delete", itemId);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

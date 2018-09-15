@@ -270,8 +270,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResultData deletePlatformOrder(String orderId) {
-        orderItemDao.delete(orderId);
-        return orderDao.deleteOrder(orderId);
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        ResultData response = orderItemDao.query(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query order item");
+            return result;
+        }
+        List<OrderItem> list = (List<OrderItem>) response.getData();
+        for (OrderItem item : list) {
+            orderItemDao.delete(item.getItemId());
+        }
+        result = orderDao.deleteOrder(orderId);
+        return result;
     }
 
     private int[] index(final String[] header, Row row) {

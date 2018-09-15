@@ -3,6 +3,7 @@ package finley.gmair.service.impl;
 import finley.gmair.dao.ExpressCompanyDao;
 import finley.gmair.dao.ExpressOrderDao;
 import finley.gmair.dao.ExpressParcelDao;
+import finley.gmair.dao.ExpressTokenDao;
 import finley.gmair.model.express.*;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
@@ -26,6 +27,9 @@ public class ExpressServiceImpl implements ExpressService {
 
     @Autowired
     private ExpressParcelDao expressParcelDao;
+
+    @Autowired
+    private ExpressTokenDao expressTokenDao;
 
     @Override
     public ResultData createExpressCompany(ExpressCompany company) {
@@ -166,12 +170,30 @@ public class ExpressServiceImpl implements ExpressService {
     }
 
     @Override
-    public ResultData deleteExpressOrder(String orderId) {
-        return expressOrderDao.deleteExpressOrder(orderId);
+    public ResultData deleteExpressOrder(String expressId) {
+        return expressOrderDao.deleteExpressOrder(expressId);
     }
 
     @Override
-    public ResultData deleteExpressParcel(String parent_express) {
-        return expressParcelDao.deleteExpressParcel(parent_express);
+    public ResultData deleteExpressParcel(String expressId) {
+        return expressParcelDao.deleteExpressParcel(expressId);
+    }
+
+    @Override
+    public ResultData fetchExpressToken(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = expressTokenDao.query(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to retrieve access_token");
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No access_token found");
+        }
+        return result;
     }
 }

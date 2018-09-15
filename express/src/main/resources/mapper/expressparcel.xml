@@ -72,6 +72,6 @@
     <delete id="delete" parameterType="java.lang.String">
         delete from gmair_express.parcel_express
         where
-        parent_express = #{parentExpress}
+        express_id = #{expressId}
     </delete>
 </mapper>
