@@ -479,7 +479,16 @@ public class AssignController {
             result.setDescription("please make sure you fill the required fields");
             return result;
         }
-        ResultData response = assignService.deleteAssign(codeValue);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", codeValue);
+        ResultData response = assignService.fetchAssign(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query assign");
+            return result;
+        }
+        Assign assign = ((List<Assign>) response.getData()).get(0);
+        response = assignService.deleteAssign(assign.getAssignId());
         switch (response.getResponseCode()) {
             case RESPONSE_ERROR:
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);

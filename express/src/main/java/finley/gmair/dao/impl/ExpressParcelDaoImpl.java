@@ -71,10 +71,10 @@ public class ExpressParcelDaoImpl extends BaseDao implements ExpressParcelDao {
     }
 
     @Override
-    public ResultData deleteExpressParcel(String parent_express) {
+    public ResultData deleteExpressParcel(String expressId) {
         ResultData result = new ResultData();
         try {
-            sqlSession.delete("gmair.express.parcel.delete", parent_express);
+            sqlSession.delete("gmair.express.parcel.delete", expressId);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

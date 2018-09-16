@@ -25,3 +25,10 @@ ALTER TABLE `gmair_express`.`express_company`
   ADD COLUMN `company_url` VARCHAR(100) NULL
   AFTER `company_code`;
 
+
+##2018.09.15
+CREATE TABLE `gmair_express`.`express_token` (
+  `access_token` VARCHAR(200) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL);
+

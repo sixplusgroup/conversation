@@ -446,12 +446,21 @@ public class ExpressController {
             result.setDescription("Fail to retrieve expressOrder, please try again later");
             return result;
         }
-        List<ExpressOrder> list = (List<ExpressOrder>) response.getData();
-        for (ExpressOrder expressOrder : list) {
-            String parent_express = expressOrder.getExpressId();
-            expressService.deleteExpressParcel(parent_express);
+        ExpressOrder expressOrder = ((List<ExpressOrder>) response.getData()).get(0);
+        String parent_express = expressOrder.getExpressId();
+        condition.clear();
+        condition.put("parentExpress", parent_express);
+        response = expressService.fetchExpressParcel(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve expressParcel, please try again later");
+            return result;
         }
-        result = expressService.deleteExpressOrder(orderId);
+        List<ExpressParcel> list = (List<ExpressParcel>) response.getData();
+        for (ExpressParcel expressParcel : list) {
+            expressService.deleteExpressParcel(expressParcel.getExpressId());
+        }
+        result = expressService.deleteExpressOrder(expressOrder.getExpressId());
         return result;
     }
 
