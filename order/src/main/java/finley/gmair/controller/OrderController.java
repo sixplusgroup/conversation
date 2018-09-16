@@ -216,10 +216,27 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/list")
-    public ResultData list() {
+    public ResultData list(String startTime, String endTime, String cityName, String status) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
+        if(!StringUtils.isEmpty(startTime))
+            condition.put("startTime",startTime);
+        if(!StringUtils.isEmpty(endTime))
+            condition.put("endTime",endTime);
+        if(!StringUtils.isEmpty(cityName)) {
+            condition.put("cityName", cityName + "%");
+        }
+        if(!StringUtils.isEmpty(status)) {
+            switch (status){
+                case "PAYED": condition.put("status", 0);break;
+                case "PROCESSING": condition.put("status",1);break;
+                case "FINISHED": condition.put("status",2);break;
+                case "COMMENTED": condition.put("status",3);break;
+                case "CLOSED": condition.put("status",4);break;
+            }
+
+        }
         ResultData response = orderService.fetchPlatformOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);

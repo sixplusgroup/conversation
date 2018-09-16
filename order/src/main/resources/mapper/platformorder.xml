@@ -58,12 +58,27 @@
         <if test="phone != null">
             AND phone = #{phone}
         </if>
+        <if test="cityName != null">
+            AND city like #{cityName}
+        </if>
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            <![CDATA[
+                AND create_time <= #{endTime}
+            ]]>
+        </if>
+        <if test="status != null">
+            AND order_status = #{status}
+        </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
         <if test="incomplete != null">
             AND (province IS NULL OR city IS NULL)
         </if>
+        ORDER BY create_time ASC
     </select>
 
     <update id="update" parameterType="finley.gmair.model.order.PlatformOrder">

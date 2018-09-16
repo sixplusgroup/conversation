@@ -14,7 +14,10 @@ public interface OrderService {
     ResultData channelList();
 
     @GetMapping("/order/list")
-    ResultData orderList();
+    ResultData orderList(@RequestParam("startTime") String startTime,
+                         @RequestParam("endTime") String endTime,
+                         @RequestParam("cityName") String cityName,
+                         @RequestParam("status") String status);
 
     @PostMapping("/order/create")
     ResultData orderCreate(@RequestParam("order") String order);

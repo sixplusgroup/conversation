@@ -45,8 +45,8 @@ public class OrderController {
     }
 
     @GetMapping("/list")
-    public ResultData orderList() {
-        return orderService.orderList();
+    public ResultData orderList(String startTime, String endTime, String cityName, String status) {
+        return orderService.orderList(startTime,endTime,cityName,status);
     }
 
     @PostMapping("/create")
