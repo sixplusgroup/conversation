@@ -13,6 +13,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +55,7 @@ public class V2PartialStatusReceiver {
             condition.clear();
             condition.put("machineId",uid);
             condition.put("pm2_5",pm2_5);
+            condition.put("createAt",new Timestamp(System.currentTimeMillis()));
             latestPM2_5Dao.updateByMachineId(condition);
         }
         //the machineId is not exist,insert
