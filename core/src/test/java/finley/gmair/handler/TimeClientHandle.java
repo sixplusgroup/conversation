@@ -138,9 +138,9 @@ public class TimeClientHandle implements Runnable{
 
     private void doWrite(SocketChannel sc) throws IOException {
         // flag = 0  => 发送数据报文
-        // flag = 1  => 发送查询报文(查询滤网pm25探头记录的值)
+        // flag = 1  => 发送部分数据报文(查询滤网pm25探头记录的值)
         // flag = 2  => 发送设置报文
-        int flag = 0;
+        int flag = 1;
 
         //测试machine_status时,flag=0
         byte[] CTF = new byte[]{0x03};
@@ -157,7 +157,7 @@ public class TimeClientHandle implements Runnable{
         if(flag==1){
             CID = new byte[]{0x0E};
             LEN = new byte[]{0x01};
-            data = new byte[]{0x01};
+            data = new byte[]{0x25};
         }
         //测试0x0F(screen,警示灯)时,flag=2
         else if(flag==2){

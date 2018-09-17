@@ -164,11 +164,11 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
     @Override
     public ResultData queryPartialAveragePm25() {
         ResultData result = new ResultData();
-        long last25Hour = (System.currentTimeMillis() - 1000 * 60 * 60 * 25) / (1000 * 60 * 60) * (1000 * 60 * 60);
-        long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
-
+        long last24Hour = (System.currentTimeMillis() - 1000 * 60 * 60 * 24) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        //long now = (System.currentTimeMillis()) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        long now = System.currentTimeMillis();
         Query query = new Query();
-        query.addCriteria(Criteria.where("createAt").gte(last25Hour).lt(lastHour));
+        query.addCriteria(Criteria.where("createAt").gte(last24Hour).lt(now));
         List<MachinePartialStatus> machinePartialStatusList = new ArrayList<>();
         try {
             machinePartialStatusList = mongoTemplate.find(query, MachinePartialStatus.class);

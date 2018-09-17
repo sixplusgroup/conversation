@@ -40,6 +40,8 @@ public class MachineStatusController {
     @Autowired
     private RedisService redisService;
 
+    Map<String, Integer> pm25Over25Count = new HashMap<>();
+    private int overCountLimit = 3;
 
     //每小时调用,从redis中统计每个机器的pm25每小时平均值,并插入到mysql数据库中machine_hourly_status
     @PostMapping("/schedule/hourly")
@@ -138,7 +140,7 @@ public class MachineStatusController {
 
 
     //V2
-    //每日调用,从mongo统计24小时滤网pm25平均值,向超标机器发送警告信号灯报文
+    //每日调用,若滤网PM25连续N天超标,向超标机器发送警告信号灯报文
     @PostMapping("/screen/schedule/daily")
     public ResultData configScreenDaily() {
         ResultData result = new ResultData();
@@ -154,21 +156,37 @@ public class MachineStatusController {
         }
         List<MachinePartialStatus> mpsList = (List<MachinePartialStatus>) response.getData();
         for (MachinePartialStatus mps : mpsList) {
-            //check online
-            response = coreV2Service.isOnline(mps.getUid());
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+            String machineId = mps.getUid();
+            //如果过去24小时pm2.5平均值小于25,则将计数清零
+            if (((Double) mps.getData()).doubleValue() < 25.0) {
+                pm25Over25Count.put(machineId, 0);
                 continue;
-
-            //if pm2.5 > 25, send the packet
-            if (((Double) mps.getData()).doubleValue() < 25.0)
-                continue;
-
-            try {
-                coreV2Service.configScreen(mps.getUid(), 1);
-                Thread.sleep(100);
-            } catch (Exception e) {
-                result.setDescription(e.getMessage());
             }
+            //如果过去24小时pm2.5平均值超标,则根据计数情况分类讨论
+            else {
+                if (pm25Over25Count.containsKey(machineId)) {
+                    int overCount = pm25Over25Count.get(machineId);
+                    //算上今天,超标时间为 overCount + 1,如果还么有到达上限
+                    if (overCount + 1 < overCountLimit) {
+                        pm25Over25Count.put(machineId, overCount + 1);
+                    }
+                    //算上今天,超标时间已经达到上限
+                    else if (overCount + 1 == overCountLimit) {
+                        pm25Over25Count.put(machineId, overCountLimit - 1);
+                        try {
+                            if (coreV2Service.isOnline(machineId).getResponseCode() == ResponseCode.RESPONSE_OK)
+                                coreV2Service.configScreen(machineId, 1);
+                            Thread.sleep(100);
+                        } catch (Exception e) {
+                            result.setDescription(e.getMessage());
+                        }
+                    }
+                } else {
+                    pm25Over25Count.put(machineId, 1);
+                }
+            }
+
+
         }
 
         return result;
@@ -295,6 +313,9 @@ public class MachineStatusController {
             long thatTime = list.get(i).getCreateTime().getTime();
             list.get(i).setCreateTime(new Timestamp(thatTime - (thatTime + 8 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000)));
         }
+        while (list.size() > 7) {
+            list.remove(0);
+        }
 
         //对缺失的时间补0
         for (int i = 0; i < 7; i++) {
@@ -345,12 +366,12 @@ public class MachineStatusController {
             int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
             switch (version) {
                 case 1:
-                    LimitQueue<finley.gmair.model.machine.v1.MachineStatus> machineStatusV1Queue = (LimitQueue<finley.gmair.model.machine.v1.MachineStatus>)redisService.get(machineId);
+                    LimitQueue<finley.gmair.model.machine.v1.MachineStatus> machineStatusV1Queue = (LimitQueue<finley.gmair.model.machine.v1.MachineStatus>) redisService.get(machineId);
                     if (machineStatusV1Queue != null)
                         machineV1StatusList.add(machineStatusV1Queue.getLast());
                     break;
                 case 2:
-                    LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>)redisService.get(machineId);
+                    LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
                     MachineStatus machineStatusV2 = statusQueue.getLast();
                     if (machineStatusV2 != null)
                         machineV2StatusList.add(machineStatusV2);
