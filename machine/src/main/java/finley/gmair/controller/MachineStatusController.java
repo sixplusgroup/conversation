@@ -243,6 +243,10 @@ public class MachineStatusController {
             long thatTime = list.get(i).getCreateTime().getTime();
             list.get(i).setCreateTime(new Timestamp((thatTime / (1000 * 60 * 60) * (1000 * 60 * 60))));
         }
+        while (list.size() > 24) {
+            list.remove(0);
+        }
+
         int last24Index = (int) ((last24Hour.getTime() / (1000 * 60 * 60) + 8) % 24);
         for (int i = 0; i < 24; i++) {
             if (list.size() == i || list.get(i).getCreateTime().getTime() != (last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)) {
