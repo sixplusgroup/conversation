@@ -41,16 +41,19 @@ public class MachineStatusController {
     private RedisService redisService;
 
 
+    //每小时调用,从redis中统计每个机器的pm25每小时平均值,并插入到mysql数据库中machine_hourly_status
     @PostMapping("/schedule/hourly")
     ResultData handleMachineStatusHourly() {
         return machinePm25Service.handleHourly();
     }
 
+    //每天调用,根据machine_hourly_status统计出每个机器的pm25每日平均值
     @PostMapping("/schedule/daily")
     ResultData handleMachineStatusDaily() {
         return machinePm25Service.handleDaily();
     }
 
+    //每月调用,根据machine_daily_status统计出每个机器的pm25每月平均值
     @PostMapping("/schedule/monthly")
     ResultData handleMachineStatusMonthly() {
         return machinePm25Service.handleMonthly();
@@ -135,7 +138,7 @@ public class MachineStatusController {
 
 
     //V2
-    //每日调用,从mong统计24小时滤网pm25平均值,向超标机器发送警告信号灯报文
+    //每日调用,从mongo统计24小时滤网pm25平均值,向超标机器发送警告信号灯报文
     @PostMapping("/screen/schedule/daily")
     public ResultData configScreenDaily() {
         ResultData result = new ResultData();
