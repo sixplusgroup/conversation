@@ -29,10 +29,7 @@ public class MachineStatusController {
     private MachineQrcodeBindService machineQrcodeBindService;
 
     @Autowired
-    private RepositoryService repositoryService;
-
-    @Autowired
-    private CoreService coreService;
+    private CoreV2Service coreV2Service;
 
     @Autowired
     private CoreV1Service coreV1Service;
@@ -93,13 +90,15 @@ public class MachineStatusController {
             }
             int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
             if (version == 2)
-                response = coreService.isOnline(machineQrcodeBindVo.getMachineId());
+                response = coreV2Service.isOnline(machineQrcodeBindVo.getMachineId());
             else if (version == 1)
                 response = coreV1Service.isOnline(machineQrcodeBindVo.getMachineId());
             return response;
         }
     }
 
+    //V2
+    //每小时调用,向机器发送查询滤网pm2.5的报文
     @GetMapping("/partial/schedule/hourly")
     public ResultData ProbePartialPM2_5Hourly() {
         ResultData result = new ResultData();
@@ -117,13 +116,13 @@ public class MachineStatusController {
         //foreach the uid, send the packet to the online machine
         StringBuffer sb = new StringBuffer("");
         for (MachineQrcodeBindVo mqb : machineQrcodeBindVoList) {
-            response = repositoryService.isOnilne(mqb.getMachineId());
+            response = coreV2Service.isOnline(mqb.getMachineId());
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
                 continue;
             //System.out.println(mqb.getMachineId());
             sb.delete(0, sb.length());
             sb.append(mqb.getMachineId());
-            coreService.probePartialPm25(sb.toString());
+            coreV2Service.probePartialPm25(sb.toString());
             try {
                 Thread.sleep(100);
             } catch (Exception e) {
@@ -134,7 +133,9 @@ public class MachineStatusController {
         return result;
     }
 
-    //每日调用该接口,检查滤网pm2.5超标的机器,发送警告信号灯
+
+    //V2
+    //每日调用,从mong统计24小时滤网pm25平均值,向超标机器发送警告信号灯报文
     @PostMapping("/screen/schedule/daily")
     public ResultData configScreenDaily() {
         ResultData result = new ResultData();
@@ -151,7 +152,7 @@ public class MachineStatusController {
         List<MachinePartialStatus> mpsList = (List<MachinePartialStatus>) response.getData();
         for (MachinePartialStatus mps : mpsList) {
             //check online
-            response = repositoryService.isOnilne(mps.getUid());
+            response = coreV2Service.isOnline(mps.getUid());
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
                 continue;
 
@@ -160,7 +161,7 @@ public class MachineStatusController {
                 continue;
 
             try {
-                coreService.configScreen(mps.getUid(), 1);
+                coreV2Service.configScreen(mps.getUid(), 1);
                 Thread.sleep(100);
             } catch (Exception e) {
                 result.setDescription(e.getMessage());
@@ -170,7 +171,7 @@ public class MachineStatusController {
         return result;
     }
 
-    //获取machine过去24小时的pm2.5记录
+    //从mysql获取machine过去24小时的pm2.5记录,并格式化
     @GetMapping("/hourly")
     public ResultData fetchMachineHourlyPm2_5(String qrcode) {
 
@@ -231,7 +232,7 @@ public class MachineStatusController {
         return result;
     }
 
-    //获取machine过去七天的pm2.5记录
+    //从mysql获取machine过去七天的pm2.5记录
     @GetMapping("/daily")
     public ResultData fetchMachineDailyPm2_5(String qrcode) {
 
@@ -312,7 +313,7 @@ public class MachineStatusController {
             return result;
         }
 
-        ResultData response = coreService.onlineList(machineIdList);
+        ResultData response = coreV2Service.onlineList(machineIdList);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());

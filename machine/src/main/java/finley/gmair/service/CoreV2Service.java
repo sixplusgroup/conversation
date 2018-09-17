@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("core-agent")
-public interface CoreService {
+public interface CoreV2Service {
 
     @GetMapping("/core/repo/{machineId}/online")
     ResultData isOnline(@PathVariable("machineId") String machineId);

@@ -160,6 +160,7 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         return result;
     }
 
+    //查询最近24小时的滤网pm2.5平均值,整理出一个List(machineId,averagePM24)
     @Override
     public ResultData queryPartialAveragePm25() {
         ResultData result = new ResultData();
@@ -201,6 +202,7 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         return result;
     }
 
+    //暂时废弃
     public ResultData queryMachineV1Status(Map<String, Object> condition){
         ResultData result = new ResultData();
         Query query = new Query();

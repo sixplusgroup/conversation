@@ -33,7 +33,7 @@ public class ControlOptionController {
     private ControlOptionService controlOptionService;
 
     @Autowired
-    private CoreService coreService;
+    private CoreV2Service coreV2Service;
 
     @Autowired
     private CoreV1Service coreV1Service;
@@ -204,7 +204,7 @@ public class ControlOptionController {
         //according the value to control the machine
         if (component.equals("power")) {
             if (version == 2)
-                response = coreService.configPower(machineId, commandValue, version);
+                response = coreV2Service.configPower(machineId, commandValue, version);
             else if (version == 1) {
                 response = coreV1Service.configPower(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -219,7 +219,7 @@ public class ControlOptionController {
             }
         } else if (component.equals("lock")) {
             if (version == 2)
-                response = coreService.configLock(machineId, commandValue);
+                response = coreV2Service.configLock(machineId, commandValue);
             else if (version == 1) {
                 response.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 response.setDescription("board v1 have no component lock");
@@ -227,7 +227,7 @@ public class ControlOptionController {
             }
         } else if (component.equals("heat")) {
             if (version == 2)
-                response = coreService.configHeat(machineId, commandValue, version);
+                response = coreV2Service.configHeat(machineId, commandValue, version);
             else if (version == 1) {
                 response = coreV1Service.configHeat(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -242,7 +242,7 @@ public class ControlOptionController {
             }
         } else if (component.equals("mode")) {
             if (version == 2)
-                response = coreService.configMode(machineId, commandValue, version);
+                response = coreV2Service.configMode(machineId, commandValue, version);
             else if (version == 1) {
                 response = coreV1Service.configMode(machineId, commandValue, version);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -318,7 +318,7 @@ public class ControlOptionController {
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
         if (version == 2)
-            response = coreService.configSpeed(machineId, speed, version);
+            response = coreV2Service.configSpeed(machineId, speed, version);
         else if (version == 1) {
             coreV1Service.configMode(machineId, 2, version);
             try {
@@ -386,7 +386,7 @@ public class ControlOptionController {
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
         if (version == 2)
-            response = coreService.configLight(machineId, light, version);
+            response = coreV2Service.configLight(machineId, light, version);
         else if (version == 1) {
             response = coreV1Service.configLight(machineId, light, version);
 

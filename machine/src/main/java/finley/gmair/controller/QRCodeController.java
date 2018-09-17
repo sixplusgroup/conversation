@@ -52,7 +52,7 @@ public class QRCodeController {
     private BoardVersionService boardVersionService;
 
     @Autowired
-    private CoreService coreService;
+    private CoreV2Service coreV2Service;
 
     @Autowired
     private CoreV1Service coreV1Service;
@@ -618,7 +618,7 @@ public class QRCodeController {
             if (version == 1)
                 response = coreV1Service.isOnline(machineId);
             else if (version == 2)
-                response = coreService.isOnline(machineId);
+                response = coreV2Service.isOnline(machineId);
 
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
