@@ -254,6 +254,7 @@ public class MachineStatusController {
             }
         }
         result.setData(list);
+        result.setDescription("list.size() = "+list.size());
         return result;
     }
 
@@ -325,6 +326,7 @@ public class MachineStatusController {
                 list.add(i, new MachinePm2_5Vo(machineId, 0, 0, new Timestamp(last7Day.getTime() + (i + 1) * 1000 * 60 * 60 * 24)));
             }
         }
+        result.setDescription("list.size = "+list.size());
         result.setData(list);
         return result;
     }
