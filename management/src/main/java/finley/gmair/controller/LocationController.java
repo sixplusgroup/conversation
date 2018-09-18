@@ -3,10 +3,7 @@ package finley.gmair.controller;
 import finley.gmair.service.LocationService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
@@ -19,5 +16,15 @@ public class LocationController {
     @RequestMapping(method = RequestMethod.POST, value = "/address/resolve")
     public ResultData geocoder(String address) {
         return locationService.geocoder(address);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/province/list")
+    ResultData province(){
+        return locationService.province();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{provinceId}/cities")
+    ResultData city(@PathVariable("provinceId") String provinceId){
+        return locationService.city(provinceId);
     }
 }

@@ -225,7 +225,7 @@ public class OrderController {
         if(!StringUtils.isEmpty(endTime))
             condition.put("endTime",endTime);
         if(!StringUtils.isEmpty(cityName)) {
-            condition.put("cityName", cityName + "%");
+            condition.put("cityName","%" + cityName + "%");
         }
         if(!StringUtils.isEmpty(status)) {
             switch (status){
