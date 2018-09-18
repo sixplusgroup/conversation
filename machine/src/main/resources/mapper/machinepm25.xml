@@ -72,7 +72,8 @@
     </insert>
 
     <select id="selectDaily" parameterType="java.util.Map" resultMap="machinePm2_5">
-        SELECT machine_id, average_pm2_5, `index`, create_time FROM `gmair_machine`.`machine_daily_status`
+        SELECT machine_id, average_pm2_5, `index`, create_time
+        FROM `gmair_machine`.`machine_daily_status`
         WHERE 1 = 1
         <if test="uid != null">
             AND machine_id = #{uid}
@@ -86,11 +87,16 @@
             ]]>
         </if>
         <if test="createTimeGTE != null">
-            AND create_time >= #{createTimeGTE}
+            AND create_time > #{createTimeGTE}
         </if>
         <if test="createTimeLTE != null">
             <![CDATA[
                 AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
+        <if test="dateDiff != null">
+            <![CDATA[
+                AND DATEDIFF(CURDATE(),create_time) < 7
             ]]>
         </if>
         <if test="blockFlag != null">

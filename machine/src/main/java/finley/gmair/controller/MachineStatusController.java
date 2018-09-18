@@ -248,7 +248,7 @@ public class MachineStatusController {
         }
 
         int last24Index = (int) ((last24Hour.getTime() / (1000 * 60 * 60) + 8) % 24);
-        for (int i = 0; i < 24; i++) {
+        for (int i = 0; list.size() < 24; i++) {
             if (list.size() == i || list.get(i).getCreateTime().getTime() != (last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)) {
                 list.add(i, new MachinePm2_5Vo(machineId, (last24Index + i) % 24, 0, new Timestamp(last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)));
             }
@@ -291,14 +291,11 @@ public class MachineStatusController {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.MILLISECOND, 0);
         long zero = cal.getTimeInMillis(); // 今天零点零分零秒的毫秒数
-        Timestamp lastDay = new Timestamp(zero);
-        Timestamp last7Day = new Timestamp(zero - 7 * 24 * 60 * 60 * 1000);
 
         //查询数据库获取室内的过去七天的pm2.5
         condition.clear();
         condition.put("uid", machineId);
-        condition.put("createTimeGTE", last7Day);
-        condition.put("createTimeLTE", lastDay);
+        condition.put("dateDiff", System.currentTimeMillis());
         condition.put("blockFlag", false);
         response = machinePm25Service.fetchMachineDailyPm25(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -322,8 +319,9 @@ public class MachineStatusController {
         }
 
         //对缺失的时间补0
-        for (int i = 0; i < 7; i++) {
-            if (list.size() == i || list.get(i).getCreateTime().getTime() != last7Day.getTime() + (i + 1) * 1000 * 60 * 60 * 24) {
+        Timestamp last7Day = new Timestamp(zero - 7 * 24 * 60 * 60 * 1000);
+        for (int i = 0; list.size() < 7; i++) {
+            if (i == list.size() || list.get(i).getCreateTime().getTime() != last7Day.getTime() + (i + 1) * 1000 * 60 * 60 * 24) {
                 list.add(i, new MachinePm2_5Vo(machineId, 0, 0, new Timestamp(last7Day.getTime() + (i + 1) * 1000 * 60 * 60 * 24)));
             }
         }
