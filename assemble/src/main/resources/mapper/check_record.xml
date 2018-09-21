@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.assemble.check_record">
+
+    <resultMap id="checkRecord" type="finley.gmair.model.assemble.CheckRecord">
+        <result property="recordId" column="record_id"/>
+        <result property="snapshotId" column="snapshot_id"/>
+        <result property="recordStatus" column="record_status" />
+        <result property="blockFlag" column="block_flag" />
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="finley.gmair.model.assemble.CheckRecord">
+        insert into gmair_assemble.check_record(record_id, snapshot_id, record_status, block_flag, create_time)
+        VALUES
+        (
+         #{recordId}, #{snapshotId}, #{recordStatus}, #{blockFlag}, #{createAt}
+        )
+    </insert>
+    
+    <select id="query" resultMap="checkRecord" parameterType="java.util.Map">
+        select record_id,snapshot_id,record_status,block_flag,create_time
+        from gmair_assemble.check_record
+        WHERE
+        1 = 1
+        <if test="recordId != null">
+            AND record_id = #{recordId}
+        </if>
+        <if test="snapshotId != null">
+            AND snapshot_id = #{snapshotId}
+        </if>
+        <if test="recordStatus != null">
+            AND record_status = #{recordStatus}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test="createTimeGT != null">
+            AND create_time > #{createTimeGT}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLT != null">
+            <![CDATA[
+                AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_assemble.check_record
+        <set>
+            <if test="recordStatus != null">
+                record_status = #{recordStatus}
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag}
+            </if>
+        </set>
+        WHERE
+        snapshot_id = #{snapshotId}
+    </update>
+</mapper>

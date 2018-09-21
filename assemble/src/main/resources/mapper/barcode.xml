@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.assemble.barcode">
+
+    <resultMap id="barcode" type="finley.gmair.model.assemble.Barcode">
+        <result property="codeId" column="code_id"/>
+        <result property="codeValue" column="code_value"/>
+        <result property="blockFlag" column="block_flag" />
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="finley.gmair.model.assemble.Barcode">
+        insert into gmair_assemble.barcode(code_id, code_value, block_flag, create_time)
+        VALUES
+        (
+         #{codeId}, #{codeValue}, #{blockFlag}, #{createAt}
+        )
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO gmair_assemble.barcode(code_id, code_value, block_flag, create_time)
+        VALUES
+        <foreach collection="list" index="index" separator="," item="barcode">
+            (
+            #{barcode.codeId}, #{barcode.codeValue},
+            #{barcode.blockFlag}, #{barcode.createAt}
+            )
+        </foreach>
+    </insert>
+    
+    <select id="query" resultMap="barcode" parameterType="java.util.Map">
+        select code_id,code_value,block_flag,create_time
+        from gmair_assemble.barcode
+        WHERE
+        1 = 1
+        <if test="codeId != null">
+            AND code_id = #{codeId}
+        </if>
+        <if test="codeValue != null">
+            AND code_value = #{codeValue}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test="createTimeGT != null">
+            AND create_time > #{createTimeGT}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLT != null">
+            <![CDATA[
+                AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_assemble.barcode
+        <set>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag}
+            </if>
+        </set>
+        WHERE
+        code_value = #{codeValue}
+    </update>
+</mapper>

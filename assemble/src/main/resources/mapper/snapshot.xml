@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.assemble.snapshot">
+
+    <resultMap id="snapshot" type="finley.gmair.model.assemble.Snapshot">
+        <result property="snapshotId" column="snapshot_id"/>
+        <result property="codeValue" column="code_value"/>
+        <result property="snapshotPath" column="snapshot_path"/>
+        <result property="blockFlag" column="block_flag" />
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="finley.gmair.model.assemble.Snapshot">
+        insert into gmair_assemble.snapshot(snapshot_id, code_value, snapshot_path, block_flag, create_time)
+        VALUES
+        (
+         #{snapshotId}, #{codeValue}, #{snapshotPath}, #{blockFlag}, #{createAt}
+        )
+    </insert>
+
+    <select id="query" resultMap="snapshot" parameterType="java.util.Map">
+        select snapshot_id,code_value,snapshot_path,block_flag,create_time
+        from gmair_assemble.snapshot
+        WHERE
+        1 = 1
+        <if test="snapshotId != null">
+            AND snapshot_id = #{snapshotId}
+        </if>
+        <if test="codeValue != null">
+            AND code_value = #{codeValue}
+        </if>
+        <if test="snapshotPath != null">
+            AND snapshot_path = #{snapshotPath}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test="createTimeGT != null">
+            AND create_time > #{createTimeGT}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLT != null">
+            <![CDATA[
+                AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
+    </select>
+</mapper>

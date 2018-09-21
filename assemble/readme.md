@@ -17,3 +17,29 @@ snapshot_id | code_value | snapshot_path | block_flag | create_time
 3. CheckRecord
 * Columns:
 record_id | snapshot_id | record_status | block_flag | create_time
+
+## Controller
+1.BarcodeController ("/assemble/barcode")
+*       //根据数量创建条形码,最少1条,最多1000条
+        @PostMapping("/batch/create")
+        public ResultData createBatch(int number);
+        
+2.SnapshotController
+*       //工人上传一张图片时触发
+        @RequestMapping(method = RequestMethod.POST, value = "/pic/upload")
+        public ResultData uploadPic(MultipartHttpServletRequest request);
+*       //工人提交图片对应url和条形码时触发,创建snapshot表单
+        @RequestMapping(method = RequestMethod.POST, value = "/create")
+        public ResultData createSnapshot(String codeValue, String snapshotPath);
+*       //显示snapshot list
+        @RequestMapping(method = RequestMethod.GET, value = "/fetch")
+        public ResultData fetchSnapshot(String startTime, String endTime, String codeValue);
+        
+3.CheckRecordController ("/assemble/checkrecord")
+*       //创建check record
+        @PostMapping("/create") 
+        public ResultData createCheckRecord(String snapshotId, boolean recordStatus);
+
+*       //根据checkStatus查询check record
+        @GetMapping("/fetch/bystatus")
+        public ResultData fetchCheckRecordByStatus(boolean recordStatus);
