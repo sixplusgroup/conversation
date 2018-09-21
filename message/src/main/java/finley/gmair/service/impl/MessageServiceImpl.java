@@ -45,4 +45,11 @@ public class MessageServiceImpl implements MessageService {
         }
         return result;
     }
+
+    @Override
+    public ResultData createReceiveMessage(TextMessage message) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
 }

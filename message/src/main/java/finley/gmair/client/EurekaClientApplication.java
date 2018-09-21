@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-@ComponentScan({"finley.gmair.service", "finley.gmair.dao"})
+@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao"})
 @RestController
 @EnableDiscoveryClient
 @EnableEurekaClient
