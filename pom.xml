@@ -41,6 +41,9 @@
         <module>preparation</module>
         <module>enterpriseselling</module>
         <module>machine-mode</module>
+        <module>drift</module>
+        <module>mail</module>
+        <module>assemble</module>
     </modules>
 
     <parent>
