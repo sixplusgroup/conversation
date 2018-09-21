@@ -24,6 +24,6 @@
 * Repository
     * Columns: repository_id | goods_id | pool_size | block_flag | create_time
 * Activity
-    * Columns: activity_id | goods_id | activity_name | start | end | block_flag | create_time
+    * Columns: activity_id | goods_id | activity_name | repository_size | start | end | block_flag | create_time
 * Reservation
     * Columns: reservation_id | consumer_id | activity_id | expected_date | interval | consignee_name | consignee_phone | consignee_address | province_id | city_id | block_flag | create_time
