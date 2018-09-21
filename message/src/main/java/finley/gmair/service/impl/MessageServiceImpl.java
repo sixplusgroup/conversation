@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.MessageDao;
+import finley.gmair.dao.ReceiveMessageDao;
 import finley.gmair.model.message.TextMessage;
 import finley.gmair.service.MessageService;
 import finley.gmair.util.ResponseCode;
@@ -16,6 +17,9 @@ import java.util.Map;
 public class MessageServiceImpl implements MessageService {
     @Autowired
     private MessageDao messageDao;
+
+    @Autowired
+    private ReceiveMessageDao receiveMessageDao;
 
     @Override
     @Transactional
@@ -38,7 +42,7 @@ public class MessageServiceImpl implements MessageService {
         ResultData response = messageDao.query(condition);
         result.setResponseCode(response.getResponseCode());
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setDescription("Fail to save text message to database");
+            result.setDescription("Fail to fetch text message from database");
         } else {
             List<TextMessage> list = (List<TextMessage>) response.getData();
             result.setData(list);
@@ -49,7 +53,27 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public ResultData createReceiveMessage(TextMessage message) {
         ResultData result = new ResultData();
+        ResultData response = receiveMessageDao.insert(message);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+        } else {
+            result.setDescription(response.getDescription());
+            result.setDescription("Fail to save text message uploaded to database");
+        }
+        return result;
+    }
 
+    @Override
+    public ResultData fetchReceiveMessage(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = receiveMessageDao.query(condition);
+        result.setResponseCode(response.getResponseCode());
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setDescription("Fail to fetch received text message from database");
+        } else {
+            List<TextMessage> list = (List<TextMessage>) response.getData();
+            result.setData(list);
+        }
         return result;
     }
 }

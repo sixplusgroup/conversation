@@ -10,7 +10,7 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.message.TextMessage">
-        INSERT INTO gmair_message.in_text_message (message_id, mobile, text, block_flag, create_time)
+        INSERT INTO gmair_message.in_text_message (message_id, mobile, `text`, block_flag, create_time)
         VALUES (#{messageId}, #{phone}, #{text}, #{blockFlag}, #{createAt})
     </insert>
 
@@ -23,6 +23,12 @@
         </if>
         <if test="phone != null">
             AND phone = #{phone}
+        </if>
+        <if test="startTime != null">
+            AND create_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt; #{endTime}
         </if>
     </select>
 </mapper>

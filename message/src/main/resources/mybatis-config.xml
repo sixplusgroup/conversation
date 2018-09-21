@@ -6,5 +6,6 @@
     <mappers>
         <mapper resource="mapper/message/textmessage.xml"/>
         <mapper resource="mapper/message/messagetemplate.xml"/>
+        <mapper resource="mapper/message/intextmessage.xml"/>
     </mappers>
 </configuration>
