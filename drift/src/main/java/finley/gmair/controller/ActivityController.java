@@ -1,4 +1,4 @@
-package finley.gmair.drift;
+package finley.gmair.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
