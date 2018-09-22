@@ -126,6 +126,11 @@ public class InstallController {
 
     @GetMapping("/assign/feedback/info")
     public ResultData assignFeedback(String assignId) {
-        return  installService.assignFeedback(assignId);
+        return installService.assignFeedback(assignId);
+    }
+
+    @GetMapping("/reconnaissance/list")
+    public ResultData recoList(String orderId) {
+        return installService.orderReconnaissanceList(orderId);
     }
 }

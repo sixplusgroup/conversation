@@ -2,10 +2,7 @@ package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "install-agent")
 public interface InstallService {
@@ -71,4 +68,7 @@ public interface InstallService {
 
     @PostMapping("/installation/assign/delete")
     ResultData deleteAssign(@RequestParam("codeValue") String codeValue);
+
+    @GetMapping(value = "/installation/reconnaissance/order/{orderId}")
+    ResultData orderReconnaissanceList(@PathVariable("orderId") String orderId);
 }
