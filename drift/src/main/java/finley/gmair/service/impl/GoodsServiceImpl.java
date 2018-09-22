@@ -4,5 +4,5 @@ import finley.gmair.service.GoodsService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GoodsServiceImpl implements GoodsService{
+public class GoodsServiceImpl implements GoodsService {
 }

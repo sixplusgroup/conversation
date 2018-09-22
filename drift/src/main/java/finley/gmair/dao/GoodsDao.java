@@ -1,8 +1,5 @@
 package finley.gmair.dao;
 
-
-public interface GoodsDao {
-
 import finley.gmair.model.drift.Goods;
 import finley.gmair.util.ResultData;
 

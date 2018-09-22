@@ -1,12 +1,5 @@
 package finley.gmair.dao.impl;
 
-<<<<<<< Updated upstream
-import finley.gmair.dao.GoodsDao;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public class GoodsDaoImpl implements GoodsDao {
-=======
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.GoodsDao;
 import finley.gmair.model.drift.Goods;
