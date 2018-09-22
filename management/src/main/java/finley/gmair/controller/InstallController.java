@@ -129,8 +129,8 @@ public class InstallController {
         return installService.assignFeedback(assignId);
     }
 
-    @GetMapping("/reconnaissance/list")
-    public ResultData recoList(String orderId) {
+    @GetMapping("/reconnaissance/order/{orderId}")
+    public ResultData recoList(@PathVariable("orderId") String orderId) {
         return installService.orderReconnaissanceList(orderId);
     }
 }
