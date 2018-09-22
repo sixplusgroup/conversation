@@ -1,12 +1,17 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.machine.Ownership;
+import finley.gmair.pool.ReceptionPool;
 import finley.gmair.service.AuthConsumerService;
+import finley.gmair.service.LogService;
 import finley.gmair.service.MachineService;
+import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
@@ -15,6 +20,9 @@ public class MachineController {
 
     @Autowired
     private MachineService machineService;
+
+    @Autowired
+    private LogService logService;
 
     @Autowired
     private AuthConsumerService authConsumerService;
@@ -68,18 +76,24 @@ public class MachineController {
 
     //发送遥控信息
     @PostMapping("/operate/{component}/{operation}")
-    public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode) {
+    public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, component, new StringBuffer("User ").append(consumerId).append(" operate ").append(component).append(" set to ").append(operation).toString(), IPUtil.getIP(request))));
         return machineService.chooseComponent(qrcode, component, operation);
     }
 
     //配置风量
     @PostMapping("/config/speed")
-    public ResultData configSpeed(String qrcode, int speed) {
+    public ResultData configSpeed(String qrcode, int speed, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "speed", new StringBuffer("User ").append(consumerId).append(" operate ").append("speed").append(" set to ").append(speed).toString(), IPUtil.getIP(request))));
         return machineService.configSpeed(qrcode, speed);
     }
 
     @PostMapping("/config/light")
-    public ResultData configLight(String qrcode, int light) {
+    public ResultData configLight(String qrcode, int light, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "light", new StringBuffer("User ").append(consumerId).append(" operate ").append("light").append(" set to ").append(light).toString(), IPUtil.getIP(request))));
         return machineService.configLight(qrcode, light);
     }
 
@@ -163,8 +177,8 @@ public class MachineController {
         return machineService.probeBindByQRcode(qrcode, consumerId);
     }
 
-    @RequestMapping(value = "/model/component/probe",method = RequestMethod.GET)
-    public ResultData fetchModelEnabledComponent(String modelId,String componentName){
-        return machineService.fetchModelEnabledComponent(modelId,componentName);
+    @RequestMapping(value = "/model/component/probe", method = RequestMethod.GET)
+    public ResultData fetchModelEnabledComponent(String modelId, String componentName) {
+        return machineService.fetchModelEnabledComponent(modelId, componentName);
     }
 }
