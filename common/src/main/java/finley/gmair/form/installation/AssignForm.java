@@ -10,6 +10,13 @@ public class AssignForm {
 
     private String consumerAddress;
 
+    public AssignForm(String qrcode, String consumerConsignee, String consumerPhone, String consumerAddress) {
+        this.qrcode = qrcode;
+        this.consumerConsignee = consumerConsignee;
+        this.consumerPhone = consumerPhone;
+        this.consumerAddress = consumerAddress;
+    }
+
     public String getQrcode() {
         return qrcode;
     }

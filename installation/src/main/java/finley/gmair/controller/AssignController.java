@@ -416,9 +416,10 @@ public class AssignController {
             result.setDescription(new StringBuffer("No assign found with assign id: ").append(assignId).toString());
             return result;
         }
+
+        //the current assignment will be marked as closed
         Assign assign = ((List<Assign>) response.getData()).get(0);
-        LocalDateTime localDateTime = LocalDateTime.of(DateFormatUtil.convertToLocalDate(date), LocalTime.MIN);
-        assign.setAssignDate(Timestamp.valueOf(localDateTime));
+        assign.setAssignStatus(AssignStatus.CLOSED);
         response = assignService.updateAssign(assign);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -426,9 +427,13 @@ public class AssignController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to update assign");
+            result.setDescription("Fail to update current assign");
         }
-        return result;
+
+        //create a new assignment
+        AssignForm assignForm = new AssignForm(assign.getCodeValue(),assign.getConsumerConsignee(),assign.getConsumerPhone(),assign.getConsumerAddress());
+        response = create(assignForm);
+        return response;
     }
 
     @PostMapping("/cancel")
