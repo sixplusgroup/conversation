@@ -70,8 +70,6 @@ public class SnapshotController {
         boolean net = form.isNet();
         String installType = form.getInstallType().trim();
 
-
-
         //according to the qrcode,find the assignId.
         String assignId = "";
         Map<String, Object> condition = new HashMap<>();
@@ -156,11 +154,11 @@ public class SnapshotController {
                 e.printStackTrace();
             }
 
-            try{
-                sendMessage(snapshotId);                                            //发送短信
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+//            try{
+//                sendMessage(snapshotId);                                            //发送短信
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
         }).start();
 
         return result;

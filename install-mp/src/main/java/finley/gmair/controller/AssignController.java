@@ -239,8 +239,18 @@ public class AssignController {
         return result;
     }
 
+    /**
+     * This method postpone the installation assign
+     * For each assign postponed, the current assignment will be marked as postponed / closed
+     * A new installation assign will be generated.
+     *
+     * @param assignId
+     * @param date
+     * @return
+     */
     @PostMapping("/postpone")
     public ResultData postpone(String assignId, String date) {
+        //todo
         return assignServiceAgent.postpone(assignId, date);
     }
 
@@ -248,13 +258,13 @@ public class AssignController {
     public ResultData cancel(String assignId, String description) {
         ResultData result = new ResultData();
         ResultData response = assignServiceAgent.cancel(assignId, description);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(response.getDescription());
             return result;
         }
         response = feedbackService.createFeedback(assignId, description);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(response.getDescription());
             return result;
