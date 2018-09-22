@@ -10,5 +10,5 @@ public interface ActivityDao {
 
     ResultData insertActivity(Activity activity);
 
-    ResultData updateActivity(Activity activity);
+    ResultData updateActivity(Map<String, Object> condition);
 }

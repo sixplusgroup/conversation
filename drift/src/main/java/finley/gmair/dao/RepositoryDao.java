@@ -10,5 +10,5 @@ public interface RepositoryDao {
 
     ResultData insertRepository(DriftRepository driftRepository);
 
-    ResultData updateRepository(DriftRepository driftRepository);
+    ResultData updateRepository(Map<String, Object> condition);
 }

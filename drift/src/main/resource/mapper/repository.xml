@@ -27,4 +27,26 @@
         </if>
         order by create_time desc
     </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.DriftRepository" useGeneratedKeys="false">
+        insert into gmair_drift.drift_repository(repository_id, goods_id, pool_size, block_flag, create_time)
+        values (#{repositoryId}, #{goodsId}, #{poolSize}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_drift.drift_repository
+        <set>
+            <if test="goodsId != null">
+                goods_id = #{goodsId},
+            </if>
+            <if test="poolSize != null">
+                pool_size = #{poolSize},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            repository_id = #{repositoryId}
+        </set>
+        where repository_id = #{repositoryId}
+    </update>
 </mapper>

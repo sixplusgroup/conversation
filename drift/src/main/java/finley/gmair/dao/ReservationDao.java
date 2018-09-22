@@ -10,5 +10,5 @@ public interface ReservationDao {
 
     ResultData insertReservation(Reservation reservation);
 
-    ResultData updateReservation(Reservation reservation);
+    ResultData updateReservation(Map<String, Object> condition);
 }

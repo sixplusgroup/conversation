@@ -10,5 +10,5 @@ public interface GoodsDao {
 
     ResultData insertGoods(Goods goods);
 
-    ResultData updateGoods(Goods goods);
+    ResultData updateGoods(Map<String, Object> condition);
 }
