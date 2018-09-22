@@ -1,4 +1,8 @@
 package finley.gmair.service.impl;
 
-public class GoodsServiceImpl {
+import finley.gmair.service.GoodsService;
+import org.springframework.stereotype.Service;
+
+@Service
+public class GoodsServiceImpl implements GoodsService{
 }

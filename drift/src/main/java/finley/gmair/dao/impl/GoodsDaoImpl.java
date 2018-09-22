@@ -1,4 +1,8 @@
 package finley.gmair.dao.impl;
 
-public class GoodsDaoImpl {
+import finley.gmair.dao.GoodsDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class GoodsDaoImpl implements GoodsDao {
 }
