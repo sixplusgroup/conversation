@@ -2,7 +2,6 @@ package finley.gmair.controller;
 
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.pool.ReceptionPool;
-import finley.gmair.service.AuthConsumerService;
 import finley.gmair.service.LogService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.IPUtil;
@@ -23,9 +22,6 @@ public class MachineController {
 
     @Autowired
     private LogService logService;
-
-    @Autowired
-    private AuthConsumerService authConsumerService;
 
     @GetMapping("/check/device/name/binded")
     public ResultData checkDeviceNameExist(String deviceName) {
