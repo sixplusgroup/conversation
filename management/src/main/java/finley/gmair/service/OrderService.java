@@ -16,6 +16,7 @@ public interface OrderService {
     @GetMapping("/order/list")
     ResultData orderList(@RequestParam("startTime") String startTime,
                          @RequestParam("endTime") String endTime,
+                         @RequestParam("provinceName") String provinceName,
                          @RequestParam("cityName") String cityName,
                          @RequestParam("status") String status);
 

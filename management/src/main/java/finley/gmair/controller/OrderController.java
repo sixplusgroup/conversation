@@ -45,8 +45,8 @@ public class OrderController {
     }
 
     @GetMapping("/list")
-    public ResultData orderList(String startTime, String endTime, String cityName, String status) {
-        return orderService.orderList(startTime,endTime,cityName,status);
+    public ResultData orderList(String startTime, String endTime, String provinceName, String cityName, String status) {
+        return orderService.orderList(startTime, endTime, provinceName, cityName, status);
     }
 
     @PostMapping("/create")
@@ -138,18 +138,18 @@ public class OrderController {
                 return result;
             }
 
-            List<Object> list = (List<Object>)response.getData();
+            List<Object> list = (List<Object>) response.getData();
             new Thread(() -> {
                 ResultData rd = new ResultData();
                 for (Object item : list) {
-                    String codeValue = ((LinkedHashMap<String, Object>)item).get("codeValue").toString();
+                    String codeValue = ((LinkedHashMap<String, Object>) item).get("codeValue").toString();
                     rd = installService.deleteAssign(codeValue);
                 }
             }).start();
 
             new Thread(() -> {
-               ResultData rd = expressService.deleteExpress(orderId);
-          }).start();
+                ResultData rd = expressService.deleteExpress(orderId);
+            }).start();
 
             response = orderService.deleteOrder(orderId);
         } catch (Exception e) {

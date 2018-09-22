@@ -61,6 +61,9 @@
         <if test="cityName != null">
             AND city like #{cityName}
         </if>
+        <if test="provinceName != null">
+            AND province like #{provinceName}
+        </if>
         <if test="startTime != null">
             AND create_time >= #{startTime}
         </if>

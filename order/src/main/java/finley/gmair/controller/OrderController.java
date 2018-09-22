@@ -45,6 +45,7 @@ public class OrderController {
 
     @Autowired
     private OrderLocationRetryCountService orderLocationRetryCountService;
+
     /**
      * This method is aimed to handle the order spreadsheet and store the records
      *
@@ -85,7 +86,7 @@ public class OrderController {
 
         PlatformOrder platformOrder = new PlatformOrder(list, orderNo, consignee, phone, address, channel, description);
         platformOrder.setTotalPrice(price);
-        platformOrder.setLocation(province,city,district);
+        platformOrder.setLocation(province, city, district);
 
         //设置时间
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
@@ -97,11 +98,11 @@ public class OrderController {
         ResultData locationResult = locationService.geocoder(address);
         if (locationResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
             JSONObject location = (JSON.parseObject(JSON.toJSONString(locationResult.getData()))).getJSONObject("location");
-            double latitude = 0.0,longitude = 0.0;
+            double latitude = 0.0, longitude = 0.0;
             try {
                 latitude = Double.parseDouble(location.getString("lat"));
                 longitude = Double.parseDouble(location.getString("lng"));
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
             platformOrder.setLatitude(latitude);
@@ -216,24 +217,36 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/list")
-    public ResultData list(String startTime, String endTime, String cityName, String status) {
+    public ResultData list(String startTime, String endTime, String provinceName, String cityName, String status) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        if(!StringUtils.isEmpty(startTime))
-            condition.put("startTime",startTime);
-        if(!StringUtils.isEmpty(endTime))
-            condition.put("endTime",endTime);
-        if(!StringUtils.isEmpty(cityName)) {
-            condition.put("cityName","%" + cityName + "%");
+        if (!StringUtils.isEmpty(startTime))
+            condition.put("startTime", startTime);
+        if (!StringUtils.isEmpty(endTime))
+            condition.put("endTime", endTime);
+        if (!StringUtils.isEmpty(provinceName))
+            condition.put("provinceName", "%" + provinceName + "%");
+        if (!StringUtils.isEmpty(cityName)) {
+            condition.put("cityName", "%" + cityName + "%");
         }
-        if(!StringUtils.isEmpty(status)) {
-            switch (status){
-                case "PAYED": condition.put("status", 0);break;
-                case "PROCESSING": condition.put("status",1);break;
-                case "FINISHED": condition.put("status",2);break;
-                case "COMMENTED": condition.put("status",3);break;
-                case "CLOSED": condition.put("status",4);break;
+        if (!StringUtils.isEmpty(status)) {
+            switch (status) {
+                case "PAYED":
+                    condition.put("status", 0);
+                    break;
+                case "PROCESSING":
+                    condition.put("status", 1);
+                    break;
+                case "FINISHED":
+                    condition.put("status", 2);
+                    break;
+                case "COMMENTED":
+                    condition.put("status", 3);
+                    break;
+                case "CLOSED":
+                    condition.put("status", 4);
+                    break;
             }
 
         }
@@ -368,7 +381,7 @@ public class OrderController {
             return result;
         }
         ResultData response = orderService.deletePlatformOrder(orderId);
-        switch (response.getResponseCode()){
+        switch (response.getResponseCode()) {
             case RESPONSE_ERROR:
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("Fail to delete order");
@@ -391,7 +404,7 @@ public class OrderController {
         condition.put("orderId", orderId);
         condition.put("status", OrderStatus.PAYED.getValue());
         ResultData response = orderService.resetPlatformOrder(condition);
-        switch (response.getResponseCode()){
+        switch (response.getResponseCode()) {
             case RESPONSE_ERROR:
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("Fail to reset order");
