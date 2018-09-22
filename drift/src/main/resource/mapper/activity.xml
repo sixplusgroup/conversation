@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.drift.activity">
+    <resultMap id="activityVo" type="finley.gmair.model.drift.Activity">
+        <result property="activityId" column="activity_id"></result>
+        <result property="goodsId" column="goods_id"></result>
+        <result property="activityName" column="activity_name"></result>
+        <result property="repositorySize" column="repository_size"></result>
+        <result property="threshold" column="threshold"></result>
+        <result property="startTime" column="start_time"></result>
+        <result property="endTime" column="end_time"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="activityVo">
+        select activity_id, goods_id, activity_name, repository_size, threshold, start_time, end_time, block_flag, create_time
+        from gmair_drift.drift_activity
+        where 1 = 1
+        <if test="activityId != null">
+            and activity_id = #{activityId}
+        </if>
+        <if test="goodsId != null">
+            and goods_id = #{goodsId}
+        </if>
+        <if test="activityName != null">
+            and activity_name = #{activityName}
+        </if>
+        <if test="repositorySize != null">
+            and repository_size = #{repositorySize}
+        </if>
+        <if test="threshold != null">
+            and threshold = #{threshold}
+        </if>
+        <if test="startTime != null">
+            and start_time = #{startTime}
+        </if>
+        <if test="endTime != null">
+            and end_time = #{endTime}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by creat_time desc
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.Activity">
+        insert into gmair_drift.drift_activity(activity_id, goods_id, activity_name, repository_size, threshold, start_time, end_time, block_flag, create_time)
+        values (#{activityId}, #{goodsId}, #{activityName}, #{repositorySize}, #{threshold}, #{startTime}, #{endTime}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        update gmair_drift.drift_activity
+        <set>
+            <if test="activityName != null">
+                activity_name = #{activityName},
+            </if>
+            <if test="repositorySize != null">
+                repository_size = #{repositorySize},
+            </if>
+            <if test="threshold != null">
+                threshold = #{threshold},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+            activity_id = #{activityId}
+        </set>
+        where activity_id = #{activityId}
+    </update>
+</mapper>
