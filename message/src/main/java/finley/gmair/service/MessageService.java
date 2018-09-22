@@ -9,4 +9,8 @@ public interface MessageService {
     ResultData createTextMessage(TextMessage message);
 
     ResultData fetchTextMessage(Map<String, Object> condition);
+
+    ResultData createReceiveMessage(TextMessage message);
+
+    ResultData fetchReceiveMessage(Map<String, Object> condition);
 }

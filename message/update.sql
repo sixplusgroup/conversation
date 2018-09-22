@@ -16,3 +16,13 @@ CREATE TABLE `gmair_message`.`message_template` (
   `create_time`     DATETIME     NOT NULL,
   PRIMARY KEY (`template_id`)
 );
+
+
+#2018.09.18 add table in_text_message to receive feedback from consumer
+CREATE TABLE `gmair_message`.`in_text_message` (
+  `message_id` VARCHAR(20) NOT NULL,
+  `mobile` VARCHAR(45) NOT NULL,
+  `text` LONGTEXT NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`message_id`));
