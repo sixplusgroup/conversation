@@ -41,7 +41,7 @@ public class ReconnaissanceController {
 
         ResultData response = reconnaissanceService.createReconnaissance(reconnaissance);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setDescription("服务器忙，请稍后再试");
+            result.setDescription("Fail to create reconnaissance record");
             result.setResponseCode(response.getResponseCode());
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -58,18 +58,15 @@ public class ReconnaissanceController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
         condition.put("orderId", orderId);
-
         ResultData response = reconnaissanceService.fetchReconnaissance(condition);
-
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setDescription("服务器忙，请稍后再试");
+            result.setDescription("Fail to fetch reconnaissance list for order: " + orderId);
             result.setResponseCode(response.getResponseCode());
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
         } else {
-            result.setData(((List<Reconnaissance>) response.getData()).get(0));
+            result.setData(response.getData());
         }
-
         return result;
     }
 
