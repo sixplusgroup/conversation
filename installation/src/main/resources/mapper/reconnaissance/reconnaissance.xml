@@ -35,6 +35,7 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
+        order by create_time asc
     </select>
 
     <update id="update" parameterType="finley.gmair.model.installation.Reconnaissance">
