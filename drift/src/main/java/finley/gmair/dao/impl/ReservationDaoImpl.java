@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.ReservationDao;
 import finley.gmair.model.drift.Reservation;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,7 @@ public class ReservationDaoImpl extends BaseDao implements ReservationDao {
     @Override
     public ResultData insertReservation(Reservation reservation) {
         ResultData result = new ResultData();
+        reservation.setReservationId(IDGenerator.generate("RES"));
         try {
             sqlSession.insert("gmair.drift.reservation.insert", reservation);
             result.setData(reservation);

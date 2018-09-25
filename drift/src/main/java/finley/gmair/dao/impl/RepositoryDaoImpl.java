@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.RepositoryDao;
 import finley.gmair.model.drift.DriftRepository;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,7 @@ public class RepositoryDaoImpl extends BaseDao implements RepositoryDao {
     @Override
     public ResultData insertRepository(DriftRepository driftRepository) {
         ResultData result = new ResultData();
+        driftRepository.setRepositoryId(IDGenerator.generate("REP"));
         try {
             sqlSession.insert("gmair.drift.repository.insert", driftRepository);
             result.setData(driftRepository);

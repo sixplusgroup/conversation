@@ -4,12 +4,14 @@
     <resultMap id="goodsVo" type="finley.gmair.model.drift.Goods">
         <result property="goodsId" column="goods_id"></result>
         <result property="goodsName" column="goods_name"></result>
+        <result property="goodsDescription" column="goods_description"></result>
+        <result property="goodsPrice" column="goods_price"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="goodsVo">
-        select goods_id, goods_name, block_flag, create_time
+        select goods_id, goods_name, goods_description, goods_price, block_flag, create_time
         from gmair_drift.drift_goods
         where 1 = 1
         <if test="goodsId != null">
@@ -18,6 +20,12 @@
         <if test="goodsName != null">
             and goods_name = #{goodsName}
         </if>
+        <if test="goodsDescription != null">
+            and goods_description = #{goodsDescription}
+        </if>
+        <if test="goodsPrice != null">
+            and goods_price = #{goodsPrice}
+        </if>
         <if test="blockFlag != null">
             and block_flag = #{blockFlag}
         </if>
@@ -25,8 +33,8 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.Goods" useGeneratedKeys="false">
-        insert into gmair_drift.drift_goods(goods_id, goods_name, block_flag, create_time)
-        values (#{goodsId}, #{goodsName}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_goods(goods_id, goods_name, goods_description, goods_price, block_flag, create_time)
+        values (#{goodsId}, #{goodsName}, #{goodsDescription}, #{goodsPrice}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">
@@ -34,6 +42,12 @@
         <set>
             <if test="goodsName != null">
                 goods_name = #{goodsName},
+            </if>
+            <if test="goodsDescription != null">
+                goods_description = #{goodsDescription},
+            </if>
+            <if test="goodsPrice != null">
+                goods_price = #{goodsPrice},
             </if>
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},
