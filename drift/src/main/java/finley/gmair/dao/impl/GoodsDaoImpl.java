@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.GoodsDao;
 import finley.gmair.model.drift.Goods;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,7 @@ public class GoodsDaoImpl extends BaseDao implements GoodsDao {
     @Override
     public ResultData insertGoods(Goods goods) {
         ResultData result = new ResultData();
+        goods.setGoodsId(IDGenerator.generate("DRI"));
         try {
             sqlSession.insert("gmair.drift.goods.insert", goods);
             result.setData(goods);

@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.ActivityDao;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.model.drift.Activity;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,7 @@ public class ActivityDaoImpl extends BaseDao implements ActivityDao {
     @Override
     public ResultData insertActivity(Activity activity) {
         ResultData result = new ResultData();
+        activity.setActivityId(IDGenerator.generate("ACT"));
         try {
             sqlSession.insert("gmair.drift.activity.insert", activity);
             result.setData(activity);
