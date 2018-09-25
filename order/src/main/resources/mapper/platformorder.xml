@@ -60,6 +60,7 @@
         </if>
         <if test="cityName != null">
             AND city like #{cityName}
+            OR district like #{cityName}
         </if>
         <if test="provinceName != null">
             AND province like #{provinceName}
