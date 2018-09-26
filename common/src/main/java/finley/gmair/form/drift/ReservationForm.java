@@ -1,12 +1,8 @@
-package finley.gmair.model.drift;
-
-import finley.gmair.model.Entity;
+package finley.gmair.form.drift;
 
 import java.util.Date;
 
-public class Reservation extends Entity {
-    private String reservationId;
-
+public class ReservationForm {
     private String consumerId;
 
     private String goodsId;
@@ -24,31 +20,6 @@ public class Reservation extends Entity {
     private String provinceId;
 
     private String cityId;
-
-    public Reservation() {
-        super();
-    }
-
-    public Reservation(String consumerId, String goodsId, Date expected, int interval, String consigneeName, String consigneePhone, String consigneeAddress, String provinceId, String cityId) {
-        this();
-        this.consumerId = consumerId;
-        this.goodsId = goodsId;
-        this.expected = expected;
-        this.interval = interval;
-        this.consigneeName = consigneeName;
-        this.consigneePhone = consigneePhone;
-        this.consigneeAddress = consigneeAddress;
-        this.provinceId = provinceId;
-        this.cityId = cityId;
-    }
-
-    public String getReservationId() {
-        return reservationId;
-    }
-
-    public void setReservationId(String reservationId) {
-        this.reservationId = reservationId;
-    }
 
     public String getConsumerId() {
         return consumerId;
