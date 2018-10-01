@@ -35,3 +35,8 @@
     + In some situations, users will send back a reply. Here we config a URL to receive notification from the messaging platform.
     > URL: /message/receive
     + Parameters(message[String], mobile[String])
+    
++ Retrieve replies from users
+    + replies from users will be fetched upon the given query
+    > URL: /message/receive/list
+    + Parameters()
