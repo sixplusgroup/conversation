@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/preparation/machine")
-
+@CrossOrigin
 public class MachineController {
 
     @Autowired
@@ -92,7 +92,6 @@ public class MachineController {
         return bindVersionService.findPrebind();
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/bind/batch")
     public ResultData bindBatch(String bindList) {
         return bindVersionService.bindBatchVersion(bindList);
