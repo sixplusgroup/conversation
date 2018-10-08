@@ -368,6 +368,12 @@ public class QRCodeController {
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(param)) {
             JSONObject paramJson = JSON.parseObject(param);
+            if (!StringUtils.isEmpty(paramJson.get("codeValue"))) {
+                condition.put("codeValue", paramJson.getString("codeValue"));
+            }
+            if (!StringUtils.isEmpty(paramJson.get("machineId"))) {
+                condition.put("machineId", paramJson.getString("machineId"));
+            }
             if (!StringUtils.isEmpty(paramJson.get("startDate"))) {
                 condition.put("startTime", paramJson.getString("startDate"));
             }
@@ -644,40 +650,6 @@ public class QRCodeController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         condition.put("dateNow", sdf.format(date));
         ResultData response = preBindService.fetchByDate(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No prebind found from database");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to retrieve prebind, please try again later");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        return result;
-    }
-
-    @GetMapping(value = "/prebind/list")
-    public ResultData prebind(String qrcode, String machineId, String start, String end) {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag", false);
-        //put search filters into the map
-        if (!StringUtils.isEmpty(qrcode)) {
-            condition.put("codeValue", qrcode);
-        }
-        if (!StringUtils.isEmpty(machineId)) {
-            condition.put("machineId", machineId);
-        }
-        if (!StringUtils.isEmpty(start)) {
-            condition.put("startTime", start);
-        }
-        if (!StringUtils.isEmpty(end)) {
-            condition.put("endTime", end);
-        }
-        ResultData response = preBindService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No prebind found from database");
