@@ -1,14 +1,14 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.BindVersionService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/preparation/machine")
@@ -96,9 +96,13 @@ public class MachineController {
         return bindVersionService.bindBatchVersion(bindList);
     }
 
-
     @PostMapping(value = "/prebind/delete")
     public ResultData deletePrebind(String qrcode, String machineId) {
         return bindVersionService.deletePreBind(qrcode, machineId);
+    }
+
+    @PostMapping(value = "/prebind/list")
+    public ResultData list(String qrcode, String machineId, String start, String end) {
+        return bindVersionService.prebindList(qrcode, machineId, start, end);
     }
 }

@@ -26,6 +26,9 @@ public interface BindVersionService {
     @GetMapping(value = "/machine/qrcode/prebind/list/now")
     ResultData findPrebind();
 
+    @GetMapping(value = "/machine/qrcode/prebind/list")
+    ResultData prebindList(@RequestParam("qrcode") String qrcode, @RequestParam("machineId") String machineId, @RequestParam("start") String start, @RequestParam("end") String end);
+
     @PostMapping(value = "/machine/board/bind/batch")
     ResultData bindBatchVersion(@RequestParam("bindList") String bindList);
 
