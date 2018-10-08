@@ -29,10 +29,7 @@
     </select>
 
     <delete id="delete" parameterType="String">
-        UPDATE gmair_machine.board_version
-        <set>
-            block_flag = true
-        </set>
+        DELETE FROM gmair_machine.board_version
         WHERE machine_id = #{machineId};
     </delete>
 </mapper>

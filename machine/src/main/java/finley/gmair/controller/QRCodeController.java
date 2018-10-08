@@ -273,15 +273,15 @@ public class QRCodeController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setData(response.getData());
             //insert correct, then update idleMachine
-            Map<String, Object> condition = new HashMap<>();
-            condition.put("machineId", form.getMachineId());
-            response = idleMachineService.modify(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("The idleMachine update is failed, please try again");
-            }
+//            Map<String, Object> condition = new HashMap<>();
+//            condition.put("machineId", form.getMachineId());
+//            response = idleMachineService.modify(condition);
+//            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                result.setResponseCode(ResponseCode.RESPONSE_OK);
+//            } else {
+//                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                result.setDescription("The idleMachine update is failed, please try again");
+//            }
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("The qrCode preBind is failed, please try again");

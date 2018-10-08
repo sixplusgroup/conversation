@@ -88,34 +88,34 @@ public class BoardVersionController {
     }
 
     @GetMapping("/by/qrcode")
-    public ResultData findBoardVersionByQRcode(String qrcode){
+    public ResultData findBoardVersionByQRcode(String qrcode) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(qrcode)){
+        if (StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide the qrcode");
             return result;
         }
         //according the qrcode, find the machineId.
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("codeValue",qrcode);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find the qrcode");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to find the qrcode");
             return result;
         }
-        String machineId = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getMachineId();
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         return searchBoardVersion(machineId);
     }
 
     @PostMapping(value = "/bind/batch")
-    public ResultData bindBatchVersion(String bindList){
-        ResultData result =  new ResultData();
+    public ResultData bindBatchVersion(String bindList) {
+        ResultData result = new ResultData();
         if (StringUtils.isEmpty(bindList)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide the bind list");
@@ -124,7 +124,7 @@ public class BoardVersionController {
         JSONArray jsonArray = JSONArray.parseArray(bindList);
 
         //check whether the input data has correct format
-        for( int i = 0; i< jsonArray.size(); i++) {
+        for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
             if (StringUtils.isEmpty(jsonObject.getString("codeValue"))
                     || StringUtils.isEmpty(jsonObject.getString("machineId"))
@@ -140,16 +140,16 @@ public class BoardVersionController {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 
             //make sure :
-                //1.codeValue exist in qrcode table,
-                //2.codeValue has not been binded (in pre_bind table)
-                //3.machineId has not been binded (in pre_bind table)
+            //1.codeValue exist in qrcode table,
+            //2.codeValue has not been binded (in pre_bind table)
+            //3.machineId has not been binded (in pre_bind table)
             Map<String, Object> condition = new HashMap<>();
             condition.put("codeValue", jsonObject.getString("codeValue"));
             condition.put("blockFlag", false);
             ResultData response = qrCodeService.fetch(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                errorList.add(new BatchBindForm(jsonObject.getString("machineId"),jsonObject.getString("codeValue"),jsonObject.getIntValue("version")));
+                errorList.add(new BatchBindForm(jsonObject.getString("machineId"), jsonObject.getString("codeValue"), jsonObject.getIntValue("version")));
                 continue;
             }
 
@@ -157,9 +157,9 @@ public class BoardVersionController {
             condition.put("codeValue", jsonObject.getString("codeValue"));
             condition.put("blockFlag", false);
             response = preBindService.fetch(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL){
+            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                errorList.add(new BatchBindForm(jsonObject.getString("machineId"),jsonObject.getString("codeValue"),jsonObject.getIntValue("version")));
+                errorList.add(new BatchBindForm(jsonObject.getString("machineId"), jsonObject.getString("codeValue"), jsonObject.getIntValue("version")));
                 continue;
             }
 
@@ -167,9 +167,9 @@ public class BoardVersionController {
             condition.put("machineId", jsonObject.getString("machineId"));
             condition.put("blockFlag", false);
             response = preBindService.fetch(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL){
+            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                errorList.add(new BatchBindForm(jsonObject.getString("machineId"),jsonObject.getString("codeValue"),jsonObject.getIntValue("version")));
+                errorList.add(new BatchBindForm(jsonObject.getString("machineId"), jsonObject.getString("codeValue"), jsonObject.getIntValue("version")));
                 continue;
             }
 
@@ -191,40 +191,47 @@ public class BoardVersionController {
     @PostMapping(value = "/bind/delete")
     public ResultData deletePreBind(String bindId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(bindId)){
+        if (StringUtils.isEmpty(bindId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide the bindId");
             return result;
         }
 
 
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("bindId",bindId);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("bindId", bindId);
+        condition.put("blockFlag", false);
         ResultData response = preBindService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find the bindId");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("error to find the bindId");
             return result;
         }
-        String qrcode = ((List<PreBindCode>)response.getData()).get(0).getCodeValue();
-        String machineId = ((List<PreBindCode>)response.getData()).get(0).getMachineId();
+        String qrcode = ((List<PreBindCode>) response.getData()).get(0).getCodeValue();
+        String machineId = ((List<PreBindCode>) response.getData()).get(0).getMachineId();
         condition.clear();
-        condition.put("codeValue",qrcode);
-        condition.put("machineId",machineId);
-        condition.put("blockFlag",false);
+        condition.put("codeValue", qrcode);
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
         response = machineQrcodeBindService.fetch(condition);
-        String codeMachineBindId = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getBindId();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            String codeMachineBindId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getBindId();
+            ResultData r = machineQrcodeBindService.deleteByBindId(codeMachineBindId);
+            if (r.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to remove machine qrcode bind info");
+                return result;
+            }
+        }
 
         //删除
-        ResultData r1 = machineQrcodeBindService.deleteByBindId(codeMachineBindId);
         ResultData r2 = boardVersionService.deleteByMachineId(machineId);
         ResultData r3 = preBindService.deletePreBind(bindId);
-        if(r1.getResponseCode() == ResponseCode.RESPONSE_ERROR || r2.getResponseCode() == ResponseCode.RESPONSE_ERROR || r3.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (r2.getResponseCode() == ResponseCode.RESPONSE_ERROR || r3.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("error to delete three bind");
             return result;

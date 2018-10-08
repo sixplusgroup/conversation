@@ -19,6 +19,7 @@ import java.util.Map;
 public class PreBindServiceImpl implements PreBindService {
     @Autowired
     private PreBindDao preBindDao;
+
     @Override
     public ResultData create(PreBindCode preBindCode) {
         ResultData result = new ResultData();
@@ -27,6 +28,7 @@ public class PreBindServiceImpl implements PreBindService {
         Map<String, Object> condition = new HashMap<>();
         condition.put("machineId", preBindCode.getMachineId());
         condition.put("codeValue", preBindCode.getCodeValue());
+        condition.put("blockFlag", false);
 
         ResultData response = preBindDao.queryBy2Id(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

@@ -8,7 +8,7 @@
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
-    
+
     <select id="query" parameterType="java.util.Map" resultMap="prebindVo">
         SELECT bind_id, machine_id, code_value, block_flag, create_time
         FROM gmair_machine.pre_bind
@@ -36,7 +36,7 @@
         <if test="search != null">
             AND (machine_id LIKE #{search} OR code_value LIKE #{search})
         </if>
-        ORDER BY create_time DESC 
+        ORDER BY create_time DESC
     </select>
 
     <select id="queryByDate" parameterType="java.util.Map" resultMap="prebindVo">
@@ -62,21 +62,33 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.machine.PreBindCode" useGeneratedKeys="false">
-        INSERT INTO gmair_machine.pre_bind(bind_id, machine_id, code_value, block_flag, create_time)
-        VALUES(#{bindId}, #{machineId}, #{codeValue}, #{blockFlag}, #{createAt})
+        INSERT INTO gmair_machine.pre_bind (bind_id, machine_id, code_value, block_flag, create_time)
+        VALUES (#{bindId}, #{machineId}, #{codeValue}, #{blockFlag}, #{createAt})
     </insert>
 
     <!--根据machine_id或者code_value查找prebind表-->
     <select id="queryBy2Id" parameterType="string" resultMap="prebindVo">
-         SELECT bind_id, machine_id, code_value, block_flag, create_time
-         FROM gmair_machine.pre_bind
-         WHERE machine_id = #{machineId} OR code_value = #{codeValue}
+        SELECT
+        bind_id,
+        machine_id,
+        code_value,
+        block_flag,
+        create_time
+        FROM gmair_machine.pre_bind
+        WHERE (machine_id = #{machineId} OR code_value = #{codeValue})
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
     </select>
 
     <!--删除预绑定，更新idlemachine-->
     <update id="updateIdleMachine" parameterType="String">
-        UPDATE gmair_machine.idle_machine SET block_flag = 0 WHERE machine_id =
-        (SELECT machine_id FROM gmair_machine.pre_bind WHERE bind_id = #{bindId});
+        UPDATE gmair_machine.idle_machine
+        SET block_flag = 0
+        WHERE machine_id =
+              (SELECT machine_id
+               FROM gmair_machine.pre_bind
+               WHERE bind_id = #{bindId});
     </update>
 
     <!--根据qrcode删除相应预绑定-->
