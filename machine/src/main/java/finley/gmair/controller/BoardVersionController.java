@@ -189,42 +189,47 @@ public class BoardVersionController {
 
     @Transactional
     @PostMapping(value = "/bind/delete")
-    public ResultData deletePreBind(String qrcode,String machineId) {
+    public ResultData deletePreBind(String bindId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(qrcode)||StringUtils.isEmpty(machineId)){
+        if(StringUtils.isEmpty(bindId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please provide the qrcode and machineId");
+            result.setDescription("please provide the bindId");
             return result;
         }
 
+
         Map<String,Object> condition = new HashMap<>();
-        condition.put("codeValue",qrcode);
-        condition.put("machineId",machineId);
+        condition.put("bindId",bindId);
+        condition.put("blockFlag",false);
         ResultData response = preBindService.fetch(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find the qrcode-machineId");
+            result.setDescription("not find the bindId");
             return result;
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("error to find the qrcode-machineId");
+            result.setDescription("error to find the bindId");
             return result;
         }
-
-        //先把machine-qrcode-bind表记录blockFlag置为1
+        String qrcode = ((List<PreBindCode>)response.getData()).get(0).getCodeValue();
+        String machineId = ((List<PreBindCode>)response.getData()).get(0).getMachineId();
         condition.clear();
         condition.put("codeValue",qrcode);
-        condition.put("blockFlag",true);
-        machineQrcodeBindService.modifyByQRcode(condition);
+        condition.put("machineId",machineId);
+        condition.put("blockFlag",false);
+        response = machineQrcodeBindService.fetch(condition);
+        String codeMachineBindId = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getBindId();
 
-        //再删除prebind表中记录
-        response=preBindService.deletePreBind(qrcode);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        //删除
+        ResultData r1 = machineQrcodeBindService.deleteByBindId(codeMachineBindId);
+        ResultData r2 = boardVersionService.deleteByMachineId(machineId);
+        ResultData r3 = preBindService.deletePreBind(bindId);
+        if(r1.getResponseCode() == ResponseCode.RESPONSE_ERROR || r2.getResponseCode() == ResponseCode.RESPONSE_ERROR || r3.getResponseCode() == ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("error to delete prebind");
+            result.setDescription("error to delete three bind");
             return result;
         }
-        result.setDescription("success to delete prebind and code_machine_bind");
+        result.setDescription("success to delete three bind");
         return result;
     }
 }

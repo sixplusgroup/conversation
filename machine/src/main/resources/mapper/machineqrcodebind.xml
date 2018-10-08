@@ -47,4 +47,12 @@
         </set>
         WHERE code_value = #{codeValue}
     </update>
+
+    <delete id="delete" parameterType="String">
+        UPDATE gmair_machine.code_machine_bind
+        <set>
+            block_flag = true
+        </set>
+        WHERE bind_id = #{bindId};
+    </delete>
 </mapper>

@@ -64,4 +64,16 @@ public class MachineQrcodeBindServiceImpl implements MachineQrcodeBindService {
         return result;
     }
 
+    @Override
+    public ResultData deleteByBindId(String bindId){
+        ResultData result = new ResultData();
+        ResultData response = machineQrcodeBindDao.delete(bindId);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to delete the code-machine table");
+            return result;
+        }
+        return result;
+    }
+
 }

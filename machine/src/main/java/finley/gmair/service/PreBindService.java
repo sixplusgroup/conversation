@@ -14,7 +14,7 @@ public interface PreBindService {
 
     ResultData fetch(Map<String, Object> condition);
 
-    ResultData deletePreBind(String codeValue);
+    ResultData deletePreBind(String bindId);
 
     ResultData fetchByDate(Map<String, Object> condition);
 }

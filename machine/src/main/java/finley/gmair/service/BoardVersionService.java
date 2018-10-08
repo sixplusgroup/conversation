@@ -9,4 +9,6 @@ public interface BoardVersionService {
     ResultData createBoardVersion(BoardVersion version);
 
     ResultData fetchBoardVersion(Map<String, Object> condition);
+
+    ResultData deleteByMachineId(String machineId);
 }

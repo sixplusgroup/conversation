@@ -73,8 +73,8 @@ public class PreBindServiceImpl implements PreBindService {
     }
 
     @Override
-    public ResultData deletePreBind(String codeValue) {
-        ResultData result = preBindDao.delete(codeValue);
+    public ResultData deletePreBind(String bindId) {
+        ResultData result = preBindDao.delete(bindId);
         return result;
     }
 

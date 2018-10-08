@@ -27,4 +27,12 @@
             AND block_flag = #{blockFlag}
         </if>
     </select>
+
+    <delete id="delete" parameterType="String">
+        UPDATE gmair_machine.board_version
+        <set>
+            block_flag = true
+        </set>
+        WHERE machine_id = #{machineId};
+    </delete>
 </mapper>

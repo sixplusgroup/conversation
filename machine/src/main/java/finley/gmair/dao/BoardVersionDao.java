@@ -9,4 +9,6 @@ public interface BoardVersionDao {
     ResultData insertBoardVersion(BoardVersion version);
 
     ResultData queryBoardVersion(Map<String, Object> condition);
+
+    ResultData delete(String machineId);
 }

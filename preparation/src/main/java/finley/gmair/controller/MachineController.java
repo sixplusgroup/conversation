@@ -98,8 +98,8 @@ public class MachineController {
     }
 
     @PostMapping(value = "/prebind/delete")
-    public ResultData deletePrebind(String qrcode, String machineId) {
-        return bindVersionService.deletePreBind(qrcode, machineId);
+    public ResultData deletePrebind(String bindId) {
+        return bindVersionService.deletePreBind(bindId);
     }
 
     @GetMapping(value = "/prebind/list")

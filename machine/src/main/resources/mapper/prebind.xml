@@ -76,12 +76,16 @@
     <!--删除预绑定，更新idlemachine-->
     <update id="updateIdleMachine" parameterType="String">
         UPDATE gmair_machine.idle_machine SET block_flag = 0 WHERE machine_id =
-        (SELECT machine_id FROM gmair_machine.pre_bind WHERE code_value = #{codeValue});
+        (SELECT machine_id FROM gmair_machine.pre_bind WHERE bind_id = #{bindId});
     </update>
 
     <!--根据qrcode删除相应预绑定-->
     <delete id="deletePrebind" parameterType="String">
-        DELETE FROM gmair_machine.pre_bind WHERE code_value = #{codeValue};
+        UPDATE gmair_machine.pre_bind
+        <set>
+            block_flag = true
+        </set>
+        WHERE bind_id = #{bindId};
     </delete>
 
 </mapper>

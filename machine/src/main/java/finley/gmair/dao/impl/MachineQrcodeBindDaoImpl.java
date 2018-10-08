@@ -65,4 +65,17 @@ public class MachineQrcodeBindDaoImpl extends BaseDao implements MachineQrcodeBi
         return result;
     }
 
+    @Override
+    public ResultData delete(String bindId){
+        ResultData result = new ResultData();
+        try{
+            sqlSession.delete("gmair.machineqrcodebind.delete",bindId);
+        }catch (Exception e){
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
 }

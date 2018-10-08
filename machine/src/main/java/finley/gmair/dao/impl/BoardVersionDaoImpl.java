@@ -45,4 +45,16 @@ public class BoardVersionDaoImpl extends BaseDao implements BoardVersionDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData delete(String machineId){
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.machine.boardversion.delete", machineId);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

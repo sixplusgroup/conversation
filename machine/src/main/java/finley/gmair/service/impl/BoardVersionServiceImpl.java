@@ -46,4 +46,16 @@ public class BoardVersionServiceImpl implements BoardVersionService {
         result.setData(response.getData());
         return result;
     }
+
+    @Override
+    public ResultData deleteByMachineId(String machineId){
+        ResultData result = new ResultData();
+        ResultData response = boardVersionDao.delete(machineId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to delete board version information from database.");
+            return result;
+        }
+        return result;
+    }
 }

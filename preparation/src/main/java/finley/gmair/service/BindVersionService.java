@@ -33,6 +33,6 @@ public interface BindVersionService {
     ResultData bindBatchVersion(@RequestParam("bindList") String bindList);
 
     @PostMapping(value = "/machine/board/bind/delete")
-    ResultData deletePreBind(@RequestParam("qrcode") String qrcode, @RequestParam("machineId") String machineId);
+    ResultData deletePreBind(@RequestParam("bindId") String bindId);
 
 }
