@@ -27,12 +27,12 @@ public interface BindVersionService {
     ResultData findPrebind();
 
     @GetMapping(value = "/machine/qrcode/prebind/list")
-    ResultData prebindList(@RequestParam("qrcode") String qrcode, @RequestParam("machineId") String machineId, @RequestParam("start") String start, @RequestParam("end") String end);
+    ResultData prebindList(@RequestParam("param") String param);
 
     @PostMapping(value = "/machine/board/bind/batch")
     ResultData bindBatchVersion(@RequestParam("bindList") String bindList);
 
     @PostMapping(value = "/machine/board/bind/delete")
-    ResultData deletePreBind(@RequestParam("qrcode") String qrcode,@RequestParam("machineId") String machineId);
+    ResultData deletePreBind(@RequestParam("qrcode") String qrcode, @RequestParam("machineId") String machineId);
 
 }

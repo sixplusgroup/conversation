@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.BindVersionService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -101,8 +103,21 @@ public class MachineController {
         return bindVersionService.deletePreBind(qrcode, machineId);
     }
 
-    @PostMapping(value = "/prebind/list")
+    @GetMapping(value = "/prebind/list")
     public ResultData list(String qrcode, String machineId, String start, String end) {
-        return bindVersionService.prebindList(qrcode, machineId, start, end);
+        JSONObject param = new JSONObject();
+        if (!StringUtils.isEmpty(qrcode)) {
+            param.put("codeValue", qrcode);
+        }
+        if (!StringUtils.isEmpty(machineId)) {
+            param.put("machineId", machineId);
+        }
+        if (!StringUtils.isEmpty(start)) {
+            param.put("startDate", start);
+        }
+        if (!StringUtils.isEmpty(end)) {
+            param.put("endDate", end);
+        }
+        return bindVersionService.prebindList(JSON.toJSONString(param));
     }
 }
