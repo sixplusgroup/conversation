@@ -1,10 +1,7 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.assemble.Snapshot;
-import finley.gmair.model.wechat.AccessToken;
 import finley.gmair.service.FileMapService;
 import finley.gmair.service.SnapshotService;
-import finley.gmair.service.TempFileMapService;
 import finley.gmair.service.WechatService;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
@@ -16,12 +13,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,9 +30,6 @@ public class SnapshotController {
 
     @Autowired
     private FileMapService fileMapService;
-
-    @Autowired
-    private TempFileMapService tempFileMapService;
 
     @Autowired
     private SnapshotService snapshotService;
