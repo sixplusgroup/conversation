@@ -8,5 +8,6 @@
         <mapper resource="mapper/activity.xml" />
         <mapper resource="mapper/repository.xml" />
         <mapper resource="mapper/reservation.xml" />
+        <mapper resource="mapper/excode.xml" />
     </mappers>
 </configuration>
