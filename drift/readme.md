@@ -32,22 +32,22 @@
 
 
 ##2018.10.10@hushenghao
-* Data Structure Interface
-    * Activity
-        * Dao: insert | query | update
-        * Service: create | fetch | modify
-        * Controller: create | list
-    * Repository
-        * Dao: insert | query | update
-        * Service: create | fetch | modify
-        * Controller: create | list
-    * Reservation
-        * Dao: insert | query | update
-        * Service: create | fetch | modify
-        * Controller: create | list
-    * Goods
-        * Dao: insert | query | update
-        * Service: create | fetch | modify
-        * Controller: create | list
-    * @FeignService
-        * Auth-consumer service: login | register (maybe change later)
+#### Interface
+* Activity
+    * Dao: insert | query | update
+    * Service: create | fetch | modify
+    * Controller: create | list
+* Repository
+    * Dao: insert | query | update
+    * Service: create | fetch | modify
+    * Controller: create | list
+* Reservation
+    * Dao: insert | query | update
+    * Service: create | fetch | modify
+    * Controller: create | list
+* Goods
+    * Dao: insert | query | update
+    * Service: create | fetch | modify
+    * Controller: create | list
+* @FeignService
+    * Auth-consumer service: login | register (maybe change later)
