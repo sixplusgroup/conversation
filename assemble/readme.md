@@ -24,6 +24,10 @@ record_id | snapshot_id | record_status | block_flag | create_time
         @PostMapping("/batch/create")
         public ResultData createBatch(int number);
         
+*       //按照条形码值查询条形码
+        @GetMapping("/fetch")
+        public ResultData fetchBarcode(String codeValue);
+        
 2.SnapshotController
 *       //工人上传一张图片时触发
         @RequestMapping(method = RequestMethod.POST, value = "/pic/upload")

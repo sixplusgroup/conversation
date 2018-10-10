@@ -60,17 +60,17 @@ public class CheckRecordController {
     }
 
     @GetMapping("/fetch/bystatus")
-    public ResultData fetchCheckRecordByStatus(boolean recordStatus){
+    public ResultData fetchCheckRecordByStatus(boolean recordStatus) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("recordStatus",recordStatus);
-        condition.put("blockFlag",false);
+        condition.put("recordStatus", recordStatus);
+        condition.put("blockFlag", false);
         ResultData response = checkRecordService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch check record by record status");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find any data by status");
             return result;

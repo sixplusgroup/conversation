@@ -6,7 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
+@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller", "finley.gmair.config"})
 @EnableDiscoveryClient
 @EnableFeignClients({"finley.gmair.service"})
 @SpringBootApplication

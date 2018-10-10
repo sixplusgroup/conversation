@@ -79,6 +79,15 @@ public class SnapshotController {
                 .append(fileName)
                 .toString();
 
+        //save temp url-path map to tempfile_location
+        ResultData response = tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to save temp file into mysql");
+            return result;
+        }
+        result.setData(fileUrl);
+
         //create the pic-saving directory and save the pic to disk.
         File directory = new File(actualPath);
         if (!directory.exists()) {
@@ -92,14 +101,6 @@ public class SnapshotController {
             return result;
         }
 
-        //save temp url-path map to tempfile_location
-        ResultData response = tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to save temp file");
-            return result;
-        }
-        result.setData(fileUrl);
         return result;
     }
 
@@ -161,7 +162,7 @@ public class SnapshotController {
 
     //显示snapshot list
     @RequestMapping(method = RequestMethod.GET, value = "/fetch")
-    public ResultData fetchSnapshot(String startTime, String endTime, String codeValue) {
+    public ResultData fetchSnapshot(String startTime, String endTime, String codeValue, String snapshotId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(startTime)) {
@@ -172,6 +173,9 @@ public class SnapshotController {
         }
         if (!StringUtils.isEmpty(codeValue)) {
             condition.put("codeValue", codeValue);
+        }
+        if (!StringUtils.isEmpty(snapshotId)) {
+            condition.put("snapshotId", snapshotId);
         }
         ResultData response = snapshotService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
