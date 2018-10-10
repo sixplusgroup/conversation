@@ -111,6 +111,13 @@ public class WechatApplication {
                             String xml = content.toXML(result);
                             return xml;
                         }
+                        if (reply.getTemplateId().startsWith("ATI")) {
+                            condition.clear();
+                            condition.put("templateId", reply.getTemplateId());
+                            ArticleReplyVo vo = getArticle(condition);
+                            String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), tmessage);
+                            return xml;
+                        }
                     }
                     break;
                 case "event":
