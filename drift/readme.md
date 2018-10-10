@@ -29,3 +29,25 @@
     * Columns: reservation_id | consumer_id | activity_id | expected_date | interval | consignee_name | consignee_phone | consignee_address | province_id | city_id | block_flag | create_time
 
 ## API List
+
+
+##2018.10.10@hushenghao
+* Data Structure Interface
+    * Activity
+        * Dao: insert | query | update
+        * Service: create | fetch | modify
+        * Controller: create | list
+    * Repository
+        * Dao: insert | query | update
+        * Service: create | fetch | modify
+        * Controller: create | list
+    * Reservation
+        * Dao: insert | query | update
+        * Service: create | fetch | modify
+        * Controller: create | list
+    * Goods
+        * Dao: insert | query | update
+        * Service: create | fetch | modify
+        * Controller: create | list
+    * @FeignService
+        * Auth-consumer service: login | register (maybe change later)
