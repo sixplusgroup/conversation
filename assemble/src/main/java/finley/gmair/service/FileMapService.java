@@ -10,4 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface FileMapService {
     @RequestMapping(method = RequestMethod.POST, value = "/resource/createpic")
     ResultData createPicMap(@RequestParam("fileUrl") String fileUrl);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/resource/filemap/create")
+    ResultData create(@RequestParam("url") String url,
+                      @RequestParam("actualPath") String actualPath,
+                      @RequestParam("filename") String filename);
 }

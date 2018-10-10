@@ -1,9 +1,11 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.assemble.Snapshot;
+import finley.gmair.model.wechat.AccessToken;
 import finley.gmair.service.FileMapService;
 import finley.gmair.service.SnapshotService;
 import finley.gmair.service.TempFileMapService;
+import finley.gmair.service.WechatService;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -17,11 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -38,27 +43,23 @@ public class SnapshotController {
     @Autowired
     private SnapshotService snapshotService;
 
+    @Autowired
+    private WechatService wechatService;
+
     @Value("${RESOURCE_URL}")
     private String RESOURCE_URL;
 
     @Value("${STORAGE_PATH}")
     private String STORAGE_PATH;
 
-    //工人上传一张图片时触发
-    @RequestMapping(method = RequestMethod.POST, value = "/pic/upload")
-    public ResultData uploadPic(MultipartHttpServletRequest request) {
+    //工人提交图片对应微信服务器上的url和条形码时触发,创建snapshot表单
+    @RequestMapping(method = RequestMethod.POST, value = "/upload")
+    public ResultData upload(String codeValue, String mediaId) {
         ResultData result = new ResultData();
-        MultipartFile file = request.getFile("fileName");
-        //check the file not empty.
-        try {
-            if (file == null || file.getBytes().length == 0) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("empty file");
-                return result;
-            }
-        } catch (Exception e) {
+        //check whether input is empty
+        if (StringUtils.isEmpty(codeValue) || StringUtils.isEmpty(mediaId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.getMessage());
+            result.setDescription("Please provide all information");
             return result;
         }
 
@@ -67,98 +68,76 @@ public class SnapshotController {
                 .append(File.separator)
                 .append(new SimpleDateFormat("yyyyMMdd").format(new Date()))
                 .toString();
-        String fileName = new StringBuffer(IDGenerator.generate("KKK"))
-                .append(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.')))
-                .toString();
+        String filename = IDGenerator.generate("ZJP") + ".jpg";
         String fileUrl = new StringBuffer(RESOURCE_URL)
                 .append(File.separator)
-                .append(fileName)
+                .append(filename)
                 .toString();
-        String picPath = new StringBuffer(actualPath)
-                .append(File.separator)
-                .append(fileName)
-                .toString();
-
-        //save temp url-path map to tempfile_location
-        ResultData response = tempFileMapService.createPicMap(fileUrl, actualPath, fileName);
+        ResultData response = wechatService.getToken();
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to save temp file into mysql");
+            result.setDescription("fail to get access token");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find the access token");
             return result;
         }
-        result.setData(fileUrl);
-
-        //create the pic-saving directory and save the pic to disk.
-        File directory = new File(actualPath);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        try {
-            file.transferTo(new File(picPath));
-        } catch (IOException e) {
+        String access_token = ((LinkedHashMap<String, String>) response.getData()).get("accessToken");
+        //String access_token = "14_dQ2As1M6CMuf6D-5IIh8W0TRJKci3K6V4ugEmZI7YWLyaaCP1FV4Sy55CeOJJpGWmzMTASm0pVifL6BlLjxvDmEq-0u4KnTENCw6FtH6wExKQY_TTSYvzsvGe9wrf2l4sdTzkrGXE0SN4PNySYXaAEALRQ";
+        new Thread(()->{
+            downloadPic(actualPath,filename,mediaId,access_token);
+        });
+        response = fileMapService.create(fileUrl, actualPath, filename);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("error happen when save pic to disk");
+            result.setDescription("fail to create file map");
             return result;
         }
-
+        result.setDescription("success to create file map");
         return result;
     }
-
-    //工人提交图片对应url和条形码时触发,创建snapshot表单
-    @RequestMapping(method = RequestMethod.POST, value = "/create")
-    public ResultData createSnapshot(String codeValue, String snapshotPath) {
+    //下载微信服务器上的图片
+    //actualPath 本地文件夹名
+    //filename 保存的文件名
+    //media_id 微信服务器对资源的编号
+    //token 微信公众号的token
+    private ResultData downloadPic(String actualPath, String filename, String media_id, String token) {
         ResultData result = new ResultData();
-
-        //check whether input is empty
-        if (StringUtils.isEmpty(codeValue) || StringUtils.isEmpty(snapshotPath)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all information");
-            return result;
-        }
-
-        //new a thread to save information
-        new Thread(() -> {
-            try {
-                fileMapService.createPicMap(snapshotPath);                               //修改filemap表
-            } catch (Exception e) {
-                e.printStackTrace();
+        String url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=" + token + "&media_id=" + media_id;
+        try {
+            URL address = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) address.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            System.setProperty("sun.net.client.defaultConnectTimeout", "30000");
+            System.setProperty("sun.net.client.defaultReadTimeout", "30000");
+            connection.connect();
+            InputStream is = connection.getInputStream();
+            //路径处理
+            File directory = new File(actualPath);
+            if (!directory.exists()) {
+                directory.mkdirs();
             }
-            try {
-                tempFileMapService.deleteValidPicMapFromTempFileMap(snapshotPath);       //修改tempfilemap表
-            } catch (Exception e) {
-                e.printStackTrace();
+            String completeName = new StringBuffer(actualPath).append(File.separator).append(filename).toString();
+            File temp = new File(completeName);
+            //开始下载
+            FileOutputStream fileOutputStream = new FileOutputStream(temp);
+            byte[] data = new byte[1024];
+            int len = 0;
+            while ((len = is.read(data)) != -1) {
+                fileOutputStream.write(data, 0, len);
             }
-        }).start();
+            result.setData(filename);
+        } catch (Exception e) {
 
-        //check if the codeValue exist
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("codeValue", codeValue);
-        condition.put("blockFlag", false);
-        ResultData response = snapshotService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to fetch codevalue");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription("exist codeValue,do not need to create again");
+        } finally {
             return result;
         }
-
-        //create the Snapshot
-        Snapshot snapshot = new Snapshot(codeValue, snapshotPath);
-        response = snapshotService.create(snapshot);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to create the snapshot.");
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
-        result.setDescription("Success to create the snapshot.");
-        return result;
     }
+
 
     //显示snapshot list
     @RequestMapping(method = RequestMethod.GET, value = "/fetch")
@@ -191,5 +170,8 @@ public class SnapshotController {
         result.setDescription("success to fetch");
         return result;
     }
+
+
+
 
 }
