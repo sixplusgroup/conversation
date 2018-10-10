@@ -46,7 +46,7 @@ public class RepositoryController {
         return result;
     }
 
-    @GetMapping(value = "list")
+    @GetMapping(value = "/list")
     public ResultData getRepository() {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();

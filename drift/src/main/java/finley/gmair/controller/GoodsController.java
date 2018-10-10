@@ -71,7 +71,7 @@ public class GoodsController {
      *
      * @return
      */
-    @GetMapping(value = "list")
+    @GetMapping(value = "/list")
     public ResultData getGoods() {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();

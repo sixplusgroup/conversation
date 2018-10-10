@@ -144,7 +144,7 @@ public class ActivityController {
      * the method is used to select the activity list
      *
      * @return*/
-    @GetMapping(value = "list")
+    @GetMapping(value = "/list")
     public ResultData getActivity() {
          ResultData result = new ResultData();
          Map<String, Object> condition = new HashMap<>();
