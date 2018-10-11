@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@CrossOrigin({"https://console.gmair.net"})
 @RestController
 @RequestMapping("/assemble/snapshot")
 @PropertySource(value = "classpath:/assemble.properties")
@@ -56,14 +58,14 @@ public class SnapshotController {
         }
         //exist codeValue
         Map<String, Object> condition = new HashMap<>();
-        condition.put("codeValue",codeValue);
-        condition.put("blockFlag",false);
+        condition.put("codeValue", codeValue);
+        condition.put("blockFlag", false);
         ResultData response = snapshotService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("exist codeValue, don not commit again!");
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("条码值: ").append(codeValue).append("已存在, 请勿重复使用上传").toString());
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to check whether the codeValue exist");
             return result;
@@ -94,7 +96,6 @@ public class SnapshotController {
             downloadPic(actualPath, filename, mediaId, access_token);
             fileMapService.create(fileUrl, actualPath, filename);
         }).start();
-
 
 
         //create snapshot
@@ -181,6 +182,4 @@ public class SnapshotController {
         result.setDescription("success to fetch");
         return result;
     }
-
-
 }
