@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.assemble.Snapshot;
 import finley.gmair.service.FileMapService;
 import finley.gmair.service.SnapshotService;
 import finley.gmair.service.WechatService;
@@ -75,19 +76,21 @@ public class SnapshotController {
             return result;
         }
         String access_token = ((LinkedHashMap<String, String>) response.getData()).get("accessToken");
-        //String access_token = "14_dQ2As1M6CMuf6D-5IIh8W0TRJKci3K6V4ugEmZI7YWLyaaCP1FV4Sy55CeOJJpGWmzMTASm0pVifL6BlLjxvDmEq-0u4KnTENCw6FtH6wExKQY_TTSYvzsvGe9wrf2l4sdTzkrGXE0SN4PNySYXaAEALRQ";
-        new Thread(()->{
-            downloadPic(actualPath,filename,mediaId,access_token);
-        });
-        response = fileMapService.create(fileUrl, actualPath, filename);
+        //String access_token = "14_lh_dsVE_43Jxoj3x8bz_F5Wuq05ziAtTakvW2dLTz1woEobu8wX4Il5uib5xecIyvvakmvDE1uUjSwhCI4QKkKAO4YmM2ydOm5XEAXha1TAdHhOguppQLQX82nYQelYnoF66GQ7tRpiQa9wJIFUhAFAQNC";
+        new Thread(() -> {
+            downloadPic(actualPath, filename, mediaId, access_token);
+            fileMapService.create(fileUrl, actualPath, filename);
+        }).start();
+        response = snapshotService.create(new Snapshot(codeValue, fileUrl));
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to create file map");
+            result.setDescription("fail to create snapshot");
             return result;
         }
         result.setDescription("success to create file map");
         return result;
     }
+
     //下载微信服务器上的图片
     //actualPath 本地文件夹名
     //filename 保存的文件名
@@ -161,8 +164,6 @@ public class SnapshotController {
         result.setDescription("success to fetch");
         return result;
     }
-
-
 
 
 }
