@@ -54,8 +54,22 @@ public class SnapshotController {
             result.setDescription("Please provide all information");
             return result;
         }
+        //exist codeValue
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue",codeValue);
+        condition.put("blockFlag",false);
+        ResultData response = snapshotService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("exist codeValue, don not commit again!");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to check whether the codeValue exist");
+            return result;
+        }
 
-        //actualPath does not contains file name but picPath does
+        //download pic to local disk from wechat server and save the file map
         String actualPath = new StringBuffer(STORAGE_PATH)
                 .append(File.separator)
                 .append(new SimpleDateFormat("yyyyMMdd").format(new Date()))
@@ -65,7 +79,7 @@ public class SnapshotController {
                 .append(File.separator)
                 .append(filename)
                 .toString();
-        ResultData response = wechatService.getToken();
+        response = wechatService.getToken();
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to get access token");
@@ -76,11 +90,14 @@ public class SnapshotController {
             return result;
         }
         String access_token = ((LinkedHashMap<String, String>) response.getData()).get("accessToken");
-        //String access_token = "14_lh_dsVE_43Jxoj3x8bz_F5Wuq05ziAtTakvW2dLTz1woEobu8wX4Il5uib5xecIyvvakmvDE1uUjSwhCI4QKkKAO4YmM2ydOm5XEAXha1TAdHhOguppQLQX82nYQelYnoF66GQ7tRpiQa9wJIFUhAFAQNC";
         new Thread(() -> {
             downloadPic(actualPath, filename, mediaId, access_token);
             fileMapService.create(fileUrl, actualPath, filename);
         }).start();
+
+
+
+        //create snapshot
         response = snapshotService.create(new Snapshot(codeValue, fileUrl));
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
