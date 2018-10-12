@@ -34,11 +34,12 @@ public class GMRepository {
 
     public GMRepository() {
         super();
-        cache = ExpiringMap.builder()
-                .expiration(2, TimeUnit.MINUTES)
-                .expirationPolicy(ExpirationPolicy.ACCESSED)
-                .expirationListener((key, ctx) -> CorePool.getCleanPool().submit(() -> (((ChannelHandlerContext) ctx).close())))
-                .build();
+//        cache = ExpiringMap.builder()
+//                .expiration(2, TimeUnit.MINUTES)
+//                .expirationPolicy(ExpirationPolicy.ACCESSED)
+//                .expirationListener((key, ctx) -> CorePool.getCleanPool().submit(() -> (((ChannelHandlerContext) ctx).close())))
+//                .build();
+        cache = new ConcurrentHashMap<>();
     }
 
     public GMRepository push(String key, ChannelHandlerContext value) {
@@ -53,18 +54,16 @@ public class GMRepository {
         return cache.get(key);
     }
 
-//    public GMRepository remove(ChannelHandlerContext ctx) {
-//        String removeKey = null;
-//        for (String key : cache.keySet()) {
-//            if (cache.get(key).equals(ctx)) {
-//                CorePool.getLogExecutor().execute(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress()));
-//                removeKey = key;
-//            }
-//        }
-//        if (removeKey != null)
-//            cache.remove(removeKey);
-//        return this;
-//    }
+    public GMRepository remove(ChannelHandlerContext ctx) {
+        for (String key : cache.keySet()) {
+            if (cache.get(key).equals(ctx)) {
+                CorePool.getLogExecutor().execute(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress()));
+                cache.remove(key);
+                break;
+            }
+        }
+        return this;
+    }
 
     public ResultData list() {
         ResultData result = new ResultData();

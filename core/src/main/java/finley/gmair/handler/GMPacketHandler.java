@@ -58,7 +58,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         ctx.channel().close();
-        //repository.remove(ctx);
+        repository.remove(ctx);
     }
 
     @Override
