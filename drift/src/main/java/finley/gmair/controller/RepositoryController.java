@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/assemble/repository")
+@RequestMapping("/drift/repository")
 public class RepositoryController {
 
     @Autowired

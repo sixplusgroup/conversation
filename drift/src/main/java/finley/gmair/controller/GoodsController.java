@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/assemble/goods")
+@RequestMapping("/drift/goods")
 public class GoodsController {
 
     @Autowired

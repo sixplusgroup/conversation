@@ -7,6 +7,7 @@
         <result property="activityName" column="activity_name"></result>
         <result property="repositorySize" column="repository_size"></result>
         <result property="threshold" column="threshold"></result>
+        <result property="reservableDays" column="reservable_days"></result>
         <result property="startTime" column="start_time"></result>
         <result property="endTime" column="end_time"></result>
         <result property="blockFlag" column="block_flag"></result>
@@ -14,7 +15,7 @@
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="activityVo">
-        select activity_id, goods_id, activity_name, repository_size, threshold, start_time, end_time, block_flag, create_time
+        select activity_id, goods_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, block_flag, create_time
         from gmair_drift.drift_activity
         where 1 = 1
         <if test="activityId != null">
@@ -32,6 +33,9 @@
         <if test="threshold != null">
             and threshold = #{threshold}
         </if>
+        <if test="reservableDays != null">
+            and reservable_days = #{reservableDays}
+        </if>
         <if test="startTime != null">
             and start_time = #{startTime}
         </if>
@@ -45,8 +49,8 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.Activity">
-        insert into gmair_drift.drift_activity(activity_id, goods_id, activity_name, repository_size, threshold, start_time, end_time, block_flag, create_time)
-        values (#{activityId}, #{goodsId}, #{activityName}, #{repositorySize}, #{threshold}, #{startTime}, #{endTime}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_activity(activity_id, goods_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, block_flag, create_time)
+        values (#{activityId}, #{goodsId}, #{activityName}, #{repositorySize}, #{threshold}, #{reservableDays}, #{startTime}, #{endTime}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">
@@ -60,6 +64,9 @@
             </if>
             <if test="threshold != null">
                 threshold = #{threshold},
+            </if>
+            <if test="reservableDays != null">
+                reservable_days = #{reservableDays},
             </if>
             <if test="startTime != null">
                 start_time = #{startTime},

@@ -15,6 +15,8 @@ public class Activity extends Entity {
 
     private double threshold;
 
+    private int reservableDays;
+
     private Date startTime;
 
     private Date endTime;
@@ -23,12 +25,13 @@ public class Activity extends Entity {
         super();
     }
 
-    public Activity(String goodsId, String activityName, int repositorySize, double threshold, Date startTime, Date endTime) {
+    public Activity(String goodsId, String activityName, int repositorySize, double threshold, int reservableDays, Date startTime, Date endTime) {
         this();
         this.goodsId = goodsId;
         this.activityName = activityName;
         this.repositorySize = repositorySize;
         this.threshold = threshold;
+        this.reservableDays = reservableDays;
         this.startTime = startTime;
         this.endTime = endTime;
     }
@@ -71,6 +74,14 @@ public class Activity extends Entity {
 
     public void setThreshold(double threshold) {
         this.threshold = threshold;
+    }
+
+    public int getReservableDays() {
+        return reservableDays;
+    }
+
+    public void setReservableDays(int reservableDays) {
+        this.reservableDays = reservableDays;
     }
 
     public Date getStartTime() {

@@ -13,6 +13,8 @@ public class DriftOrder extends AbstractDriftOrder {
 
     private String description;
 
+    private double realPay;
+
     private boolean buyMachine;
 
     private String machineOrderNo;
@@ -36,13 +38,14 @@ public class DriftOrder extends AbstractDriftOrder {
         this.district = district;
     }
 
-    public DriftOrder(List<DriftOrderItem> list, String consignee, String phone, String address, String orderNo, String province, String city, String district, String description) {
+    public DriftOrder(List<DriftOrderItem> list, String consignee, String phone, String address, String orderNo, String province, String city, String district, String description, double realPay) {
         super(list, consignee, phone, address);
         this.orderNo = orderNo;
         this.province = province;
         this.city = city;
         this.district = district;
         this.description = description;
+        this.realPay = realPay;
         this.status = DriftOrderStatus.APPLIED;
     }
 
@@ -84,6 +87,14 @@ public class DriftOrder extends AbstractDriftOrder {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public double getRealPay() {
+        return realPay;
+    }
+
+    public void setRealPay(double realPay) {
+        this.realPay = realPay;
     }
 
     public boolean isBuyMachine() {

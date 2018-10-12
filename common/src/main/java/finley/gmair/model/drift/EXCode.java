@@ -11,6 +11,8 @@ public class EXCode extends Entity {
 
     private EXCodeStatus status;
 
+    private CodeUseType type;
+
     public EXCode() {
         super();
         this.status = EXCodeStatus.CREATED;
@@ -53,5 +55,13 @@ public class EXCode extends Entity {
 
     public void setStatus(EXCodeStatus status) {
         this.status = status;
+    }
+
+    public CodeUseType getType() {
+        return type;
+    }
+
+    public void setType(CodeUseType type) {
+        this.type = type;
     }
 }

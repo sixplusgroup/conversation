@@ -12,6 +12,8 @@ public class ActivityForm {
 
     private double threshold;
 
+    private int reservableDays;
+
     private Date startTime;
 
     private Date endTime;
@@ -42,6 +44,14 @@ public class ActivityForm {
 
     public double getThreshold() {
         return threshold;
+    }
+
+    public int getReservableDays() {
+        return reservableDays;
+    }
+
+    public void setReservableDays(int reservableDays) {
+        this.reservableDays = reservableDays;
     }
 
     public void setThreshold(double threshold) {

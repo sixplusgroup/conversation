@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/assemble/activity")
+@RequestMapping("/drift/activity")
 public class ActivityController {
 
     @Autowired
@@ -46,7 +46,8 @@ public class ActivityController {
 
         //judge the parameter complete or not
         if (StringUtils.isEmpty(form.getGoodsId()) || StringUtils.isEmpty(form.getActivityName()) || StringUtils.isEmpty(form.getRepositorySize())
-            || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getStartTime()) || StringUtils.isEmpty(form.getEndTime())) {
+                || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getReservableDays()) || StringUtils.isEmpty(form.getStartTime())
+                || StringUtils.isEmpty(form.getEndTime())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -57,9 +58,10 @@ public class ActivityController {
         String activityName = form.getActivityName().trim();
         int repositorySize = form.getRepositorySize();
         double threshold = form.getThreshold();
+        int reservableDays = form.getReservableDays();
         Date startTime = form.getStartTime();
         Date endTime = form.getEndTime();
-        Activity activity = new Activity(goodsId, activityName, repositorySize, threshold, startTime, endTime);
+        Activity activity = new Activity(goodsId, activityName, repositorySize, threshold, reservableDays, startTime, endTime);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
