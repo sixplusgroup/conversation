@@ -6,15 +6,17 @@ public class Snapshot extends Entity {
     private String snapshotId;
     private String codeValue;
     private String snapshotPath;
+    private boolean checkStatus;
 
     public Snapshot() {
         super();
     }
 
-    public Snapshot(String codeValue, String snapshotPath) {
+    public Snapshot(String codeValue, String snapshotPath, boolean checkStatus) {
         super();
         this.codeValue = codeValue;
         this.snapshotPath = snapshotPath;
+        this.checkStatus = checkStatus;
     }
 
     public String getSnapshotId() {
@@ -39,5 +41,13 @@ public class Snapshot extends Entity {
 
     public void setSnapshotPath(String snapshotPath) {
         this.snapshotPath = snapshotPath;
+    }
+
+    public boolean isCheckStatus() {
+        return checkStatus;
+    }
+
+    public void setCheckStatus(boolean checkStatus) {
+        this.checkStatus = checkStatus;
     }
 }

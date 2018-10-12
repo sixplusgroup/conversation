@@ -46,4 +46,15 @@ public class SnapshotServiceImpl implements SnapshotService {
         result.setDescription("success to find snapshot");
         return result;
     }
+
+    @Override
+    public ResultData update(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = snapshotDao.update(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        return result;
+    }
 }

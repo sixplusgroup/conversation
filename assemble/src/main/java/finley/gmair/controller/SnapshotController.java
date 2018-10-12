@@ -20,10 +20,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @CrossOrigin({"https://console.gmair.net"})
 @RestController
@@ -99,7 +96,7 @@ public class SnapshotController {
 
 
         //create snapshot
-        response = snapshotService.create(new Snapshot(codeValue, fileUrl));
+        response = snapshotService.create(new Snapshot(codeValue, fileUrl,false));
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to create snapshot");
@@ -151,7 +148,7 @@ public class SnapshotController {
     }
 
 
-    //显示snapshot list
+    //显示未审核过的snapshot list
     @RequestMapping(method = RequestMethod.GET, value = "/fetch")
     public ResultData fetchSnapshot(String startTime, String endTime, String codeValue, String snapshotId) {
         ResultData result = new ResultData();
@@ -168,6 +165,8 @@ public class SnapshotController {
         if (!StringUtils.isEmpty(snapshotId)) {
             condition.put("snapshotId", snapshotId);
         }
+        condition.put("checkStatus",false);
+        condition.put("blockFlag",false);
         ResultData response = snapshotService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -179,7 +178,7 @@ public class SnapshotController {
             return result;
         }
         result.setData(response.getData());
-        result.setDescription("success to fetch");
+        result.setDescription("success to fetch, list.size = " + ((List<Snapshot>)response.getData()).size());
         return result;
     }
 }

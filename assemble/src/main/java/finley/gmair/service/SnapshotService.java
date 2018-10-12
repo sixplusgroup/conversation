@@ -10,4 +10,6 @@ public interface SnapshotService {
     ResultData create(Snapshot snapshot);
 
     ResultData fetch(Map<String,Object> condition);
+
+    ResultData update(Map<String, Object> condition);
 }

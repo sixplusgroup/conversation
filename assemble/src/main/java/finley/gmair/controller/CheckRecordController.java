@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import finley.gmair.model.assemble.CheckRecord;
 import finley.gmair.service.CheckRecordService;
+import finley.gmair.service.SnapshotService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class CheckRecordController {
     @Autowired
     private CheckRecordService checkRecordService;
 
+    @Autowired
+    private SnapshotService snapshotService;
+
     @PostMapping("/create")
     public ResultData createCheckRecord(String snapshotId, boolean recordStatus) {
         ResultData result = new ResultData();
@@ -37,11 +41,22 @@ public class CheckRecordController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription("exist snapshotId,don't create again");
+            result.setDescription("exist snapshotId, don't create again");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch the check record by snapshotId");
+            return result;
+        }
+
+        //update the snapshot check status
+        condition.clear();
+        condition.put("snapshotId",snapshotId);
+        condition.put("checkStatus",true);
+        response = snapshotService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to update the snapshot status");
             return result;
         }
 
