@@ -6,6 +6,8 @@ import finley.gmair.model.drift.Activity;
 import finley.gmair.model.drift.EXCode;
 import finley.gmair.service.ActivityService;
 import finley.gmair.service.EXCodeService;
+import finley.gmair.util.DriftProperties;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.poi.ss.usermodel.Cell;
@@ -15,11 +17,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -109,6 +110,12 @@ public class ActivityController {
         return result;
     }
 
+    /**
+     * This method is used to generate the excode xls when create batch excode
+     * method is private, just called in create batch
+     *
+     * @return
+     */
     private String generateXls(String activityId) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("EXCode");
@@ -116,11 +123,12 @@ public class ActivityController {
         condition.put("activityId", activityId);
         ResultData response = activityService.fetchActivity(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-
+            return new StringBuffer("The request with activityId: ").append(activityId).append(" can not be executed").toString();
         }
+        Activity activity = ((List<Activity>) response.getData()).get(0);
         response = exCodeService.fetchEXCode(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return new StringBuffer("The request with activityId: ").append(activityId).append(" can not be executed").toString();
+            return new StringBuffer("The request with activityId: ").append(activityId).append(" is error").toString();
         }
 
         //set table header
@@ -136,8 +144,91 @@ public class ActivityController {
         List<EXCode> exCodes = (List<EXCode>) response.getData();
         for (int row =1, i = 0; i < exCodes.size(); i++, row++) {
             EXCode code = exCodes.get(i);
+            Row current = sheet.createRow(row);
+            Cell serial = current.createCell(0);
+            serial.setCellValue(i + 1);
+            Cell activityName = current.createCell(1);
+            activityName.setCellValue(activity.getActivityName().trim());
+            Cell codeValue = current.createCell(2);
+            codeValue.setCellValue(code.getCodeValue().trim());
         }
-        return "";
+
+        //create file
+        String base = DriftProperties.getValue("excode_storage_path");
+        File directory = new File(new StringBuffer(base).append(DriftProperties.getValue("excode_batch")).toString());
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+        String tempSerial = IDGenerator.generate("EXC");
+        File file = new File(
+                new StringBuffer(base).append(DriftProperties.getValue("excode_batch")).append(tempSerial).append(".xlsx").toString());
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return e.getMessage();
+            }
+        }
+
+        //store data to file
+        try {
+            OutputStream outputStream = new FileOutputStream(file);
+            workbook.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+        return tempSerial;
+    }
+
+    /**
+     * This method is used to download a batch of excode
+     *
+     * @return
+     */
+    @ResponseBody
+    @GetMapping(value = "/download/{filename}")
+    public void download(@PathVariable("filename") String filename, HttpServletResponse response) {
+        File file = null;
+        if (filename.startsWith("EXC")) {
+            filename = filename + ".xlsx";
+            file = new File(DriftProperties.getValue("excode_storage_path") + DriftProperties.getValue("excode_batch") + filename);
+        }
+        BufferedInputStream inputStream = null;
+        BufferedOutputStream outputStream = null;
+        try {
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            outputStream = new BufferedOutputStream(response.getOutputStream());
+            byte[] buffer = new byte[2048];
+            int bytesRead;
+            while (-1 != (bytesRead = inputStream.read(buffer, 0, buffer.length))) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

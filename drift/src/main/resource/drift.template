@@ -1,0 +1,5 @@
+##root path
+excode_storage_path=/root/Material/excode
+
+##qrcode batch create
+excode_batch=/batch-create/
