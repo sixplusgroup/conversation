@@ -35,10 +35,12 @@
         <if test="codeValue != null">
             AND code_value = #{codeValue}
         </if>
+        <if test="ownership != null">
+            AND ownership = #{ownership}
+        </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
-
     </select>
 
     <update id="update" parameterType="java.util.Map">
