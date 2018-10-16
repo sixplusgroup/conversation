@@ -45,6 +45,7 @@
         <module>mail</module>
         <module>assemble</module>
         <module>map</module>
+        <module>formaldehyde</module>
     </modules>
 
     <parent>
