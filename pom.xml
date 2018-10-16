@@ -44,6 +44,7 @@
         <module>drift</module>
         <module>mail</module>
         <module>assemble</module>
+        <module>map</module>
     </modules>
 
     <parent>
