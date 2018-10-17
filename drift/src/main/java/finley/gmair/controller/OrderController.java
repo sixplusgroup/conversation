@@ -111,6 +111,13 @@ public class OrderController {
         return result;
     }
 
+    @PostMapping(value = "/payed")
+    public ResultData orderPayed(@RequestParam("orderId") String orderId) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
+
     /**
      * The function is called to confirm the order whether can be accepted or not
      *
@@ -139,11 +146,11 @@ public class OrderController {
         response = orderService.updateDriftOrder(order);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
+            result.setDescription(new StringBuffer("Fail to confirm drift order with: ").append(order.toString()).toString());
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setDescription("Drift order update successfully");
+        result.setDescription("Drift order is already confirmed");
         return result;
     }
 
@@ -209,20 +216,23 @@ public class OrderController {
                 case "APPLIED":
                     condition.put("status", 0);
                     break;
-                case "PROCESSED":
+                case "PAYED":
                     condition.put("status", 1);
                     break;
-                case "DELIVERED":
+                case "CONFIRMED":
                     condition.put("status", 2);
                     break;
-                case "FINISHED":
+                case "DELIVERED":
                     condition.put("status", 3);
                     break;
-                case "CLOSED":
+                case "FINISHED":
                     condition.put("status", 4);
                     break;
-                case "CANCELED":
+                case "CLOSED":
                     condition.put("status", 5);
+                    break;
+                case "CANCELED":
+                    condition.put("status", 6);
                     break;
             }
         }
