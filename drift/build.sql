@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `gmair_drift`.`drift_reservation` (
   `interval` INT NOT NULL,
   `consignee_name` VARCHAR(45) NOT NULL,
   `consignee_phone` VARCHAR(45) NOT NULL,
-  `consighee_address` VARCHAR(45) NOT NULL,
+  `consignee_address` VARCHAR(45) NOT NULL,
   `province_id` VARCHAR(45) NOT NULL,
   `city_id` VARCHAR(45) NOT NULL,
   `block_flag` TINYINT(1) NOT NULL,
