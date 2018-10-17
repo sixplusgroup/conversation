@@ -65,6 +65,14 @@
         <if test="provinceName != null">
             AND province like #{provinceName}
         </if>
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            <![CDATA[
+                AND create_time <= #{endTime}
+            ]]>
+        </if>
         <if test="status != null">
             AND order_status = #{status}
         </if>
