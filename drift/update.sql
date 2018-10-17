@@ -70,5 +70,17 @@ CREATE TABLE IF NOT EXISTS `gmair_drift`.`drift_order` (
 ALTER TABLE `gmair_drift`.`drift_excode`
 ADD COLUMN `use_type` TINYINT(1) DEFAULT NULL AFTER `code_status`;
 
+ALTER TABLE `gmair_drift`.`drift_order`
+ADD COLUMN `real_pay` INT(11) NOT NULL AFTER `total_price`;
+
 ALTER TABLE `gmair_drift`.`drift_activity`
 ADD COLUMN `reservable_days` INT(11) NOT NULL AFTER `threshold`;
+
+
+##2018-10-17
+ALTER TABLE gmair_drift.drift_order_item
+DROP COLUMN `test_target`;
+
+ALTER TABLE `gmair_drift`.`drift_reservation`
+ADD COLUMN `test_target` VARCHAR(20) NOT NULL AFTER `city_id`;
+

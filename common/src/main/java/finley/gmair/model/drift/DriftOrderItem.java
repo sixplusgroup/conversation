@@ -13,22 +13,19 @@ public class DriftOrderItem extends Entity {
 
     private double itemPrice;
 
-    private String testTarget;
-
     public DriftOrderItem() {
         super();
     }
 
-    public DriftOrderItem(String itemName, int quantity, double itemPrice, String testTarget) {
+    public DriftOrderItem(String itemName, int quantity, double itemPrice) {
         this();
         this.itemName = itemName;
         this.quantity = quantity;
         this.itemPrice = itemPrice;
-        this.testTarget = testTarget;
     }
 
-    public DriftOrderItem(String orderId, String itemName, int quantity, double itemPrice, String testTarget) {
-        this(itemName, quantity, itemPrice, testTarget);
+    public DriftOrderItem(String orderId, String itemName, int quantity, double itemPrice) {
+        this(itemName, quantity, itemPrice);
         this.orderId = orderId;
     }
 
@@ -70,13 +67,5 @@ public class DriftOrderItem extends Entity {
 
     public void setItemPrice(double itemPrice) {
         this.itemPrice = itemPrice;
-    }
-
-    public String getTestTarget() {
-        return testTarget;
-    }
-
-    public void setTestTarget(String testTarget) {
-        this.testTarget = testTarget;
     }
 }

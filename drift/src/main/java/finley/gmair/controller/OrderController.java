@@ -49,17 +49,15 @@ public class OrderController {
 
         JSONArray orderItemList = jsonObject.getJSONArray("orderItemList");
         List<DriftOrderItem> list = new ArrayList<>();
-        DriftOrderItem item = new DriftOrderItem();
         for (Object orderItem : orderItemList) {
+            DriftOrderItem item = new DriftOrderItem();
             JSONObject json = JSON.parseObject(JSON.toJSONString(orderItem));
             String itemName = json.getString("commodityName");
             int quantity = json.getInteger("commodityQuantity");
             double itemPrice = json.getDouble("commodityPrice");
-            String testTarget = json.getString("testTarget");
             item.setItemName(itemName);
             item.setQuantity(quantity);
             item.setItemPrice(itemPrice);
-            item.setTestTarget(testTarget);
             list.add(item);
         }
 
@@ -137,7 +135,7 @@ public class OrderController {
         }
 
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
-        order.setStatus(DriftOrderStatus.PROCESSED);
+        order.setStatus(DriftOrderStatus.CONFIRMED);
         response = orderService.updateDriftOrder(order);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -146,6 +144,40 @@ public class OrderController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Drift order update successfully");
+        return result;
+    }
+
+    /**
+     * The method is called to deliver order
+     *
+     * @return */
+    @PostMapping(value = "/deliver")
+    public ResultData orderDeliver(@RequestParam("orderId") String orderId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to retrieve drift order with orderId: ").append(orderId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("The drift order with orderId: ").append(orderId).append(" doesn't exist").toString());
+            return result;
+        }
+
+        DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+        order.setStatus(DriftOrderStatus.DELIVERED);
+        response = orderService.updateDriftOrder(order);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
         return result;
     }
 

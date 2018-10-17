@@ -25,11 +25,13 @@ public class Reservation extends Entity {
 
     private String cityId;
 
+    private String testTarget;
+
     public Reservation() {
         super();
     }
 
-    public Reservation(String consumerId, String goodsId, Date expected, int interval, String consigneeName, String consigneePhone, String consigneeAddress, String provinceId, String cityId) {
+    public Reservation(String consumerId, String goodsId, Date expected, int interval, String consigneeName, String consigneePhone, String consigneeAddress, String provinceId, String cityId, String testTarget) {
         this();
         this.consumerId = consumerId;
         this.goodsId = goodsId;
@@ -40,6 +42,7 @@ public class Reservation extends Entity {
         this.consigneeAddress = consigneeAddress;
         this.provinceId = provinceId;
         this.cityId = cityId;
+        this.testTarget = testTarget;
     }
 
     public String getReservationId() {
@@ -120,5 +123,13 @@ public class Reservation extends Entity {
 
     public void setCityId(String cityId) {
         this.cityId = cityId;
+    }
+
+    public String getTestTarget() {
+        return testTarget;
+    }
+
+    public void setTestTarget(String testTarget) {
+        this.testTarget = testTarget;
     }
 }
