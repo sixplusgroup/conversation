@@ -45,7 +45,7 @@
         <if test="blockFlag != null">
             and block_flag = #{blockFlag}
         </if>
-        order by creat_time desc
+        order by create_time desc
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.Activity">
