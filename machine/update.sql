@@ -186,3 +186,37 @@ CREATE TABLE `gmair_machine`.`model_enabled_component` (
   `block_flag` TINYINT(1) NOT NULL DEFAULT '0',
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`mec_id`));
+
+#2018-10-17 add view
+CREATE
+    ALGORITHM = UNDEFINED
+    DEFINER = `root`@`localhost`
+    SQL SECURITY DEFINER
+VIEW `gmair_machine`.`consumer_code_machine_view` AS
+    SELECT
+        `gmair_machine`.`consumer_code_bind`.`bind_id` AS `bind_id`,
+        `gmair_machine`.`consumer_code_bind`.`consumer_id` AS `consumer_id`,
+        `gmair_machine`.`consumer_code_bind`.`bind_name` AS `bind_name`,
+        `gmair_machine`.`consumer_code_bind`.`code_value` AS `code_value`,
+        `gmair_machine`.`code_machine_bind`.`machine_id` AS `machine_id`,
+        `gmair_location`.`city_list`.`province_id` AS `province_id`,
+        `gmair_machine`.`machine_default_location`.`city_id` AS `city_id`,
+        `gmair_location`.`city_list`.`city_name` AS `city_name`,
+        `gmair_location`.`city_list`.`longitude` AS `longitude`,
+        `gmair_location`.`city_list`.`latitude` AS `latitude`,
+        `gmair_machine`.`consumer_code_bind`.`block_flag` AS `block_flag`,
+        `gmair_machine`.`consumer_code_bind`.`create_time` AS `create_time`
+    FROM
+        (((`gmair_machine`.`consumer_code_bind`
+        JOIN `gmair_machine`.`code_machine_bind`)
+        JOIN `gmair_machine`.`machine_default_location`)
+        JOIN `gmair_location`.`city_list`)
+    WHERE
+        ((`gmair_machine`.`consumer_code_bind`.`ownership` = 0)
+            AND (`gmair_machine`.`consumer_code_bind`.`code_value` = `gmair_machine`.`code_machine_bind`.`code_value`)
+            AND (`gmair_machine`.`code_machine_bind`.`code_value` = `gmair_machine`.`machine_default_location`.`code_value`)
+            AND (`gmair_location`.`city_list`.`city_id` = `gmair_machine`.`machine_default_location`.`city_id`)
+            AND (`gmair_machine`.`code_machine_bind`.`block_flag` = 0)
+            AND (`gmair_machine`.`consumer_code_bind`.`block_flag` = 0)
+            AND (`gmair_machine`.`machine_default_location`.`block_flag` = 0)
+            AND (`gmair_location`.`city_list`.`block_flag` = 0))
