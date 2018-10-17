@@ -11,10 +11,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -90,6 +87,11 @@ public class OrderController {
         return result;
     }
 
+    /**
+     * The function is called  to delete the order with orderId
+     *
+     * @return
+     * */
     @PostMapping(value = "/delete")
     public ResultData deleteOrder(String orderId) {
         ResultData result = new ResultData();
@@ -111,6 +113,11 @@ public class OrderController {
         return result;
     }
 
+    /**
+     * The function is called to confirm the order whether can be accepted or not
+     *
+     * @return
+     * */
     @PostMapping(value = "/confirm")
     public ResultData orderConfirm(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
@@ -139,6 +146,70 @@ public class OrderController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Drift order update successfully");
+        return result;
+    }
+
+    /**
+     * The method is called to get order information by useful conditions
+     * contains time, province, city and so on
+     *
+     * @return
+     * */
+    @GetMapping(value = "/list")
+    public ResultData orderList(String startTime, String endTime, String provinceName, String cityName, String status) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        if (!StringUtils.isEmpty(startTime)) {
+            condition.put("startTime", startTime);
+        }
+        if (!StringUtils.isEmpty(endTime)) {
+            condition.put("endTime", endTime);
+        }
+//        if (!StringUtils.isEmpty(provinceName)) {
+//            condition.put("provinceName", provinceName);
+//        }
+//        if (!StringUtils.isEmpty(cityName)) {
+//            condition.put("cityName", cityName);
+//        }
+        if (!StringUtils.isEmpty(status)) {
+            switch (status) {
+                case "APPLIED":
+                    condition.put("status", 0);
+                    break;
+                case "PROCESSED":
+                    condition.put("status", 1);
+                    break;
+                case "DELIVERED":
+                    condition.put("status", 2);
+                    break;
+                case "FINISHED":
+                    condition.put("status", 3);
+                    break;
+                case "CLOSED":
+                    condition.put("status", 4);
+                    break;
+                case "CANCELED":
+                    condition.put("status", 5);
+                    break;
+            }
+        }
+
+        ResultData response = orderService.fetchDriftOrder(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No drift order");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Query error, please try again later");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
         return result;
     }
 }
