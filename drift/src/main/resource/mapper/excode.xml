@@ -39,8 +39,8 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.EXCode" useGeneratedKeys="false">
-        insert into gmair_drift.drift_excode(code_id, activity_id, code_value, code_status, block_flag, create_time)
-        values(#{codeId}, #{activityId}, #{codeValue}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_excode(code_id, activity_id, code_value, code_status, use_type, block_flag, create_time)
+        values(#{codeId}, #{activityId}, #{codeValue}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{type, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">
