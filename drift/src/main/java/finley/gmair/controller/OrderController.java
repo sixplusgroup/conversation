@@ -3,9 +3,11 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.drift.Activity;
 import finley.gmair.model.drift.DriftOrder;
 import finley.gmair.model.drift.DriftOrderItem;
 import finley.gmair.model.drift.DriftOrderStatus;
+import finley.gmair.service.ActivityService;
 import finley.gmair.service.OrderService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -30,6 +32,14 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private ActivityService activityService;
+
+    /**
+     * The method is called to create order
+     *
+     * @return
+     * */
     @PostMapping(value = "/create")
     public ResultData createDriftOrder(String order) {
         ResultData result = new ResultData();
@@ -111,9 +121,45 @@ public class OrderController {
         return result;
     }
 
+    /**
+     * The method is called to deal order when order is payed in bill
+     *
+     * @return
+     * */
     @PostMapping(value = "/payed")
     public ResultData orderPayed(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
+
+        return result;
+    }
+
+    /**
+     * The method is called to check the current order whether can be applied
+     * 1. check the date in reservable days
+     * 2. check the repository is enough to use
+     *
+     * @return
+     * */
+    @PostMapping(value = "/check")
+    public ResultData check(String activityId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("System errors, please try again later");
+            return result;
+        }
+
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        double weekQuantity = activity.getRepositorySize() * activity.getThreshold();
+        int reservableDays = activity.getReservableDays();
 
         return result;
     }
@@ -157,7 +203,8 @@ public class OrderController {
     /**
      * The method is called to deliver order
      *
-     * @return */
+     * @return
+     * */
     @PostMapping(value = "/deliver")
     public ResultData orderDeliver(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
