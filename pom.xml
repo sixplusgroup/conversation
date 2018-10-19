@@ -46,6 +46,7 @@
         <module>assemble</module>
         <module>map</module>
         <module>formaldehyde</module>
+        <module>bill</module>
     </modules>
 
     <parent>
