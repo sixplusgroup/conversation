@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="gmair.map.consumer_code_machine_view">
-    <resultMap id="consumer_code_machine_view" type="finley.gmair.model.map.MachineLoc">
+<mapper namespace="gmair.machine.consumer_code_machine_view">
+    <resultMap id="consumer_code_machine_view" type="finley.gmair.model.machine.MachineLoc">
         <result property="bindId" column="bind_id"></result>
         <result property="consumerId" column="consumer_id"></result>
         <result property="bindName" column="bind_name"></result>

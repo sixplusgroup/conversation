@@ -17,5 +17,7 @@ public interface MachineService {
     @GetMapping("/machine/status/byuid")
     ResultData machineStatus(@RequestParam("uid") String uid);
 
+    @GetMapping("machine/map/fetch")
+    ResultData fetchMachineLatLngList();
 
 }

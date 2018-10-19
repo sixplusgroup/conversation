@@ -1,7 +1,8 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
+import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.MachineMapDao;
-import finley.gmair.model.map.MachineLoc;
+import finley.gmair.model.machine.MachineLoc;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,7 @@ public class MachineMapDaoImpl extends BaseDao implements MachineMapDao {
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         try {
-            List<MachineLoc> list = sqlSession.selectList("gmair.map.consumer_code_machine_view.query", condition);
+            List<MachineLoc> list = sqlSession.selectList("gmair.machine.consumer_code_machine_view.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
