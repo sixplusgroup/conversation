@@ -39,7 +39,8 @@ public class ActivityController {
     /**
      * the method is used to create activity
      *
-     * @return */
+     * @return
+     * */
     @PostMapping(value = "/create")
     public ResultData createDriftActivity(ActivityForm form) {
         ResultData result = new ResultData();
@@ -77,7 +78,8 @@ public class ActivityController {
     /**
      * the method is called to create excode if activity needs
      *
-     * @return */
+     * @return
+     * */
     @PostMapping(value = "/excode/create")
     public ResultData createEXCode(EXCodeCreateForm form) {
         ResultData result = new ResultData();
@@ -236,7 +238,8 @@ public class ActivityController {
     /**
      * the method is used to select the activity list
      *
-     * @return*/
+     * @return
+     * */
     @GetMapping(value = "/list")
     public ResultData getActivity() {
          ResultData result = new ResultData();
@@ -257,6 +260,48 @@ public class ActivityController {
                  result.setData(response.getData());
                  break;
          }
+         return result;
+    }
+
+    /**
+     * The method is called to update activity with parameters by activity_id
+     * available parameters:
+     * 1. size, 2. threshold, 3. reservable_days, 4. end_time
+     *
+     * @return
+     * */
+    @PostMapping(value = "/update")
+    public ResultData updateActivity(String activityId, int repositorySize, double threshold, int reservableDays, Date endTime) {
+         ResultData result = new ResultData();
+         Map<String, Object> condition = new HashMap<>();
+         //if no activityId, don't allow to update
+         if (StringUtils.isEmpty(activityId)) {
+             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+             result.setDescription("Can't update activity with no activityId");
+             return result;
+         }
+         condition.put("activityId", activityId);
+         //put exist parameters to map
+         if (!StringUtils.isEmpty(repositorySize)) {
+             condition.put("repositorySize", repositorySize);
+         }
+         if (!StringUtils.isEmpty(threshold)) {
+             condition.put("threshold", threshold);
+         }
+         if (!StringUtils.isEmpty(reservableDays)) {
+             condition.put("reservableDays", reservableDays);
+         }
+         if (!StringUtils.isEmpty(endTime)) {
+             condition.put("endTime", endTime);
+         }
+
+         ResultData response = activityService.modifyActivity(condition);
+         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+             result.setDescription("Fail to update activity");
+             return result;
+         }
+         result.setResponseCode(ResponseCode.RESPONSE_OK);
          return result;
     }
 }
