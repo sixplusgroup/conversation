@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.formaldehyde.check_equipment">
     <resultMap id="checkEquipment" type="finley.gmair.model.formaldehyde.CheckEquipment">
-        <result property="EquipmentId" column="equipment_id"></result>
-        <result property="equipmentName" column="equipmentName"></result>
+        <result property="equipmentId" column="equipment_id"></result>
+        <result property="equipmentName" column="equipment_name"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
@@ -14,7 +14,7 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="checkEquipment">
-        SELECT merchant_id,merchant_name,merchant_code,merchant_address,block_flag,create_time
+        SELECT equipment_id,equipment_name,block_flag,create_time
         FROM gmair_formaldehyde_detection.check_equipment
         WHERE 1 = 1
         <if test="equipmentId != null">

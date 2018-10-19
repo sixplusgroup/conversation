@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("formaldehyde-agent")
 public interface FormaldehydeService {
-    @PostMapping("/case/profile/create")
+    @PostMapping("/formaldehyde/case/profile/create")
     ResultData createCaseProfile(@RequestParam("caseHolder") String caseHolder,
                                  @RequestParam("equipmentId") String equipmentId,
                                  @RequestParam("checkDuration") String checkDuration,

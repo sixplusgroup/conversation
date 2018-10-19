@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.district.City;
 import finley.gmair.model.formaldehyde.CaseLngLat;
 import finley.gmair.model.formaldehyde.CaseProfile;
 import finley.gmair.model.formaldehyde.CaseStatus;
@@ -9,7 +8,6 @@ import finley.gmair.service.CaseProfileService;
 import finley.gmair.service.LocationService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.bouncycastle.asn1.ocsp.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,7 +20,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
-@RequestMapping("/case/profile")
+@RequestMapping("/formaldehyde/case/profile")
 public class CaseProfileController {
     @Autowired
     private CaseProfileService caseProfileService;
