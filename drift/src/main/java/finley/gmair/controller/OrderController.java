@@ -20,10 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/drift/order")
@@ -135,7 +132,7 @@ public class OrderController {
 
     /**
      * The method is called to check the current order whether can be applied
-     * 1. check the date in reservable days
+     * 1. check the date in reservable days and in activity duration
      * 2. check the repository is enough to use
      *
      * @return
@@ -160,7 +157,7 @@ public class OrderController {
         Activity activity = ((List<Activity>) response.getData()).get(0);
         double weekQuantity = activity.getRepositorySize() * activity.getThreshold();
         int reservableDays = activity.getReservableDays();
-
+        Date endTime = activity.getEndTime();
         return result;
     }
 

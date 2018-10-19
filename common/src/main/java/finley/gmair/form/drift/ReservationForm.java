@@ -21,6 +21,8 @@ public class ReservationForm {
 
     private String cityId;
 
+    private String testTarget;
+
     public String getConsumerId() {
         return consumerId;
     }
@@ -91,5 +93,13 @@ public class ReservationForm {
 
     public void setCityId(String cityId) {
         this.cityId = cityId;
+    }
+
+    public String getTestTarget() {
+        return testTarget;
+    }
+
+    public void setTestTarget(String testTarget) {
+        this.testTarget = testTarget;
     }
 }

@@ -28,7 +28,8 @@ public class ReservationController {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getConsumerId()) || StringUtils.isEmpty(form.getGoodsId()) || StringUtils.isEmpty(form.getExpected())
             || StringUtils.isEmpty(form.getInterval()) || StringUtils.isEmpty(form.getConsigneeName()) || StringUtils.isEmpty(form.getConsigneePhone())
-            || StringUtils.isEmpty(form.getConsigneeAddress()) || StringUtils.isEmpty(form.getProvinceId()) || StringUtils.isEmpty(form.getCityId())) {
+            || StringUtils.isEmpty(form.getConsigneeAddress()) || StringUtils.isEmpty(form.getProvinceId()) || StringUtils.isEmpty(form.getCityId())
+            || StringUtils.isEmpty(form.getTestTarget())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -43,9 +44,10 @@ public class ReservationController {
         String consigneeAddress = form.getConsigneeAddress().trim();
         String provinceId = form.getProvinceId().trim();
         String cityId = form.getCityId().trim();
+        String testTarget = form.getTestTarget().trim();
 
         Reservation reservation = new Reservation(consumerId, goodsId, expected, interval, consigneeName,
-                consigneePhone, consigneeAddress, provinceId, cityId);
+                consigneePhone, consigneeAddress, provinceId, cityId, testTarget);
 
         ResultData response = reservationService.createReservation(reservation);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
