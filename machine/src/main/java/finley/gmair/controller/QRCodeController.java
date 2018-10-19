@@ -443,7 +443,7 @@ public class QRCodeController {
         condition.put("blockFlag", false);
         ResultData response = qrCodeService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
             return result;
         }
