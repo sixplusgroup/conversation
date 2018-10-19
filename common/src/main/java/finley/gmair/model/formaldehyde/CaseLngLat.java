@@ -1,22 +1,30 @@
-package finley.gmair.model.aircheck;
+package finley.gmair.model.formaldehyde;
 
 import finley.gmair.model.Entity;
 
-public class CaseLocation extends Entity {
+public class CaseLngLat extends Entity {
+    private String recordId;
     private String caseId;
-
     private double longitude;
-
     private double latitude;
 
-    public CaseLocation() {
+    public CaseLngLat() {
         super();
     }
 
-    public CaseLocation(double longitude, double latitude) {
-        this();
+    public CaseLngLat(String caseId, double longitude, double latitude) {
+        super();
+        this.caseId = caseId;
         this.longitude = longitude;
         this.latitude = latitude;
+    }
+
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
     }
 
     public String getCaseId() {
