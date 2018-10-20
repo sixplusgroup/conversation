@@ -32,7 +32,7 @@ public class EXCodeServiceImpl implements EXCodeService {
         ResultData response = new ResultData();
         for (int i = 0; i < num; i++) {
             String codeValue = new StringBuffer(EXSerialGenerator.generate()).toString();
-            EXCode code = new EXCode(activityId, codeValue, EXCodeStatus.CREATED);
+            EXCode code = new EXCode(activityId, codeValue);
             response = exCodeDao.insert(code);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);

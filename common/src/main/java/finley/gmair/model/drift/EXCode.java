@@ -16,13 +16,13 @@ public class EXCode extends Entity {
     public EXCode() {
         super();
         this.status = EXCodeStatus.CREATED;
+        this.type = CodeUseType.PAPER;
     }
 
-    public EXCode(String activityId, String codeValue, EXCodeStatus status) {
+    public EXCode(String activityId, String codeValue) {
         this();
         this.activityId = activityId;
         this.codeValue = codeValue;
-        this.status = status;
     }
 
     public String getCodeId() {

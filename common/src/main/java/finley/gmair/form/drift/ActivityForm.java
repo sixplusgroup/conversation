@@ -1,7 +1,5 @@
 package finley.gmair.form.drift;
 
-import java.util.Date;
-
 public class ActivityForm {
 
     private String goodsId;
@@ -14,9 +12,9 @@ public class ActivityForm {
 
     private int reservableDays;
 
-    private Date startTime;
+    private String startTime;
 
-    private Date endTime;
+    private String endTime;
 
     public String getGoodsId() {
         return goodsId;
@@ -58,19 +56,19 @@ public class ActivityForm {
         this.threshold = threshold;
     }
 
-    public Date getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 }

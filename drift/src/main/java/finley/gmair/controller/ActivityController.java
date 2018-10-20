@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ public class ActivityController {
      * @return
      * */
     @PostMapping(value = "/create")
-    public ResultData createDriftActivity(ActivityForm form) {
+    public ResultData createDriftActivity(ActivityForm form) throws Exception {
         ResultData result = new ResultData();
 
         //judge the parameter complete or not
@@ -60,9 +61,11 @@ public class ActivityController {
         int repositorySize = form.getRepositorySize();
         double threshold = form.getThreshold();
         int reservableDays = form.getReservableDays();
-        Date startTime = form.getStartTime();
-        Date endTime = form.getEndTime();
-        Activity activity = new Activity(goodsId, activityName, repositorySize, threshold, reservableDays, startTime, endTime);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date start = sdf.parse(form.getStartTime());
+        Date end = sdf.parse(form.getEndTime());
+
+        Activity activity = new Activity(goodsId, activityName, repositorySize, threshold, reservableDays, start, end);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
