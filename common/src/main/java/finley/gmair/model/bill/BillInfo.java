@@ -18,12 +18,11 @@ public class BillInfo extends Entity {
         this.status = BillStatus.UNPAYED;
     }
 
-    public BillInfo(String orderId, double orderPrice, double actualPrice, BillStatus status) {
+    public BillInfo(String orderId, double orderPrice, double actualPrice) {
         this();
         this.orderId = orderId;
         this.orderPrice = orderPrice;
         this.actualPrice = actualPrice;
-        this.status = status;
     }
 
     public String getBillId() {
