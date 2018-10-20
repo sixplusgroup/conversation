@@ -68,8 +68,22 @@ public class OrderController {
             list.add(item);
         }
 
+
+        //check user whether buy machine or not
         //build drift order
-        DriftOrder driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, pay);
+        boolean buyMachine = jsonObject.getBoolean("buyMachine");
+        DriftOrder driftOrder = new DriftOrder();
+        if (buyMachine) {
+            String machineOrderNo = jsonObject.getString("machineOrderNo");
+            if (StringUtils.isEmpty(machineOrderNo)) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("please make sure you hava filled the machine orderNo");
+                return result;
+            }
+            driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, pay, buyMachine, machineOrderNo);
+        } else {
+            driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, pay);
+        }
         driftOrder.setTotalPrice(price);
 
         //set time by orderDate
@@ -77,6 +91,7 @@ public class OrderController {
         LocalDate localDate = LocalDate.parse(orderDate, dateTimeFormatter);
         LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
         driftOrder.setCreateAt(Timestamp.valueOf(localDateTime));
+
 
         ResultData response = orderService.createDriftOrder(driftOrder);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -126,7 +141,31 @@ public class OrderController {
     @PostMapping(value = "/payed")
     public ResultData orderPayed(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to retrieve drift order with orderId: ").append(orderId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("The drift order with orderId: ").append(orderId).append(" doesn't exist").toString());
+            return result;
+        }
 
+        DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+        order.setStatus(DriftOrderStatus.PAYED);
+        response = orderService.updateDriftOrder(order);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("Drift order is already payed");
         return result;
     }
 
@@ -158,6 +197,8 @@ public class OrderController {
         double weekQuantity = activity.getRepositorySize() * activity.getThreshold();
         int reservableDays = activity.getReservableDays();
         Date endTime = activity.getEndTime();
+        //create current date
+        Date date = new Date();
         return result;
     }
 

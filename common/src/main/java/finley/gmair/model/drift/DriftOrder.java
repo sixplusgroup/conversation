@@ -49,6 +49,13 @@ public class DriftOrder extends AbstractDriftOrder {
         this.status = DriftOrderStatus.APPLIED;
     }
 
+    public DriftOrder(List<DriftOrderItem> list, String consignee, String phone, String address, String orderNo, String province, String city, String district, String description, double realPay, boolean buyMachine, String machineOrderNo) {
+        this(list, consignee, phone, address, orderNo, province, city, district, description, realPay);
+        this.buyMachine = buyMachine;
+        this.machineOrderNo = machineOrderNo;
+        this.status = DriftOrderStatus.APPLIED;
+    }
+
     public String getOrderNo() {
         return orderNo;
     }

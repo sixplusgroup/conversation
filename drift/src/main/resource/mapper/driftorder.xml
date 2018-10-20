@@ -27,13 +27,12 @@
         <result property="itemName" column="item_name"/>
         <result property="quantity" column="quantity"/>
         <result property="itemPrice" column="item_price"/>
-        <result property="testTarget" column="test_target" />
         <result property="blockFlag" column="block_flag"/>
         <result property="createAt" column="create_time"/>
     </resultMap>
 
     <select id="selectOrderItem" parameterType="java.lang.String" resultMap="orderItemVo">
-        SELECT item_id, item_name, item_price, quantity, test_target
+        SELECT item_id, item_name, item_price, quantity
         FROM gmair_drift.drift_order_item
         WHERE
         drift_order_item.order_id = #{order_id}
@@ -98,7 +97,7 @@
                 district = #{district},
             </if>
             <if test="status != null">
-                order_status = #{status},
+                order_status = #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
             </if>
             order_id = #{orderId}
         </set>
