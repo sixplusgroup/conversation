@@ -100,7 +100,7 @@ public class ActivityController {
 
         Equipment equipment = new Equipment(equipmentName);
         ResultData response = equipmentService.createEquipment(equipment);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to store equipment to database");
             return result;
@@ -162,7 +162,7 @@ public class ActivityController {
      *
      * @return
      * */
-    @GetMapping(value = "/getActivity/byId")
+    @PostMapping(value = "/getActivity/byId")
     public ResultData getActivityById(String activityId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
