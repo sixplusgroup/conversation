@@ -259,7 +259,7 @@ public class OrderController {
 
     private int checkQuantity(String selectDate) throws Exception {
         int quantity = 0;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date select = sdf.parse(selectDate);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(select);
