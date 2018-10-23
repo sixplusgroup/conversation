@@ -1,7 +1,9 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.model.formaldehyde.CaseLngLat;
 import finley.gmair.model.formaldehyde.CaseProfile;
+import finley.gmair.model.formaldehyde.CaseProfileData;
 import finley.gmair.model.formaldehyde.CaseStatus;
 import finley.gmair.service.CaseLngLatService;
 import finley.gmair.service.CaseProfileService;
@@ -99,7 +101,10 @@ public class CaseProfileController {
             result.setDescription("not find");
             return result;
         }
-        result.setData(response.getData());
+        CaseProfile caseProfile = ((List<CaseProfile>)response.getData()).get(0);
+        CaseProfileData caseProfileData = new CaseProfileData(caseProfile.getCaseId(),caseProfile.getCaseHolder(),caseProfile.getEquipmentId(),caseProfile.getCheckDuration(),caseProfile.getCheckDate(),caseProfile.getCaseCityId(),caseProfile.getCaseCityName(),caseProfile.getCaseLocation(),
+                JSON.parseArray(caseProfile.getCheckTrace()),caseProfile.getCaseStatus(),caseProfile.getVideoId());
+        result.setData(caseProfileData);
         result.setDescription("success to fetch");
         return result;
     }

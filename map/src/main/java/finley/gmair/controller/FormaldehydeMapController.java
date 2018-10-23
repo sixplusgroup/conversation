@@ -4,10 +4,12 @@ package finley.gmair.controller;
 import finley.gmair.service.FormaldehydeService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/map/formaldehyde")
 public class FormaldehydeMapController {
