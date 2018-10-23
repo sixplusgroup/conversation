@@ -15,5 +15,10 @@
     <select id="query" parameterType="java.util.Map" resultMap="infoVo">
 
     </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.bill.BillInfo">
+        insert into gmair_bill.bill_info(bill_id, order_id, order_price, actual_price, bill_status, block_flag, create_time)
+        values (#{billId}, #{orderId}, #{orderPrice}, #{actualPrice}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{blockFlag}, #{createAt})
+    </insert>
     
 </mapper>

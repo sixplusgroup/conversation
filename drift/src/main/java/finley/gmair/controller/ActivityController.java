@@ -1,11 +1,17 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ActivityForm;
 import finley.gmair.form.drift.EXCodeCreateForm;
 import finley.gmair.model.drift.Activity;
 import finley.gmair.model.drift.EXCode;
+import finley.gmair.model.drift.EquipActivity;
+import finley.gmair.model.drift.Equipment;
 import finley.gmair.service.ActivityService;
 import finley.gmair.service.EXCodeService;
+import finley.gmair.service.EquipmentService;
 import finley.gmair.util.DriftProperties;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
@@ -21,10 +27,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/drift/activity")
@@ -36,13 +40,16 @@ public class ActivityController {
     @Autowired
     private EXCodeService exCodeService;
 
+    @Autowired
+    private EquipmentService equipmentService;
+
     /**
      * the method is used to create activity
      *
      * @return
      * */
     @PostMapping(value = "/create")
-    public ResultData createDriftActivity(ActivityForm form) {
+    public ResultData createDriftActivity(ActivityForm form) throws Exception {
         ResultData result = new ResultData();
 
         //judge the parameter complete or not
@@ -60,9 +67,11 @@ public class ActivityController {
         int repositorySize = form.getRepositorySize();
         double threshold = form.getThreshold();
         int reservableDays = form.getReservableDays();
-        Date startTime = form.getStartTime();
-        Date endTime = form.getEndTime();
-        Activity activity = new Activity(goodsId, activityName, repositorySize, threshold, reservableDays, startTime, endTime);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date start = sdf.parse(form.getStartTime());
+        Date end = sdf.parse(form.getEndTime());
+
+        Activity activity = new Activity(goodsId, activityName, repositorySize, threshold, reservableDays, start, end);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -71,6 +80,109 @@ public class ActivityController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
+        }
+        return result;
+    }
+
+    /**
+     * the method is called to create equipment
+     *
+     * @return
+     * */
+    @PostMapping(value = "/equip/create")
+    public ResultData createEquipment(String equipmentName) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(equipmentName)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+
+        Equipment equipment = new Equipment(equipmentName);
+        ResultData response = equipmentService.createEquipment(equipment);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store equipment to database");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * the method is called to build equipment_activity relationship
+     * parameters: 1.activityId, 2.equipmentId
+     *
+     * @return
+     * */
+    @PostMapping(value = "/equipactivity/bind/create")
+    public ResultData bind(String activityId, String equipmentId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(activityId) || StringUtils.isEmpty(equipmentId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+
+        //check the activity and equipment all exist or not
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query activity with activityId");
+            return result;
+        }
+        condition.remove("activityId");
+        condition.put("equipId", equipmentId);
+        response = equipmentService.fetchEquipment(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query equipment with equipmentId");
+            return result;
+        }
+
+        //after checking, build entity and insert
+        EquipActivity equipActivity = new EquipActivity(equipmentId, activityId);
+        response = equipmentService.createRelationship(equipActivity);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store to database");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * the method is used to select actual activity by activityId
+     *
+     * @return
+     * */
+    @PostMapping(value = "/getActivity/byId")
+    public ResultData getActivityById(String activityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(activityId)) {
+            condition.put("activityId", activityId);
+        }
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No activity found from database by activityId");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Query activity error, please try again later");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            Activity activity = ((List<Activity>) response.getData()).get(0);
+            result.setData(activity);
         }
         return result;
     }

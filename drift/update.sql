@@ -84,3 +84,22 @@ DROP COLUMN `test_target`;
 ALTER TABLE `gmair_drift`.`drift_reservation`
 ADD COLUMN `test_target` VARCHAR(20) NOT NULL AFTER `city_id`;
 
+
+##2018-10-22
+CREATE TABLE IF NOT EXISTS `gmair_drift`.`drift_equipment` (
+  `equip_id` VARCHAR(45) NOT NULL,
+  `equip_name` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT '0',
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`equip_id`)
+)  ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+CREATE TABLE IF not exists `gmair_drift`.`equip_activity` (
+  `equip_id` VARCHAR(45) NOT NULL,
+  `activity_id` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT '0',
+  `create_time` DATETIME NOT NULL,
+)  ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+ALTER TABLE `gmair_drift`.`drift_order`
+ADD COLUMN `activity` VARCHAR(45) NOT NULL AFTER `description`;

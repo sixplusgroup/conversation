@@ -13,6 +13,7 @@
         <result property="totalPrice" column="total_price"></result>
         <result property="realPay" column="real_pay"></result>
         <result property="description" column="description"></result>
+        <result property="activity" column="activity"></result>
         <result property="status" column="order_status"
                 typeHandler="finley.gmair.mybatis.handler.DriftOrderStatusHandler"></result>
         <result property="buyMachine" column="buy_machine"></result>
@@ -27,26 +28,25 @@
         <result property="itemName" column="item_name"/>
         <result property="quantity" column="quantity"/>
         <result property="itemPrice" column="item_price"/>
-        <result property="testTarget" column="test_target" />
         <result property="blockFlag" column="block_flag"/>
         <result property="createAt" column="create_time"/>
     </resultMap>
 
     <select id="selectOrderItem" parameterType="java.lang.String" resultMap="orderItemVo">
-        SELECT item_id, item_name, item_price, quantity, test_target
+        SELECT item_id, item_name, item_price, quantity
         FROM gmair_drift.drift_order_item
         WHERE
         drift_order_item.order_id = #{order_id}
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrder" useGeneratedKeys="false">
-        insert into gmair_drift.drift_order(order_id, order_no, consignee, phone, address, province, city, district, total_price, real_pay, description, order_status, buy_machine, machine_orderNo, block_flag, create_time)
-        values(#{orderId}, #{orderNo}, #{consignee}, #{phone}, #{address}, #{province}, #{city}, #{district},#{totalPrice},
-               #{realPay}, #{description}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{buyMachine}, #{machineOrderNo}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_order(order_id, order_no, consignee, phone, address, province, city, district, total_price, real_pay, description, activity, order_status, buy_machine, machine_orderNo, block_flag, create_time)
+        values(#{orderId}, #{orderNo}, #{consignee}, #{phone}, #{address}, #{province}, #{city}, #{district}, #{totalPrice},
+               #{realPay}, #{description}, #{activity}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{buyMachine}, #{machineOrderNo}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        select order_id, order_no, consignee, phone, address, province, city, district, total_price, real_pay, description, order_status, buy_machine, machine_orderNo, block_flag, create_time
+        select order_id, order_no, consignee, phone, address, province, city, district, total_price, real_pay, description, activity, order_status, buy_machine, machine_orderNo, block_flag, create_time
         from gmair_drift.drift_order
         where 1 = 1
         <if test="orderId != null">
@@ -73,6 +73,9 @@
                 AND create_time <= #{endTime}
             ]]>
         </if>
+        <if test="activity != null">
+            AND activity = #{activity}
+        </if>
         <if test="status != null">
             AND order_status = #{status}
         </if>
@@ -98,7 +101,7 @@
                 district = #{district},
             </if>
             <if test="status != null">
-                order_status = #{status},
+                order_status = #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
             </if>
             order_id = #{orderId}
         </set>

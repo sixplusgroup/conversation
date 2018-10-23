@@ -3,11 +3,9 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.drift.Activity;
-import finley.gmair.model.drift.DriftOrder;
-import finley.gmair.model.drift.DriftOrderItem;
-import finley.gmair.model.drift.DriftOrderStatus;
+import finley.gmair.model.drift.*;
 import finley.gmair.service.ActivityService;
+import finley.gmair.service.EquipmentService;
 import finley.gmair.service.OrderService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -16,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -50,6 +49,7 @@ public class OrderController {
         String province = jsonObject.getString("province");
         String city = jsonObject.getString("city");
         String district = jsonObject.getString("district");
+        String activityId = jsonObject.getString("activityId");
         String description = jsonObject.getString("description");
         double price = jsonObject.getDouble("price");
         double pay = jsonObject.getDouble("pay");
@@ -68,8 +68,32 @@ public class OrderController {
             list.add(item);
         }
 
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("No activity match");
+            return result;
+        }
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        String activityName = activity.getActivityName();
+
+        //check user whether buy machine or not
         //build drift order
-        DriftOrder driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, pay);
+        boolean buyMachine = jsonObject.getBoolean("buyMachine");
+        DriftOrder driftOrder = new DriftOrder();
+        if (buyMachine) {
+            String machineOrderNo = jsonObject.getString("machineOrderNo");
+            if (StringUtils.isEmpty(machineOrderNo)) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("please make sure you hava filled the machine orderNo");
+                return result;
+            }
+            driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, activityName, pay, buyMachine, machineOrderNo);
+        } else {
+            driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, activityName, pay);
+        }
         driftOrder.setTotalPrice(price);
 
         //set time by orderDate
@@ -78,7 +102,8 @@ public class OrderController {
         LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
         driftOrder.setCreateAt(Timestamp.valueOf(localDateTime));
 
-        ResultData response = orderService.createDriftOrder(driftOrder);
+
+        response = orderService.createDriftOrder(driftOrder);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("服务器正忙，请稍后再试");
@@ -126,7 +151,31 @@ public class OrderController {
     @PostMapping(value = "/payed")
     public ResultData orderPayed(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to retrieve drift order with orderId: ").append(orderId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("The drift order with orderId: ").append(orderId).append(" doesn't exist").toString());
+            return result;
+        }
 
+        DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+        order.setStatus(DriftOrderStatus.PAYED);
+        response = orderService.updateDriftOrder(order);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("Drift order is already payed");
         return result;
     }
 
@@ -138,15 +187,16 @@ public class OrderController {
      * @return
      * */
     @PostMapping(value = "/check")
-    public ResultData check(String activityId) {
+    public ResultData check(String activityId, String selectDate) throws Exception {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(activityId)) {
+        if (StringUtils.isEmpty(activityId) || StringUtils.isEmpty(selectDate)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
         ResultData response = activityService.fetchActivity(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -158,7 +208,81 @@ public class OrderController {
         double weekQuantity = activity.getRepositorySize() * activity.getThreshold();
         int reservableDays = activity.getReservableDays();
         Date endTime = activity.getEndTime();
+        //check the date
+        int compare = checkDate(selectDate, endTime, reservableDays);
+        if (compare == -1) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("The select date is beyond access");
+            return result;
+        }
+
+        int usedQuantity = checkQuantity(selectDate);
+        if (usedQuantity == -1) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("System errors, please try again later");
+        } else if (usedQuantity == 0) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        } else {
+            if (usedQuantity < weekQuantity) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Current orders have reached top");
+            }
+        }
         return result;
+    }
+
+    private int checkDate(String selectDate, Date endTime, int reservableDays) throws Exception {
+        int flag = -1;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, reservableDays);
+        System.out.print(calendar.getTime());
+        Date terminalDate = sdf.parse(sdf.format(calendar.getTime()));
+        Date select = sdf.parse(selectDate);
+        Date end = sdf.parse(sdf.format(endTime));
+        int compare = terminalDate.compareTo(end);
+        if (compare > 0) {
+            terminalDate = end;
+        }
+        compare = select.compareTo(terminalDate);
+        if (compare > 0) {
+            flag = -1;
+            return flag;
+        } else {
+            flag = 1;
+            return flag;
+        }
+    }
+
+    private int checkQuantity(String selectDate) throws Exception {
+        int quantity = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date select = sdf.parse(selectDate);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(select);
+        calendar.add(Calendar.DATE, -3);
+        Date weekStart = sdf.parse(sdf.format(calendar.getTime()));
+        calendar.add(Calendar.DATE, 6);
+        Date weekEnd = sdf.parse(sdf.format(calendar.getTime()));
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("startTime", weekStart);
+        condition.put("endTime", weekEnd);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            quantity = -1;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            quantity = 0;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<DriftOrder> list = (List<DriftOrder>) response.getData();
+            quantity = list.size();
+        }
+        return quantity;
     }
 
     /**
