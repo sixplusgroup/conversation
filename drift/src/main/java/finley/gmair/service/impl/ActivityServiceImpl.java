@@ -64,4 +64,25 @@ public class ActivityServiceImpl implements ActivityService {
         }
         return result;
     }
+
+    @Override
+    public ResultData fetchActivityEquipment(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = activityDao.queryActivityEquipment(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No equipment found");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to retrieve activity equipment vo");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
+        return result;
+    }
 }

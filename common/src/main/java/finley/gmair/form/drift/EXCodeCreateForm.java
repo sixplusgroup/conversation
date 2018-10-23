@@ -6,6 +6,8 @@ public class EXCodeCreateForm {
 
     private int num;
 
+    private double price;
+
     public String getActivityId() {
         return activityId;
     }
@@ -20,5 +22,13 @@ public class EXCodeCreateForm {
 
     public void setNum(int num) {
         this.num = num;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

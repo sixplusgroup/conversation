@@ -11,4 +11,6 @@ public interface ActivityService {
     ResultData createActivity(Activity activity);
 
     ResultData modifyActivity(Map<String, Object> condition);
+
+    ResultData fetchActivityEquipment(Map<String, Object> condition);
 }

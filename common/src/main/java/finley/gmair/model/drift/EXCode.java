@@ -11,18 +11,18 @@ public class EXCode extends Entity {
 
     private EXCodeStatus status;
 
-    private CodeUseType type;
+    private double price;
 
     public EXCode() {
         super();
         this.status = EXCodeStatus.CREATED;
-        this.type = CodeUseType.PAPER;
     }
 
-    public EXCode(String activityId, String codeValue) {
+    public EXCode(String activityId, String codeValue, double price) {
         this();
         this.activityId = activityId;
         this.codeValue = codeValue;
+        this.price = price;
     }
 
     public String getCodeId() {
@@ -57,11 +57,11 @@ public class EXCode extends Entity {
         this.status = status;
     }
 
-    public CodeUseType getType() {
-        return type;
+    public double getPrice() {
+        return price;
     }
 
-    public void setType(CodeUseType type) {
-        this.type = type;
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

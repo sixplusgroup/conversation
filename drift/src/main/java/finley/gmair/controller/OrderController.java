@@ -3,8 +3,10 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.service.ActivityService;
+import finley.gmair.service.EXCodeService;
 import finley.gmair.service.EquipmentService;
 import finley.gmair.service.OrderService;
 import finley.gmair.util.ResponseCode;
@@ -31,77 +33,98 @@ public class OrderController {
     @Autowired
     private ActivityService activityService;
 
+    @Autowired
+    private EXCodeService exCodeService;
+
     /**
      * The method is called to create order
      *
      * @return
      * */
     @PostMapping(value = "/create")
-    public ResultData createDriftOrder(String order) {
+    public ResultData createDriftOrder(DriftOrderForm form) {
         ResultData result = new ResultData();
-
-        JSONObject jsonObject = JSONObject.parseObject(order);
-        String consignee = jsonObject.getString("consignee");
-        String phone = jsonObject.getString("phone");
-        String address = jsonObject.getString("address");
-        String orderNo = jsonObject.getString("orderNo");
-        String orderDate = jsonObject.getString("orderDate");
-        String province = jsonObject.getString("province");
-        String city = jsonObject.getString("city");
-        String district = jsonObject.getString("district");
-        String activityId = jsonObject.getString("activityId");
-        String description = jsonObject.getString("description");
-        double price = jsonObject.getDouble("price");
-        double pay = jsonObject.getDouble("pay");
-
-        JSONArray orderItemList = jsonObject.getJSONArray("orderItemList");
-        List<DriftOrderItem> list = new ArrayList<>();
-        for (Object orderItem : orderItemList) {
-            DriftOrderItem item = new DriftOrderItem();
-            JSONObject json = JSON.parseObject(JSON.toJSONString(orderItem));
-            String itemName = json.getString("commodityName");
-            int quantity = json.getInteger("commodityQuantity");
-            double itemPrice = json.getDouble("commodityPrice");
-            item.setItemName(itemName);
-            item.setQuantity(quantity);
-            item.setItemPrice(itemPrice);
-            list.add(item);
+        if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getAddress()) || StringUtils.isEmpty(form.getConsignee())
+            || StringUtils.isEmpty(form.getPhone()) || StringUtils.isEmpty(form.getItemList()) || StringUtils.isEmpty(form.getProvince())
+            || StringUtils.isEmpty(form.getCity()) || StringUtils.isEmpty(form.getDistrict())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
         }
 
+        String activityId = form.getActivityId();
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
         ResultData response = activityService.fetchActivity(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("No activity match");
+            result.setDescription("Activity match errors");
             return result;
         }
         Activity activity = ((List<Activity>) response.getData()).get(0);
-        String activityName = activity.getActivityName();
 
-        //check user whether buy machine or not
-        //build drift order
-        boolean buyMachine = jsonObject.getBoolean("buyMachine");
-        DriftOrder driftOrder = new DriftOrder();
-        if (buyMachine) {
-            String machineOrderNo = jsonObject.getString("machineOrderNo");
-            if (StringUtils.isEmpty(machineOrderNo)) {
+        String activityName = activity.getActivityName();
+        String consignee = form.getConsignee();
+        String phone = form.getPhone();
+        String address = form.getAddress();
+        String orderNo = form.getOrderNo();
+        String orderDate = form.getOrderDate();
+        String province = form.getProvince();
+        String city = form.getCity();
+        String district = form.getDistrict();
+        String description = form.getDescription();
+        JSONArray itemList = JSONObject.parseArray(form.getItemList());
+        List<DriftOrderItem> list = new ArrayList<>();
+
+        //calculate order price
+        double price = 0;
+        for (Object Item : itemList) {
+            DriftOrderItem orderItem = new DriftOrderItem();
+            JSONObject json = JSON.parseObject(JSON.toJSONString(Item));
+            String itemName = json.getString("commodityName");
+            int quantity = json.getInteger("commodityQuantity");
+            double itemPrice = json.getDouble("commodityPrice");
+            orderItem.setItemName(itemName);
+            orderItem.setQuantity(quantity);
+            orderItem.setItemPrice(itemPrice);
+            price += orderItem.getItemPrice() * orderItem.getQuantity();
+            list.add(orderItem);
+        }
+
+        DriftOrder driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, activityName);
+        driftOrder.setTotalPrice(price);
+        if (!StringUtils.isEmpty(form.getExcode())) {
+            condition.clear();
+            condition.put("codeValue", form.getExcode());
+            condition.put("blockFlag", false);
+            condition.put("status", 0);
+            response = exCodeService.fetchEXCode(condition);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("please make sure you hava filled the machine orderNo");
+                result.setDescription("EXcode errors");
                 return result;
             }
-            driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, activityName, pay, buyMachine, machineOrderNo);
+            EXCode exCode = ((List<EXCode>) response.getData()).get(0);
+            double codePrice = exCode.getPrice();
+            String codeId = exCode.getCodeId();
+            double realPay = price - codePrice;
+            driftOrder.setRealPay(realPay);
+            driftOrder.setExcode(form.getExcode());
+            new Thread(() -> {
+                condition.clear();
+                condition.put("codeId", codeId);
+                condition.put("status", true);
+                exCodeService.modifyEXCode(condition);
+            }).start();
         } else {
-            driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, activityName, pay);
+            driftOrder.setRealPay(price);
         }
-        driftOrder.setTotalPrice(price);
 
         //set time by orderDate
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
         LocalDate localDate = LocalDate.parse(orderDate, dateTimeFormatter);
         LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
         driftOrder.setCreateAt(Timestamp.valueOf(localDateTime));
-
 
         response = orderService.createDriftOrder(driftOrder);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {

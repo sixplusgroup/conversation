@@ -11,4 +11,6 @@ public interface ActivityDao {
     ResultData insertActivity(Activity activity);
 
     ResultData updateActivity(Map<String, Object> condition);
+
+    ResultData queryActivityEquipment(Map<String, Object> condition);
 }

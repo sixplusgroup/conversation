@@ -103,3 +103,20 @@ CREATE TABLE IF not exists `gmair_drift`.`equip_activity` (
 
 ALTER TABLE `gmair_drift`.`drift_order`
 ADD COLUMN `activity` VARCHAR(45) NOT NULL AFTER `description`;
+
+##2018-10-23
+CREATE VIEW activity_equipment_view
+AS
+SELECT drift_activity.activity_id, activity_name, drift_equipment.equip_id, equip_name, drift_equipment.block_flag, drift_equipment.create_time
+FROM gmair_drift.drift_activity, gmair_drift.equip_activity, gmair_drift.drift_equipment
+WHERE drift_activity.activity_id = equip_activity.activity_id
+AND equip_activity.equip_id = drift_equipment.equip_id
+AND drift_activity.block_flag = 0;
+
+
+ALTER TABLE `gmair_drift`.`drift_order`
+DROP COLUMN `machine_orderNo`,
+CHANGE COLUMN `buy_machine` `excode` VARCHAR(45) NULL DEFAULT '0' ;
+
+ALTER TABLE `gmair_drift`.`drift_excode`
+CHANGE COLUMN `use_type` `price` DOUBLE NOT NULL ;

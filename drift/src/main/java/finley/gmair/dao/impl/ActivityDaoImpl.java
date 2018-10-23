@@ -6,6 +6,7 @@ import finley.gmair.model.drift.Activity;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.drift.ActivityEquipmentVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -50,6 +51,23 @@ public class ActivityDaoImpl extends BaseDao implements ActivityDao {
         ResultData result = new ResultData();
         try {
             sqlSession.update("gmair.drift.activity.update", condition);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryActivityEquipment(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<ActivityEquipmentVo> list = sqlSession.selectList("gmair.drift.activity.queryActivityEquipment", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

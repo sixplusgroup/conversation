@@ -17,9 +17,7 @@ public class DriftOrder extends AbstractDriftOrder {
 
     private double realPay;
 
-    private boolean buyMachine;
-
-    private String machineOrderNo;
+    private String excode;
 
     private DriftOrderStatus status;
 
@@ -40,7 +38,7 @@ public class DriftOrder extends AbstractDriftOrder {
         this.district = district;
     }
 
-    public DriftOrder(List<DriftOrderItem> list, String consignee, String phone, String address, String orderNo, String province, String city, String district, String description, String activity, double realPay) {
+    public DriftOrder(List<DriftOrderItem> list, String consignee, String phone, String address, String orderNo, String province, String city, String district, String description, String activity) {
         super(list, consignee, phone, address);
         this.orderNo = orderNo;
         this.province = province;
@@ -48,14 +46,6 @@ public class DriftOrder extends AbstractDriftOrder {
         this.district = district;
         this.description = description;
         this.activity = activity;
-        this.realPay = realPay;
-        this.status = DriftOrderStatus.APPLIED;
-    }
-
-    public DriftOrder(List<DriftOrderItem> list, String consignee, String phone, String address, String orderNo, String province, String city, String district, String description, String activity, double realPay, boolean buyMachine, String machineOrderNo) {
-        this(list, consignee, phone, address, orderNo, province, city, district, description, activity, realPay);
-        this.buyMachine = buyMachine;
-        this.machineOrderNo = machineOrderNo;
         this.status = DriftOrderStatus.APPLIED;
     }
 
@@ -107,20 +97,20 @@ public class DriftOrder extends AbstractDriftOrder {
         this.realPay = realPay;
     }
 
-    public boolean isBuyMachine() {
-        return buyMachine;
+    public String getActivity() {
+        return activity;
     }
 
-    public void setBuyMachine(boolean buyMachine) {
-        this.buyMachine = buyMachine;
+    public void setActivity(String activity) {
+        this.activity = activity;
     }
 
-    public String getMachineOrderNo() {
-        return machineOrderNo;
+    public String getExcode() {
+        return excode;
     }
 
-    public void setMachineOrderNo(String machineOrderNo) {
-        this.machineOrderNo = machineOrderNo;
+    public void setExcode(String excode) {
+        this.excode = excode;
     }
 
     public DriftOrderStatus getStatus() {

@@ -195,7 +195,7 @@ public class ActivityController {
     @PostMapping(value = "/excode/create")
     public ResultData createEXCode(EXCodeCreateForm form) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getNum())) {
+        if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getNum()) || StringUtils.isEmpty(form.getPrice())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -212,7 +212,8 @@ public class ActivityController {
         }
 
         int num = form.getNum();
-        response = exCodeService.createEXCode(activityId, num);
+        double price = form.getPrice();
+        response = exCodeService.createEXCode(activityId, num, price);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             new Thread(() -> {
@@ -255,6 +256,8 @@ public class ActivityController {
         headCell1.setCellValue("活动名");
         Cell headCell2 = row0.createCell(2);
         headCell2.setCellValue("兑换码");
+        Cell headCell3 = row0.createCell(3);
+        headCell3.setCellValue("价格");
 
         //insert real data to table
         List<EXCode> exCodes = (List<EXCode>) response.getData();
@@ -267,6 +270,8 @@ public class ActivityController {
             activityName.setCellValue(activity.getActivityName().trim());
             Cell codeValue = current.createCell(2);
             codeValue.setCellValue(code.getCodeValue().trim());
+            Cell price = current.createCell(3);
+            price.setCellValue(code.getPrice());
         }
 
         //create file
@@ -383,7 +388,7 @@ public class ActivityController {
      * @return
      * */
     @PostMapping(value = "/update")
-    public ResultData updateActivity(String activityId, int repositorySize, double threshold, int reservableDays, Date endTime) {
+    public ResultData updateActivity(String activityId, Integer repositorySize, Double threshold, Integer reservableDays, String endTime) {
          ResultData result = new ResultData();
          Map<String, Object> condition = new HashMap<>();
          //if no activityId, don't allow to update
@@ -415,5 +420,30 @@ public class ActivityController {
          }
          result.setResponseCode(ResponseCode.RESPONSE_OK);
          return result;
+    }
+
+    @GetMapping(value = "/getEquip/by/{activityId}")
+    public ResultData getEquipmentByActivityId(@PathVariable("activityId") String activityId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivityEquipment(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get equipment by activityId");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No equipment found by activityId");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
     }
 }
