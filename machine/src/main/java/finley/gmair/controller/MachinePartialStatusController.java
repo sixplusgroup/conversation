@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,22 @@ public class MachinePartialStatusController {
     private OutPm25HourlyService outPm25HourlyService;
 
     Map<String, Integer> pm25Over25Count = new HashMap<>();
+
+    @PostConstruct
+    public void loadDataFromDatabase(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("dateDiff", true);
+        ResultData response =  outPm25DailyService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            List<OutPm25Daily> list = (List<OutPm25Daily>) response.getData();
+            for (OutPm25Daily opd : list){
+                String machineId = opd.getMachineId();
+                int overCount = opd.getOverCount();
+                pm25Over25Count.put(machineId,overCount);
+            }
+        }
+    }
 
     //每小时调用,向V2机器发送查询滤网pm2.5的报文
     @GetMapping("/pm25/probe/hourly")

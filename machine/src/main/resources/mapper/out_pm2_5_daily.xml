@@ -31,6 +31,11 @@
         <if test="createAt != null">
             AND create_time >= #{createAt}
         </if>
+        <if test="dateDiff != null">
+            <![CDATA[
+                AND DATEDIFF(CURDATE(),create_time) = 1
+            ]]>
+        </if>
         order by create_time desc
     </select>
 </mapper>
