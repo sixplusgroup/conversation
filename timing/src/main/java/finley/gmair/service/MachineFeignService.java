@@ -17,9 +17,15 @@ public interface MachineFeignService {
     @PostMapping("/machine/status/schedule/monthly")
     ResultData handleMachineStatusMonthly();
 
-    @GetMapping("/machine/status/partial/schedule/hourly")
+    @GetMapping("/machine/partial/status/pm25/probe/hourly")
     ResultData probePartialPM2_5Hourly();
 
-    @PostMapping("/machine/status/screen/schedule/daily")
-    ResultData configScreenDaily();
+    @PostMapping("/machine/partial/status/pm25/save/daily")
+    ResultData savePartialPm25Daily();
+
+    @PostMapping("/machine/partial/status/screen/on/daily")
+    ResultData turnOnScreenDaily();
+
+    @PostMapping("/machine/partial/status/screen/off/hourly")
+    ResultData turnOffScreenHourly();
 }

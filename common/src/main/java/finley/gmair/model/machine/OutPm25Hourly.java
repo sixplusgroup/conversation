@@ -2,18 +2,20 @@ package finley.gmair.model.machine;
 
 import finley.gmair.model.Entity;
 
-public class LatestPM2_5 extends Entity {
+public class OutPm25Hourly extends Entity {
     private String latestId;
     private String machineId;
     private int pm2_5;
-    public LatestPM2_5(){
+    private int indexHour;
+    public OutPm25Hourly(){
         super();
     }
 
-    public LatestPM2_5(String machineId, int pm2_5) {
+    public OutPm25Hourly(String machineId, int pm2_5, int indexHour) {
         super();
         this.machineId = machineId;
         this.pm2_5 = pm2_5;
+        this.indexHour = indexHour;
     }
 
     public String getLatestId() {
@@ -32,11 +34,19 @@ public class LatestPM2_5 extends Entity {
         this.machineId = machineId;
     }
 
-    public double getPm2_5() {
+    public int getPm2_5() {
         return pm2_5;
     }
 
     public void setPm2_5(int pm2_5) {
         this.pm2_5 = pm2_5;
+    }
+
+    public int getIndexHour() {
+        return indexHour;
+    }
+
+    public void setIndexHour(int indexHour) {
+        this.indexHour = indexHour;
     }
 }

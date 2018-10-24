@@ -13,18 +13,13 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class DailyJob implements Job{
-
-    @Autowired
-    private AirQualityFeignService airQualityFeignService;
+public class DailyNoonJob implements Job{
 
     @Autowired
     private MachineFeignService machineFeignService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        airQualityFeignService.scheduleDaily();
-        machineFeignService.handleMachineStatusDaily();
-        machineFeignService.savePartialPm25Daily();
+        machineFeignService.turnOnScreenDaily();
     }
 }

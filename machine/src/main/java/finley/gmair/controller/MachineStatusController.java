@@ -2,9 +2,7 @@ package finley.gmair.controller;
 
 
 import finley.gmair.datastructrue.LimitQueue;
-import finley.gmair.model.machine.BoardVersion;
-import finley.gmair.model.machine.MachinePartialStatus;
-import finley.gmair.model.machine.MachineStatus;
+import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
@@ -40,8 +38,16 @@ public class MachineStatusController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private OutPm25DailyService outPm25DailyService;
+
+    @Autowired
+    private FilterLimitConfigService overDayService;
+
+    @Autowired
+    private FilterLightService filterLightService;
+
     Map<String, Integer> pm25Over25Count = new HashMap<>();
-    private int overCountLimit = 3;
 
     //每小时调用,从redis中统计每个机器的pm25每小时平均值,并插入到mysql数据库中machine_hourly_status
     @PostMapping("/schedule/hourly")
@@ -100,96 +106,6 @@ public class MachineStatusController {
                 response = coreV1Service.isOnline(machineQrcodeBindVo.getMachineId());
             return response;
         }
-    }
-
-    //V2
-    //每小时调用,向机器发送查询滤网pm2.5的报文
-    @GetMapping("/partial/schedule/hourly")
-    public ResultData ProbePartialPM2_5Hourly() {
-        ResultData result = new ResultData();
-
-        //get the qrcode-machine-bind list
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag", false);
-        ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(response.getResponseCode());
-            return result;
-        }
-        List<MachineQrcodeBindVo> machineQrcodeBindVoList = (List<MachineQrcodeBindVo>) response.getData();
-
-        //foreach the uid, send the packet to the online machine
-        StringBuffer sb = new StringBuffer("");
-        for (MachineQrcodeBindVo mqb : machineQrcodeBindVoList) {
-            response = coreV2Service.isOnline(mqb.getMachineId());
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
-                continue;
-            //System.out.println(mqb.getMachineId());
-            sb.delete(0, sb.length());
-            sb.append(mqb.getMachineId());
-            coreV2Service.probePartialPm25(sb.toString());
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                result.setDescription(e.getMessage());
-            }
-
-        }
-        return result;
-    }
-
-
-    //V2
-    //每日调用,若滤网PM25连续N天超标,向超标机器发送警告信号灯报文
-    @PostMapping("/screen/schedule/daily")
-    public ResultData configScreenDaily() {
-        ResultData result = new ResultData();
-        ResultData response = machinePm25Service.fetchAveragePm25();
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to fetch average partial pm2_5");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find average partial pm2_5");
-            return result;
-        }
-        List<MachinePartialStatus> mpsList = (List<MachinePartialStatus>) response.getData();
-        for (MachinePartialStatus mps : mpsList) {
-            String machineId = mps.getUid();
-            //如果过去24小时pm2.5平均值小于25,则将计数清零
-            if (((Double) mps.getData()).doubleValue() < 25.0) {
-                pm25Over25Count.put(machineId, 0);
-                continue;
-            }
-            //如果过去24小时pm2.5平均值超标,则根据计数情况分类讨论
-            else {
-                if (pm25Over25Count.containsKey(machineId)) {
-                    int overCount = pm25Over25Count.get(machineId);
-                    //算上今天,超标时间为 overCount + 1,如果还么有到达上限
-                    if (overCount + 1 < overCountLimit) {
-                        pm25Over25Count.put(machineId, overCount + 1);
-                    }
-                    //算上今天,超标时间已经达到上限
-                    else if (overCount + 1 == overCountLimit) {
-                        pm25Over25Count.put(machineId, overCountLimit - 1);
-                        try {
-                            if (coreV2Service.isOnline(machineId).getResponseCode() == ResponseCode.RESPONSE_OK)
-                                coreV2Service.configScreen(machineId, 1);
-                            Thread.sleep(100);
-                        } catch (Exception e) {
-                            result.setDescription(e.getMessage());
-                        }
-                    }
-                } else {
-                    pm25Over25Count.put(machineId, 1);
-                }
-            }
-
-
-        }
-
-        return result;
     }
 
     //从mysql获取machine过去24小时的pm2.5记录,并格式化
@@ -254,7 +170,7 @@ public class MachineStatusController {
             }
         }
         result.setData(list);
-        result.setDescription("list.size() = "+list.size());
+        result.setDescription("list.size() = " + list.size());
         return result;
     }
 
@@ -326,7 +242,7 @@ public class MachineStatusController {
                 list.add(i, new MachinePm2_5Vo(machineId, 0, 0, new Timestamp(last7Day.getTime() + (i + 1) * 1000 * 60 * 60 * 24)));
             }
         }
-        result.setDescription("list.size = "+list.size());
+        result.setDescription("list.size = " + list.size());
         result.setData(list);
         return result;
     }

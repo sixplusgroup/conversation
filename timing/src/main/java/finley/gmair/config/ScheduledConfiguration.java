@@ -1,9 +1,6 @@
 package finley.gmair.config;
 
-import finley.gmair.job.DailyJob;
-import finley.gmair.job.HalfHourlyJob;
-import finley.gmair.job.HourlyJob;
-import finley.gmair.job.MonthlyJob;
+import finley.gmair.job.*;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -109,6 +106,24 @@ public class ScheduledConfiguration {
         CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
         cronTriggerFactoryBean.setJobDetail(processDailyJob().getObject());
         cronTriggerFactoryBean.setCronExpression("0 0 0 * * ?");
+        cronTriggerFactoryBean.setGroup("spring3-quartz");
+        return cronTriggerFactoryBean;
+    }
+
+    @Bean(value = "dailyNoonJob")
+    public JobDetailFactoryBean processDailyNoonJob() {
+        JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+        jobDetailFactory.setDurability(true);
+        jobDetailFactory.setJobClass(DailyNoonJob.class);
+        jobDetailFactory.setGroup("spring3-quartz");
+        return jobDetailFactory;
+    }
+
+    @Bean(value = "dailyNoonTrigger")
+    public CronTriggerFactoryBean processDailyNoonTrigger() {
+        CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
+        cronTriggerFactoryBean.setJobDetail(processDailyJob().getObject());
+        cronTriggerFactoryBean.setCronExpression("0 0 12 * * ?");
         cronTriggerFactoryBean.setGroup("spring3-quartz");
         return cronTriggerFactoryBean;
     }

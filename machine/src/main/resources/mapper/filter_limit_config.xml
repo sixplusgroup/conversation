@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.filterLimitConfig">
+    <resultMap id="filterLimitConfig" type="finley.gmair.model.machine.FilterLimitConfig">
+        <result property="overCountLimit" column="over_count_limit"></result>
+        <result property="overPm25Limit" column="over_pm25_limit"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="filterLimitConfig">
+        SELECT over_count_limit,over_pm25_limit
+        FROM gmair_machine.filter_limit_config
+        WHERE 1=1
+    </select>
+</mapper>

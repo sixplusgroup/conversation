@@ -22,10 +22,13 @@
         <mapper resource="mapper/consumer_qrcode_bind.xml"></mapper>
         <mapper resource="mapper/machine_default_location.xml"></mapper>
         <mapper resource="mapper/pm2_5_boundary.xml"></mapper>
-        <mapper resource="mapper/pm2_5_latest.xml"></mapper>
+        <mapper resource="mapper/out_pm2_5_hourly.xml"></mapper>
         <mapper resource="mapper/modelvolume.xml"></mapper>
         <mapper resource="mapper/modellight.xml"></mapper>
         <mapper resource="mapper/model_enabled_component.xml"></mapper>
         <mapper resource="mapper/consumer_code_machine_view.xml"></mapper>
+        <mapper resource="mapper/out_pm2_5_daily.xml"></mapper>
+        <mapper resource="mapper/filter_limit_config.xml"></mapper>
+        <mapper resource="mapper/filter_light.xml"></mapper>
     </mappers>
 </configuration>

@@ -177,3 +177,39 @@ CREATE TABLE `gmair_machine`.`model_light_config` (
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`config_id`));
+
+
+#2018-10-23 add table
+CREATE TABLE `out_pm2_5_daily` (
+  `record_id` varchar(20) NOT NULL,
+  `machine_id` varchar(20) NOT NULL,
+  `average_pm25` double NOT NULL DEFAULT '0',
+  `over_count` tinyint(5) NOT NULL DEFAULT '0',
+  `block_flag` tinyint(5) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`record_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+CREATE TABLE `filter_limit_config` (
+  `over_count_limit` int(11) NOT NULL,
+  `over_pm25_limit` int(11) NOT NULL,
+  PRIMARY KEY (`over_count_limit`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+CREATE TABLE `gmair_machine`.`filter_light` (
+`machine_id` VARCHAR(20) NOT NULL,
+`light_status` TINYINT(5) NOT NULL,
+`block_flag` TINYINT(5) NOT NULL,
+`create_time` DATETIME NOT NULL,
+PRIMARY KEY (`machine_id`));
+
+ALTER TABLE `gmair_machine`.`pm2_5_latest`
+RENAME TO  `gmair_machine`.`out_pm2_5_hourly` ;
+
+ALTER TABLE `gmair_machine`.`out_pm2_5_hourly`
+ADD COLUMN `index` INT(11) NOT NULL AFTER `pm2_5`;
+
+ALTER TABLE `gmair_machine`.`out_pm2_5_hourly`
+CHANGE COLUMN `index` `index_hour` INT(11) NOT NULL ;
+
+

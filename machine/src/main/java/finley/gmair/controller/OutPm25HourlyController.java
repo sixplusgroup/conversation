@@ -1,7 +1,7 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.machine.LatestPM2_5;
-import finley.gmair.service.LatestPM2_5Service;
+import finley.gmair.model.machine.OutPm25Hourly;
+import finley.gmair.service.OutPm25HourlyService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
@@ -15,12 +15,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/machine/latest/pm2_5")
-public class LatestPM2_5Controller {
+public class OutPm25HourlyController {
     @Autowired
-    private LatestPM2_5Service latestPM2_5Service;
+    private OutPm25HourlyService outPm25HourlyService;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResultData createLatestPM2_5(String machineId, int pm2_5) {
+    public ResultData createOutPm25Hourly(String machineId, int pm2_5) {
 
         ResultData result = new ResultData();
         //check empty
@@ -31,8 +31,8 @@ public class LatestPM2_5Controller {
         }
 
         //create boundary pm2.5
-        LatestPM2_5 latestPM2_5 = new LatestPM2_5(machineId, pm2_5);
-        ResultData response = latestPM2_5Service.create(latestPM2_5);
+        OutPm25Hourly outPm25Hourly = new OutPm25Hourly(machineId, pm2_5, 0);
+        ResultData response = outPm25HourlyService.create(outPm25Hourly);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to create latest pm2.5");
@@ -46,7 +46,7 @@ public class LatestPM2_5Controller {
     }
 
     @RequestMapping(value = "/probe/by/machineId", method = RequestMethod.GET)
-    public ResultData probeLatestPM2_5ByMachineId(String machineId) {
+    public ResultData probeOutPm25ByMachineId(String machineId) {
         ResultData result = new ResultData();
         //check empty
         if (StringUtils.isEmpty(machineId)) {
@@ -55,11 +55,11 @@ public class LatestPM2_5Controller {
             return result;
         }
 
-        //probe boundary pm2.5 by modelId
+        //probe pm2.5 by modelId
         Map<String, Object> condition = new HashMap<>();
         condition.put("machineId", machineId);
         condition.put("blockFlag", false);
-        ResultData response = latestPM2_5Service.fetch(condition);
+        ResultData response = outPm25HourlyService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to probe latest pm2.5 by modelId");
@@ -76,7 +76,7 @@ public class LatestPM2_5Controller {
     }
 
     @RequestMapping(value = "/modify/by/machineId", method = RequestMethod.POST)
-    public ResultData modifyLatestPM2_5ByModelId(String machineId,int pm2_5) {
+    public ResultData modifyOutPm25ByModelId(String machineId, int pm2_5) {
         ResultData result = new ResultData();
         //check empty
         if (StringUtils.isEmpty(machineId)) {
@@ -90,7 +90,7 @@ public class LatestPM2_5Controller {
         condition.put("machineId", machineId);
         condition.put("pm2_5", pm2_5);
         condition.put("blockFlag", false);
-        ResultData response = latestPM2_5Service.updateByMachineId(condition);
+        ResultData response = outPm25HourlyService.updateByMachineId(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to modify latest pm2.5 by modelId");

@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="gmair.machine.pm2_5_latest">
-    <resultMap id="LatestPM2_5" type="finley.gmair.model.machine.LatestPM2_5">
+<mapper namespace="gmair.machine.outPm25Hourly">
+    <resultMap id="outPm25Hourly" type="finley.gmair.model.machine.OutPm25Hourly">
         <result property="latestId" column="latest_id"></result>
         <result property="machineId" column="machine_id"></result>
         <result property="pm2_5" column="pm2_5"></result>
-        <result property="blockFlag" column="block_flag"></result>
+        <result property="indexHour" column="index_hour"></result>
         <result property="createAt" column="create_time"></result>
+        <result property="blockFlag" column="block_flag"></result>
     </resultMap>
 
-    <insert id="insert" parameterType="finley.gmair.model.machine.LatestPM2_5" useGeneratedKeys="false">
-        replace INTO gmair_machine.pm2_5_latest(latest_id, machine_id, pm2_5, create_time, block_flag)
-        VALUES(#{latestId}, #{machineId}, #{pm2_5}, #{createAt}, #{blockFlag})
+    <insert id="insert" parameterType="finley.gmair.model.machine.OutPm25Hourly" useGeneratedKeys="false">
+        insert into gmair_machine.out_pm2_5_hourly(latest_id, machine_id, pm2_5, index_hour, create_time, block_flag)
+        VALUES (#{latestId}, #{machineId}, #{pm2_5}, #{indexHour}, #{createAt}, #{blockFlag})
     </insert>
 
-    <select id="query" parameterType="java.util.Map" resultMap="LatestPM2_5">
-        SELECT latest_id,machine_id,pm2_5,block_flag,create_time
-        FROM gmair_machine.pm2_5_latest
+    <select id="query" parameterType="java.util.Map" resultMap="outPm25Hourly">
+        SELECT latest_id,machine_id,pm2_5,index_hour,block_flag,create_time
+        FROM gmair_machine.out_pm2_5_hourly
         WHERE 1 = 1
         <if test="latestId != null">
             AND latest_id = #{latestId}
@@ -27,10 +28,19 @@
         <if test="pm2_5 != null">
             AND pm2_5 = #{pm2_5}
         </if>
+        <if test="lastHour != null">
+            AND create_time >= #{lastHour}
+        </if>
+        <if test="currentHour != null">
+            <![CDATA[
+            AND create_time < #{currentHour}
+            ]]>
+        </if>
+        order by create_time desc
     </select>
 
     <update id="updateByMachineId" parameterType="java.util.Map">
-        UPDATE gmair_machine.pm2_5_latest
+        UPDATE gmair_machine.out_pm2_5_hourly
         <set>
             <if test="machineId != null">
                 machine_id = #{machineId},

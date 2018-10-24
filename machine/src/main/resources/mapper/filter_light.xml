@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.filterLight">
+    <resultMap id="filterLight" type="finley.gmair.model.machine.FilterLight">
+        <result property="machineId" column="machine_id"></result>
+        <result property="lightStatus" column="light_status"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.machine.FilterLight" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.filter_light(machine_id, light_status, block_flag, create_time)
+        VALUES(#{machineId}, #{lightStatus}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="filterLight">
+        SELECT machine_id,light_status,block_flag,create_time
+        FROM gmair_machine.filter_light
+        WHERE 1 = 1
+        <if test="machineId != null">
+            AND machine_id = #{machineId}
+        </if>
+        <if test="lightStatus != null">
+            AND light_status = #{lightStatus}
+        </if>
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        update gmair_machine.filter_light
+        set light_status = #{lightStatus}
+        where machine_id = #{machineId}
+    </update>
+</mapper>

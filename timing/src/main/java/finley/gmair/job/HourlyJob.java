@@ -37,5 +37,6 @@ public class HourlyJob implements Job{
         machineFeignService.handleMachineStatusHourly();
         machineFeignService.probePartialPM2_5Hourly();
         machineModeFeignService.handleHourlyPowerSaving();
+        machineFeignService.turnOffScreenHourly();
     }
 }
