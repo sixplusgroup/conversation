@@ -21,7 +21,7 @@ public class EXCodeServiceImpl implements EXCodeService {
     private EXCodeDao exCodeDao;
 
     @Override
-    public ResultData createEXCode(String activityId, int num, double price) {
+    public ResultData createEXCode(String activityId, String channel, int num, double price) {
         ResultData result = new ResultData();
         if (num < 0) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -32,7 +32,7 @@ public class EXCodeServiceImpl implements EXCodeService {
         ResultData response = new ResultData();
         for (int i = 0; i < num; i++) {
             String codeValue = new StringBuffer(EXSerialGenerator.generate()).toString();
-            EXCode code = new EXCode(activityId, codeValue, price);
+            EXCode code = new EXCode(activityId, channel, codeValue, price);
             response = exCodeDao.insert(code);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);

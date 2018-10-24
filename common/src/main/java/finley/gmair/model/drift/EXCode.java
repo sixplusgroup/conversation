@@ -7,6 +7,8 @@ public class EXCode extends Entity {
 
     private String activityId;
 
+    private String channel;
+
     private String codeValue;
 
     private EXCodeStatus status;
@@ -18,9 +20,10 @@ public class EXCode extends Entity {
         this.status = EXCodeStatus.CREATED;
     }
 
-    public EXCode(String activityId, String codeValue, double price) {
+    public EXCode(String activityId, String channel, String codeValue, double price) {
         this();
         this.activityId = activityId;
+        this.channel = channel;
         this.codeValue = codeValue;
         this.price = price;
     }
@@ -39,6 +42,14 @@ public class EXCode extends Entity {
 
     public void setActivityId(String activityId) {
         this.activityId = activityId;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 
     public String getCodeValue() {

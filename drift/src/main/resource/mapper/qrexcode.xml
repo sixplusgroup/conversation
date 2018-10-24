@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.drift.qrexcode">
+    <resultMap id="codeVo" type="finley.gmair.model.drift.QR_EXcode">
+        <result property="Id" column="id"></result>
+        <result property="qrcode" column="qrcode"></result>
+        <result property="excode" column="excode"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="codeVo">
+        select id, qrcode, excode, block_flag, create_time
+        from gmair_drift.machine_excode
+        where 1 = 1
+        <if test="Id != null">
+            and id = #{Id}
+        </if>
+        <if test="qrcode != null">
+            and qrcode = #{qrcode}
+        </if>
+        <if test="excode != null">
+            and excode = #{excode}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by create_time desc
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.QR_EXcode">
+        insert into gmair_drift.machine_excode(id, qrcode, excode, block_flag, create_time)
+        values(#{Id}, #{qrcode}, #{excode}, #{blockFlag}, #{createAt})
+    </insert>
+</mapper>

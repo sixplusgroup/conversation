@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.drift.*;
-import finley.gmair.service.ActivityService;
-import finley.gmair.service.EXCodeService;
-import finley.gmair.service.EquipmentService;
-import finley.gmair.service.OrderService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +32,9 @@ public class OrderController {
 
     @Autowired
     private EXCodeService exCodeService;
+
+    @Autowired
+    private BillService billService;
 
     /**
      * The method is called to create order
@@ -97,7 +97,7 @@ public class OrderController {
             condition.clear();
             condition.put("codeValue", form.getExcode());
             condition.put("blockFlag", false);
-            condition.put("status", 0);
+            condition.put("status", 1);
             response = exCodeService.fetchEXCode(condition);
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -113,7 +113,7 @@ public class OrderController {
             new Thread(() -> {
                 condition.clear();
                 condition.put("codeId", codeId);
-                condition.put("status", true);
+                condition.put("status", 2);
                 exCodeService.modifyEXCode(condition);
             }).start();
         } else {
@@ -135,6 +135,9 @@ public class OrderController {
             result.setDescription("无相关数据，请仔细检查");
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            new Thread(() -> {
+                billService.createBill(driftOrder.getOrderId(), driftOrder.getTotalPrice(), driftOrder.getRealPay());
+            }).start();
             result.setData(response.getData());
         }
         return result;

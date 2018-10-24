@@ -14,5 +14,7 @@
         <mapper resource="mapper/driftorder.xml" />
         <mapper resource="mapper/equipment.xml" />
         <mapper resource="mapper/equipactivity.xml" />
+        <mapper resource="mapper/channel.xml" />
+        <mapper resource="mapper/qrexcode.xml" />
     </mappers>
 </configuration>

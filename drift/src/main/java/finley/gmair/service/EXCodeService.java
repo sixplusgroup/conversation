@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface EXCodeService {
 
-    ResultData createEXCode(String activityId, int num, double price);
+    ResultData createEXCode(String activityId, String channel, int num, double price);
 
     ResultData fetchEXCode(Map<String, Object> condition);
 

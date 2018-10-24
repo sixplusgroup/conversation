@@ -3,7 +3,7 @@ package finley.gmair.model.drift;
 import finley.gmair.model.EnumValue;
 
 public enum EXCodeStatus implements EnumValue {
-    CREATED(0), OCCUPIED(1);
+    CREATED(0), EXCHANGED(1), OCCUPIED(2);
 
     private int value;
 

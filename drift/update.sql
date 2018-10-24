@@ -76,14 +76,12 @@ ADD COLUMN `real_pay` INT(11) NOT NULL AFTER `total_price`;
 ALTER TABLE `gmair_drift`.`drift_activity`
 ADD COLUMN `reservable_days` INT(11) NOT NULL AFTER `threshold`;
 
-
 ##2018-10-17
 ALTER TABLE gmair_drift.drift_order_item
 DROP COLUMN `test_target`;
 
 ALTER TABLE `gmair_drift`.`drift_reservation`
 ADD COLUMN `test_target` VARCHAR(20) NOT NULL AFTER `city_id`;
-
 
 ##2018-10-22
 CREATE TABLE IF NOT EXISTS `gmair_drift`.`drift_equipment` (
@@ -113,10 +111,30 @@ WHERE drift_activity.activity_id = equip_activity.activity_id
 AND equip_activity.equip_id = drift_equipment.equip_id
 AND drift_activity.block_flag = 0;
 
-
 ALTER TABLE `gmair_drift`.`drift_order`
 DROP COLUMN `machine_orderNo`,
 CHANGE COLUMN `buy_machine` `excode` VARCHAR(45) NULL DEFAULT '0' ;
 
 ALTER TABLE `gmair_drift`.`drift_excode`
 CHANGE COLUMN `use_type` `price` DOUBLE NOT NULL ;
+
+##2018-10-24
+ALTER TABLE `gmair_drift`.`drift_excode`
+ADD COLUMN `channel` VARCHAR(45) NOT NULL AFTER `activity_id`;
+
+CREATE TABLE `gmair_drift`.`drift_channel` (
+  `channel_id` VARCHAR(45) NOT NULL,
+  `channel_name` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`channel_id`)
+)  ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+CREATE TABLE `gmair_drift`.`machine_excode` (
+  `id` VARCHAR(45) NOT NULL,
+  `qrcode` VARCHAR(45) NOT NULL,
+  `excode` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=UTF8;

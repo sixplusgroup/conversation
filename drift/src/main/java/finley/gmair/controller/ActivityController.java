@@ -5,13 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ActivityForm;
 import finley.gmair.form.drift.EXCodeCreateForm;
-import finley.gmair.model.drift.Activity;
-import finley.gmair.model.drift.EXCode;
-import finley.gmair.model.drift.EquipActivity;
-import finley.gmair.model.drift.Equipment;
-import finley.gmair.service.ActivityService;
-import finley.gmair.service.EXCodeService;
-import finley.gmair.service.EquipmentService;
+import finley.gmair.model.drift.*;
+import finley.gmair.service.*;
 import finley.gmair.util.DriftProperties;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
@@ -42,6 +37,15 @@ public class ActivityController {
 
     @Autowired
     private EquipmentService equipmentService;
+
+    @Autowired
+    private ChannelService channelService;
+
+    @Autowired
+    private MachineService machineService;
+
+    @Autowired
+    private QrExCodeService qrExCodeService;
 
     /**
      * the method is used to create activity
@@ -195,7 +199,8 @@ public class ActivityController {
     @PostMapping(value = "/excode/create")
     public ResultData createEXCode(EXCodeCreateForm form) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getNum()) || StringUtils.isEmpty(form.getPrice())) {
+        if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getNum())
+                || StringUtils.isEmpty(form.getPrice()) || StringUtils.isEmpty(form.getChannelId())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -204,16 +209,32 @@ public class ActivityController {
         String activityId = form.getActivityId();
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
         ResultData response = activityService.fetchActivity(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("兑换码一致性错误，服务器不予处理");
+            result.setDescription("活动一致性错误，服务器不予处理");
             return result;
         }
 
+        //verify channel correct or not
+        String channelId = form.getChannelId();
+        condition.clear();
+        condition.put("channelId", channelId);
+        condition.put("blockFlag", false);
+        response = channelService.fetchChannel(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("引流一致性错误，服务器不予处理");
+            return result;
+        }
+
+        DriftChannel channel = ((List<DriftChannel>) response.getData()).get(0);
+
+        String channelName = channel.getChannelName();
         int num = form.getNum();
         double price = form.getPrice();
-        response = exCodeService.createEXCode(activityId, num, price);
+        response = exCodeService.createEXCode(activityId, channelName, num, price);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             new Thread(() -> {
@@ -350,6 +371,89 @@ public class ActivityController {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * The method is called to exchange excoede
+     * 1. check channel correct or not
+     * 2. if buy machine, provide qrcode, store to database
+     *    if activityVIP, only provide channelId
+     * @return
+     * */
+    @PostMapping(value = "/excode/exchange")
+    public ResultData excodeExchange(String channelId, String qrcode) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(channelId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        //channelId不为空，判断channel
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("channelId", channelId);
+        condition.put("blockFlag", false);
+        ResultData response = channelService.fetchChannel(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Channel match errors");
+            return result;
+        }
+
+        DriftChannel channel = ((List<DriftChannel>) response.getData()).get(0);
+        String channelName = channel.getChannelName();
+
+        condition.clear();
+        condition.put("channel", channelName);
+        condition.put("status", 0);
+        condition.put("blockFlag", false);
+        response = exCodeService.fetchEXCode(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("System errors, please try again");
+            return result;
+        }
+        EXCode code = ((List<EXCode>) response.getData()).get(0);
+        //根据channelName判断是哪类兑换
+        if (channelName.contains("果麦")) {
+            if (StringUtils.isEmpty(qrcode)) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("No qrcode");
+                return result;
+            }
+            response = machineService.checkQrcode(qrcode);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Qrcode errors");
+                return result;
+            }
+            condition.clear();
+            condition.put("qrcode", qrcode);
+            response = qrExCodeService.fetchQrExCode(condition);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("The qrcode is already exchanged");
+                return result;
+            }
+
+            String codeValue = code.getCodeValue();
+            QR_EXcode qr_eXcode = new QR_EXcode(qrcode, codeValue);
+            new Thread(() -> {
+                qrExCodeService.createQrExCode(qr_eXcode);
+            }).start();
+        }
+        condition.clear();
+        condition.put("codeId", code.getCodeId());
+        condition.put("status", 1);
+        response = exCodeService.modifyEXCode(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to exchange");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(code);
+        result.setDescription("Succeed to exchange");
+        return result;
     }
 
     /**
