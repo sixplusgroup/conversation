@@ -4,7 +4,6 @@
     <resultMap id="excodeVo" type="finley.gmair.model.drift.EXCode">
         <result property="codeId" column="code_id"></result>
         <result property="activityId" column="activity_id"></result>
-        <result property="channel" column="channel"></result>
         <result property="codeValue" column="code_value"></result>
         <result property="status" column="code_status"
                 typeHandler="finley.gmair.mybatis.handler.EXCodeStatusHandler"></result>
@@ -14,7 +13,7 @@
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="excodeVo">
-        select code_id, activity_id, channel, code_value, code_status, price, block_flag, create_time
+        select code_id, activity_id, code_value, code_status, price, block_flag, create_time
         from gmair_drift.drift_excode
         where 1 = 1
         <if test="codeId != null">
@@ -22,9 +21,6 @@
         </if>
         <if test="activityId != null">
             and activity_id = #{activityId}
-        </if>
-        <if test="channel != null">
-            and channel = #{channel}
         </if>
         <if test="codeValue != null">
             and code_value = #{codeValue}
@@ -45,8 +41,8 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.EXCode" useGeneratedKeys="false">
-        insert into gmair_drift.drift_excode(code_id, activity_id, channel, code_value, code_status, price, block_flag, create_time)
-        values(#{codeId}, #{activityId}, #{channel}, #{codeValue}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{price}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_excode(code_id, activity_id, code_value, code_status, price, block_flag, create_time)
+        values(#{codeId}, #{activityId}, #{codeValue}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{price}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">

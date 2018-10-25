@@ -4,48 +4,38 @@
     <resultMap id="orderVo" type="finley.gmair.model.drift.DriftOrder">
         <result property="orderId" column="order_id"></result>
         <result property="orderNo" column="order_no"></result>
+        <result property="consumerId" column="consumer_id"></result>
+        <result property="activity" column="activity"></result>
+        <result property="equipId" column="equip_id"></result>
         <result property="consignee" column="consignee"></result>
         <result property="phone" column="phone"></result>
         <result property="address" column="address"></result>
+        <result property="expectedDate" column="expected_date"></result>
+        <result property="intervalDate" column="interval_date"></result>
         <result property="province" column="province"></result>
         <result property="city" column="city"></result>
         <result property="district" column="district"></result>
         <result property="totalPrice" column="total_price"></result>
         <result property="realPay" column="real_pay"></result>
+        <result property="excode" column="excode"></result>
+        <result property="testTarget" column="test_target"></result>
         <result property="description" column="description"></result>
-        <result property="activity" column="activity"></result>
         <result property="status" column="order_status"
                 typeHandler="finley.gmair.mybatis.handler.DriftOrderStatusHandler"></result>
-        <result property="excode" column="excode"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
-        <collection property="list" select="selectOrderItem" column="order_id"></collection>
     </resultMap>
-
-    <resultMap id="orderItemVo" type="finley.gmair.model.drift.DriftOrderItem">
-        <result property="itemId" column="item_id"/>
-        <result property="itemName" column="item_name"/>
-        <result property="quantity" column="quantity"/>
-        <result property="itemPrice" column="item_price"/>
-        <result property="blockFlag" column="block_flag"/>
-        <result property="createAt" column="create_time"/>
-    </resultMap>
-
-    <select id="selectOrderItem" parameterType="java.lang.String" resultMap="orderItemVo">
-        SELECT item_id, item_name, item_price, quantity
-        FROM gmair_drift.drift_order_item
-        WHERE
-        drift_order_item.order_id = #{order_id}
-    </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrder" useGeneratedKeys="false">
-        insert into gmair_drift.drift_order(order_id, order_no, consignee, phone, address, province, city, district, total_price, real_pay, description, activity, order_status, excode, block_flag, create_time)
-        values(#{orderId}, #{orderNo}, #{consignee}, #{phone}, #{address}, #{province}, #{city}, #{district}, #{totalPrice},
-               #{realPay}, #{description}, #{activity}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{excode}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_order(order_id, order_no, consumer_id, activity, equip_id, consignee, phone, address, expected_date, interval_date, province, city, district, total_price, real_pay,
+                    excode, test_target, description, order_status, block_flag, create_time)
+        values(#{orderId}, #{orderNo}, #{consumerId}, #{activity}, #{equipId}, #{consignee}, #{phone}, #{address}, #{expectedDate}, #{intervalDate}, #{province}, #{city}, #{district}, #{totalPrice}, #{realPay},
+               #{excode}, #{testTarget}, #{description}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        select order_id, order_no, consignee, phone, address, province, city, district, total_price, real_pay, description, activity, order_status, buy_machine, machine_orderNo, block_flag, create_time
+        select order_id, order_no, consumer_id, activity, equip_id, consignee, phone, address, expected_date, interval_date, province, city, district, total_price, real_pay,
+        excode, test_target, description, order_status, block_flag, create_time
         from gmair_drift.drift_order
         where 1 = 1
         <if test="orderId != null">

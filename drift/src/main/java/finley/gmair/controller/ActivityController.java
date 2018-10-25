@@ -1,9 +1,7 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ActivityForm;
+import finley.gmair.form.drift.AttachmentForm;
 import finley.gmair.form.drift.EXCodeCreateForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.service.*;
@@ -39,13 +37,13 @@ public class ActivityController {
     private EquipmentService equipmentService;
 
     @Autowired
-    private ChannelService channelService;
-
-    @Autowired
     private MachineService machineService;
 
     @Autowired
     private QrExCodeService qrExCodeService;
+
+    @Autowired
+    private AttachmentService attachmentService;
 
     /**
      * the method is used to create activity
@@ -57,16 +55,15 @@ public class ActivityController {
         ResultData result = new ResultData();
 
         //judge the parameter complete or not
-        if (StringUtils.isEmpty(form.getGoodsId()) || StringUtils.isEmpty(form.getActivityName()) || StringUtils.isEmpty(form.getRepositorySize())
-                || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getReservableDays()) || StringUtils.isEmpty(form.getStartTime())
-                || StringUtils.isEmpty(form.getEndTime())) {
+        if (StringUtils.isEmpty(form.getActivityName()) || StringUtils.isEmpty(form.getRepositorySize())
+                || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getReservableDays())
+                || StringUtils.isEmpty(form.getStartTime()) || StringUtils.isEmpty(form.getEndTime())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
         }
 
         //build activity entity
-        String goodsId = form.getGoodsId().trim();
         String activityName = form.getActivityName().trim();
         int repositorySize = form.getRepositorySize();
         double threshold = form.getThreshold();
@@ -75,7 +72,7 @@ public class ActivityController {
         Date start = sdf.parse(form.getStartTime());
         Date end = sdf.parse(form.getEndTime());
 
-        Activity activity = new Activity(goodsId, activityName, repositorySize, threshold, reservableDays, start, end);
+        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -94,15 +91,15 @@ public class ActivityController {
      * @return
      * */
     @PostMapping(value = "/equip/create")
-    public ResultData createEquipment(String equipmentName) {
+    public ResultData createEquipment(String equipmentName, double equipPrice) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(equipmentName)) {
+        if (StringUtils.isEmpty(equipmentName) || StringUtils.isEmpty(equipPrice)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
 
-        Equipment equipment = new Equipment(equipmentName);
+        Equipment equipment = new Equipment(equipmentName, equipPrice);
         ResultData response = equipmentService.createEquipment(equipment);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -111,6 +108,35 @@ public class ActivityController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * The method is called to create attach with some equipment
+     *
+     * @return
+     * */
+    @PostMapping(value = "/attach/create")
+    public ResultData createAttachment(AttachmentForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getEquipId()) || StringUtils.isEmpty(form.getAttachName()) || StringUtils.isEmpty(form.getAttachPrice())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        String equipId = form.getEquipId().trim();
+        String attachName = form.getAttachName().trim();
+        double attachPrice = form.getAttachPrice();
+        Attachment attachment = new Attachment(equipId, attachName, attachPrice);
+        ResultData response = attachmentService.create(attachment);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store attachment");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
         return result;
     }
 
@@ -200,7 +226,7 @@ public class ActivityController {
     public ResultData createEXCode(EXCodeCreateForm form) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getNum())
-                || StringUtils.isEmpty(form.getPrice()) || StringUtils.isEmpty(form.getChannelId())) {
+                || StringUtils.isEmpty(form.getPrice())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -217,24 +243,9 @@ public class ActivityController {
             return result;
         }
 
-        //verify channel correct or not
-        String channelId = form.getChannelId();
-        condition.clear();
-        condition.put("channelId", channelId);
-        condition.put("blockFlag", false);
-        response = channelService.fetchChannel(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("引流一致性错误，服务器不予处理");
-            return result;
-        }
-
-        DriftChannel channel = ((List<DriftChannel>) response.getData()).get(0);
-
-        String channelName = channel.getChannelName();
         int num = form.getNum();
         double price = form.getPrice();
-        response = exCodeService.createEXCode(activityId, channelName, num, price);
+        response = exCodeService.createEXCode(activityId, num, price);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             new Thread(() -> {
@@ -381,29 +392,27 @@ public class ActivityController {
      * @return
      * */
     @PostMapping(value = "/excode/exchange")
-    public ResultData excodeExchange(String channelId, String qrcode) {
+    public ResultData excodeExchange(String activityId, String qrcode) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(channelId)) {
+        if (StringUtils.isEmpty(activityId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
         //channelId不为空，判断channel
         Map<String, Object> condition = new HashMap<>();
-        condition.put("channelId", channelId);
+        condition.put("activityId", activityId);
         condition.put("blockFlag", false);
-        ResultData response = channelService.fetchChannel(condition);
+        ResultData response = activityService.fetchActivity(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Channel match errors");
+            result.setDescription("Activity match errors");
             return result;
         }
-
-        DriftChannel channel = ((List<DriftChannel>) response.getData()).get(0);
-        String channelName = channel.getChannelName();
-
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        String activityName = activity.getActivityName();
         condition.clear();
-        condition.put("channel", channelName);
+        condition.put("activityId", activityId);
         condition.put("status", 0);
         condition.put("blockFlag", false);
         response = exCodeService.fetchEXCode(condition);
@@ -413,8 +422,8 @@ public class ActivityController {
             return result;
         }
         EXCode code = ((List<EXCode>) response.getData()).get(0);
-        //根据channelName判断是哪类兑换
-        if (channelName.contains("果麦")) {
+        //根据activityName判断是哪类兑换
+        if (activityName.contains("果麦")) {
             if (StringUtils.isEmpty(qrcode)) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("No qrcode");

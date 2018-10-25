@@ -7,8 +7,6 @@ import java.util.Date;
 public class Activity extends Entity {
     private String activityId;
 
-    private String goodsId;
-
     private String activityName;
 
     private int repositorySize;
@@ -25,9 +23,8 @@ public class Activity extends Entity {
         super();
     }
 
-    public Activity(String goodsId, String activityName, int repositorySize, double threshold, int reservableDays, Date startTime, Date endTime) {
+    public Activity(String activityName, int repositorySize, double threshold, int reservableDays, Date startTime, Date endTime) {
         this();
-        this.goodsId = goodsId;
         this.activityName = activityName;
         this.repositorySize = repositorySize;
         this.threshold = threshold;
@@ -42,14 +39,6 @@ public class Activity extends Entity {
 
     public void setActivityId(String activityId) {
         this.activityId = activityId;
-    }
-
-    public String getGoodsId() {
-        return goodsId;
-    }
-
-    public void setGoodsId(String goodsId) {
-        this.goodsId = goodsId;
     }
 
     public String getActivityName() {

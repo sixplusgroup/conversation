@@ -36,25 +36,29 @@ public class OrderController {
     @Autowired
     private BillService billService;
 
+    @Autowired
+    private AttachmentService attachmentService;
+
+    @Autowired
+    private EquipmentService equipmentService;
     /**
      * The method is called to create order
      *
      * @return
      * */
     @PostMapping(value = "/create")
-    public ResultData createDriftOrder(DriftOrderForm form) {
+    public ResultData createDriftOrder(DriftOrderForm form) throws Exception {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getAddress()) || StringUtils.isEmpty(form.getConsignee())
-            || StringUtils.isEmpty(form.getPhone()) || StringUtils.isEmpty(form.getItemList()) || StringUtils.isEmpty(form.getProvince())
-            || StringUtils.isEmpty(form.getCity()) || StringUtils.isEmpty(form.getDistrict())) {
+        if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getConsumerId()) || StringUtils.isEmpty(form.getEquipId()) ||StringUtils.isEmpty(form.getAddress()) || StringUtils.isEmpty(form.getConsignee())
+            || StringUtils.isEmpty(form.getPhone()) || StringUtils.isEmpty(form.getExpectedDate()) || StringUtils.isEmpty(form.getIntervalDate()) || StringUtils.isEmpty(form.getDistrict())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-
         String activityId = form.getActivityId();
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
         ResultData response = activityService.fetchActivity(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -62,8 +66,9 @@ public class OrderController {
             return result;
         }
         Activity activity = ((List<Activity>) response.getData()).get(0);
-
         String activityName = activity.getActivityName();
+        String consumerId = form.getConsumerId();
+        String equipId = form.getEquipId();
         String consignee = form.getConsignee();
         String phone = form.getPhone();
         String address = form.getAddress();
@@ -72,27 +77,37 @@ public class OrderController {
         String province = form.getProvince();
         String city = form.getCity();
         String district = form.getDistrict();
+        String expectedDate = form.getExpectedDate();
+        int intervalDate = form.getIntervalDate();
         String description = form.getDescription();
-        JSONArray itemList = JSONObject.parseArray(form.getItemList());
-        List<DriftOrderItem> list = new ArrayList<>();
+        String testTarget = form.getTestTarget();
 
-        //calculate order price
-        double price = 0;
-        for (Object Item : itemList) {
-            DriftOrderItem orderItem = new DriftOrderItem();
-            JSONObject json = JSON.parseObject(JSON.toJSONString(Item));
-            String itemName = json.getString("commodityName");
-            int quantity = json.getInteger("commodityQuantity");
-            double itemPrice = json.getDouble("commodityPrice");
-            orderItem.setItemName(itemName);
-            orderItem.setQuantity(quantity);
-            orderItem.setItemPrice(itemPrice);
-            price += orderItem.getItemPrice() * orderItem.getQuantity();
-            list.add(orderItem);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date expected = sdf.parse(expectedDate);
+        condition.remove("activityId");
+        condition.put("equipId", equipId);
+        condition.put("blockFlag", false);
+        response = equipmentService.fetchEquipment(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Equipment match errors");
+            return result;
         }
-
-        DriftOrder driftOrder = new DriftOrder(list, consignee, phone, address, orderNo, province, city, district, description, activityName);
+        Equipment equipment = ((List<Equipment>) response.getData()).get(0);
+        double price = equipment.getEquipPrice();
+        response = attachmentService.fetch(condition);
+        DriftOrderItem item = new DriftOrderItem();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            Attachment attachment = ((List<Attachment>) response.getData()).get(0);
+            item.setItemName(attachment.getAttachName());
+            item.setItemPrice(attachment.getAttachPrice());
+            item.setQuantity(form.getItemQuantity());
+            price += item.getItemPrice() * item.getQuantity();
+        }
+        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, orderNo, province, city, district, description, activityName, expected, intervalDate);
+        driftOrder.setItem(item);
         driftOrder.setTotalPrice(price);
+        driftOrder.setTestTarget(testTarget);
         if (!StringUtils.isEmpty(form.getExcode())) {
             condition.clear();
             condition.put("codeValue", form.getExcode());
@@ -119,13 +134,11 @@ public class OrderController {
         } else {
             driftOrder.setRealPay(price);
         }
-
         //set time by orderDate
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
         LocalDate localDate = LocalDate.parse(orderDate, dateTimeFormatter);
         LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
         driftOrder.setCreateAt(Timestamp.valueOf(localDateTime));
-
         response = orderService.createDriftOrder(driftOrder);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

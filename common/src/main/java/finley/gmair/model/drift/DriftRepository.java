@@ -5,7 +5,7 @@ import finley.gmair.model.Entity;
 public class DriftRepository extends Entity {
     private String repositoryId;
 
-    private String goodsId;
+    private String equipId;
 
     private int poolSize;
 
@@ -13,9 +13,9 @@ public class DriftRepository extends Entity {
         super();
     }
 
-    public DriftRepository(String goodsId, int poolSize) {
+    public DriftRepository(String equipIdId, int poolSize) {
         this();
-        this.goodsId = goodsId;
+        this.equipId = equipIdId;
         this.poolSize = poolSize;
     }
 
@@ -27,12 +27,12 @@ public class DriftRepository extends Entity {
         this.repositoryId = repositoryId;
     }
 
-    public String getGoodsId() {
-        return goodsId;
+    public String getEquipId() {
+        return equipId;
     }
 
-    public void setGoodsId(String goodsId) {
-        this.goodsId = goodsId;
+    public void setEquipId(String equipId) {
+        this.equipId = equipId;
     }
 
     public int getPoolSize() {

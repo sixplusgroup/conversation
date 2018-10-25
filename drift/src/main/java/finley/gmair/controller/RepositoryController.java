@@ -26,14 +26,14 @@ public class RepositoryController {
     public ResultData createRepository(RepositoryForm form) {
         ResultData result = new ResultData();
         //judge the parameter complete or not
-        if (StringUtils.isEmpty(form.getGoodsId()) || StringUtils.isEmpty(form.getPoolSize())) {
+        if (StringUtils.isEmpty(form.getEquipId()) || StringUtils.isEmpty(form.getPoolSize())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
         }
 
         //build the repository entity
-        DriftRepository repository = new DriftRepository(form.getGoodsId(), form.getPoolSize());
+        DriftRepository repository = new DriftRepository(form.getEquipId(), form.getPoolSize());
         ResultData response = repositoryService.createRepository(repository);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

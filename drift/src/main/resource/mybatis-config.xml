@@ -4,17 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <mappers>
-        <mapper resource="mapper/goods.xml" />
         <mapper resource="mapper/activity.xml" />
         <mapper resource="mapper/repository.xml" />
-        <mapper resource="mapper/reservation.xml" />
         <mapper resource="mapper/excode.xml" />
-        <mapper resource="mapper/driftcommodity.xml" />
         <mapper resource="mapper/driftorderitem.xml" />
         <mapper resource="mapper/driftorder.xml" />
         <mapper resource="mapper/equipment.xml" />
         <mapper resource="mapper/equipactivity.xml" />
-        <mapper resource="mapper/channel.xml" />
         <mapper resource="mapper/qrexcode.xml" />
+        <mapper resource="mapper/attachment.xml" />
     </mappers>
 </configuration>

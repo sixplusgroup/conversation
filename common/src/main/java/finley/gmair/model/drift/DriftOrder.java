@@ -1,9 +1,11 @@
 package finley.gmair.model.drift;
 
-import java.util.List;
+import java.util.Date;
 
 public class DriftOrder extends AbstractDriftOrder {
     private String orderNo;
+
+    private String equipId;
 
     private String province;
 
@@ -17,9 +19,13 @@ public class DriftOrder extends AbstractDriftOrder {
 
     private double realPay;
 
+    private String testTarget;
+
     private String excode;
 
     private DriftOrderStatus status;
+
+    private DriftOrderItem item;
 
     public DriftOrder() {
         super();
@@ -31,16 +37,11 @@ public class DriftOrder extends AbstractDriftOrder {
         this.orderNo = orderNo;
     }
 
-    public DriftOrder(String orderNo, String province, String city, String district) {
-        this(orderNo);
-        this.province = province;
-        this.city = city;
-        this.district = district;
-    }
-
-    public DriftOrder(List<DriftOrderItem> list, String consignee, String phone, String address, String orderNo, String province, String city, String district, String description, String activity) {
-        super(list, consignee, phone, address);
+    public DriftOrder(String consumerId, String equipId, String consignee, String phone, String address, String orderNo, String province,
+                      String city, String district, String description, String activity, Date expectedDate, int intervalDate) {
+        super(consumerId, consignee, phone, address, expectedDate, intervalDate);
         this.orderNo = orderNo;
+        this.equipId = equipId;
         this.province = province;
         this.city = city;
         this.district = district;
@@ -55,6 +56,14 @@ public class DriftOrder extends AbstractDriftOrder {
 
     public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
+    }
+
+    public String getEquipId() {
+        return equipId;
+    }
+
+    public void setEquipId(String equipId) {
+        this.equipId = equipId;
     }
 
     public String getProvince() {
@@ -119,5 +128,21 @@ public class DriftOrder extends AbstractDriftOrder {
 
     public void setStatus(DriftOrderStatus status) {
         this.status = status;
+    }
+
+    public String getTestTarget() {
+        return testTarget;
+    }
+
+    public void setTestTarget(String testTarget) {
+        this.testTarget = testTarget;
+    }
+
+    public DriftOrderItem getItem() {
+        return item;
+    }
+
+    public void setItem(DriftOrderItem item) {
+        this.item = item;
     }
 }

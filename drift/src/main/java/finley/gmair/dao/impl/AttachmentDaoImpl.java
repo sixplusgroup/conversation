@@ -1,8 +1,8 @@
 package finley.gmair.dao.impl;
 
+import finley.gmair.dao.AttachmentDao;
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.GoodsDao;
-import finley.gmair.model.drift.Goods;
+import finley.gmair.model.drift.Attachment;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -12,12 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class GoodsDaoImpl extends BaseDao implements GoodsDao {
+public class AttachmentDaoImpl extends BaseDao implements AttachmentDao {
+
     @Override
-    public ResultData queryGoods(Map<String, Object> condition) {
+    public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<Goods> list = sqlSession.selectList("gmair.drift.goods.query", condition);
+            List<Attachment> list = sqlSession.selectList("gmair.drift.attachment.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -31,12 +32,12 @@ public class GoodsDaoImpl extends BaseDao implements GoodsDao {
     }
 
     @Override
-    public ResultData insertGoods(Goods goods) {
+    public ResultData insert(Attachment attachment) {
         ResultData result = new ResultData();
-        goods.setGoodsId(IDGenerator.generate("DRI"));
+        attachment.setAttachId(IDGenerator.generate("DAI"));
         try {
-            sqlSession.insert("gmair.drift.goods.insert", goods);
-            result.setData(goods);
+            sqlSession.insert("gmair.drift.attachment.insert", attachment);
+            result.setData(attachment);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -46,10 +47,10 @@ public class GoodsDaoImpl extends BaseDao implements GoodsDao {
     }
 
     @Override
-    public ResultData updateGoods(Map<String, Object> condition) {
+    public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.drift.goods.update", condition);
+            sqlSession.update("gmair.drift.attachment.update", condition);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

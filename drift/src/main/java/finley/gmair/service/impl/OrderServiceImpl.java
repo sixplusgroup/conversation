@@ -9,6 +9,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,13 +65,13 @@ public class OrderServiceImpl implements OrderService {
         }
         String orderId = ((DriftOrder) response.getData()).getOrderId();
         //insert order item
-        List<DriftOrderItem> list = order.getList();
-        new Thread(() -> {
-            for (DriftOrderItem item : list) {
-                item.setOrderId(orderId);
+        DriftOrderItem item = order.getItem();
+        if (!StringUtils.isEmpty(item.getItemName())) {
+            item.setOrderId(orderId);
+            new Thread(() -> {
                 orderItemDao.insertOrderItem(item);
-            }
-        }).start();
+            }).start();
+        }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
         return result;

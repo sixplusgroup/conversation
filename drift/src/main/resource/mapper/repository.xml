@@ -3,21 +3,21 @@
 <mapper namespace="gmair.drift.repository">
     <resultMap id="repositoryVo" type="finley.gmair.model.drift.DriftRepository">
         <result property="repositoryId" column="repository_id"></result>
-        <result property="goodsId" column="goods_id"></result>
+        <result property="equipId" column="equip_id"></result>
         <result property="poolSize" column="pool_size"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="repositoryVo">
-        select repository_id, goods_id, pool_size, block_flag, create_time
+        select repository_id, equip_id, pool_size, block_flag, create_time
         from gmair_drift.drift_repository
         where 1 = 1
         <if test="repositoryId != null">
             and repository_id = #{repositoryId}
         </if>
-        <if test="goodsId != null">
-            and goods_id = #{goodsId}
+        <if test="equipId != null">
+            and equip_id = #{equipId}
         </if>
         <if test="poolSize != null">
             and pool_size = #{poolSize}
@@ -29,16 +29,13 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftRepository" useGeneratedKeys="false">
-        insert into gmair_drift.drift_repository(repository_id, goods_id, pool_size, block_flag, create_time)
-        values (#{repositoryId}, #{goodsId}, #{poolSize}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_repository(repository_id, equip_id, pool_size, block_flag, create_time)
+        values (#{repositoryId}, #{equipId}, #{poolSize}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">
         UPDATE gmair_drift.drift_repository
         <set>
-            <if test="goodsId != null">
-                goods_id = #{goodsId},
-            </if>
             <if test="poolSize != null">
                 pool_size = #{poolSize},
             </if>

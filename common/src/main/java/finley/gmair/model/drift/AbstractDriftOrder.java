@@ -2,12 +2,13 @@ package finley.gmair.model.drift;
 
 import finley.gmair.model.Entity;
 
+import java.util.Date;
 import java.util.List;
 
 public abstract class AbstractDriftOrder extends Entity {
     private String orderId;
 
-    protected List<DriftOrderItem> list;
+    private String consumerId;
 
     private String consignee;
 
@@ -17,23 +18,22 @@ public abstract class AbstractDriftOrder extends Entity {
 
     private double totalPrice;
 
+    private Date expectedDate;
+
+    private int intervalDate;
+
     public AbstractDriftOrder() {
         super();
     }
 
-    public AbstractDriftOrder(List<DriftOrderItem> list) {
+    public AbstractDriftOrder(String consumerId, String consignee, String phone, String address, Date expectedDate, int intervalDate) {
         this();
-        this.list = list;
-        for (DriftOrderItem item : list) {
-            totalPrice += item.getItemPrice();
-        }
-    }
-
-    public AbstractDriftOrder(List<DriftOrderItem> list, String consignee, String phone, String address) {
-        this(list);
+        this.consumerId = consumerId;
         this.consignee = consignee;
         this.phone = phone;
         this.address = address;
+        this.expectedDate = expectedDate;
+        this.intervalDate = intervalDate;
     }
 
     public String getOrderId() {
@@ -44,12 +44,12 @@ public abstract class AbstractDriftOrder extends Entity {
         this.orderId = orderId;
     }
 
-    public List<DriftOrderItem> getList() {
-        return list;
+    public String getConsumerId() {
+        return consumerId;
     }
 
-    public void setList(List<DriftOrderItem> list) {
-        this.list = list;
+    public void setConsumerId(String consumerId) {
+        this.consumerId = consumerId;
     }
 
     public String getConsignee() {
@@ -82,5 +82,21 @@ public abstract class AbstractDriftOrder extends Entity {
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public Date getExpectedDate() {
+        return expectedDate;
+    }
+
+    public void setExpectedDate(Date expectedDate) {
+        this.expectedDate = expectedDate;
+    }
+
+    public int getIntervalDate() {
+        return intervalDate;
+    }
+
+    public void setIntervalDate(int intervalDate) {
+        this.intervalDate = intervalDate;
     }
 }

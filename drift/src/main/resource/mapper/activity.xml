@@ -3,7 +3,6 @@
 <mapper namespace="gmair.drift.activity">
     <resultMap id="activityVo" type="finley.gmair.model.drift.Activity">
         <result property="activityId" column="activity_id"></result>
-        <result property="goodsId" column="goods_id"></result>
         <result property="activityName" column="activity_name"></result>
         <result property="repositorySize" column="repository_size"></result>
         <result property="threshold" column="threshold"></result>
@@ -46,14 +45,11 @@
     </select>
 
     <select id="query" parameterType="java.util.Map" resultMap="activityVo">
-        select activity_id, goods_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, block_flag, create_time
+        select activity_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, block_flag, create_time
         from gmair_drift.drift_activity
         where 1 = 1
         <if test="activityId != null">
             and activity_id = #{activityId}
-        </if>
-        <if test="goodsId != null">
-            and goods_id = #{goodsId}
         </if>
         <if test="activityName != null">
             and activity_name = #{activityName}
@@ -80,8 +76,8 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.Activity">
-        insert into gmair_drift.drift_activity(activity_id, goods_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, block_flag, create_time)
-        values (#{activityId}, #{goodsId}, #{activityName}, #{repositorySize}, #{threshold}, #{reservableDays}, #{startTime}, #{endTime}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_activity(activity_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, block_flag, create_time)
+        values (#{activityId}, #{activityName}, #{repositorySize}, #{threshold}, #{reservableDays}, #{startTime}, #{endTime}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">

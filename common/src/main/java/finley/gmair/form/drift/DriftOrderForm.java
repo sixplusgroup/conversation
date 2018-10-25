@@ -3,9 +3,13 @@ package finley.gmair.form.drift;
 public class DriftOrderForm {
     private String orderNo;
 
+    private String consumerId;
+
     private String orderDate;
 
     private String activityId;
+
+    private String equipId;
 
     private String consignee;
 
@@ -21,9 +25,15 @@ public class DriftOrderForm {
 
     private String description;
 
+    private String expectedDate;
+
+    private int intervalDate;
+
+    private String testTarget;
+
     private String excode;
 
-    private String itemList;
+    private int itemQuantity;
 
     public String getOrderNo() {
         return orderNo;
@@ -31,6 +41,14 @@ public class DriftOrderForm {
 
     public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
+    }
+
+    public String getConsumerId() {
+        return consumerId;
+    }
+
+    public void setConsumerId(String consumerId) {
+        this.consumerId = consumerId;
     }
 
     public String getOrderDate() {
@@ -47,6 +65,14 @@ public class DriftOrderForm {
 
     public void setActivityId(String activityId) {
         this.activityId = activityId;
+    }
+
+    public String getEquipId() {
+        return equipId;
+    }
+
+    public void setEquipId(String equipId) {
+        this.equipId = equipId;
     }
 
     public String getConsignee() {
@@ -105,6 +131,30 @@ public class DriftOrderForm {
         this.description = description;
     }
 
+    public String getExpectedDate() {
+        return expectedDate;
+    }
+
+    public void setExpectedDate(String expectedDate) {
+        this.expectedDate = expectedDate;
+    }
+
+    public int getIntervalDate() {
+        return intervalDate;
+    }
+
+    public void setIntervalDate(int intervalDate) {
+        this.intervalDate = intervalDate;
+    }
+
+    public String getTestTarget() {
+        return testTarget;
+    }
+
+    public void setTestTarget(String testTarget) {
+        this.testTarget = testTarget;
+    }
+
     public String getExcode() {
         return excode;
     }
@@ -113,11 +163,11 @@ public class DriftOrderForm {
         this.excode = excode;
     }
 
-    public String getItemList() {
-        return itemList;
+    public int getItemQuantity() {
+        return itemQuantity;
     }
 
-    public void setItemList(String itemList) {
-        this.itemList = itemList;
+    public void setItemQuantity(int itemQuantity) {
+        this.itemQuantity = itemQuantity;
     }
 }

@@ -1,9 +1,6 @@
 package finley.gmair.form.drift;
 
 public class ActivityForm {
-
-    private String goodsId;
-
     private String activityName;
 
     private int repositorySize;
@@ -15,14 +12,6 @@ public class ActivityForm {
     private String startTime;
 
     private String endTime;
-
-    public String getGoodsId() {
-        return goodsId;
-    }
-
-    public void setGoodsId(String goodsId) {
-        this.goodsId = goodsId;
-    }
 
     public String getActivityName() {
         return activityName;
