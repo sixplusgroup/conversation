@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/formaldehyde/case/profile")
@@ -44,8 +45,15 @@ public class CaseProfileController {
         }
         //TODO 检查是否插入过这条记录
 
+        SimpleDateFormat sDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        try {
+            date = sDateFormat.parse(checkDate);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         //创建case
-        CaseProfile caseProfile = new CaseProfile(caseHolder, equipmentId, checkDuration, Timestamp.valueOf(checkDate), caseCityId, caseCityName, caseLocation, checkTrace, CaseStatus.COMMITED, videoId);
+        CaseProfile caseProfile = new CaseProfile(caseHolder, equipmentId, checkDuration, date, caseCityId, caseCityName, caseLocation, checkTrace, CaseStatus.COMMITED, videoId);
         ResultData response = caseProfileService.create(caseProfile);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

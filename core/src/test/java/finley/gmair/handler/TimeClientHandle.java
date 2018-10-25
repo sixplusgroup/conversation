@@ -157,7 +157,7 @@ public class TimeClientHandle implements Runnable{
         if(flag==1){
             CID = new byte[]{0x0E};
             LEN = new byte[]{0x01};
-            data = new byte[]{0x25};
+            data = new byte[]{0x10};
         }
         //测试0x0F(screen,警示灯)时,flag=2
         else if(flag==2){

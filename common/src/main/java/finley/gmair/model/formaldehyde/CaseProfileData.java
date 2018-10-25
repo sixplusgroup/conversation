@@ -3,6 +3,7 @@ package finley.gmair.model.formaldehyde;
 import finley.gmair.model.Entity;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public class CaseProfileData extends Entity {
@@ -10,7 +11,7 @@ public class CaseProfileData extends Entity {
     private String caseHolder;
     private String equipmentId;
     private String checkDuration;
-    private Timestamp checkDate;
+    private Date checkDate;
     private String caseCityId;
     private String caseCityName;
     private String caseLocation;
@@ -22,7 +23,7 @@ public class CaseProfileData extends Entity {
         super();
     }
 
-    public CaseProfileData(String caseId, String caseHolder, String equipmentId, String checkDuration, Timestamp checkDate, String caseCityId, String caseCityName, String caseLocation, List<Object> checkTrace, CaseStatus caseStatus, String videoId) {
+    public CaseProfileData(String caseId, String caseHolder, String equipmentId, String checkDuration, Date checkDate, String caseCityId, String caseCityName, String caseLocation, List<Object> checkTrace, CaseStatus caseStatus, String videoId) {
         super();
         this.caseId = caseId;
         this.caseHolder = caseHolder;
@@ -69,11 +70,11 @@ public class CaseProfileData extends Entity {
         this.checkDuration = checkDuration;
     }
 
-    public Timestamp getCheckDate() {
+    public Date getCheckDate() {
         return checkDate;
     }
 
-    public void setCheckDate(Timestamp checkDate) {
+    public void setCheckDate(Date checkDate) {
         this.checkDate = checkDate;
     }
 
