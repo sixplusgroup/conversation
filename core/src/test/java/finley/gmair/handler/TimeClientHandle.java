@@ -140,7 +140,7 @@ public class TimeClientHandle implements Runnable{
         // flag = 0  => 发送数据报文
         // flag = 1  => 发送部分数据报文(查询滤网pm25探头记录的值)
         // flag = 2  => 发送设置报文
-        int flag = 1;
+        int flag = 0;
 
         //测试machine_status时,flag=0
         byte[] CTF = new byte[]{0x03};

@@ -32,4 +32,7 @@ public interface AirQualityService {
 
     @GetMapping("/airquality/weekly/cityAqi/{cityId}")
     ResultData getWeeklyCityAqi(@PathVariable("cityId") String cityId);
+
+    @GetMapping("/airquality/province/{provinceId}")
+    ResultData provinceAirQuality(@PathVariable("provinceId") String provinceId);
 }

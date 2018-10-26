@@ -26,4 +26,16 @@ public interface MachineService {
                                 @RequestParam("actionName") String actionName,
                                 @RequestParam("actionOperator") String actionOperator,
                                 @RequestParam("commandValue") String commandValue);
+
+    @GetMapping("/machine/qrcode/checkonline")
+    ResultData checkOnline(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/qrcode/model")
+    ResultData getModel(@RequestParam("codeValue") String codeValue);
+
+    @GetMapping("/machine/status/byuid")
+    ResultData machineStatus(@RequestParam("uid") String uid);
+
+    @GetMapping("machine/map/fetch")
+    ResultData fetchMachineLatLngList();
 }
