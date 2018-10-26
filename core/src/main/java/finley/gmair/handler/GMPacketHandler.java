@@ -98,7 +98,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                 try {
                     System.arraycopy(request, FIRST_PACKET_LEN, second, 0, SECOND_PACKET_LEN);
                     handleRequest(second, ctx);
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -158,14 +158,14 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                         communicationService.create(status);
                         CorePool.getComExecutor().execute(new Thread(() -> {
                             LimitQueue<MachineStatus> queue = null;
-                            if(redisService.exists(uid)==false){
+                            if (redisService.exists(uid) == false) {
                                 queue = new LimitQueue<>(120);
                                 queue.offer(status);
-                            }else{
-                                queue = (LimitQueue<MachineStatus>)redisService.get(uid);
+                            } else {
+                                queue = (LimitQueue<MachineStatus>) redisService.get(uid);
                                 queue.offer(status);
                             }
-                            redisService.set(uid,queue,(long) 120);
+                            redisService.set(uid, queue, (long) 120);
                             //redisService.set(uid, status, (long) 120);
                         }));
                     } else {
@@ -271,14 +271,14 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     communicationService.create(status);                //把接收到的全存mongo数据库
                     CorePool.getComExecutor().execute(new Thread(() -> {
                         LimitQueue<finley.gmair.model.machine.v1.MachineStatus> queue = null;
-                        if(redisService.exists(uid)==false){
+                        if (redisService.exists(uid) == false) {
                             queue = new LimitQueue<>(720);
                             queue.offer(machineV1Status);
-                        }else{
-                            queue = (LimitQueue<finley.gmair.model.machine.v1.MachineStatus>)redisService.get(uid);
+                        } else {
+                            queue = (LimitQueue<finley.gmair.model.machine.v1.MachineStatus>) redisService.get(uid);
                             queue.offer(machineV1Status);
                         }
-                        redisService.set(uid,queue,(long) 120);
+                        redisService.set(uid, queue, (long) 120);
 //                        redisService.set(uid, machineV1Status, (long) 120); //存入缓存
                     }));
                 }
