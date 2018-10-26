@@ -1,6 +1,6 @@
 package finley.gmair.job;
 
-import finley.gmair.pool.CorePool;
+import finley.gmair.pool.TimingPool;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.MachineFeignService;
 import org.quartz.Job;
@@ -23,11 +23,11 @@ public class MonthlyJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             airQualityFeignService.scheduleMonthly();
         }));
 
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             machineFeignService.handleMachineStatusMonthly();
         }));
     }

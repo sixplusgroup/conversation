@@ -1,6 +1,6 @@
 package finley.gmair.job;
 
-import finley.gmair.pool.CorePool;
+import finley.gmair.pool.TimingPool;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.ExpressFeignService;
 import finley.gmair.service.MachineFeignService;
@@ -32,25 +32,25 @@ public class HourlyJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         System.out.println("start schedule hourly..");
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             airQualityFeignService.scheduleHourly();
         }));
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             expressFeignService.updateOrderStatus();
         }));
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             expressFeignService.updateParcelStatus();
         }));
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             machineFeignService.handleMachineStatusHourly();
         }));
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             machineFeignService.probePartialPM2_5Hourly();
         }));
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             machineModeFeignService.handleHourlyPowerSaving();
         }));
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             machineFeignService.turnOffScreenHourly();
         }));
     }

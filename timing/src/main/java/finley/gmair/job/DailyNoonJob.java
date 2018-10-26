@@ -1,6 +1,6 @@
 package finley.gmair.job;
 
-import finley.gmair.pool.CorePool;
+import finley.gmair.pool.TimingPool;
 import finley.gmair.service.MachineFeignService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -20,7 +20,7 @@ public class DailyNoonJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             machineFeignService.turnOnScreenDaily();
         }));
     }

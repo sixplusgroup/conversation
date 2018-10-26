@@ -85,6 +85,7 @@ public class MachinePartialStatusController {
                 }
             }
         }).start();
+        System.out.println("success to probe partial pm2_5 hourly");
         return result;
     }
 

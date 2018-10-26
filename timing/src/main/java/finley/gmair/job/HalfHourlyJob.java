@@ -1,7 +1,6 @@
 package finley.gmair.job;
 
-import finley.gmair.model.air.AirQuality;
-import finley.gmair.pool.CorePool;
+import finley.gmair.pool.TimingPool;
 import finley.gmair.service.AirQualityFeignService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -18,10 +17,10 @@ public class HalfHourlyJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             airQualityFeignService.cityCrawler();
         }));
-        CorePool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
             airQualityFeignService.monitorStationCrawler();
         }));
     }
