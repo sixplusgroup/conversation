@@ -6,7 +6,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan({"finley.gmair.config", "finley.gmair.job"})
+@ComponentScan({"finley.gmair.config", "finley.gmair.job", "finley.gmair.controller"})
 @EnableFeignClients({"finley.gmair.service"})
 public class TimeApplication {
 

@@ -1,5 +1,6 @@
 package finley.gmair.job;
 
+import finley.gmair.pool.CorePool;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.MachineFeignService;
 import org.quartz.Job;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class DailyJob implements Job{
+public class DailyJob implements Job {
 
     @Autowired
     private AirQualityFeignService airQualityFeignService;
@@ -23,8 +24,14 @@ public class DailyJob implements Job{
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        airQualityFeignService.scheduleDaily();
-        machineFeignService.handleMachineStatusDaily();
-        machineFeignService.savePartialPm25Daily();
+        CorePool.getTimingExecutor().execute(new Thread(() -> {
+            airQualityFeignService.scheduleDaily();
+        }));
+        CorePool.getTimingExecutor().execute(new Thread(() -> {
+            machineFeignService.handleMachineStatusDaily();
+        }));
+        CorePool.getTimingExecutor().execute(new Thread(() -> {
+            machineFeignService.savePartialPm25Daily();
+        }));
     }
 }

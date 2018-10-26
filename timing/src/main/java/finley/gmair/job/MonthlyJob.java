@@ -1,5 +1,6 @@
 package finley.gmair.job;
 
+import finley.gmair.pool.CorePool;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.MachineFeignService;
 import org.quartz.Job;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
  * monthly job executor
  */
 @Component
-public class MonthlyJob implements Job{
+public class MonthlyJob implements Job {
 
     @Autowired
     private AirQualityFeignService airQualityFeignService;
@@ -22,7 +23,12 @@ public class MonthlyJob implements Job{
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        airQualityFeignService.scheduleMonthly();
-        machineFeignService.handleMachineStatusMonthly();
+        CorePool.getTimingExecutor().execute(new Thread(() -> {
+            airQualityFeignService.scheduleMonthly();
+        }));
+
+        CorePool.getTimingExecutor().execute(new Thread(() -> {
+            machineFeignService.handleMachineStatusMonthly();
+        }));
     }
 }

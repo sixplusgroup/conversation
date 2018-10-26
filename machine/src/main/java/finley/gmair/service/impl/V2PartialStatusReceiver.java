@@ -41,13 +41,14 @@ public class V2PartialStatusReceiver {
         MachinePartialStatus machinePartialStatus = (MachinePartialStatus) resultData.getData();
         int pm2_5 = (int) machinePartialStatus.getData();
 
-
         //check if machineId exist in pm_2_5_latest table
         //the machineId exist,just update
         OutPm25Hourly outPm25Hourly = new OutPm25Hourly(uid, pm2_5,LocalDateTime.now().getHour());
-        outPm25HourlyDao.insert(outPm25Hourly);
-
-
+        try {
+            outPm25HourlyDao.insert(outPm25Hourly);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 }

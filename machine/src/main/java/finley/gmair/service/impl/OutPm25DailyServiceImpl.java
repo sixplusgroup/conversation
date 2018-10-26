@@ -37,16 +37,16 @@ public class OutPm25DailyServiceImpl implements OutPm25DailyService {
         ResultData response = outPm25DailyDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to fetch out pm2.5 daily from database.");
+            result.setDescription("Fail to fetch from database.");
             return result;
         }
         else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No boundary pm2.5 found.");
+            result.setDescription("No machine found should be light.");
             return result;
         }
         result.setData(response.getData());
-        result.setDescription("success to find pm2.5");
+        result.setDescription("success to find machine should be light.");
         return result;
     }
 

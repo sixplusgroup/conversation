@@ -27,7 +27,15 @@
 
     <update id="update" parameterType="java.util.Map">
         update gmair_machine.filter_light
-        set light_status = #{lightStatus}
+        <set>
+            <if test="lightStatus != null">
+                light_status = #{lightStatus},
+            </if>
+            <if test="createAt != null">
+                create_time = #{createAt},
+            </if>
+            machine_id = #{machineId}
+        </set>
         where machine_id = #{machineId}
     </update>
 </mapper>
