@@ -57,7 +57,7 @@ public class ActivityController {
         //judge the parameter complete or not
         if (StringUtils.isEmpty(form.getActivityName()) || StringUtils.isEmpty(form.getRepositorySize())
                 || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getReservableDays())
-                || StringUtils.isEmpty(form.getStartTime()) || StringUtils.isEmpty(form.getEndTime())) {
+                || StringUtils.isEmpty(form.getStartTime()) || StringUtils.isEmpty(form.getEndTime()) || StringUtils.isEmpty(form.getIntroduction())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -71,8 +71,8 @@ public class ActivityController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date start = sdf.parse(form.getStartTime());
         Date end = sdf.parse(form.getEndTime());
-
-        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end);
+        String introduction = form.getIntroduction();
+        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -501,7 +501,7 @@ public class ActivityController {
      * @return
      * */
     @PostMapping(value = "/update")
-    public ResultData updateActivity(String activityId, Integer repositorySize, Double threshold, Integer reservableDays, String endTime) {
+    public ResultData updateActivity(String activityId, Integer repositorySize, Double threshold, Integer reservableDays, String endTime, String introduction) {
          ResultData result = new ResultData();
          Map<String, Object> condition = new HashMap<>();
          //if no activityId, don't allow to update
@@ -523,6 +523,9 @@ public class ActivityController {
          }
          if (!StringUtils.isEmpty(endTime)) {
              condition.put("endTime", endTime);
+         }
+         if (!StringUtils.isEmpty(introduction)) {
+             condition.put("introduction", introduction);
          }
 
          ResultData response = activityService.modifyActivity(condition);
