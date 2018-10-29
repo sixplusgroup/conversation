@@ -49,7 +49,7 @@ public class ActivityController {
      * the method is used to create activity
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/create")
     public ResultData createDriftActivity(ActivityForm form) throws Exception {
         ResultData result = new ResultData();
@@ -89,7 +89,7 @@ public class ActivityController {
      * the method is called to create equipment
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/equip/create")
     public ResultData createEquipment(String equipmentName, double equipPrice) {
         ResultData result = new ResultData();
@@ -115,7 +115,7 @@ public class ActivityController {
      * The method is called to create attach with some equipment
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/attach/create")
     public ResultData createAttachment(AttachmentForm form) {
         ResultData result = new ResultData();
@@ -145,7 +145,7 @@ public class ActivityController {
      * parameters: 1.activityId, 2.equipmentId
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/equipactivity/bind/create")
     public ResultData bind(String activityId, String equipmentId) {
         ResultData result = new ResultData();
@@ -191,7 +191,7 @@ public class ActivityController {
      * the method is used to select actual activity by activityId
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/getActivity/byId")
     public ResultData getActivityById(String activityId) {
         ResultData result = new ResultData();
@@ -221,7 +221,7 @@ public class ActivityController {
      * the method is called to create excode if activity needs
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/excode/create")
     public ResultData createEXCode(EXCodeCreateForm form) {
         ResultData result = new ResultData();
@@ -293,7 +293,7 @@ public class ActivityController {
 
         //insert real data to table
         List<EXCode> exCodes = (List<EXCode>) response.getData();
-        for (int row =1, i = 0; i < exCodes.size(); i++, row++) {
+        for (int row = 1, i = 0; i < exCodes.size(); i++, row++) {
             EXCode code = exCodes.get(i);
             Row current = sheet.createRow(row);
             Cell serial = current.createCell(0);
@@ -388,9 +388,10 @@ public class ActivityController {
      * The method is called to exchange excoede
      * 1. check channel correct or not
      * 2. if buy machine, provide qrcode, store to database
-     *    if activityVIP, only provide channelId
+     * if activityVIP, only provide channelId
+     *
      * @return
-     * */
+     */
     @PostMapping(value = "/excode/exchange")
     public ResultData excodeExchange(String activityId, String qrcode) {
         ResultData result = new ResultData();
@@ -399,7 +400,7 @@ public class ActivityController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        //channelId不为空，判断channel
+
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
         condition.put("blockFlag", false);
@@ -409,8 +410,7 @@ public class ActivityController {
             result.setDescription("Activity match errors");
             return result;
         }
-        Activity activity = ((List<Activity>) response.getData()).get(0);
-        String activityName = activity.getActivityName();
+
         condition.clear();
         condition.put("activityId", activityId);
         condition.put("status", 0);
@@ -422,34 +422,32 @@ public class ActivityController {
             return result;
         }
         EXCode code = ((List<EXCode>) response.getData()).get(0);
-        //根据activityName判断是哪类兑换
-        if (activityName.contains("果麦")) {
-            if (StringUtils.isEmpty(qrcode)) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("No qrcode");
-                return result;
-            }
-            response = machineService.checkQrcode(qrcode);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("Qrcode errors");
-                return result;
-            }
-            condition.clear();
-            condition.put("qrcode", qrcode);
-            response = qrExCodeService.fetchQrExCode(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("The qrcode is already exchanged");
-                return result;
-            }
 
-            String codeValue = code.getCodeValue();
-            QR_EXcode qr_eXcode = new QR_EXcode(qrcode, codeValue);
-            new Thread(() -> {
-                qrExCodeService.createQrExCode(qr_eXcode);
-            }).start();
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("No qrcode");
+            return result;
         }
+        response = machineService.checkQrcode(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Qrcode errors");
+            return result;
+        }
+        condition.clear();
+        condition.put("qrcode", qrcode);
+        response = qrExCodeService.fetchQrExCode(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("The qrcode is already exchanged");
+            return result;
+        }
+
+        String codeValue = code.getCodeValue();
+        QR_EXcode qr_eXcode = new QR_EXcode(qrcode, codeValue);
+        new Thread(() -> {
+            qrExCodeService.createQrExCode(qr_eXcode);
+        }).start();
         condition.clear();
         condition.put("codeId", code.getCodeId());
         condition.put("status", 1);
@@ -469,28 +467,28 @@ public class ActivityController {
      * the method is used to select the activity list
      *
      * @return
-     * */
+     */
     @GetMapping(value = "/list")
     public ResultData getActivity() {
-         ResultData result = new ResultData();
-         Map<String, Object> condition = new HashMap<>();
-         condition.put("blockFlag", false);
-         ResultData response = activityService.fetchActivity(condition);
-         switch (response.getResponseCode()) {
-             case RESPONSE_NULL:
-                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                 result.setDescription("No activity found");
-                 break;
-             case RESPONSE_ERROR:
-                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                 result.setDescription("Query error,try again later");
-                 break;
-             case RESPONSE_OK:
-                 result.setResponseCode(ResponseCode.RESPONSE_OK);
-                 result.setData(response.getData());
-                 break;
-         }
-         return result;
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No activity found");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Query error,try again later");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
+        return result;
     }
 
     /**
@@ -499,43 +497,43 @@ public class ActivityController {
      * 1. size, 2. threshold, 3. reservable_days, 4. end_time
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/update")
     public ResultData updateActivity(String activityId, Integer repositorySize, Double threshold, Integer reservableDays, String endTime, String introduction) {
-         ResultData result = new ResultData();
-         Map<String, Object> condition = new HashMap<>();
-         //if no activityId, don't allow to update
-         if (StringUtils.isEmpty(activityId)) {
-             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-             result.setDescription("Can't update activity with no activityId");
-             return result;
-         }
-         condition.put("activityId", activityId);
-         //put exist parameters to map
-         if (!StringUtils.isEmpty(repositorySize)) {
-             condition.put("repositorySize", repositorySize);
-         }
-         if (!StringUtils.isEmpty(threshold)) {
-             condition.put("threshold", threshold);
-         }
-         if (!StringUtils.isEmpty(reservableDays)) {
-             condition.put("reservableDays", reservableDays);
-         }
-         if (!StringUtils.isEmpty(endTime)) {
-             condition.put("endTime", endTime);
-         }
-         if (!StringUtils.isEmpty(introduction)) {
-             condition.put("introduction", introduction);
-         }
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        //if no activityId, don't allow to update
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Can't update activity with no activityId");
+            return result;
+        }
+        condition.put("activityId", activityId);
+        //put exist parameters to map
+        if (!StringUtils.isEmpty(repositorySize)) {
+            condition.put("repositorySize", repositorySize);
+        }
+        if (!StringUtils.isEmpty(threshold)) {
+            condition.put("threshold", threshold);
+        }
+        if (!StringUtils.isEmpty(reservableDays)) {
+            condition.put("reservableDays", reservableDays);
+        }
+        if (!StringUtils.isEmpty(endTime)) {
+            condition.put("endTime", endTime);
+        }
+        if (!StringUtils.isEmpty(introduction)) {
+            condition.put("introduction", introduction);
+        }
 
-         ResultData response = activityService.modifyActivity(condition);
-         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-             result.setDescription("Fail to update activity");
-             return result;
-         }
-         result.setResponseCode(ResponseCode.RESPONSE_OK);
-         return result;
+        ResultData response = activityService.modifyActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update activity");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        return result;
     }
 
     @GetMapping(value = "/getEquip/by/{activityId}")
@@ -560,6 +558,18 @@ public class ActivityController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
+        return result;
+    }
+
+    @GetMapping(value = "/excode/list")
+    public ResultData getlist() {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        List<Object> list = new ArrayList<>();
+        list.add(EXCodeStatus.CREATED.getValue());
+        list.add(EXCodeStatus.EXCHANGED.getValue());
+        condition.put("status", list);
+        result = exCodeService.fetchEXCode(condition);
         return result;
     }
 }

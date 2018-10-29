@@ -64,14 +64,15 @@ public class OrderServiceImpl implements OrderService {
             return result;
         }
         String orderId = ((DriftOrder) response.getData()).getOrderId();
+        order.setOrderId(orderId);
         //insert order item
-        DriftOrderItem item = order.getItem();
-        if (!StringUtils.isEmpty(item.getItemName())) {
-            item.setOrderId(orderId);
-            new Thread(() -> {
+        List<DriftOrderItem> list = order.getList();
+        new Thread(() -> {
+            for (DriftOrderItem item : list) {
+                item.setOrderId(orderId);
                 orderItemDao.insertOrderItem(item);
-            }).start();
-        }
+            }
+        }).start();
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
         return result;

@@ -1,6 +1,7 @@
 package finley.gmair.model.drift;
 
 import java.util.Date;
+import java.util.List;
 
 public class DriftOrder extends AbstractDriftOrder {
     private String orderNo;
@@ -25,7 +26,7 @@ public class DriftOrder extends AbstractDriftOrder {
 
     private DriftOrderStatus status;
 
-    private DriftOrderItem item;
+    private List<DriftOrderItem> list;
 
     public DriftOrder() {
         super();
@@ -138,11 +139,11 @@ public class DriftOrder extends AbstractDriftOrder {
         this.testTarget = testTarget;
     }
 
-    public DriftOrderItem getItem() {
-        return item;
+    public List<DriftOrderItem> getList() {
+        return list;
     }
 
-    public void setItem(DriftOrderItem item) {
-        this.item = item;
+    public void setList(List<DriftOrderItem> list) {
+        this.list = list;
     }
 }
