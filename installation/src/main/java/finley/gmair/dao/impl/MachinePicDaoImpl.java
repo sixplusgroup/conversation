@@ -1,8 +1,11 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.TempFileMapDao;
-import finley.gmair.model.resource.FileMap;
+import finley.gmair.dao.MachinePicDao;
+import finley.gmair.dao.PicDao;
+import finley.gmair.model.installation.MachinePic;
+import finley.gmair.model.installation.Member;
+import finley.gmair.model.installation.Pic;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -12,16 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Repository
-public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
 
+@Repository
+public class MachinePicDaoImpl extends BaseDao implements MachinePicDao {
     @Override
-    public ResultData insertTempFileMap(FileMap tempFileMap) {
+    public ResultData insertMachinePic(MachinePic machinePic) {
+
         ResultData result = new ResultData();
-        tempFileMap.setFileId(IDGenerator.generate("RTF"));
+        machinePic.setRecordId(IDGenerator.generate("RCD"));
         try {
-            sqlSession.insert("gmair.resource.tempfilemap.insert", tempFileMap);
-            result.setData(tempFileMap);
+            sqlSession.insert("gmair.installation.install_machine_pic.insert", machinePic);
+            result.setData(machinePic);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
@@ -30,15 +34,11 @@ public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
     }
 
     @Override
-    public ResultData queryTempFileMap(Map<String, Object> condition) {
+    public ResultData queryMachinePic(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        List<FileMap> list = new ArrayList<>();
+        List<MachinePic> list = new ArrayList<>();
         try {
-            list = sqlSession.selectList("gmair.resource.tempfilemap.query", condition);
-            if (list.size() == 0) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                return result;
-            }
+            list = sqlSession.selectList("gmair.installation.install_machine_pic.query", condition);
             result.setData(list);
 
         } catch (Exception e) {
@@ -49,20 +49,20 @@ public class TempFileMapDaoImpl extends BaseDao implements TempFileMapDao {
         if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("No tempfilemap found");
+                result.setDescription("No pic found");
             } else {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("Success to found tempfilemap");
+                result.setDescription("Success to found pic");
             }
         }
         return result;
     }
 
     @Override
-    public ResultData deleteTempFileMap(Map<String, Object> condition) {
+    public ResultData deleteMachinePic(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.delete("gmair.resource.tempfilemap.delete", condition);
+            sqlSession.delete("gmair.installation.install_machine_pic.delete", condition);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

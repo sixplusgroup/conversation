@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.installation.install_machine_pic">
+    <resultMap id="install_machine_pic" type="finley.gmair.model.installation.MachinePic">
+        <result property="recordId" column="record_id" />
+        <result property="codeValue" column="code_value" />
+        <result property="picUrl" column="pic_url" />
+        <result property="blockFlag" column="block_flag" />
+        <result property="createAt" column="create_time" />
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.installation.MachinePic" useGeneratedKeys="false">
+        INSERT INTO gmair_install.install_machine_pic
+        VALUES(
+          #{recordId},#{codeValue},#{picUrl},#{blockFlag},#{createAt}
+        )
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="install_machine_pic">
+        SELECT record_id,code_value,pic_url,block_flag,create_time
+        FROM gmair_install.install_machine_pic
+        WHERE 1 = 1
+        <if test="recordId != null">
+            AND record_id = #{recordId}
+        </if>
+        <if test="codeValue != null">
+            AND code_value = #{codeValue}
+        </if>
+        <if test="picUrl != null">
+            AND pic_url = #{picUrl}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <delete id="delete" parameterType="java.util.Map">
+        DELETE FROM gmair_install.install_machine_pic
+        WHERE 0=1
+        <if test="picUrl != null">
+            OR pic_url = #{picUrl}
+        </if>
+    </delete>
+</mapper>

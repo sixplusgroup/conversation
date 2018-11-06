@@ -198,3 +198,13 @@ ALTER TABLE `gmair_install`.`install_feedback`
 
 ALTER TABLE `gmair_install`.`install_cancel_feedback`
 RENAME TO  `gmair_install`.`install_feedback` ;
+
+
+#2018.11.06
+CREATE TABLE `gmair_install`.`install_machine_pic` (
+  `record_id` VARCHAR(20) NOT NULL,
+  `code_value` VARCHAR(45) NOT NULL,
+  `pic_url` VARCHAR(100) NOT NULL,
+  `block_flag` VARCHAR(45) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`record_id`));

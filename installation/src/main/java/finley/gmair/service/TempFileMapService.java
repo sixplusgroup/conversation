@@ -16,7 +16,7 @@ public interface TempFileMapService {
     @RequestMapping(method = RequestMethod.GET, value = "/resource/tempfilemap/fetchpath")
     ResultData actualPath(@RequestParam("fileUrl") String fileUrl);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/resource/tempfilemap/deletevalid")
+    @RequestMapping(method = RequestMethod.POST, value = "/resource/tempfilemap/deletevalid")
     ResultData deleteValidPicMapFromTempFileMap(@RequestParam("fileUrl") String fileUrl);
 
     @RequestMapping(method = RequestMethod.GET, value = "/resource/tempfilemap/getinvalid")

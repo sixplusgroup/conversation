@@ -133,4 +133,14 @@ public class InstallController {
     public ResultData recoList(@PathVariable("orderId") String orderId) {
         return installService.orderReconnaissanceList(orderId);
     }
+
+    @PostMapping("/machine/pic/create")
+    public ResultData createMachinePic(String codeValue, String picUrl1, String picUrl2, String picUrl3) {
+        return installService.createMachinePic(codeValue, picUrl1, picUrl2, picUrl3);
+    }
+
+    @GetMapping("/machine/pic/fetch")
+    public ResultData fetchMachinePic(String codeValue){
+        return installService.fetchMachinePicByQRcode(codeValue);
+    }
 }

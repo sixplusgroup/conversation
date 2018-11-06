@@ -71,4 +71,13 @@ public interface InstallService {
 
     @GetMapping(value = "/installation/reconnaissance/order/{orderId}")
     ResultData orderReconnaissanceList(@PathVariable("orderId") String orderId);
+
+    @PostMapping("/installation/machine/pic/create")
+    ResultData createMachinePic(@RequestParam("codeValue")String codeValue,
+                                @RequestParam("picUrl1") String picUrl1,
+                                @RequestParam("picUrl2") String picUrl2,
+                                @RequestParam("picUrl3") String picUrl3);
+
+    @GetMapping("/installation/machine/pic/fetch")
+    ResultData fetchMachinePicByQRcode(@RequestParam("codeValue") String codeValue);
 }

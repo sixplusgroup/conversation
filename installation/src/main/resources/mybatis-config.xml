@@ -11,5 +11,6 @@
         <mapper resource="mapper/team.xml" />
         <mapper resource="mapper/pic.xml" />
         <mapper resource="mapper/reconnaissance/reconnaissance.xml" />
+        <mapper resource="mapper/install_machine_pic.xml" />
     </mappers>
 </configuration>
