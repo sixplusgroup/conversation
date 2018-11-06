@@ -41,7 +41,7 @@ public class MachinePartialStatusController {
     @Autowired
     private OutPm25HourlyService outPm25HourlyService;
 
-    Map<String, Integer> pm25Over25Count = new HashMap<>();
+    private Map<String, Integer> pm25Over25Count = new HashMap<>();
 
     @PostConstruct
     public void loadDataFromDatabase() {
@@ -68,6 +68,7 @@ public class MachinePartialStatusController {
             Map<String, Object> condition = new HashMap<>();
             condition.put("blockFlag", false);
             ResultData response = machineQrcodeBindService.fetch(condition);
+            //todo
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 List<MachineQrcodeBindVo> machineQrcodeBindVoList = (List<MachineQrcodeBindVo>) response.getData();
                 //foreach the uid, send the packet to the online machine
@@ -101,6 +102,7 @@ public class MachinePartialStatusController {
                 overPm25Limit = ((List<FilterLimitConfig>) response.getData()).get(0).getOverPm25Limit();
             }
 
+            //todo mysql
             //然后,从Mongo获取当天所有机器 pm25的统计平均值
             response = machinePm25Service.fetchAveragePm25();
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -150,6 +152,7 @@ public class MachinePartialStatusController {
             overCountLimit = ((List<FilterLimitConfig>) response.getData()).get(0).getOverCountLimit();
         }
 
+        //todo
         //获取今天零点的时间戳
         Long currentTimestamps = System.currentTimeMillis();
         Long oneDayTimestamps = Long.valueOf(60 * 60 * 24 * 1000);
@@ -230,7 +233,6 @@ public class MachinePartialStatusController {
                         continue;
                     try {
                         if (coreV2Service.isOnline(machineId).getResponseCode() == ResponseCode.RESPONSE_OK) {
-                            coreV2Service.configScreen(machineId, 0);
                             condition.clear();
                             condition.put("machineId", machineId);
                             condition.put("blockFlag", false);
@@ -242,6 +244,7 @@ public class MachinePartialStatusController {
                             } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                                 filterLightService.create(new FilterLight(machineId, false));
                             }
+                            coreV2Service.configScreen(machineId, 0);
                         }
                         Thread.sleep(50);
                     } catch (Exception e) {

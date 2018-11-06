@@ -20,4 +20,13 @@ public class ScheduleController {
         }).start();
         return result;
     }
+
+    @RequestMapping("/save/partial/pm25/daily")
+    public ResultData savePartialPm25Daily() {
+        ResultData result = new ResultData();
+        new Thread(() -> {
+            machineFeignService.savePartialPm25Daily();
+        }).start();
+        return result;
+    }
 }
