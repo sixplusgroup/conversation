@@ -13,6 +13,8 @@ public class ActivityForm {
 
     private String endTime;
 
+    private String introduction;
+
     public String getActivityName() {
         return activityName;
     }
@@ -59,5 +61,13 @@ public class ActivityForm {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public String getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 }

@@ -91,6 +91,10 @@ CREATE TABLE `gmair_drift`.`attachment` (
   PRIMARY KEY (`attach_id`));
 
 
+##2018-10-26
+ALTER TABLE `gmair_drift`.`drift_activity`
+ADD COLUMN `introduction` VARCHAR(50) NOT NULL AFTER `end_time`;
+
 
 
 

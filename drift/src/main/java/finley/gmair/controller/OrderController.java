@@ -94,19 +94,31 @@ public class OrderController {
             return result;
         }
         Equipment equipment = ((List<Equipment>) response.getData()).get(0);
-        double price = equipment.getEquipPrice();
+        //构建item list
+        List<DriftOrderItem> list = new ArrayList<>();
+        DriftOrderItem equipItem = new DriftOrderItem();
+        double price = 0;
+        equipItem.setItemName(equipment.getEquipName());
+        equipItem.setItemPrice(equipment.getEquipPrice());
+        equipItem.setQuantity(1);
+        list.add(equipItem);
         response = attachmentService.fetch(condition);
-        DriftOrderItem item = new DriftOrderItem();
+
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             Attachment attachment = ((List<Attachment>) response.getData()).get(0);
-            item.setItemName(attachment.getAttachName());
-            item.setItemPrice(attachment.getAttachPrice());
-            item.setQuantity(form.getItemQuantity());
-            price += item.getItemPrice() * item.getQuantity();
+            DriftOrderItem attachItem = new DriftOrderItem();
+            attachItem.setItemName(attachment.getAttachName());
+            attachItem.setItemPrice(attachment.getAttachPrice());
+            attachItem.setQuantity(form.getItemQuantity());
+            list.add(attachItem);
+        }
+
+        for (DriftOrderItem orderItem : list) {
+            price += orderItem.getItemPrice() * orderItem.getQuantity();
         }
         DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, orderNo, province, city, district, description, activityName, expected, intervalDate);
-        driftOrder.setItem(item);
         driftOrder.setTotalPrice(price);
+        driftOrder.setList(list);
         driftOrder.setTestTarget(testTarget);
         if (!StringUtils.isEmpty(form.getExcode())) {
             condition.clear();
