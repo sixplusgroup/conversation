@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/management/airQuality")
+@RequestMapping("/management/airquality")
 public class AirQualityController {
 
     @Autowired
@@ -25,6 +25,11 @@ public class AirQualityController {
     @GetMapping("/latest")
     ResultData getLatestCityAirQuality(){
         return airQualityService.getLatestCityAirQuality();
+    }
+
+    @GetMapping("/province/list")
+    ResultData provinceAirQualityList() {
+        return airQualityService.provinceAirQualityList();
     }
 
     @GetMapping("/latest/{cityId}")

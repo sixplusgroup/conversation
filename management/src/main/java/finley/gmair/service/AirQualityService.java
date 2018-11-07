@@ -15,6 +15,9 @@ public interface AirQualityService {
     @GetMapping("/airquality/hourly/cityAqi")
     ResultData allHourlyCityAqi();
 
+    @GetMapping("/airquality/province/list")
+    ResultData provinceAirQualityList();
+
     @GetMapping("/airquality/latest")
     ResultData getLatestCityAirQuality();
 
