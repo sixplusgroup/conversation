@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import finley.gmair.model.installation.MachinePic;
 import finley.gmair.service.FileMapService;
 import finley.gmair.service.MachinePicService;
@@ -18,6 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * MachinePic用于记录机器二维码与安装图片的对应关系
+ * 后台提供图片上传功能
+ * 数字地图可根据二维码查询对应的图片
+ */
 @RestController
 @RequestMapping("/installation/machine/pic")
 public class MachinePicController {
@@ -34,7 +40,6 @@ public class MachinePicController {
     @Autowired
     private MachineService machineService;
 
-    @Transactional
     @PostMapping("/create")
     public ResultData createMachinePic(String codeValue, String picUrl1, String picUrl2, String picUrl3) {
         ResultData result = new ResultData();
@@ -43,7 +48,17 @@ public class MachinePicController {
             result.setDescription("please provide the codeValue");
             return result;
         }
-        if (StringUtils.isEmpty(picUrl1) && StringUtils.isEmpty(picUrl2) && StringUtils.isEmpty(picUrl3)) {
+        JSONArray pictures = new JSONArray();
+        if (!StringUtils.isEmpty(picUrl1)) {
+            pictures.add(picUrl1);
+        }
+        if (!StringUtils.isEmpty(picUrl2)) {
+            pictures.add(picUrl2);
+        }
+        if (!StringUtils.isEmpty(picUrl3)) {
+            pictures.add(picUrl3);
+        }
+        if (pictures.size() == 0) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide at least one pic");
             return result;
@@ -71,32 +86,14 @@ public class MachinePicController {
             result.setDescription("this qrcode has already uploaded pic before");
             return result;
         }
-
-        //create machine pic
-        if (!StringUtils.isEmpty(picUrl1)) {
-            new Thread(() -> {
-                clearResource(picUrl1);
-            }).start();
-            ResultData response1 = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl1));
+        new Thread(() -> {
+            for (int i = 0; i < pictures.size(); i++) {
+                clearResource(pictures.getString(i));
+            }
+        }).start();
+        for (int i = 0; i < pictures.size(); i++) {
+            ResultData response1 = machinePicService.createMachinePic(new MachinePic(codeValue, pictures.getString(i)));
             if (response1.getResponseCode() == ResponseCode.RESPONSE_ERROR)
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        }
-
-        if (!StringUtils.isEmpty(picUrl2)) {
-            new Thread(() -> {
-                clearResource(picUrl2);
-            }).start();
-            ResultData response2 = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl2));
-            if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR)
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        }
-
-        if (!StringUtils.isEmpty(picUrl3)) {
-            new Thread(() -> {
-                clearResource(picUrl3);
-            }).start();
-            ResultData response3 = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl3));
-            if (response3.getResponseCode() == ResponseCode.RESPONSE_ERROR)
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
         return result;
