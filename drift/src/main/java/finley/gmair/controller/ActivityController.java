@@ -416,7 +416,7 @@ public class ActivityController {
 
         //兑换等全部过程，加同步锁
         synchronized (lock) {
-            //判断二维码是否正确，是否已经兑换过
+            //判断二维码是否正确，或已经兑换
             if (StringUtils.isEmpty(qrcode)) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("No qrcode");
