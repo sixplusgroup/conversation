@@ -27,6 +27,7 @@ public class MachinePicDaoImpl extends BaseDao implements MachinePicDao {
             sqlSession.insert("gmair.installation.install_machine_pic.insert", machinePic);
             result.setData(machinePic);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
