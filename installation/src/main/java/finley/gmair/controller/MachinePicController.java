@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import finley.gmair.model.installation.MachinePic;
 import finley.gmair.service.FileMapService;
 import finley.gmair.service.MachinePicService;
+import finley.gmair.service.MachineService;
 import finley.gmair.service.TempFileMapService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -14,9 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -31,6 +30,9 @@ public class MachinePicController {
 
     @Autowired
     private FileMapService fileMapService;
+
+    @Autowired
+    private MachineService machineService;
 
     @Transactional
     @PostMapping("/create")
@@ -48,15 +50,35 @@ public class MachinePicController {
         }
 
         //check qrcode exist
-        //todo
+        ResultData response = machineService.checkQRcodeExist(codeValue);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch qrcode");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find the qrcode ");
+            return result;
+        }
+
+        //check qrcode hasn't upload pic
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", codeValue);
+        condition.put("blockFlag", false);
+        response = machinePicService.fetchMachinePic(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("this qrcode has already uploaded pic before");
+            return result;
+        }
 
         //create machine pic
         if (!StringUtils.isEmpty(picUrl1)) {
             new Thread(() -> {
                 clearResource(picUrl1);
             }).start();
-            ResultData response = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl1));
-            if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
+            ResultData response1 = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl1));
+            if (response1.getResponseCode() == ResponseCode.RESPONSE_ERROR)
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
 
@@ -64,8 +86,8 @@ public class MachinePicController {
             new Thread(() -> {
                 clearResource(picUrl2);
             }).start();
-            ResultData response = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl2));
-            if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
+            ResultData response2 = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl2));
+            if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR)
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
 
@@ -73,8 +95,8 @@ public class MachinePicController {
             new Thread(() -> {
                 clearResource(picUrl3);
             }).start();
-            ResultData response = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl3));
-            if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR)
+            ResultData response3 = machinePicService.createMachinePic(new MachinePic(codeValue, picUrl3));
+            if (response3.getResponseCode() == ResponseCode.RESPONSE_ERROR)
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
         return result;

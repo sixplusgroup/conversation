@@ -150,7 +150,7 @@ public class TempFileMapController {
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
     public ResultData uploadPic(MultipartHttpServletRequest request) {
         ResultData result = new ResultData();
-        MultipartFile file = request.getFile("fileName");
+        MultipartFile file = request.getFile("file");
 
         //check the file not empty.
         try {
