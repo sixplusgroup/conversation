@@ -159,7 +159,7 @@ public class TempFileMapController {
                 result.setDescription("file empty");
                 return result;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
             return result;
