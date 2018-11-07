@@ -19,6 +19,7 @@ public class ManagementSecurityConfig extends ResourceServerConfigurerAdapter {
                 .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .authorizeRequests()
+                .antMatchers("/management/install/machine/pic/fetch").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
