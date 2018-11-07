@@ -45,6 +45,7 @@ public class ActivityController {
     @Autowired
     private AttachmentService attachmentService;
 
+    private Object lock = new Object();
     /**
      * the method is used to create activity
      *
@@ -411,48 +412,57 @@ public class ActivityController {
             return result;
         }
 
-        condition.clear();
-        condition.put("activityId", activityId);
-        condition.put("status", 0);
-        condition.put("blockFlag", false);
-        response = exCodeService.fetchEXCode(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("System errors, please try again");
-            return result;
-        }
-        EXCode code = ((List<EXCode>) response.getData()).get(0);
+        EXCode code = new EXCode();
 
-        if (StringUtils.isEmpty(qrcode)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("No qrcode");
-            return result;
-        }
-        response = machineService.checkQrcode(qrcode);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Qrcode errors");
-            return result;
-        }
-        condition.clear();
-        condition.put("qrcode", qrcode);
-        response = qrExCodeService.fetchQrExCode(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("The qrcode is already exchanged");
-            return result;
+        //兑换等全部过程，加同步锁
+        synchronized (lock) {
+            //判断二维码
+            if (StringUtils.isEmpty(qrcode)) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("No qrcode");
+                return result;
+            }
+            response = machineService.checkQrcode(qrcode);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Qrcode errors");
+                return result;
+            }
+            condition.clear();
+            condition.put("qrcode", qrcode);
+            response = qrExCodeService.fetchQrExCode(condition);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("The qrcode is already exchanged");
+                return result;
+            }
+            //二维码正确，选取兑换码
+            condition.clear();
+            condition.put("activityId", activityId);
+            condition.put("status", 0);
+            condition.put("blockFlag", false);
+            response = exCodeService.fetchEXCode(condition);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("System errors, please try again");
+                return result;
+            }
+            code = ((List<EXCode>) response.getData()).get(0);
+            QR_EXcode qr_eXcode = new QR_EXcode(qrcode, code.getCodeValue());
+            //插入二维码-兑换码表
+            new Thread(() -> {
+                qrExCodeService.createQrExCode(qr_eXcode);
+            }).start();
+            //更新兑换码状态
+            condition.clear();
+            condition.put("codeId", code.getCodeId());
+            condition.put("status", 1);
+            new Thread(() -> {
+                exCodeService.modifyEXCode(condition);
+            }).start();
         }
 
-        String codeValue = code.getCodeValue();
-        QR_EXcode qr_eXcode = new QR_EXcode(qrcode, codeValue);
-        new Thread(() -> {
-            qrExCodeService.createQrExCode(qr_eXcode);
-        }).start();
-        condition.clear();
-        condition.put("codeId", code.getCodeId());
-        condition.put("status", 1);
-        response = exCodeService.modifyEXCode(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        if (StringUtils.isEmpty(code.getCodeValue())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to exchange");
             return result;
