@@ -20,6 +20,7 @@ public class ManagementSecurityConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/management/install/machine/pic/fetch").permitAll()
+                .antMatchers("/management/map/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
