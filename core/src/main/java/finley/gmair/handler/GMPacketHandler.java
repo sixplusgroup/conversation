@@ -77,8 +77,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                 System.arraycopy(request, 0, first, 0, FIRST_PACKET_LEN);
                 handleRequest(first, ctx);
             } catch (Exception e) {
-                System.out.println("error happen when the receive byte = " + ByteBufUtil.hexDump(request));
-                System.out.println("first_packet_len = " + first.length);
+                System.out.println(e.getMessage());
             }
         }
         //第二代板子
@@ -129,10 +128,8 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                 //nothing to do with heartbeat packet
                 if (packet instanceof HeartBeatPacket) {
                     //actions that need to be implement if this is a no-data packet
-                    //System.out.println(new StringBuffer("A heart beat packet ").append(uid).append(" has been received"));
                 }
                 if (packet instanceof ProbePacket && packet.isValid()) {
-                    //System.out.println(new StringBuffer("A probe packet ").append(uid).append(" has been received"));
                     //decode packet
                     byte[] CTF = ((ProbePacket) packet).getCTF();
                     //judge whether the packet is a data packet
@@ -154,8 +151,9 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                         byte[] light = new byte[]{data[11]};
                         byte[] lock = new byte[]{data[12]};
                         MachineStatus status = new MachineStatus(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temp), ByteUtil.byte2int(humid), ByteUtil.byte2int(co2), ByteUtil.byte2int(volume), ByteUtil.byte2int(power), ByteUtil.byte2int(mode), ByteUtil.byte2int(heat), ByteUtil.byte2int(light), ByteUtil.byte2int(lock));
-//                        System.out.println(new StringBuffer("Machine status received: " + JSONObject.toJSONString(status)));
-                        communicationService.create(status);
+                        CorePool.getComExecutor().execute(new Thread(() ->
+                                communicationService.create(status)
+                        ));
                         CorePool.getComExecutor().execute(new Thread(() -> {
                             LimitQueue<MachineStatus> queue = null;
                             if (redisService.exists(uid) == false) {
@@ -180,17 +178,14 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                 byte[] data = ((ProbePacket) packet).getDAT();
                                 String type = field.getGenericType().getTypeName();
                                 MachinePartialStatus status;
-                                System.out.println(type);
                                 switch (type) {
                                     case "int":
                                         status = new MachinePartialStatus(uid, name, ByteUtil.byte2int(data), packet.getTime());
                                         communicationService.create(status);
-//                                        System.out.println(new StringBuffer("Machine partial status received: " + JSONObject.toJSONString(status)));
                                         break;
                                     case "java.lang.String":
                                         status = new MachinePartialStatus(uid, name, new String(data), packet.getTime());
                                         communicationService.create(status);
-//                                        System.out.println(new StringBuffer("Machine partial status received: " + JSONObject.toJSONString(status)));
                                         break;
                                     case "int[]":
                                         //format volumes
@@ -240,7 +235,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             {
                 if (packet instanceof HeartbeatPacketV1 && packet.isValid()) {
                     //decode packet
-                    byte[] CTF = ((HeartbeatPacketV1) packet).getCTF();
+                    byte[] CTF = packet.getCTF();
                     //judge whether the packet is a data packet
                     if (CTF[0] != (byte) 0x02)
                         return;
@@ -248,7 +243,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     //convert packet to MachineV1Status
                     byte[] data = ((HeartbeatPacketV1) packet).getDAT();
                     if (data.length != 32) {
-                        System.out.println("data length is not 32");
                         return;
                     }
                     byte[] pm2_5 = new byte[]{data[0], data[1]};
@@ -270,7 +264,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                     finley.gmair.model.machine.v1.MachineStatus machineV1Status = new finley.gmair.model.machine.v1.MachineStatus(uid, status.getPm25(), status.getTemperature(), status.getHumidity(), status.getCo2(), status.getVelocity(), status.getPower(), status.getWorkMode(), status.getHeat(), status.getLight());
                     communicationService.create(status);                //把接收到的全存mongo数据库
                     CorePool.getComExecutor().execute(new Thread(() -> {
-                        LimitQueue<finley.gmair.model.machine.v1.MachineStatus> queue = null;
+                        LimitQueue<finley.gmair.model.machine.v1.MachineStatus> queue;
                         if (redisService.exists(uid) == false) {
                             queue = new LimitQueue<>(720);
                             queue.offer(machineV1Status);
@@ -279,7 +273,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                             queue.offer(machineV1Status);
                         }
                         redisService.set(uid, queue, (long) 120);
-//                        redisService.set(uid, machineV1Status, (long) 120); //存入缓存
                     }));
                 }
             }));
@@ -287,10 +280,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
         //未知报文
         else {
-            System.out.println("unkown packet:" + ByteUtil.byte2Hex(request));
-            System.out.println("head :" + ByteUtil.byte2Hex(new byte[]{request[0]}));
-            System.out.println("tail :" + ByteUtil.byte2Hex(new byte[]{request[request.length - 1]}));
-            System.out.println(new String(request));
+            //unknown packet will not be handled
         }
     }
 
@@ -302,20 +292,5 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().close();
-        //repository.remove(ctx);
-    }
-
-    private void outputHex(ByteBuf byteBuf) {
-        System.out.println("Hex:" + ByteBufUtil.hexDump(byteBuf));
-        String receivce = ByteBufUtil.hexDump(byteBuf);
-        System.out.println("FRH:" + receivce.substring(0, 2));
-        System.out.println("CTF:" + receivce.substring(2, 4));
-        System.out.println("CID:" + receivce.substring(4, 6));
-        System.out.println("UID:" + receivce.substring(6, 30));
-        System.out.println("LEN:" + receivce.substring(30, 32));
-        int length = Integer.valueOf(receivce.substring(30, 32), 16);
-        System.out.println("DAT:" + receivce.substring(32, 32 + length * 2));
-        System.out.println("CRC:" + receivce.substring(32 + length * 2, 32 + length * 2 + 4));
-        System.out.println("FRT:" + receivce.substring(32 + length * 2 + 4, 32 + length * 2 + 6));
     }
 }
