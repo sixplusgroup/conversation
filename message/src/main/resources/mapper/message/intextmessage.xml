@@ -15,14 +15,17 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="messageVo">
-        SELECT message_id, phone, text, block_flag, create_time
+        SELECT message_id, mobile, text, block_flag, create_time
         FROM gmair_message.in_text_message
         WHERE 1 = 1
         <if test="messageId != null">
             AND message_id = #{messageId}
         </if>
         <if test="phone != null">
-            AND phone = #{phone}
+            AND mobile = #{phone}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
         </if>
         <if test="startTime != null">
             AND create_time &gt; #{startTime}
