@@ -1,4 +1,4 @@
-package finley.gmair.map;
+package finley.gmair.monitor;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
