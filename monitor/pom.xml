@@ -82,5 +82,5 @@
         </dependency>
     </dependencies>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>map</artifactId>
+    <artifactId>monitor</artifactId>
 </project>

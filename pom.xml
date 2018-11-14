@@ -44,9 +44,9 @@
         <module>drift</module>
         <module>mail</module>
         <module>assemble</module>
-        <module>map</module>
         <module>formaldehyde</module>
         <module>bill</module>
+        <module>monitor</module>
     </modules>
 
     <parent>

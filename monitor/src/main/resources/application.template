@@ -1,4 +1,4 @@
-spring.application.name=map-agent
+spring.application.name=monitor-agent
 server.port=
 eureka.client.healthcheck=true
 eureka.client.service-url.defaultZone=http://localhost:8000/eureka/

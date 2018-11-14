@@ -9,9 +9,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/map/machine")
+@RequestMapping("/monitor")
 @CrossOrigin
-public class MachineMapController {
+public class MonitorController {
 
     @Autowired
     private MachineService machineService;
@@ -19,24 +19,14 @@ public class MachineMapController {
     @Autowired
     private AirqualityService airqualityService;
 
-    @GetMapping("/fetch")
-    public ResultData fetchMachineLatLngList() {
-        return machineService.fetchMachineLatLngList();
-    }
-
-    @GetMapping("/online")
+    @GetMapping("/machine/online")
     public ResultData isOnline(String codeValue) {
         return machineService.checkOnline(codeValue);
     }
 
-    @GetMapping("/status")
+    @GetMapping("/machine/status")
     public ResultData getMachineStatus(String machineId) {
         return machineService.machineStatus(machineId);
-    }
-
-    @GetMapping("/model")
-    public ResultData getMachineModel(String codeValue) {
-        return machineService.getModel(codeValue);
     }
 
     @GetMapping("/city/air")
