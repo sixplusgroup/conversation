@@ -8,6 +8,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +34,11 @@ public class MachineStatusCacheController {
     @RequestMapping(value = "/status/byuid", method = RequestMethod.GET)
     public ResultData machineStatus(String uid) {
         ResultData result = new ResultData();
+        if (StringUtils.isEmpty(uid)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("the uid can not be empty");
+            return result;
+        }
         if (redisService.exists(uid) == false) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can't find machine status in redis cache");
@@ -48,6 +54,11 @@ public class MachineStatusCacheController {
     @RequestMapping(value = "/status/byqrcode", method = RequestMethod.GET)
     public ResultData getMachineStatusByQRcode(String qrcode) {
         ResultData result = new ResultData();
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("the qrcode can not be empty");
+            return result;
+        }
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);

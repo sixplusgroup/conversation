@@ -25,8 +25,8 @@ public class MonitorController {
     }
 
     @GetMapping("/machine/status")
-    public ResultData getMachineStatus(String machineId) {
-        return machineService.machineStatus(machineId);
+    public ResultData getMachineStatus(String qrcode) {
+        return machineService.getMachineStatusByQRcode(qrcode);
     }
 
     @GetMapping("/city/air")
