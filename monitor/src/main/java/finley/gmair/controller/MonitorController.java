@@ -29,6 +29,9 @@ public class MonitorController {
         return machineService.getMachineStatusByQRcode(qrcode);
     }
 
+    @GetMapping("/cityid/probe")
+    public ResultData getCityId(String qrcode){ return machineService.probeCityIdByQRcode(qrcode); }
+
     @GetMapping("/city/air")
     public ResultData getCityLatestAirquality(String cityId, String provinceId) {
         ResultData result = new ResultData();

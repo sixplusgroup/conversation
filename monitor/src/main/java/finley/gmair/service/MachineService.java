@@ -22,4 +22,6 @@ public interface MachineService {
     @GetMapping("machine/map/fetch")
     ResultData fetchMachineLatLngList();
 
+    @GetMapping("/machine/default/location/probe/cityid")
+    ResultData probeCityIdByQRcode(@RequestParam("qrcode") String qrcode);
 }
