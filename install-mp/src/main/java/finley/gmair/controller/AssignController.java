@@ -110,7 +110,7 @@ public class AssignController {
      * The method is called to create assign
      * @return
      */
-    @PostMapping(value = "/assign/create")
+    @PostMapping(value = "/create")
     public ResultData createAssign(AssignForm form) {
         ResultData result = assignServiceAgent.create(form);
         return result;
