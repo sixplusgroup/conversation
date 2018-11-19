@@ -4,10 +4,7 @@ import finley.gmair.form.installation.InstallDateForm;
 import finley.gmair.model.installation.Assign;
 import finley.gmair.model.installation.AssignStatus;
 import finley.gmair.model.installation.Member;
-import finley.gmair.service.AssignService;
-import finley.gmair.service.AssignServiceAgent;
-import finley.gmair.service.FeedbackService;
-import finley.gmair.service.MemberService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,9 @@ public class AssignController {
 
     @Autowired
     private FeedbackService feedbackService;
+
+    @Autowired
+    private MachineService machineService;
 
     //工人选择安装时间并提交时触发,修改任务状态,安装日期
 
@@ -94,6 +94,17 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("can not update the processing or finished assign record");
         }
+        return result;
+    }
+
+    /**
+     * @param codeUrl
+     * @return
+     * The method is called to parse codeUrl to get codeValue
+     */
+    @PostMapping(value = "/getValue/byUrl")
+    public ResultData getValuebyUrl(String codeUrl) {
+        ResultData result = machineService.getCodeValuebyCodeUrl(codeUrl);
         return result;
     }
 
