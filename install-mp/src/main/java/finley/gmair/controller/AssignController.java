@@ -121,16 +121,29 @@ public class AssignController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("wechatId", openId);
+        condition.put("blockFlag", false);
         ResultData response = memberService.fetchMember(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to get member information");
             return result;
         }
-
         Member member = ((List<Member>) response.getData()).get(0);
-        Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId());
 
+        condition.remove("wechatId");
+        condition.put("codeValue", codeValue);
+        response = assignService.fetchAssign(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("The task exists");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Server is busy");
+            return result;
+        }
+
+        Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String date = sdf.format(new Date());
         assign.setAssignDate(Timestamp.valueOf(date));
