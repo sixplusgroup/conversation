@@ -124,7 +124,6 @@ public class AssignController {
         condition.put("wechatId", openId);
         condition.put("blockFlag", false);
         ResultData response = memberService.fetchMember(condition);
-        System.out.println("[Info]: member" + JSON.toJSONString(response));
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to get member information");
@@ -134,13 +133,16 @@ public class AssignController {
         condition.remove("wechatId");
         condition.put("codeValue", codeValue);
         response = assignService.fetchAssign(condition);
-        System.out.println("[Info]: assign " + JSON.toJSONString(response));
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             Assign assignExist = ((List<Assign>) response.getData()).get(0);
             if (member.getMemberId().equals(assignExist.getMemberId())) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
+
+                //todo assign status
+                result.setDescription("The assign is exist");
             } else {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("This assign doesn't belong to the installer");
             }
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -151,6 +153,7 @@ public class AssignController {
 
         Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId());
         assign.setAssignDate(new Timestamp(System.currentTimeMillis()));
+        assign.setAssignStatus(AssignStatus.PROCESSING);
         if (!StringUtils.isEmpty(consumerConsignee)) {
             assign.setConsumerConsignee(consumerConsignee);
         }
