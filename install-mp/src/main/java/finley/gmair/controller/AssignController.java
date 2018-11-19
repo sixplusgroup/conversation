@@ -134,8 +134,12 @@ public class AssignController {
         condition.put("codeValue", codeValue);
         response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("The task exists");
+            Assign assignExist = ((List<Assign>) response.getData()).get(0);
+            if (member.getMemberId().equals(assignExist.getMemberId())) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            }
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
