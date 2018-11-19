@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.InstallDateForm;
 import finley.gmair.model.installation.Assign;
@@ -123,16 +124,17 @@ public class AssignController {
         condition.put("wechatId", openId);
         condition.put("blockFlag", false);
         ResultData response = memberService.fetchMember(condition);
+        System.out.println("[Info]: member" + JSON.toJSONString(response));
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to get member information");
             return result;
         }
         Member member = ((List<Member>) response.getData()).get(0);
-
         condition.remove("wechatId");
         condition.put("codeValue", codeValue);
         response = assignService.fetchAssign(condition);
+        System.out.println("[Info]: assign " + JSON.toJSONString(response));
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             Assign assignExist = ((List<Assign>) response.getData()).get(0);
             if (member.getMemberId().equals(assignExist.getMemberId())) {
@@ -148,10 +150,7 @@ public class AssignController {
         }
 
         Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String date = sdf.format(new Date());
-        assign.setAssignDate(Timestamp.valueOf(date));
-
+        assign.setAssignDate(new Timestamp(System.currentTimeMillis()));
         if (!StringUtils.isEmpty(consumerConsignee)) {
             assign.setConsumerConsignee(consumerConsignee);
         }

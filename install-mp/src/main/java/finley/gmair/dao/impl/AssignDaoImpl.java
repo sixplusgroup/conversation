@@ -16,14 +16,14 @@ import java.util.Map;
 public class AssignDaoImpl extends BaseDao implements AssignDao {
 
     @Override
-    public ResultData insertAssign(Assign assign){
+    public ResultData insertAssign(Assign assign) {
         ResultData result = new ResultData();
         assign.setAssignId(IDGenerator.generate("IAS"));
-        try{
-            sqlSession.insert("gmair.installation.assign.insert",assign);
+        try {
+            sqlSession.insert("gmair.installation.assign.insert", assign);
             result.setData(assign);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
+            System.out.println("[Error: ] " + e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
@@ -33,17 +33,16 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
     @Override
     public ResultData queryAssign(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        List<Assign> list=new ArrayList<>();
-        try{
-            list=sqlSession.selectList("gmair.installation.assign.query",condition);
+        List<Assign> list = new ArrayList<>();
+        try {
+            list = sqlSession.selectList("gmair.installation.assign.query", condition);
             result.setData(list);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
 
-        if(result.getResponseCode()!=ResponseCode.RESPONSE_ERROR) {
+        if (result.getResponseCode() != ResponseCode.RESPONSE_ERROR) {
             if (list.isEmpty() == true) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("No assign found");
@@ -56,13 +55,12 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
     }
 
     @Override
-    public ResultData updateAssign(Assign assign){
+    public ResultData updateAssign(Assign assign) {
         ResultData result = new ResultData();
-        try{
-            sqlSession.update("gmair.installation.assign.update",assign);
+        try {
+            sqlSession.update("gmair.installation.assign.update", assign);
             result.setData(assign);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
