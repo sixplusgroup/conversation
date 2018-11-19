@@ -15,7 +15,4 @@ public interface AssignServiceAgent {
 
     @PostMapping("/installation/assign/cancel")
     ResultData cancel(@RequestParam("assignId") String assignId, @RequestParam("description") String description);
-
-    @PostMapping("/installation/assign/create")
-    ResultData create(@RequestBody AssignForm form);
 }

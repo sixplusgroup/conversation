@@ -14,6 +14,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,13 +108,34 @@ public class AssignController {
         return result;
     }
 
-    /**
+    /*
      * The method is called to create assign
      * @return
      */
     @PostMapping(value = "/create")
-    public ResultData createAssign(AssignForm form) {
-        ResultData result = assignServiceAgent.create(form);
+    public ResultData createAssign(String openId, String codeValue, String consumerConsignee, String consumerPhone, String consumerAddress) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechatId", openId);
+        ResultData response = memberService.fetchMember(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get member information");
+            return result;
+        }
+
+        Member member = ((List<Member>) response.getData()).get(0);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = sdf.format(new Date());
+        Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId(), Timestamp.valueOf(date), consumerConsignee, consumerPhone, consumerAddress);
+        response = assignService.createAssign(assign);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to create install assign");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
         return result;
     }
 
