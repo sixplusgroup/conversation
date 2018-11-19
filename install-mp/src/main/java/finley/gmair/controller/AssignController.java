@@ -99,8 +99,7 @@ public class AssignController {
 
     /**
      * @param codeUrl
-     * @return
-     * The method is called to parse codeUrl to get codeValue
+     * @return The method is called to parse codeUrl to get codeValue
      */
     @GetMapping(value = "/getValue/byUrl")
     public ResultData getValuebyUrl(String codeUrl) {
@@ -115,7 +114,7 @@ public class AssignController {
     @PostMapping(value = "/create")
     public ResultData createAssign(String openId, String codeValue, String consumerConsignee, String consumerPhone, String consumerAddress) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(openId)) {
+        if (StringUtils.isEmpty(openId) && StringUtils.isEmpty(codeValue)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
