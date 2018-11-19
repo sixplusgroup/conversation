@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.InstallDateForm;
 import finley.gmair.model.installation.Assign;
 import finley.gmair.model.installation.AssignStatus;
@@ -10,10 +11,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -102,9 +100,19 @@ public class AssignController {
      * @return
      * The method is called to parse codeUrl to get codeValue
      */
-    @PostMapping(value = "/getValue/byUrl")
+    @GetMapping(value = "/getValue/byUrl")
     public ResultData getValuebyUrl(String codeUrl) {
         ResultData result = machineService.getCodeValuebyCodeUrl(codeUrl);
+        return result;
+    }
+
+    /**
+     * The method is called to create assign
+     * @return
+     */
+    @PostMapping(value = "/assign/create")
+    public ResultData createAssign(AssignForm form) {
+        ResultData result = assignServiceAgent.create(form);
         return result;
     }
 
