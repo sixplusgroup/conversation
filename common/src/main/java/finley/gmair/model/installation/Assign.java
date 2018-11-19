@@ -36,6 +36,13 @@ public class Assign extends Entity {
         this.consumerAddress = consumerAddress;
     }
 
+    public Assign(String codeValue, String teamId, String memberId) {
+        this();
+        this.codeValue = codeValue;
+        this.teamId = teamId;
+        this.memberId = memberId;
+    }
+
     public Assign(String codeValue, String teamId, String memberId, Timestamp assignDate, String consumerConsignee, String consumerPhone, String consumerAddress) {
         this();
         this.codeValue = codeValue;

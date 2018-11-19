@@ -115,6 +115,11 @@ public class AssignController {
     @PostMapping(value = "/create")
     public ResultData createAssign(String openId, String codeValue, String consumerConsignee, String consumerPhone, String consumerAddress) {
         ResultData result = new ResultData();
+        if (StringUtils.isEmpty(openId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
         Map<String, Object> condition = new HashMap<>();
         condition.put("wechatId", openId);
         ResultData response = memberService.fetchMember(condition);
@@ -125,9 +130,21 @@ public class AssignController {
         }
 
         Member member = ((List<Member>) response.getData()).get(0);
+        Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId());
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String date = sdf.format(new Date());
-        Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId(), Timestamp.valueOf(date), consumerConsignee, consumerPhone, consumerAddress);
+        assign.setAssignDate(Timestamp.valueOf(date));
+
+        if (!StringUtils.isEmpty(consumerConsignee)) {
+            assign.setConsumerConsignee(consumerConsignee);
+        }
+        if (!StringUtils.isEmpty(consumerPhone)) {
+            assign.setConsumerPhone(consumerPhone);
+        }
+        if (!StringUtils.isEmpty(consumerAddress)) {
+            assign.setConsumerAddress(consumerAddress);
+        }
         response = assignService.createAssign(assign);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

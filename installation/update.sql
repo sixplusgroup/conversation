@@ -208,3 +208,10 @@ CREATE TABLE `gmair_install`.`install_machine_pic` (
   `block_flag` VARCHAR(45) NOT NULL,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`record_id`));
+
+
+2018-11-19
+ALTER TABLE `gmair_install`.`install_assign`
+CHANGE COLUMN `consumer_consignee` `consumer_consignee` VARCHAR(45) NULL ,
+CHANGE COLUMN `consumer_phone` `consumer_phone` VARCHAR(45) NULL ,
+CHANGE COLUMN `consumer_address` `consumer_address` VARCHAR(255) NULL ;
