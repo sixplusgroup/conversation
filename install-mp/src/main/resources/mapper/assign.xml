@@ -50,6 +50,7 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
+        order by create_time desc
     </select>
 
     <update id="update" parameterType="finley.gmair.model.installation.Assign">

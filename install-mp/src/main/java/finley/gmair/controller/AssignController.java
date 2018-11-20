@@ -130,14 +130,34 @@ public class AssignController {
             return result;
         }
         Member member = ((List<Member>) response.getData()).get(0);
+
+        //build assign entity
+        Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId());
+        assign.setAssignDate(new Timestamp(System.currentTimeMillis()));
+        assign.setAssignStatus(AssignStatus.PROCESSING);
+        if (!StringUtils.isEmpty(consumerConsignee)) {
+            assign.setConsumerConsignee(consumerConsignee);
+        }
+        if (!StringUtils.isEmpty(consumerPhone)) {
+            assign.setConsumerPhone(consumerPhone);
+        }
+        if (!StringUtils.isEmpty(consumerAddress)) {
+            assign.setConsumerAddress(consumerAddress);
+        }
+
         condition.remove("wechatId");
         condition.put("codeValue", codeValue);
         response = assignService.fetchAssign(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             Assign assignExist = ((List<Assign>) response.getData()).get(0);
-            if (member.getMemberId().equals(assignExist.getMemberId())) {
+            if (assignExist.getAssignStatus().getValue() == 4) {
+                new Thread(() -> {
+                    assignService.createAssign(assign);
+                }).start();
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
-
+                result.setDescription("New assign is created");
+            } else if (member.getMemberId().equals(assignExist.getMemberId())) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
                 //todo assign status
                 result.setDescription("The assign is exist");
             } else {
@@ -151,18 +171,6 @@ public class AssignController {
             return result;
         }
 
-        Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId());
-        assign.setAssignDate(new Timestamp(System.currentTimeMillis()));
-        assign.setAssignStatus(AssignStatus.PROCESSING);
-        if (!StringUtils.isEmpty(consumerConsignee)) {
-            assign.setConsumerConsignee(consumerConsignee);
-        }
-        if (!StringUtils.isEmpty(consumerPhone)) {
-            assign.setConsumerPhone(consumerPhone);
-        }
-        if (!StringUtils.isEmpty(consumerAddress)) {
-            assign.setConsumerAddress(consumerAddress);
-        }
         response = assignService.createAssign(assign);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
