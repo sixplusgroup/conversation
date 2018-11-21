@@ -99,55 +99,6 @@ public class AssignController {
     }
 
     /**
-     * @param openId
-     * The method is called to get member's install assign
-     * @return
-     * */
-    @GetMapping(value = "/list/by/openId")
-    public ResultData assignList(String openId) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(openId)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure you fill all the required fields");
-            return result;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("wechatId", openId);
-        condition.put("blockFlag", false);
-        ResultData response = memberService.fetchMember(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("System errors, please try again later");
-            return result;
-        }
-        Member member = ((List<Member>) response.getData()).get(0);
-
-        //get assign by memberId、teamId and assign status
-        String memberId = member.getMemberId();
-        String teamId = member.getTeamId();
-        condition.remove("wechatId");
-        condition.put("memberId", memberId);
-        condition.put("teamId", teamId);
-        condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
-        response = assignService.fetchAssign(condition);
-        switch (response.getResponseCode()) {
-            case RESPONSE_NULL:
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("No assign found");
-                break;
-            case RESPONSE_ERROR:
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("Fail to retrieve assign");
-                break;
-            case RESPONSE_OK:
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setData(response.getData());
-                break;
-        }
-        return result;
-    }
-
-    /**
      * @param codeUrl
      * @return The method is called to parse codeUrl to get codeValue
      */
@@ -158,11 +109,11 @@ public class AssignController {
     }
 
     /**
-     * The method is called to finish installation and entrance to picture upload
+     * The method is called to submit and entrance to picture upload
      * @return
      * */
-    @PostMapping(value = "/finish")
-    public ResultData finishAssign(String openId, String codeValue, String assignId) {
+    @PostMapping(value = "/submit")
+    public ResultData submit(String openId, String codeValue, String assignId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(openId) || StringUtils.isEmpty(codeValue) || StringUtils.isEmpty(assignId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -188,6 +139,7 @@ public class AssignController {
         condition.put("memberId", memberId);
         condition.put("teamId", teamId);
         condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
         response = assignService.fetchAssign(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -199,13 +151,12 @@ public class AssignController {
         /**if installed, return OK and upload picture
          * else, update assign
          * */
-        if (!StringUtils.isEmpty(assign.getCodeValue()) && (assign.getAssignStatus().getValue() == 3)) {
+        if (!StringUtils.isEmpty(assign.getCodeValue())) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("Installation is finished");
             return result;
         }
         assign.setCodeValue(codeValue);
-        assign.setAssignStatus(AssignStatus.FINISHED);
         response = assignService.updateAssign(assign);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
