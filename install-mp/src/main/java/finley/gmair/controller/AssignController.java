@@ -158,7 +158,9 @@ public class AssignController {
     }
 
     /**
-     * The method is called to */
+     * The method is called to finish installation and entrance to picture upload
+     * @return
+     * */
     @PostMapping(value = "/finish")
     public ResultData finishAssign(String openId, String codeValue, String assignId) {
         ResultData result = new ResultData();
