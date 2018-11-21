@@ -215,3 +215,12 @@ ALTER TABLE `gmair_install`.`install_assign`
 CHANGE COLUMN `consumer_consignee` `consumer_consignee` VARCHAR(45) NULL ,
 CHANGE COLUMN `consumer_phone` `consumer_phone` VARCHAR(45) NULL ,
 CHANGE COLUMN `consumer_address` `consumer_address` VARCHAR(255) NULL ;
+
+
+2018-11-21
+ALTER TABLE `gmair_install`.`install_assign`
+CHANGE COLUMN `code_value` `code_value` VARCHAR(45) NULL ,
+CHANGE COLUMN `consumer_consignee` `consumer_consignee` VARCHAR(45) NOT NULL ,
+CHANGE COLUMN `consumer_phone` `consumer_phone` VARCHAR(45) NOT NULL ,
+CHANGE COLUMN `consumer_address` `consumer_address` VARCHAR(255) NOT NULL ,
+CHANGE COLUMN `assign_date` `assign_date` DATE NULL DEFAULT NULL ;

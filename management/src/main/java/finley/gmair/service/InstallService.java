@@ -41,6 +41,13 @@ public interface InstallService {
                                         @RequestParam("consumerAddress") String consumerAddress);
 
 
+    @PostMapping("/installation/assign/postpone")
+    ResultData postponeAssign(@RequestParam("assignId") String assignId,
+                                     @RequestParam("date") String date);
+
+    @PostMapping("/installation/assign/cancel")
+    ResultData cancelAssign(@RequestParam("assignId") String assignId);
+
     @GetMapping("/installation/assign/finishedinfo")
     ResultData finishedInfo(@RequestParam("assignId") String assignId);
 

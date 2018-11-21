@@ -17,12 +17,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/installation/assign")
@@ -49,19 +47,22 @@ public class AssignController {
         ResultData result = new ResultData();
 
         //check whether input is empty
-        if (StringUtils.isEmpty(form.getQrcode()) || StringUtils.isEmpty(form.getConsumerConsignee())
-                || StringUtils.isEmpty(form.getConsumerPhone()) || StringUtils.isEmpty(form.getConsumerAddress())) {
+        if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone())
+                || StringUtils.isEmpty(form.getConsumerAddress())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please provide all required information");
             return result;
         }
-        String qrcode = form.getQrcode().trim();
         String consumerConsignee = form.getConsumerConsignee().trim();
         String consumerPhone = form.getConsumerPhone().trim();
         String consumerAddress = form.getConsumerAddress().trim();
 
         //create the the assign and save
-        Assign assign = new Assign(qrcode, consumerConsignee, consumerPhone, consumerAddress);
+        Assign assign = new Assign(consumerConsignee, consumerPhone, consumerAddress);
+        if (!StringUtils.isEmpty(form.getQrcode())) {
+            assign.setCodeValue(form.getQrcode());
+        }
+
         ResultData response = assignService.createAssign(assign);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -391,7 +392,7 @@ public class AssignController {
     }
 
     @PostMapping("/postpone")
-    public ResultData postpone(String assignId, String date) {
+    public ResultData postpone(String assignId, String date) throws Exception{
         ResultData result = new ResultData();
 
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(date)) {
@@ -430,17 +431,20 @@ public class AssignController {
             result.setDescription("Fail to update current assign");
         }
 
-        //create a new assignment
-        AssignForm assignForm = new AssignForm(assign.getCodeValue(),assign.getConsumerConsignee(),assign.getConsumerPhone(),assign.getConsumerAddress());
-        response = create(assignForm);
+        //create a new assign
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date selectDate = sdf.parse(date);
+        Assign assign_new = new Assign(assign.getCodeValue(), assign.getConsumerConsignee(), assign.getConsumerPhone(), assign.getConsumerAddress());
+        assign_new.setAssignDate(selectDate);
+        response = assignService.createAssign(assign_new);
         return response;
     }
 
     @PostMapping("/cancel")
-    public ResultData cancel(String assignId, String description) {
+    public ResultData cancel(String assignId) {
         ResultData result = new ResultData();
         //check the input
-        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(description)) {
+        if (StringUtils.isEmpty(assignId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure all required information is provided.");
             return result;
@@ -465,6 +469,7 @@ public class AssignController {
         }
         Assign assign = ((List<Assign>) response.getData()).get(0);
         assign.setAssignStatus(AssignStatus.CLOSED);
+        assign.setBlockFlag(true);
 
         response = assignService.updateAssign(assign);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {

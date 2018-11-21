@@ -3,6 +3,7 @@ package finley.gmair.model.installation;
 import finley.gmair.model.Entity;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class Assign extends Entity {
     private String assignId;
@@ -21,7 +22,7 @@ public class Assign extends Entity {
 
     private String consumerAddress;
 
-    private Timestamp assignDate;
+    private Date assignDate;
 
     public Assign() {
         super();
@@ -36,14 +37,14 @@ public class Assign extends Entity {
         this.consumerAddress = consumerAddress;
     }
 
-    public Assign(String codeValue, String teamId, String memberId) {
+    public Assign(String consumerConsignee, String consumerPhone, String consumerAddress) {
         this();
-        this.codeValue = codeValue;
-        this.teamId = teamId;
-        this.memberId = memberId;
+        this.consumerConsignee = consumerConsignee;
+        this.consumerPhone = consumerPhone;
+        this.consumerAddress = consumerAddress;
     }
 
-    public Assign(String codeValue, String teamId, String memberId, Timestamp assignDate, String consumerConsignee, String consumerPhone, String consumerAddress) {
+    public Assign(String codeValue, String teamId, String memberId, Date assignDate, String consumerConsignee, String consumerPhone, String consumerAddress) {
         this();
         this.codeValue = codeValue;
         this.teamId = teamId;
@@ -94,11 +95,11 @@ public class Assign extends Entity {
         this.assignStatus = assignStatus;
     }
 
-    public Timestamp getAssignDate() {
+    public Date getAssignDate() {
         return assignDate;
     }
 
-    public void setAssignDate(Timestamp assignDate) {
+    public void setAssignDate(Date assignDate) {
         this.assignDate = assignDate;
     }
 

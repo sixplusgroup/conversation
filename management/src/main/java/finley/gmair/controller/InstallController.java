@@ -6,6 +6,7 @@ import finley.gmair.service.InstallService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,33 @@ public class InstallController {
     @PostMapping("/team/create")
     public ResultData teamCreate(TeamForm form) {
         return installService.createTeam(form.getTeamName(), form.getTeamArea(), form.getTeamDescription());
+    }
+
+    @PostMapping("/assign/create")
+    public ResultData assignCreate(AssignForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone())
+                || StringUtils.isEmpty(form.getConsumerAddress())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        String qrcode = form.getQrcode();
+        String consumerConsignee = form.getConsumerConsignee();
+        String consumerPhone = form.getConsumerPhone();
+        String consumerAddress = form.getConsumerAddress();
+        result = installService.createInstallationAssign(qrcode, consumerConsignee, consumerPhone, consumerAddress);
+        return result;
+    }
+
+    @PostMapping("/assign/postpone")
+    public ResultData postpone(String assignId, String date) {
+        return installService.postponeAssign(assignId, date);
+    }
+
+    @PostMapping("/assign/cancel")
+    public ResultData cancel(String assignId) {
+        return installService.cancelAssign(assignId);
     }
 
     @GetMapping("/member/list")
