@@ -99,23 +99,14 @@ public class AssignController {
     }
 
     /**
-     * @param codeUrl
-     * @return The method is called to parse codeUrl to get codeValue
-     */
-    @GetMapping(value = "/getValue/byUrl")
-    public ResultData getValuebyUrl(String codeUrl) {
-        ResultData result = machineService.getCodeValuebyCodeUrl(codeUrl);
-        return result;
-    }
-
-    /**
-     * The method is called to create assign
+     * @param openId
+     * The method is called to get member's install assign
      * @return
-     */
-    @PostMapping(value = "/create")
-    public ResultData createAssign(String openId, String codeValue, String consumerConsignee, String consumerPhone, String consumerAddress) {
+     * */
+    @GetMapping(value = "/list/by/openId")
+    public ResultData assignList(String openId) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(openId) && StringUtils.isEmpty(codeValue)) {
+        if (StringUtils.isEmpty(openId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -126,58 +117,101 @@ public class AssignController {
         ResultData response = memberService.fetchMember(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to get member information");
+            result.setDescription("System errors, please try again later");
             return result;
         }
         Member member = ((List<Member>) response.getData()).get(0);
 
-        //build assign entity
-        Assign assign = new Assign(codeValue, member.getTeamId(), member.getMemberId());
-        assign.setAssignDate(new Timestamp(System.currentTimeMillis()));
-        assign.setAssignStatus(AssignStatus.PROCESSING);
-        if (!StringUtils.isEmpty(consumerConsignee)) {
-            assign.setConsumerConsignee(consumerConsignee);
-        }
-        if (!StringUtils.isEmpty(consumerPhone)) {
-            assign.setConsumerPhone(consumerPhone);
-        }
-        if (!StringUtils.isEmpty(consumerAddress)) {
-            assign.setConsumerAddress(consumerAddress);
-        }
-
+        //get assign by memberId、teamId and assign status
+        String memberId = member.getMemberId();
+        String teamId = member.getTeamId();
         condition.remove("wechatId");
-        condition.put("codeValue", codeValue);
+        condition.put("memberId", memberId);
+        condition.put("teamId", teamId);
+        condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
         response = assignService.fetchAssign(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            Assign assignExist = ((List<Assign>) response.getData()).get(0);
-            if (assignExist.getAssignStatus().getValue() == 4) {
-                new Thread(() -> {
-                    assignService.createAssign(assign);
-                }).start();
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("New assign is created");
-            } else if (member.getMemberId().equals(assignExist.getMemberId())) {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                //todo assign status
-                result.setDescription("The assign is exist");
-            } else {
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No assign found");
+                break;
+            case RESPONSE_ERROR:
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("This assign doesn't belong to the installer");
-            }
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setDescription("Fail to retrieve assign");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
+        return result;
+    }
+
+    /**
+     * @param codeUrl
+     * @return The method is called to parse codeUrl to get codeValue
+     */
+    @GetMapping(value = "/getValue/byUrl")
+    public ResultData getValuebyUrl(String codeUrl) {
+        ResultData result = machineService.getCodeValuebyCodeUrl(codeUrl);
+        return result;
+    }
+
+    /**
+     * The method is called to */
+    @PostMapping(value = "/finish")
+    public ResultData finishAssign(String openId, String codeValue, String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(openId) || StringUtils.isEmpty(codeValue) || StringUtils.isEmpty(assignId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Server is busy");
+            result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-
-        response = assignService.createAssign(assign);
+        //verify member
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechatId", openId);
+        condition.put("blockFlag", false);
+        ResultData response = memberService.fetchMember(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to create install assign");
+            result.setDescription("Fail to get member information");
+            return result;
+        }
+        Member member = ((List<Member>) response.getData()).get(0);
+        String memberId = member.getMemberId();
+        String teamId = member.getTeamId();
+
+        //get assign with member and assignId
+        condition.remove("wechatId");
+        condition.put("memberId", memberId);
+        condition.put("teamId", teamId);
+        condition.put("assignId", assignId);
+        response = assignService.fetchAssign(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Assign error with assignId");
+            return result;
+        }
+        Assign assign = ((List<Assign>) response.getData()).get(0);
+
+        /**if installed, return OK and upload picture
+         * else, update assign
+         * */
+        if (!StringUtils.isEmpty(assign.getCodeValue()) && (assign.getAssignStatus().getValue() == 3)) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("Installation is finished");
+            return result;
+        }
+        assign.setCodeValue(codeValue);
+        assign.setAssignStatus(AssignStatus.FINISHED);
+        response = assignService.updateAssign(assign);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Update assign is failed");
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("Update assign successfully");
         result.setData(response.getData());
         return result;
     }
