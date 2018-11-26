@@ -166,6 +166,10 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                             redisService.set(uid, queue, (long) 120);
                             //redisService.set(uid, status, (long) 120);
                         }));
+                    } else if (command == 0xFA) {
+                        //0xFA serves as the upgrade command
+                        //The response packets back by the board are handled here
+
                     } else {
                         Field[] fields = PacketInfo.class.getDeclaredFields();
                         for (Field field : fields) {

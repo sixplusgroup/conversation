@@ -201,11 +201,10 @@ public class CommunicationController {
             return result;
         }
 
-        if(version==1){
+        if (version == 1) {
             AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.POWER, power, uid, MachineV1Status.class);
             ctx.writeAndFlush(packet.convert2bytearray());
-        }
-        else if(version==2) {
+        } else if (version == 2) {
             AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.POWER_MODE, power, uid);
             ctx.writeAndFlush(packet.convert2bytearray());
         }
@@ -239,11 +238,10 @@ public class CommunicationController {
             return result;
         }
 
-        if(version==1){
+        if (version == 1) {
             AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.WORKMODE, mode, uid, MachineV1Status.class);
             ctx.writeAndFlush(packet.convert2bytearray());
-        }
-        else if(version==2) {
+        } else if (version == 2) {
             AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.WORK_MODE, mode, uid);
             ctx.writeAndFlush(packet.convert2bytearray());
         }
@@ -276,10 +274,10 @@ public class CommunicationController {
             result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
             return result;
         }
-        if(version==1){
+        if (version == 1) {
             AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.VELOCITY, speed, uid, MachineV1Status.class);
             ctx.writeAndFlush(packet.convert2bytearray());
-        }else if(version==2) {
+        } else if (version == 2) {
             AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.FAN_SPEED, speed, uid);
             ctx.writeAndFlush(packet.convert2bytearray());
         }
@@ -335,7 +333,7 @@ public class CommunicationController {
 
     //配置辅热
     @PostMapping("/com/config/heat")
-    public ResultData configHeat(String uid, int heat,int version) {
+    public ResultData configHeat(String uid, int heat, int version) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
         if (StringUtils.isEmpty(ctx)) {
@@ -343,10 +341,10 @@ public class CommunicationController {
             result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
             return result;
         }
-        if(version==1){
+        if (version == 1) {
             AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.HEAT, heat, uid, MachineV1Status.class);
             ctx.writeAndFlush(packet.convert2bytearray());
-        }else if(version==2) {
+        } else if (version == 2) {
             AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.HEAT_MODE, heat, uid);
             ctx.writeAndFlush(packet.convert2bytearray());
         }
@@ -402,7 +400,7 @@ public class CommunicationController {
 
     //配置屏显亮度
     @PostMapping("/com/config/light")
-    public ResultData configLight(String uid, int light,int version) {
+    public ResultData configLight(String uid, int light, int version) {
         ResultData result = new ResultData();
         ChannelHandlerContext ctx = repository.retrieve(uid);
         if (StringUtils.isEmpty(ctx)) {
@@ -410,10 +408,10 @@ public class CommunicationController {
             result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
             return result;
         }
-        if(version==1){
+        if (version == 1) {
             AbstractPacketV1 packet = PacketUtil.generateV1DetailProbe(Action.CONFIG, Constant.LIGHT, light, uid, MachineV1Status.class);
             ctx.writeAndFlush(packet.convert2bytearray());
-        }else if(version == 2) {
+        } else if (version == 2) {
             AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.LIGHT, light, uid);
             ctx.writeAndFlush(packet.convert2bytearray());
         }
@@ -608,6 +606,30 @@ public class CommunicationController {
         AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.PROBE, PacketConstant.SCREEN, null, uid);
         ctx.writeAndFlush(packet.convert2bytearray());
         result.setDescription(new StringBuffer("Succeed to send a probe packet(query screen) to the target uid: ").append(uid).toString());
+        return result;
+    }
+
+    /**
+     * @param uid      机器的MAC地址，用作设备的唯一识别号
+     * @param sequence 升级包在服务器端的顺序
+     * @param bytes    升级包每块的字节数，默认是64
+     * @param blocks   升级包的总块数 = 升级包的大小/升级包每块的字节数
+     * @return
+     */
+    @PostMapping("/com/config/ota")
+    public ResultData ota(String uid, int sequence, int bytes, int blocks) {
+        ResultData result = new ResultData();
+        ChannelHandlerContext ctx = repository.retrieve(uid);
+        if (StringUtils.isEmpty(ctx)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("No channel found for uid: ").append(uid).toString());
+            byte[] input = ByteUtil.concat(new byte[]{0x00}, ByteUtil.int2byte(bytes, 2), ByteUtil.int2byte(blocks, 2), ByteUtil.int2byte(sequence, 1));
+            AbstractPacketV2 packet = PacketUtil.generateDetailProbe(Action.CONFIG, PacketConstant.OTA, input, uid);
+            ctx.writeAndFlush(packet.convert2bytearray());
+            result.setDescription(new StringBuffer("Succeed to send a config packet(ota) to the target uid: ").append(uid).toString());
+            return result;
+        }
+
         return result;
     }
 }
