@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.Image;
 import finley.gmair.model.wechat.PictureOutMessage;
 import finley.gmair.util.WechatProperties;
+import finley.gmair.util.WechatUtil;
 import finley.gmair.util.XStreamFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,16 @@ public class PictureReplyController {
         content.alias("xml", Image.class);
         String xml = content.toXML(result);
         return xml;
+    }
+
+    @PostMapping(value = "/upload/get/mediaId")
+    public String upload2MediaId (String accessToken, String imgUrl) {
+        if (StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(imgUrl)) {
+            return new StringBuffer("Can't be applied with the openId: ").append(accessToken)
+                    .append(" and the imgUrl: ").append(imgUrl).toString();
+        }
+        String result = WechatUtil.uploadImage(accessToken, imgUrl);
+        return result;
     }
 
     private PictureOutMessage init(String openId, String mediaId) {
