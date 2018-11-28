@@ -20,6 +20,12 @@ public class RabbitMQConfig {
     @Value("${machine_v1_queue_name}")
     private String machineV1Queue;
 
+    @Value("${turn_on_queue_name}")
+    private String turnOnQueue;
+
+    @Value("${turn_off_queue_name}")
+    private String turnOffQueue;
+
     @Bean
     public Queue queue() {
         return new Queue(machineQueue);
@@ -34,4 +40,12 @@ public class RabbitMQConfig {
     public Queue machineV1Queue() {
         return new Queue(machineV1Queue);
     }
+
+    @Bean
+    public Queue turnOnQueue() {
+        return new Queue(turnOnQueue);
+    }
+
+    @Bean
+    public Queue turnOffQueue() { return new Queue(turnOffQueue); }
 }

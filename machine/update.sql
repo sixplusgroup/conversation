@@ -212,4 +212,14 @@ ADD COLUMN `index` INT(11) NOT NULL AFTER `pm2_5`;
 ALTER TABLE `gmair_machine`.`out_pm2_5_hourly`
 CHANGE COLUMN `index` `index_hour` INT(11) NOT NULL ;
 
+##2018-11-26
+CREATE TABLE `gmair_machine`.`machine_on_off` (
+  `config_id` VARCHAR(45) NOT NULL,
+  `uid` VARCHAR(45) NOT NULL,
+  `status` TINYINT(1) NOT NULL,
+  `start_time` TIME DEFAULT NULL,
+  `end_time` TIME DEFAULT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`config_id`));
 
