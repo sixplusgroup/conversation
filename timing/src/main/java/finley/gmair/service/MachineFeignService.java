@@ -28,4 +28,7 @@ public interface MachineFeignService {
 
     @PostMapping("/machine/partial/status/screen/off/hourly")
     ResultData turnOffScreenHourly();
+
+    @GetMapping("/machine/power/onoff/schedule/half/list")
+    ResultData powerTurnOnOff();
 }
