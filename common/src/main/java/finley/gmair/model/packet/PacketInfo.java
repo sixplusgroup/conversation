@@ -48,6 +48,9 @@ public class PacketInfo {
     @PacketConfig(command = 0x0F, name = PacketConstant.SCREEN, length = 1)
     private int screen;
 
+    @PacketConfig(command = 0xFA, name = PacketConstant.OTA, length = 5)
+    private int ota;
+
     @PacketConfig(command = 0xFD, name = PacketConstant.CLASSIFICATION, length = 1)
     private int classification;
 

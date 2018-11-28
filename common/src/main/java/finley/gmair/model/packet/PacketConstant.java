@@ -31,6 +31,8 @@ public class PacketConstant {
 
     public final static String SCREEN = "screen";
 
+    public final static String OTA = "ota";
+
     public final static String CLASSIFICATION = "classification";
 
     public final static String FIRMWARE = "firmware";
