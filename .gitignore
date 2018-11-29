@@ -9,3 +9,5 @@ logs/**
 **.jks
 **.properties
 **.yml
+*.png
+*.jpg
