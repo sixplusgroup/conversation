@@ -30,5 +30,6 @@
         <mapper resource="mapper/out_pm2_5_daily.xml"></mapper>
         <mapper resource="mapper/filter_limit_config.xml"></mapper>
         <mapper resource="mapper/filter_light.xml"></mapper>
+        <mapper resource="mapper/machine_on_off.xml"></mapper>
     </mappers>
 </configuration>
