@@ -234,4 +234,20 @@ public class MachineController {
         airqualityService.getDailyCityAqi(cityId);
         return result;
     }
+
+    //创建定时开关配置
+    @PostMapping(value = "/config/timing/power")
+    public ResultData configPower(String qrcode, String startTime, String endTime, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "power", new StringBuffer("User ").append(consumerId).append(" operate ").append("power").append(" set start to ").append(startTime).append(" and end to ").append(endTime).toString(), IPUtil.getIP(request))));
+        return machineService.createPowerOnoff(qrcode, startTime, endTime);
+    }
+
+    //更新定时开关配置
+    @PostMapping(value = "/update/timing/power/config")
+    public ResultData updatePowerConfig(String qrcode, boolean status, String startTime, String endTime, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "power", new StringBuffer("User ").append(consumerId).append(" operate ").append("power").append(" update start to ").append(startTime).append(" and end to ").append(endTime).append(" and status to ").append(status).toString(), IPUtil.getIP(request))));
+        return machineService.updatePowerOnoff(qrcode, status, startTime, endTime);
+    }
 }

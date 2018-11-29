@@ -119,5 +119,18 @@ public interface MachineService {
 
     //ModelEnabledComponentController
     @GetMapping("/machine/model/enabled/component/fetch")
-    ResultData fetchModelEnabledComponent(@RequestParam("modelId") String modelId, @RequestParam("componentName") String componentName);
+    ResultData fetchModelEnabledComponent(@RequestParam("modelId") String modelId,
+                                          @RequestParam("componentName") String componentName);
+
+    //MachineOnOffController
+    @PostMapping("/machine/power/onoff/create")
+    ResultData createPowerOnoff(@RequestParam("qrcode") String qrcode,
+                                @RequestParam("startTime") String startTime,
+                                @RequestParam("endTime") String endTime);
+
+    @PostMapping("/machine/power/onoff/update")
+    ResultData updatePowerOnoff(@RequestParam("qrcode") String qrcode,
+                                @RequestParam("status") boolean status,
+                                @RequestParam("startTime") String startTime,
+                                @RequestParam("endTime") String endTime);
 }
