@@ -215,11 +215,9 @@ public class MachineOnOffController {
             long now = sdf.parse(new Date().toString()).getTime();
             long after = now + 30 * 60 * 1000;
             if (start > now && start < after) {
-                System.out.print(new StringBuilder("The machine: ").append(uid).append("is turned on"));
                 notifier.sendTurnOn(uid);
             }
             if (end > now && end < after) {
-                System.out.print(new StringBuilder("The machine: ").append(uid).append("is turned off"));
                 notifier.sendTurnOff(uid);
             }
         } catch (Exception e) {
