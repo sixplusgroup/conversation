@@ -9,6 +9,7 @@ import finley.gmair.service.AirqualityService;
 import finley.gmair.service.LogService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.IPUtil;
+import finley.gmair.util.ImageShareUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
 
 
 @RestController
@@ -192,49 +194,6 @@ public class MachineController {
         return machineService.fetchModelEnabledComponent(modelId, componentName);
     }
 
-    @PostMapping("/share")
-    public ResultData share(String qrcode) {
-        ResultData result = new ResultData();
-        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //获取机器的实时数据
-        int version = 0, pm2_5 = 0, temperature = 0, humidity = 0, co2 = 0;
-        ResultData response = machineService.getMachineStatusByQRcode(qrcode);
-        //如果能够获取到实时数据，则绘制实时数据部分
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            JSONObject machine = JSONObject.parseObject(JSON.toJSONString(response.getData()));
-            pm2_5 = machine.getInteger("pm2_5");
-            if (machine.containsKey("temp")) {
-                version = 1;
-                temperature = machine.getInteger("temp");
-                humidity = machine.getInteger("humid");
-            }
-            if (machine.containsKey("temperature")) {
-                version = 2;
-                temperature = machine.getInteger("temperature");
-                humidity = machine.getInteger("humidity");
-                co2 = machine.getInteger("co2");
-            }
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("当前无法获取室内的数值信息");
-            return result;
-        }
-        //获取机器的室外地址
-        response = machineService.probeCityIdByQRcode(qrcode);
-        //如果能够获取到室外配置，则显示室外城市信息
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-
-        }
-        String cityId = null;
-        //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
-        response = airqualityService.getLatestCityAirQuality(cityId);
-        //获取室外的连续7天的空气数据
-        machineService.fetchMachineDailyPm2_5(qrcode);
-        //获取室内的连续7天的空气数据
-        airqualityService.getDailyCityAqi(cityId);
-        return result;
-    }
-
     //创建定时开关配置
     @PostMapping(value = "/config/timing/power")
     public ResultData configPower(String qrcode, String startTime, String endTime, HttpServletRequest request) {
@@ -249,5 +208,77 @@ public class MachineController {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "power", new StringBuffer("User ").append(consumerId).append(" operate ").append("power").append(" update start to ").append(startTime).append(" and end to ").append(endTime).append(" and status to ").append(status).toString(), IPUtil.getIP(request))));
         return machineService.updatePowerOnoff(qrcode, status, startTime, endTime);
+    }
+
+    @PostMapping("/share")
+    public ResultData share(String qrcode) {
+        ResultData result = new ResultData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //获取机器的实时数据
+        int version, pm2_5, temperature = 0, humidity = 0, co2 = 0;
+        ResultData response = machineService.getMachineStatusByQRcode(qrcode);
+        //如果能够获取到实时数据，则绘制实时数据部分
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("当前无法获取室内的数值信息");
+            return result;
+        }
+        JSONObject machine = JSONObject.parseObject(JSON.toJSONString(response.getData()));
+        pm2_5 = machine.getInteger("pm2_5");
+        if (machine.containsKey("temp")) {
+            version = 1;
+            temperature = machine.getInteger("temp");
+            humidity = machine.getInteger("humid");
+        }
+        if (machine.containsKey("temperature")) {
+            version = 2;
+            temperature = machine.getInteger("temperature");
+            humidity = machine.getInteger("humidity");
+            co2 = machine.getInteger("co2");
+        }
+        //获取机器的室外地址
+        response = machineService.probeCityIdByQRcode(qrcode);
+        //如果能够获取到室外配置，则显示室外城市信息
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("当前无法获取室外的城市信息");
+            return result;
+        }
+        JSONObject location = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+        String cityId = location.getString("cityId");
+        //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
+        response = airqualityService.getLatestCityAirQuality(cityId);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("当前无法获取最新的城市PM2.5信息");
+            return result;
+        }
+        int outdoorPM2_5, aqi, pm10;
+        double co, no2, o3, so2;
+        JSONObject outdoor = JSON.parseObject(JSON.toJSONString(response.getData()));
+        outdoorPM2_5 = outdoor.getInteger("pm2_5");
+        aqi = outdoor.getInteger("aqi");
+        pm10 = outdoor.getInteger("pm10");
+        String primary = outdoor.getString("primePollution");
+        co = outdoor.getDouble("co");
+        no2 = outdoor.getDouble("no2");
+        o3 = outdoor.getDouble("o3");
+        so2 = outdoor.getDouble("so2");
+        share(path, "果麦新风", pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+        //获取室外的连续7天的空气数据
+        //response = machineService.fetchMachineDailyPm2_5(qrcode);
+        //获取室内的连续7天的空气数据
+        //airqualityService.getDailyCityAqi(cityId);
+        return result;
+    }
+
+    private BufferedImage share(String path, String name, int pm2_5, int temperature, int humidity, int co2) {
+        return ImageShareUtil.share(path, name, pm2_5, temperature, humidity, co2);
+    }
+
+    private BufferedImage share(String path, String name, int pm2_5, int temperature, int humidity, int co2, int outPM2_5, int aqi, String primary, int pm10, double co, double no2, double o3, double so2) {
+        return ImageShareUtil.share(path, name, pm2_5, temperature, humidity, co2, outPM2_5, aqi, primary, pm10, co, no2, o3, so2);
     }
 }
