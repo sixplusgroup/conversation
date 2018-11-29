@@ -92,8 +92,7 @@ public interface MachineService {
     ResultData probeCityIdByQRcode(@RequestParam("qrcode") String qrcode);
 
     @PostMapping("/machine/default/location/update/cityid")
-    ResultData updateCityIdByQRcode(@RequestParam("cityId") String cityId,
-                                    @RequestParam("qrcode") String qrcode);
+    ResultData updateCityIdByQRcode(@RequestParam("cityId") String cityId, @RequestParam("qrcode") String qrcode);
 
     //GoodsController
     @GetMapping("/machine/goods/model/query/by/modelid")
@@ -120,6 +119,5 @@ public interface MachineService {
 
     //ModelEnabledComponentController
     @GetMapping("/machine/model/enabled/component/fetch")
-    ResultData fetchModelEnabledComponent(@RequestParam("modelId") String modelId,
-                                          @RequestParam("componentName") String componentName);
+    ResultData fetchModelEnabledComponent(@RequestParam("modelId") String modelId, @RequestParam("componentName") String componentName);
 }

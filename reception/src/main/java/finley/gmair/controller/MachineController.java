@@ -1,12 +1,19 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.pool.ReceptionPool;
+import finley.gmair.service.AirqualityService;
 import finley.gmair.service.LogService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.IPUtil;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/reception/machine")
+@PropertySource(value = "classpath:/resource.properties")
 public class MachineController {
 
     @Autowired
@@ -22,6 +30,12 @@ public class MachineController {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private AirqualityService airqualityService;
+
+    @Value("${image_share_path}")
+    private String path;
 
     @GetMapping("/check/device/name/binded")
     public ResultData checkDeviceNameExist(String deviceName) {
@@ -176,5 +190,48 @@ public class MachineController {
     @RequestMapping(value = "/model/component/probe", method = RequestMethod.GET)
     public ResultData fetchModelEnabledComponent(String modelId, String componentName) {
         return machineService.fetchModelEnabledComponent(modelId, componentName);
+    }
+
+    @PostMapping("/share")
+    public ResultData share(String qrcode) {
+        ResultData result = new ResultData();
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //获取机器的实时数据
+        int version = 0, pm2_5 = 0, temperature = 0, humidity = 0, co2 = 0;
+        ResultData response = machineService.getMachineStatusByQRcode(qrcode);
+        //如果能够获取到实时数据，则绘制实时数据部分
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            JSONObject machine = JSONObject.parseObject(JSON.toJSONString(response.getData()));
+            pm2_5 = machine.getInteger("pm2_5");
+            if (machine.containsKey("temp")) {
+                version = 1;
+                temperature = machine.getInteger("temp");
+                humidity = machine.getInteger("humid");
+            }
+            if (machine.containsKey("temperature")) {
+                version = 2;
+                temperature = machine.getInteger("temperature");
+                humidity = machine.getInteger("humidity");
+                co2 = machine.getInteger("co2");
+            }
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("当前无法获取室内的数值信息");
+            return result;
+        }
+        //获取机器的室外地址
+        response = machineService.probeCityIdByQRcode(qrcode);
+        //如果能够获取到室外配置，则显示室外城市信息
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+
+        }
+        String cityId = null;
+        //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
+        response = airqualityService.getLatestCityAirQuality(cityId);
+        //获取室外的连续7天的空气数据
+        machineService.fetchMachineDailyPm2_5(qrcode);
+        //获取室内的连续7天的空气数据
+        airqualityService.getDailyCityAqi(cityId);
+        return result;
     }
 }
