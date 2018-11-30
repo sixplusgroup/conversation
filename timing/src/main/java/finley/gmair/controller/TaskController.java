@@ -46,7 +46,7 @@ public class TaskController {
     @PostMapping(value = "/create")
     public ResultData createTask(String taskName, String frequent, String description) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(taskName)) {
+        if (StringUtils.isEmpty(taskName) || StringUtils.isEmpty(frequent) || StringUtils.isEmpty(description)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
