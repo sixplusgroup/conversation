@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.timing.task">
+    <resultMap id="taskVo" type="finley.gmair.model.timing.Task">
+        <result property="taskId" column="task_id"></result>
+        <result property="taskName" column="task_name"></result>
+        <result property="status" column="status"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="taskVo">
+        select task_id, task_name, status, block_flag, create_time
+        from gmair_schedule.task
+        where  1 = 1
+        <if test="taskId != null">
+            and task_id = #{taskId}
+        </if>
+        <if test="taskName != null">
+            and task_name = #{taskName}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by create_time desc
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.timing.Task" useGeneratedKeys="false">
+        insert into gmair_schedule.task(task_id, task_name, status, block_flag, create_time)
+        values(#{taskId}, #{taskName}, #{status}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="update" parameterType="finley.gmair.model.timing.Task">
+        update gmair_schedule.task
+        set
+          task_name = #{taskName},
+          status = #{status},
+          block_flag = #{blockFlag}
+        where
+          task_id = #{taskId}
+    </update>
+</mapper>
