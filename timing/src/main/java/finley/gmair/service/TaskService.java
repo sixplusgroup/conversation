@@ -11,4 +11,6 @@ public interface TaskService {
     ResultData create(Task task);
 
     ResultData modify(Task task);
+
+    boolean probeTaskStatus(Map<String, Object> condition);
 }

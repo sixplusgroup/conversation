@@ -7,6 +7,10 @@ public class Task extends Entity {
 
     private String taskName;
 
+    private String frequent;
+
+    private String description;
+
     private boolean status;
 
     public Task() {
@@ -14,9 +18,11 @@ public class Task extends Entity {
         this.status = true;
     }
 
-    public Task(String taskName) {
+    public Task(String taskName, String frequent, String description) {
         this();
         this.taskName = taskName;
+        this.frequent = frequent;
+        this.description = description;
     }
 
     public String getTaskId() {
@@ -33,6 +39,22 @@ public class Task extends Entity {
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+    public String getFrequent() {
+        return frequent;
+    }
+
+    public void setFrequent(String frequent) {
+        this.frequent = frequent;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isStatus() {

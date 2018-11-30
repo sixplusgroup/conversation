@@ -44,14 +44,14 @@ public class TaskController {
     }
 
     @PostMapping(value = "/create")
-    public ResultData createTask(String taskName) {
+    public ResultData createTask(String taskName, String frequent, String description) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(taskName)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        Task task = new Task(taskName);
+        Task task = new Task(taskName, frequent, description);
         ResultData response = taskService.create(task);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -64,7 +64,7 @@ public class TaskController {
     }
 
     @PostMapping(value = "/update")
-    public ResultData updateTask(String taskName, boolean status) {
+    public ResultData updateTask(String taskName, boolean status, String frequent, String description) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(taskName)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -83,6 +83,12 @@ public class TaskController {
         Task task = ((List<Task>) response.getData()).get(0);
         if (!StringUtils.isEmpty(status)) {
             task.setStatus(status);
+        }
+        if (!StringUtils.isEmpty(frequent)) {
+            task.setFrequent(frequent);
+        }
+        if (!StringUtils.isEmpty(description)) {
+            task.setDescription(description);
         }
         response = taskService.modify(task);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {

@@ -8,6 +8,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -63,5 +64,16 @@ public class TaskServiceImpl implements TaskService {
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
         return result;
+    }
+
+    @Override
+    public boolean probeTaskStatus(Map<String, Object> condition) {
+        condition.put("blockFlag", false);
+        ResultData response = taskDao.queryTask(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return false;
+        }
+        boolean status = ((List<Task>) response.getData()).get(0).isStatus();
+        return status;
     }
 }

@@ -13,7 +13,6 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,24 +32,31 @@ public class HalfHourlyJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        Map<String, Object> condition = new HashMap<>();
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            airQualityFeignService.cityCrawler();
-        }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            airQualityFeignService.monitorStationCrawler();
-        }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            Map<String, Object> condition = new HashMap<>();
-            condition.put("blockFlag", false);
-            condition.put("taskName", "poweronoff");
-            ResultData response = taskService.fetch(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                return;
+            condition.clear();
+            condition.put("taskId", "GTI20181130hana2n87");
+            boolean status = taskService.probeTaskStatus(condition);
+            if (status) {
+                airQualityFeignService.cityCrawler();
             }
-            boolean status = ((List<Task>) response.getData()).get(0).isStatus();
+        }));
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            condition.clear();
+            condition.put("taskId", "GTI20181130gn56nl79");
+            boolean status = taskService.probeTaskStatus(condition);
+            if (status) {
+                airQualityFeignService.monitorStationCrawler();
+            }
+        }));
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            condition.clear();
+            condition.put("taskId", "GTI201811307oaxgf42");
+            boolean status = taskService.probeTaskStatus(condition);
             if (status) {
                 machineFeignService.powerTurnOnOff();
             }
         }));
     }
+
 }
