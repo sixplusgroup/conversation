@@ -6,9 +6,11 @@ import finley.gmair.model.message.TextMessage;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +36,13 @@ public class MessageDaoImpl extends BaseDao implements MessageDao {
     public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<TextMessage> list = sqlSession.selectList("gmair.message.query", condition);
+            List<TextMessage> list = new ArrayList<>();
+//            if (condition.get("pagesize")!=null&&condition.get("pageno")!=null){
+//                list = sqlSession.selectList("gmair.message.query", condition,new RowBounds(Integer.parseInt(String.valueOf(condition.get("pageno"))),Integer.parseInt(String.valueOf(condition.get("pagesize")))));
+//            }else{
+                list = sqlSession.selectList("gmair.message.query", condition);
+//            }
+
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
