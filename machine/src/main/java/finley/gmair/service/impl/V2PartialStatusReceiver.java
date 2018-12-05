@@ -47,7 +47,6 @@ public class V2PartialStatusReceiver {
             outPm25HourlyDao.insert(outPm25Hourly);
         } catch (Exception e) {
 
-
         }
     }
 }
