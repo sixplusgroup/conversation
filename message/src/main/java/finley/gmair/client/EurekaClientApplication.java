@@ -12,7 +12,9 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.ComponentScan;
@@ -87,9 +89,24 @@ public class EurekaClientApplication {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST, value = "/sent/overview")
-    public ResultData overview() {
+    public ResultData overview(String phone,String starttime,String endtime) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(phone)) {
+            condition.put("phone", phone);
+        }
+        if (!StringUtils.isEmpty(starttime)) {
+            condition.put("startTime", starttime);
+        }
+        if (!StringUtils.isEmpty(endtime)) {
+            condition.put("endTime", endtime);
+        }
+//        if (!StringUtils.isEmpty(pagesize)) {
+//            condition.put("pagesize", pagesize);
+//        }
+//        if (!StringUtils.isEmpty(pageno)) {
+//            condition.put("pageno", pageno);
+//        }
         ResultData response = messageService.fetchTextMessage(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
