@@ -40,10 +40,29 @@ public class MessageController {
         return result;
     }
 
+    /**
+     * 接收短信列表
+     * @return
+     */
     @GetMapping("/receive/list")
-    public ResultData list() {
+    public ResultData list(String phone,String starttime,String endtime) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(phone)) {
+            condition.put("phone", phone);
+        }
+        if (!StringUtils.isEmpty(starttime)) {
+            condition.put("startTime", starttime);
+        }
+        if (!StringUtils.isEmpty(endtime)) {
+            condition.put("endTime", endtime);
+        }
+//        if (!StringUtils.isEmpty(pagesize)) {
+//            condition.put("pagesize", pagesize);
+//        }
+//        if (!StringUtils.isEmpty(pageno)) {
+//            condition.put("pageno", pageno);
+//        }
         condition.put("blockFlag", false);
         ResultData response = messageService.fetchReceiveMessage(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
