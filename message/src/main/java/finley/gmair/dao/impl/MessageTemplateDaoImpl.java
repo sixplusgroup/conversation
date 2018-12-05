@@ -6,6 +6,8 @@ import finley.gmair.model.message.MessageTemplate;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ import java.util.Map;
 
 @Repository
 public class MessageTemplateDaoImpl extends BaseDao implements MessageTemplateDao {
+
+    private Logger logger = LoggerFactory.getLogger(MessageTemplateDaoImpl.class);
 
     @Override
     @Transactional
@@ -25,6 +29,7 @@ public class MessageTemplateDaoImpl extends BaseDao implements MessageTemplateDa
             result.setData(template);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            logger.error(e.getMessage());
             result.setDescription(e.getMessage());
         }
         return result;
@@ -41,7 +46,7 @@ public class MessageTemplateDaoImpl extends BaseDao implements MessageTemplateDa
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            System.out.println(new StringBuffer("Message").append("-error-").append(e.getMessage()).toString());
+            logger.error(e.getMessage());
             result.setDescription(e.getMessage());
         }
         return result;
@@ -55,6 +60,7 @@ public class MessageTemplateDaoImpl extends BaseDao implements MessageTemplateDa
             result.setData(template);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            logger.error(e.getMessage());
             result.setDescription(e.getMessage());
         }
         return result;

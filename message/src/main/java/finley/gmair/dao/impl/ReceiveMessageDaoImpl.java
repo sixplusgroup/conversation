@@ -7,6 +7,8 @@ import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.ibatis.session.RowBounds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.Map;
 
 @Repository
 public class ReceiveMessageDaoImpl extends BaseDao implements ReceiveMessageDao {
+
+    private Logger logger = LoggerFactory.getLogger(ReceiveMessageDaoImpl.class);
 
     @Override
     public ResultData insert(TextMessage message) {
@@ -25,8 +29,8 @@ public class ReceiveMessageDaoImpl extends BaseDao implements ReceiveMessageDao 
             result.setData(message);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            logger.error(e.getMessage());
             result.setDescription(e.getMessage());
-            System.out.println("[Error] " + e.getMessage());
         }
         return result;
     }
@@ -35,12 +39,7 @@ public class ReceiveMessageDaoImpl extends BaseDao implements ReceiveMessageDao 
     public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<TextMessage> list = new ArrayList<>();
-//            if (condition.get("pagesize")!=null&&condition.get("pageno")!=null){
-//                list = sqlSession.selectList("gmair.message.receive.query", condition,new RowBounds(Integer.parseInt(String.valueOf(condition.get("pageno"))),Integer.parseInt(String.valueOf(condition.get("pagesize")))));
-//            }else{
-                list = sqlSession.selectList("gmair.message.receive.query", condition);
-//            }
+            List<TextMessage> list = sqlSession.selectList("gmair.message.receive.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }

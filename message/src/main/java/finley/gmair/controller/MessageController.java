@@ -42,10 +42,11 @@ public class MessageController {
 
     /**
      * 接收短信列表
+     *
      * @return
      */
     @GetMapping("/receive/list")
-    public ResultData list(String phone,String starttime,String endtime) {
+    public ResultData list(String phone, String starttime, String endtime) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(phone)) {

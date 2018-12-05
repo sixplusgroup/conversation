@@ -6,10 +6,14 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 
 public class MessageUtil {
+
+    private static Logger logger = LoggerFactory.getLogger(MessageUtil.class);
 
     public static ResultData sendOne(String phone, String text) {
         ResultData result = new ResultData();
@@ -22,7 +26,7 @@ public class MessageUtil {
         formData.add("message", new StringBuffer(text).append(MessageProperties.getValue("message_signature")).toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).
                 post(ClientResponse.class, formData);
-        System.out.println(JSON.toJSONString(response));
+        logger.info(JSON.toJSONString(response));
         return result;
     }
 
@@ -37,7 +41,7 @@ public class MessageUtil {
         formData.add("message", new StringBuffer(text).append(MessageProperties.getValue("message_signature")));
         ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).
                 post(ClientResponse.class, formData);
-        System.out.println("haha" + JSON.toJSONString(response));
+        logger.info(JSON.toJSONString(response));
         return result;
     }
 }
