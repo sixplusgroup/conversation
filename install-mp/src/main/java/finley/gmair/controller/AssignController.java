@@ -110,6 +110,18 @@ public class AssignController {
 
     /**
      * The method is called to submit and entrance to picture upload
+     * 1. first, verify the parameters full or not
+     *  if not, return error;
+     *  else, continue
+     * 2. then, verify the member correct or not
+     *  if not, return error;
+     *  else, get specific member information
+     * 3. then, verify install assign with 4 parameters(teamId, memberId, assignId, status)
+     *  if not, return error;
+     *  else, get install assign information
+     * 4. then, get codeValue in assign and compare with parameter
+     *  if =, return ok -> upload picture
+     *  else, update assign -> (codeValue -> assign), return ok
      * @return
      * */
     @PostMapping(value = "/submit")
