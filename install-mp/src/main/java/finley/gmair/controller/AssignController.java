@@ -119,9 +119,9 @@ public class AssignController {
      * 3. then, verify install assign with 4 parameters(teamId, memberId, assignId, status)
      *  if not, return error;
      *  else, get install assign information
-     * 4. then, get codeValue in assign and compare with parameter
-     *  if =, return ok -> upload picture
-     *  else, update assign -> (codeValue -> assign), return ok
+     * 4. then, get codeValue in assign and verify null or not
+     *  if null, update assign -> (codeValue -> assign, assignStatus -> finished), return ok -> upload picture
+     *  else, return ok -> upload picture
      * @return
      * */
     @PostMapping(value = "/submit")
