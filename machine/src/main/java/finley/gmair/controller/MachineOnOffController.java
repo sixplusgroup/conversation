@@ -126,8 +126,8 @@ public class MachineOnOffController {
             //遍历list，获取30minute中要执行的定时任务，加入队列
             for (Machine_on_off machine_on_off : list) {
                 String uid = machine_on_off.getMachineId();
-                long start = machine_on_off.getStartTime().getTime();
-                long end = machine_on_off.getEndTime().getTime();
+                long start = machine_on_off.getStartTime().getTime() + 8 * 60 * 60 * 1000;
+                long end = machine_on_off.getEndTime().getTime() + 8 * 60 * 60 * 1000;
                 process(uid, start, end);
             }
             result.setData(list);
@@ -210,14 +210,18 @@ public class MachineOnOffController {
      * parameter: 1. uid 2. start 3. end
      * */
     private void process(String uid, long start, long end) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        long curTimeMills = hour * 60 * 60 * 1000 + minute * 60 * 1000 + second * 1000;
+        long before = curTimeMills - 5 * 60 * 60 * 1000;
+        long after = curTimeMills + 5 * 60 * 60 * 1000;
         try {
-            long now = sdf.parse(new Date().toString()).getTime();
-            long after = now + 30 * 60 * 1000;
-            if (start > now && start < after) {
+            if (start > before && start < after) {
                 notifier.sendTurnOn(uid);
             }
-            if (end > now && end < after) {
+            if (end > before && end < after) {
                 notifier.sendTurnOff(uid);
             }
         } catch (Exception e) {
