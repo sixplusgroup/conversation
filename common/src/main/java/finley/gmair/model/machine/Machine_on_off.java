@@ -18,7 +18,6 @@ public class Machine_on_off extends Entity {
 
     public Machine_on_off() {
         super();
-        this.status = true;
     }
 
     public Machine_on_off(String machineId, LocalTime startTime, LocalTime endTime) {
