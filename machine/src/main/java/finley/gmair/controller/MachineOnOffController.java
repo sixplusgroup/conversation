@@ -206,6 +206,46 @@ public class MachineOnOffController {
     }
 
     /**
+     * The method is called to get record by qrcode
+     * 1. verify the code
+     * 2. get machineId by code
+     * 3. get record by machineId
+     * @return */
+    @GetMapping(value = "/get/record/by/code")
+    public ResultData getRecord(String qrcode) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill all the required fields");
+            return result;
+        }
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("qrcode is wrong, please inspect");
+            return result;
+        }
+        MachineQrcodeBindVo vo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
+
+        condition.remove("codeValue");
+        condition.put("machineId", vo.getMachineId());
+        response = machineOnOffService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Parse machine config incorrect");
+            return result;
+        }
+
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
      * The private method is called to add new uid to queue
      * parameter: 1. uid 2. start 3. end
      * */

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.bill.snapshot">
+    <resultMap id="snapshotVo" type="finley.gmair.model.bill.DealSnapshot">
+        <result property="snapshotId" column="snapshot_id"></result>
+        <result property="billId" column="bill_id"></result>
+        <result property="appId" column="app_id"></result>
+        <result property="mchId" column="mch_id"></result>
+        <result property="deviceInfo" column="device_info"></result>
+        <result property="isSubscribe" column="is_subscribe"></result>
+        <result property="channelId" column="channel_id"></result>
+        <result property="bankType" column="bank_type"></result>
+        <result property="orderPrice" column="order_price"></result>
+        <result property="actualPrice" column="actual_price"></result>
+        <result property="feeType" column="fee_type"></result>
+        <result property="timeEnd" column="time_end"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+        <result property="accountId" column="account_id"></result>
+        <result property="transactionId" column="transaction_id"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="snapshotVo">
+        select *
+        from gmair_bill.deal_snapshot
+        where  1 = 1
+        <if test="snapshotId != null">
+            AND snapshot_id = #{snapshotId}
+        </if>
+        <if test="billId != null">
+            AND bill_id = #{billId}
+        </if>
+        <if test="appId != null">
+            AND app_id =#{appId}
+        </if>
+        <if test="mchId != null">
+            AND mch_id =#{mchId}
+        </if>
+        <if test="deviceInfo != null">
+            AND device_info =#{deviceInfo}
+        </if>
+        <if test="isSubscribe != null">
+            AND is_subscribe =#{isSubscribe}
+        </if>
+        <if test="channelId != null">
+            AND channel_id  =#{channelId}
+        </if>
+        <if test="bankType != null">
+            AND bank_type  =#{bankType}
+        </if>
+        <if test="orderPrice != null">
+            AND order_price  =#{orderPrice}
+        </if>
+        <if test="actualPrice != null">
+            AND actual_price =#{actualPrice}
+        </if>
+        <if test="feeType != null">
+            AND fee_type  =#{feeType}
+        </if>
+        <if test="timeEnd != null">
+            AND time_end  =#{timeEnd}
+        </if>
+        <if test="accountId != null">
+            AND account_id  =#{accountId}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test="transactionId != null">
+            AND transaction_id =#{transactionId}
+        </if>
+        ORDER BY create_time ASC
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.bill.DealSnapshot">
+        insert into gmair_bill.deal_snapshot(snapshot_id, bill_id, app_id, mch_id, device_info,
+         account_id, is_subscribe, channel_id, bank_type, order_price, actual_price, fee_type,
+        time_end, block_flag, create_time, transaction_id)
+        values (#{snapshotId}, #{billId}, #{appId}, #{mchId}, #{deviceInfo}, #{accountId}, #{isSubscribe},
+         #{channelId}, #{bankType}, #{orderPrice}, #{actualPrice}, #{feeType},
+         #{timeEnd}, #{blockFlag}, #{createAt}, #{transactionId})
+    </insert>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from gmair_bill.deal_snapshot
+        where snapshot_id = #{snapshotId}
+    </delete>
+
+</mapper>

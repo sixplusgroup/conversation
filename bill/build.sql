@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS `gmair_bill`.`bill_info` (
   `bill_status`  TINYINT(1)  NOT NULL,
   `block_flag`   TINYINT(1)  NOT NULL,
   `create_time`  DATETIME    NOT NULL,
+  `account_id`   VARCHAR(20) NOT NULL,
+  `channel_id`   VARCHAR(20) NOT NULL,
   PRIMARY KEY (`bill_id`)
 )
   ENGINE = InnoDB;
@@ -48,20 +50,23 @@ CREATE TABLE IF NOT EXISTS `gmair_bill`.`payment_channel` (
 CREATE TABLE IF NOT EXISTS `gmair_bill`.`deal_snapshot` (
   `snapshot_id`     VARCHAR(20) NOT NULL,
   `bill_id`         VARCHAR(20) NOT NULL,
+  `account_id`      VARCHAR(20) NOT NULL,
+  `app_id`          VARCHAR(20) NOT NULL,
+  `mch_id`          VARCHAR(20) NOT NULL,
+  `device_info`     VARCHAR(45) NOT NULL,
+  `is_subscribe`    VARCHAR(1)  NOT NULL,
   `channel_id`      VARCHAR(20) NOT NULL,
-  `channel_name`    VARCHAR(45) NOT NULL,
-  `deal_account`    VARCHAR(45) NOT NULL,
-  `snapshot_status` TINYINT(1)  NOT NULL,
+  `bank_type`       VARCHAR(20),
+  `order_price`     DOUBLE  NOT NULL,
+  `actual_price`    DOUBLE  NOT NULL,
+  `fee_type`        VARCHAR(20) NOT NULL,
+  `transaction_id`  VARCHAR(32) NOT NULL,
+  `time_end`        VARCHAR(14) NOT NULL,
   `block_flag`      TINYINT(1)  NOT NULL,
   `create_time`     DATETIME    NOT NULL,
   PRIMARY KEY (`snapshot_id`),
-  INDEX `fk_deal_snapshot_payment_channel_idx` (`channel_id` ASC),
   INDEX `fk_deal_snapshot_bill_info1_idx` (`bill_id` ASC),
-  CONSTRAINT `fk_deal_snapshot_payment_channel`
-  FOREIGN KEY (`channel_id`)
-  REFERENCES `gmair_bill`.`payment_channel` (`channel_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+
   CONSTRAINT `fk_deal_snapshot_bill_info1`
   FOREIGN KEY (`bill_id`)
   REFERENCES `gmair_bill`.`bill_info` (`bill_id`)

@@ -5,5 +5,7 @@
 <configuration>
     <mappers>
         <mapper resource="mapper/billinfo.xml" />
+        <mapper resource="mapper/channel.xml" />
+        <mapper resource="mapper/snapshot.xml" />
     </mappers>
 </configuration>
