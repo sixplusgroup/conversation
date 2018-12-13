@@ -210,6 +210,13 @@ public class MachineController {
         return machineService.updatePowerOnoff(qrcode, status, startTime, endTime);
     }
 
+    @GetMapping(value = "/probe/onoff/status/by/code")
+    public ResultData probeStatus(String qrcode, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "status", new StringBuffer("User ").append(consumerId).append(" power ").append("status").toString(), IPUtil.getIP(request))));
+        return machineService.getRecord(qrcode);
+    }
+
     @PostMapping("/share")
     public ResultData share(String qrcode) {
         ResultData result = new ResultData();

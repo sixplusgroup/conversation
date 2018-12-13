@@ -133,4 +133,7 @@ public interface MachineService {
                                 @RequestParam("status") boolean status,
                                 @RequestParam("startTime") String startTime,
                                 @RequestParam("endTime") String endTime);
+
+    @GetMapping("/machine/power/onoff/get/record/by/code")
+    ResultData getRecord(@RequestParam("qrcode") String qrcode);
 }
