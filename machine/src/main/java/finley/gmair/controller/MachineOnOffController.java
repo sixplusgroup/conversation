@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.*;
 
 @RestController
@@ -41,12 +42,12 @@ public class MachineOnOffController {
      * 5. if, new thread(()->{add to queue})
      * @return
      * */
-    @PostMapping("/create")
-    public ResultData createMachineOnOff(String qrcode, String startTime, String endTime) throws Exception {
+    @PostMapping("/confirm")
+    public ResultData configConfirm(String qrcode, int startHour, int startMinute, int endHour, int endMinute, boolean status) throws Exception {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(startTime) || StringUtils.isEmpty(endTime)) {
+        if (StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure you fill all the required fields");
+            result.setDescription("Please make sure you fill the required fields");
             return result;
         }
 
@@ -61,38 +62,33 @@ public class MachineOnOffController {
         }
         MachineQrcodeBindVo vo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
 
+        LocalTime start = LocalTime.of(startHour, startMinute, 0);
+        LocalTime end = LocalTime.of(endHour, endMinute, 0);
+        Machine_on_off machine_on_off = new Machine_on_off(vo.getMachineId(), start, end);
+        machine_on_off.setStatus(status);
+
         condition.remove("codeValue");
         condition.put("machineId", vo.getMachineId());
         response = machineOnOffService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("The config of the machine is already exists");
-            return result;
-        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("System error, please try again later");
             return result;
         }
-
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        Timestamp start = new Timestamp(sdf.parse(startTime).getTime());
-        Timestamp end = new Timestamp(sdf.parse(endTime).getTime());
-        Machine_on_off machine_on_off = new Machine_on_off(vo.getMachineId(), start, end);
-        response = machineOnOffService.create(machine_on_off);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Config create unsuccessfully");
-            return result;
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            response = machineOnOffService.update(machine_on_off);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            response = machineOnOffService.create(machine_on_off);
+            result.setData(response.getData());
         }
 
         //获取当前时间点和30minute后时间点，验证新任务是否要直接加入队列
         new Thread(() -> {
-            process(vo.getMachineId(), start.getTime(), end.getTime());
+            process(vo.getMachineId(), start, end);
         }).start();
 
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
         return result;
     }
 
@@ -126,82 +122,13 @@ public class MachineOnOffController {
             //遍历list，获取30minute中要执行的定时任务，加入队列
             for (Machine_on_off machine_on_off : list) {
                 String uid = machine_on_off.getMachineId();
-                long start = machine_on_off.getStartTime().getTime() + 8 * 60 * 60 * 1000;
-                long end = machine_on_off.getEndTime().getTime() + 8 * 60 * 60 * 1000;
+                LocalTime start = machine_on_off.getStartTime();
+                LocalTime end = machine_on_off.getEndTime();
                 process(uid, start, end);
             }
             result.setData(list);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
         }
-        return result;
-    }
-
-    /**
-     * The method is called to update config
-     * 1. verify uid is correct or not
-     * 2. if correct, get config entity
-     * 3. if new parameters(status, startTime, endTime) exist, set new parameters
-     * 4. update config
-     * 5. verify new parameters(startTime, endTime) is belong to now()---now()+30
-     * @return
-     * */
-    @PostMapping("/update")
-    public ResultData updateConfig(String qrcode, boolean status, String startTime, String endTime) throws Exception{
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(qrcode)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure you fill all the required fields");
-            return result;
-        }
-
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("codeValue", qrcode);
-        condition.put("blockFlag", false);
-        ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("qrcode is wrong, please inspect");
-            return result;
-        }
-        MachineQrcodeBindVo vo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
-
-        condition.remove("codeValue");
-        condition.put("machineId", vo.getMachineId());
-        response = machineOnOffService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Parse machine config incorrect");
-            return result;
-        }
-
-        Machine_on_off machine_on_off = ((List<Machine_on_off>) response.getData()).get(0);
-        if (!StringUtils.isEmpty(status)) {
-            machine_on_off.setStatus(status);
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        if (!StringUtils.isEmpty(startTime)) {
-            machine_on_off.setStartTime(new Timestamp(sdf.parse(startTime).getTime()));
-        }
-        if (!StringUtils.isEmpty(endTime)) {
-            machine_on_off.setEndTime(new Timestamp(sdf.parse(endTime).getTime()));
-        }
-
-        response = machineOnOffService.update(machine_on_off);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Update config unsuccessfully");
-            return result;
-        }
-
-        machine_on_off = (Machine_on_off) response.getData();
-        Timestamp start = machine_on_off.getStartTime();
-        Timestamp end = machine_on_off.getEndTime();
-        new Thread(() -> {
-            process(vo.getMachineId(), start.getTime(), end.getTime());
-        }).start();
-
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setDescription("Update config successfully");
         return result;
     }
 
@@ -236,7 +163,7 @@ public class MachineOnOffController {
         response = machineOnOffService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Parse machine config incorrect");
+            result.setDescription("Parse machine incorrect");
             return result;
         }
 
@@ -249,19 +176,18 @@ public class MachineOnOffController {
      * The private method is called to add new uid to queue
      * parameter: 1. uid 2. start 3. end
      * */
-    private void process(String uid, long start, long end) {
+    private void process(String uid, LocalTime start, LocalTime end) {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
-        long curTimeMills = hour * 60 * 60 * 1000 + minute * 60 * 1000 + second * 1000;
-        long before = curTimeMills - 5 * 60 * 60 * 1000;
-        long after = curTimeMills + 5 * 60 * 60 * 1000;
+        LocalTime before = LocalTime.of(hour, minute - 5, second);
+        LocalTime after = LocalTime.of(hour, minute + 5, second);
         try {
-            if (start > before && start < after) {
+            if (start.isAfter(before) && start.isBefore(after)) {
                 notifier.sendTurnOn(uid);
             }
-            if (end > before && end < after) {
+            if (end.isAfter(before) && end.isBefore(after)) {
                 notifier.sendTurnOff(uid);
             }
         } catch (Exception e) {

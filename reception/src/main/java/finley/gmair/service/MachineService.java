@@ -123,16 +123,13 @@ public interface MachineService {
                                           @RequestParam("componentName") String componentName);
 
     //MachineOnOffController
-    @PostMapping("/machine/power/onoff/create")
-    ResultData createPowerOnoff(@RequestParam("qrcode") String qrcode,
-                                @RequestParam("startTime") String startTime,
-                                @RequestParam("endTime") String endTime);
-
-    @PostMapping("/machine/power/onoff/update")
-    ResultData updatePowerOnoff(@RequestParam("qrcode") String qrcode,
-                                @RequestParam("status") boolean status,
-                                @RequestParam("startTime") String startTime,
-                                @RequestParam("endTime") String endTime);
+    @PostMapping("/machine/power/onoff/confirm")
+    ResultData confirmPowerOnoff(@RequestParam("qrcode") String qrcode,
+                                 @RequestParam("startHour") int startHour,
+                                 @RequestParam("startMinute") int startMinute,
+                                 @RequestParam("endHour") int endHour,
+                                 @RequestParam("endMinute") int endMinute,
+                                 @RequestParam("status") boolean status);
 
     @GetMapping("/machine/power/onoff/get/record/by/code")
     ResultData getRecord(@RequestParam("qrcode") String qrcode);

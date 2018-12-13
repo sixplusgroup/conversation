@@ -202,21 +202,17 @@ public class MachineController {
     }
 
     //创建定时开关配置
-    @PostMapping(value = "/config/timing/power")
-    public ResultData configPower(String qrcode, String startTime, String endTime, HttpServletRequest request) {
+    @PostMapping(value = "/confirm/timing/power")
+    public ResultData confirmPower(String qrcode, int startHour, int startMinute, int endHour, int endMinute, boolean status, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "power", new StringBuffer("User ").append(consumerId).append(" operate ").append("power").append(" set start to ").append(startTime).append(" and end to ").append(endTime).toString(), IPUtil.getIP(request))));
-        return machineService.createPowerOnoff(qrcode, startTime, endTime);
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "power", new StringBuffer("User ").append(consumerId).append(" operate ").append("power")
+                .append(" set start to ").append(startHour).append(":").append(startMinute)
+                .append(" and end to ").append(endHour).append(":").append(endMinute)
+                .append(" status").append(status).toString(), IPUtil.getIP(request))));
+        return machineService.confirmPowerOnoff(qrcode, startHour, startMinute, endHour, endMinute, status);
     }
 
-    //更新定时开关配置
-    @PostMapping(value = "/update/timing/power/config")
-    public ResultData updatePowerConfig(String qrcode, boolean status, String startTime, String endTime, HttpServletRequest request) {
-        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "power", new StringBuffer("User ").append(consumerId).append(" operate ").append("power").append(" update start to ").append(startTime).append(" and end to ").append(endTime).append(" and status to ").append(status).toString(), IPUtil.getIP(request))));
-        return machineService.updatePowerOnoff(qrcode, status, startTime, endTime);
-    }
-
+    //获取当前机器定时开关机状态
     @GetMapping(value = "/probe/onoff/status/by/code")
     public ResultData probeStatus(String qrcode, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

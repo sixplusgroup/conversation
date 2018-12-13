@@ -3,6 +3,7 @@ package finley.gmair.model.machine;
 import finley.gmair.model.Entity;
 
 import java.sql.Timestamp;
+import java.time.LocalTime;
 
 public class Machine_on_off extends Entity {
     private String configId;
@@ -11,16 +12,16 @@ public class Machine_on_off extends Entity {
 
     private boolean status;
 
-    private Timestamp startTime;
+    private LocalTime startTime;
 
-    private Timestamp endTime;
+    private LocalTime endTime;
 
     public Machine_on_off() {
         super();
         this.status = true;
     }
 
-    public Machine_on_off(String machineId, Timestamp startTime, Timestamp endTime) {
+    public Machine_on_off(String machineId, LocalTime startTime, LocalTime endTime) {
         this();
         this.machineId = machineId;
         this.startTime = startTime;
@@ -51,19 +52,19 @@ public class Machine_on_off extends Entity {
         this.status = status;
     }
 
-    public Timestamp getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Timestamp startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public Timestamp getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Timestamp endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 }
