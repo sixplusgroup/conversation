@@ -1,6 +1,7 @@
 package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.Ownership;
@@ -8,18 +9,18 @@ import finley.gmair.pool.ReceptionPool;
 import finley.gmair.service.AirqualityService;
 import finley.gmair.service.LogService;
 import finley.gmair.service.MachineService;
-import finley.gmair.util.IPUtil;
-import finley.gmair.util.ImageShareUtil;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
+import finley.gmair.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.Date;
 
 
 @RestController
@@ -38,6 +39,12 @@ public class MachineController {
 
     @Value("${image_share_path}")
     private String path;
+
+    @Value("${image_save_path}")
+    private String fileSavePath;
+
+    @Value("${image_upload_url}")
+    private String imageUploadUrl;
 
     @GetMapping("/check/device/name/binded")
     public ResultData checkDeviceNameExist(String deviceName) {
@@ -247,7 +254,15 @@ public class MachineController {
         response = machineService.probeCityIdByQRcode(qrcode);
         //如果能够获取到室外配置，则显示室外城市信息
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            BufferedImage bufferedImageTemp = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            //把处理完的图片上传到服务器
+            String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
+            try {
+                ImageIO.write(bufferedImageTemp, "jpg", new File(fileName));
+                UploadUtil.uploadImage(imageUploadUrl, fileName, "file");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("当前无法获取室外的城市信息");
             return result;
@@ -257,14 +272,22 @@ public class MachineController {
         //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
         response = airqualityService.getLatestCityAirQuality(cityId);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            BufferedImage bufferedImageTemp = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            //把处理完的图片上传到服务器
+            String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
+            try {
+                ImageIO.write(bufferedImageTemp, "jpg", new File(fileName));
+                UploadUtil.uploadImage(imageUploadUrl, fileName, "file");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("当前无法获取最新的城市PM2.5信息");
             return result;
         }
         int outdoorPM2_5, aqi, pm10;
         double co, no2, o3, so2;
-        JSONObject outdoor = JSON.parseObject(JSON.toJSONString(response.getData()));
+        JSONObject outdoor = JSONArray.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
         outdoorPM2_5 = outdoor.getInteger("pm2_5");
         aqi = outdoor.getInteger("aqi");
         pm10 = outdoor.getInteger("pm10");
@@ -273,7 +296,15 @@ public class MachineController {
         no2 = outdoor.getDouble("no2");
         o3 = outdoor.getDouble("o3");
         so2 = outdoor.getDouble("so2");
-        share(path, "果麦新风", pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+        BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+        //把处理完的图片上传到服务器
+        String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
+        try {
+            ImageIO.write(bufferedImage, "jpg", new File(fileName));
+            UploadUtil.uploadImage(imageUploadUrl, fileName, "file");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //获取室外的连续7天的空气数据
         //response = machineService.fetchMachineDailyPm2_5(qrcode);
         //获取室内的连续7天的空气数据
