@@ -45,7 +45,8 @@ public class MachineOnOffController {
     @PostMapping("/confirm")
     public ResultData configConfirm(String qrcode, int startHour, int startMinute, int endHour, int endMinute, boolean status) throws Exception {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(qrcode)) {
+        if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(startHour) || StringUtils.isEmpty(startMinute)
+            || StringUtils.isEmpty(endHour) || StringUtils.isEmpty(endMinute) || StringUtils.isEmpty(status)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill the required fields");
             return result;
@@ -76,6 +77,8 @@ public class MachineOnOffController {
             return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            String configId = ((List<Machine_on_off>) response.getData()).get(0).getConfigId();
+            machine_on_off.setConfigId(configId);
             response = machineOnOffService.update(machine_on_off);
             result.setData(response.getData());
         }
@@ -92,6 +95,16 @@ public class MachineOnOffController {
         return result;
     }
 
+    @PostMapping("/update")
+    public ResultData update(String qrcode, int startHour, int startMinute, int endHour, int endMinute, boolean status) {
+        ResultData result = new ResultData();
+        LocalTime start = LocalTime.of(startHour, startMinute, 0);
+        LocalTime end = LocalTime.of(endHour, endMinute, 0);
+        Machine_on_off on_off = new Machine_on_off(qrcode, start, end);
+        on_off.setStatus(status);
+        result = machineOnOffService.update(on_off);
+        return result;
+    }
     /**
      * The method is called every half an hour
      * 1. condition(status: true, blockFlag, false)
