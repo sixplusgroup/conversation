@@ -1,16 +1,23 @@
 package finley.gmair.controller;
 
+import com.netflix.discovery.CommonConstants;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.Image;
 import finley.gmair.model.wechat.PictureOutMessage;
 import finley.gmair.util.WechatProperties;
 import finley.gmair.util.WechatUtil;
 import finley.gmair.util.XStreamFactory;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 @RestController
@@ -32,12 +39,12 @@ public class PictureReplyController {
     }
 
     @PostMapping(value = "/upload/get/mediaId")
-    public String upload2MediaId (String accessToken, String imgUrl) {
-        if (StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(imgUrl)) {
-            return new StringBuffer("Can't be applied with the openId: ").append(accessToken)
-                    .append(" and the imgUrl: ").append(imgUrl).toString();
+    public String upload2MediaId (String accessToken, MultipartFile multiFile) throws IOException{
+        if (StringUtils.isEmpty(accessToken)) {
+            return new StringBuffer("Can't be applied with the openId: ").append(accessToken).toString();
         }
-        String result = WechatUtil.uploadImage(accessToken, imgUrl);
+        File file = multi2file(multiFile);
+        String result = WechatUtil.uploadImage(accessToken, file);
         return result;
     }
 
@@ -48,5 +55,14 @@ public class PictureReplyController {
         result.setCreateTime(new Date().getTime());
         result.setImage(new Image(mediaId));
         return result;
+    }
+
+    private File multi2file(MultipartFile multiFile) throws IOException {
+        File file = new File(multiFile.getOriginalFilename());
+        file.createNewFile();
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(multiFile.getBytes());
+        fos.close();
+        return file;
     }
 }

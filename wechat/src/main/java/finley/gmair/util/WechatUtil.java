@@ -2,6 +2,7 @@ package finley.gmair.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -124,14 +125,13 @@ public class WechatUtil {
 		return false;
 	}
 
-	public static String uploadImage(String token, String imgUrl) {
+	public static String uploadImage(String token, File file) {
 		String url = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token="
 				+ token + "&type=image";
 		try {
 			URL address = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) address
 					.openConnection();
-			File file = new File(imgUrl);
 			if (!file.exists() || !file.isFile()) {
 				System.out.println("上传的文件不存在");
 			}
@@ -152,7 +152,7 @@ public class WechatUtil {
 			sb.append(BOUNDARY);
 			sb.append("\r\n");
 			sb.append("Content-Disposition: form-data;name=\"media\";filename=\""
-					+ imgUrl + "\" \r\n");
+					+ file.getName() + "\" \r\n");
 			sb.append("Content-Type:application/octet-stream\r\n\r\n");
 			byte[] head = sb.toString().getBytes("utf-8");
 			// 获得输出流
