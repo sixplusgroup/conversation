@@ -42,8 +42,8 @@ public class PictureReplyController {
         }
         try {
             String mediaId = upload2MediaId(file);
-            String pictureXml = reply(openId, mediaId);
-            result.setData(pictureXml);
+            String accessToken = getAccessToken();
+            boolean status = WechatUtil.pushImage(accessToken, openId, mediaId);
             result.setDescription("reply successfully");
         } catch (IOException e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
