@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
@@ -46,13 +47,13 @@ public class PictureReplyController {
     }
 
     @PostMapping(value = "/upload/get/mediaId")
-    public String upload2MediaId (MultipartFile multiFile) throws IOException{
+    public String upload2MediaId (MultipartFile file) throws IOException{
         String accessToken = getAccessToken();
         if (StringUtils.isEmpty(accessToken)) {
             return new StringBuffer("Can't be applied with the openId: ").append(accessToken).toString();
         }
-        File file = multi2file(multiFile);
-        String result = WechatUtil.uploadImage(accessToken, file);
+        File f = multi2file(file);
+        String result = WechatUtil.uploadImage(accessToken, f);
         return result;
     }
 
@@ -65,13 +66,13 @@ public class PictureReplyController {
         return result;
     }
 
-    private File multi2file(MultipartFile multiFile) throws IOException {
-        File file = new File(multiFile.getOriginalFilename());
-        file.createNewFile();
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(multiFile.getBytes());
+    private File multi2file(MultipartFile file) throws IOException {
+        File f = new File(file.getOriginalFilename());
+        f.createNewFile();
+        FileOutputStream fos = new FileOutputStream(f);
+        fos.write(file.getBytes());
         fos.close();
-        return file;
+        return f;
     }
 
     private String getAccessToken() {
@@ -81,7 +82,7 @@ public class PictureReplyController {
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return null;
         }
-        AccessToken token = ((List<AccessToken>) response.getData()).get(0);
+        AccessToken token = (AccessToken) response.getData();
         return token.getAccessToken();
     }
 }
