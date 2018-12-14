@@ -2,12 +2,13 @@ package finley.gmair.controller;
 
 import com.netflix.discovery.CommonConstants;
 import com.thoughtworks.xstream.XStream;
+import finley.gmair.model.wechat.AccessToken;
 import finley.gmair.model.wechat.Image;
 import finley.gmair.model.wechat.PictureOutMessage;
-import finley.gmair.util.WechatProperties;
-import finley.gmair.util.WechatUtil;
-import finley.gmair.util.XStreamFactory;
+import finley.gmair.service.AccessTokenService;
+import finley.gmair.util.*;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,10 +20,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/wechat/picture")
 public class PictureReplyController {
+
+    @Autowired
+    private AccessTokenService accessTokenService;
 
     @PostMapping(value = "/reply", produces = "text/xml;charset=utf-8")
     public String reply(String openId, String mediaId) {
@@ -39,7 +46,8 @@ public class PictureReplyController {
     }
 
     @PostMapping(value = "/upload/get/mediaId")
-    public String upload2MediaId (String accessToken, MultipartFile multiFile) throws IOException{
+    public String upload2MediaId (MultipartFile multiFile) throws IOException{
+        String accessToken = getAccessToken();
         if (StringUtils.isEmpty(accessToken)) {
             return new StringBuffer("Can't be applied with the openId: ").append(accessToken).toString();
         }
@@ -64,5 +72,16 @@ public class PictureReplyController {
         fos.write(multiFile.getBytes());
         fos.close();
         return file;
+    }
+
+    private String getAccessToken() {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = accessTokenService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return null;
+        }
+        AccessToken token = ((List<AccessToken>) response.getData()).get(0);
+        return token.getAccessToken();
     }
 }

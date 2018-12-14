@@ -44,14 +44,6 @@ public class WechatController {
         return wechatService.getToken();
     }
 
-    @PostMapping("/upload/picture/mediaId")
-    public String uploadPicture2mediaId(String accessToken, String imgUrl) {
-        if (StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(imgUrl)) {
-            return new StringBuffer("Calling error with the access_token: ").append(accessToken).append(" and the imgUrl: ").append(imgUrl).toString();
-        }
-        return wechatService.upload2mediaId(accessToken, imgUrl);
-    }
-
     @PostMapping("/picture/reply/user")
     public String replyPicture2user(String openId, String mediaId) {
         if (StringUtils.isEmpty(openId) || StringUtils.isEmpty(mediaId)) {

@@ -16,11 +16,6 @@ public interface WechatService {
     @GetMapping("/wechat/accessToken/query")
     ResultData getToken();
 
-    //upload temporary picture to get mediaId
-    @PostMapping("/wechat/picture/upload/get/mediaId")
-    String upload2mediaId(@RequestParam("accessToken") String accessToken,
-                          @RequestParam("imgUrl") String imgUrl);
-
     //reply picture to user
     @PostMapping("/wechat/picture/reply")
     String picture2user(@RequestParam("openId") String openId,
