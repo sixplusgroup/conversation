@@ -6,21 +6,27 @@ import com.alibaba.fastjson.JSONObject;
 import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.pool.ReceptionPool;
-import finley.gmair.service.AirqualityService;
-import finley.gmair.service.LogService;
-import finley.gmair.service.MachineService;
+import finley.gmair.service.*;
 import finley.gmair.util.*;
+import finley.gmair.vo.consumer.ConsumerVo;
+import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 
 @RestController
@@ -36,6 +42,15 @@ public class MachineController {
 
     @Autowired
     private AirqualityService airqualityService;
+
+    @Autowired
+    private WechatFormService wechatFormService;
+
+    @Autowired
+    private WechatService wechatService;
+
+    @Autowired
+    private AuthConsumerService authConsumerService;
 
     @Value("${image_share_path}")
     private String path;
@@ -250,15 +265,8 @@ public class MachineController {
         response = machineService.probeCityIdByQRcode(qrcode);
         //如果能够获取到室外配置，则显示室外城市信息
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            BufferedImage bufferedImageTemp = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
-            //把处理完的图片上传到服务器
-            String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
-            try {
-                ImageIO.write(bufferedImageTemp, "jpg", new File(fileName));
-                UploadUtil.uploadImage(imageUploadUrl, fileName, "file");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            savaAndUpload(bufferedImage);
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("当前无法获取室外的城市信息");
             return result;
@@ -268,15 +276,8 @@ public class MachineController {
         //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
         response = airqualityService.getLatestCityAirQuality(cityId);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            BufferedImage bufferedImageTemp = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
-            //把处理完的图片上传到服务器
-            String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
-            try {
-                ImageIO.write(bufferedImageTemp, "jpg", new File(fileName));
-                UploadUtil.uploadImage(imageUploadUrl, fileName, "file");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            savaAndUpload(bufferedImage);
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("当前无法获取最新的城市PM2.5信息");
             return result;
@@ -293,14 +294,7 @@ public class MachineController {
         o3 = outdoor.getDouble("o3");
         so2 = outdoor.getDouble("so2");
         BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
-        //把处理完的图片上传到服务器
-        String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
-        try {
-            ImageIO.write(bufferedImage, "jpg", new File(fileName));
-            UploadUtil.uploadImage(imageUploadUrl, fileName, "file");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        savaAndUpload(bufferedImage);
         //获取室外的连续7天的空气数据
         //response = machineService.fetchMachineDailyPm2_5(qrcode);
         //获取室内的连续7天的空气数据
@@ -314,5 +308,28 @@ public class MachineController {
 
     private BufferedImage share(String path, String name, int pm2_5, int temperature, int humidity, int co2, int outPM2_5, int aqi, String primary, int pm10, double co, double no2, double o3, double so2) {
         return ImageShareUtil.share(path, name, pm2_5, temperature, humidity, co2, outPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+    }
+
+    private void savaAndUpload(BufferedImage bufferedImage) {
+        //把处理完的图片上传到服务器
+        String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
+        try {
+            File file = new File(fileName);
+            ImageIO.write(bufferedImage, "jpg", file);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
+            String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            ResultData result = authConsumerService.profile(consumerId);
+            if (result.getResponseCode() != ResponseCode.RESPONSE_OK)
+                return;
+            String openId = (String)((LinkedHashMap) result.getData()).get("wechat");
+            if (StringUtils.isEmpty(openId))
+                return;
+            new Thread(() -> {
+                wechatFormService.uploadAndReply(openId, multipartFile);
+            }).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
