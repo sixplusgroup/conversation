@@ -32,6 +32,25 @@ public class PictureReplyController {
     @Autowired
     private AccessTokenService accessTokenService;
 
+    @PostMapping(value = "/upload/and/reply")
+    public ResultData upload_reply(String openId, MultipartFile file) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(openId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        try {
+            String mediaId = upload2MediaId(file);
+            String pictureXml = reply(openId, mediaId);
+            result.setData(pictureXml);
+            result.setDescription("reply successfully");
+        } catch (IOException e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
     @PostMapping(value = "/reply", produces = "text/xml;charset=utf-8")
     public String reply(String openId, String mediaId) {
         if (StringUtils.isEmpty(openId) || StringUtils.isEmpty(mediaId)) {
