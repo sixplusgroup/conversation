@@ -1,36 +1,37 @@
 package finley.gmair.controller;
 
-import com.netflix.discovery.CommonConstants;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.AccessToken;
 import finley.gmair.model.wechat.Image;
 import finley.gmair.model.wechat.PictureOutMessage;
 import finley.gmair.service.AccessTokenService;
 import finley.gmair.util.*;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/wechat/picture")
+@PropertySource("classpath:/wechat.properties")
 public class PictureReplyController {
 
     @Autowired
     private AccessTokenService accessTokenService;
+
+    @Value("${file_save_path}")
+    private String fileSavePath;
 
     @PostMapping(value = "/upload/and/reply")
     public ResultData upload_reply(String openId, MultipartFile file) {
@@ -73,6 +74,7 @@ public class PictureReplyController {
         }
         File f = multi2file(file);
         String result = WechatUtil.uploadImage(accessToken, f);
+        f.delete();
         return result;
     }
 
@@ -86,11 +88,9 @@ public class PictureReplyController {
     }
 
     private File multi2file(MultipartFile file) throws IOException {
-        File f = new File(file.getOriginalFilename());
-        f.createNewFile();
-        FileOutputStream fos = new FileOutputStream(f);
-        fos.write(file.getBytes());
-        fos.close();
+        File f = new File(String.format("%s/%s.jpg",fileSavePath,IDGenerator.generate("PIC")));
+        //f.createNewFile();
+        file.transferTo(f);
         return f;
     }
 

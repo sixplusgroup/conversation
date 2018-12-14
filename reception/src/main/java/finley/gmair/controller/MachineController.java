@@ -326,10 +326,16 @@ public class MachineController {
             if (StringUtils.isEmpty(openId))
                 return;
             new Thread(() -> {
-                wechatFormService.uploadAndReply(openId, multipartFile);
+                try {
+                    wechatFormService.uploadAndReply(openId, multipartFile);
+                }
+                catch (Exception e){
+
+                }
             }).start();
+            file.delete();
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
     }
 }
