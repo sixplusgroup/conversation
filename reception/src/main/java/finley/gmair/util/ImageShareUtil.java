@@ -13,15 +13,15 @@ import java.text.DecimalFormat;
 public class ImageShareUtil {
     private static Logger logger = LoggerFactory.getLogger(ImageShareUtil.class);
 
-    private final static String[] list = new String[]{"exc_01.png", "mod_02.png", "sen_03.png", "unh_04.png", "vun_05.png", "haz_06.png"};
+    private final static String[] list = new String[]{"/exc_01.png", "/mod_02.png", "/sen_03.png", "/unh_04.png", "/vun_05.png", "/haz_06.png"};
 
     public static BufferedImage share(String base, String name, int indoorPM2_5, int temperature, int humidity, int carbon) {
         BufferedImage indoor = null, stata = null, brand = null;
         int width = 0, height = 0;
         try {
             indoor = ImageShareUtil.indoor(base, name, indoorPM2_5, temperature, humidity, carbon);
-            stata = ImageIO.read(new File(base + "stata_03.jpg"));
-            brand = ImageIO.read(new File(base + "brand_04.jpg"));
+            stata = ImageIO.read(new File(base + "/stata_03.jpg"));
+            brand = ImageIO.read(new File(base + "/brand_04.jpg"));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -47,8 +47,8 @@ public class ImageShareUtil {
         try {
             indoor = ImageShareUtil.indoor(base, name, indoorPM2_5, temperature, humidity, carbon);
             outdoor = ImageShareUtil.outdoor(base, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
-            stata = ImageIO.read(new File(base + "stata_03.jpg"));
-            brand = ImageIO.read(new File(base + "brand_04.jpg"));
+            stata = ImageIO.read(new File(base + "/stata_03.jpg"));
+            brand = ImageIO.read(new File(base + "/brand_04.jpg"));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -71,9 +71,9 @@ public class ImageShareUtil {
     public static BufferedImage indoor(String base, String name, int current, int temp, int humid, int carbon) {
         BufferedImage indoor = null, circle = null, text = null;
         try {
-            indoor = ImageIO.read(new File(base + "indoor_01.jpg"));
+            indoor = ImageIO.read(new File(base + "/indoor_01.jpg"));
             circle = pickCircle(base, current, list);
-            text = ImageIO.read(new File(base + "indoor.png"));
+            text = ImageIO.read(new File(base + "/indoor.png"));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -106,9 +106,9 @@ public class ImageShareUtil {
     public static BufferedImage outdoor(String base, int current, int aqi, String primary, int pm10, double co, double no2, double o3, double so2) {
         BufferedImage outdoor = null, circle = null, text = null;
         try {
-            outdoor = ImageIO.read(new File(base + "outdoor_02.jpg"));
+            outdoor = ImageIO.read(new File(base + "/outdoor_02.jpg"));
             circle = pickCircle(base, current, list);
-            text = ImageIO.read(new File(base + "outdoor.png"));
+            text = ImageIO.read(new File(base + "/outdoor.png"));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

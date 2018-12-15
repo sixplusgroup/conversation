@@ -10,6 +10,8 @@ import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.apache.http.entity.ContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -34,6 +36,8 @@ import java.util.List;
 @PropertySource(value = "classpath:/resource.properties")
 public class MachineController {
 
+    private Logger logger = LoggerFactory.getLogger(MachineController.class);
+
     @Autowired
     private MachineService machineService;
 
@@ -52,14 +56,14 @@ public class MachineController {
     @Autowired
     private AuthConsumerService authConsumerService;
 
+    @Autowired
+    private LocationService locationService;
+
     @Value("${image_share_path}")
     private String path;
 
     @Value("${image_save_path}")
     private String fileSavePath;
-
-    @Value("${image_upload_url}")
-    private String imageUploadUrl;
 
     @GetMapping("/check/device/name/binded")
     public ResultData checkDeviceNameExist(String deviceName) {
@@ -254,6 +258,9 @@ public class MachineController {
             version = 1;
             temperature = machine.getInteger("temp");
             humidity = machine.getInteger("humid");
+            if (machine.containsKey("co2")) {
+                co2 = machine.getInteger("co2");
+            }
         }
         if (machine.containsKey("temperature")) {
             version = 2;
@@ -267,7 +274,7 @@ public class MachineController {
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
             savaAndUpload(bufferedImage);
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("当前无法获取室外的城市信息");
             return result;
         }
@@ -276,11 +283,23 @@ public class MachineController {
         //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
         response = airqualityService.getLatestCityAirQuality(cityId);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
-            savaAndUpload(bufferedImage);
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("当前无法获取最新的城市PM2.5信息");
-            return result;
+            //根据城市获取省份
+            response = locationService.probeProvinceIdByCityId(cityId);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("当前无法获取最新的城市PM2.5信息");
+                return result;
+            }
+            location = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+            String provinceId = location.getString("provinceId");
+            response = airqualityService.getLatestCityAirQuality(provinceId);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+                savaAndUpload(bufferedImage);
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("当前无法获取最新的城市PM2.5信息");
+                return result;
+            }
         }
         int outdoorPM2_5, aqi, pm10;
         double co, no2, o3, so2;
@@ -322,15 +341,13 @@ public class MachineController {
             ResultData result = authConsumerService.profile(consumerId);
             if (result.getResponseCode() != ResponseCode.RESPONSE_OK)
                 return;
-            String openId = (String)((LinkedHashMap) result.getData()).get("wechat");
+            String openId = (String) ((LinkedHashMap) result.getData()).get("wechat");
             if (StringUtils.isEmpty(openId))
                 return;
             new Thread(() -> {
                 try {
                     wechatFormService.uploadAndReply(openId, multipartFile);
-                }
-                catch (Exception e){
-
+                } catch (Exception e) {
                 }
             }).start();
             file.delete();
