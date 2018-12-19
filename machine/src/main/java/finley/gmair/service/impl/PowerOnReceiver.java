@@ -40,10 +40,30 @@ public class PowerOnReceiver {
         BoardVersion boardVersion = ((List<BoardVersion>) response.getData()).get(0);
         switch (boardVersion.getVersion()) {
             case 1:
-                coreV1Service.configPower(uid, 1, 1);
+                new Thread(() -> {
+                    for (int i = 0; i < 3; i++) {
+                        try {
+                            coreV1Service.configPower(uid, 1, 1);
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+
+                        }
+                    }
+                }).start();
+                //coreV1Service.configPower(uid, 1, 1);
                 break;
             case 2:
-                coreV2Service.configPower(uid, 1, 2);
+                new Thread(() -> {
+                    for (int i = 0; i < 3; i++) {
+                        try {
+                            coreV2Service.configPower(uid, 1, 2);
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+
+                        }
+                    }
+                }).start();
+                //coreV2Service.configPower(uid, 1, 2);
                 break;
         }
     }
