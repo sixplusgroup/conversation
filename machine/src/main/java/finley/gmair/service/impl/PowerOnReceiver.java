@@ -41,10 +41,10 @@ public class PowerOnReceiver {
         switch (boardVersion.getVersion()) {
             case 1:
                 new Thread(() -> {
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 6; i++) {
                         try {
                             coreV1Service.configPower(uid, 1, 1);
-                            Thread.sleep(1000);
+                            Thread.sleep(5000);
                         } catch (InterruptedException e) {
 
                         }
@@ -54,10 +54,10 @@ public class PowerOnReceiver {
                 break;
             case 2:
                 new Thread(() -> {
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 6; i++) {
                         try {
                             coreV2Service.configPower(uid, 1, 2);
-                            Thread.sleep(1000);
+                            Thread.sleep(5000);
                         } catch (InterruptedException e) {
 
                         }
