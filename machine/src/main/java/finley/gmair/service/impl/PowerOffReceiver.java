@@ -44,7 +44,7 @@ public class PowerOffReceiver {
                     for (int i = 0; i < 6; i++) {
                         try {
                             coreV1Service.configPower(uid, 0, 1);
-                            Thread.sleep(5000);
+                            Thread.sleep(10000);
                         } catch (InterruptedException e) {
 
                         }
@@ -57,7 +57,7 @@ public class PowerOffReceiver {
                     for (int i = 0; i < 6; i++) {
                         try {
                             coreV2Service.configPower(uid, 0, 2);
-                            Thread.sleep(5000);
+                            Thread.sleep(10000);
                         } catch (InterruptedException e) {
 
                         }
