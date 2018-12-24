@@ -54,7 +54,6 @@ public class RankCrawler {
      * get city rank and
      * every hour on half
      */
-    @PostConstruct
     public void rank() {
         Map<String, CityAirQuality> map = new HashMap<>();
         int count = 1;
@@ -139,10 +138,10 @@ public class RankCrawler {
             return;
         Timestamp timestamp = airQualityList.get(0).getRecordTime();
         Map<String, Object> condition = new HashMap();
-        condition.put("recordTime",timestamp);
-        condition.put("blockFlag",false);
+        condition.put("recordTime", timestamp);
+        condition.put("blockFlag", false);
         ResultData response = airQualityDao.select(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             airQualityDao.insertBatch(airQualityList);
         }
     }
