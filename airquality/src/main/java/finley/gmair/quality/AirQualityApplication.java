@@ -1,5 +1,6 @@
 package finley.gmair.quality;
 
+import finley.gmair.service.CityAQIService;
 import finley.gmair.service.MonitorStationCrawler;
 import finley.gmair.service.RankCrawler;
 import finley.gmair.util.ResultData;
@@ -31,9 +32,12 @@ public class AirQualityApplication {
     @Autowired
     private MonitorStationCrawler monitorStationCrawler;
 
+    @Autowired
+    private CityAQIService cityAQIService;
+
     @PostMapping("/airquality/city/crawler")
     public ResultData crawler() {
-        rankCrawler.rank();
+        cityAQIService.obtain();
         return new ResultData();
     }
 
