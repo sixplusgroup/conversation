@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -118,14 +119,13 @@ public class CityAirQualityController {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.MILLISECOND, 0);
         long zero = cal.getTimeInMillis(); // 今天零点零分零秒的毫秒数
-        Timestamp todayZero = new Timestamp(zero);
         Timestamp last7dayZero = new Timestamp(zero - 7 * 24 * 60 * 60 * 1000);
 
         //查询过去七天的pm2.5记录
         Map<String, Object> condition = new HashMap<>();
         condition.put("cityId", cityId);
-        condition.put("createTimeGTE", last7dayZero);
-        condition.put("createTimeLTE", todayZero);
+        condition.put("dateDiff", System.currentTimeMillis());
+        condition.put("blockFlag", false);
         ResultData response = airQualityStatisticService.fetchAirQualityDailyStatistic(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -134,18 +134,26 @@ public class CityAirQualityController {
             result.setDescription("fail to fetch city daily aqi");
             return result;
         } else {
-            //将查询结果格式化
             List<CityAirQualityStatisticVo> list = (List<CityAirQualityStatisticVo>) response.getData();
-            for (int i = 0; i < list.size(); i++) {
-                long thatTime = list.get(i).getCreateTime().getTime();
-                list.get(i).setCreateTime(new Timestamp(thatTime - (thatTime + 8 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000)));
-            }
+            List<CityAirQualityStatisticVo> resultList = new ArrayList<>();
+            //定义查询结果的返回值
             for (int i = 0; i < 7; i++) {
-                if (list.size() == i || list.get(i).getCreateTime().getTime() != last7dayZero.getTime() + (i + 1) * 1000 * 60 * 60 * 24) {
-                    list.add(i, new CityAirQualityStatisticVo(cityId, 0, new Timestamp(last7dayZero.getTime() + (i + 1) * 1000 * 60 * 60 * 24)));
-                }
+                resultList.add(new CityAirQualityStatisticVo(cityId, 0, new Timestamp(last7dayZero.getTime() + (i + 1) * 1000 * 60 * 60 * 24)));
             }
-            result.setData(list);
+            for (int i = 0; i < list.size(); i++) {
+                //首先拿出这一条记录的当天0点时间戳和pm2.5
+                long thatTime = list.get(i).getCreateTime().getTime();
+                SimpleDateFormat time = new SimpleDateFormat("yyyyMMdd");
+                int thatDate = Integer.parseInt(time.format(thatTime));
+                int sevenDayLastDate = Integer.parseInt(time.format(last7dayZero));
+                int dayDiff = thatDate - sevenDayLastDate - 1;
+                double pm2_5 = list.get(i).getPm25();
+                //判断该时间戳与七天前0点时间戳的差距
+                if (dayDiff < 0 || dayDiff >= 7)
+                    continue;
+                resultList.get((int) dayDiff).setPm25(pm2_5);
+            }
+            result.setData(resultList);
         }
         return result;
     }

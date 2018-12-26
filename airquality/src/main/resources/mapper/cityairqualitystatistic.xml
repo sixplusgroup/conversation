@@ -87,6 +87,14 @@
               AND create_time <= #{createTimeLTE}
             ]]>
         </if>
+        <if test="dateDiff != null">
+            <![CDATA[
+                AND DATEDIFF(CURDATE(),create_time) < 7
+            ]]>
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
         order by create_time asc
     </select>
 
