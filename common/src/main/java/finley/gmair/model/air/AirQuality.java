@@ -2,7 +2,7 @@ package finley.gmair.model.air;
 
 import finley.gmair.model.Entity;
 
-public class AirQuality extends Entity {
+public abstract class AirQuality extends Entity {
     private double aqi;
     private String aqiLevel;
     private String primePollution;

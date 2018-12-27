@@ -7,8 +7,10 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 @Service
@@ -30,44 +32,6 @@ public class ProvinceCityCacheServiceImpl implements ProvinceCityCacheService {
 
     @Autowired
     LocationFeign locationFeign;
-
-    @PostConstruct
-    public void init() {
-        int count = 1;
-        while (count > 0) {
-            try {
-                ResultData response = locationFeign.province();
-                List<LinkedHashMap> provinceList = (List<LinkedHashMap>) response.getData();
-                for (int i = 0; i < provinceList.size(); i++) {
-                    String provinceId = (String) provinceList.get(i).get("provinceId");
-                    String provinceName = (String) provinceList.get(i).get("provinceName");
-                    provinceId2NameMap.put(provinceId, provinceName);
-                    response = locationFeign.city(provinceId);
-                    List<LinkedHashMap> cityList = (List<LinkedHashMap>) response.getData();
-                    for (LinkedHashMap city : cityList) {
-                        provinceCityMap.put((String) city.get("cityName"), (String) city.get("cityId"));
-                        city2provinceMap.put((String) city.get("cityId"), provinceId);
-                        cityId2NameMap.put((String) city.get("cityId"), (String) city.get("cityName"));
-                        citySet.add((String) city.get("cityId"));
-                    }
-                    city2provinceMap.put(provinceId, provinceId);
-                    provinceCityMap.put(provinceName, provinceId);
-                    cityId2NameMap.put(provinceId, provinceName);
-                    citySet.add(provinceId);
-                }
-                count--;
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("初始化各种map失败,等待5秒后重新初始化,请确认location服务已经启动");
-                try{
-                    Thread.sleep(5000);
-                } catch (Exception exception){
-                    exception.printStackTrace();
-                }
-            }
-        }
-
-    }
 
     @Override
     public ResultData fetch(String cityName) {
