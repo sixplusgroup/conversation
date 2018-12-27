@@ -7,6 +7,7 @@ import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.TimeUtil;
 import finley.gmair.vo.machine.MachinePm2_5Vo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,11 +137,9 @@ public class MachineStatusController {
 
         //2.get the last 24 hour data from database
         Timestamp last24Hour = new Timestamp((System.currentTimeMillis() - 24 * 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60));
-        Timestamp lastHour = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60) * (1000 * 60 * 60));
         condition.clear();
         condition.put("uid", machineId);
         condition.put("createTimeGTE", last24Hour);
-        condition.put("createTimeLTE", lastHour);
         condition.put("blockFlag", false);
         response = machinePm25Service.fetchMachineHourlyPm25(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -153,24 +152,25 @@ public class MachineStatusController {
             return result;
         }
 
-        //3.format data
+        //3.format time
         List<MachinePm2_5Vo> list = (List<MachinePm2_5Vo>) response.getData();
-        for (int i = 0; i < list.size(); i++) {
-            long thatTime = list.get(i).getCreateTime().getTime();
-            list.get(i).setCreateTime(new Timestamp((thatTime / (1000 * 60 * 60) * (1000 * 60 * 60))));
-        }
-        while (list.size() > 24) {
-            list.remove(0);
+        List<MachinePm2_5Vo> resultList = new ArrayList<>();
+        for (int i = 0; i < 24; i++) {
+            resultList.add(new MachinePm2_5Vo(machineId, 0, 0, new Timestamp(last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)));
         }
 
-        int last24Index = (int) ((last24Hour.getTime() / (1000 * 60 * 60) + 8) % 24);
-        for (int i = 0; list.size() < 24; i++) {
-            if (list.size() == i || list.get(i).getCreateTime().getTime() != (last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)) {
-                list.add(i, new MachinePm2_5Vo(machineId, (last24Index + i) % 24, 0, new Timestamp(last24Hour.getTime() + (i + 1) * 60 * 60 * 1000)));
-            }
+        for (int i = 0; i < list.size(); i++) {
+            //获取这条记录时间戳整点的时间戳
+            Timestamp thatHour = TimeUtil.getThatTimeStampHourTimestamp(list.get(i).getCreateTime());
+            long hourDiff = (thatHour.getTime() - last24Hour.getTime()) / (60 * 60 * 1000) - 1;
+            if (hourDiff < 0 || hourDiff > 23)
+                continue;
+            resultList.get((int) hourDiff).setPm2_5(list.get(i).getPm2_5());
         }
-        result.setData(list);
-        result.setDescription("list.size() = " + list.size());
+
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("success to find latest pm2.5 by machineId");
+        result.setData(resultList);
         return result;
     }
 

@@ -1,5 +1,6 @@
 package finley.gmair.util;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -13,5 +14,16 @@ public class TimeUtil {
         Calendar calendar = Calendar.getInstance();
         String time = sdf.format(calendar.getTime());
         return time;
+    }
+
+    //获取当前小时整点时间戳
+    public static Timestamp getCurrentHourTimestamp(){
+        Timestamp lastHour = new Timestamp((System.currentTimeMillis()) / (1000 * 60 * 60) * (1000 * 60 * 60));
+        return lastHour;
+    }
+
+    //传入一个时间戳，转换成那个时间整点的时间戳()
+    public static Timestamp getThatTimeStampHourTimestamp(Timestamp timestamp){
+        return new Timestamp(timestamp.getTime()/(1000 * 60 * 60) * (1000 * 60 * 60));
     }
 }

@@ -64,4 +64,14 @@ public class MachineController {
         result.setDescription("success to create control option with its actions");
         return result;
     }
+
+    @GetMapping("/probe/24hour/outPm25")
+    public ResultData probeLast24HourOutPm25ByMachineId(String qrcode){
+        return machineService.probeLast24HourOutPm25ByQrcode(qrcode);
+    }
+
+    @GetMapping("/probe/24hour/indoorPm25")
+    public ResultData probeLast24HourIndoorPm25ByMachineId(String qrcode){
+        return machineService.fetchMachineHourlyPm2_5(qrcode);
+    }
 }
