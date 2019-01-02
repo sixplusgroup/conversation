@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.machinePowerDaily">
+    <resultMap id="machinePowerDaily" type="finley.gmair.model.machine.MachinePowerDaily">
+        <result property="statusId" column="status_id"></result>
+        <result property="machineId" column="machine_id"></result>
+        <result property="powerUsage" column="power_usage"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.machine.MachinePowerDaily" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.machine_daily_power(status_id, machine_id, power_usage, block_flag, create_time)
+        VALUES(#{statusId}, #{machineId}, #{powerUsage}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <insert id="insertDailyBatch" parameterType="java.util.List">
+        INSERT INTO gmair_machine.machine_daily_power
+        (status_id, machine_id, power_usage, block_flag, create_time)
+        VALUES
+        <foreach collection="list" separator="," item="MachinePowerDaily" index="index">
+            (#{MachinePowerDaily.statusId}, #{MachinePowerDaily.machineId}, #{MachinePowerDaily.powerUsage},
+            #{MachinePowerDaily.blockFlag}, #{MachinePowerDaily.createAt})
+        </foreach>
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="machinePowerDaily">
+        SELECT status_id, machine_id, power_usage, block_flag, create_time
+        FROM gmair_machine.machine_daily_power
+        WHERE 1 = 1
+        <if test="statusId != null">
+            AND status_id = #{statusId}
+        </if>
+        <if test="machineId != null">
+            AND machine_id = #{machineId}
+        </if>
+        <if test="createAt != null">
+            AND create_time >= #{createAt}
+        </if>
+        <if test="oneDayDiff != null">
+            <![CDATA[
+                AND DATEDIFF(CURDATE(),create_time) = 1
+            ]]>
+        </if>
+        order by create_time desc
+    </select>
+</mapper>

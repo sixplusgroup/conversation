@@ -223,3 +223,13 @@ CREATE TABLE `gmair_machine`.`machine_on_off` (
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`config_id`));
 
+
+#2018-01-02
+CREATE TABLE `machine_daily_power` (
+  `status_id` varchar(25) NOT NULL,
+  `machine_id` varchar(45) NOT NULL,
+  `power_usage` varchar(45) NOT NULL,
+  `block_flag` tinyint(1) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8

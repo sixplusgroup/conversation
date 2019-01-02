@@ -31,5 +31,6 @@
         <mapper resource="mapper/filter_limit_config.xml"></mapper>
         <mapper resource="mapper/filter_light.xml"></mapper>
         <mapper resource="mapper/machine_on_off.xml"></mapper>
+        <mapper resource="mapper/machine_power_daily.xml"></mapper>
     </mappers>
 </configuration>

@@ -48,6 +48,9 @@ public class MachineStatusController {
     @Autowired
     private FilterLightService filterLightService;
 
+    @Autowired
+    private MachinePowerService machinePowerService;
+
     Map<String, Integer> pm25Over25Count = new HashMap<>();
 
     //每小时调用,从redis中统计每个机器的pm25每小时平均值,并插入到mysql数据库中machine_hourly_status
@@ -66,6 +69,12 @@ public class MachineStatusController {
     @PostMapping("/schedule/monthly")
     ResultData handleMachineStatusMonthly() {
         return machinePm25Service.handleMonthly();
+    }
+
+    //每日调用,从mongo中统计每个机器的每天power开机时间(minute),并插入到mysql数据库中machine_daily_power
+    @GetMapping("/power/schedule/daily")
+    public ResultData handleMachinePowerDaily() {
+        return machinePowerService.handleMachinePowerStatusDaily();
     }
 
     @GetMapping("/isonline/{qrcode}")
