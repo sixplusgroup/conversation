@@ -198,21 +198,34 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         return result;
     }
 
-    //暂时废弃
+
     public ResultData queryMachineV1Status(Map<String, Object> condition) {
         ResultData result = new ResultData();
         Query query = new Query();
         if (condition.get("machineId") != null) {
-            query.addCriteria(Criteria.where("machineId").is(condition.get("machineId")));
+            query.addCriteria(Criteria.where("uid").is(condition.get("machineId")));
         }
-        if (condition.get("createAtGTE") != null) {
+        if (condition.get("power") != null) {
+            query.addCriteria(Criteria.where("power").is(condition.get("power")));
+        }
+        if (condition.get("createAtGTE") != null && condition.get("createAtLT") != null) {
+            query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")).lt(condition.get("createAtLT")));
+        } else if (condition.get("createAtGTE") != null) {
             query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")));
-            query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "createAt")));
+        } else if (condition.get("createAtLT") != null) {
+            query.addCriteria(Criteria.where("createAt").lt(condition.get("createAtLT")));
         }
+        query.with(new Sort(new Sort.Order(Sort.Direction.ASC, "createAt")));
 
         try {
-            MachineV1Status machineV1Status = mongoTemplate.findOne(query, MachineV1Status.class);
-            result.setData(machineV1Status);
+            List<MachineV1Status> machineStatusList = mongoTemplate.find(query, MachineV1Status.class);
+            if (machineStatusList.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                return result;
+            } else {
+                result.setData(machineStatusList);
+                return result;
+            }
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             e.printStackTrace();
@@ -231,6 +244,10 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         }
         if (condition.get("createAtGTE") != null && condition.get("createAtLT") != null) {
             query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")).lt(condition.get("createAtLT")));
+        } else if (condition.get("createAtGTE") != null) {
+            query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")));
+        } else if (condition.get("createAtLT") != null) {
+            query.addCriteria(Criteria.where("createAt").lt(condition.get("createAtLT")));
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.ASC, "createAt")));
 
