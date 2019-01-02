@@ -56,7 +56,7 @@ public class GMRepository {
 
     public GMRepository remove(ChannelHandlerContext ctx) {
         for (String key : cache.keySet()) {
-            if (cache.get(key).equals(ctx)) {
+            if (cache.get(key).equals(ctx) && !StringUtils.isEmpty(ctx)) {
                 CorePool.getLogExecutor().execute(() -> logService.createMachineComLog(key, "Lose connection", new StringBuffer("Client: ").append(key).append(" of 2nd version loses connection to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress()));
                 cache.remove(key);
                 break;
