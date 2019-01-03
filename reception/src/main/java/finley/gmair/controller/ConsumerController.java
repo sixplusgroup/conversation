@@ -1,8 +1,11 @@
 package finley.gmair.controller;
 
 import finley.gmair.form.consumer.LocationForm;
+import finley.gmair.pool.ReceptionPool;
 import finley.gmair.service.AuthConsumerService;
+import finley.gmair.service.LogService;
 import finley.gmair.service.MachineService;
+import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * ConsumerController is responsible for all operations done by consumer regarding his/her account information,
@@ -27,6 +32,9 @@ public class ConsumerController {
 
     @Autowired
     private MachineService machineService;
+
+    @Autowired
+    private LogService logService;
 
     @RequestMapping(value= "/check/right/qrcode",method = RequestMethod.GET)
     public ResultData checkUserAccessToQRcode(String qrcode){
@@ -80,7 +88,7 @@ public class ConsumerController {
     }
 
     @RequestMapping(value="/wechat/bind",method = RequestMethod.POST)
-    public ResultData bindWechat(String openid){
+    public ResultData bindWechat(String openid, HttpServletRequest request){
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(openid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -96,12 +104,15 @@ public class ConsumerController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to bind whechat");
+            ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+                logService.createUser(consumerId, "wechatBind", new StringBuffer("User:").append(consumerId).append(" bind wechat with id ").append(openid).toString(), IPUtil.getIP(request));
+            }));
         }
         return result;
     }
 
     @RequestMapping(value="/wechat/unbind",method = RequestMethod.POST)
-    public ResultData unbindWechat(){
+    public ResultData unbindWechat(HttpServletRequest request){
         ResultData result = new ResultData();
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ResultData response = authConsumerService.unbindWechat(consumerId);
@@ -112,12 +123,15 @@ public class ConsumerController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to unbind whechat");
+            ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+                logService.createUser(consumerId, "wechatUnBind", new StringBuffer("User:").append(consumerId).append(" unbind wechat").toString(), IPUtil.getIP(request));
+            }));
         }
         return result;
     }
 
     @RequestMapping(value = "/edit/username", method = RequestMethod.POST)
-    public ResultData editUsername(String username) {
+    public ResultData editUsername(String username, HttpServletRequest request) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(username)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -133,12 +147,15 @@ public class ConsumerController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to edit username.");
+            ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+                logService.createUser(consumerId, "editUserName", new StringBuffer("User:").append(consumerId).append(" edit user name to ").append(username).toString(), IPUtil.getIP(request));
+            }));
         }
         return result;
     }
 
     @RequestMapping(value = "/edit/phone", method = RequestMethod.POST)
-    public ResultData editPhone(String newPhone) {
+    public ResultData editPhone(String newPhone, HttpServletRequest request) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(newPhone)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -154,12 +171,15 @@ public class ConsumerController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to edit phone.");
+            ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+                logService.createUser(consumerId, "editUserPhone", new StringBuffer("User:").append(consumerId).append(" edit user phone to ").append(newPhone).toString(), IPUtil.getIP(request));
+            }));
         }
         return result;
     }
 
     @RequestMapping(value = "/edit/location", method = RequestMethod.POST)
-    public ResultData editLocation(LocationForm form) {
+    public ResultData editLocation(LocationForm form, HttpServletRequest request) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getProvince()) || StringUtils.isEmpty(form.getCity()) || StringUtils.isEmpty(form.getDistrict()) || StringUtils.isEmpty(form.getDetail())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -175,6 +195,9 @@ public class ConsumerController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to edit location");
+            ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+                logService.createUser(consumerId, "editLocation", new StringBuffer("User:").append(consumerId).append(" edit user location to ").append(form.toString()).toString(), IPUtil.getIP(request));
+            }));
         }
         return result;
     }

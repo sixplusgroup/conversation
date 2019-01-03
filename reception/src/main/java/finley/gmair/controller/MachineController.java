@@ -79,20 +79,32 @@ public class MachineController {
 
     //设备初始化时 将qrcode和consumerId绑定
     @PostMapping("/deviceinit")
-    public ResultData deviceInit(String qrcode, String deviceName) {
+    public ResultData deviceInit(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+            logService.createUserAction(consumerId, qrcode, "bind",
+                    new StringBuffer("User:").append(consumerId).append(" bind device with name ").append(deviceName).toString(), IPUtil.getIP(request));
+        }));
         return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
     }
 
     @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
-    public ResultData unbindConsumerWithQRcode(String qrcode) {
+    public ResultData unbindConsumerWithQRcode(String qrcode, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+            logService.createUserAction(consumerId, qrcode, "unbind",
+                    new StringBuffer("User:").append(consumerId).append(" unbind device with qrcode ").append(qrcode).toString(), IPUtil.getIP(request));
+        }));
         return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
     }
 
     @PostMapping("/device/bind/share")
-    public ResultData acquireControlOn(String qrcode, String deviceName) {
+    public ResultData acquireControlOn(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+            logService.createUserAction(consumerId, qrcode, "shareBind",
+                    new StringBuffer("User:").append(consumerId).append(" share device binding with ").append(deviceName).toString(), IPUtil.getIP(request));
+        }));
         return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.SHARE.getValue());
     }
 
@@ -204,8 +216,12 @@ public class MachineController {
     }
 
     @RequestMapping(value = "/modify/bind/name", method = RequestMethod.POST)
-    public ResultData modifyBindName(String qrcode, String bindName) {
+    public ResultData modifyBindName(String qrcode, String bindName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+            logService.createUserAction(consumerId, qrcode, "modifyBindName",
+                    new StringBuffer("User:").append(consumerId).append(" modify device bind name to ").append(bindName).toString(), IPUtil.getIP(request));
+        }));
         return machineService.modifyBindName(qrcode, bindName, consumerId);
     }
 
@@ -240,7 +256,7 @@ public class MachineController {
     }
 
     @PostMapping("/share")
-    public ResultData share(String qrcode) {
+    public ResultData share(String qrcode, HttpServletRequest request) {
         ResultData result = new ResultData();
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //获取机器的实时数据
@@ -313,6 +329,10 @@ public class MachineController {
         o3 = outdoor.getDouble("o3");
         so2 = outdoor.getDouble("so2");
         BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+            logService.createUserAction(consumerId, qrcode, "shareImage",
+                    new StringBuffer("User:").append(consumerId).append(" share machine image with qrcode ").append(qrcode).toString(), IPUtil.getIP(request));
+        }));
         savaAndUpload(bufferedImage);
         //获取室外的连续7天的空气数据
         //response = machineService.fetchMachineDailyPm2_5(qrcode);
