@@ -1,14 +1,8 @@
 package finley.gmair.controller;
 
 
-import finley.gmair.form.log.MachineComLogForm;
-import finley.gmair.form.log.Server2MachineLogForm;
-import finley.gmair.form.log.SystemEventLogForm;
-import finley.gmair.form.log.UserActionLogForm;
-import finley.gmair.model.log.MachineComLog;
-import finley.gmair.model.log.Server2MachineLog;
-import finley.gmair.model.log.SystemEventLog;
-import finley.gmair.model.log.UserActionLog;
+import finley.gmair.form.log.*;
+import finley.gmair.model.log.*;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -240,6 +234,49 @@ public class LogController {
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to query server-machine log");
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/user/create")
+    public ResultData createUserLog(UserLogForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getUserId()) || StringUtils.isEmpty(form.getComponent())
+                || StringUtils.isEmpty(form.getLogDetail()) || StringUtils.isEmpty(form.getIp())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        String userId = form.getUserId().trim();
+        String component = form.getComponent().trim();
+        String logDetail = form.getLogDetail().trim();
+        String ip = form.getIp().trim();
+        UserLog log = new UserLog(logDetail, ip, userId, component);
+        ResultData response = logService.createUserLog(log);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store user log");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @PostMapping("/user/query")
+    public ResultData getUserLog(String userId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(userId)) {
+            condition.put("userId", userId);
+        }
+        ResultData response = logService.fetchUserLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query user log");
         }
         return result;
     }

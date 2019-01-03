@@ -1,9 +1,6 @@
 package finley.gmair.dao;
 
-import finley.gmair.model.log.MachineComLog;
-import finley.gmair.model.log.Server2MachineLog;
-import finley.gmair.model.log.SystemEventLog;
-import finley.gmair.model.log.UserActionLog;
+import finley.gmair.model.log.*;
 import finley.gmair.util.ResultData;
 
 import java.util.Map;
@@ -24,5 +21,9 @@ public interface LogDao {
     ResultData insertServer2MachineLog(Server2MachineLog server2MachineLog);
 
     ResultData queryServer2MachineLog(Map<String, Object> condition);
+
+    ResultData insertUserLog(UserLog userLog);
+
+    ResultData queryUserLog(Map<String, Object> condition);
 
 }

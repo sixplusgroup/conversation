@@ -2,10 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.LogDao;
-import finley.gmair.model.log.MachineComLog;
-import finley.gmair.model.log.Server2MachineLog;
-import finley.gmair.model.log.SystemEventLog;
-import finley.gmair.model.log.UserActionLog;
+import finley.gmair.model.log.*;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -27,6 +24,8 @@ public class LogDaoImpl extends BaseDao implements LogDao {
     private final static String Collection_UserActionLog = "UserAction_log";
 
     private final static String Collection_Server2MachineLog = "ServerMachine_log";
+
+    private final static String Collection_UserLog = "User_log";
 
     @Override
     public ResultData insertMachineComLog(MachineComLog machineComLog) {
@@ -166,6 +165,44 @@ public class LogDaoImpl extends BaseDao implements LogDao {
                 list = mongoTemplate.find(new Query(Criteria.where("machineValue").is(condition.get("machineValue"))), Server2MachineLog.class, Collection_Server2MachineLog);
             } else {
                 list = mongoTemplate.findAll(Server2MachineLog.class, Collection_Server2MachineLog);
+            }
+
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData insertUserLog(UserLog userLog) {
+        ResultData result = new ResultData();
+        userLog.setLogId(IDGenerator.generate("USL"));
+        try {
+            mongoTemplate.insert(userLog, Collection_UserLog);
+            result.setData(userLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryUserLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<UserLog> list;
+            if (condition.containsKey("userId")) {
+                list = mongoTemplate.find(new Query(Criteria.where("userId").is(condition.get("userId"))), UserLog.class, Collection_UserLog);
+            } else {
+                list = mongoTemplate.findAll(UserLog.class, Collection_UserLog);
             }
 
             if (list.isEmpty()) {
