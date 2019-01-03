@@ -77,31 +77,31 @@ public class MachinePowerServiceImpl implements MachinePowerService {
             return resultData;
         }
         List<MachineStatus> v2List = (List<MachineStatus>) response.getData();
+        List<MachinePowerDaily> v1MachinePowerDailyList = new ArrayList<>();
+        List<MachinePowerDaily> v2MachinePowerDailyList = new ArrayList<>();
 
-
-        //根据获取到的昨天的数据统计所有用户昨日机器开机时长
-        int v1PacketInteval = 12;                //一分钟服务器接收到12条一代主板数据报文
-        Map<String, Long> v1PowerUsageMap = v1List.stream().collect(
-                Collectors.groupingBy(MachineV1Status::getMachineId, Collectors.counting()));
-        List<MachinePowerDaily> v1MachinePowerDailyList = v1PowerUsageMap.entrySet().stream()
-                .map(e -> new MachinePowerDaily(e.getKey(), (int) (e.getValue() / v1PacketInteval)))
-                .collect(Collectors.toList());
-
-        int v2PacketInteval = 2;                  //一分钟服务器接收到2条二代主板数据报文
-        Map<String, Long> v2PowerUsageMap = v2List.stream().collect(
-                Collectors.groupingBy(MachineStatus::getUid, Collectors.counting()));
-        List<MachinePowerDaily> v2MachinePowerDailyList = v2PowerUsageMap.entrySet().stream()
-                .map(e -> new MachinePowerDaily(e.getKey(), (int) (e.getValue() / v2PacketInteval)))
-                .collect(Collectors.toList());
+        if(v1List!=null) {
+            //根据获取到的昨天的数据统计所有用户昨日机器开机时长
+            int v1PacketInteval = 12;                //一分钟服务器接收到12条一代主板数据报文
+            Map<String, Long> v1PowerUsageMap = v1List.stream().collect(
+                    Collectors.groupingBy(MachineV1Status::getMachineId, Collectors.counting()));
+            v1MachinePowerDailyList = v1PowerUsageMap.entrySet().stream()
+                    .map(e -> new MachinePowerDaily(e.getKey(), (int) (e.getValue() / v1PacketInteval)))
+                    .collect(Collectors.toList());
+        }
+        if(v2List!=null) {
+            int v2PacketInteval = 2;                  //一分钟服务器接收到2条二代主板数据报文
+            Map<String, Long> v2PowerUsageMap = v2List.stream().collect(
+                    Collectors.groupingBy(MachineStatus::getUid, Collectors.counting()));
+            v2MachinePowerDailyList = v2PowerUsageMap.entrySet().stream()
+                    .map(e -> new MachinePowerDaily(e.getKey(), (int) (e.getValue() / v2PacketInteval)))
+                    .collect(Collectors.toList());
+        }
 
         //合并两个统计完的数组，插入数据库
         List<MachinePowerDaily> resultList = new ArrayList<>();
-        for(MachinePowerDaily mpd:v1MachinePowerDailyList){
-            resultList.add(mpd);
-        }
-        for(MachinePowerDaily mpd:v2MachinePowerDailyList){
-            resultList.add(mpd);
-        }
+        resultList.addAll(v1MachinePowerDailyList);
+        resultList.addAll(v2MachinePowerDailyList);
         response = machinePowerDailyDao.insertDailyBatch(resultList);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             resultData.setDescription("成功统计数据");
