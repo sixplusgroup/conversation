@@ -145,7 +145,7 @@ public class LogDaoImpl extends BaseDao implements LogDao {
         ResultData result = new ResultData();
         server2MachineLog.setLogId(IDGenerator.generate("STM"));
         try {
-            mongoTemplate.insert(server2MachineLog, "ServerMachine_log");
+            mongoTemplate.insert(server2MachineLog, Collection_Server2MachineLog);
             result.setData(server2MachineLog);
         } catch (Exception e) {
             e.printStackTrace();
