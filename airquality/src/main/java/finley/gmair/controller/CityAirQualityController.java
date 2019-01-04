@@ -144,7 +144,7 @@ public class CityAirQualityController {
             for (int i = 0; i < list.size(); i++) {
                 //首先拿出这一条记录的当天0点时间戳和pm2.5
                 long thatTime = list.get(i).getCreateTime().getTime();
-                int dayDiff = TimeUtil.days(last7dayZero.getTime(), thatTime);
+                int dayDiff = TimeUtil.days(last7dayZero.getTime(), thatTime) - 1;
                 double pm2_5 = list.get(i).getPm25();
                 //判断该时间戳与七天前0点时间戳的差距
                 if (dayDiff < 0 || dayDiff >= 7)

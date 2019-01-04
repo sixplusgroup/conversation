@@ -11,7 +11,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>airquality</artifactId>
-    <version>1.0.0104-Weekly-SNAPSHOT</version>
+    <version>1.0.0105-Weekly-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
