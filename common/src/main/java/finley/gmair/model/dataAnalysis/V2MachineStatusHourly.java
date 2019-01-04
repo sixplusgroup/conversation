@@ -2,7 +2,7 @@ package finley.gmair.model.dataAnalysis;
 
 import finley.gmair.model.Entity;
 
-public class MachineStatusHourly extends Entity {
+public class V2MachineStatusHourly extends Entity {
     //机器id
     private String machineId;
 
@@ -37,11 +37,11 @@ public class MachineStatusHourly extends Entity {
     private int heatOnMinute;
     private int heatOffMinute;
 
-    public MachineStatusHourly() {
+    public V2MachineStatusHourly() {
         super();
     }
 
-    public MachineStatusHourly(String machineId, double averagePm25, int maxPm25, int minPm25, double averageVolume, int maxVolume, int minVolume, double averageTemp, int maxTemp, int minTemp, double averageHumid, int maxHumid, int minHumid, double averageCo2, int maxCo2, int minCo2, int powerOnMinute, int powerOffMinute, int manualMinute, int cosyMinute, int warmMinute, int heatOnMinute, int heatOffMinute) {
+    public V2MachineStatusHourly(String machineId, double averagePm25, int maxPm25, int minPm25, double averageVolume, int maxVolume, int minVolume, double averageTemp, int maxTemp, int minTemp, double averageHumid, int maxHumid, int minHumid, double averageCo2, int maxCo2, int minCo2, int powerOnMinute, int powerOffMinute, int manualMinute, int cosyMinute, int warmMinute, int heatOnMinute, int heatOffMinute) {
         this.machineId = machineId;
         this.averagePm25 = averagePm25;
         this.maxPm25 = maxPm25;
