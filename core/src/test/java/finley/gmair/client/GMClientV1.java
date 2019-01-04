@@ -7,10 +7,10 @@ public class GMClientV1 {
     public static void main(String[] args) {
         int port = 8888;
         //服务器host: 118.31.78.254     my host: 192.168.2.59
-        //for(int i=0;i<10;i++) {
-        String uid = "test-v1";
+        for(int i=0;i<10;i++) {
+        String uid = "v1test" + i;
         GMClientV1Handler server = new GMClientV1Handler("192.168.50.21", port, uid,5000);
         new Thread(server, "server").start();
-        //}
+        }
     }
 }
