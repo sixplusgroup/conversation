@@ -15,7 +15,7 @@ public class UserActionLogForm {
 
     private String ip;
 
-    private Object actionValue;
+    private String actionValue;
 
     public String getUserId() {
         return userId;
@@ -57,11 +57,11 @@ public class UserActionLogForm {
         this.ip = ip;
     }
 
-    public Object getActionValue() {
+    public String getActionValue() {
         return actionValue;
     }
 
-    public void setActionValue(Object actionValue) {
+    public void setActionValue(String actionValue) {
         this.actionValue = actionValue;
     }
 }
