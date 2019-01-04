@@ -11,4 +11,6 @@ public interface BillDao {
     ResultData insert(BillInfo billInfo);
 
     ResultData update(BillInfo billInfo);
+
+    ResultData delete(String billId);
 }

@@ -2,7 +2,6 @@ package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.CityAQIService;
 import finley.gmair.util.ResultData;
 import org.apache.commons.codec.binary.Base64;
@@ -23,8 +22,8 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     private Logger logger = LoggerFactory.getLogger(CityAQIServiceImpl.class);
 
-    @Value("${username}")
-    private String username;
+    @Value("${account}")
+    private String account;
 
     @Value("${password}")
     private String password;
@@ -40,7 +39,7 @@ public class CityAQIServiceImpl implements CityAQIService {
             try {
                 URL location = new URL(url.toString());
                 HttpURLConnection connection = (HttpURLConnection) location.openConnection();
-                String origin = new StringBuffer(username).append(":").append(password).toString();
+                String origin = new StringBuffer(account).append(":").append(password).toString();
                 String auth = new String(Base64.encodeBase64(origin.getBytes()));
                 connection.setRequestProperty("Authorization", new StringBuffer("Basic ").append(auth).toString());
                 connection.setRequestProperty("User-Agent", "MSIE 7.0");
