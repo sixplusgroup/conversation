@@ -4,26 +4,26 @@ package finley.gmair.model.log;
  * @author shenghaohu@hshvip.com
  * @date 2018/6/6
  */
-public class UserActionLog extends AbstractLog {
+public class UserMachineOperationLog extends AbstractLog {
     private String logId;
 
     private String userId;
 
-    private String machineValue;
+    private String qrcode;
 
     private long time;
 
     private String component;
 
-    private Object actionValue;
+    private String value;
 
-    public UserActionLog(String userId, String machineValue, long time, String component, String logDetail, String ip, Object actionValue) {
-        super(logDetail, ip);
+    public UserMachineOperationLog(String userId, String qrcode, long time, String component, String detail, String ip, String value) {
+        super(detail, ip);
         this.userId = userId;
-        this.machineValue = machineValue;
+        this.qrcode = qrcode;
         this.time = time;
         this.component = component;
-        this.actionValue = actionValue;
+        this.value = value;
     }
 
     public String getLogId() {
@@ -42,12 +42,12 @@ public class UserActionLog extends AbstractLog {
         this.userId = userId;
     }
 
-    public String getMachineValue() {
-        return machineValue;
+    public String getQrcode() {
+        return qrcode;
     }
 
-    public void setMachineValue(String machineValue) {
-        this.machineValue = machineValue;
+    public void setQrcode(String qrcode) {
+        this.qrcode = qrcode;
     }
 
     public long getTime() {
@@ -66,11 +66,11 @@ public class UserActionLog extends AbstractLog {
         this.component = component;
     }
 
-    public Object getActionValue() {
-        return actionValue;
+    public Object getValue() {
+        return value;
     }
 
-    public void setActionValue(Object actionValue) {
-        this.actionValue = actionValue;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

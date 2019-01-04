@@ -1,6 +1,6 @@
 package finley.gmair.model.log;
 
-public class UserLog extends AbstractLog {
+public class UserAccountOperationLog extends AbstractLog {
 
     private String logId;
 
@@ -8,8 +8,8 @@ public class UserLog extends AbstractLog {
 
     private String component;
 
-    public UserLog(String logDetail, String ip, String userId, String component) {
-        super(logDetail, ip);
+    public UserAccountOperationLog(String detail, String ip, String userId, String component) {
+        super(detail, ip);
         this.userId = userId;
         this.component = component;
     }

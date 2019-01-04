@@ -8,16 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("log-agent")
 public interface LogService {
     @PostMapping("/log/useraction/create")
-    ResultData createUserAction(@RequestParam("userId") String userId,
-                                @RequestParam("machineValue") String machineValue,
-                                @RequestParam("component") String component,
-                                @RequestParam("logDetail") String logDetail,
-                                @RequestParam("ip") String ip,
-                                @RequestParam("actionValue") Object actionValue);
+    ResultData createUserMachineOperationLog(@RequestParam("userId") String userId, @RequestParam("machineValue") String machineValue, @RequestParam("component") String component, @RequestParam("logDetail") String logDetail, @RequestParam("ip") String ip, @RequestParam("actionValue") String actionValue);
 
     @PostMapping("/log/userlog/create")
-    ResultData createUser(@RequestParam("userId") String userId,
-                          @RequestParam("component") String component,
-                          @RequestParam("logDetail") String logDetail,
-                          @RequestParam("ip") String ip);
+    ResultData createUserAccountOperationLog(@RequestParam("userId") String userId, @RequestParam("component") String component, @RequestParam("logDetail") String logDetail, @RequestParam("ip") String ip);
 }

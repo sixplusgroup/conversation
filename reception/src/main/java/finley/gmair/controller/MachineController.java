@@ -3,12 +3,10 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.pool.ReceptionPool;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
-import finley.gmair.vo.consumer.ConsumerVo;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 
 @RestController
@@ -49,9 +45,6 @@ public class MachineController {
 
     @Autowired
     private WechatFormService wechatFormService;
-
-    @Autowired
-    private WechatService wechatService;
 
     @Autowired
     private AuthConsumerService authConsumerService;
@@ -82,8 +75,7 @@ public class MachineController {
     public ResultData deviceInit(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserAction(consumerId, qrcode, "bind",
-                    new StringBuffer("User:").append(consumerId).append(" bind device with name ").append(deviceName).toString(), IPUtil.getIP(request), "bind");
+            logService.createUserMachineOperationLog(consumerId, qrcode, "bind", new StringBuffer("User:").append(consumerId).append(" bind device with name ").append(deviceName).toString(), IPUtil.getIP(request), "bind");
         }));
         return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
     }
@@ -92,7 +84,7 @@ public class MachineController {
     public ResultData unbindConsumerWithQRcode(String qrcode, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserAction(consumerId, qrcode, "unbind",
+            logService.createUserMachineOperationLog(consumerId, qrcode, "unbind",
                     new StringBuffer("User:").append(consumerId).append(" unbind device with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "unbind");
         }));
         return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
@@ -102,8 +94,7 @@ public class MachineController {
     public ResultData acquireControlOn(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserAction(consumerId, qrcode, "shareBind",
-                    new StringBuffer("User:").append(consumerId).append(" share device binding with ").append(deviceName).toString(), IPUtil.getIP(request), "share");
+            logService.createUserMachineOperationLog(consumerId, qrcode, "shareBind", new StringBuffer("User:").append(consumerId).append(" share device binding with ").append(deviceName).toString(), IPUtil.getIP(request), "share");
         }));
         return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.SHARE.getValue());
     }
@@ -128,7 +119,7 @@ public class MachineController {
     @PostMapping("/operate/{component}/{operation}")
     public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, component, new StringBuffer("User ").append(consumerId).append(" operate ").append(component).append(" set to ").append(operation).toString(), IPUtil.getIP(request), operation)));
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, component, new StringBuffer("User ").append(consumerId).append(" operate ").append(component).append(" set to ").append(operation).toString(), IPUtil.getIP(request), operation)));
         return machineService.chooseComponent(qrcode, component, operation);
     }
 
@@ -136,14 +127,14 @@ public class MachineController {
     @PostMapping("/config/speed")
     public ResultData configSpeed(String qrcode, int speed, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "speed", new StringBuffer("User ").append(consumerId).append(" operate ").append("speed").append(" set to ").append(speed).toString(), IPUtil.getIP(request), speed)));
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "speed", new StringBuffer("User ").append(consumerId).append(" operate ").append("speed").append(" set to ").append(speed).toString(), IPUtil.getIP(request), String.valueOf(speed))));
         return machineService.configSpeed(qrcode, speed);
     }
 
     @PostMapping("/config/light")
     public ResultData configLight(String qrcode, int light, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "light", new StringBuffer("User ").append(consumerId).append(" operate ").append("light").append(" set to ").append(light).toString(), IPUtil.getIP(request), light)));
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "light", new StringBuffer("User ").append(consumerId).append(" operate ").append("light").append(" set to ").append(light).toString(), IPUtil.getIP(request), String.valueOf(light))));
         return machineService.configLight(qrcode, light);
     }
 
@@ -219,8 +210,7 @@ public class MachineController {
     public ResultData modifyBindName(String qrcode, String bindName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserAction(consumerId, qrcode, "modifyBindName",
-                    new StringBuffer("User:").append(consumerId).append(" modify device bind name to ").append(bindName).toString(), IPUtil.getIP(request), "modifyBind");
+            logService.createUserMachineOperationLog(consumerId, qrcode, "modifyBindName", new StringBuffer("User:").append(consumerId).append(" modify device bind name to ").append(bindName).toString(), IPUtil.getIP(request), "modifyBind");
         }));
         return machineService.modifyBindName(qrcode, bindName, consumerId);
     }
@@ -240,18 +230,14 @@ public class MachineController {
     @PostMapping(value = "/confirm/timing/power")
     public ResultData confirmPower(String qrcode, int startHour, int startMinute, int endHour, int endMinute, boolean status, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "power", new StringBuffer("User ").append(consumerId).append(" operate ").append("power")
-                .append(" set start to ").append(startHour).append(":").append(startMinute)
-                .append(" and end to ").append(endHour).append(":").append(endMinute)
-                .append(" and status").append(status).toString(), IPUtil.getIP(request), status)));
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "timing", new StringBuffer("User ").append(consumerId).append(" operate ").append("power").append(" set start to ").append(startHour).append(":").append(startMinute).append(" and end to ").append(endHour).append(":").append(endMinute).append(" and status").append(status).toString(), IPUtil.getIP(request), status ? "on" : "off")));
         return machineService.confirmPowerOnoff(qrcode, startHour, startMinute, endHour, endMinute, status);
     }
 
     //获取当前机器定时开关机状态
     @GetMapping(value = "/probe/onoff/status/by/code")
-    public ResultData probeStatus(String qrcode, HttpServletRequest request) {
+    public ResultData probeStatus(String qrcode) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserAction(consumerId, qrcode, "status", new StringBuffer("User ").append(consumerId).append(" power ").append("status").toString(), IPUtil.getIP(request))));
         return machineService.getRecord(qrcode);
     }
 
@@ -330,8 +316,7 @@ public class MachineController {
         so2 = outdoor.getDouble("so2");
         BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserAction(consumerId, qrcode, "shareImage",
-                    new StringBuffer("User:").append(consumerId).append(" share machine image with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "shareImage");
+            logService.createUserMachineOperationLog(consumerId, qrcode, "share", new StringBuffer("User:").append(consumerId).append(" share machine image with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "image");
         }));
         savaAndUpload(bufferedImage);
         //获取室外的连续7天的空气数据
