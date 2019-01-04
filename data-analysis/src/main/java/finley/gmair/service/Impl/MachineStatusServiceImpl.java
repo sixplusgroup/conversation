@@ -35,8 +35,8 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         Map<String, Object> map = (HashMap) response.getData();
 
         //统计
-        List<V1MachineStatusHourly> resultList1 = new ArrayList<>();
-        List<V2MachineStatusHourly> resultList2 = new ArrayList<>();
+        List<Object> resultList = new ArrayList<>();
+
         try {
             for (String machineId : map.keySet()) {
                 Object queue = map.get(machineId);
@@ -45,14 +45,14 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                     LinkedList<MachineStatus> list = ((LimitQueue) queue).getLinkedList();
                     V1MachineStatusHourly msh = countV1Status(list);
                     if (msh != null)
-                        resultList1.add(msh);
+                        resultList.add(msh);
                 }
                 //若这个queue存了v2的status
                 else if (((LimitQueue<Object>) queue).getLast() instanceof finley.gmair.model.machine.MachineStatus) {
                     LinkedList<finley.gmair.model.machine.MachineStatus> list = ((LimitQueue) queue).getLinkedList();
                     V2MachineStatusHourly msh = countV2Status(list);
                     if (msh != null)
-                        resultList2.add(msh);
+                        resultList.add(msh);
                 }
             }
         } catch (Exception e) {
@@ -60,9 +60,6 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             result.setDescription("error happen when statistic data");
             return result;
         }
-        List<Object> resultList = new ArrayList<>();
-        resultList.add(resultList1);
-        resultList.add(resultList2);
         if (resultList.isEmpty()) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("empty list");

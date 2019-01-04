@@ -38,6 +38,7 @@ public class V1MachineStatusHourly extends Entity {
     }
 
     public V1MachineStatusHourly(String machineId, double averagePm25, int maxPm25, int minPm25, double averageVolume, int maxVolume, int minVolume, double averageTemp, int maxTemp, int minTemp, double averageHumid, int maxHumid, int minHumid, int powerOnMinute, int powerOffMinute, int manualMinute, int cosyMinute, int warmMinute, int heatOnMinute, int heatOffMinute) {
+        super();
         this.machineId = machineId;
         this.averagePm25 = averagePm25;
         this.maxPm25 = maxPm25;

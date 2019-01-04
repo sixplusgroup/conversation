@@ -4,6 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <mappers>
-        <mapper resource="mapper/installer.xml"></mapper>
+        <mapper resource="mapper/indoor_pm25_hourly.xml"></mapper>
     </mappers>
 </configuration>

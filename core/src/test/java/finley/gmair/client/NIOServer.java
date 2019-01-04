@@ -9,7 +9,7 @@ public class NIOServer {
         //服务器host: 118.31.78.254     my host: 192.168.2.59
         for(int i=0;i<10;i++) {
             String uid = "v2test" + i;
-            TimeClientHandle server = new TimeClientHandle("192.168.50.21", port, uid, 5000);
+            TimeClientHandle server = new TimeClientHandle(null, port, uid, 5000);
             new Thread(server, "server").start();
         }
     }
