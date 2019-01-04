@@ -1,7 +1,6 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.LogDao;
-import finley.gmair.model.express.ExpressCompany;
 import finley.gmair.model.log.*;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
@@ -84,7 +83,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public ResultData createUserActionLog(UserActionLog userActionLog) {
+    public ResultData createUserActionLog(UserMachineOperationLog userActionLog) {
         ResultData result = new ResultData();
         ResultData response = logDao.insertUserActionLog(userActionLog);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -150,7 +149,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public ResultData createUserLog(UserLog userLog) {
+    public ResultData createUserLog(UserAccountOperationLog userLog) {
         ResultData result = new ResultData();
         ResultData response = logDao.insertUserLog(userLog);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

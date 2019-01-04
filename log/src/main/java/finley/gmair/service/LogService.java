@@ -15,7 +15,7 @@ public interface LogService {
 
     ResultData fetchModuleLog(Map<String, Object> condition);
 
-    ResultData createUserActionLog(UserActionLog userActionLog);
+    ResultData createUserActionLog(UserMachineOperationLog userActionLog);
 
     ResultData fetchUserActionLog(Map<String, Object> condition);
 
@@ -23,7 +23,7 @@ public interface LogService {
 
     ResultData fetchServer2MachineLog(Map<String, Object> condition);
 
-    ResultData createUserLog(UserLog userLog);
+    ResultData createUserLog(UserAccountOperationLog userLog);
 
     ResultData fetchUserLog(Map<String, Object> condition);
 

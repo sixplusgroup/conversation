@@ -140,9 +140,9 @@ public class LogController {
         String component = logForm.getComponent().trim();
         String logDetail = logForm.getLogDetail().trim();
         String ip = logForm.getIp().trim();
-        Object actionValue = logForm.getActionValue();
+        String actionValue = logForm.getActionValue();
 
-        UserActionLog userActionLog = new UserActionLog(userId, machineValue, time, component, logDetail, ip, actionValue);
+        UserMachineOperationLog userActionLog = new UserMachineOperationLog(userId, machineValue, time, component, logDetail, ip, actionValue);
         ResultData response = logService.createUserActionLog(userActionLog);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -252,7 +252,7 @@ public class LogController {
         String component = form.getComponent().trim();
         String logDetail = form.getLogDetail().trim();
         String ip = form.getIp().trim();
-        UserLog log = new UserLog(logDetail, ip, userId, component);
+        UserAccountOperationLog log = new UserAccountOperationLog(logDetail, ip, userId, component);
         ResultData response = logService.createUserLog(log);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

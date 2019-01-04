@@ -14,7 +14,7 @@ public interface LogDao {
 
     ResultData queryModuleLog(Map<String, Object> condition);
 
-    ResultData insertUserActionLog(UserActionLog userActionLog);
+    ResultData insertUserActionLog(UserMachineOperationLog userActionLog);
 
     ResultData queryUserActionLog(Map<String, Object> condition);
 
@@ -22,7 +22,7 @@ public interface LogDao {
 
     ResultData queryServer2MachineLog(Map<String, Object> condition);
 
-    ResultData insertUserLog(UserLog userLog);
+    ResultData insertUserLog(UserAccountOperationLog userLog);
 
     ResultData queryUserLog(Map<String, Object> condition);
 
