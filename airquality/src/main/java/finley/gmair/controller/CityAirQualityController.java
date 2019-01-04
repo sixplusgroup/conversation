@@ -7,6 +7,7 @@ import com.mysql.cj.xdevapi.JsonArray;
 import finley.gmair.service.AirQualityStatisticService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.TimeUtil;
 import finley.gmair.vo.air.CityAirQualityStatisticVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -124,7 +125,7 @@ public class CityAirQualityController {
         //查询过去七天的pm2.5记录
         Map<String, Object> condition = new HashMap<>();
         condition.put("cityId", cityId);
-        condition.put("dateDiff", System.currentTimeMillis());
+        condition.put("last7day", true);
         condition.put("blockFlag", false);
         ResultData response = airQualityStatisticService.fetchAirQualityDailyStatistic(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
@@ -143,10 +144,7 @@ public class CityAirQualityController {
             for (int i = 0; i < list.size(); i++) {
                 //首先拿出这一条记录的当天0点时间戳和pm2.5
                 long thatTime = list.get(i).getCreateTime().getTime();
-                SimpleDateFormat time = new SimpleDateFormat("yyyyMMdd");
-                int thatDate = Integer.parseInt(time.format(thatTime));
-                int sevenDayLastDate = Integer.parseInt(time.format(last7dayZero));
-                int dayDiff = thatDate - sevenDayLastDate - 1;
+                int dayDiff = TimeUtil.days(last7dayZero.getTime(), thatTime);
                 double pm2_5 = list.get(i).getPm25();
                 //判断该时间戳与七天前0点时间戳的差距
                 if (dayDiff < 0 || dayDiff >= 7)

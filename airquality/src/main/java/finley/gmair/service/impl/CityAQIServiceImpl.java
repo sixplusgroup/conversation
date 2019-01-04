@@ -13,6 +13,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,6 +78,8 @@ public class CityAQIServiceImpl implements CityAQIService {
         String content = "[]";
         while (cd > 0) {
             try {
+                ChromeDriverService service = new ChromeDriverService.Builder().usingDriverExecutable(new File(path)).usingAnyFreePort().build();
+                service.start();
                 WebDriver driver = new ChromeDriver();
                 WebDriver.Navigation navigation = driver.navigate();
                 new Thread(() -> login()).start();
@@ -84,6 +88,7 @@ public class CityAQIServiceImpl implements CityAQIService {
                 content = element.getText();
                 driver.close();
                 driver.quit();
+                service.stop();
                 break;
             } catch (Exception e) {
                 logger.error(e.getMessage());

@@ -3,16 +3,16 @@
 <mapper namespace="gmair.airquality.airqualitystatistic">
 
     <resultMap id="CityAirQualityStatisticVO" type="finley.gmair.vo.air.CityAirQualityStatisticVo">
-        <result column="city_id" property="cityId" />
-        <result column="pm_25" property="pm25" />
-        <result column="create_time" property="createTime" />
+        <result column="city_id" property="cityId"/>
+        <result column="pm_25" property="pm25"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
     <insert id="insertHourly" parameterType="finley.gmair.model.air.CityAirQualityStatistic">
         INSERT INTO `gmair_airquality`.`city_hourly_aqi`
         (city_id, pm_25, block_flag, create_time)
         VALUES
-        (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
+            (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
     </insert>
 
     <insert id="insertHourlyBatch" parameterType="java.util.List">
@@ -20,7 +20,8 @@
         (city_id, pm_25, block_flag, create_time)
         VALUES
         <foreach collection="list" item="CityAirQualityStatistic" separator="," index="index">
-            (#{CityAirQualityStatistic.cityId}, #{CityAirQualityStatistic.pm25}, #{CityAirQualityStatistic.blockFlag}, #{CityAirQualityStatistic.createAt})
+            (#{CityAirQualityStatistic.cityId}, #{CityAirQualityStatistic.pm25}, #{CityAirQualityStatistic.blockFlag},
+            #{CityAirQualityStatistic.createAt})
         </foreach>
     </insert>
 
@@ -28,7 +29,7 @@
         INSERT INTO `gmair_airquality`.`city_daily_aqi`
         (city_id, pm_25, block_flag, create_time)
         VALUES
-        (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
+            (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
     </insert>
 
     <insert id="insertDailyBatch" parameterType="java.util.List">
@@ -36,7 +37,8 @@
         (city_id, pm_25, block_flag, create_time)
         VALUES
         <foreach collection="list" item="CityAirQualityStatistic" separator="," index="index">
-            (#{CityAirQualityStatistic.cityId}, #{CityAirQualityStatistic.pm25}, #{CityAirQualityStatistic.blockFlag}, #{CityAirQualityStatistic.createAt})
+            (#{CityAirQualityStatistic.cityId}, #{CityAirQualityStatistic.pm25}, #{CityAirQualityStatistic.blockFlag},
+            #{CityAirQualityStatistic.createAt})
         </foreach>
     </insert>
 
@@ -44,7 +46,7 @@
         INSERT INTO `gmair_airquality`.`city_monthly_aqi`
         (city_id, pm_25, block_flag, create_time)
         VALUES
-        (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
+            (#{cityId}, #{pm25}, #{blockFlag}, #{createAt})
     </insert>
 
     <insert id="insertMonthlyBatch" parameterType="java.util.List">
@@ -52,7 +54,8 @@
         (city_id, pm_25, block_flag, create_time)
         VALUES
         <foreach collection="list" item="CityAirQualityStatistic" separator="," index="index">
-            (#{CityAirQualityStatistic.cityId}, #{CityAirQualityStatistic.pm25}, #{CityAirQualityStatistic.blockFlag}, #{CityAirQualityStatistic.createAt})
+            (#{CityAirQualityStatistic.cityId}, #{CityAirQualityStatistic.pm25}, #{CityAirQualityStatistic.blockFlag},
+            #{CityAirQualityStatistic.createAt})
         </foreach>
     </insert>
 
@@ -87,7 +90,7 @@
               AND create_time <= #{createTimeLTE}
             ]]>
         </if>
-        <if test="dateDiff != null">
+        <if test="last7day != null">
             <![CDATA[
                 AND DATEDIFF(CURDATE(),create_time) < 7
             ]]>
