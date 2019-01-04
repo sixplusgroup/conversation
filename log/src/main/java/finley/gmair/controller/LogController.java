@@ -128,7 +128,7 @@ public class LogController {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(logForm.getUserId()) || StringUtils.isEmpty(logForm.getMachineValue()) ||
                 StringUtils.isEmpty(logForm.getComponent()) || StringUtils.isEmpty(logForm.getLogDetail())
-                || StringUtils.isEmpty(logForm.getIp())) {
+                || StringUtils.isEmpty(logForm.getIp()) || StringUtils.isEmpty(logForm.getActionValue())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -140,8 +140,9 @@ public class LogController {
         String component = logForm.getComponent().trim();
         String logDetail = logForm.getLogDetail().trim();
         String ip = logForm.getIp().trim();
+        Object actionValue = logForm.getActionValue();
 
-        UserActionLog userActionLog = new UserActionLog(userId, machineValue, time, component, logDetail, ip);
+        UserActionLog userActionLog = new UserActionLog(userId, machineValue, time, component, logDetail, ip, actionValue);
         ResultData response = logService.createUserActionLog(userActionLog);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -238,7 +239,7 @@ public class LogController {
         return result;
     }
 
-    @PostMapping(value = "/user/create")
+    @PostMapping(value = "/userlog/create")
     public ResultData createUserLog(UserLogForm form) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getUserId()) || StringUtils.isEmpty(form.getComponent())
@@ -263,7 +264,7 @@ public class LogController {
         return result;
     }
 
-    @PostMapping("/user/query")
+    @PostMapping("/userlog/query")
     public ResultData getUserLog(String userId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();

@@ -15,12 +15,15 @@ public class UserActionLog extends AbstractLog {
 
     private String component;
 
-    public UserActionLog(String userId, String machineValue, long time, String component, String logDetail, String ip) {
+    private Object actionValue;
+
+    public UserActionLog(String userId, String machineValue, long time, String component, String logDetail, String ip, Object actionValue) {
         super(logDetail, ip);
         this.userId = userId;
         this.machineValue = machineValue;
         this.time = time;
         this.component = component;
+        this.actionValue = actionValue;
     }
 
     public String getLogId() {
@@ -61,5 +64,13 @@ public class UserActionLog extends AbstractLog {
 
     public void setComponent(String component) {
         this.component = component;
+    }
+
+    public Object getActionValue() {
+        return actionValue;
+    }
+
+    public void setActionValue(Object actionValue) {
+        this.actionValue = actionValue;
     }
 }
