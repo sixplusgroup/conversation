@@ -8,6 +8,8 @@ import finley.gmair.model.machine.v1.MachineStatus;
 import finley.gmair.service.MachineStatusService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ import java.util.*;
 public class MachineStatusServiceImpl implements MachineStatusService {
     @Autowired
     private MachineStatusRedisDao machineStatusRedisDao;
+
+    private Logger logger = LoggerFactory.getLogger(MachineStatusServiceImpl.class);
+
 
     public ResultData getHourlyStatisticalData() {
         ResultData result = new ResultData();
@@ -28,6 +33,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             result.setDescription("no machine status found last hour from redis");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            logger.debug("error happen when fetch machine status from redis");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("error happen when fetch machine status from redis");
             return result;
@@ -56,7 +62,8 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            logger.debug(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("error happen when statistic data");
             return result;

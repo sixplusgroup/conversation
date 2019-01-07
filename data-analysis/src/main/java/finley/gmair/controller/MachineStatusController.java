@@ -82,7 +82,6 @@ public class MachineStatusController {
         List<HeatHourly> heatHourlyList = dataList.stream().map(e -> new HeatHourly(e.getString("machineId"),e.getIntValue("heatOnMinute"),e.getIntValue("heatOffMinute"))).collect(Collectors.toList());
         List<ModeHourly> modeHourlyList = dataList.stream().map(e -> new ModeHourly(e.getString("machineId"),e.getIntValue("manualMinute"),e.getIntValue("cosyMinute"),e.getIntValue("warmMinute"))).collect(Collectors.toList());
 
-
         ResultData response1 = indoorPm25Service.insertBatchHourly(pm25HourlyList);
         ResultData response2 = volumeService.insertBatchHourly(volumeHourlyList);
         ResultData response3 = tempService.insertBatchHourly(tempHourlyList);
