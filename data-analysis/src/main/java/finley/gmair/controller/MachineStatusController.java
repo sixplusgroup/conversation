@@ -5,6 +5,8 @@ import finley.gmair.model.dataAnalysis.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +48,7 @@ public class MachineStatusController {
     @Autowired
     private ModeService modeService;
 
+    private Logger logger = LoggerFactory.getLogger(MachineStatusController.class);
 
     @GetMapping("/probe/statistical/lasthour")
     public ResultData probeStatisticalData() {
