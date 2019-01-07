@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.co2_daily">
+    <resultMap id="co2Daily" type="finley.gmair.model.dataAnalysis.Co2Hourly">
+        <result property="statusId" column="status_id"></result>
+        <result property="machineId" column="machine_id"></result>
+        <result property="averageCo2" column="average_co2"></result>
+        <result property="maxCo2" column="max_co2"></result>
+        <result property="minCo2" column="min_co2"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.dataAnalysis.Co2Hourly" useGeneratedKeys="false">
+        INSERT INTO gmair_data_analysis.co2_daily(status_id, machine_id, average_co2, max_co2, min_co2, block_flag, create_time)
+        VALUES(#{statusId}, #{machineId}, #{averageCo2}, #{maxCo2}, #{minCo2}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO gmair_data_analysis.co2_daily(status_id, machine_id, average_co2, max_co2, min_co2, block_flag, create_time)
+        VALUES
+        <foreach collection="list" separator="," item="Co2Daily" index="index">
+            (#{Co2Daily.statusId}, #{Co2Daily.machineId},
+            #{Co2Daily.averageCo2}, #{Co2Daily.maxCo2}, #{Co2Daily.minCo2},
+            #{Co2Daily.blockFlag}, #{Co2Daily.createAt})
+        </foreach>
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="co2Daily">
+        SELECT status_id, machine_id, average_co2, max_co2, min_co2, block_flag, create_time
+        FROM gmair_data_analysis.co2_daily
+        WHERE 1 = 1
+        <if test="statusId != null">
+            AND status_id = #{statusId}
+        </if>
+        <if test="machineId != null">
+            AND machine_id = #{machineId}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLT != null">
+            <![CDATA[
+                AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        order by create_time asc
+    </select>
+</mapper>
