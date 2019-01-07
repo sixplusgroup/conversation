@@ -27,7 +27,7 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="indoorPm25Hourly">
-        SELECT status_id, machine_id, power_usage, block_flag, create_time
+        SELECT status_id, machine_id, average_pm25, max_pm25, min_pm25, block_flag, create_time
         FROM gmair_data_analysis.indoor_pm25_hourly
         WHERE 1 = 1
         <if test="statusId != null">

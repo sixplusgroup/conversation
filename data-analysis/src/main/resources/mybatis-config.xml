@@ -5,5 +5,12 @@
 <configuration>
     <mappers>
         <mapper resource="mapper/indoor_pm25_hourly.xml"></mapper>
+        <mapper resource="mapper/volume_hourly.xml"></mapper>
+        <mapper resource="mapper/temp_hourly.xml"></mapper>
+        <mapper resource="mapper/humid_hourly.xml"></mapper>
+        <mapper resource="mapper/co2_hourly.xml"></mapper>
+        <mapper resource="mapper/heat_hourly.xml"></mapper>
+        <mapper resource="mapper/power_hourly.xml"></mapper>
+        <mapper resource="mapper/mode_hourly.xml"></mapper>
     </mappers>
 </configuration>

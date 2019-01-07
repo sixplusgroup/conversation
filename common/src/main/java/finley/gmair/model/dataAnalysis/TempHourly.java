@@ -20,4 +20,44 @@ public class TempHourly extends Entity {
         this.maxTemp = maxTemp;
         this.minTemp = minTemp;
     }
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
+
+    public String getMachineId() {
+        return machineId;
+    }
+
+    public void setMachineId(String machineId) {
+        this.machineId = machineId;
+    }
+
+    public double getAverageTemp() {
+        return averageTemp;
+    }
+
+    public void setAverageTemp(double averageTemp) {
+        this.averageTemp = averageTemp;
+    }
+
+    public int getMaxTemp() {
+        return maxTemp;
+    }
+
+    public void setMaxTemp(int maxTemp) {
+        this.maxTemp = maxTemp;
+    }
+
+    public int getMinTemp() {
+        return minTemp;
+    }
+
+    public void setMinTemp(int minTemp) {
+        this.minTemp = minTemp;
+    }
 }
