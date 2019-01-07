@@ -125,9 +125,9 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
             ctx.writeAndFlush(response.convert2bytearray());
 
-            if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 30) {
-                return;
-            }
+//            if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 30) {
+//                return;
+//            }
 
             CorePool.getComExecutor().execute(new Thread(() -> {
                 //nothing to do with heartbeat packet
