@@ -28,13 +28,12 @@ public class MachineStatusRedisDaoImpl implements MachineStatusRedisDao {
                 map.put(key,redisTemplate.opsForValue().get(key));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to fetch machine status last hour in redis");
             return result;
         }
         if (map.isEmpty()) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No machine status last hour last hour");
             return result;
         }
         result.setData(map);

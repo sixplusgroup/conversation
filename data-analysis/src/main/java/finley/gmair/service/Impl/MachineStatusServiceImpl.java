@@ -56,6 +56,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("error happen when statistic data");
             return result;
