@@ -56,5 +56,13 @@ public class DailyJob implements Job {
                 machineFeignService.savePartialPm25Daily();
             }
         }));
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            condition.clear();
+            condition.put("taskId", "GTI20190102lv2hzn29");
+            boolean status = taskService.probeTaskStatus(condition);
+            if (status) {
+                machineFeignService.handleMachinePowerDaily();
+            }
+        }));
     }
 }

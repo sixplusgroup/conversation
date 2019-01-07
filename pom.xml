@@ -47,6 +47,7 @@
         <module>formaldehyde</module>
         <module>bill</module>
         <module>monitor</module>
+        <module>data-analysis</module>
     </modules>
 
     <parent>

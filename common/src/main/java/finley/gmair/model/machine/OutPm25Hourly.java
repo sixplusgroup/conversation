@@ -2,6 +2,8 @@ package finley.gmair.model.machine;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class OutPm25Hourly extends Entity {
     private String latestId;
     private String machineId;
@@ -16,6 +18,14 @@ public class OutPm25Hourly extends Entity {
         this.machineId = machineId;
         this.pm2_5 = pm2_5;
         this.indexHour = indexHour;
+    }
+
+    public OutPm25Hourly(String machineId, Timestamp timestamp){
+        this.machineId = machineId;
+        this.pm2_5 = 0;
+        this.indexHour = 0;
+        this.blockFlag = false;
+        this.createAt = timestamp;
     }
 
     public String getLatestId() {

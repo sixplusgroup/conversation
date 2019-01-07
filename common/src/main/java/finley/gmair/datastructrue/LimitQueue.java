@@ -24,6 +24,9 @@ public class LimitQueue<E> implements Serializable {
         queue.offer(e);
     }
 
+    public LinkedList<E> getLinkedList(){
+        return this.queue;
+    }
     public E get(int position) {
         return queue.get(position);
     }

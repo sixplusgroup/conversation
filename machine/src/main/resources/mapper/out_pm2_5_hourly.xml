@@ -36,6 +36,14 @@
             AND create_time < #{currentHour}
             ]]>
         </if>
+        <if test="createTimeGT != null">
+            AND create_time > #{createTimeGT}
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
         order by create_time desc
     </select>
 
