@@ -6,6 +6,8 @@ import finley.gmair.model.wechat.Image;
 import finley.gmair.model.wechat.PictureOutMessage;
 import finley.gmair.service.AccessTokenService;
 import finley.gmair.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -27,6 +29,8 @@ import java.util.Map;
 @PropertySource("classpath:/wechat.properties")
 public class PictureReplyController {
 
+    private Logger logger = LoggerFactory.getLogger(PictureReplyController.class);
+
     @Autowired
     private AccessTokenService accessTokenService;
 
@@ -36,6 +40,7 @@ public class PictureReplyController {
     @PostMapping(value = "/upload/and/reply")
     public ResultData upload_reply(String openId, MultipartFile file) {
         ResultData result = new ResultData();
+        logger.info("open id: " + openId + ", file: " + file.toString());
         if (StringUtils.isEmpty(openId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
@@ -43,7 +48,9 @@ public class PictureReplyController {
         }
         try {
             String mediaId = upload2MediaId(file);
+            logger.info("media id: " + mediaId);
             String accessToken = getAccessToken();
+            logger.info("access_token: " + accessToken);
             boolean status = WechatUtil.pushImage(accessToken, openId, mediaId);
             result.setDescription("reply successfully");
         } catch (IOException e) {
@@ -52,6 +59,7 @@ public class PictureReplyController {
         }
         return result;
     }
+
     @PostMapping(value = "/reply", produces = "text/xml;charset=utf-8")
     public String reply(String openId, String mediaId) {
         if (StringUtils.isEmpty(openId) || StringUtils.isEmpty(mediaId)) {
@@ -67,7 +75,7 @@ public class PictureReplyController {
     }
 
     @PostMapping(value = "/upload/get/mediaId")
-    public String upload2MediaId (MultipartFile file) throws IOException{
+    public String upload2MediaId(MultipartFile file) throws IOException {
         String accessToken = getAccessToken();
         if (StringUtils.isEmpty(accessToken)) {
             return new StringBuffer("Can't be applied with the openId: ").append(accessToken).toString();
@@ -88,8 +96,7 @@ public class PictureReplyController {
     }
 
     private File multi2file(MultipartFile file) throws IOException {
-        File f = new File(String.format("%s/%s.jpg",fileSavePath,IDGenerator.generate("PIC")));
-        //f.createNewFile();
+        File f = new File(String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("PIC")));
         file.transferTo(f);
         return f;
     }
