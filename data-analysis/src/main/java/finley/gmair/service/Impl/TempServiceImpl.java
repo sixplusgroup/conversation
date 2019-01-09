@@ -1,5 +1,6 @@
 package finley.gmair.service.Impl;
 
+import finley.gmair.dao.TempDailyDao;
 import finley.gmair.dao.TempHourlyDao;
 import finley.gmair.model.dataAnalysis.TempHourly;
 import finley.gmair.service.TempService;
@@ -16,6 +17,9 @@ public class TempServiceImpl implements TempService {
     @Autowired
     private TempHourlyDao tempHourlyDao;
 
+    @Autowired
+    private TempDailyDao tempDailyDao;
+
     @Override
     public ResultData insertBatchHourly(List<TempHourly> list) {
         return tempHourlyDao.insertBatch(list);
@@ -26,5 +30,14 @@ public class TempServiceImpl implements TempService {
         return tempHourlyDao.query(condition);
     }
 
+    @Override
+    public ResultData insertBatchDaily(List<TempHourly> list) {
+        return tempDailyDao.insertBatch(list);
+    }
+
+    @Override
+    public ResultData fetchDaily(Map<String, Object> condition) {
+        return tempDailyDao.query(condition);
+    }
 
 }

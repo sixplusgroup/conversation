@@ -1,5 +1,6 @@
 package finley.gmair.service.Impl;
 
+import finley.gmair.dao.HeatDailyDao;
 import finley.gmair.dao.HeatHourlyDao;
 import finley.gmair.model.dataAnalysis.HeatHourly;
 import finley.gmair.service.HeatService;
@@ -16,6 +17,9 @@ public class HeatServiceImpl implements HeatService {
     @Autowired
     private HeatHourlyDao heatHourlyDao;
 
+    @Autowired
+    private HeatDailyDao heatDailyDao;
+
     @Override
     public ResultData insertBatchHourly(List<HeatHourly> list) {
         return heatHourlyDao.insertBatch(list);
@@ -24,6 +28,14 @@ public class HeatServiceImpl implements HeatService {
     @Override
     public ResultData fetchHourly(Map<String, Object> condition) {
         return heatHourlyDao.query(condition);
+    }
+
+    @Override
+    public ResultData insertBatchDaily(List<HeatHourly> list) { return heatDailyDao.insertBatch(list); }
+
+    @Override
+    public ResultData fetchDaily(Map<String, Object> condition) {
+        return heatDailyDao.query(condition);
     }
 
 

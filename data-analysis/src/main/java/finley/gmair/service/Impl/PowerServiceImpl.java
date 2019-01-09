@@ -1,5 +1,6 @@
 package finley.gmair.service.Impl;
 
+import finley.gmair.dao.PowerDailyDao;
 import finley.gmair.dao.PowerHourlyDao;
 import finley.gmair.model.dataAnalysis.PowerHourly;
 import finley.gmair.service.PowerService;
@@ -16,6 +17,9 @@ public class PowerServiceImpl implements PowerService {
     @Autowired
     private PowerHourlyDao powerHourlyDao;
 
+    @Autowired
+    private PowerDailyDao powerDailyDao;
+
     @Override
     public ResultData insertBatchHourly(List<PowerHourly> list) {
         return powerHourlyDao.insertBatch(list);
@@ -26,5 +30,9 @@ public class PowerServiceImpl implements PowerService {
         return powerHourlyDao.query(condition);
     }
 
+    @Override
+    public ResultData insertBatchDaily(List<PowerHourly> list) { return powerDailyDao.insertBatch(list); }
 
+    @Override
+    public ResultData fetchDaily(Map<String, Object> condition) { return powerDailyDao.query(condition); }
 }

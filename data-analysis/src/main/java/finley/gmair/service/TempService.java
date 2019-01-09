@@ -12,4 +12,8 @@ public interface TempService {
 
     ResultData fetchHourly(Map<String, Object> condition);
 
+    ResultData insertBatchDaily(List<TempHourly> list);
+
+    ResultData fetchDaily(Map<String, Object> condition);
+
 }

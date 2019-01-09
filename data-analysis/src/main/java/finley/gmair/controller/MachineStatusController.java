@@ -105,4 +105,11 @@ public class MachineStatusController {
         result.setDescription("success to insert statistical machine data hourly into database ");
         return result;
     }
+
+    @PostMapping("/schedule/statistical/daily")
+    public ResultData statisticalDataDaily() {
+        ResultData result = new ResultData();
+        machineStatusService.handleDailyStatisticalData();
+        return result;
+    }
 }

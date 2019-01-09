@@ -12,4 +12,7 @@ public interface HeatService {
 
     ResultData fetchHourly(Map<String, Object> condition);
 
+    ResultData insertBatchDaily(List<HeatHourly> list);
+
+    ResultData fetchDaily(Map<String, Object> condition);
 }

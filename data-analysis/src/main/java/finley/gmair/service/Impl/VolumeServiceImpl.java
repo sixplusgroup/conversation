@@ -1,5 +1,6 @@
 package finley.gmair.service.Impl;
 
+import finley.gmair.dao.VolumeDailyDao;
 import finley.gmair.dao.VolumeHourlyDao;
 import finley.gmair.model.dataAnalysis.VolumeHourly;
 import finley.gmair.service.VolumeService;
@@ -16,6 +17,9 @@ public class VolumeServiceImpl implements VolumeService {
     @Autowired
     private VolumeHourlyDao volumeHourlyDao;
 
+    @Autowired
+    private VolumeDailyDao volumeDailyDao;
+
     @Override
     public ResultData insertBatchHourly(List<VolumeHourly> list) {
         return volumeHourlyDao.insertBatch(list);
@@ -26,5 +30,14 @@ public class VolumeServiceImpl implements VolumeService {
         return volumeHourlyDao.query(condition);
     }
 
+    @Override
+    public ResultData insertBatchDaily(List<VolumeHourly> list) {
+        return volumeDailyDao.insertBatch(list);
+    }
+
+    @Override
+    public ResultData fetchDaily(Map<String, Object> condition) {
+        return volumeDailyDao.query(condition);
+    }
 
 }

@@ -1,9 +1,8 @@
 package finley.gmair.service.Impl;
 
-import finley.gmair.dao.MachineStatusRedisDao;
+import finley.gmair.dao.*;
 import finley.gmair.datastructrue.LimitQueue;
-import finley.gmair.model.dataAnalysis.V1MachineStatusHourly;
-import finley.gmair.model.dataAnalysis.V2MachineStatusHourly;
+import finley.gmair.model.dataAnalysis.*;
 import finley.gmair.model.machine.v1.MachineStatus;
 import finley.gmair.service.MachineStatusService;
 import finley.gmair.util.ResponseCode;
@@ -13,16 +12,67 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MachineStatusServiceImpl implements MachineStatusService {
     @Autowired
     private MachineStatusRedisDao machineStatusRedisDao;
 
+    @Autowired
+    private Co2HourlyDao co2HourlyDao;
+
+    @Autowired
+    private Co2DailyDao co2DailyDao;
+
+    @Autowired
+    private HeatHourlyDao heatHourlyDao;
+
+    @Autowired
+    private HeatDailyDao heatDailyDao;
+
+    @Autowired
+    private HumidHourlyDao humidHourlyDao;
+
+    @Autowired
+    private HumidDailyDao humidDailyDao;
+
+    @Autowired
+    private IndoorPm25HourlyDao indoorPm25HourlyDao;
+
+    @Autowired
+    private IndoorPm25DailyDao indoorPm25DailyDao;
+
+    @Autowired
+    private ModeHourlyDao modeHourlyDao;
+
+    @Autowired
+    private ModeDailyDao modeDailyDao;
+
+    @Autowired
+    private PowerHourlyDao powerHourlyDao;
+
+    @Autowired
+    private PowerDailyDao powerDailyDao;
+
+    @Autowired
+    private TempHourlyDao tempHourlyDao;
+
+    @Autowired
+    private TempDailyDao tempDailyDao;
+
+    @Autowired
+    private VolumeHourlyDao volumeHourlyDao;
+
+    @Autowired
+    private VolumeDailyDao volumeDailyDao;
+
     private Logger logger = LoggerFactory.getLogger(MachineStatusServiceImpl.class);
 
-
+    @Override
     public ResultData getHourlyStatisticalData() {
         ResultData result = new ResultData();
 
@@ -49,7 +99,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                 //若这个queue存了v1的status
                 if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatus) {
                     LinkedList<MachineStatus> list = new LinkedList<>();
-                    for(int i=0;i<((LimitQueue) queue).size();i++){
+                    for (int i = 0; i < ((LimitQueue) queue).size(); i++) {
                         list.add(((LimitQueue<MachineStatus>) queue).get(i));
                     }
 //
@@ -61,7 +111,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                 //若这个queue存了v2的status
                 else if (((LimitQueue<Object>) queue).getLast() instanceof finley.gmair.model.machine.MachineStatus) {
                     LinkedList<finley.gmair.model.machine.MachineStatus> list = new LinkedList<>();
-                    for(int i=0;i<((LimitQueue) queue).size();i++){
+                    for (int i = 0; i < ((LimitQueue) queue).size(); i++) {
                         list.add(((LimitQueue<finley.gmair.model.machine.MachineStatus>) queue).get(i));
                     }
 //                    LinkedList<finley.gmair.model.machine.MachineStatus> list = ((LimitQueue) queue).getLinkedList();
@@ -110,7 +160,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         int heatOnMinute = (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute;
         int heatOffMinute = (int) list.stream().filter(a -> a.getHeat() == 0).count() / packetCountForOneMinute;
         String machineId = list.get(0).getUid();
-        V1MachineStatusHourly msh = new V1MachineStatusHourly(machineId,averagePm25,maxPm25,minPm25,averageVolume,maxVolume,minVolume,averageTemp,maxTemp,minTemp,averageHumid,maxHumid,minHumid,powerOnMinute,powerOffMinute,manualMinute,cosyMinute,warmMinute,heatOnMinute,heatOffMinute);
+        V1MachineStatusHourly msh = new V1MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, powerOnMinute, powerOffMinute, manualMinute, cosyMinute, warmMinute, heatOnMinute, heatOffMinute);
         return msh;
     }
 
@@ -139,7 +189,103 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         int heatOnMinute = (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute;
         int heatOffMinute = (int) list.stream().filter(a -> a.getHeat() == 0).count() / packetCountForOneMinute;
         String machineId = list.get(0).getUid();
-        V2MachineStatusHourly msh = new V2MachineStatusHourly(machineId,averagePm25,maxPm25,minPm25,averageVolume,maxVolume,minVolume,averageTemp,maxTemp,minTemp,averageHumid,maxHumid,minHumid,averageCo2,maxCo2,minCo2,powerOnMinute,powerOffMinute,manualMinute,cosyMinute,warmMinute,heatOnMinute,heatOffMinute);
+        V2MachineStatusHourly msh = new V2MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, averageCo2, maxCo2, minCo2, powerOnMinute, powerOffMinute, manualMinute, cosyMinute, warmMinute, heatOnMinute, heatOffMinute);
         return msh;
+    }
+
+    @Override
+    public ResultData handleDailyStatisticalData() {
+        ResultData result = new ResultData();
+        try {
+            LocalDate lastDay = LocalDateTime.now().minusDays(1).toLocalDate();
+            LocalDate today = LocalDateTime.now().toLocalDate();
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("createTimeGTE", lastDay);
+            condition.put("createTimeLTE", today);
+            condition.put("blockFlag", 0);
+
+            //查过去24小时的co2，并统计到daily表中
+            ResultData response = co2HourlyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<Co2Hourly> list = (List<Co2Hourly>) response.getData();
+                Map<String, Double> averageCo2Map = list.stream().collect(Collectors.groupingBy(Co2Hourly::getMachineId, Collectors.averagingDouble(Co2Hourly::getAverageCo2)));
+                Map<String, Optional<Co2Hourly>> maxCo2Map = list.stream().collect(Collectors.groupingBy(Co2Hourly::getMachineId, Collectors.maxBy(Comparator.comparing(Co2Hourly::getMaxCo2))));
+                Map<String, Optional<Co2Hourly>> minCo2Map = list.stream().collect(Collectors.groupingBy(Co2Hourly::getMachineId, Collectors.minBy(Comparator.comparing(Co2Hourly::getMinCo2))));
+                List<Co2Hourly> dailyData = averageCo2Map.entrySet().stream().map(e -> new Co2Hourly(e.getKey(), e.getValue(), maxCo2Map.get(e.getKey()).map(Co2Hourly::getMaxCo2).get(), minCo2Map.get(e.getKey()).map(Co2Hourly::getMinCo2).get())).collect(Collectors.toList());
+                co2DailyDao.insertBatch(dailyData);
+            }
+            //heat
+            response = heatHourlyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<HeatHourly> list = (List<HeatHourly>) response.getData();
+                Map<String, Integer> heatOnMinute = list.stream().collect(Collectors.groupingBy(HeatHourly::getMachineId, Collectors.summingInt(HeatHourly::getHeatOnMinute)));
+                Map<String, Integer> heatOffMinute = list.stream().collect(Collectors.groupingBy(HeatHourly::getMachineId, Collectors.summingInt(HeatHourly::getHeatOffMinute)));
+                List<HeatHourly> dailyData = heatOnMinute.entrySet().stream().map(e -> new HeatHourly(e.getKey(), e.getValue(), heatOffMinute.get(e.getKey()).intValue())).collect(Collectors.toList());
+                heatDailyDao.insertBatch(dailyData);
+            }
+            //humid
+            response = humidHourlyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<HumidHourly> list = (List<HumidHourly>) response.getData();
+                Map<String, Double> averageHumidMap = list.stream().collect(Collectors.groupingBy(HumidHourly::getMachineId, Collectors.averagingDouble(HumidHourly::getAverageHumid)));
+                Map<String, Optional<HumidHourly>> maxHumidMap = list.stream().collect(Collectors.groupingBy(HumidHourly::getMachineId, Collectors.maxBy(Comparator.comparing(HumidHourly::getMaxHumid))));
+                Map<String, Optional<HumidHourly>> minHumidMap = list.stream().collect(Collectors.groupingBy(HumidHourly::getMachineId, Collectors.minBy(Comparator.comparing(HumidHourly::getMinHumid))));
+                List<HumidHourly> dailyData = averageHumidMap.entrySet().stream().map(e -> new HumidHourly(e.getKey(), e.getValue(), maxHumidMap.get(e.getKey()).map(HumidHourly::getMaxHumid).get(), minHumidMap.get(e.getKey()).map(HumidHourly::getMinHumid).get())).collect(Collectors.toList());
+                humidDailyDao.insertBatch(dailyData);
+            }
+            //indoor_pm25
+            response = indoorPm25HourlyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<IndoorPm25Hourly> list = (List<IndoorPm25Hourly>) response.getData();
+                Map<String, Double> averageIndoorPm25Map = list.stream().collect(Collectors.groupingBy(IndoorPm25Hourly::getMachineId, Collectors.averagingDouble(IndoorPm25Hourly::getAveragePm25)));
+                Map<String, Optional<IndoorPm25Hourly>> maxIndoorPm25Map = list.stream().collect(Collectors.groupingBy(IndoorPm25Hourly::getMachineId, Collectors.maxBy(Comparator.comparing(IndoorPm25Hourly::getMaxPm25))));
+                Map<String, Optional<IndoorPm25Hourly>> minIndoorPm25Map = list.stream().collect(Collectors.groupingBy(IndoorPm25Hourly::getMachineId, Collectors.minBy(Comparator.comparing(IndoorPm25Hourly::getMinPm25))));
+                List<IndoorPm25Hourly> dailyData = averageIndoorPm25Map.entrySet().stream().map(e -> new IndoorPm25Hourly(e.getKey(), e.getValue(), maxIndoorPm25Map.get(e.getKey()).map(IndoorPm25Hourly::getMaxPm25).get(), minIndoorPm25Map.get(e.getKey()).map(IndoorPm25Hourly::getMinPm25).get())).collect(Collectors.toList());
+                indoorPm25DailyDao.insertBatch(dailyData);
+            }
+            //mode
+            response = modeHourlyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<ModeHourly> list = (List<ModeHourly>) response.getData();
+                Map<String, Integer> manualMinute = list.stream().collect(Collectors.groupingBy(ModeHourly::getMachineId, Collectors.summingInt(ModeHourly::getManualMinute)));
+                Map<String, Integer> cosyMinute = list.stream().collect(Collectors.groupingBy(ModeHourly::getMachineId, Collectors.summingInt(ModeHourly::getCosyMinute)));
+                Map<String, Integer> warmMinute = list.stream().collect(Collectors.groupingBy(ModeHourly::getMachineId, Collectors.summingInt(ModeHourly::getWarmMinute)));
+                List<ModeHourly> dailyData = manualMinute.entrySet().stream().map(e -> new ModeHourly(e.getKey(), e.getValue(), cosyMinute.get(e.getKey()).intValue(), warmMinute.get(e.getKey()).intValue())).collect(Collectors.toList());
+                modeDailyDao.insertBatch(dailyData);
+            }
+            //power
+            response = powerHourlyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<PowerHourly> list = (List<PowerHourly>) response.getData();
+                Map<String, Integer> powerOnMinute = list.stream().collect(Collectors.groupingBy(PowerHourly::getMachineId, Collectors.summingInt(PowerHourly::getPowerOnMinute)));
+                Map<String, Integer> powerOffMinute = list.stream().collect(Collectors.groupingBy(PowerHourly::getMachineId, Collectors.summingInt(PowerHourly::getPowerOffMinute)));
+                List<PowerHourly> dailyData = powerOnMinute.entrySet().stream().map(e -> new PowerHourly(e.getKey(), e.getValue(), powerOffMinute.get(e.getKey()).intValue())).collect(Collectors.toList());
+                powerDailyDao.insertBatch(dailyData);
+            }
+            //temp
+            response = tempHourlyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<TempHourly> list = (List<TempHourly>) response.getData();
+                Map<String, Double> averageTempMap = list.stream().collect(Collectors.groupingBy(TempHourly::getMachineId, Collectors.averagingDouble(TempHourly::getAverageTemp)));
+                Map<String, Optional<TempHourly>> maxTempMap = list.stream().collect(Collectors.groupingBy(TempHourly::getMachineId, Collectors.maxBy(Comparator.comparing(TempHourly::getMaxTemp))));
+                Map<String, Optional<TempHourly>> minTempMap = list.stream().collect(Collectors.groupingBy(TempHourly::getMachineId, Collectors.minBy(Comparator.comparing(TempHourly::getMinTemp))));
+                List<TempHourly> dailyData = averageTempMap.entrySet().stream().map(e -> new TempHourly(e.getKey(), e.getValue(), maxTempMap.get(e.getKey()).map(TempHourly::getMaxTemp).get(), minTempMap.get(e.getKey()).map(TempHourly::getMinTemp).get())).collect(Collectors.toList());
+                tempDailyDao.insertBatch(dailyData);
+            }
+
+            //volume
+            response = volumeHourlyDao.query(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<VolumeHourly> list = (List<VolumeHourly>) response.getData();
+                Map<String, Double> averageVolumeMap = list.stream().collect(Collectors.groupingBy(VolumeHourly::getMachineId, Collectors.averagingDouble(VolumeHourly::getAverageVolume)));
+                Map<String, Optional<VolumeHourly>> maxVolumeMap = list.stream().collect(Collectors.groupingBy(VolumeHourly::getMachineId, Collectors.maxBy(Comparator.comparing(VolumeHourly::getMaxVolume))));
+                Map<String, Optional<VolumeHourly>> minVolumeMap = list.stream().collect(Collectors.groupingBy(VolumeHourly::getMachineId, Collectors.minBy(Comparator.comparing(VolumeHourly::getMinVolume))));
+                List<VolumeHourly> dailyData = averageVolumeMap.entrySet().stream().map(e -> new VolumeHourly(e.getKey(), e.getValue(), maxVolumeMap.get(e.getKey()).map(VolumeHourly::getMaxVolume).get(), minVolumeMap.get(e.getKey()).map(VolumeHourly::getMinVolume).get())).collect(Collectors.toList());
+                volumeDailyDao.insertBatch(dailyData);
+            }
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+        }
+        return result;
     }
 }

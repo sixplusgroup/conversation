@@ -12,4 +12,7 @@ public interface ModeService {
 
     ResultData fetchHourly(Map<String, Object> condition);
 
+    ResultData insertBatchDaily(List<ModeHourly> list);
+
+    ResultData fetchDaily(Map<String, Object> condition);
 }
