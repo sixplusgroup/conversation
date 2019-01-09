@@ -1,5 +1,6 @@
 package finley.gmair.service.Impl;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.*;
 import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.dataAnalysis.*;
@@ -73,26 +74,22 @@ public class MachineStatusServiceImpl implements MachineStatusService {
     private Logger logger = LoggerFactory.getLogger(MachineStatusServiceImpl.class);
 
     @Override
-    public ResultData getHourlyStatisticalData() {
+    public ResultData handleHourlyStatisticalData() {
         ResultData result = new ResultData();
 
-        //首先从redis中获取前一小时的数据
+        //1.从redis中获取前一小时的数据
         ResultData response = machineStatusRedisDao.queryHourlyStatus();
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("no machine status found last hour from redis");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             logger.debug("error happen when fetch machine status from redis");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("error happen when fetch machine status from redis");
             return result;
         }
         Map<String, Object> map = (HashMap) response.getData();
-
-        //统计
-        List<Object> resultList = new ArrayList<>();
-
+        //2.统计获取到的数据
+        List<Object> statisticalDataList = new ArrayList<>();
         try {
             for (String machineId : map.keySet()) {
                 Object queue = map.get(machineId);
@@ -102,11 +99,10 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                     for (int i = 0; i < ((LimitQueue) queue).size(); i++) {
                         list.add(((LimitQueue<MachineStatus>) queue).get(i));
                     }
-//
 //                    LinkedList<MachineStatus> list = ((LimitQueue) queue).getLinkedList();
                     V1MachineStatusHourly msh = countV1Status(list);
                     if (msh != null)
-                        resultList.add(msh);
+                        statisticalDataList.add(msh);
                 }
                 //若这个queue存了v2的status
                 else if (((LimitQueue<Object>) queue).getLast() instanceof finley.gmair.model.machine.MachineStatus) {
@@ -117,22 +113,38 @@ public class MachineStatusServiceImpl implements MachineStatusService {
 //                    LinkedList<finley.gmair.model.machine.MachineStatus> list = ((LimitQueue) queue).getLinkedList();
                     V2MachineStatusHourly msh = countV2Status(list);
                     if (msh != null)
-                        resultList.add(msh);
+                        statisticalDataList.add(msh);
                 }
             }
         } catch (Exception e) {
-//            e.printStackTrace();
             logger.debug(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("error happen when statistic data");
             return result;
         }
-        if (resultList.isEmpty()) {
+        if (statisticalDataList.isEmpty()) {
+            logger.debug("after statistical data,result is null");
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("empty list");
             return result;
         }
-        result.setData(resultList);
+        //3.将统计结果插入到数据库
+        List<JSONObject> dataList = statisticalDataList.stream().map(e -> JSONObject.parseObject(e.toString())).collect(Collectors.toList());
+        List<IndoorPm25Hourly> pm25HourlyList = dataList.stream().map(e -> new IndoorPm25Hourly(e.getString("machineId"),e.getDouble("averagePm25"),e.getIntValue("maxPm25"),e.getIntValue("minPm25"))).collect(Collectors.toList());
+        List<VolumeHourly> volumeHourlyList = dataList.stream().map(e -> new VolumeHourly(e.getString("machineId"),e.getDouble("averageVolume"),e.getIntValue("maxVolume"),e.getIntValue("minVolume"))).collect(Collectors.toList());
+        List<TempHourly> tempHourlyList =  dataList.stream().map(e -> new TempHourly(e.getString("machineId"),e.getDouble("averageTemp"),e.getIntValue("maxTemp"),e.getIntValue("minTemp"))).collect(Collectors.toList());
+        List<Co2Hourly>  co2HourlyList =  dataList.stream().filter(e -> e.getString("averageCo2")!= null).map(e -> new Co2Hourly(e.getString("machineId"),e.getDouble("averageCo2"),e.getIntValue("maxCo2"),e.getIntValue("minCo2"))).collect(Collectors.toList());
+        List<HumidHourly> humidHourlyList =  dataList.stream().map(e -> new HumidHourly(e.getString("machineId"),e.getDouble("averageHumid"),e.getIntValue("maxHumid"),e.getIntValue("minHumid"))).collect(Collectors.toList());
+        List<PowerHourly> powerHourlyList =  dataList.stream().map(e -> new PowerHourly(e.getString("machineId"),e.getIntValue("powerOnMinute"),e.getIntValue("powerOffMinute"))).collect(Collectors.toList());
+        List<HeatHourly> heatHourlyList = dataList.stream().map(e -> new HeatHourly(e.getString("machineId"),e.getIntValue("heatOnMinute"),e.getIntValue("heatOffMinute"))).collect(Collectors.toList());
+        List<ModeHourly> modeHourlyList = dataList.stream().map(e -> new ModeHourly(e.getString("machineId"),e.getIntValue("manualMinute"),e.getIntValue("cosyMinute"),e.getIntValue("warmMinute"))).collect(Collectors.toList());
+
+        indoorPm25HourlyDao.insertBatch(pm25HourlyList);
+        volumeHourlyDao.insertBatch(volumeHourlyList);
+        tempHourlyDao.insertBatch(tempHourlyList);
+        co2HourlyDao.insertBatch(co2HourlyList);
+        humidHourlyDao.insertBatch(humidHourlyList);
+        powerHourlyDao.insertBatch(powerHourlyList);
+        heatHourlyDao.insertBatch(heatHourlyList);
+        modeHourlyDao.insertBatch(modeHourlyList);
         result.setDescription("success to statistic data");
         return result;
     }
@@ -201,7 +213,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             LocalDate today = LocalDateTime.now().toLocalDate();
             Map<String, Object> condition = new HashMap<>();
             condition.put("createTimeGTE", lastDay);
-            condition.put("createTimeLTE", today);
+            condition.put("createTimeLT", today);
             condition.put("blockFlag", 0);
 
             //查过去24小时的co2，并统计到daily表中
