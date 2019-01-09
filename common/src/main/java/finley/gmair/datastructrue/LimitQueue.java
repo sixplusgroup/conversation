@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 public class LimitQueue<E> implements Serializable {
 
+    private static final long serialVersionUID = -163782052046695468L;
+
     private int limit; // 队列长度
 
     private LinkedList<E> queue = new LinkedList<E>();
@@ -22,6 +24,10 @@ public class LimitQueue<E> implements Serializable {
             queue.poll();
         }
         queue.offer(e);
+    }
+
+    public LinkedList<E> getLinkedList(){
+        return this.queue;
     }
 
     public E get(int position) {
