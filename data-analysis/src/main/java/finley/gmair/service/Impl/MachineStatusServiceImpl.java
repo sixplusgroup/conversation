@@ -48,23 +48,23 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                 Object queue = map.get(machineId);
                 //若这个queue存了v1的status
                 if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatus) {
-//                    LinkedList<MachineStatus> list = new LinkedList<>();
-//                    for(int i=0;i<((LimitQueue) queue).size();i++){
-//                        list.add(((LimitQueue<MachineStatus>) queue).get(i));
-//                    }
+                    LinkedList<MachineStatus> list = new LinkedList<>();
+                    for(int i=0;i<((LimitQueue) queue).size();i++){
+                        list.add(((LimitQueue<MachineStatus>) queue).get(i));
+                    }
 //
-                    LinkedList<MachineStatus> list = ((LimitQueue) queue).getLinkedList();
+//                    LinkedList<MachineStatus> list = ((LimitQueue) queue).getLinkedList();
                     V1MachineStatusHourly msh = countV1Status(list);
                     if (msh != null)
                         resultList.add(msh);
                 }
                 //若这个queue存了v2的status
                 else if (((LimitQueue<Object>) queue).getLast() instanceof finley.gmair.model.machine.MachineStatus) {
-//                    LinkedList<finley.gmair.model.machine.MachineStatus> list = new LinkedList<>();
-//                    for(int i=0;i<((LimitQueue) queue).size();i++){
-//                        list.add(((LimitQueue<finley.gmair.model.machine.MachineStatus>) queue).get(i));
-//                    }
-                    LinkedList<finley.gmair.model.machine.MachineStatus> list = ((LimitQueue) queue).getLinkedList();
+                    LinkedList<finley.gmair.model.machine.MachineStatus> list = new LinkedList<>();
+                    for(int i=0;i<((LimitQueue) queue).size();i++){
+                        list.add(((LimitQueue<finley.gmair.model.machine.MachineStatus>) queue).get(i));
+                    }
+//                    LinkedList<finley.gmair.model.machine.MachineStatus> list = ((LimitQueue) queue).getLinkedList();
                     V2MachineStatusHourly msh = countV2Status(list);
                     if (msh != null)
                         resultList.add(msh);
