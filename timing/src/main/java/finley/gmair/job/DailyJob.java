@@ -2,6 +2,7 @@ package finley.gmair.job;
 
 import finley.gmair.pool.TimingPool;
 import finley.gmair.service.AirQualityFeignService;
+import finley.gmair.service.DataAnalysisService;
 import finley.gmair.service.MachineFeignService;
 import finley.gmair.service.TaskService;
 import org.quartz.Job;
@@ -25,6 +26,9 @@ public class DailyJob implements Job {
 
     @Autowired
     private MachineFeignService machineFeignService;
+
+    @Autowired
+    private DataAnalysisService dataAnalysisService;
 
     @Autowired
     private TaskService taskService;
@@ -62,6 +66,14 @@ public class DailyJob implements Job {
             boolean status = taskService.probeTaskStatus(condition);
             if (status) {
                 machineFeignService.handleMachinePowerDaily();
+            }
+        }));
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            condition.clear();
+            condition.put("taskId", "GTI201901095urigx56");
+            boolean status = taskService.probeTaskStatus(condition);
+            if (status) {
+                dataAnalysisService.statisticalDataDaily();
             }
         }));
     }
