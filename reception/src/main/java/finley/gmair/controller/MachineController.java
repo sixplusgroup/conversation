@@ -230,7 +230,7 @@ public class MachineController {
     @PostMapping(value = "/confirm/timing/power")
     public ResultData confirmPower(String qrcode, int startHour, int startMinute, int endHour, int endMinute, boolean status, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "timing", new StringBuffer("User ").append(consumerId).append(" operate ").append("power").append(" set start to ").append(startHour).append(":").append(startMinute).append(" and end to ").append(endHour).append(":").append(endMinute).append(" and status").append(status).toString(), IPUtil.getIP(request), status ? "on" : "off")));
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "timing_machine", new StringBuffer("User ").append(consumerId).append(" operate ").append("timing switch machine").append(" set start to ").append(startHour).append(":").append(startMinute).append(" and end to ").append(endHour).append(":").append(endMinute).toString(), IPUtil.getIP(request), status ? "on" : "off")));
         return machineService.confirmPowerOnoff(qrcode, startHour, startMinute, endHour, endMinute, status);
     }
 
