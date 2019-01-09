@@ -1,20 +1,25 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
+import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.model.machine.QRCodeStatus;
+import finley.gmair.service.AuthConsumerService;
 import finley.gmair.service.ConsumerQRcodeBindService;
 import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.service.QRCodeService;
+import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.MachineInfoVo;
+import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 
 @RestController
 @RequestMapping("/machine/consumer")
@@ -27,6 +32,13 @@ public class ConsumerQRcodeController {
 
     @Autowired
     private QRCodeService qrCodeService;
+
+    @Autowired
+    private AuthConsumerService authConsumerService;
+
+    @Autowired
+    private RedisService redisService;
+
 
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
     public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
@@ -176,9 +188,9 @@ public class ConsumerQRcodeController {
                     condition.put("bindId", cqb.getBindId());
                     condition.put("blockFlag", true);
                     response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
-                    if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+                    if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                        result.setDescription("fail to set the bindId "+ cqb.getBindId()+"'s block flag = true");
+                        result.setDescription("fail to set the bindId " + cqb.getBindId() + "'s block flag = true");
                         return result;
                     }
                 }
@@ -375,6 +387,64 @@ public class ConsumerQRcodeController {
             result.setData(response.getData());
             return result;
         }
+        return result;
+    }
+
+    @GetMapping("/owner/machine/list")
+    public ResultData getOwnerMachineList(int curPage, int pageSize) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("ownership", Ownership.OWNER);
+        condition.put("blockFlag", false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch consumer machine bind");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find consumer machine bind");
+            return result;
+        }
+        List<ConsumerQRcodeBind> list = (List<ConsumerQRcodeBind>) response.getData();
+        int totalPage = list.size() / pageSize + 1;
+        if (curPage < 1 || curPage > totalPage) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to got that page because that page not exist");
+            return result;
+        }
+        list = list.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, list.size()));
+        List<MachineInfoVo> resultList = new ArrayList<>();
+
+        for (ConsumerQRcodeBind cqb : list) {
+            String codeValue = cqb.getCodeValue();
+            String consumerId = cqb.getConsumerId();
+            String bindName = cqb.getBindName();
+            Timestamp bindTime = cqb.getCreateAt();
+            condition.clear();
+            condition.put("codeValue", codeValue);
+            condition.put("blockFlag", false);
+            response = machineQrcodeBindService.fetch(condition);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+                continue;
+            String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+            response = authConsumerService.profile(consumerId);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
+                continue;
+            LinkedHashMap<String, String> linkedHashMap = (LinkedHashMap) response.getData();
+            String consumerName = linkedHashMap.get("name");
+            String consumerProvince = linkedHashMap.get("province");
+            String consumerCity = linkedHashMap.get("city");
+            String consumerAddress = linkedHashMap.get("address");
+            String consumerPhone = linkedHashMap.get("phone");
+            boolean isOnline = redisService.exists(machineId);
+            resultList.add(new MachineInfoVo(codeValue, machineId, bindName, consumerName, consumerPhone, consumerProvince, consumerCity, consumerAddress, isOnline, bindTime));
+        }
+        result.setDescription("success to fetch machine list of the machine owner");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("totalPage", totalPage);
+        jsonObject.put("machineList", resultList);
+        result.setData(jsonObject);
         return result;
     }
 }

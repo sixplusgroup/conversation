@@ -42,4 +42,8 @@ public interface MachineService {
 
     @GetMapping("/machine/status/hourly")
     ResultData fetchMachineHourlyPm2_5(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/consumer/owner/machine/list")
+    ResultData getOwnerMachineList(@RequestParam("curPage") int curPage,
+                                   @RequestParam("pageSize") int pageSize);
 }

@@ -45,16 +45,16 @@ public class MachineController {
     }
 
     @PostMapping("/config/control/option")
-    public ResultData configControlOption(String optionName,String optionComponent,String modelId,String actions){
+    public ResultData configControlOption(String optionName, String optionComponent, String modelId, String actions) {
         ResultData result = new ResultData();
         JSONArray actionList = JSONArray.parseArray(actions);
-        for (int i=0;i<actionList.size();i++){
+        for (int i = 0; i < actionList.size(); i++) {
             JSONObject action = actionList.getJSONObject(i);
-            ResultData response = machineService.setControlOption(optionName,optionComponent,modelId,
+            ResultData response = machineService.setControlOption(optionName, optionComponent, modelId,
                     action.getString("actionName"),
                     action.getString("actionOperator"),
                     action.getString("commandValue"));
-            if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("some error happen when create control option");
                 return result;
@@ -66,12 +66,17 @@ public class MachineController {
     }
 
     @GetMapping("/probe/24hour/outPm25")
-    public ResultData probeLast24HourOutPm25ByMachineId(String qrcode){
+    public ResultData probeLast24HourOutPm25ByMachineId(String qrcode) {
         return machineService.probeLast24HourOutPm25ByQrcode(qrcode);
     }
 
     @GetMapping("/probe/24hour/indoorPm25")
-    public ResultData probeLast24HourIndoorPm25ByMachineId(String qrcode){
+    public ResultData probeLast24HourIndoorPm25ByMachineId(String qrcode) {
         return machineService.fetchMachineHourlyPm2_5(qrcode);
+    }
+
+    @GetMapping("/consumer/owner/machine/list")
+    public ResultData getOwnerMachineList(int curPage, int pageSize) {
+        return machineService.getOwnerMachineList(curPage, pageSize);
     }
 }
