@@ -2,6 +2,8 @@ package finley.gmair.model.dataAnalysis;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class HumidHourly extends Entity {
     private String statusId;
     private String machineId;
@@ -19,6 +21,14 @@ public class HumidHourly extends Entity {
         this.averageHumid = averageHumid;
         this.maxHumid = maxHumid;
         this.minHumid = minHumid;
+    }
+    public HumidHourly(String machineId, double averageHumid, int maxHumid, int minHumid,Timestamp timestamp) {
+        super();
+        this.machineId = machineId;
+        this.averageHumid = averageHumid;
+        this.maxHumid = maxHumid;
+        this.minHumid = minHumid;
+        this.createAt = timestamp;
     }
 
     public String getStatusId() {
