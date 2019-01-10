@@ -138,6 +138,20 @@ CREATE TABLE IF NOT EXISTS `gmair_data_analysis`.`co2_hourly` (
   PRIMARY KEY (`status_id`))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `gmair_data_analysis`.`user_action`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gmair_data_analysis`.`user_action` (
+  `record_id` VARCHAR(50) NOT NULL,
+  `machine_id` VARCHAR(50) NOT NULL,
+  `user_id` VARCHAR(50) NOT NULL,
+  `component` VARCHAR(50) NOT NULL,
+  `component_times` INT NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT '0',
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`record_id`))
+ENGINE = InnoDB;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.analysis.user.action">
+    <resultMap id="actionVo" type="finley.gmair.model.dataAnalysis.UserActionDaily">
+        <result property="recordId" column="record_id"></result>
+        <result property="userId" column="user_id"></result>
+        <result property="machineId" column="machine_id"></result>
+        <result property="Component" column="component"></result>
+        <result property="ComponentTimes" column="component_times"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.dataAnalysis.UserActionDaily" useGeneratedKeys="false">
+        INSERT INTO gmair_data_analysis.user_action(record_id, user_id, machine_id, component, component_times, block_flag, create_time)
+        VALUES (#{recordId},#{userId},#{machineId},#{Component},#{ComponentTimes},#{blockFlag},#{createAt})
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO gmair_data_analysis.user_action(record_id, user_id, machine_id, component, component_times, block_flag, create_time)
+        VALUES
+        <foreach collection="list" separator="," item="UserAction" index="index">
+            (#{recordId},#{userId},#{machineId},#{Component},#{ComponentTimes},#{blockFlag},#{createAt})
+        </foreach>
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="userAction">
+        SELECT record_id, user_id, machine_id, component, component_times, block_flag, create_time
+        FROM gmair_data_analysis.user_action
+        WHERE 1 = 1
+        <if test="recordId != null">
+            AND record_id = #{recordId}
+        </if>
+        <if test="machineId != null">
+            AND machine_id = #{machineId}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLT != null">
+            <![CDATA[
+                AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        order by create_time asc
+    </select>
+</mapper>
