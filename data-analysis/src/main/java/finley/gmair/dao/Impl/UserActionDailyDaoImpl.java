@@ -1,8 +1,8 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.PowerHourlyDao;
-import finley.gmair.model.dataAnalysis.PowerHourly;
+import finley.gmair.dao.UserActionDailyDao;
+import finley.gmair.model.dataAnalysis.UserActionDaily;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class PowerHourlyDaoImpl extends BaseDao implements PowerHourlyDao {
+public class UserActionDailyDaoImpl extends BaseDao implements UserActionDailyDao {
 
     @Override
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         try{
-            List<PowerHourly> list = sqlSession.selectList("gmair.machine.power_hourly.query",condition);
+            List<UserActionDaily> list = sqlSession.selectList("gmair.dataAnalysis.user_action.query",condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -32,13 +32,13 @@ public class PowerHourlyDaoImpl extends BaseDao implements PowerHourlyDao {
     }
 
     @Override
-    public ResultData insertBatch(List<PowerHourly> list) {
+    public ResultData insertBatch(List<UserActionDaily> list) {
         ResultData result = new ResultData();
-        for (PowerHourly mpd: list)
-            if (mpd.getStatusId() == null)
-                mpd.setStatusId(IDGenerator.generate("POW"));
+        for (UserActionDaily uad: list)
+            if (uad.getRecordId() == null)
+                uad.setRecordId(IDGenerator.generate("UserAction"));
         try {
-            sqlSession.insert("gmair.machine.power_hourly.insertBatch", list);
+            sqlSession.insert("gmair.machine.user_action.insertBatch", list);
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -47,5 +47,4 @@ public class PowerHourlyDaoImpl extends BaseDao implements PowerHourlyDao {
         }
         return result;
     }
-
 }

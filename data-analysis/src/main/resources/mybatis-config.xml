@@ -12,5 +12,6 @@
         <mapper resource="mapper/heat_hourly.xml"></mapper>
         <mapper resource="mapper/power_hourly.xml"></mapper>
         <mapper resource="mapper/mode_hourly.xml"></mapper>
+        <mapper resource="mapper/user_action.xml"></mapper>
     </mappers>
 </configuration>
