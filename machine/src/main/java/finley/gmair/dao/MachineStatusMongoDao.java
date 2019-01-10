@@ -16,4 +16,6 @@ public interface MachineStatusMongoDao {
     ResultData queryPartialAveragePm25();
 
     ResultData queryMachineV1Status(Map<String, Object> condition);
+
+    ResultData queryMachineV2Status(Map<String, Object> condition);
 }

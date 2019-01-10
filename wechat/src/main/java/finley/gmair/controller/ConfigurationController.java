@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/wechat/config")
 public class ConfigurationController {
 
-    @CrossOrigin({"https://reception.gmair.net"})
+    @CrossOrigin({"https://reception.gmair.net", "https://console.gmair.net"})
     @PostMapping("/init")
     public ResultData config(String url) {
         ResultData result = new ResultData();

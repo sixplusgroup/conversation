@@ -77,7 +77,6 @@ public class RankCrawler {
                             String cityId = obscureCity.getCityId();
                             airQuality.setCityId(cityId);
                         }
-                        airQuality.setUrl(cityHref.attr("href"));
                         airQuality.setAqi(Double.parseDouble(tds.get(2).text()));
                         airQuality.setAqiLevel(tds.get(3).text());
                         airQuality.setPrimePollution(tds.get(4).text());
@@ -107,44 +106,38 @@ public class RankCrawler {
                 }
             }
         }
-        List<CityUrl> cityUrlList = map.values().stream()
-                .map(e -> new CityUrl(e.getCityId(), AIR_URL + e.getUrl()))
-                .collect(Collectors.toList());
         List<CityAirQuality> airQualityList = map.values().stream().collect(Collectors.toList());
 
         //把爬取到的空气质量数据存入缓存airQualityMap,key为cityId,并插入city_aqi_full表中
-        insertCityAqiDetail(airQualityList);
+//        insertCityAqiDetail(airQualityList);
 
         //根据城市pm25和aqiIndex计算平均值,统计出city对应province的数据,记录到province_airquality表中
         provinceAirQualityService.generate(airQualityList);
-
-        //把cityId和cityUrl的对应关系replace到city_url表中
-        updateCityUrl(cityUrlList);
     }
 
-    private void insertCityAqiDetail(List<CityAirQuality> airQualityList) {
-        // step 1: update cache
-        try {
-            for (CityAirQuality cityAirQuality : airQualityList) {
-                airQualityCacheService.generate(cityAirQuality);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        // step 2: update database
-        if (airQualityList.isEmpty())
-            return;
-        Timestamp timestamp = airQualityList.get(0).getRecordTime();
-        Map<String, Object> condition = new HashMap();
-        condition.put("recordTime", timestamp);
-        condition.put("blockFlag", false);
-        ResultData response = airQualityDao.select(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            airQualityDao.insertBatch(airQualityList);
-        }
-    }
+//    private void insertCityAqiDetail(List<CityAirQuality> airQualityList) {
+//        // step 1: update cache
+//        try {
+//            for (CityAirQuality cityAirQuality : airQualityList) {
+//                airQualityCacheService.generate(cityAirQuality);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        // step 2: update database
+//        if (airQualityList.isEmpty())
+//            return;
+//        Timestamp timestamp = airQualityList.get(0).getRecordTime();
+//        Map<String, Object> condition = new HashMap();
+//        condition.put("recordTime", timestamp);
+//        condition.put("blockFlag", false);
+//        ResultData response = airQualityDao.select(condition);
+//        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+//            airQualityDao.insertBatch(airQualityList);
+//        }
+//    }
 
     private void updateCityUrl(List<CityUrl> cityUrlList) {
         if (!cityUrlList.isEmpty())

@@ -21,6 +21,8 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -48,6 +50,8 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Autowired
     private RedisService redisService;
+
+    private Logger logger = LoggerFactory.getLogger(GMPacketHandler.class);
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -112,7 +116,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
         if (request[0] == (byte) 0xFF && request[request.length - 1] == (byte) 0xEE) {
             AbstractPacketV2 packet = PacketUtil.transferV2(request);
             String uid = packet.getUID().trim();
-            CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
+//            CorePool.getLogExecutor().execute(new Thread(() -> logService.createMachineComLog(uid, "Send packet", new StringBuffer("Client: ").append(uid).append(" of 2nd version sends a packet to server").toString(), ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress())));
             if (StringUtils.isEmpty(repository.retrieve(uid)) || repository.retrieve(uid) != ctx) {
                 repository.push(uid, ctx);
             }
@@ -121,9 +125,10 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
             HeartBeatPacket response = PacketUtil.generateHeartBeat(uid);
             ctx.writeAndFlush(response.convert2bytearray());
 
-            if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 30) {
-                return;
-            }
+//            if (TimeUtil.timestampDiff(System.currentTimeMillis(), packet.getTime()) >= 1000 * 30) {
+//                return;
+//            }
+
             CorePool.getComExecutor().execute(new Thread(() -> {
                 //nothing to do with heartbeat packet
                 if (packet instanceof HeartBeatPacket) {
@@ -150,12 +155,29 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                         byte[] heat = new byte[]{data[10]};
                         byte[] light = new byte[]{data[11]};
                         byte[] lock = new byte[]{data[12]};
+//                        try {
+//                            logger.info("UID: " + uid);
+//                            logger.info("PM2.5: " + ByteUtil.byte2int(pm2_5));
+//                            logger.info("TEMP: " + ByteUtil.byte2int(temp));
+//                            logger.info("HUMID: " + ByteUtil.byte2int(humid));
+//                            logger.info("CO2: " + ByteUtil.byte2int(co2));
+//                            logger.info("VOLUME: " + ByteUtil.byte2int(volume));
+//                            logger.info("POWER: " + ByteUtil.byte2int(power));
+//                            logger.info("MODE: " + ByteUtil.byte2int(mode));
+//                            logger.info("HEAT " + ByteUtil.byte2int(heat));
+//                            logger.info("LIGHT: " + ByteUtil.byte2int(light));
+//                            logger.info("LOCK: " + ByteUtil.byte2int(lock));
+//                        } catch (Exception e) {
+//                            logger.error(e.getMessage());
+//                            e.printStackTrace();
+//                        }
                         MachineStatus status = new MachineStatus(uid, ByteUtil.byte2int(pm2_5), ByteUtil.byte2int(temp), ByteUtil.byte2int(humid), ByteUtil.byte2int(co2), ByteUtil.byte2int(volume), ByteUtil.byte2int(power), ByteUtil.byte2int(mode), ByteUtil.byte2int(heat), ByteUtil.byte2int(light), ByteUtil.byte2int(lock));
+//                        logger.info("Machine status: " + JSON.toJSONString(status));/**/
                         CorePool.getComExecutor().execute(new Thread(() ->
                                 communicationService.create(status)
                         ));
                         CorePool.getComExecutor().execute(new Thread(() -> {
-                            LimitQueue<MachineStatus> queue = null;
+                            LimitQueue<MachineStatus> queue;
                             if (redisService.exists(uid) == false) {
                                 queue = new LimitQueue<>(120);
                                 queue.offer(status);

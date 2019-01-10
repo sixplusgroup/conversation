@@ -3,9 +3,7 @@ package finley.gmair.service;
 import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient("machine-agent")
 public interface MachineService {
@@ -38,4 +36,10 @@ public interface MachineService {
 
     @GetMapping("machine/map/fetch")
     ResultData fetchMachineLatLngList();
+
+    @GetMapping("/machine/latest/pm2_5/24hour/probe/bycode")
+    ResultData probeLast24HourOutPm25ByQrcode(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/status/hourly")
+    ResultData fetchMachineHourlyPm2_5(@RequestParam("qrcode") String qrcode);
 }

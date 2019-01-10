@@ -1,11 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.LogDao;
-import finley.gmair.model.express.ExpressCompany;
-import finley.gmair.model.log.MachineComLog;
-import finley.gmair.model.log.Server2MachineLog;
-import finley.gmair.model.log.SystemEventLog;
-import finley.gmair.model.log.UserActionLog;
+import finley.gmair.model.log.*;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -87,7 +83,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public ResultData createUserActionLog(UserActionLog userActionLog) {
+    public ResultData createUserActionLog(UserMachineOperationLog userActionLog) {
         ResultData result = new ResultData();
         ResultData response = logDao.insertUserActionLog(userActionLog);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -148,6 +144,39 @@ public class LogServiceImpl implements LogService {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to retrieve server-machine log");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createUserLog(UserAccountOperationLog userLog) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.insertUserLog(userLog);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to store user log");
+        return result;
+    }
+
+    @Override
+    public ResultData fetchUserLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryUserLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No user log found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve user log");
         }
         return result;
     }

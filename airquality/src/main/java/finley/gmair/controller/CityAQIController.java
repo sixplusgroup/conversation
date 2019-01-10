@@ -1,12 +1,11 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSON;
 import finley.gmair.service.CityAQIService;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,12 +22,11 @@ public class CityAQIController {
      *
      * @return
      */
-    @PostMapping("/aqi/refresh")
+    @GetMapping("/aqi/refresh")
     public ResultData refresh() {
         ResultData result = new ResultData();
-        ResultData response = cityAQIService.obtain();
-
-        logger.info(JSON.toJSONString(response));
+        new Thread(() -> cityAQIService.obtain()).start();
+        result.setDescription("已开始获取城市空气信息，请稍后");
         return result;
     }
 }
