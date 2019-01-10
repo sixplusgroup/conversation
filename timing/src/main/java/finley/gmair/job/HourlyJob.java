@@ -30,6 +30,9 @@ public class HourlyJob implements Job {
     private MachineModeFeignService machineModeFeignService;
 
     @Autowired
+    private DataAnalysisService dataAnalysisService;
+
+    @Autowired
     private TaskService taskService;
 
     @Override
@@ -90,6 +93,14 @@ public class HourlyJob implements Job {
             boolean status = taskService.probeTaskStatus(condition);
             if (status) {
                 machineFeignService.turnOffScreenHourly();
+            }
+        }));
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            condition.clear();
+            condition.put("taskId", "GTI20190109522w8i1");
+            boolean status = taskService.probeTaskStatus(condition);
+            if (status) {
+                dataAnalysisService.statisticalDataHourly();
             }
         }));
     }
