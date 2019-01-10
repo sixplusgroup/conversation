@@ -1,8 +1,8 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.Co2DailyDao;
-import finley.gmair.model.dataAnalysis.Co2Hourly;
+import finley.gmair.dao.HumidDailyDao;
+import finley.gmair.model.dataAnalysis.HumidHourly;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class Co2DailyDaoImpl extends BaseDao implements Co2DailyDao {
+public class HumidDailyDaoImpl extends BaseDao implements HumidDailyDao {
 
     @Override
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         try{
-            List<Co2Hourly> list = sqlSession.selectList("gmair.machine.co2_daily.query",condition);
+            List<HumidHourly> list = sqlSession.selectList("gmair.machine.humid_daily.query",condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -32,13 +32,13 @@ public class Co2DailyDaoImpl extends BaseDao implements Co2DailyDao {
     }
 
     @Override
-    public ResultData insertBatch(List<Co2Hourly> list) {
+    public ResultData insertBatch(List<HumidHourly> list) {
         ResultData result = new ResultData();
-        for (Co2Hourly mpd: list)
+        for (HumidHourly mpd: list)
             if (mpd.getStatusId() == null)
-                mpd.setStatusId(IDGenerator.generate("TMP"));
+                mpd.setStatusId(IDGenerator.generate("HUD"));
         try {
-            sqlSession.insert("gmair.machine.co2_daily.insertBatch", list);
+            sqlSession.insert("gmair.machine.humid_daily.insertBatch", list);
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

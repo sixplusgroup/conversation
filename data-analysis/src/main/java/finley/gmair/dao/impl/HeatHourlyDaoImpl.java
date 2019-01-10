@@ -1,8 +1,8 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.Co2HourlyDao;
-import finley.gmair.model.dataAnalysis.Co2Hourly;
+import finley.gmair.dao.HeatHourlyDao;
+import finley.gmair.model.dataAnalysis.HeatHourly;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class Co2HourlyDaoImpl extends BaseDao implements Co2HourlyDao {
+public class HeatHourlyDaoImpl extends BaseDao implements HeatHourlyDao {
 
     @Override
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         try{
-            List<Co2Hourly> list = sqlSession.selectList("gmair.machine.co2_hourly.query",condition);
+            List<HeatHourly> list = sqlSession.selectList("gmair.machine.heat_hourly.query",condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -32,13 +32,13 @@ public class Co2HourlyDaoImpl extends BaseDao implements Co2HourlyDao {
     }
 
     @Override
-    public ResultData insertBatch(List<Co2Hourly> list) {
+    public ResultData insertBatch(List<HeatHourly> list) {
         ResultData result = new ResultData();
-        for (Co2Hourly mpd: list)
+        for (HeatHourly mpd: list)
             if (mpd.getStatusId() == null)
-                mpd.setStatusId(IDGenerator.generate("TMP"));
+                mpd.setStatusId(IDGenerator.generate("HEA"));
         try {
-            sqlSession.insert("gmair.machine.co2_hourly.insertBatch", list);
+            sqlSession.insert("gmair.machine.heat_hourly.insertBatch", list);
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

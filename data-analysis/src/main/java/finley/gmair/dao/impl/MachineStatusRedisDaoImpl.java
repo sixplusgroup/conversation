@@ -1,6 +1,5 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
-import finley.gmair.controller.MachineStatusController;
 import finley.gmair.dao.MachineStatusRedisDao;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

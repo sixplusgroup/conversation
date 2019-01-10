@@ -1,8 +1,8 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.ModeDailyDao;
-import finley.gmair.model.dataAnalysis.ModeHourly;
+import finley.gmair.dao.TempHourlyDao;
+import finley.gmair.model.dataAnalysis.TempHourly;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class ModeDailyDaoImpl extends BaseDao implements ModeDailyDao {
+public class TempHourlyDaoImpl extends BaseDao implements TempHourlyDao {
 
     @Override
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         try{
-            List<ModeHourly> list = sqlSession.selectList("gmair.machine.mode_daily.query",condition);
+            List<TempHourly> list = sqlSession.selectList("gmair.machine.temp_hourly.query",condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -32,13 +32,13 @@ public class ModeDailyDaoImpl extends BaseDao implements ModeDailyDao {
     }
 
     @Override
-    public ResultData insertBatch(List<ModeHourly> list) {
+    public ResultData insertBatch(List<TempHourly> list) {
         ResultData result = new ResultData();
-        for (ModeHourly mpd: list)
+        for (TempHourly mpd: list)
             if (mpd.getStatusId() == null)
-                mpd.setStatusId(IDGenerator.generate("MOD"));
+                mpd.setStatusId(IDGenerator.generate("TMP"));
         try {
-            sqlSession.insert("gmair.machine.mode_daily.insertBatch", list);
+            sqlSession.insert("gmair.machine.temp_hourly.insertBatch", list);
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

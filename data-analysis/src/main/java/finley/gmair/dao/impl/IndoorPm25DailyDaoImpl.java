@@ -1,8 +1,8 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.VolumeDailyDao;
-import finley.gmair.model.dataAnalysis.VolumeHourly;
+import finley.gmair.dao.IndoorPm25DailyDao;
+import finley.gmair.model.dataAnalysis.IndoorPm25Hourly;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class VolumeDailyDaoImpl extends BaseDao implements VolumeDailyDao {
+public class IndoorPm25DailyDaoImpl extends BaseDao implements IndoorPm25DailyDao {
 
     @Override
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         try{
-            List<VolumeHourly> list = sqlSession.selectList("gmair.machine.volume_daily.query",condition);
+            List<IndoorPm25Hourly> list = sqlSession.selectList("gmair.machine.indoor_pm25_daily.query",condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -32,13 +32,13 @@ public class VolumeDailyDaoImpl extends BaseDao implements VolumeDailyDao {
     }
 
     @Override
-    public ResultData insertBatch(List<VolumeHourly> list) {
+    public ResultData insertBatch(List<IndoorPm25Hourly> list) {
         ResultData result = new ResultData();
-        for (VolumeHourly mpd: list)
+        for (IndoorPm25Hourly mpd: list)
             if (mpd.getStatusId() == null)
-                mpd.setStatusId(IDGenerator.generate("VOL"));
+                mpd.setStatusId(IDGenerator.generate("IDR"));
         try {
-            sqlSession.insert("gmair.machine.volume_daily.insertBatch", list);
+            sqlSession.insert("gmair.machine.indoor_pm25_daily.insertBatch", list);
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
