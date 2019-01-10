@@ -2,6 +2,8 @@ package finley.gmair.model.dataAnalysis;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class PowerHourly extends Entity {
 
     private String statusId;
@@ -18,6 +20,14 @@ public class PowerHourly extends Entity {
         this.machineId = machineId;
         this.powerOnMinute = powerOnMinute;
         this.powerOffMinute = powerOffMinute;
+    }
+
+    public PowerHourly(String machineId, int powerOnMinute, int powerOffMinute, Timestamp timestamp) {
+        super();
+        this.machineId = machineId;
+        this.powerOnMinute = powerOnMinute;
+        this.powerOffMinute = powerOffMinute;
+        this.createAt = timestamp;
     }
 
     public String getStatusId() {

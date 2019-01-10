@@ -2,6 +2,8 @@ package finley.gmair.model.dataAnalysis;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class Co2Hourly extends Entity {
     private String statusId;
     private String machineId;
@@ -19,6 +21,14 @@ public class Co2Hourly extends Entity {
         this.averageCo2 = averageCo2;
         this.maxCo2 = maxCo2;
         this.minCo2 = minCo2;
+    }
+    public Co2Hourly(String machineId, double averageCo2, int maxCo2, int minCo2, Timestamp timestamp) {
+        super();
+        this.machineId = machineId;
+        this.averageCo2 = averageCo2;
+        this.maxCo2 = maxCo2;
+        this.minCo2 = minCo2;
+        this.createAt = timestamp;
     }
 
     public String getStatusId() {

@@ -36,12 +36,20 @@
         <if test="machineId != null">
             AND machine_id = #{machineId}
         </if>
+        <if test="createTimeGT != null">
+            AND create_time > #{createTimeGT}
+        </if>
         <if test="createTimeGTE != null">
             AND create_time >= #{createTimeGTE}
         </if>
         <if test="createTimeLT != null">
             <![CDATA[
                 AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
             ]]>
         </if>
         order by create_time asc

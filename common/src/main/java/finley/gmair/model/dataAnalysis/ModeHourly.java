@@ -2,6 +2,8 @@ package finley.gmair.model.dataAnalysis;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class ModeHourly extends Entity {
     private String statusId;
     private String machineId;
@@ -19,6 +21,14 @@ public class ModeHourly extends Entity {
         this.manualMinute = manualMinute;
         this.cosyMinute = cosyMinute;
         this.warmMinute = warmMinute;
+    }
+    public ModeHourly(String machineId, int manualMinute, int cosyMinute, int warmMinute, Timestamp timestamp) {
+        super();
+        this.machineId = machineId;
+        this.manualMinute = manualMinute;
+        this.cosyMinute = cosyMinute;
+        this.warmMinute = warmMinute;
+        this.createAt = timestamp;
     }
 
     public String getStatusId() {
