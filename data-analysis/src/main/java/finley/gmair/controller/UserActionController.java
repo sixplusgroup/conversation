@@ -23,16 +23,16 @@ import java.util.stream.Collectors;
 public class UserActionController {
 
     @Autowired
-    private UserActionMongoService userActionService;
+    private UserActionMongoService userActionMongoService;
 
-    private UserActionDailyService userActionStatisticService;
+    private UserActionDailyService userActionDailyService;
 
     private Logger logger = LoggerFactory.getLogger(UserActionController.class);
 
     @GetMapping("/probe/statistical/lastday")
     public ResultData probeStatisticalData(){
         ResultData result = new ResultData();
-        ResultData response = userActionService.getDailyStatisticalData();
+        ResultData response = userActionMongoService.getDailyStatisticalData();
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setData(response.getData());
             return result;
@@ -43,16 +43,17 @@ public class UserActionController {
     @PostMapping("/schedule/statistical/daily")
     public ResultData statisticalDataDaily(){
         ResultData result = new ResultData();
-        ResultData response = userActionService.getDailyStatisticalData();
+        //ResultData re = probeStatisticalData();
+        ResultData response = userActionMongoService.getDailyStatisticalData();
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
-            result.setDescription("统计时出错");
+            result.setDescription("ERROR");
             return result;
         }
         List<Object> statisticalDataList = (List<Object>) response.getData();
         List<JSONObject> dataList = statisticalDataList.stream().map(e -> JSONObject.parseObject(e.toString())).collect(Collectors.toList());
         List<UserActionDaily> userActionDailyList = dataList.stream().map(e -> new UserActionDaily(e.getString("recordId"),e.getString("userId"),e.getString("machineId"),e.getString("component"),e.getIntValue("componentTimes"))).collect(Collectors.toList());
-        ResultData response1 = userActionStatisticService.insertBatchDaily(userActionDailyList);
+        ResultData response1 = userActionDailyService.insertBatchDaily(userActionDailyList);
 
         List<Object> resultList = new ArrayList<>();
         resultList.add(response1.getData());
