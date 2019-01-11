@@ -1,4 +1,4 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BarcodeDao;
 import finley.gmair.model.assemble.Barcode;

@@ -33,7 +33,7 @@ public class MachineStatusRedisDaoImpl implements MachineStatusRedisDao {
                 map.put(key,redisTemplate.opsForValue().get(key));
             }
         } catch (Exception e) {
-            logger.debug(e.getMessage());
+            logger.info(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }

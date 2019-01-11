@@ -1,4 +1,4 @@
-package finley.gmair.service.Impl;
+package finley.gmair.service.impl;
 
 import finley.gmair.dao.IndoorPm25DailyDao;
 import finley.gmair.dao.IndoorPm25HourlyDao;

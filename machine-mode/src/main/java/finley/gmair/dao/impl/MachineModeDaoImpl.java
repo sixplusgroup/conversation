@@ -1,4 +1,4 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
 import finley.gmair.dao.MachineModeDao;
 import finley.gmair.model.mode.MachineMode;

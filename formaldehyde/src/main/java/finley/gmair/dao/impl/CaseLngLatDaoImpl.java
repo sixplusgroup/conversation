@@ -1,9 +1,7 @@
-package finley.gmair.dao.Impl;
+package finley.gmair.dao.impl;
 
 import finley.gmair.dao.CaseLngLatDao;
-import finley.gmair.dao.CheckEquipmentDao;
 import finley.gmair.model.formaldehyde.CaseLngLat;
-import finley.gmair.model.formaldehyde.CheckEquipment;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

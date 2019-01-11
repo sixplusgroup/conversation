@@ -1,4 +1,4 @@
-package finley.gmair.service.Impl;
+package finley.gmair.service.impl;
 
 import finley.gmair.dao.HeatDailyDao;
 import finley.gmair.dao.HeatHourlyDao;
