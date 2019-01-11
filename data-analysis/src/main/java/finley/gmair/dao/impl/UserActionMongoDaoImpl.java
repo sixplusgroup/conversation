@@ -48,7 +48,7 @@ public class UserActionMongoDaoImpl implements UserActionMongoDao {
     public ResultData queryUserAction() {
         //fetch last day's user action list from mongodb
         ResultData result = new ResultData();
-        long lastDay = (System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 2) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        long lastDay = (System.currentTimeMillis() - 1000 * 60 * 60 * 24) / (1000 * 60 * 60) * (1000 * 60 * 60);
         long currentDay = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
 
         Query query = new Query();
