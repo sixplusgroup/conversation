@@ -13,8 +13,9 @@ public class MachineInfoVo {
     private String consumerAddress;
     private boolean isOnline;
     private Timestamp bindTime;
+    private int overCount;
 
-    public MachineInfoVo(String codeValue, String machineId, String bindName, String consumerName, String consumerPhone, String consumerProvince, String consumerCity, String consumerAddress, boolean isOnline, Timestamp bindTime) {
+    public MachineInfoVo(String codeValue, String machineId, String bindName, String consumerName, String consumerPhone, String consumerProvince, String consumerCity, String consumerAddress, boolean isOnline, Timestamp bindTime, int overCount) {
         this.codeValue = codeValue;
         this.machineId = machineId;
         this.bindName = bindName;
@@ -25,6 +26,7 @@ public class MachineInfoVo {
         this.consumerAddress = consumerAddress;
         this.isOnline = isOnline;
         this.bindTime = bindTime;
+        this.overCount = overCount;
     }
 
     public String getCodeValue() {
@@ -105,5 +107,13 @@ public class MachineInfoVo {
 
     public void setBindTime(Timestamp bindTime) {
         this.bindTime = bindTime;
+    }
+
+    public int getOverCount() {
+        return overCount;
+    }
+
+    public void setOverCount(int overCount) {
+        this.overCount = overCount;
     }
 }

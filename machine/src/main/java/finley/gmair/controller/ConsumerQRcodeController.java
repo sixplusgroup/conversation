@@ -1,17 +1,12 @@
 package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.machine.ConsumerQRcodeBind;
-import finley.gmair.model.machine.MachineQrcodeBind;
-import finley.gmair.model.machine.Ownership;
-import finley.gmair.model.machine.QRCodeStatus;
-import finley.gmair.service.AuthConsumerService;
-import finley.gmair.service.ConsumerQRcodeBindService;
-import finley.gmair.service.MachineQrcodeBindService;
-import finley.gmair.service.QRCodeService;
+import finley.gmair.model.machine.*;
+import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.TimeUtil;
 import finley.gmair.vo.machine.MachineInfoVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/machine/consumer")
@@ -39,6 +35,8 @@ public class ConsumerQRcodeController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private OutPm25DailyService outPm25DailyService;
 
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
     public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
@@ -391,11 +389,20 @@ public class ConsumerQRcodeController {
     }
 
     @GetMapping("/owner/machine/list")
-    public ResultData getOwnerMachineList(int curPage, int pageSize) {
+    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("ownership", Ownership.OWNER);
         condition.put("blockFlag", false);
+        if (!StringUtils.isEmpty(qrcode)) {
+            condition.put("codeValue", qrcode);
+        }
+        if (!StringUtils.isEmpty(createTimeGTE)) {
+            condition.put("createTimeGTE", new Timestamp(Long.parseLong(createTimeGTE)));
+        }
+        if (!StringUtils.isEmpty(createTimeLTE)) {
+            condition.put("createTimeLTE", new Timestamp(Long.parseLong(createTimeLTE)));
+        }
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -421,24 +428,35 @@ public class ConsumerQRcodeController {
             String consumerId = cqb.getConsumerId();
             String bindName = cqb.getBindName();
             Timestamp bindTime = cqb.getCreateAt();
+            //得到machineId
             condition.clear();
             condition.put("codeValue", codeValue);
             condition.put("blockFlag", false);
             response = machineQrcodeBindService.fetch(condition);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
-                continue;
-            String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+            String machineId = "未找到";
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK)
+                machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+            //得到overCount
+            condition.clear();
+            condition.put("machineId", machineId);
+            response = outPm25DailyService.fetch(condition);
+            int overCount = 0;
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK)
+                overCount = ((List<OutPm25Daily>) response.getData()).get(0).getOverCount();
+            //得到用户个人资料
             response = authConsumerService.profile(consumerId);
-            if (response.getResponseCode() != ResponseCode.RESPONSE_OK)
-                continue;
-            LinkedHashMap<String, String> linkedHashMap = (LinkedHashMap) response.getData();
-            String consumerName = linkedHashMap.get("name");
-            String consumerProvince = linkedHashMap.get("province");
-            String consumerCity = linkedHashMap.get("city");
-            String consumerAddress = linkedHashMap.get("address");
-            String consumerPhone = linkedHashMap.get("phone");
+            String consumerName = "未找到", consumerProvince = "未找到", consumerCity = "未找到", consumerAddress = "未找到", consumerPhone = "未找到";
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                LinkedHashMap<String, String> linkedHashMap = (LinkedHashMap) response.getData();
+                consumerName = linkedHashMap.get("name");
+                consumerProvince = linkedHashMap.get("province");
+                consumerCity = linkedHashMap.get("city");
+                consumerAddress = linkedHashMap.get("address");
+                consumerPhone = linkedHashMap.get("phone");
+            }
+            //得到机器在线状态
             boolean isOnline = redisService.exists(machineId);
-            resultList.add(new MachineInfoVo(codeValue, machineId, bindName, consumerName, consumerPhone, consumerProvince, consumerCity, consumerAddress, isOnline, bindTime));
+            resultList.add(new MachineInfoVo(codeValue, machineId, bindName, consumerName, consumerPhone, consumerProvince, consumerCity, consumerAddress, isOnline, bindTime, overCount));
         }
         result.setDescription("success to fetch machine list of the machine owner");
         JSONObject jsonObject = new JSONObject();

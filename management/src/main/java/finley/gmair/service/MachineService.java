@@ -45,5 +45,10 @@ public interface MachineService {
 
     @GetMapping("/machine/consumer/owner/machine/list")
     ResultData getOwnerMachineList(@RequestParam("curPage") int curPage,
-                                   @RequestParam("pageSize") int pageSize);
+                                   @RequestParam("pageSize") int pageSize,
+                                   @RequestParam("qrcode") String qrcode,
+                                   @RequestParam("phone") String phone,
+                                   @RequestParam("createTimeGTE") String createTimeGTE,
+                                   @RequestParam("createTimeLTE") String createTimeLTE,
+                                   @RequestParam("online") String online);
 }
