@@ -10,13 +10,13 @@ import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -50,6 +50,33 @@ public class UserActionController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("store successfully");
+        return result;
+    }
+
+    @RequestMapping(value = "/query", method = RequestMethod.POST)
+    public ResultData queryUserAction(String userId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(userId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("userId",userId);
+        condition.put("blockFlag", false);
+        ResultData response = userActionDailyService.fetchDaily(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get user action");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find user action record");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
         return result;
     }
 }

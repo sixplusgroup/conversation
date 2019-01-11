@@ -28,6 +28,9 @@
         SELECT record_id, user_id, machine_id, component, component_times, block_flag, create_time
         FROM gmair_data_analysis.user_action
         WHERE 1 = 1
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
         <if test="recordId != null">
             AND record_id = #{recordId}
         </if>
@@ -41,6 +44,9 @@
             <![CDATA[
                 AND create_time < #{createTimeLT}
             ]]>
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
         </if>
         order by create_time asc
     </select>
