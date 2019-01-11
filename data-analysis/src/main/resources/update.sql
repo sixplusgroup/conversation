@@ -136,3 +136,16 @@ DEFAULT CHARACTER SET = utf8;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+#2019-01-11
+ALTER TABLE `gmair_data_analysis`.`mode_daily`
+CHANGE COLUMN `manual_minute` `auto_minute` INT(11) NOT NULL ,
+CHANGE COLUMN `cosy_minute` `manual_minute` INT(11) NOT NULL ,
+CHANGE COLUMN `warm_minute` `sleep_minute` INT(11) NOT NULL ;
+
+ALTER TABLE `gmair_data_analysis`.`mode_hourly`
+CHANGE COLUMN `manual_minute` `auto_minute` INT(11) NOT NULL ,
+CHANGE COLUMN `cosy_minute` `manual_minute` INT(11) NOT NULL ,
+CHANGE COLUMN `warm_minute` `sleep_minute` INT(11) NOT NULL ;
+

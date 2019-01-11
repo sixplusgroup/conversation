@@ -7,29 +7,30 @@ import java.sql.Timestamp;
 public class ModeHourly extends Entity {
     private String statusId;
     private String machineId;
+    private int autoMinute;
     private int manualMinute;
-    private int cosyMinute;
-    private int warmMinute;
+    private int sleepMinute;
 
     public ModeHourly() {
         super();
     }
 
-    public ModeHourly(String machineId, int manualMinute, int cosyMinute, int warmMinute) {
+    public ModeHourly(String machineId, int autoMinute, int manualMinute, int sleepMinute) {
         super();
         this.machineId = machineId;
+        this.autoMinute = autoMinute;
         this.manualMinute = manualMinute;
-        this.cosyMinute = cosyMinute;
-        this.warmMinute = warmMinute;
+        this.sleepMinute = sleepMinute;
     }
-    public ModeHourly(String machineId, int manualMinute, int cosyMinute, int warmMinute, Timestamp timestamp) {
+    public ModeHourly(String machineId, int autoMinute, int manualMinute, int sleepMinute, Timestamp timestamp) {
         super();
         this.machineId = machineId;
+        this.autoMinute = autoMinute;
         this.manualMinute = manualMinute;
-        this.cosyMinute = cosyMinute;
-        this.warmMinute = warmMinute;
+        this.sleepMinute = sleepMinute;
         this.createAt = timestamp;
     }
+
 
     public String getStatusId() {
         return statusId;
@@ -47,6 +48,14 @@ public class ModeHourly extends Entity {
         this.machineId = machineId;
     }
 
+    public int getAutoMinute() {
+        return autoMinute;
+    }
+
+    public void setAutoMinute(int autoMinute) {
+        this.autoMinute = autoMinute;
+    }
+
     public int getManualMinute() {
         return manualMinute;
     }
@@ -55,19 +64,11 @@ public class ModeHourly extends Entity {
         this.manualMinute = manualMinute;
     }
 
-    public int getCosyMinute() {
-        return cosyMinute;
+    public int getSleepMinute() {
+        return sleepMinute;
     }
 
-    public void setCosyMinute(int cosyMinute) {
-        this.cosyMinute = cosyMinute;
-    }
-
-    public int getWarmMinute() {
-        return warmMinute;
-    }
-
-    public void setWarmMinute(int warmMinute) {
-        this.warmMinute = warmMinute;
+    public void setSleepMinute(int sleepMinute) {
+        this.sleepMinute = sleepMinute;
     }
 }

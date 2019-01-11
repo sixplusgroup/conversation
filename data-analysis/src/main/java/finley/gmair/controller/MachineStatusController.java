@@ -103,7 +103,7 @@ public class MachineStatusController {
             if (diff < 0 || diff >= listLength)
                 continue;
             for (String key : curObj.keySet()) {
-                if (key.contains("average") || key.contains("max") || key.contains("min") || key.contains("powerOn") || key.contains("powerOff") || key.contains("manual") || key.contains("cosy") || key.contains("warm") || key.contains("heatOn") || key.contains("heatOff")) {
+                if (key.contains("average") || key.contains("max") || key.contains("min") || key.contains("powerOn") || key.contains("powerOff") || key.contains("auto") || key.contains("manual") || key.contains("sleep") || key.contains("heatOn") || key.contains("heatOff")) {
                     resultList.getJSONObject((int) diff).put(key, curObj.get(key));
                 }
             }

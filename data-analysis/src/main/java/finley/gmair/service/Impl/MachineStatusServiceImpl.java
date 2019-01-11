@@ -99,7 +99,6 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                     for (int i = 0; i < ((LimitQueue) queue).size(); i++) {
                         list.add(((LimitQueue<MachineStatus>) queue).get(i));
                     }
-//                    LinkedList<MachineStatus> list = ((LimitQueue) queue).getLinkedList();
                     V1MachineStatusHourly msh = countV1Status(list);
                     if (msh != null)
                         statisticalDataList.add(msh);
@@ -110,7 +109,6 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                     for (int i = 0; i < ((LimitQueue) queue).size(); i++) {
                         list.add(((LimitQueue<finley.gmair.model.machine.MachineStatus>) queue).get(i));
                     }
-//                    LinkedList<finley.gmair.model.machine.MachineStatus> list = ((LimitQueue) queue).getLinkedList();
                     V2MachineStatusHourly msh = countV2Status(list);
                     if (msh != null)
                         statisticalDataList.add(msh);
@@ -135,7 +133,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         List<HumidHourly> humidHourlyList =  dataList.stream().map(e -> new HumidHourly(e.getString("machineId"),e.getDouble("averageHumid"),e.getIntValue("maxHumid"),e.getIntValue("minHumid"))).collect(Collectors.toList());
         List<PowerHourly> powerHourlyList =  dataList.stream().map(e -> new PowerHourly(e.getString("machineId"),e.getIntValue("powerOnMinute"),e.getIntValue("powerOffMinute"))).collect(Collectors.toList());
         List<HeatHourly> heatHourlyList = dataList.stream().map(e -> new HeatHourly(e.getString("machineId"),e.getIntValue("heatOnMinute"),e.getIntValue("heatOffMinute"))).collect(Collectors.toList());
-        List<ModeHourly> modeHourlyList = dataList.stream().map(e -> new ModeHourly(e.getString("machineId"),e.getIntValue("manualMinute"),e.getIntValue("cosyMinute"),e.getIntValue("warmMinute"))).collect(Collectors.toList());
+        List<ModeHourly> modeHourlyList = dataList.stream().map(e -> new ModeHourly(e.getString("machineId"),e.getIntValue("autoMinute"),e.getIntValue("manualMinute"),e.getIntValue("sleepMinute"))).collect(Collectors.toList());
 
         indoorPm25HourlyDao.insertBatch(pm25HourlyList);
         volumeHourlyDao.insertBatch(volumeHourlyList);
@@ -164,15 +162,15 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         double averageTemp = list.stream().mapToDouble(MachineStatus::getTemp).average().getAsDouble();
         int maxTemp = list.stream().mapToInt(MachineStatus::getTemp).max().getAsInt();
         int minTemp = list.stream().mapToInt(MachineStatus::getTemp).min().getAsInt();
-        int powerOnMinute = (int) list.stream().filter(a -> a.getPower() == 1).count() / packetCountForOneMinute;
         int powerOffMinute = (int) list.stream().filter(a -> a.getPower() == 0).count() / packetCountForOneMinute;
-        int manualMinute = (int) list.stream().filter(a -> a.getMode() == 0).count() / packetCountForOneMinute;
-        int cosyMinute = (int) list.stream().filter(a -> a.getMode() == 1).count() / packetCountForOneMinute;
-        int warmMinute = (int) list.stream().filter(a -> a.getMode() == 2).count() / packetCountForOneMinute;
-        int heatOnMinute = (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute;
+        int powerOnMinute = (int) list.stream().filter(a -> a.getPower() == 1).count() / packetCountForOneMinute;
+        int autoMinute = (int) list.stream().filter(a -> a.getMode() == 0).count() / packetCountForOneMinute;
+        int manualMinute = (int) list.stream().filter(a -> a.getMode() == 1).count() / packetCountForOneMinute;
+        int sleepMinute = (int) list.stream().filter(a -> a.getMode() == 2).count() / packetCountForOneMinute;
         int heatOffMinute = (int) list.stream().filter(a -> a.getHeat() == 0).count() / packetCountForOneMinute;
+        int heatOnMinute = (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute;
         String machineId = list.get(0).getUid();
-        V1MachineStatusHourly msh = new V1MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, powerOnMinute, powerOffMinute, manualMinute, cosyMinute, warmMinute, heatOnMinute, heatOffMinute);
+        V1MachineStatusHourly msh = new V1MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, powerOnMinute, powerOffMinute, autoMinute, manualMinute, sleepMinute, heatOnMinute, heatOffMinute);
         return msh;
     }
 
@@ -193,15 +191,15 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         double averageCo2 = list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getCo2).average().getAsDouble();
         int maxCo2 = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getCo2).max().getAsInt();
         int minCo2 = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getCo2).min().getAsInt();
-        int powerOnMinute = (int) list.stream().filter(a -> a.getPower() == 1).count() / packetCountForOneMinute;
         int powerOffMinute = (int) list.stream().filter(a -> a.getPower() == 0).count() / packetCountForOneMinute;
-        int warmMinute = (int) list.stream().filter(a -> a.getMode() == 2).count() / packetCountForOneMinute;
-        int cosyMinute = (int) list.stream().filter(a -> a.getMode() == 1).count() / packetCountForOneMinute;
-        int manualMinute = (int) list.stream().filter(a -> a.getMode() == 0).count() / packetCountForOneMinute;
-        int heatOnMinute = (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute;
+        int powerOnMinute = (int) list.stream().filter(a -> a.getPower() == 1).count() / packetCountForOneMinute;
+        int autoMinute = (int) list.stream().filter(a -> a.getMode() == 0).count() / packetCountForOneMinute;
+        int manualMinute = (int) list.stream().filter(a -> a.getMode() == 1).count() / packetCountForOneMinute;
+        int sleepMinute = (int) list.stream().filter(a -> a.getMode() == 2).count() / packetCountForOneMinute;
         int heatOffMinute = (int) list.stream().filter(a -> a.getHeat() == 0).count() / packetCountForOneMinute;
+        int heatOnMinute = (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute;
         String machineId = list.get(0).getUid();
-        V2MachineStatusHourly msh = new V2MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, averageCo2, maxCo2, minCo2, powerOnMinute, powerOffMinute, manualMinute, cosyMinute, warmMinute, heatOnMinute, heatOffMinute);
+        V2MachineStatusHourly msh = new V2MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, averageCo2, maxCo2, minCo2, powerOnMinute, powerOffMinute, autoMinute, manualMinute, sleepMinute, heatOnMinute, heatOffMinute);
         return msh;
     }
 
@@ -259,10 +257,10 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             response = modeHourlyDao.query(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 List<ModeHourly> list = (List<ModeHourly>) response.getData();
+                Map<String, Integer> autoMinute = list.stream().collect(Collectors.groupingBy(ModeHourly::getMachineId, Collectors.summingInt(ModeHourly::getAutoMinute)));
                 Map<String, Integer> manualMinute = list.stream().collect(Collectors.groupingBy(ModeHourly::getMachineId, Collectors.summingInt(ModeHourly::getManualMinute)));
-                Map<String, Integer> cosyMinute = list.stream().collect(Collectors.groupingBy(ModeHourly::getMachineId, Collectors.summingInt(ModeHourly::getCosyMinute)));
-                Map<String, Integer> warmMinute = list.stream().collect(Collectors.groupingBy(ModeHourly::getMachineId, Collectors.summingInt(ModeHourly::getWarmMinute)));
-                List<ModeHourly> dailyData = manualMinute.entrySet().stream().map(e -> new ModeHourly(e.getKey(), e.getValue(), cosyMinute.get(e.getKey()).intValue(), warmMinute.get(e.getKey()).intValue())).collect(Collectors.toList());
+                Map<String, Integer> sleepMinute = list.stream().collect(Collectors.groupingBy(ModeHourly::getMachineId, Collectors.summingInt(ModeHourly::getSleepMinute)));
+                List<ModeHourly> dailyData = autoMinute.entrySet().stream().map(e -> new ModeHourly(e.getKey(), e.getValue(), manualMinute.get(e.getKey()).intValue(), sleepMinute.get(e.getKey()).intValue())).collect(Collectors.toList());
                 modeDailyDao.insertBatch(dailyData);
             }
             //power
