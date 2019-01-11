@@ -24,7 +24,7 @@
         </foreach>
     </insert>
 
-    <select id="query" parameterType="java.util.Map" resultMap="userAction">
+    <select id="query" parameterType="java.util.Map" resultMap="actionVo">
         SELECT record_id, user_id, machine_id, component, component_times, block_flag, create_time
         FROM gmair_data_analysis.user_action
         WHERE 1 = 1
