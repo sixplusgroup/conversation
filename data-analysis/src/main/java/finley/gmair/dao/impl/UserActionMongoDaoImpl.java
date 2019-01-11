@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,7 +52,7 @@ public class UserActionMongoDaoImpl implements UserActionMongoDao {
         long currentDay = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("time").gte(lastDay).lt(currentDay));
+        query.addCriteria(Criteria.where("createAt").gte(lastDay).lt(currentDay));
         List<UserAction> userActionList = new ArrayList<>();
         try {
             userActionList = mongoTemplate.find(query, UserAction.class);
@@ -63,10 +62,12 @@ public class UserActionMongoDaoImpl implements UserActionMongoDao {
             return result;
         }
 
-        List<UserAction> resultList = new ArrayList<>();
+        List<List<UserAction>> resultList = new ArrayList<>();
         if (!userActionList.isEmpty()) {
-            Map<String, List<UserAction>> groupByUserId = userActionList.stream().collect(Collectors.groupingBy(UserAction::getUserId));
-            Iterator iter = groupByUserId.entrySet().iterator();
+            Map<String, List<UserAction>> map = userActionList.stream().collect(Collectors.groupingBy(UserAction::getUserId));
+            for (String key : map.keySet()) {
+                resultList.add(map.get(key));
+            }
         }
 
         if (resultList.isEmpty()) {
