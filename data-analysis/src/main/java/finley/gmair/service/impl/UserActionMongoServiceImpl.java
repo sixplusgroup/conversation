@@ -22,13 +22,17 @@ public class UserActionMongoServiceImpl implements UserActionMongoService {
 
         //从mongo获取前一天小时数据
         ResultData response = userActionMongoDao.queryUserAction();
-        Map<String, Object> map = (HashMap) response.getData();
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error");
+            return result;
+        }
 
         //统计
-        List<Object> resultList = new ArrayList<>();
+        List<List<UserAction>> resultList = (List<List<UserAction>>) response.getData();
 
         if (resultList.isEmpty()) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("empty list");
             return result;
         }
@@ -37,21 +41,18 @@ public class UserActionMongoServiceImpl implements UserActionMongoService {
         return result;
     }
 
-    private List<UserActionDaily> countUserAction(LinkedList<UserAction> list) {
+    @Override
+    public List<UserActionDaily> dealUserAction2Component(List<UserAction> list) {
         List<UserActionDaily> result = new ArrayList<>();
-        String recordId = list.get(0).getLogId();
-        String machineId = list.get(2).getQrcode();
-        Map<String, List<UserAction>> useridList = list.stream().collect(Collectors.groupingBy(UserAction::getUserId));
-        for (String key1: useridList.keySet()) {
-            String userId = key1;
-            List<UserAction> userActionList = useridList.get(userId);
-            Map<String, Long> componentList = list.stream().collect(Collectors.groupingBy(UserAction::getComponent,Collectors.counting()));
-            for (String key2: componentList.keySet()) {
-                String component = key2;
-                int componentTimes = componentList.get(key2).intValue();
-                UserActionDaily userActionDaily = new UserActionDaily(recordId, userId, machineId, component, componentTimes);
-                result.add(userActionDaily);
-            }
+        String machineId = list.get(0).getQrcode();
+        String userId = list.get(0).getUserId();
+
+        Map<String, Long> componentList = list.stream().collect(Collectors.groupingBy(UserAction::getComponent,Collectors.counting()));
+        for (String key: componentList.keySet()) {
+            String component = key;
+            int componentTimes = componentList.get(key).intValue();
+            UserActionDaily userActionDaily = new UserActionDaily(userId, machineId, component, componentTimes);
+            result.add(userActionDaily);
         }
         return result;
     }

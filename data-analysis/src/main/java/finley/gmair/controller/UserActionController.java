@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.dataAnalysis.UserActionDaily;
+import finley.gmair.model.machine.UserAction;
 import finley.gmair.service.UserActionMongoService;
 import finley.gmair.service.UserActionDailyService;
 import finley.gmair.util.ResponseCode;
@@ -25,40 +26,30 @@ public class UserActionController {
     @Autowired
     private UserActionMongoService userActionMongoService;
 
+    @Autowired
     private UserActionDailyService userActionDailyService;
 
-    private Logger logger = LoggerFactory.getLogger(UserActionController.class);
-
-    @GetMapping("/probe/statistical/lastday")
-    public ResultData probeStatisticalData(){
-        ResultData result = new ResultData();
-        ResultData response = userActionMongoService.getDailyStatisticalData();
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setData(response.getData());
-            return result;
-        }
-        return result;
-    }
 
     @PostMapping("/schedule/statistical/daily")
-    public ResultData statisticalDataDaily(){
+    public ResultData statisticalDataDaily() {
         ResultData result = new ResultData();
-        //ResultData re = probeStatisticalData();
         ResultData response = userActionMongoService.getDailyStatisticalData();
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(response.getResponseCode());
-            result.setDescription("ERROR");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error");
             return result;
         }
-        List<Object> statisticalDataList = (List<Object>) response.getData();
-        List<JSONObject> dataList = statisticalDataList.stream().map(e -> JSONObject.parseObject(e.toString())).collect(Collectors.toList());
-        List<UserActionDaily> userActionDailyList = dataList.stream().map(e -> new UserActionDaily(e.getString("recordId"),e.getString("userId"),e.getString("machineId"),e.getString("component"),e.getIntValue("componentTimes"))).collect(Collectors.toList());
-        ResultData response1 = userActionDailyService.insertBatchDaily(userActionDailyList);
 
-        List<Object> resultList = new ArrayList<>();
-        resultList.add(response1.getData());
-        result.setData(resultList);
-        result.setDescription("success to insert statistical user action data daily into database");
+        List<List<UserAction>> list = (List<List<UserAction>>) response.getData();
+        List<UserActionDaily> dailyList = new ArrayList<>();
+        for (List<UserAction> itemList : list) {
+            dailyList = userActionMongoService.dealUserAction2Component(itemList);
+            if (!dailyList.isEmpty()) {
+                response = userActionDailyService.insertBatchDaily(dailyList);
+            }
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("store successfully");
         return result;
     }
 }

@@ -15,9 +15,8 @@ public class UserActionDaily extends Entity {
         super();
     }
 
-    public UserActionDaily(String recordId, String userId, String machineId, String component, int componentTimes){
+    public UserActionDaily(String userId, String machineId, String component, int componentTimes){
         this();
-        this.recordId = recordId;
         this.userId = userId;
         this.machineId = machineId;
         this.component = component;

@@ -18,7 +18,7 @@ public class UserActionDailyDaoImpl extends BaseDao implements UserActionDailyDa
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         try{
-            List<UserActionDaily> list = sqlSession.selectList("gmair.dataAnalysis.user_action.query",condition);
+            List<UserActionDaily> list = sqlSession.selectList("gmair.analysis.user.action.query",condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -35,10 +35,9 @@ public class UserActionDailyDaoImpl extends BaseDao implements UserActionDailyDa
     public ResultData insertBatch(List<UserActionDaily> list) {
         ResultData result = new ResultData();
         for (UserActionDaily uad: list)
-            if (uad.getRecordId() == null)
-                uad.setRecordId(IDGenerator.generate("UserAction"));
+            uad.setRecordId(IDGenerator.generate("USD"));
         try {
-            sqlSession.insert("gmair.machine.user_action.insertBatch", list);
+            sqlSession.insert("gmair.analysis.user.action.insertBatch", list);
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
