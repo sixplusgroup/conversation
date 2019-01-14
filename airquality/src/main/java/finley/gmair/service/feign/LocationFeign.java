@@ -17,4 +17,7 @@ public interface LocationFeign {
 
     @RequestMapping(value = "/location/{provinceId}/cities", method = RequestMethod.GET)
     ResultData city(@PathVariable("provinceId") String provinceId);
+
+    @RequestMapping(value = "/location/probe/provinceId", method = RequestMethod.GET)
+    ResultData detail(@RequestParam("cityId") String cityId);
 }
