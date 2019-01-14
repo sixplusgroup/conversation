@@ -98,7 +98,13 @@ public class CityAQIServiceImpl implements CityAQIService {
                 cd--;
             }
         }
-        JSONArray data = JSON.parseArray(content);
+        JSONArray data = new JSONArray();
+        try {
+            data = JSON.parseArray(content);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            logger.info(content);
+        }
         List<CityAirQuality> list = new ArrayList<>();
         CityAirQuality quality;
         for (int i = 0; i < data.size(); i++) {
