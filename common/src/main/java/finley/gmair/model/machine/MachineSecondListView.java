@@ -1,26 +1,33 @@
-package finley.gmair.vo.machine;
+package finley.gmair.model.machine;
+
+import finley.gmair.model.Entity;
 
 import java.sql.Timestamp;
 
-public class MachineInfoVo {
+public class MachineSecondListView extends Entity {
     private String consumerId;
     private String bindName;
     private String codeValue;
     private String machineId;
     private String consumerName;
     private String consumerPhone;
-    private boolean blockFlag;
-    private Timestamp bindTime;
+    private int overCount;
+    private Timestamp outPm25Time;
 
-    public MachineInfoVo(String consumerId, String bindName, String codeValue, String machineId, String consumerName, String consumerPhone, boolean blockFlag, Timestamp bindTime) {
+    public MachineSecondListView() {
+        super();
+    }
+
+    public MachineSecondListView(String consumerId, String bindName, String codeValue, String machineId, String consumerName, String consumerPhone, int overCount, Timestamp outPm25Time) {
+        super();
         this.consumerId = consumerId;
         this.bindName = bindName;
         this.codeValue = codeValue;
         this.machineId = machineId;
         this.consumerName = consumerName;
         this.consumerPhone = consumerPhone;
-        this.blockFlag = blockFlag;
-        this.bindTime = bindTime;
+        this.overCount = overCount;
+        this.outPm25Time = outPm25Time;
     }
 
     public String getConsumerId() {
@@ -71,19 +78,19 @@ public class MachineInfoVo {
         this.consumerPhone = consumerPhone;
     }
 
-    public boolean isBlockFlag() {
-        return blockFlag;
+    public int getOverCount() {
+        return overCount;
     }
 
-    public void setBlockFlag(boolean blockFlag) {
-        this.blockFlag = blockFlag;
+    public void setOverCount(int overCount) {
+        this.overCount = overCount;
     }
 
-    public Timestamp getBindTime() {
-        return bindTime;
+    public Timestamp getOutPm25Time() {
+        return outPm25Time;
     }
 
-    public void setBindTime(Timestamp bindTime) {
-        this.bindTime = bindTime;
+    public void setOutPm25Time(Timestamp outPm25Time) {
+        this.outPm25Time = outPm25Time;
     }
 }

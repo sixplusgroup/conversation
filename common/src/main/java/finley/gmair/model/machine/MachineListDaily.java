@@ -1,26 +1,31 @@
-package finley.gmair.vo.machine;
+package finley.gmair.model.machine;
 
-import java.sql.Timestamp;
+import finley.gmair.model.Entity;
 
-public class MachineInfoVo {
+public class MachineListDaily extends Entity {
     private String consumerId;
     private String bindName;
     private String codeValue;
     private String machineId;
     private String consumerName;
     private String consumerPhone;
-    private boolean blockFlag;
-    private Timestamp bindTime;
+    private int overCount;
+    private boolean offline;
 
-    public MachineInfoVo(String consumerId, String bindName, String codeValue, String machineId, String consumerName, String consumerPhone, boolean blockFlag, Timestamp bindTime) {
+    public MachineListDaily() {
+        super();
+    }
+
+    public MachineListDaily(String consumerId, String bindName, String codeValue, String machineId, String consumerName, String consumerPhone, int overCount, boolean offline) {
+        super();
         this.consumerId = consumerId;
         this.bindName = bindName;
         this.codeValue = codeValue;
         this.machineId = machineId;
         this.consumerName = consumerName;
         this.consumerPhone = consumerPhone;
-        this.blockFlag = blockFlag;
-        this.bindTime = bindTime;
+        this.overCount = overCount;
+        this.offline = offline;
     }
 
     public String getConsumerId() {
@@ -71,19 +76,19 @@ public class MachineInfoVo {
         this.consumerPhone = consumerPhone;
     }
 
-    public boolean isBlockFlag() {
-        return blockFlag;
+    public int getOverCount() {
+        return overCount;
     }
 
-    public void setBlockFlag(boolean blockFlag) {
-        this.blockFlag = blockFlag;
+    public void setOverCount(int overCount) {
+        this.overCount = overCount;
     }
 
-    public Timestamp getBindTime() {
-        return bindTime;
+    public boolean isOffline() {
+        return offline;
     }
 
-    public void setBindTime(Timestamp bindTime) {
-        this.bindTime = bindTime;
+    public void setOffline(boolean offline) {
+        this.offline = offline;
     }
 }

@@ -1,21 +1,25 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.machine.*;
+import finley.gmair.model.machine.ConsumerQRcodeBind;
+import finley.gmair.model.machine.Ownership;
+import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.util.TimeUtil;
 import finley.gmair.vo.machine.MachineInfoVo;
-import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/machine/consumer")
@@ -389,11 +393,14 @@ public class ConsumerQRcodeController {
     }
 
     @GetMapping("/owner/machine/list")
-    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online) {
+    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("ownership", Ownership.OWNER);
-        condition.put("blockFlag", false);
+        condition.put("start", (curPage - 1) * pageSize);
+        condition.put("pageSize", pageSize);
+        if (!StringUtils.isEmpty(phone)) {
+            condition.put("phone", phone);
+        }
         if (!StringUtils.isEmpty(qrcode)) {
             condition.put("codeValue", qrcode);
         }
@@ -403,66 +410,24 @@ public class ConsumerQRcodeController {
         if (!StringUtils.isEmpty(createTimeLTE)) {
             condition.put("createTimeLTE", new Timestamp(Long.parseLong(createTimeLTE)));
         }
-        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to fetch consumer machine bind");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find consumer machine bind");
-            return result;
-        }
-        List<ConsumerQRcodeBind> list = (List<ConsumerQRcodeBind>) response.getData();
-        int totalPage = list.size() / pageSize + 1;
-        if (curPage < 1 || curPage > totalPage) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to got that page because that page not exist");
-            return result;
-        }
-        list = list.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, list.size()));
-        List<MachineInfoVo> resultList = new ArrayList<>();
 
-        for (ConsumerQRcodeBind cqb : list) {
-            String codeValue = cqb.getCodeValue();
-            String consumerId = cqb.getConsumerId();
-            String bindName = cqb.getBindName();
-            Timestamp bindTime = cqb.getCreateAt();
-            //得到machineId
-            condition.clear();
-            condition.put("codeValue", codeValue);
-            condition.put("blockFlag", false);
-            response = machineQrcodeBindService.fetch(condition);
-            String machineId = "未找到";
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK)
-                machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
-            //得到overCount
-            condition.clear();
-            condition.put("machineId", machineId);
-            response = outPm25DailyService.fetch(condition);
-            int overCount = 0;
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK)
-                overCount = ((List<OutPm25Daily>) response.getData()).get(0).getOverCount();
-            //得到用户个人资料
-            response = authConsumerService.profile(consumerId);
-            String consumerName = "未找到", consumerProvince = "未找到", consumerCity = "未找到", consumerAddress = "未找到", consumerPhone = "未找到";
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                LinkedHashMap<String, String> linkedHashMap = (LinkedHashMap) response.getData();
-                consumerName = linkedHashMap.get("name");
-                consumerProvince = linkedHashMap.get("province");
-                consumerCity = linkedHashMap.get("city");
-                consumerAddress = linkedHashMap.get("address");
-                consumerPhone = linkedHashMap.get("phone");
+        if (StringUtils.isEmpty(overCount)) {
+            ResultData response = consumerQRcodeBindService.queryMachineListView(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to fetch consumer machine bind");
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("not find consumer machine bind");
+                return result;
             }
-            //得到机器在线状态
-            boolean isOnline = redisService.exists(machineId);
-            resultList.add(new MachineInfoVo(codeValue, machineId, bindName, consumerName, consumerPhone, consumerProvince, consumerCity, consumerAddress, isOnline, bindTime, overCount));
+            List<MachineInfoVo> resultList = new ArrayList<>();
+            result.setData(response.getData());
+            return result;
+        } else {
+
         }
-        result.setDescription("success to fetch machine list of the machine owner");
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("totalPage", totalPage);
-        jsonObject.put("machineList", resultList);
-        result.setData(jsonObject);
         return result;
     }
 }
