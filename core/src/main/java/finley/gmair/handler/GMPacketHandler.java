@@ -188,10 +188,6 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                             redisService.set(uid, queue, (long) 120);
                             //redisService.set(uid, status, (long) 120);
                         }));
-                    } else if (command == 0xFA) {
-                        //0xFA serves as the upgrade command
-                        //The response packets back by the board are handled here
-
                     } else {
                         Field[] fields = PacketInfo.class.getDeclaredFields();
                         for (Field field : fields) {
@@ -206,11 +202,11 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                 MachinePartialStatus status;
                                 switch (type) {
                                     case "int":
-                                        status = new MachinePartialStatus(uid, name, ByteUtil.byte2int(data), packet.getTime());
+                                        status = new MachinePartialStatus(uid, name, ByteUtil.byte2int(data));
                                         communicationService.create(status);
                                         break;
                                     case "java.lang.String":
-                                        status = new MachinePartialStatus(uid, name, new String(data), packet.getTime());
+                                        status = new MachinePartialStatus(uid, name, new String(data));
                                         communicationService.create(status);
                                         break;
                                     case "int[]":
@@ -223,7 +219,7 @@ public class GMPacketHandler extends ChannelInboundHandlerAdapter {
                                                 temp[1] = data[i + 1];
                                                 volumes[i / 2] = ByteUtil.byte2int(temp);
                                             }
-                                            status = new MachinePartialStatus(uid, name, JSON.toJSONString(volumes), packet.getTime());
+                                            status = new MachinePartialStatus(uid, name, JSON.toJSONString(volumes));
                                             communicationService.create(status);
                                             break;
                                         }
