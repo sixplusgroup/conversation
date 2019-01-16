@@ -56,8 +56,14 @@ public interface MachineService {
                                    @RequestParam("overCountLTE") String overCountLTE);
 
     @GetMapping("/machine/latest/pm2_5/lastNday")
-    ResultData fetchLastNDayData(@RequestParam("qrcode")String qrcode, @RequestParam("lastNday") int lastNday);
+    ResultData fetchLastNDayData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNday") int lastNday);
 
     @GetMapping("/machine/latest/pm2_5/lastNhour")
-    ResultData fetchLastNHourData(@RequestParam("qrcode")String qrcode, @RequestParam("lastNhour") int lastNhour);
+    ResultData fetchLastNHourData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNhour") int lastNhour);
+
+    @GetMapping("/machine/info/list/daily/cityaqi/lastNhour")
+    ResultData getCitylastNhourData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNhour") int lastNhour);
+
+    @GetMapping("/machine/info/list/daily/cityaqi/lastNday")
+    ResultData getCitylastNdayData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNday") int lastNday);
 }
