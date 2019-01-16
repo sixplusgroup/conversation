@@ -50,5 +50,8 @@ public interface MachineService {
                                    @RequestParam("phone") String phone,
                                    @RequestParam("createTimeGTE") String createTimeGTE,
                                    @RequestParam("createTimeLTE") String createTimeLTE,
-                                   @RequestParam("online") String online);
+                                   @RequestParam("online") String online,
+                                   @RequestParam("overCount") String overCount,
+                                   @RequestParam("overCountGTE") String overCountGTE,
+                                   @RequestParam("overCountLTE") String overCountLTE);
 }

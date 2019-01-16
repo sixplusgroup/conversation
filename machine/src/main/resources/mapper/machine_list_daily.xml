@@ -53,6 +53,20 @@
                 AND create_time <= #{createTimeLTE}
             ]]>
         </if>
+        <if test="overCount != null">
+            AND over_count = #{overCount}
+        </if>
+        <if test="overCountGTE != null">
+            AND over_count >= #{overCountGTE}
+        </if>
+        <if test="overCountLTE != null">
+            <![CDATA[
+                AND over_count < #{overCountLTE}
+            ]]>
+        </if>
+        <if test="offline != null">
+            AND offline = #{offline}
+        </if>
         order by create_time asc
     </select>
 </mapper>

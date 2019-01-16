@@ -76,7 +76,7 @@ public class MachineController {
     }
 
     @GetMapping("/consumer/owner/machine/list")
-    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online) {
-        return machineService.getOwnerMachineList(curPage, pageSize, qrcode, phone, createTimeGTE, createTimeLTE, online);
+    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount, String overCountGTE, String overCountLTE) {
+        return machineService.getOwnerMachineList(curPage, pageSize, qrcode, phone, createTimeGTE, createTimeLTE, online,overCount, overCountGTE, overCountLTE);
     }
 }

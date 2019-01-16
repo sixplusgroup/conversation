@@ -1,6 +1,8 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
+import finley.gmair.model.machine.MachineListDaily;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.service.*;
@@ -41,6 +43,9 @@ public class ConsumerQRcodeController {
 
     @Autowired
     private OutPm25DailyService outPm25DailyService;
+
+    @Autowired
+    private MachineListDailyService machineListDailyService;
 
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
     public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
@@ -393,11 +398,9 @@ public class ConsumerQRcodeController {
     }
 
     @GetMapping("/owner/machine/list")
-    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount) {
+    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount, String overCountGTE, String overCountLTE) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        condition.put("start", (curPage - 1) * pageSize);
-        condition.put("pageSize", pageSize);
         if (!StringUtils.isEmpty(phone)) {
             condition.put("phone", phone);
         }
@@ -410,24 +413,44 @@ public class ConsumerQRcodeController {
         if (!StringUtils.isEmpty(createTimeLTE)) {
             condition.put("createTimeLTE", new Timestamp(Long.parseLong(createTimeLTE)));
         }
-
-        if (StringUtils.isEmpty(overCount)) {
-            ResultData response = consumerQRcodeBindService.queryMachineListView(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("fail to fetch consumer machine bind");
-                return result;
-            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("not find consumer machine bind");
-                return result;
-            }
-            List<MachineInfoVo> resultList = new ArrayList<>();
-            result.setData(response.getData());
-            return result;
-        } else {
-
+        if (!StringUtils.isEmpty(overCount)) {
+            int ovc = Integer.parseInt(overCount);
+            condition.put("overCount", ovc);
         }
+        if (!StringUtils.isEmpty(overCountGTE)) {
+            int ovcGTE = Integer.parseInt(overCountGTE);
+            condition.put("overCountGTE", ovcGTE);
+        }
+        if (!StringUtils.isEmpty(overCountLTE)) {
+            int ovcLTE = Integer.parseInt(overCountLTE);
+            condition.put("overCountLTE", ovcLTE);
+        }
+        condition.put("start", (curPage - 1) * pageSize);
+        condition.put("pageSize", pageSize);
+        ResultData response = machineListDailyService.queryMachineListDaily(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find any data according to your condition");
+            return result;
+        }
+
+        List<MachineListDaily> resultList = (List<MachineListDaily>) response.getData();
+        int totalPage = resultList.size() / pageSize + 1;
+        if (curPage < 1 || curPage > totalPage) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to got that page because that page not exist");
+            return result;
+        }
+        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("totalPage", totalPage);
+        jsonObject.put("machineList", resultList);
+        result.setData(jsonObject);
+        result.setDescription("success to fetch data");
         return result;
     }
 }

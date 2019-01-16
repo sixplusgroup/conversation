@@ -51,11 +51,13 @@ public class MachineListDailyController {
             return result;
         }
         List<MachineSecondListView> secondList = (List<MachineSecondListView>)response.getData();
-        for(MachineListDaily mld: list){
-            for(MachineSecondListView mslv: secondList){
-                if(mld.getConsumerId().equals(mslv.getConsumerId())){
-                    mld.setOverCount(mslv.getOverCount());
-                    mld.setOffline(false);
+        if(secondList.isEmpty()==false) {
+            for (MachineListDaily mld : list) {
+                for (MachineSecondListView mslv : secondList) {
+                    if (mld.getConsumerId().equals(mslv.getConsumerId())) {
+                        mld.setOverCount(mslv.getOverCount());
+                        mld.setOffline(false);
+                    }
                 }
             }
         }
