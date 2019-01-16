@@ -19,7 +19,7 @@ public class DataAnalysisController {
 
     @GetMapping("/machine/status/{statusType}/lastNday")
     public ResultData fetchLastNDayIndoorPm25(String qrcode, int lastNday, @PathVariable("statusType") String statusType) {
-        if (statusType.equals("citypm25"))s
+        if (statusType.equals("citypm25"))
             return machineService.getCitylastNdayData(qrcode, lastNday);
         if (statusType.equals("outpm25"))
             return machineService.fetchLastNDayData(qrcode, lastNday);
