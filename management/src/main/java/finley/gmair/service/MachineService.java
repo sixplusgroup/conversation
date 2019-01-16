@@ -54,4 +54,10 @@ public interface MachineService {
                                    @RequestParam("overCount") String overCount,
                                    @RequestParam("overCountGTE") String overCountGTE,
                                    @RequestParam("overCountLTE") String overCountLTE);
+
+    @GetMapping("/machine/latest/pm2_5/lastNday")
+    ResultData fetchLastNDayData(@RequestParam("qrcode")String qrcode, @RequestParam("lastNday") int lastNday);
+
+    @GetMapping("/machine/latest/pm2_5/lastNhour")
+    ResultData fetchLastNHourData(@RequestParam("qrcode")String qrcode, @RequestParam("lastNhour") int lastNhour);
 }
