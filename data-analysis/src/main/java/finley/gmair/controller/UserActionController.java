@@ -30,26 +30,92 @@ public class UserActionController {
     private UserActionDailyService userActionDailyService;
 
 
-    @PostMapping("/schedule/statistical/daily")
-    public ResultData statisticalDataDaily() {
+    @PostMapping("/schedule/statistical/userId/daily")
+    public ResultData probeByUserId2Component() {
         ResultData result = new ResultData();
-        ResultData response = userActionMongoService.getDailyStatisticalData();
+        Map<String, Object> condition = new HashMap<>();
+        long lastDay = (System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 10) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        long currentDay = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
+        condition.put("start", lastDay);
+        condition.put("end", currentDay);
+        ResultData response = userActionMongoService.fetchData(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("error");
+            result.setDescription("System Error");
             return result;
         }
 
-        List<List<UserAction>> list = (List<List<UserAction>>) response.getData();
-        List<UserActionDaily> dailyList = new ArrayList<>();
-        for (List<UserAction> itemList : list) {
-            dailyList = userActionMongoService.dealUserAction2Component(itemList);
-            if (!dailyList.isEmpty()) {
-                response = userActionDailyService.insertBatchDaily(dailyList);
+        //获取mongo数据，首先进行userId group
+        List<UserAction> actionList = (List<UserAction>) response.getData();
+        response = userActionMongoService.getDataGroupByUserId(actionList);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("retrieve by userId error");
+            return result;
+        }
+
+        //获取group by userId list,继续进行component group
+        List<List<UserAction>> userIdLists = (List<List<UserAction>>) response.getData();
+        List<UserActionDaily> actionDailyList = new ArrayList<>();
+        for (List<UserAction> list : userIdLists) {
+            String userId = list.get(0).getUserId();
+            String qrcode = list.get(0).getQrcode();
+            Map<String, Long> map = list.stream().collect(Collectors.groupingBy(UserAction::getComponent,Collectors.counting()));
+            for (String componentKey : map.keySet()) {
+                int componentTimes = map.get(componentKey).intValue();
+                UserActionDaily userActionDaily = new UserActionDaily(userId, qrcode, componentKey, componentTimes);
+                actionDailyList.add(userActionDaily);
             }
         }
+        if (actionDailyList.isEmpty()) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("retrieve action daily list error");
+            return result;
+        }
+
+        //list不为空，批量插入
+        response = userActionDailyService.insertBatchDaily(actionDailyList);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("store user action daily error");
+            return result;
+        }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
         result.setDescription("store successfully");
+        return result;
+    }
+
+    @PostMapping("/schedule/statistical/component/daily")
+    public ResultData probeByComponent() {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        long lastDay = (System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 10) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        long currentDay = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
+        condition.put("start", lastDay);
+        condition.put("end", currentDay);
+        ResultData response = userActionMongoService.fetchData(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("System Error");
+            return result;
+        }
+
+        //获取mongo数据，进行component group
+        List<UserAction> actionList = (List<UserAction>) response.getData();
+        response = userActionMongoService.getDataGroupByComponent(actionList);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("group user action by component error");
+            return result;
+        }
+        List<List<UserAction>> componentLists = (List<List<UserAction>>) response.getData();
+        for(List<UserAction> componentList : componentLists) {
+            Map<String, Long> map = componentList.stream().collect(Collectors.groupingBy(UserAction::getUserId, Collectors.counting()));
+            int componentSize = componentList.size();
+            int userNum = map.size();
+            double component_mean = (double)componentSize/userNum;
+        }
         return result;
     }
 
