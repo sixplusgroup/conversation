@@ -144,8 +144,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             powerHourlyDao.insertBatch(powerHourlyList);
             heatHourlyDao.insertBatch(heatHourlyList);
             modeHourlyDao.insertBatch(modeHourlyList);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logger.info("satistical data transfer and insert error");
             logger.info(e.getMessage());
@@ -157,7 +156,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
 
     private V1MachineStatusHourly countV1Status(LinkedList<MachineStatus> list) {
         int packetCountForOneMinute = 12;
-        double averagePm25 = list.stream().mapToDouble(MachineStatus::getPm2_5).average().getAsDouble();
+        double averagePm25 = list.stream().filter(e -> e.getPower() == 1).mapToDouble(MachineStatus::getPm2_5).average().getAsDouble();
         int maxPm25 = list.stream().mapToInt(MachineStatus::getPm2_5).max().getAsInt();
         int minPm25 = list.stream().mapToInt(MachineStatus::getPm2_5).min().getAsInt();
         double averageVolume = list.stream().mapToDouble(MachineStatus::getVolume).average().getAsDouble();
@@ -183,7 +182,7 @@ public class MachineStatusServiceImpl implements MachineStatusService {
 
     private V2MachineStatusHourly countV2Status(LinkedList<finley.gmair.model.machine.MachineStatus> list) {
         int packetCountForOneMinute = 2;
-        double averagePm25 = list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getPm2_5).average().getAsDouble();
+        double averagePm25 = list.stream().filter(e -> e.getPower() == 1).mapToDouble(finley.gmair.model.machine.MachineStatus::getPm2_5).average().getAsDouble();
         int maxPm25 = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getPm2_5).max().getAsInt();
         int minPm25 = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getPm2_5).min().getAsInt();
         double averageVolume = list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getVolume).average().getAsDouble();
