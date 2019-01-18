@@ -12,5 +12,14 @@
         <mapper resource="mapper/heat_hourly.xml"></mapper>
         <mapper resource="mapper/power_hourly.xml"></mapper>
         <mapper resource="mapper/mode_hourly.xml"></mapper>
+        <mapper resource="mapper/user_action.xml"></mapper>
+        <mapper resource="mapper/co2_daily.xml"></mapper>
+        <mapper resource="mapper/heat_daily.xml"></mapper>
+        <mapper resource="mapper/humid_daily.xml"></mapper>
+        <mapper resource="mapper/indoor_pm25_daily.xml"></mapper>
+        <mapper resource="mapper/mode_daily.xml"></mapper>
+        <mapper resource="mapper/power_daily.xml"></mapper>
+        <mapper resource="mapper/temp_daily.xml"></mapper>
+        <mapper resource="mapper/volume_daily.xml"></mapper>
     </mappers>
 </configuration>

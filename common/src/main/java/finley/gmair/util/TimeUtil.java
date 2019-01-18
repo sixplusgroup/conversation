@@ -34,4 +34,8 @@ public class TimeUtil {
         Long oneDayTimestamps = Long.valueOf(60 * 60 * 24 * 1000);
         return new Timestamp(currentTimestamps - (currentTimestamps + 60 * 60 * 8 * 1000) % oneDayTimestamps);
     }
+
+    public static Timestamp getThatTimeStampDayZeroTimestamp(Timestamp timestamp) {
+        return new Timestamp(timestamp.getTime() - (timestamp.getTime() + 8 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000));
+    }
 }

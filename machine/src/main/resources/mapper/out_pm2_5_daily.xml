@@ -31,6 +31,22 @@
         <if test="createAt != null">
             AND create_time >= #{createAt}
         </if>
+        <if test="createTimeGT != null">
+            AND create_time > #{createTimeGT}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLT != null">
+            <![CDATA[
+                AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
         <if test="dateDiff != null">
             <![CDATA[
                 AND DATEDIFF(CURDATE(),create_time) = 1

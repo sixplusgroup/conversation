@@ -1,12 +1,9 @@
 package finley.gmair.job;
 
-import finley.gmair.model.timing.Task;
 import finley.gmair.pool.TimingPool;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.MachineFeignService;
 import finley.gmair.service.TaskService;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -14,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 

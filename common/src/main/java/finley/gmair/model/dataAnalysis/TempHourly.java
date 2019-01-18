@@ -2,6 +2,8 @@ package finley.gmair.model.dataAnalysis;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class TempHourly extends Entity {
     private String statusId;
     private String machineId;
@@ -19,6 +21,14 @@ public class TempHourly extends Entity {
         this.averageTemp = averageTemp;
         this.maxTemp = maxTemp;
         this.minTemp = minTemp;
+    }
+    public TempHourly(String machineId, double averageTemp, int maxTemp, int minTemp, Timestamp timestamp) {
+        super();
+        this.machineId = machineId;
+        this.averageTemp = averageTemp;
+        this.maxTemp = maxTemp;
+        this.minTemp = minTemp;
+        this.createAt = timestamp;
     }
 
     public String getStatusId() {

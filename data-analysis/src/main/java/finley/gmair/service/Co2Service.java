@@ -13,4 +13,7 @@ public interface Co2Service {
 
     ResultData fetchHourly(Map<String, Object> condition);
 
+    ResultData insertBatchDaily(List<Co2Hourly> list);
+
+    ResultData fetchDaily(Map<String, Object> condition);
 }

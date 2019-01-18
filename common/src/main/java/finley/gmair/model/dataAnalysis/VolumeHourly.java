@@ -2,6 +2,8 @@ package finley.gmair.model.dataAnalysis;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class VolumeHourly extends Entity {
     private String statusId;
     private String machineId;
@@ -20,6 +22,15 @@ public class VolumeHourly extends Entity {
         this.averageVolume = averageVolume;
         this.maxVolume = maxVolume;
         this.minVolume = minVolume;
+    }
+
+    public VolumeHourly(String machineId, double averageVolume, int maxVolume, int minVolume, Timestamp timestamp) {
+        super();
+        this.machineId = machineId;
+        this.averageVolume = averageVolume;
+        this.maxVolume = maxVolume;
+        this.minVolume = minVolume;
+        this.createAt = timestamp;
     }
 
     public String getStatusId() {

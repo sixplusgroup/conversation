@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.machine_list_view">
+    <resultMap id="machine_list_view" type="finley.gmair.vo.machine.MachineInfoVo">
+        <result property="consumerId" column="consumer_id"></result>
+        <result property="bindName" column="bind_name"></result>
+        <result property="codeValue" column="code_value"></result>
+        <result property="machineId" column="machine_id"></result>
+        <result property="consumerName" column="consumer_name"></result>
+        <result property="consumerPhone" column="consumer_phone"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="bindTime" column="create_time"></result>
+    </resultMap>
+    <select id="query" parameterType="java.util.Map" resultMap="machine_list_view">
+        SELECT consumer_id, bind_name, code_value, machine_id, consumer_name, consumer_phone, block_flag, create_time
+        FROM gmair_machine.machine_list_view
+        WHERE 1 = 1
+        <if test="consumerId != null">
+            AND consumer_id = #{consumerId}
+        </if>
+        <if test="bindName != null">
+            AND bind_name = #{bindName}
+        </if>
+        <if test="codeValue != null">
+            AND code_value like CONCAT('%', #{codeValue}, '%')
+        </if>
+        <if test="phone != null">
+            AND consumer_phone like CONCAT('%', #{phone}, '%')
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLT != null">
+            <![CDATA[
+                AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
+    </select>
+</mapper>

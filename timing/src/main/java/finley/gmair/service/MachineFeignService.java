@@ -35,4 +35,7 @@ public interface MachineFeignService {
     @GetMapping("/machine/power/onoff/schedule/half/list")
     ResultData powerTurnOnOff();
 
+    @PostMapping("/machine/info/list/daily/schedule/create")
+    ResultData createMachineListDaily();
+
 }

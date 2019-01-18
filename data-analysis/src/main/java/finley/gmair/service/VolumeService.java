@@ -12,4 +12,7 @@ public interface VolumeService {
 
     ResultData fetchHourly(Map<String, Object> condition);
 
+    ResultData insertBatchDaily(List<VolumeHourly> list);
+
+    ResultData fetchDaily(Map<String, Object> condition);
 }
