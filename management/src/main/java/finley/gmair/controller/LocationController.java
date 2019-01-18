@@ -27,4 +27,9 @@ public class LocationController {
     ResultData city(@PathVariable("provinceId") String provinceId){
         return locationService.city(provinceId);
     }
+
+    @GetMapping("/city/profile")
+    public ResultData cityProfile(String cityId) {
+        return locationService.cityProfile(cityId);
+    }
 }
