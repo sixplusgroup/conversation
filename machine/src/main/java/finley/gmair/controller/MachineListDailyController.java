@@ -53,6 +53,7 @@ public class MachineListDailyController {
         List<MachineListDaily> list = new ArrayList<>();
         for (MachineInfoVo miv : infoList) {
             MachineListDaily mld = new MachineListDaily(miv.getConsumerId(), miv.getBindName(), miv.getCodeValue(), miv.getMachineId(), miv.getConsumerName(), miv.getConsumerPhone(), 0, true);
+            mld.setCreateAt(miv.getBindTime());
             list.add(mld);
         }
         response = consumerQRcodeBindService.queryMachineSecondListView(condition);
