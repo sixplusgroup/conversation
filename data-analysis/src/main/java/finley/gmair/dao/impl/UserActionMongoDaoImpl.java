@@ -25,7 +25,7 @@ public class UserActionMongoDaoImpl implements UserActionMongoDao {
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         Query query = new Query();
-        query.addCriteria(Criteria.where("createAt").gte(condition.get("start")).lt(condition.get("end")));
+        query.addCriteria(Criteria.where("time").gte(condition.get("start")).lt(condition.get("end")));
         List<UserAction> userActionList = new ArrayList<>();
         try {
             userActionList = mongoTemplate.find(query, UserAction.class);

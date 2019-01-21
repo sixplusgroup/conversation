@@ -21,5 +21,6 @@
         <mapper resource="mapper/power_daily.xml"></mapper>
         <mapper resource="mapper/temp_daily.xml"></mapper>
         <mapper resource="mapper/volume_daily.xml"></mapper>
+        <mapper resource="mapper/component.xml"></mapper>
     </mappers>
 </configuration>
