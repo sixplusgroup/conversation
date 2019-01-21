@@ -73,7 +73,15 @@ public class MachineListDailyController {
             }
         }
 
+        //qrcode去重
+        Map<String, Boolean> map = new HashMap<>();
+        list = list.stream().filter(e -> {
+            Boolean flag = !map.containsKey(e.getCodeValue());
+            map.put(e.getCodeValue(), true);
+            return flag;
+        }).collect(Collectors.toList());
         //list = list.stream().filter(e -> e.getOverCount() !=0).collect(Collectors.toList());
+
         machineListDailyService.insertMachineListDailyBatch(list);
         result.setData(list);
         return result;
@@ -96,7 +104,7 @@ public class MachineListDailyController {
             return result;
         }
         String cityId = ((List<MachineDefaultLocation>) response.getData()).get(0).getCityId();
-        return airqualityAgent.fetchLastNHourData(cityId,lastNhour);
+        return airqualityAgent.fetchLastNHourData(cityId, lastNhour);
 
     }
 
@@ -117,7 +125,7 @@ public class MachineListDailyController {
             return result;
         }
         String cityId = ((List<MachineDefaultLocation>) response.getData()).get(0).getCityId();
-        return airqualityAgent.fetchLastNDayData(cityId,lastNday);
+        return airqualityAgent.fetchLastNDayData(cityId, lastNday);
 
     }
 }
