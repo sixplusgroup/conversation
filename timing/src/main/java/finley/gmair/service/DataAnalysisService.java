@@ -11,4 +11,10 @@ public interface DataAnalysisService {
 
     @PostMapping("/data/analysis/machine/status/schedule/statistical/daily")
     ResultData statisticalDataDaily();
+
+    @PostMapping("/data/analysis/user/action/schedule/statistical/userId/daily")
+    ResultData statisticalUserDaily();
+
+    @PostMapping("/data/analysis/user/action/schedule/statistical/component/daily")
+    ResultData statisticalComponentDaily();
 }
