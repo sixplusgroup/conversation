@@ -82,6 +82,19 @@ public class MachineListDailyController {
         }).collect(Collectors.toList());
         //list = list.stream().filter(e -> e.getOverCount() !=0).collect(Collectors.toList());
 
+
+        try {
+            ResultData r = machineListDailyService.queryMachineListDaily(new HashMap<>());
+            if (r.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<MachineListDaily> deleteList = (List<MachineListDaily>) r.getData();
+                for (MachineListDaily mld : deleteList) {
+                    String codeValue = mld.getCodeValue();
+                    machineListDailyService.deleteMachineListDaily(codeValue);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         machineListDailyService.insertMachineListDailyBatch(list);
         result.setData(list);
         return result;

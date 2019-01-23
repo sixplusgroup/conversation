@@ -14,7 +14,7 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
     <insert id="insertBatch" parameterType="java.util.List">
-        replace INTO gmair_machine.machine_list_daily(consumer_id, bind_name, code_value, machine_id, consumer_name, consumer_phone, over_count, offline, block_flag, create_time)
+        insert INTO gmair_machine.machine_list_daily(consumer_id, bind_name, code_value, machine_id, consumer_name, consumer_phone, over_count, offline, block_flag, create_time)
         VALUES
         <foreach collection="list" separator="," item="MachineListDaily" index="index">
             (#{MachineListDaily.consumerId}, #{MachineListDaily.bindName},
@@ -69,4 +69,9 @@
         </if>
         order by create_time asc
     </select>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from gmair_machine.machine_list_daily
+        where code_value = #{codeValue}
+    </delete>
 </mapper>

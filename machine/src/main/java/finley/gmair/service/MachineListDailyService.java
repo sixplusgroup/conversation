@@ -10,4 +10,6 @@ public interface MachineListDailyService {
     ResultData insertMachineListDailyBatch(List<MachineListDaily> list);
 
     ResultData queryMachineListDaily(Map<String, Object> condition);
+
+    ResultData deleteMachineListDaily(String codeValue);
 }
