@@ -26,4 +26,9 @@ public class MachineListDailyServiceImpl implements MachineListDailyService {
     public ResultData queryMachineListDaily(Map<String, Object> condition){
         return machineListDailyDao.queryMachineListView(condition);
     }
+
+    @Override
+    public ResultData deleteMachineListDaily(String codeValue) {
+        return machineListDailyDao.deleteMachineListDailyByCodeValue(codeValue);
+    }
 }

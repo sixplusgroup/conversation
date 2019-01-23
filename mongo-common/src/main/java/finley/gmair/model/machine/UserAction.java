@@ -11,7 +11,6 @@ public class UserAction extends Entity{
     private String component;
     private String value;
 
-
     public UserAction(){super();}
 
     public UserAction(String logId, String userId, String qrcode, Long time, String component, String value){

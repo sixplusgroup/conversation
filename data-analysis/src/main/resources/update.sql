@@ -149,3 +149,17 @@ CHANGE COLUMN `manual_minute` `auto_minute` INT(11) NOT NULL ,
 CHANGE COLUMN `cosy_minute` `manual_minute` INT(11) NOT NULL ,
 CHANGE COLUMN `warm_minute` `sleep_minute` INT(11) NOT NULL ;
 
+
+#2019-01-21
+
+CREATE TABLE IF NOT EXISTS `gmair_data_analysis`.`component_mean` (
+  `record_id` VARCHAR(50) NOT NULL,
+  `date_index` VARCHAR(50) NOT NULL,
+  `component` VARCHAR(50) NOT NULL,
+  `component_times` INT(11) NOT NULL,
+  `component_mean` DOUBLE NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL DEFAULT '0',
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`record_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;

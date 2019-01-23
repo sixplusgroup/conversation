@@ -10,4 +10,6 @@ public interface MachineListDailyDao {
     ResultData insertMachineListDailyBatch(List<MachineListDaily> list);
 
     ResultData queryMachineListView(Map<String, Object> condition);
+
+    ResultData deleteMachineListDailyByCodeValue(String codeValue);
 }

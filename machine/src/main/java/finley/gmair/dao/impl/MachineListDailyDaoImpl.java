@@ -46,4 +46,17 @@ public class MachineListDailyDaoImpl extends BaseDao implements MachineListDaily
         return result;
     }
 
+    @Override
+    public ResultData deleteMachineListDailyByCodeValue(String codeValue) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.machine.machine_list_daily.delete", codeValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
 }
