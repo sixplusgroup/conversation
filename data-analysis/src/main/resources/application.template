@@ -15,3 +15,6 @@ spring.datasource.password=
 
 
 security.oauth2.resource.filter-order=3
+
+#mongo
+spring.data.mongodb.uri=mongodb://127.0.0.1:27017/gmair_log

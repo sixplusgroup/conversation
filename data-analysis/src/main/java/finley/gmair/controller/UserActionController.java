@@ -1,18 +1,19 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.dataAnalysis.ComponentMean;
 import finley.gmair.model.dataAnalysis.UserActionDaily;
 import finley.gmair.model.machine.UserAction;
+import finley.gmair.service.ComponentMeanService;
 import finley.gmair.service.UserActionMongoService;
 import finley.gmair.service.UserActionDailyService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +30,15 @@ public class UserActionController {
     @Autowired
     private UserActionDailyService userActionDailyService;
 
+    @Autowired
+    private ComponentMeanService componentMeanService;
+
 
     @PostMapping("/schedule/statistical/userId/daily")
     public ResultData probeByUserId2Component() {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        long lastDay = (System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 10) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        long lastDay = (System.currentTimeMillis() - 1000 * 60 * 60 * 24) / (1000 * 60 * 60) * (1000 * 60 * 60);
         long currentDay = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
         condition.put("start", lastDay);
         condition.put("end", currentDay);
@@ -90,8 +94,10 @@ public class UserActionController {
     public ResultData probeByComponent() {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        long lastDay = (System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 10) / (1000 * 60 * 60) * (1000 * 60 * 60);
+        long lastDay = (System.currentTimeMillis() - 1000 * 60 * 60 * 24) / (1000 * 60 * 60) * (1000 * 60 * 60);
         long currentDay = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        DecimalFormat df = new DecimalFormat("0.00");
         condition.put("start", lastDay);
         condition.put("end", currentDay);
         ResultData response = userActionMongoService.fetchData(condition);
@@ -110,12 +116,33 @@ public class UserActionController {
             return result;
         }
         List<List<UserAction>> componentLists = (List<List<UserAction>>) response.getData();
+        List<ComponentMean> componentDailyList = new ArrayList<>();
         for(List<UserAction> componentList : componentLists) {
             Map<String, Long> map = componentList.stream().collect(Collectors.groupingBy(UserAction::getUserId, Collectors.counting()));
             int componentSize = componentList.size();
             int userNum = map.size();
-            double component_mean = (double)componentSize/userNum;
+            double component_mean = Double.valueOf(df.format((double)componentSize/(double)userNum));
+            String date_index = sdf.format(lastDay);
+            String component = componentList.get(0).getComponent();
+            ComponentMean componentMean = new ComponentMean(date_index, component, componentSize, component_mean);
+            componentDailyList.add(componentMean);
         }
+        if (componentDailyList.isEmpty()) {
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("retrieve component list error");
+        return result;
+    }
+
+    //list不为空，批量插入
+    response = componentMeanService.insertBatchDaily(componentDailyList);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("store component data error");
+        return result;
+    }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        result.setDescription("store component data successfully");
         return result;
     }
 
