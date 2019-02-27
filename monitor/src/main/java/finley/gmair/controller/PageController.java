@@ -18,6 +18,7 @@ public class PageController {
     public ModelAndView viewOnTV(@PathVariable("qrcode") String qrcode) {
         ModelAndView view = new ModelAndView();
         view.setViewName("tv_view");
+        view.addObject("qrcode", qrcode);
         return view;
     }
 }
