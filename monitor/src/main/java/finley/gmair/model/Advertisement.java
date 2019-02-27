@@ -7,6 +7,8 @@ package finley.gmair.model;
 public class Advertisement extends Entity {
     private String adsId;
 
+    private String qrcode;
+
     private String content;
 
     public Advertisement() {
@@ -19,6 +21,14 @@ public class Advertisement extends Entity {
 
     public void setAdsId(String adsId) {
         this.adsId = adsId;
+    }
+
+    public String getQrcode() {
+        return qrcode;
+    }
+
+    public void setQrcode(String qrcode) {
+        this.qrcode = qrcode;
     }
 
     public String getContent() {
