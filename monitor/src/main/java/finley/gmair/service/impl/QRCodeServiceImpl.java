@@ -28,7 +28,9 @@ public class QRCodeServiceImpl implements QRCodeService {
         ResultData response = qrCodeDao.queryProfile(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setData(response.getData());
-        } else {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else{
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
         return result;
@@ -40,7 +42,9 @@ public class QRCodeServiceImpl implements QRCodeService {
         ResultData response = qrCodeDao.queryAds(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setData(response.getData());
-        } else {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else{
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
         return result;
