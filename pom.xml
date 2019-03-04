@@ -47,6 +47,7 @@
         <module>bill</module>
         <module>monitor</module>
         <module>data-analysis</module>
+        <!--<module>installdesk</module>-->
     </modules>
 
     <parent>
