@@ -1,4 +1,4 @@
-package finley.gmair.config;
+package finley.gmair.util;
 
 public class MqttInbound {
     private String url;
