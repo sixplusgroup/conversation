@@ -29,10 +29,11 @@ public class PageController {
 //        return view;
 //    }
 
-    @GetMapping("/tv/multiple")
-    public ModelAndView viewOnMultiple() {
+    @GetMapping("/tv/multiple/{consumerId}")
+    public ModelAndView viewOnMultiple(@PathVariable("consumerId") String consumerId) {
         ModelAndView view = new ModelAndView();
         view.setViewName("multiple_view");
+        view.addObject("consumerId", consumerId);
         return view;
     }
 }

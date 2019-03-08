@@ -14,6 +14,9 @@
     margin-left: 3%;
 }
 @media screen and (max-width: 500px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -127,6 +130,9 @@
 
 }
 @media screen and (min-width: 500px) and (max-width: 700px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -240,6 +246,9 @@
 
 }
 @media screen and (min-width: 700px) and (max-width: 800px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -353,6 +362,9 @@
 
 }
 @media screen and (min-width: 800px) and (max-width: 1500px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -464,6 +476,9 @@
     }
 }
 @media screen and (min-width: 1500px) and (max-width: 2000px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -575,6 +590,9 @@
     }
 }
 @media screen and (min-width: 2000px) and (max-width: 4000px){
+    .gmair-image {
+        width:20%;
+    }
     .footer_left{
         float:left;
         width:30%;
@@ -598,7 +616,7 @@
         padding: 0 1% 0 5%;
     }
     .log-image {
-        width: 60%;
+        width: 40%;
         margin-left: 15px;
     }
     .monitor-indoor-outdoor-header {
@@ -667,7 +685,7 @@
         font-size: 75px;
     }
     .footer_text{
-        font-size: 70px;
+        font-size: 55px;
     }
     .monitor-outdoor {
         padding: 0.5% 2.5% 1% 2.5%;
@@ -750,9 +768,6 @@
     overflow: hidden;
     padding-left: 4%;
     padding-right: 4%;
-}
-.gmair-image {
-    width:50%;
 }
 .qrcode-img {
     width:100%;

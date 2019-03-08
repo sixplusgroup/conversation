@@ -132,6 +132,7 @@
     <div class="contact-div">
         <div class="footer_left">
             <div class="half-height">
+                <img src="https://monitor.gmair.net/image/gmair_logo.png" class="gmair-image"/>
                 <div><img src="https://monitor.gmair.net/image/log.png" class="log-image"/></div>
             </div>
             <div style="height:5px"></div>
@@ -171,7 +172,7 @@
     let city_name = "";
 
     $(document).ready(function () {
-        codeValue=obtainCodeValue(window.location.pathname);
+        codeValue=obtainCodeValue("tv");
         $("#time").text(init_time());
         $("#time1").text(init_time());
         obtainFile(codeValue);
@@ -191,9 +192,14 @@
         setInterval(() => obtain_test_data(codeValue), 10000);
     })
 
-    function obtainCodeValue(path_name) {
-        let path=path_name.split("/");
-        return path[3];
+    function obtainCodeValue(name) {
+        let reg = new RegExp('(?:(?:&|\\?)' + name + '=([^&]*))|(?:/' + name + '/([^/]*))', 'i');
+        let r = window.location.href.match(reg);
+        if (r != null)
+            return decodeURI(r[1] || r[2]);
+        return null;
+        // let path=path_name.split("/");
+        // return path[3];
     }
 
     function init_time() {
@@ -270,7 +276,6 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log(response);
                 if (response.responseCode === "RESPONSE_OK") {
                     $("#logo-img").attr("src",response.data[0].logoPath);
                     $("#ad-img").attr("src",response.data[0].qrcodePath);
@@ -291,7 +296,6 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log(response);
                 if (response.responseCode === "RESPONSE_OK") {
                     $(".str_move.str_origin").text(response.data[0].content);
                 } else {
