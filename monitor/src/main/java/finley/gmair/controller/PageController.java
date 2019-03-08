@@ -21,4 +21,18 @@ public class PageController {
         view.addObject("qrcode", qrcode);
         return view;
     }
+
+//    @GetMapping("/tv/test")
+//    public ModelAndView viewOnTest() {
+//        ModelAndView view = new ModelAndView();
+//        view.setViewName("tv_test");
+//        return view;
+//    }
+
+    @GetMapping("/tv/multiple")
+    public ModelAndView viewOnMultiple() {
+        ModelAndView view = new ModelAndView();
+        view.setViewName("multiple_view");
+        return view;
+    }
 }
