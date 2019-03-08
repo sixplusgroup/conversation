@@ -2,7 +2,7 @@ package finley.gmair.util;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "com.mqtt")
+@ConfigurationProperties(prefix = "spring.mqtt")
 public class MqttProperties {
     private MqttInbound inbound;
     private MqttOutbound outbound;
