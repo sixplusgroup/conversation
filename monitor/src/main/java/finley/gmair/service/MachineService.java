@@ -24,4 +24,8 @@ public interface MachineService {
 
     @GetMapping("/machine/default/location/probe/cityid")
     ResultData probeCityIdByQRcode(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/consumer/machinelist")
+    ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
+
 }
