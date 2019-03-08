@@ -4,3 +4,10 @@ spring.application.name=core-agent
 
 eureka.client.healthcheck=true
 eureka.client.service-url.defaultZone=http://localhost:8000/eureka/
+##mqtt配置
+com.mqtt.inbound.url=tcp://116.62.233.170:61613
+com.mqtt.inbound.clientId=familyServerIn
+com.mqtt.inbound.topics=topic1,topic2
+com.mqtt.outbound.urls=tcp://116.62.233.170:61613
+com.mqtt.outbound.clientId=familyServerOut
+com.mqtt.outbound.topic=topic1
