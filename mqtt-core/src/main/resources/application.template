@@ -1,17 +1,22 @@
-server.port=8008
+server:
+  port: 8008
 
-spring.application.name=core-agent
+spring:
+  application:
+    name: core-agent
+  mqtt:
+    inbound:
+      url: tcp://127.0.0.1:61613
+      clientId: core-server
+      topics: topic1,topic2
+    outbound:
+      urls: tcp://127.0.0.1:61613
+      clientId: core-client
+      topic: topic1
 
-eureka.client.healthcheck=true
-eureka.client.service-url.defaultZone=http://localhost:8000/eureka/
-##mqtt配置
-spring.mqtt.inbound.url=tcp://116.62.233.170:61613
-spring.mqtt.inbound.clientId=familyServerIn
-spring.mqtt.inbound.topics=topic1,topic2
-spring.mqtt.inbound.username=admin
-spring.mqtt.inbound.password=Gmair@2019
-spring.mqtt.outbound.urls=tcp://116.62.233.170:61613
-spring.mqtt.outbound.clientId=familyServerOut
-spring.mqtt.outbound.topic=topic1
-spring.mqtt.outbound.username=admin
-spring.mqtt.outbound.password=Gmair@2019
+eureka:
+  client:
+    healthcheck: true
+    service-url:
+      defaultZone: http://localhost:8000/eureka/
+
