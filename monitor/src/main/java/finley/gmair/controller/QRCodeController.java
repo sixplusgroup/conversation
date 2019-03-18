@@ -19,7 +19,7 @@ import java.util.Map;
  * @create_time 2019-2019/2/27 10:51 AM
  */
 @RestController
-@RequestMapping("/qrcode")
+@RequestMapping("/monitor/qrcode")
 public class QRCodeController {
     private Logger logger = LoggerFactory.getLogger(QRCodeController.class);
 

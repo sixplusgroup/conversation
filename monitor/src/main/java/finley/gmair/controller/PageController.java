@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @create_time 2019-2019/2/26 9:47 PM
  */
 @RestController
-@RequestMapping("/machine")
+@RequestMapping("/monitor/machine")
 public class PageController {
 
     @GetMapping("/tv/{qrcode}")

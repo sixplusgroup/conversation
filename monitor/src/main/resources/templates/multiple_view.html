@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8"/>
     <title>果麦新风</title>
-    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all"/>
-    <link rel="stylesheet" th:href="@{/static/font-awesome-4.7.0/css/font-awesome.min.css}"/>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/css/multiple_view.css}"/>
-    <script type="text/javascript" th:src="@{/static/limarquee/js/jquery-1.8.3.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/monitor/static/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/monitor/static/font-awesome-4.7.0/css/font-awesome.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/monitor/static/css/multiple_view.css}"/>
+    <script type="text/javascript" th:src="@{/monitor/static/limarquee/js/jquery-1.8.3.min.js}"></script>
 </head>
 <body style="background-color: #f8f8f8">
 <div class="layui-carousel" id="test1" style="background-color: #f8f8f8">
@@ -25,268 +25,268 @@
     </div>
     <div carousel-item="" id="page_item">
         <!--<div>-->
-            <!--<div class="responsive">-->
-                <!--<div class="item">-->
-                    <!--<div class="machine_name" id="machine_name1">教室一</div>-->
-                    <!--<div class="data_left">-->
-                        <!--<div class="data_name">-->
-                            <!--室内PM2.5-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="pm25_value1">-->
-                            <!--005-->
-                        <!--</div>-->
-                        <!--<div class="data_evaluate" id="pm25_evaluate1">-->
-                            <!--优-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_right">-->
-                        <!--<div class="data_name">-->
-                            <!--室内CO₂-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="co2_value1">-->
-                            <!--210-->
-                        <!--</div>-->
-                        <!--<div class="data_co2_evaluate" id="co2_evaluate1">-->
-                            <!--氧气充沛-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_bottom">-->
-                        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value1">10</span>-->
-                        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp1">20℃</span>-->
-                        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid1">30%</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="responsive">-->
-                <!--<div class="item">-->
-                    <!--<div class="machine_name" id="machine_name2">教室二</div>-->
-                    <!--<div class="data_left">-->
-                        <!--<div class="data_name">-->
-                            <!--室内PM2.5-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="pm25_value2">-->
-                            <!--005-->
-                        <!--</div>-->
-                        <!--<div class="data_evaluate" id="pm25_evaluate2">-->
-                            <!--优-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_right">-->
-                        <!--<div class="data_name">-->
-                            <!--室内CO₂-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="co2_value2">-->
-                            <!--210-->
-                        <!--</div>-->
-                        <!--<div class="data_co2_evaluate" id="co2_evaluate2">-->
-                            <!--氧气充沛-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_bottom">-->
-                        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value2">10</span>-->
-                        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp2">20℃</span>-->
-                        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid2">30%</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="responsive">-->
-                <!--<div class="item">-->
-                    <!--<div class="machine_name" id="machine_name3">教室三</div>-->
-                    <!--<div class="data_left">-->
-                        <!--<div class="data_name">-->
-                            <!--室内PM2.5-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="pm25_value3">-->
-                            <!--005-->
-                        <!--</div>-->
-                        <!--<div class="data_evaluate" id="pm25_evaluate3">-->
-                            <!--优-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_right">-->
-                        <!--<div class="data_name">-->
-                            <!--室内CO₂-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="co2_value3">-->
-                            <!--210-->
-                        <!--</div>-->
-                        <!--<div class="data_co2_evaluate" id="co2_evaluate3">-->
-                            <!--氧气充沛-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_bottom">-->
-                        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value3">10</span>-->
-                        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp3">20℃</span>-->
-                        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid3">30%</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="responsive">-->
-                <!--<div class="item">-->
-                    <!--<div class="machine_name" id="machine_name4">教室四</div>-->
-                    <!--<div class="data_left">-->
-                        <!--<div class="data_name">-->
-                            <!--室内PM2.5-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="pm25_value4">-->
-                            <!--005-->
-                        <!--</div>-->
-                        <!--<div class="data_evaluate" id="pm25_evaluate4">-->
-                            <!--优-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_right">-->
-                        <!--<div class="data_name">-->
-                            <!--室内CO₂-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="co2_value4">-->
-                            <!--210-->
-                        <!--</div>-->
-                        <!--<div class="data_co2_evaluate" id="co2_evaluate4">-->
-                            <!--氧气充沛-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_bottom">-->
-                        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value4">10</span>-->
-                        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp4">20℃</span>-->
-                        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid4">30%</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="responsive">-->
-                <!--<div class="item">-->
-                    <!--<div class="machine_name" id="machine_name5">教室五</div>-->
-                    <!--<div class="data_left">-->
-                        <!--<div class="data_name">-->
-                            <!--室内PM2.5-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="pm25_value5">-->
-                            <!--005-->
-                        <!--</div>-->
-                        <!--<div class="data_evaluate" id="pm25_evaluate5">-->
-                            <!--优-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_right">-->
-                        <!--<div class="data_name">-->
-                            <!--室内CO₂-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="co2_value5">-->
-                            <!--210-->
-                        <!--</div>-->
-                        <!--<div class="data_co2_evaluate" id="co2_evaluate5">-->
-                            <!--氧气充沛-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_bottom">-->
-                        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value5">10</span>-->
-                        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp5">20℃</span>-->
-                        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid5">30%</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="responsive">-->
-                <!--<div class="item">-->
-                    <!--<div class="machine_name" id="machine_name6">教室六</div>-->
-                    <!--<div class="data_left">-->
-                        <!--<div class="data_name">-->
-                            <!--室内PM2.5-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="pm25_value6">-->
-                            <!--005-->
-                        <!--</div>-->
-                        <!--<div class="data_evaluate" id="pm25_evaluate6">-->
-                            <!--优-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_right">-->
-                        <!--<div class="data_name">-->
-                            <!--室内CO₂-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="co2_value6">-->
-                            <!--210-->
-                        <!--</div>-->
-                        <!--<div class="data_co2_evaluate" id="co2_evaluate6">-->
-                            <!--氧气充沛-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_bottom">-->
-                        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value6">10</span>-->
-                        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp6">20℃</span>-->
-                        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid6">30%</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="responsive">-->
-                <!--<div class="item">-->
-                    <!--<div class="machine_name" id="machine_name7">教室七</div>-->
-                    <!--<div class="data_left">-->
-                        <!--<div class="data_name">-->
-                            <!--室内PM2.5-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="pm25_value7">-->
-                            <!--005-->
-                        <!--</div>-->
-                        <!--<div class="data_evaluate" id="pm25_evaluate7">-->
-                            <!--优-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_right">-->
-                        <!--<div class="data_name">-->
-                            <!--室内CO₂-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="co2_value7">-->
-                            <!--210-->
-                        <!--</div>-->
-                        <!--<div class="data_co2_evaluate" id="co2_evaluate7">-->
-                            <!--氧气充沛-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_bottom">-->
-                        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value7">10</span>-->
-                        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp7">20℃</span>-->
-                        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid7">30%</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="responsive">-->
-                <!--<div class="item">-->
-                    <!--<div class="machine_name" id="machine_name8">教室八</div>-->
-                    <!--<div class="data_left">-->
-                        <!--<div class="data_name">-->
-                            <!--室内PM2.5-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="pm25_value8">-->
-                            <!--005-->
-                        <!--</div>-->
-                        <!--<div class="data_evaluate" id="pm25_evaluate8">-->
-                            <!--优-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_right">-->
-                        <!--<div class="data_name">-->
-                            <!--室内CO₂-->
-                        <!--</div>-->
-                        <!--<div class="data_value" id="co2_value8">-->
-                            <!--210-->
-                        <!--</div>-->
-                        <!--<div class="data_co2_evaluate" id="co2_evaluate8">-->
-                            <!--氧气充沛-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="data_bottom">-->
-                        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value8">10</span>-->
-                        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp8">20℃</span>-->
-                        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid8">30%</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
+        <!--<div class="responsive">-->
+        <!--<div class="item">-->
+        <!--<div class="machine_name" id="machine_name1">教室一</div>-->
+        <!--<div class="data_left">-->
+        <!--<div class="data_name">-->
+        <!--室内PM2.5-->
+        <!--</div>-->
+        <!--<div class="data_value" id="pm25_value1">-->
+        <!--005-->
+        <!--</div>-->
+        <!--<div class="data_evaluate" id="pm25_evaluate1">-->
+        <!--优-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_right">-->
+        <!--<div class="data_name">-->
+        <!--室内CO₂-->
+        <!--</div>-->
+        <!--<div class="data_value" id="co2_value1">-->
+        <!--210-->
+        <!--</div>-->
+        <!--<div class="data_co2_evaluate" id="co2_evaluate1">-->
+        <!--氧气充沛-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_bottom">-->
+        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value1">10</span>-->
+        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp1">20℃</span>-->
+        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid1">30%</span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="responsive">-->
+        <!--<div class="item">-->
+        <!--<div class="machine_name" id="machine_name2">教室二</div>-->
+        <!--<div class="data_left">-->
+        <!--<div class="data_name">-->
+        <!--室内PM2.5-->
+        <!--</div>-->
+        <!--<div class="data_value" id="pm25_value2">-->
+        <!--005-->
+        <!--</div>-->
+        <!--<div class="data_evaluate" id="pm25_evaluate2">-->
+        <!--优-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_right">-->
+        <!--<div class="data_name">-->
+        <!--室内CO₂-->
+        <!--</div>-->
+        <!--<div class="data_value" id="co2_value2">-->
+        <!--210-->
+        <!--</div>-->
+        <!--<div class="data_co2_evaluate" id="co2_evaluate2">-->
+        <!--氧气充沛-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_bottom">-->
+        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value2">10</span>-->
+        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp2">20℃</span>-->
+        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid2">30%</span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="responsive">-->
+        <!--<div class="item">-->
+        <!--<div class="machine_name" id="machine_name3">教室三</div>-->
+        <!--<div class="data_left">-->
+        <!--<div class="data_name">-->
+        <!--室内PM2.5-->
+        <!--</div>-->
+        <!--<div class="data_value" id="pm25_value3">-->
+        <!--005-->
+        <!--</div>-->
+        <!--<div class="data_evaluate" id="pm25_evaluate3">-->
+        <!--优-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_right">-->
+        <!--<div class="data_name">-->
+        <!--室内CO₂-->
+        <!--</div>-->
+        <!--<div class="data_value" id="co2_value3">-->
+        <!--210-->
+        <!--</div>-->
+        <!--<div class="data_co2_evaluate" id="co2_evaluate3">-->
+        <!--氧气充沛-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_bottom">-->
+        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value3">10</span>-->
+        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp3">20℃</span>-->
+        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid3">30%</span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="responsive">-->
+        <!--<div class="item">-->
+        <!--<div class="machine_name" id="machine_name4">教室四</div>-->
+        <!--<div class="data_left">-->
+        <!--<div class="data_name">-->
+        <!--室内PM2.5-->
+        <!--</div>-->
+        <!--<div class="data_value" id="pm25_value4">-->
+        <!--005-->
+        <!--</div>-->
+        <!--<div class="data_evaluate" id="pm25_evaluate4">-->
+        <!--优-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_right">-->
+        <!--<div class="data_name">-->
+        <!--室内CO₂-->
+        <!--</div>-->
+        <!--<div class="data_value" id="co2_value4">-->
+        <!--210-->
+        <!--</div>-->
+        <!--<div class="data_co2_evaluate" id="co2_evaluate4">-->
+        <!--氧气充沛-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_bottom">-->
+        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value4">10</span>-->
+        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp4">20℃</span>-->
+        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid4">30%</span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="responsive">-->
+        <!--<div class="item">-->
+        <!--<div class="machine_name" id="machine_name5">教室五</div>-->
+        <!--<div class="data_left">-->
+        <!--<div class="data_name">-->
+        <!--室内PM2.5-->
+        <!--</div>-->
+        <!--<div class="data_value" id="pm25_value5">-->
+        <!--005-->
+        <!--</div>-->
+        <!--<div class="data_evaluate" id="pm25_evaluate5">-->
+        <!--优-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_right">-->
+        <!--<div class="data_name">-->
+        <!--室内CO₂-->
+        <!--</div>-->
+        <!--<div class="data_value" id="co2_value5">-->
+        <!--210-->
+        <!--</div>-->
+        <!--<div class="data_co2_evaluate" id="co2_evaluate5">-->
+        <!--氧气充沛-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_bottom">-->
+        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value5">10</span>-->
+        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp5">20℃</span>-->
+        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid5">30%</span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="responsive">-->
+        <!--<div class="item">-->
+        <!--<div class="machine_name" id="machine_name6">教室六</div>-->
+        <!--<div class="data_left">-->
+        <!--<div class="data_name">-->
+        <!--室内PM2.5-->
+        <!--</div>-->
+        <!--<div class="data_value" id="pm25_value6">-->
+        <!--005-->
+        <!--</div>-->
+        <!--<div class="data_evaluate" id="pm25_evaluate6">-->
+        <!--优-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_right">-->
+        <!--<div class="data_name">-->
+        <!--室内CO₂-->
+        <!--</div>-->
+        <!--<div class="data_value" id="co2_value6">-->
+        <!--210-->
+        <!--</div>-->
+        <!--<div class="data_co2_evaluate" id="co2_evaluate6">-->
+        <!--氧气充沛-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_bottom">-->
+        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value6">10</span>-->
+        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp6">20℃</span>-->
+        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid6">30%</span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="responsive">-->
+        <!--<div class="item">-->
+        <!--<div class="machine_name" id="machine_name7">教室七</div>-->
+        <!--<div class="data_left">-->
+        <!--<div class="data_name">-->
+        <!--室内PM2.5-->
+        <!--</div>-->
+        <!--<div class="data_value" id="pm25_value7">-->
+        <!--005-->
+        <!--</div>-->
+        <!--<div class="data_evaluate" id="pm25_evaluate7">-->
+        <!--优-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_right">-->
+        <!--<div class="data_name">-->
+        <!--室内CO₂-->
+        <!--</div>-->
+        <!--<div class="data_value" id="co2_value7">-->
+        <!--210-->
+        <!--</div>-->
+        <!--<div class="data_co2_evaluate" id="co2_evaluate7">-->
+        <!--氧气充沛-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_bottom">-->
+        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value7">10</span>-->
+        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp7">20℃</span>-->
+        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid7">30%</span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="responsive">-->
+        <!--<div class="item">-->
+        <!--<div class="machine_name" id="machine_name8">教室八</div>-->
+        <!--<div class="data_left">-->
+        <!--<div class="data_name">-->
+        <!--室内PM2.5-->
+        <!--</div>-->
+        <!--<div class="data_value" id="pm25_value8">-->
+        <!--005-->
+        <!--</div>-->
+        <!--<div class="data_evaluate" id="pm25_evaluate8">-->
+        <!--优-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_right">-->
+        <!--<div class="data_name">-->
+        <!--室内CO₂-->
+        <!--</div>-->
+        <!--<div class="data_value" id="co2_value8">-->
+        <!--210-->
+        <!--</div>-->
+        <!--<div class="data_co2_evaluate" id="co2_evaluate8">-->
+        <!--氧气充沛-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="data_bottom">-->
+        <!--<i class="fa fa-leaf fa-fw" aria-hidden="true"></i><span id="wind_value8">10</span>-->
+        <!--<i class="fa fa-thermometer fa-fw" aria-hidden="true"></i><span id="temp8">20℃</span>-->
+        <!--<i class="fa fa-tint fa-fw" aria-hidden="true"></i><span id="humid8">30%</span>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
         <!--</div>-->
     </div>
     <div class="contact-div">
         <div class="footer_left">
-                <img src="https://monitor.gmair.net/image/gmair_logo.png" class="logo-image"/>
-                <img src="https://monitor.gmair.net/image/log.png" class="log-image"/>
+            <img src="https://monitor.gmair.net/image/gmair_logo.png" class="logo-image"/>
+            <img src="https://monitor.gmair.net/image/log.png" class="log-image"/>
         </div>
         <div class="footer_content">
             <div><span>TEL&nbsp;:&nbsp;</span>4009946898</div>
@@ -302,132 +302,288 @@
         </div>
     </div>
 </div>
-    <!-- 条目中可以是任意内容，如：<img src=""> -->
-    <script th:src="@{/static/layui/layui.js}"></script>
-    <script>
-        /*<![CDATA[*/
-        // let response={
-        //     "data":[{
-        //         bindName:"卧室",
-        //         pm2_5:56,
-        //         co2:1200,
-        //         volume:23,
-        //         temp:21,
-        //         humid:34,
-        //     },
-        //         {
-        //             bindName:"卧室2",
-        //             pm2_5:46,
-        //             co2:200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },
-        //         {
-        //             bindName:"卧室3",
-        //             pm2_5:76,
-        //             co2:3200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },
-        //         {
-        //             bindName:"卧室4",
-        //             pm2_5:100,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },
-        //         {
-        //             bindName:"卧室5",
-        //             pm2_5:156,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },
-        //         {
-        //             bindName:"卧室6",
-        //             pm2_5:256,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },
-        //         {
-        //             bindName:"卧室7",
-        //             pm2_5:356,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },
-        //         {
-        //             bindName:"卧室8",
-        //             pm2_5:456,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },{
-        //             bindName:"卧室9",
-        //             pm2_5:556,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },{
-        //             bindName:"卧室10",
-        //             pm2_5:256,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },{
-        //             bindName:"卧室11",
-        //             pm2_5:156,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },{
-        //             bindName:"卧室12",
-        //             pm2_5:56,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },{
-        //             bindName:"卧室13",
-        //             pm2_5:56,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },{
-        //             bindName:"卧室14",
-        //             pm2_5:56,
-        //             co2:1200,
-        //             volume:23,
-        //             temp:21,
-        //             humid:34,
-        //         },
-        //     ],
-        // }
+<!-- 条目中可以是任意内容，如：<img src=""> -->
+<script th:src="@{/monitor/static/layui/layui.js}"></script>
+<script>
+    /*<![CDATA[*/
+    // let response={
+    //     "data":[{
+    //         bindName:"卧室",
+    //         pm2_5:56,
+    //         co2:1200,
+    //         volume:23,
+    //         temp:21,
+    //         humid:34,
+    //     },
+    //         {
+    //             bindName:"卧室2",
+    //             pm2_5:46,
+    //             co2:200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },
+    //         {
+    //             bindName:"卧室3",
+    //             pm2_5:76,
+    //             co2:3200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },
+    //         {
+    //             bindName:"卧室4",
+    //             pm2_5:100,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },
+    //         {
+    //             bindName:"卧室5",
+    //             pm2_5:156,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },
+    //         {
+    //             bindName:"卧室6",
+    //             pm2_5:256,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },
+    //         {
+    //             bindName:"卧室7",
+    //             pm2_5:356,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },
+    //         {
+    //             bindName:"卧室8",
+    //             pm2_5:456,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },{
+    //             bindName:"卧室9",
+    //             pm2_5:556,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },{
+    //             bindName:"卧室10",
+    //             pm2_5:256,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },{
+    //             bindName:"卧室11",
+    //             pm2_5:156,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },{
+    //             bindName:"卧室12",
+    //             pm2_5:56,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },{
+    //             bindName:"卧室13",
+    //             pm2_5:56,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },{
+    //             bindName:"卧室14",
+    //             pm2_5:56,
+    //             co2:1200,
+    //             volume:23,
+    //             temp:21,
+    //             humid:34,
+    //         },
+    //     ],
+    // }
 
-        let consumerId="";
-        let height = window.innerHeight;
-        $(document).ready(function () {
-            $(".item").css({"height": height * 0.30, "margin-bottom": height * 0.03});
-            // $("#time1").show();
-            // $(".run_type2").show();
-            $("#time1").text(init_time());
-            $(".location-div").css("height", height * 0.1);
-            consumerId=obtainConsumerId("multiple");
-            obtainMonitorData(consumerId);
+    let consumerId = "";
+    let height = window.innerHeight;
+    $(document).ready(function () {
+        $(".item").css({"height": height * 0.30, "margin-bottom": height * 0.03});
+        // $("#time1").show();
+        // $(".run_type2").show();
+        $("#time1").text(init_time());
+        $(".location-div").css("height", height * 0.1);
+        consumerId = obtainConsumerId("multiple");
+        obtainMonitorData(consumerId);
+    })
+    setInterval(function () {
+        obtainMonitorData(consumerId)
+    }, 30000);
+    layui.use('carousel', function () {
+        let carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#test1',
+            width: '100%',//设置容器宽度
+            height: height * 0.66,
+            indicator: 'none',
+            interval: 10000,
+            // , arrow: 'always' //始终显示箭头
+            //,anim: 'updown' //切换动画方式
+        });
+    });
+
+    function init_time() {
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = ('0' + (today.getMonth() + 1)).slice(-2).toString();
+        let date = ('0' + today.getDate()).slice(-2).toString();
+        let hour = ('0' + today.getHours()).slice(-2).toString();
+        let minute = ('0' + today.getMinutes()).slice(-2).toString();
+        let date_string = year + "年" + month + "月" + date + "日" + "  " + hour + ":" + minute;
+        return date_string;
+    }
+
+    function obtainConsumerId(name) {
+        let reg = new RegExp('(?:(?:&|\\?)' + name + '=([^&]*))|(?:/' + name + '/([^/]*))', 'i');
+        let r = window.location.href.match(reg);
+        if (r != null)
+            return decodeURI(r[1] || r[2]);
+        return null;
+        // let path=path_name.split("/");
+        // return path[3];
+    }
+
+    function setPm25Color(pm2_5) {
+        let color = "";
+        if (pm2_5 === "") {
+            color = "";
+        } else if (pm2_5 >= 0 & pm2_5 <= 35) {
+            color = "pm2_5_excellent";
+        } else if (pm2_5 > 35 && pm2_5 <= 75) {
+            color = "pm2_5_moderate";
+        } else if (pm2_5 > 75 && pm2_5 <= 115) {
+            color = "pm2_5_sensative";
+        } else if (pm2_5 > 115 && pm2_5 <= 150) {
+            color = "pm2_5_unhealthy";
+        } else if (pm2_5 > 150 && pm2_5 <= 250) {
+            color = "pm2_5_very_unhealthy";
+        } else if (pm2_5 > 250) {
+            color = "pm2_5_hazardous";
+        }
+        return color;
+    }
+
+    function setPm25Text(pm2_5) {
+        let text = ""
+        if (pm2_5 === "") {
+            text = "优";
+        } else if (pm2_5 >= 0 & pm2_5 <= 35) {
+            text = "优";
+        } else if (pm2_5 > 35 && pm2_5 <= 75) {
+            text = "良";
+        } else if (pm2_5 > 75 && pm2_5 <= 115) {
+            text = "轻度污染";
+        } else if (pm2_5 > 115 && pm2_5 <= 150) {
+            text = "中度污染";
+        } else if (pm2_5 > 150 && pm2_5 <= 250) {
+            text = "重度污染";
+        } else if (pm2_5 > 250) {
+            text = "严重污染";
+        }
+        return text;
+    }
+
+    function setCO2Text(co2) {
+        let text = ""
+        if (co2 === "") {
+            text = "氧气充沛";
+        } else if (co2 >= 0 && co2 < 1000) {
+            text = "氧气充沛";
+        } else if (co2 >= 1000 && co2 < 2000) {
+            text = "CO₂浓度高";
+        } else if (co2 >= 2000) {
+            text = "CO₂浓度过高";
+        }
+        return text;
+    }
+
+    function obtainMonitorData(consumerId) {
+        $.ajax({
+            type: 'get',
+            url: "/monitor/consumer/machine/list/status?consumerId=" + consumerId,
+            data: {},
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                // console.log("请求成功");
+                // console.log(response);
+                setDataItem(response);
+            },
+            error: function () {
+                console.log("请求失败")
+            },
         })
-        setInterval(obtainMonitorData(consumerId),30000);
+    }
+
+    function setDataItem(response) {
+        if (response.responseCode == 'RESPONSE_ERROR') {
+            return;
+        }
+        $("#page_item").empty();
+        let length = Number.parseInt((response.data.length - 1) / 8);
+        for (let j = 0; j <= length; j++) {
+            let $machineTemp = $("<div></div>");
+            let data_length;
+            if (j === length) {
+                data_length = response.data.length;
+            } else {
+                data_length = j * 8 + 8
+            }
+            for (let i = j * 8; i < data_length; i++) {
+                $machineTemp.append("<div class=\"responsive\">\n" +
+                    "                <div class=\"item\">\n" +
+                    "                    <div class=\"machine_name\" id=\"machine_name8\">" + response.data[i].bindName + "</div>\n" +
+                    "                    <div class=\"data_left\">\n" +
+                    "                        <div class=\"data_name\">\n" +
+                    "                            室内PM2.5\n" +
+                    "                        </div>\n" +
+                    "                        <div class=\"data_value\" id=\"pm25_value8\">" + response.data[i].pm2_5 + "</div>" +
+                    "                        <div class='data_evaluate " + setPm25Color(response.data[i].pm2_5) + "' id=\"pm25_evaluate8\">" + setPm25Text(response.data[i].pm2_5) + "</div>" +
+                    "                    </div>\n" +
+                    "                    <div class=\"data_right\">\n" +
+                    "                        <div class=\"data_name\">\n" +
+                    "                            室内CO₂\n" +
+                    "                        </div>\n" +
+                    "                        <div class=\"data_value\" id=\"co2_value8\">" + response.data[i].co2 + "</div>\n" +
+                    "                        <div class=\"data_co2_evaluate\" id=\"co2_evaluate8\">" + setCO2Text(response.data[i].co2) + "</div>\n" +
+                    "                    </div>\n" +
+                    "                    <div class=\"data_bottom\">\n" +
+                    "                        <i class=\"fa fa-leaf fa-fw\" aria-hidden=\"true\"></i><span id=\"wind_value8\">" + response.data[i].volume + "</span>\n" +
+                    "                        <i class=\"fa fa-thermometer fa-fw\" aria-hidden=\"true\"></i><span id=\"temp8\">" + response.data[i].temp + "℃</span>\n" +
+                    "                        <i class=\"fa fa-tint fa-fw\" aria-hidden=\"true\"></i><span id=\"humid8\">" + response.data[i].humid + "%</span>\n" +
+                    "                    </div>\n" +
+                    "                </div>\n" +
+                    "            </div>");
+
+            }
+            $machineTemp.appendTo("#page_item");
+        }
+
+        $(".item").css({"height": height * 0.30, "margin-bottom": height * 0.03});
+        $("#page_item").show();
         layui.use('carousel', function () {
             let carousel = layui.carousel;
             //建造实例
@@ -435,165 +591,15 @@
                 elem: '#test1',
                 width: '100%',//设置容器宽度
                 height: height * 0.66,
-                indicator:'none',
-                interval:10000,
+                indicator: 'none',
+                interval: 10000,
                 // , arrow: 'always' //始终显示箭头
                 //,anim: 'updown' //切换动画方式
             });
         });
+    }
 
-        function init_time() {
-            let today = new Date();
-            let year = today.getFullYear();
-            let month = ('0' + (today.getMonth() + 1)).slice(-2).toString();
-            let date = ('0' + today.getDate()).slice(-2).toString();
-            let hour = ('0' + today.getHours()).slice(-2).toString();
-            let minute = ('0' + today.getMinutes()).slice(-2).toString();
-            let date_string = year + "年" + month + "月" + date + "日" + "  " + hour + ":" + minute;
-            return date_string;
-        }
-
-        function obtainConsumerId(name) {
-            let reg = new RegExp('(?:(?:&|\\?)' + name + '=([^&]*))|(?:/' + name + '/([^/]*))', 'i');
-            let r = window.location.href.match(reg);
-            if (r != null)
-                return decodeURI(r[1] || r[2]);
-            return null;
-            // let path=path_name.split("/");
-            // return path[3];
-        }
-
-        function setPm25Color(pm2_5) {
-            let color="";
-            if (pm2_5 === "") {
-                color="";
-            } else if (pm2_5 >= 0 & pm2_5 <= 35) {
-                color="pm2_5_excellent";
-            } else if (pm2_5 > 35 && pm2_5 <= 75) {
-                color="pm2_5_moderate";
-            } else if (pm2_5 > 75 && pm2_5 <= 115) {
-                color="pm2_5_sensative";
-            } else if (pm2_5 > 115 && pm2_5 <= 150) {
-                color="pm2_5_unhealthy";
-            } else if (pm2_5 > 150 && pm2_5 <= 250) {
-                color="pm2_5_very_unhealthy";
-            } else if (pm2_5 > 250) {
-                color="pm2_5_hazardous";
-            }
-            return color;
-        }
-
-        function setPm25Text(pm2_5) {
-            let text=""
-            if (pm2_5 === "") {
-                text="优";
-            } else if (pm2_5 >= 0 & pm2_5 <= 35) {
-                text="优";
-            } else if (pm2_5 > 35 && pm2_5 <= 75) {
-                text="良";
-            } else if (pm2_5 > 75 && pm2_5 <= 115) {
-                text="轻度污染";
-            } else if (pm2_5 > 115 && pm2_5 <= 150) {
-                text="中度污染";
-            } else if (pm2_5 > 150 && pm2_5 <= 250) {
-                text="重度污染";
-            } else if (pm2_5 > 250) {
-                text="严重污染";
-            }
-            return text;
-        }
-
-        function setCO2Text(co2) {
-            let text=""
-            if (co2 === "") {
-                text="氧气充沛";
-            } else if (co2 >= 0 &&co2<1000) {
-                text="氧气充沛";
-            } else if (co2 >=1000 && co2< 2000) {
-                text="CO₂浓度高";
-            } else if (co2 >=2000) {
-                text="CO₂浓度过高";
-            }
-            return text;
-        }
-        
-        function obtainMonitorData(consumerId) {
-                $.ajax({
-                type: 'get',
-                url: "/monitor/consumer/machine/list/status?consumerId="+consumerId,
-                data: {},
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    // console.log("请求成功");
-                    // console.log(response);
-                    setDataItem(response);
-                },
-                error:function () {
-                    console.log("请求失败")
-                },
-            })
-        }
-
-        function setDataItem(response) {
-            $("#page_item").empty();
-            let length=Number.parseInt((response.data.length-1)/8);
-            for(let j=0;j<=length;j++){
-                let $machineTemp = $("<div></div>");
-                let data_length;
-                if(j===length){
-                    data_length=response.data.length;
-                }else {
-                    data_length=j*8+8
-                }
-                for (let i =j*8; i<data_length; i++) {
-                    $machineTemp.append("<div class=\"responsive\">\n" +
-                        "                <div class=\"item\">\n" +
-                        "                    <div class=\"machine_name\" id=\"machine_name8\">"+response.data[i].bindName+"</div>\n" +
-                        "                    <div class=\"data_left\">\n" +
-                        "                        <div class=\"data_name\">\n" +
-                        "                            室内PM2.5\n" +
-                        "                        </div>\n" +
-                        "                        <div class=\"data_value\" id=\"pm25_value8\">"+response.data[i].pm2_5+"</div>" +
-                        "                        <div class='data_evaluate "+setPm25Color(response.data[i].pm2_5)+"' id=\"pm25_evaluate8\">"+setPm25Text(response.data[i].pm2_5)+"</div>" +
-                        "                    </div>\n" +
-                        "                    <div class=\"data_right\">\n" +
-                        "                        <div class=\"data_name\">\n" +
-                        "                            室内CO₂\n" +
-                        "                        </div>\n" +
-                        "                        <div class=\"data_value\" id=\"co2_value8\">"+response.data[i].co2+"</div>\n" +
-                        "                        <div class=\"data_co2_evaluate\" id=\"co2_evaluate8\">"+setCO2Text(response.data[i].co2)+"</div>\n" +
-                        "                    </div>\n" +
-                        "                    <div class=\"data_bottom\">\n" +
-                        "                        <i class=\"fa fa-leaf fa-fw\" aria-hidden=\"true\"></i><span id=\"wind_value8\">"+response.data[i].volume+"</span>\n" +
-                        "                        <i class=\"fa fa-thermometer fa-fw\" aria-hidden=\"true\"></i><span id=\"temp8\">"+response.data[i].temp+"℃</span>\n" +
-                        "                        <i class=\"fa fa-tint fa-fw\" aria-hidden=\"true\"></i><span id=\"humid8\">"+response.data[i].humid+"%</span>\n" +
-                        "                    </div>\n" +
-                        "                </div>\n" +
-                        "            </div>");
-
-                }
-                $machineTemp.appendTo("#page_item");
-            }
-
-            $(".item").css({"height": height * 0.30, "margin-bottom": height * 0.03});
-            $("#page_item").show();
-            layui.use('carousel', function () {
-                let carousel = layui.carousel;
-                //建造实例
-                carousel.render({
-                    elem: '#test1',
-                    width: '100%',//设置容器宽度
-                    height: height * 0.66,
-                    indicator:'none',
-                    interval:10000,
-                    // , arrow: 'always' //始终显示箭头
-                    //,anim: 'updown' //切换动画方式
-                });
-            });
-        }
-        /*]]>*/
-    </script>
+    /*]]>*/
+</script>
 </body>
 </html>
