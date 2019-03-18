@@ -427,6 +427,7 @@
             consumerId=obtainConsumerId("multiple");
             obtainMonitorData(consumerId);
         })
+        setInterval(obtainMonitorData,10000);
         layui.use('carousel', function () {
             let carousel = layui.carousel;
             //建造实例
