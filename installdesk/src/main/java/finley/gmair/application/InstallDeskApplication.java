@@ -1,8 +1,10 @@
 package finley.gmair.application;
 
 /**
- * @author fan
- * @create_time 2019-2019/3/4 10:40 AM
+ * @ClassName: InstallDeskApplication
+ * @Description: TODO
+ * @Author fan
+ * @Date 2019/3/19 5:18 PM
  */
 public class InstallDeskApplication {
 }
