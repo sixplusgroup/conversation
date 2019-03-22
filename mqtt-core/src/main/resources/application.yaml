@@ -1,0 +1,22 @@
+server:
+  port: 8008
+
+spring:
+  application:
+    name: core-agent
+  mqtt:
+    inbound:
+      url: tcp://116.62.233.170:61613
+      clientId: core-server
+      topics: test
+    outbound:
+      urls: tcp://116.62.233.170:61613
+      clientId: core-client
+      topic: test
+
+eureka:
+  client:
+    healthcheck: true
+    service-url:
+      defaultZone: http://localhost:8000/eureka/
+
