@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
-@ComponentScan({"finley.gmair.config", "finley.gmair.util"})
+@ComponentScan({"finley.gmair.config", "finley.gmair.util", "finley.gmair.dao", "finley.gmair.service", "finley.gmair.controller"})
 @Configuration
 @EnableConfigurationProperties(MqttProperties.class)
 @SpringBootApplication

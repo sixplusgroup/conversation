@@ -1,7 +1,6 @@
 package finley.gmair.config;
 
 import finley.gmair.util.MqttProperties;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
