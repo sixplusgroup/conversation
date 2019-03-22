@@ -102,6 +102,18 @@
     z-index:10;
     width: 120px;
 }
+
+.data_middle {
+    text-align: center;
+    color:white;
+    position:absolute;
+    top: 26%;
+    left: 50%;
+    margin-left: -60px;
+    z-index:10;
+    width: 120px;
+}
+
 .data_right{
     text-align: center;
     right: 10%;

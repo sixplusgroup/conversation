@@ -138,15 +138,24 @@
         return text;
     }
 
+    function setCO2Useful(co2,i) {
+        if(co2===2000){
+            $("#co2"+i).hide();
+            $("#pm25"+i).attr("class","data_middle")
+        }else{
+            $("#pm25"+i).attr("class","data_left")
+        }
+    }
+
     function setCO2Text(co2) {
-        var text = ""
+        let text = "";
         if (co2 === "") {
             text = "氧气充沛";
-        } else if (co2 >= 0 && co2 < 1000) {
+        }else if (co2 >=0 && co2 < 1000) {
             text = "氧气充沛";
         } else if (co2 >= 1000 && co2 < 2000) {
             text = "CO₂浓度高";
-        } else if (co2 >= 2000) {
+        } else if (co2 > 2000) {
             text = "CO₂浓度过高";
         }
         return text;
@@ -186,19 +195,19 @@
             for (var i = j * 8; i < data_length; i++) {
                 $machineTemp.append("<div class=\"responsive\">\n" +
                     "                <div class=\"item\">\n" +
-                    "                    <div class=\"machine_name\" id=\"machine_name8\">" + response.data[i].bindName + "</div>\n" +
-                    "                    <div class=\"data_left\">\n" +
+                    "                    <div class=\"machine_name\" id='machine_name"+i+"'>" + response.data[i].bindName + "</div>\n" +
+                    "                    <div class=\"data_left\" id='pm25"+i+"'>\n" +
                     "                        <div class=\"data_name\">\n" +
                     "                            室内PM2.5\n" +
                     "                        </div>\n" +
-                    "                        <div class=\"data_value\" id=\"pm25_value8\">" + response.data[i].pm2_5 + "</div>" +
+                    "                        <div class=\"data_value\" id='pm25_value"+i+"'>" + response.data[i].pm2_5 + "</div>" +
                     "                        <div class='data_evaluate " + setPm25Color(response.data[i].pm2_5) + "' id=\"pm25_evaluate8\">" + setPm25Text(response.data[i].pm2_5) + "</div>" +
                     "                    </div>\n" +
-                    "                    <div class=\"data_right\">\n" +
+                    "                    <div class=\"data_right\" id='co2"+i+"'>\n" +
                     "                        <div class=\"data_name\">\n" +
                     "                            室内CO₂\n" +
                     "                        </div>\n" +
-                    "                        <div class=\"data_value\" id=\"co2_value8\">" + response.data[i].co2 + "</div>\n" +
+                    "                        <div class=\"data_value\">" + response.data[i].co2 + "</div>\n" +
                     "                        <div class=\"data_co2_evaluate\" id=\"co2_evaluate8\">" + setCO2Text(response.data[i].co2) + "</div>\n" +
                     "                    </div>\n" +
                     "                    <div class=\"data_bottom\">\n" +
@@ -211,6 +220,10 @@
 
             }
             $machineTemp.appendTo("#page_item");
+            for(let i=j*8;i<data_length;i++){
+                setCO2Useful(response.data[i].co2,i);
+            }
+
         }
 
         $(".item").css({"height": height * 0.30, "margin-bottom": height * 0.03});
@@ -229,7 +242,6 @@
             });
         });
     }
-
     /*]]>*/
 </script>
 </body>
