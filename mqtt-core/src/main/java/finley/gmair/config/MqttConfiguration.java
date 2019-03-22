@@ -36,13 +36,19 @@ public class MqttConfiguration {
     /**
      * 实现MqttOutbound
      */
+
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
+        String[] serverUrls = mqttProperties.getOutbound().getUrls().split(",");
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
         factory.setUserName(username);
-        factory.setPassword(password);
-        factory.setCleanSession(false);
-        factory.setKeepAliveInterval(2);
+        //factory.setPassword(password);
+        factory.setServerURIs(serverUrls);
+        factory.setCleanSession(true);
+        factory.setConnectionTimeout(10);
+        factory.setKeepAliveInterval(20);
+        String topic = mqttProperties.getOutbound().getTopic();
+        factory.setWill(new DefaultMqttPahoClientFactory.Will(topic, "close".getBytes(), 2, true));
         return factory;
     }
 
@@ -75,7 +81,7 @@ public class MqttConfiguration {
     public MessageProducer inbound() {
         String[] inboundTopics = mqttProperties.getInbound().getTopics().split(",");
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getUrl(), mqttProperties.getInbound().getClientId(),
+                new MqttPahoMessageDrivenChannelAdapter(/*mqttProperties.getInbound().getUrl(),*/ mqttProperties.getInbound().getClientId(), mqttClientFactory(),
                         inboundTopics);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
