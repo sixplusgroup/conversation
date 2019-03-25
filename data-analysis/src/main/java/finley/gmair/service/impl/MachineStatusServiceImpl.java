@@ -82,17 +82,21 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             logger.info("not find any data in redis");
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find any data in redis");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             logger.info("error happen when fetch machine status from redis");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error happen when fetch machine status from redis");
             return result;
         }
         Map<String, Object> map = (HashMap) response.getData();
+        logger.info("[Processing] data set size: " + map.size());
         //2.统计获取到的数据
         List<Object> statisticalDataList = new ArrayList<>();
         try {
             for (String machineId : map.keySet()) {
+                logger.info("[Processing] machine mac: " + machineId);
                 Object queue = map.get(machineId);
                 //若这个queue存了v1的status
                 if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatus) {
@@ -116,13 +120,16 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                 }
             }
         } catch (Exception e) {
-            logger.debug(e.getMessage());
+            e.printStackTrace();
+            logger.info(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
             return result;
         }
         if (statisticalDataList.isEmpty()) {
-            logger.debug("after statistical data,result is null");
+            logger.info("after statistical data,result is null");
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("after statistical data,result is null");
             return result;
         }
         //3.将统计结果插入到数据库
