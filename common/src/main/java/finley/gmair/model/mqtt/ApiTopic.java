@@ -2,18 +2,18 @@ package finley.gmair.model.mqtt;
 
 import finley.gmair.model.Entity;
 
-public class ApiBound extends Entity {
+public class ApiTopic extends Entity {
     private String boundId;
     private String apiName;
     private String apiUrl;
     private String apiTopic;
     private String apiDescription;
 
-    public ApiBound() {
+    public ApiTopic() {
         super();
     }
 
-    public ApiBound(String apiName, String apiUrl, String apiTopic, String apiDescription) {
+    public ApiTopic(String apiName, String apiUrl, String apiTopic, String apiDescription) {
         this();
         this.apiName = apiName;
         this.apiUrl = apiUrl;
