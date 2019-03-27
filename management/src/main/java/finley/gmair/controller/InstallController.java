@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -79,7 +80,7 @@ public class InstallController {
     }
 
     @PostMapping("/assign/create")
-    public ResultData assignCreate(AssignForm form) {
+    public ResultData create(AssignForm form) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone())
                 || StringUtils.isEmpty(form.getConsumerAddress())) {
@@ -90,8 +91,19 @@ public class InstallController {
         String consumerConsignee = form.getConsumerConsignee();
         String consumerPhone = form.getConsumerPhone();
         String consumerAddress = form.getConsumerAddress();
-        String qrcode = form.getQrcode();
-        result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, qrcode);
+        String model = form.getModel();
+        result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model);
+        return result;
+    }
+
+    @GetMapping("/assign/list")
+    public ResultData list(String status, String teamId, Integer start, Integer length) {
+        ResultData result;
+        if (start == null || length == null) {
+            result = installService.fetchAssign(status, teamId);
+        } else {
+            result = installService.fetchAssignByPage(status, teamId, start, length);
+        }
         return result;
     }
 }

@@ -68,7 +68,7 @@
         INSERT INTO gmair_install.install_assign (assign_id, code_value, team_id, member_id, assign_status, consumer_consignee, consumer_phone, consumer_address, assign_region, assign_detail, assign_date, block_flag, create_time)
         VALUES (#{assignId}, #{codeValue}, #{teamId}, #{memberId},
                              #{assignStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
-                             #{consumerConsignee}, #{consumerPhone}, #{consumerAddress}, #{address}, #{region},
+                             #{consumerConsignee}, #{consumerPhone}, #{consumerAddress}, #{region}, #{detail},
                              #{assignDate}, #{blockFlag}, #{createAt})
     </insert>
 

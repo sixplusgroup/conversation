@@ -80,7 +80,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/list")
-    public ResultData list(String status, String teamId) {
+    public ResultData list(String status, String teamId, Integer start, Integer length) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(status)) {
@@ -90,7 +90,12 @@ public class AssignController {
             condition.put("teamId", teamId);
         }
         condition.put("blockFlag", false);
-        ResultData response = assignService.fetch(condition);
+        ResultData response;
+        if (start == null || length == null) {
+            response = assignService.fetch(condition);
+        } else {
+            response = assignService.fetch(condition, start, length);
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("当前没有符合条件的安装任务");

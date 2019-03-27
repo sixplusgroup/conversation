@@ -1,5 +1,6 @@
 package finley.gmair.dao.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.AssignDao;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.model.installation.Assign;
@@ -7,6 +8,7 @@ import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.installation.AssignVo;
+import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -44,6 +46,27 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(list);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData query(Map<String, Object> condition, int start, int length) {
+        ResultData result = new ResultData();
+        JSONObject data = new JSONObject();
+        try {
+            List list = sqlSession.selectList("gmair.install.assign.query", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            data.put("size", list.size());
+            list = sqlSession.selectList("gmair.install.assign.query", condition, new RowBounds(start, length));
+            data.put("data", list);
+            result.setData(data);
         } catch (Exception e) {
             logger.error(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

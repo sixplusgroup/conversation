@@ -10,6 +10,8 @@ public interface AssignService {
 
     ResultData fetch(Map<String, Object> condition);
 
+    ResultData fetch(Map<String, Object> condition, int start, int length);
+
     ResultData update(Map<String, Object> condition);
 
     ResultData block(String assignId);

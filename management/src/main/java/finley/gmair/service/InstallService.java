@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface InstallService {
     //调度人员创建安装任务
     @PostMapping("/install/assign/create")
-    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "qrcode", required = false) String qrcode);
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model);
 
     //调度人员查看已有的安装任务
     @GetMapping("/install/assign/list")
     ResultData fetchAssign(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId);
+
+    //调度人员查看已有的安装任务列表
+    @GetMapping("/install/assign/list")
+    ResultData fetchAssignByPage(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId, @RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
 }
