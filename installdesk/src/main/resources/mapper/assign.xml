@@ -62,6 +62,7 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
+        ORDER BY create_time ASC
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Assign">
