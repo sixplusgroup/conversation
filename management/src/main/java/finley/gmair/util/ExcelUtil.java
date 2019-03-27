@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.NumberToTextConverter;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ExcelUtil {
             Row current = sheet.getRow(i);
             if (current == null) break;
             String name = getCellValue(current.getCell(index[0]), String.class);
-            String phone = getCellValue(current.getCell(index[1]), String.class);
+            String phone = getCellValue(current.getCell(index[1]), Integer.class);
             String address = getCellValue(current.getCell(index[2]), String.class);
             String quantity = getCellValue(current.getCell(index[3]), Integer.class);
             String model = getCellValue(current.getCell(index[4]), String.class);
@@ -71,7 +72,7 @@ public class ExcelUtil {
         }
         if (type == CellType.NUMERIC) {
             if (clazz == Integer.class) {
-                return String.valueOf((int) cell.getNumericCellValue());
+                return NumberToTextConverter.toText(cell.getNumericCellValue());
             }
         }
         if (type == CellType.BLANK) {
