@@ -10,6 +10,8 @@ public class AssignForm {
 
     private String consumerAddress;
 
+    private String model;
+
     public String getQrcode() {
         return qrcode;
     }
@@ -40,5 +42,13 @@ public class AssignForm {
 
     public void setConsumerAddress(String consumerAddress) {
         this.consumerAddress = consumerAddress;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 }

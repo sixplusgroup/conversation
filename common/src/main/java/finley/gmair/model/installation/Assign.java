@@ -24,35 +24,30 @@ public class Assign extends Entity {
 
     private Date assignDate;
 
+    private String region;
+
+    private String detail;
+
     public Assign() {
         super();
         this.assignStatus = AssignStatus.TODOASSIGN;
     }
 
-    public Assign(String codeValue, String consumerConsignee, String consumerPhone, String consumerAddress) {
+    public Assign(String codeValue, String consumerConsignee, String consumerPhone, String consumerAddress, String detail) {
         this();
         this.codeValue = codeValue;
         this.consumerConsignee = consumerConsignee;
         this.consumerPhone = consumerPhone;
         this.consumerAddress = consumerAddress;
+        this.detail = detail;
     }
 
-    public Assign(String consumerConsignee, String consumerPhone, String consumerAddress) {
+    public Assign(String consumerConsignee, String consumerPhone, String consumerAddress, String detail) {
         this();
         this.consumerConsignee = consumerConsignee;
         this.consumerPhone = consumerPhone;
         this.consumerAddress = consumerAddress;
-    }
-
-    public Assign(String codeValue, String teamId, String memberId, Date assignDate, String consumerConsignee, String consumerPhone, String consumerAddress) {
-        this();
-        this.codeValue = codeValue;
-        this.teamId = teamId;
-        this.memberId = memberId;
-        this.assignDate = assignDate;
-        this.consumerConsignee = consumerConsignee;
-        this.consumerPhone = consumerPhone;
-        this.consumerAddress = consumerAddress;
+        this.detail = detail;
     }
 
     public String getAssignId() {
@@ -125,6 +120,22 @@ public class Assign extends Entity {
 
     public void setConsumerAddress(String consumerAddress) {
         this.consumerAddress = consumerAddress;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
     }
 }
 

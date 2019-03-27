@@ -1,32 +1,81 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.form.installation.*;
+import finley.gmair.form.installation.AssignForm;
 import finley.gmair.service.InstallService;
+import finley.gmair.util.ExcelUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.util.List;
+import java.io.File;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/management/install")
+@PropertySource("classpath:management.properties")
 public class InstallController {
+    private Logger logger = LoggerFactory.getLogger(InstallController.class);
 
     @Autowired
     private InstallService installService;
 
-    @GetMapping("/team/list")
-    public ResultData teamList() {
-        return installService.fetchTeamList();
-    }
+    @Value("${temp_path}")
+    private String baseDir;
 
-    @PostMapping("/team/create")
-    public ResultData teamCreate(TeamForm form) {
-        return installService.createTeam(form.getTeamName(), form.getTeamArea(), form.getTeamDescription());
+    @RequestMapping(value = "/assign/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResultData upload(MultipartHttpServletRequest request) {
+        ResultData result = new ResultData();
+        //存储文件
+        MultipartFile file = request.getFile("file");
+        String name = file.getOriginalFilename();
+        File base = null;
+        try {
+            base = new File(baseDir);
+            if (!base.exists()) base.mkdirs();
+        } catch (Exception e) {
+            if (base != null) base.mkdirs();
+        }
+        File target = new File(baseDir + File.separator + name);
+        try {
+            file.transferTo(target);
+        } catch (Exception e) {
+            logger.error("文件: " + name + "处理失败, " + e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("文件上传失败");
+            return result;
+        }
+        //解析文件
+        try {
+            Workbook book = WorkbookFactory.create(target);
+            int nums = book.getNumberOfSheets();
+            if (nums <= 0) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("请确保上传的文件中有列表数据");
+                return result;
+            }
+            //获取第一页的数据
+            Sheet sheet = book.getSheetAt(0);
+            JSONArray data = ExcelUtil.decode(sheet);
+            result.setData(data);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("文件未能成功解析");
+        }
+        return result;
     }
 
     @PostMapping("/assign/create")
@@ -35,140 +84,14 @@ public class InstallController {
         if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone())
                 || StringUtils.isEmpty(form.getConsumerAddress())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure you fill all the required fields");
+            result.setDescription("请输入所有的安装任务用户相关的信息");
             return result;
         }
-        String qrcode = form.getQrcode();
         String consumerConsignee = form.getConsumerConsignee();
         String consumerPhone = form.getConsumerPhone();
         String consumerAddress = form.getConsumerAddress();
-        result = installService.createInstallationAssign(qrcode, consumerConsignee, consumerPhone, consumerAddress);
+        String qrcode = form.getQrcode();
+        result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, qrcode);
         return result;
-    }
-
-    @PostMapping("/assign/postpone")
-    public ResultData postpone(String assignId, String date) {
-        return installService.postponeAssign(assignId, date);
-    }
-
-    @PostMapping("/assign/cancel")
-    public ResultData cancel(String assignId) {
-        return installService.cancelAssign(assignId);
-    }
-
-    @GetMapping("/member/list")
-    public ResultData memberList(String teamId) {
-        return installService.fetchMemberList(teamId);
-    }
-
-    @PostMapping("/member/create")
-    public ResultData memberCreate(MemberForm form) {
-        return installService.createMember(form.getTeamId(), form.getMemberPhone(), form.getMemberName(), form.getMemberRole());
-    }
-
-    @PostMapping(value = "/reconnaissance/{reconnaissanceId}/process")
-    public ResultData reconnaissanceProcess(@PathVariable String reconnaissanceId, ReconnaissanceForm form) {
-        return installService.reconnaissanceProcess(reconnaissanceId, form.getOrderId(), form.getSetupMethod(),
-                form.getDescription(), form.getReconDate(), form.getReconStatus());
-    }
-
-    @PostMapping(value = "/assign/allocate")
-    public ResultData allocateInstallationAssign(AllocateForm allocateForm) {
-        return installService.allocateInstallationAssign(allocateForm.getAssignId(),
-                allocateForm.getTeamName(), allocateForm.getMemberName(), allocateForm.getInstallDate());
-    }
-
-    @GetMapping(value = "/assign/finishedinfo")
-    public ResultData getFinishedInfo(String assignId) {
-        return installService.finishedInfo(assignId);
-    }
-
-
-    @GetMapping("/assign/list")
-    public ResultData assignList() {
-        ResultData result = new ResultData();
-        JSONObject data = new JSONObject();
-        ResultData response = installService.todoAssignList();
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            data.put("todo", ((List) response.getData()).size());
-        } else {
-            data.put("todo", 0);
-        }
-        response = installService.assignedList();
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            data.put("assigned", ((List) response.getData()).size());
-        } else {
-            data.put("assigned", 0);
-        }
-        response = installService.processingAssignList();
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            data.put("processing", ((List) response.getData()).size());
-        } else {
-            data.put("processing", 0);
-        }
-        response = installService.finishedList();
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            data.put("finished", ((List) response.getData()).size());
-        } else {
-            data.put("finished", 0);
-        }
-        response = installService.closedList();
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            data.put("closed", ((List) response.getData()).size());
-        } else {
-            data.put("closed", 0);
-        }
-        result.setData(data);
-        return result;
-    }
-
-    @GetMapping("/assign/todo")
-    public ResultData todoList() {
-        return installService.todoAssignList();
-    }
-
-    @GetMapping("/assign/assigned")
-    public ResultData assignedList() {
-        return installService.assignedList();
-    }
-
-    @GetMapping("/assign/processing")
-    public ResultData processingList() {
-        return installService.processingAssignList();
-    }
-
-    @GetMapping("/assign/finished")
-    public ResultData finishedList() {
-        return installService.finishedList();
-    }
-
-    @GetMapping("/assign/closed")
-    public ResultData closedList() {
-        return installService.closedList();
-    }
-
-    @GetMapping("/assign/detail/list")
-    public ResultData assignDetailList(int status) {
-        return installService.detailList(status);
-    }
-
-    @GetMapping("/assign/feedback/info")
-    public ResultData assignFeedback(String assignId) {
-        return installService.assignFeedback(assignId);
-    }
-
-    @GetMapping("/reconnaissance/order/{orderId}")
-    public ResultData recoList(@PathVariable("orderId") String orderId) {
-        return installService.orderReconnaissanceList(orderId);
-    }
-
-    @PostMapping("/machine/pic/create")
-    public ResultData createMachinePic(String codeValue, String picUrl1, String picUrl2, String picUrl3) {
-        return installService.createMachinePic(codeValue, picUrl1, picUrl2, picUrl3);
-    }
-
-    @GetMapping("/machine/pic/fetch")
-    public ResultData fetchMachinePic(String codeValue){
-        return installService.fetchMachinePicByQRcode(codeValue);
     }
 }

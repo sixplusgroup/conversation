@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="gmair.installation.assign">
+<mapper namespace="gmair.install.assign">
     <resultMap id="assignVo" type="finley.gmair.model.installation.Assign">
         <result property="assignId" column="assign_id"></result>
         <result property="codeValue" column="code_value"></result>
@@ -11,47 +11,28 @@
         <result property="consumerConsignee" column="consumer_consignee"></result>
         <result property="consumerPhone" column="consumer_phone"></result>
         <result property="consumerAddress" column="consumer_address"></result>
+        <result property="region" column="assign_region"></result>
+        <result property="detail" column="assign_detail"></result>
         <result property="assignDate" column="assign_date"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
-
-    <resultMap id="assignWithNameVo" type="finley.gmair.vo.installation.AssignVo">
-        <result property="assignId" column="assign_id"></result>
-        <result property="codeValue" column="code_value"></result>
-        <result property="teamName" column="team_name"></result>
-        <result property="memberName" column="member_name"></result>
-        <result property="assignStatus" column="assign_status"
-                typeHandler="finley.gmair.mybatis.handler.AssignStatusHandler"></result>
-        <result property="assignDate" column="assign_date"></result>
-        <result property="blockFlag" column="block_flag"></result>
-        <result property="createAt" column="create_time"></result>
-        <result property="consumerConsignee" column="consumer_consignee"></result>
-        <result property="consumerPhone" column="consumer_phone"></result>
-        <result property="consumerAddress" column="consumer_address"></result>
-    </resultMap>
-
-    <resultMap id="AssignFinishedVo" type="finley.gmair.vo.installation.AssignFinishedVo">
-        <result property="assignId" column="assign_id"></result>
-        <result property="picPath" column="pic_path"></result>
-        <result property="installType" column="install_type"></result>
-        <result property="locationPlace" column="location_place"></result>
-        <result property="assignDate" column="assign_date"></result>
-        <result property="blockFlag" column="block_flag"></result>
-        <result property="createAt" column="create_time"></result>
-    </resultMap>
-
-    <insert id="insert" parameterType="finley.gmair.model.installation.Assign" useGeneratedKeys="false">
-        INSERT INTO gmair_install.install_assign (assign_id, code_value, team_id, member_id, assign_status, assign_date, block_flag, create_time, consumer_consignee, consumer_phone, consumer_address)
-        VALUES (#{assignId}, #{codeValue}, #{teamId}, #{memberId},
-                             #{assignStatus,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
-                             #{assignDate}, #{blockFlag}, #{createAt}, #{consumerConsignee},
-                             #{consumerPhone}, #{consumerAddress})
-    </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="assignVo">
-        SELECT assign_id,code_value,team_id,member_id,assign_status,assign_date,
-        block_flag,create_time,consumer_consignee,consumer_phone,consumer_address
+        SELECT
+        assign_id,
+        code_value,
+        team_id,
+        member_id,
+        assign_status,
+        consumer_consignee,
+        consumer_phone,
+        consumer_address,
+        assign_region,
+        assign_detail,
+        assign_date,
+        block_flag,
+        create_time
         FROM gmair_install.install_assign
         WHERE 1 = 1
         <if test="assignId != null">
@@ -66,74 +47,34 @@
         <if test="memberId != null">
             AND member_id = #{memberId}
         </if>
-        <if test="assignStatus != null">
-            AND assign_status = #{assignStatus}
+        <if test="consumerConsignee != null">
+            AND consumer_consignee = #{consumerConsignee}
         </if>
-        <if test="assignDate != null">
-            AND assign_date = #{assignDate}
-        </if>
-        <if test="blockFlag != null">
-            AND block_flag = #{blockFlag}
-        </if>
-    </select>
-
-    <select id="queryAssignWithDetailName" parameterType="java.util.Map" resultMap="assignWithNameVo">
-        SELECT assign_id, code_value, team_name, member_name, assign_status, assign_date, block_flag, create_time, consumer_consignee, consumer_phone, consumer_address
-        FROM gmair_install.assign_view
-        WHERE 1 = 1
-        <if test="assignId != null">
-            AND assign_id = #{assignId}
-        </if>
-        <if test="codeValue != null">
-            AND code_value = #{codeValue}
-        </if>
-        <if test="teamName != null">
-            AND team_name = #{teamName}
-        </if>
-        <if test="memberName != null">
-            AND member_name = #{memberName}
+        <if test="consumerPhone != null">
+            AND consumer_phone = #{consumer_phone}
         </if>
         <if test="assignStatus != null">
             AND assign_status = #{assignStatus}
         </if>
-        <if test="assignDate != null">
-            AND assign_date = #{assignDate}
+        <if test="region != null">
+            AND assgin_region = #{region}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
     </select>
 
-    <select id="query3" parameterType="java.util.Map" resultMap="AssignFinishedVo">
-        SELECT assign_id,pic_path,install_type,location_place,assign_date,block_flag,create_time
-        FROM gmair_install.finished_view
-        WHERE 1 = 1
-        <if test="assignId != null">
-            AND assign_id = #{assignId}
-        </if>
-        <if test="pipPath != null">
-            AND pic_path = #{picPath}
-        </if>
-        <if test="installType != null">
-            AND install_type = #{installType}
-        </if>
-        <if test="locationPlace != null">
-            AND location_place = #{locationPlace}
-        </if>
-        <if test="assignDate != null">
-            AND assign_date = #{assignDate}
-        </if>
-        <if test="blockFlag != null">
-            AND block_flag = #{blockFlag}
-        </if>
-    </select>
+    <insert id="insert" parameterType="finley.gmair.model.installation.Assign">
+        INSERT INTO gmair_install.install_assign (assign_id, code_value, team_id, member_id, assign_status, consumer_consignee, consumer_phone, consumer_address, assign_region, assign_detail, assign_date, block_flag, create_time)
+        VALUES (#{assignId}, #{codeValue}, #{teamId}, #{memberId},
+                             #{assignStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+                             #{consumerConsignee}, #{consumerPhone}, #{consumerAddress}, #{address}, #{region},
+                             #{assignDate}, #{blockFlag}, #{createAt})
+    </insert>
 
-    <update id="update" parameterType="finley.gmair.model.installation.Assign">
-        UPDATE gmair_install.install_assign
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_install.intall_assign
         <set>
-            <if test="assignId != null">
-                assign_id = #{assignId},
-            </if>
             <if test="codeValue != null">
                 code_value = #{codeValue},
             </if>
@@ -144,13 +85,7 @@
                 member_id = #{memberId},
             </if>
             <if test="assignStatus != null">
-                assign_status = #{assignStatus,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
-            </if>
-            <if test="assignDate != null">
-                assign_date = #{assignDate},
-            </if>
-            <if test="blockFlag != null">
-                block_flag = #{blockFlag},
+                assign_status = #{assignStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
             </if>
             <if test="consumerConsignee != null">
                 consumer_consignee = #{consumerConsignee},
@@ -161,13 +96,25 @@
             <if test="consumerAddress != null">
                 consumer_address = #{consumerAddress},
             </if>
+            <if test="region != null">
+                assign_region = #{region},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
             assign_id = #{assignId}
         </set>
         WHERE assign_id = #{assignId}
     </update>
 
-    <delete id="delete" parameterType="java.lang.String">
-        delete from gmair_install.install_assign
-        where assign_id = #{assignId}
+    <update id="block">
+        UPDATE gmair_install.install_assign
+        SET block_flag = TRUE
+        WHERE assign_id = #{assignId}
+    </update>
+
+    <delete id="remove">
+        DELETE FROM gmair_install.install_assign
+        WHERE assign_id = #{assignId}
     </delete>
 </mapper>
