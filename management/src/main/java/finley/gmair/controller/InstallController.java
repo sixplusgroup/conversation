@@ -109,13 +109,44 @@ public class InstallController {
     }
 
     @GetMapping("/assign/list")
-    public ResultData list(String status, String teamId, Integer start, Integer length) {
+    public ResultData assigns(String status, String teamId, Integer start, Integer length) {
         ResultData result;
         if (start == null || length == null) {
             result = installService.fetchAssign(status, teamId);
         } else {
             result = installService.fetchAssignByPage(status, teamId, start, length);
         }
+        return result;
+    }
+
+    @GetMapping("/assign/{assignId}/info")
+    public ResultData assign(@PathVariable("assignId") String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请输入安装任务的编号");
+            return result;
+        }
+        result = installService.fetchAssign(assignId);
+        return result;
+    }
+
+    @PostMapping("/assign/dispatch")
+    public ResultData dispatch(String assignId, String teamId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(teamId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请输入安装任务和派单团队信息");
+            return result;
+        }
+        result = installService.dispatchAssign(assignId, teamId);
+        return result;
+    }
+
+    @GetMapping("/assign/team/list")
+    public ResultData teams() {
+        ResultData result = new ResultData();
+        
         return result;
     }
 }

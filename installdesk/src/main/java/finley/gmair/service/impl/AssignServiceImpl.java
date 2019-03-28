@@ -59,11 +59,9 @@ public class AssignServiceImpl implements AssignService {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(response.getDescription());
         }

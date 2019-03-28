@@ -17,9 +17,25 @@ public class TeamServiceImpl implements TeamService {
     private TeamDao teamDao;
 
     @Override
-    public ResultData fetchTeam(Map<String, Object> condition) {
+    public ResultData create(Team team) {
         ResultData result = new ResultData();
-        ResultData response = teamDao.queryTeam(condition);
+        //调用DAO执行存储操作并获取返回结果
+        ResultData response = teamDao.insert(team);
+        //对执行结果进行解析
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to insert team" + team.toString());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData fetch(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = teamDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -37,37 +53,63 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public ResultData createTeam(Team team) {
+    public ResultData fetch(Map<String, Object> condition, int start, int length) {
         ResultData result = new ResultData();
-
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("teamName", team.getTeamName());
-        condition.put("blockFalg", false);
-
-        ResultData response = teamDao.queryTeam(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription(new StringBuffer("team with name: ").append(team.getTeamName()).append(" already exist").toString());
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to finish the prerequisite check");
-            return result;
-        }
-
-        response = teamDao.insertTeam(team);
+        ResultData response = teamDao.query(condition, start, length);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to insert team" + team.toString());
+            result.setDescription(response.getDescription());
         }
         return result;
     }
 
+    @Override
+    public ResultData update(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = teamDao.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
+    }
 
+    @Override
+    public ResultData block(String teamId) {
+        ResultData result = new ResultData();
+        ResultData response = teamDao.block(teamId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData remove(String teamId) {
+        ResultData result = new ResultData();
+        ResultData response = teamDao.remove(teamId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
+    }
 }

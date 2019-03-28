@@ -11,7 +11,7 @@ public interface AssignDao {
 
     ResultData query(Map<String, Object> condition);
 
-    ResultData query(Map<String, Object> codnition, int start, int length);
+    ResultData query(Map<String, Object> condition, int start, int length);
 
     ResultData update(Map<String, Object> condition);
 
