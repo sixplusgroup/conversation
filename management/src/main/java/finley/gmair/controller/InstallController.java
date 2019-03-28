@@ -96,6 +96,18 @@ public class InstallController {
         return result;
     }
 
+    @PostMapping("/assign/cancel")
+    public ResultData cancel(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请选择相应的安装任务");
+            return result;
+        }
+        result = installService.cancelAssign(assignId);
+        return result;
+    }
+
     @GetMapping("/assign/list")
     public ResultData list(String status, String teamId, Integer start, Integer length) {
         ResultData result;

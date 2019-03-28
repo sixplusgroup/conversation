@@ -19,4 +19,7 @@ public interface InstallService {
     //调度人员查看已有的安装任务列表
     @GetMapping("/install/assign/list")
     ResultData fetchAssignByPage(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId, @RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
+
+    @PostMapping("/install/assign/cancel")
+    ResultData cancelAssign(@RequestParam(value = "assignId") String assignId);
 }

@@ -141,4 +141,23 @@ public class AssignController {
 
         return result;
     }
+
+    @PostMapping("/cancel")
+    public ResultData cancel(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保请求所需要的参数已设置");
+            return result;
+        }
+        ResultData response = assignService.block(assignId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("撤销安装任务成功");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("撤销安装任务失败，请重新尝试");
+        }
+        return result;
+    }
 }
