@@ -143,10 +143,26 @@ public class InstallController {
         return result;
     }
 
-    @GetMapping("/assign/team/list")
-    public ResultData teams() {
+    @GetMapping("/team/list")
+    public ResultData teams(Integer start, Integer length) {
+        ResultData result;
+        if (start == null || length == null) {
+            result = installService.fetchTeam();
+        } else {
+            result = installService.fetchTeam(start, length);
+        }
+        return result;
+    }
+
+    @GetMapping("/team/{teamId}/info")
+    public ResultData team(@PathVariable("teamId") String teamId) {
         ResultData result = new ResultData();
-        
+        if (StringUtils.isEmpty(teamId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保团队ID信息已提供");
+            return result;
+        }
+        result = installService.fetchTeam(teamId);
         return result;
     }
 }

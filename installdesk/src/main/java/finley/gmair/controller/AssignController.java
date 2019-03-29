@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.Assign;
+import finley.gmair.model.installation.AssignStatus;
 import finley.gmair.service.AssignService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -143,6 +144,7 @@ public class AssignController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignId", assignId);
         condition.put("teamId", teamId);
+        condition.put("assignStatus", AssignStatus.ASSIGNED.getValue());
         ResultData response = assignService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);

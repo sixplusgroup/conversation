@@ -74,7 +74,7 @@
     </insert>
 
     <update id="update" parameterType="java.util.Map">
-        UPDATE gmair_install.intall_assign
+        UPDATE gmair_install.install_assign
         <set>
             <if test="codeValue != null">
                 code_value = #{codeValue},
@@ -86,7 +86,7 @@
                 member_id = #{memberId},
             </if>
             <if test="assignStatus != null">
-                assign_status = #{assignStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+                assign_status = #{assignStatus},
             </if>
             <if test="consumerConsignee != null">
                 consumer_consignee = #{consumerConsignee},

@@ -22,7 +22,7 @@ import java.util.Map;
  * @Date 2019/3/28 1:03 PM
  */
 @RestController
-@RequestMapping("/management/install/team")
+@RequestMapping("/install/team")
 public class TeamController {
     private Logger logger = LoggerFactory.getLogger(TeamController.class);
 
