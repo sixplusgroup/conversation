@@ -13,15 +13,13 @@ CREATE SCHEMA IF NOT EXISTS `gmair_mqtt`
 USE `gmair_mqtt`;
 
 -- -----------------------------------------------------
--- Table `gmair_mqtt`.`api_topic`
+-- Table `gmair_mqtt`.`mqtt_topic`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `gmair_mqtt`.`api_topic` (
-  `bound_id` VARCHAR(20) NOT NULL,
-  `api_name` VARCHAR(20) NOT NULL,
-  `api_url` VARCHAR(50) NOT NULL,
-  `api_topic` VARCHAR(20) NOT NULL,
-  `api_description` VARCHAR(50) NOT NULL,
+CREATE TABLE IF NOT EXISTS `gmair_mqtt`.`mqtt_topic` (
+  `topic_id` VARCHAR(20) NOT NULL,
+  `topic_detail` VARCHAR(20) NOT NULL,
+  `topic_description` VARCHAR(50) NOT NULL,
   `block_flag`   TINYINT(1)   NOT NULL,
   `create_time`  DATETIME     NOT NULL,
-  PRIMARY KEY (`bound_id`)
+  PRIMARY KEY (`topic_id`)
 ) ENGINE = InnoDB;

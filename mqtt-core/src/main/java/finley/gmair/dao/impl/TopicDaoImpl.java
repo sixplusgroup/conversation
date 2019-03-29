@@ -2,7 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.TopicDao;
-import finley.gmair.model.mqtt.ApiTopic;
+import finley.gmair.model.mqtt.Topic;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -17,7 +17,7 @@ public class TopicDaoImpl extends BaseDao implements TopicDao {
     public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<ApiTopic> list = sqlSession.selectList("gmair.mqtt.topic.query", condition);
+            List<Topic> list = sqlSession.selectList("gmair.mqtt.topic.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -30,9 +30,9 @@ public class TopicDaoImpl extends BaseDao implements TopicDao {
     }
 
     @Override
-    public ResultData insert(ApiTopic topic) {
+    public ResultData insert(Topic topic) {
         ResultData result = new ResultData();
-        topic.setBoundId(IDGenerator.generate("ATI"));
+        topic.setTopicId(IDGenerator.generate("MTI"));
         try {
             sqlSession.insert("gmair.mqtt.topic.insert", topic);
             result.setData(topic);
