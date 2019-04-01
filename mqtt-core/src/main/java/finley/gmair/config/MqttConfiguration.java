@@ -1,7 +1,6 @@
 package finley.gmair.config;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.mqtt.SensorPayload;
 import finley.gmair.model.mqtt.StatusPayload;
@@ -105,24 +104,15 @@ public class MqttConfiguration {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-                System.out.println(message.getHeaders());
-                System.out.println(message.getPayload());
+//                System.out.println(message.getHeaders());
+//                System.out.println(message.getPayload());
                 MessageHeaders headers = message.getHeaders();
                 String payload = ((String) message.getPayload());
                 String topic = headers.get("mqtt_topic").toString();
-                String machineId = topic.substring(8, 20);
 
                 //将payload转换为json数据格式，进行进一步处理
                 JSONObject json = JSON.parseObject(payload);
-                if (topic.contains("sys_status")) {
-                    StatusPayload statusPayload = new StatusPayload(machineId, json);
-                }
-                if (topic.contains("sensor")) {
-                    SensorPayload sensorPayload = new SensorPayload(machineId, json);
-                }
-                if (topic.contains("sys_surplus")) {
-                    SurplusPayload surplusPayload = new SurplusPayload(machineId, json);
-                }
+                handle(topic, json);
             }
         };
     }
@@ -151,12 +141,29 @@ public class MqttConfiguration {
     private void handle(String topic, JSONObject json) {
         //将topic根据"/"切分为string数组，方便处理
         String[] array = topic.split("/");
+
         //根据定义的topic格式，获取message对应的machineId
         String machineId = array[2];
+
         if (array.length == 7) {
-
+            //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
+            String sensor = array[6];
+            int value = json.getIntValue("value");
+            //todo something
         } else {
-
+            String action = array[5];
+            if (action.equals("sys_status")) {
+                StatusPayload payload = new StatusPayload(machineId, json);
+                //todo something
+            }
+            if (action.equals("sys_surplus")) {
+                SurplusPayload payload = new SurplusPayload(machineId, json);
+                //todo something
+            }
+            if (action.equals("sensor")) {
+                SensorPayload payload = new SensorPayload(machineId, json);
+                //todo something
+            }
         }
     }
 }

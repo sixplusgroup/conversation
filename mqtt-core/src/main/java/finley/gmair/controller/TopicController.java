@@ -1,13 +1,11 @@
 package finley.gmair.controller;
 
-import finley.gmair.config.MqttConfiguration;
 import finley.gmair.form.mqtt.TopicForm;
 import finley.gmair.model.mqtt.Topic;
 import finley.gmair.service.TopicService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.MessageHandler;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
