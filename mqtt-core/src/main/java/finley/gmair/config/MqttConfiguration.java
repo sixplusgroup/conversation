@@ -111,21 +111,17 @@ public class MqttConfiguration {
                 String payload = ((String) message.getPayload());
                 String topic = headers.get("mqtt_topic").toString();
                 String machineId = topic.substring(8, 20);
+
+                //将payload转换为json数据格式，进行进一步处理
                 JSONObject json = JSON.parseObject(payload);
                 if (topic.contains("sys_status")) {
                     StatusPayload statusPayload = new StatusPayload(machineId, json);
-                    System.out.println("终端数据");
-                    System.out.println(statusPayload.getId());
                 }
                 if (topic.contains("sensor")) {
                     SensorPayload sensorPayload = new SensorPayload(machineId, json);
-                    System.out.println("传感器数据");
-                    System.out.println(sensorPayload.getCo2());
                 }
                 if (topic.contains("sys_surplus")) {
                     SurplusPayload surplusPayload = new SurplusPayload(machineId, json);
-                    System.out.println("滤芯数据");
-                    System.out.println(surplusPayload.getBottom());
                 }
             }
         };
@@ -147,5 +143,20 @@ public class MqttConfiguration {
             result[i] = list.get(i).getTopicDetail();
         }
         return result;
+    }
+
+    /**
+     * 处理当前message的信息
+     * */
+    private void handle(String topic, JSONObject json) {
+        //将topic根据"/"切分为string数组，方便处理
+        String[] array = topic.split("/");
+        //根据定义的topic格式，获取message对应的machineId
+        String machineId = array[2];
+        if (array.length == 7) {
+
+        } else {
+
+        }
     }
 }
