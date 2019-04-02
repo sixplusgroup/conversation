@@ -166,7 +166,7 @@ public class TempFileMapController {
         }
 
         //actualPath does not contains file name but picPath does
-        String actualPath = new StringBuffer(STORAGE_PATH)
+        String actualPath = new StringBuffer(STORAGE_PATH + "/picture")
                 .append(File.separator)
                 .append(new SimpleDateFormat("yyyyMMdd").format(new Date()))
                 .toString();

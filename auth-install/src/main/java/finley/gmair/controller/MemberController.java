@@ -8,10 +8,7 @@ import finley.gmair.util.WechatProperties;
 import finley.gmair.util.WechatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -24,25 +21,26 @@ public class InstallerController {
     @Autowired
     private InstallerService installerService;
 
-    @PostMapping("/openid")
-    public ResultData openid(String code) {
+    //根据用户的openid获取用户的基本信息
+    @GetMapping("/profile")
+    public ResultData profile(String openid) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(code)) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("wechatId", openid);
+        condition.put("blockFlag", false);
+        ResultData response = installerService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(((List) response.getData()).get(0));
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure you have the code when query this method");
-            return result;
+            result.setDescription("查询失败，请稍后尝试");
         }
-        //query the openid by code, via wechat appid & secret
-        String openid = WechatUtil.queryOauthOpenId(WechatProperties.getValue("wechat_appid"), WechatProperties.getValue("wechat_secret"), code);
-        if (StringUtils.isEmpty(openid)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Invalid code, please try again later");
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(openid);
         return result;
     }
+
+
 
     /**
      * if any member with the given phone, set his/her openid
@@ -68,7 +66,7 @@ public class InstallerController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("memberPhone", memberPhone);
         condition.put("blockFlag", false);
-        ResultData response = installerService.fetchInstaller(condition);
+        ResultData response = installerService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setDescription("No member with the specified phone number");
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -78,10 +76,8 @@ public class InstallerController {
             result.setDescription("Fail to find any member with the given phone number");
             return result;
         }
-        Member member = ((List<Member>) response.getData()).get(0);
-        //update the member
-        member.setWechatId(wechatId);
-        response = installerService.reviseInstaller(member);
+
+        response = installerService.bindWechat(wechatId, memberPhone);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
@@ -96,4 +92,6 @@ public class InstallerController {
     public Principal user(Principal user) {
         return user;
     }
+
+
 }
