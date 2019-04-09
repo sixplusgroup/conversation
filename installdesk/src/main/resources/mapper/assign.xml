@@ -44,6 +44,12 @@
         <if test="teamId != null">
             AND team_id = #{teamId}
         </if>
+        <if test="teams != null">
+            AND team_id IN
+            <foreach item="item" collection="teams" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="memberId != null">
             AND member_id = #{memberId}
         </if>

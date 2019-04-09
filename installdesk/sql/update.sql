@@ -7,3 +7,22 @@ CREATE TABLE `gmair_install`.`dispatch_record` (
   `create_time` DATETIME    NOT NULL,
   PRIMARY KEY (`record_id`)
 );
+
+#2019-04-01
+CREATE TABLE `gmair_install`.`user_session` (
+  `open_id`     VARCHAR(50) NOT NULL,
+  `session_key` VARCHAR(45) NOT NULL,
+  `block_flag`  TINYINT(1)  NOT NULL DEFAULT 0,
+  `create_time` DATETIME    NOT NULL,
+  PRIMARY KEY (`open_id`)
+);
+
+#2019-04-03
+CREATE TABLE `gmair_install`.`team_watch` (
+  `watch_id`    VARCHAR(20) NOT NULL,
+  `member_id`   VARCHAR(20) NOT NULL,
+  `team_id`     VARCHAR(20) NOT NULL,
+  `block_flag`  TINYINT(1)  NOT NULL,
+  `create_time` DATETIME    NOT NULL,
+  PRIMARY KEY (`watch_id`)
+);

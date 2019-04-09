@@ -1,15 +1,18 @@
 package finley.gmair.service;
 
-import finley.gmair.model.installation.Assign;
 import finley.gmair.util.ResultData;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Map;
-
+@FeignClient("install-agent")
 public interface AssignService {
 
-    ResultData createAssign(Assign assign);
+    @GetMapping("/install/assign/tasks")
+    ResultData fetchAssign(@RequestParam("memberId") String memberId);
 
-    ResultData fetchAssign(Map<String, Object> condition);
+    @GetMapping("/install/assign/tasks")
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
 
-    ResultData updateAssign(Assign assign);
+
 }

@@ -6,5 +6,7 @@
     <mappers>
         <mapper resource="mapper/assign.xml"/>
         <mapper resource="mapper/team.xml"/>
+        <mapper resource="mapper/member.xml"/>
+        <mapper resource="mapper/teamwatch.xml"/>
     </mappers>
 </configuration>

@@ -1,4 +1,6 @@
-package nbiot.finley.model;
+package finley.gmair.model.installation;
+
+import finley.gmair.model.Entity;
 
 public class UserSession extends Entity {
     private String openId;
