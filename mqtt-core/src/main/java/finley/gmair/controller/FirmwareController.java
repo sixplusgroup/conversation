@@ -1,12 +1,12 @@
 package finley.gmair.controller;
 
-import finley.gmair.form.mqtt.TopicForm;
-import finley.gmair.model.mqtt.Topic;
-import finley.gmair.service.TopicService;
+import finley.gmair.model.mqtt.Firmware;
+import finley.gmair.service.FirmwareService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,27 +15,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/topic")
-public class TopicController {
+@RequestMapping("/firmware")
+public class FirmwareController {
 
     @Autowired
-    private TopicService topicService;
+    private FirmwareService firmwareService;
 
     @PostMapping(value = "/create")
-    public ResultData createTopic(TopicForm form) {
+    public ResultData createFirmware(String version, String link) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(form.getTopicDetail()) || StringUtils.isEmpty(form.getTopicDescription())) {
+        if (StringUtils.isEmpty(version) || StringUtils.isEmpty(link)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topicDetail = form.getTopicDetail().trim();
-        String topicDescription = form.getTopicDescription().trim();
-        Topic topic = new Topic(topicDetail, topicDescription);
-        ResultData response = topicService.create(topic);
+        Firmware firmware = new Firmware(version, link);
+        ResultData response = firmwareService.create(firmware);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Create topic unsuccessfully");
+            result.setDescription("Fail to create firmware");
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -43,19 +41,19 @@ public class TopicController {
         return result;
     }
 
-    @PostMapping ("/query")
-    public ResultData getTopic() {
+    @GetMapping(value = "/query")
+    public ResultData getFirmware() {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        ResultData response = topicService.fetch(condition);
+        ResultData response = firmwareService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No topic got");
+            result.setDescription("No firmware get");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to get topic");
+            result.setDescription("Fail to get firmware");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -64,4 +62,10 @@ public class TopicController {
         return result;
     }
 
+    @PostMapping(value = "/update")
+    public ResultData updateFirmware(String version, String link) {
+        ResultData result = new ResultData();
+
+        return result;
+    }
 }

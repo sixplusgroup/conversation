@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Configuration
 @EnableConfigurationProperties(MqttProperties.class)
+@EnableFeignClients({"finley.gmair.service"})
 @EnableEurekaClient
 @ComponentScan({"finley.gmair.config", "finley.gmair.util", "finley.gmair.dao", "finley.gmair.service", "finley.gmair.controller"})
 public class MqttApplication {

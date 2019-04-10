@@ -5,5 +5,7 @@
 <configuration>
     <mappers>
         <mapper resource="mapper/topic.xml"></mapper>
+        <mapper resource="mapper/firmware.xml"></mapper>
+        <mapper resource="mapper/machinetype.xml"></mapper>
     </mappers>
 </configuration>
