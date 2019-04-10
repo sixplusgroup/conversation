@@ -72,6 +72,31 @@ public class MemberController {
         return result;
     }
 
+    @GetMapping("/list")
+    public ResultData list(String teamId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(teamId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装团队的信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("teamId", teamId);
+        ResultData response = memberService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("获取团队成员信息失败，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到相关的团队成员");
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
     @GetMapping("/profile")
     public ResultData profile(String openid, String phone) {
         ResultData result = new ResultData();

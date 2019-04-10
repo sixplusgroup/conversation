@@ -167,12 +167,58 @@ public class AssignController {
      * @return
      */
     @PostMapping("/assign")
-    public ResultData assign() {
+    public ResultData assign(String assignId, String memberId) {
         ResultData result = new ResultData();
-
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("memberId", memberId);
+        condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
+        ResultData response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("分配安装任务给安装工人失败，请重新尝试");
+        }
         return result;
     }
 
+    /**
+     * 安装负责人召回安装任务，安装任务召回后，将回到初始状态，需要由调度人员重新进行派单
+     * 仅可对出于Assigned和Processing状态的订单进行召回，召回时需要提供原因
+     *
+     * @param assignId
+     * @return
+     */
+    @PostMapping("/recall")
+    public ResultData recall(String assignId, String message) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(message)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息和召回原因");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("teamId", "");
+        condition.put("memberId", "");
+        condition.put("assignStatus", AssignStatus.TODOASSIGN.getValue());
+        ResultData response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("分配安装任务给安装工人失败，请重新尝试");
+        }
+        return result;
+    }
+
+    /**
+     * 调度人员撤销安装任务
+     *
+     * @param assignId
+     * @return
+     */
     @PostMapping("/cancel")
     public ResultData cancel(String assignId) {
         ResultData result = new ResultData();

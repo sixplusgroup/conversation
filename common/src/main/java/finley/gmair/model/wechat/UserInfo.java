@@ -1,4 +1,6 @@
-package nbiot.finley.model;
+package finley.gmair.model.wechat;
+
+import finley.gmair.model.Entity;
 
 public class UserInfo extends Entity {
     private String userInfoId;

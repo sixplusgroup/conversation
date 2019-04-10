@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="finley.nbiot.user.session">
-    <resultMap id="userSessionVo" type="nbiot.finley.model.UserSession">
+<mapper namespace="gmair.user.session">
+    <resultMap id="userSessionVo" type="finley.gmair.model.wechat.UserSession">
         <result property="openId" column="open_id"></result>
         <result property="sessionKey" column="session_key"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <insert id="insert" parameterType="nbiot.finley.model.UserSession" useGeneratedKeys="false">
-        REPLACE INTO nbiot_machine.nbiot_user_session(open_id, session_key, block_flag, create_time)
+    <insert id="insert" parameterType="finley.gmair.model.wechat.UserSession" useGeneratedKeys="false">
+        REPLACE INTO gmair_install.user_session (open_id, session_key, block_flag, create_time)
         VALUES (#{openId}, #{sessionKey}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="userSessionVo">
         SELECT open_id, session_key, block_flag, create_time
-        FROM nbiot_machine.nbiot_user_session
+        FROM gmair_install.user_session
         WHERE 1 = 1
         <if test="openId != null">
             AND open_id = #{openId}

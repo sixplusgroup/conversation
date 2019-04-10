@@ -1,4 +1,4 @@
-package finley.gmair.model.installation;
+package finley.gmair.model.wechat;
 
 import finley.gmair.model.Entity;
 
