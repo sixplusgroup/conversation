@@ -181,4 +181,37 @@ public class LogServiceImpl implements LogService {
         return result;
     }
 
+    @Override
+    public ResultData createMqttAckLog(MqttAckLog mqttAckLog) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.insertMqttAckLog(mqttAckLog);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store mqtt ack log to mongo");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @Override
+    public ResultData fetchMqttAckLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryMqttAckLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No mqtt ack log found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve mqtt ack log");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
 }
