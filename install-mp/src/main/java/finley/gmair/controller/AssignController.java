@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +45,18 @@ public class AssignController {
         } else {
             result = assignService.fetchAssign(memberId, status);
         }
+        return result;
+    }
+
+    @PostMapping("/alloc")
+    public ResultData allocate(String assignId, String memberId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务和成员信息");
+            return result;
+        }
+        result = assignService.dispatchAssign(assignId, memberId);
         return result;
     }
 
