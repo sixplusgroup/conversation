@@ -4,13 +4,14 @@
     <resultMap id="typeVo" type="finley.gmair.model.mqtt.MachineType">
         <result property="boardId" column="board_id"></result>
         <result property="boardVersion" column="board_version"></result>
-        <result property="type" column="type"></result>
+        <result property="deviceName" column="device_name"></result>
+        <result property="typeName" column="type_name"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="typeVo">
-        select board_id, board_version, machine_type, block_flag, create_time
+        select board_id, board_version, device_name, type_name, block_flag, create_time
         from gmair_mqtt.machine_type
         where 1 = 1
         <if test="boardId != null">
@@ -19,8 +20,11 @@
         <if test="boardVersion != null">
             and board_version = #{boardVersion}
         </if>
-        <if test="type != null">
-            and type = #{type}
+        <if test="deviceName != null">
+            and device_name = #{deviceName}
+        </if>
+        <if test="typeName != null">
+            and type_name = #{typeName}
         </if>
         <if test="blockFlag != null">
             and block_flag = #{blockFlag}
@@ -29,7 +33,7 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.mqtt.MachineType" useGeneratedKeys="false">
-        insert into gmair_mqtt.machine_type(board_id, board_version, machine_type, block_flag, create_time)
-        values (#{boardId}, #{boardVersion}, #{type}, #{blockFlag}, #{createAt})
+        insert into gmair_mqtt.machine_type(board_id, board_version, device_name, type_name, block_flag, create_time)
+        values (#{boardId}, #{boardVersion}, {deviceName}, #{typeName}, #{blockFlag}, #{createAt})
     </insert>
 </mapper>

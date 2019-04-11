@@ -5,16 +5,18 @@ import finley.gmair.model.Entity;
 public class MachineType extends Entity {
     private String boardId;
     private int boardVersion;
-    private String type;
+    private String deviceName;
+    private String typeName;
 
     public MachineType() {
         super();
     }
 
-    public MachineType(int boardVersion, String type) {
+    public MachineType(int boardVersion, String deviceName, String typeName) {
         this();
         this.boardVersion = boardVersion;
-        this.type = type;
+        this.deviceName = deviceName;
+        this.typeName = typeName;
     }
 
     public String getBoardId() {
@@ -33,11 +35,19 @@ public class MachineType extends Entity {
         this.boardVersion = boardVersion;
     }
 
-    public String getType() {
-        return type;
+    public String getDeviceName() {
+        return deviceName;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 }
