@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/topic")
+@RequestMapping("/mqtt/topic")
 public class TopicController {
 
     @Autowired

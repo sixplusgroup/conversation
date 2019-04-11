@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/firmware")
+@RequestMapping("/mqtt/firmware")
 public class FirmwareController {
 
     @Autowired

@@ -32,7 +32,7 @@ import java.util.Map;
  *    finally: publish(topic, message，qos)
  * */
 @RestController
-@RequestMapping("/message")
+@RequestMapping("/mqtt/message")
 public class MessageController {
     private final static String host = "tcp://116.62.233.170:61613";
     private final static String clientId = "core-server";
