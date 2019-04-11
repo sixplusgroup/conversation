@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.MachineTypeDao;
 import finley.gmair.model.mqtt.MachineType;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -32,7 +33,7 @@ public class MachineTypeDaoImpl extends BaseDao implements MachineTypeDao {
     @Override
     public ResultData insertType(MachineType machineType) {
         ResultData result = new ResultData();
-        machineType.setBoardId("BTI");
+        machineType.setBoardId(IDGenerator.generate("MTI"));
         try {
             sqlSession.insert("gmair.mqtt.machineType.insert", machineType);
             result.setData(machineType);

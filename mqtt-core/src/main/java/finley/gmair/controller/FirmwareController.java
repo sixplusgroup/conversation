@@ -61,11 +61,4 @@ public class FirmwareController {
         }
         return result;
     }
-
-    @PostMapping(value = "/update")
-    public ResultData updateFirmware(String version, String link) {
-        ResultData result = new ResultData();
-
-        return result;
-    }
 }

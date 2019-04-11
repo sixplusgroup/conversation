@@ -34,6 +34,6 @@
 
     <insert id="insert" parameterType="finley.gmair.model.mqtt.MachineType" useGeneratedKeys="false">
         insert into gmair_mqtt.machine_type(board_id, board_version, device_name, type_name, block_flag, create_time)
-        values (#{boardId}, #{boardVersion}, {deviceName}, #{typeName}, #{blockFlag}, #{createAt})
+        values(#{boardId}, #{boardVersion}, #{deviceName}, #{typeName}, #{blockFlag}, #{createAt})
     </insert>
 </mapper>
