@@ -35,3 +35,6 @@ CREATE TABLE `gmair_install`.`assign_action` (
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`action_id`));
+
+ALTER SCHEMA `gmair_install`  DEFAULT CHARACTER SET utf8  DEFAULT COLLATE utf8_general_ci ;
+

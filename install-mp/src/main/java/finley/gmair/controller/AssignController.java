@@ -112,4 +112,16 @@ public class AssignController {
         return result;
     }
 
+    @GetMapping("/trace")
+    public ResultData trace(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务相关的信息");
+            return result;
+        }
+        result = assignService.traceAssign(assignId);
+        return result;
+    }
+
 }

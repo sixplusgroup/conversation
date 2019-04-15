@@ -364,4 +364,30 @@ public class AssignController {
         result.setData(response.getData());
         return result;
     }
+
+    @GetMapping("/trace")
+    public ResultData trace(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务相关的信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        ResultData response = assignActionService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到和该安装任务相关的处理信息");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询处理信息失败，请稍后尝试");
+        }
+        return result;
+    }
 }

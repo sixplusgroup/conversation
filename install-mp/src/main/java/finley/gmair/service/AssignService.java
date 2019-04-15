@@ -29,4 +29,7 @@ public interface AssignService {
 
     @PostMapping("/install/assign/cancel")
     ResultData cancelAssign(@RequestParam("assignId") String assignId, @RequestParam("message") String message);
+
+    @GetMapping("/install/assign/trace")
+    ResultData traceAssign(@RequestParam("assignId") String assignId);
 }
