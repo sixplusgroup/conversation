@@ -14,4 +14,7 @@ public interface MemberService {
 
     @GetMapping("/install/member/list")
     ResultData list(@RequestParam("teamId") String teamId);
+
+    @GetMapping("/install/member/profile")
+    ResultData profile(@RequestParam("memberId") String memberId);
 }

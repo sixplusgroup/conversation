@@ -55,4 +55,16 @@ public class MemberController {
         result = memberService.list(teamId);
         return result;
     }
+
+    @GetMapping("/profile")
+    public ResultData profile(String memberId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装成员的信息");
+            return result;
+        }
+        result = memberService.profile(memberId);
+        return result;
+    }
 }

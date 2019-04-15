@@ -98,11 +98,11 @@ public class MemberController {
     }
 
     @GetMapping("/profile")
-    public ResultData profile(String openid, String phone) {
+    public ResultData profile(String openid, String phone, String memberId) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(openid) && StringUtils.isEmpty(phone)) {
+        if (StringUtils.isEmpty(openid) && StringUtils.isEmpty(phone) && StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请提供openid或电话号码至少一个信息");
+            result.setDescription("请提供openid或电话号码或成员信息中的至少一个");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
@@ -111,6 +111,9 @@ public class MemberController {
         }
         if (!StringUtils.isEmpty(phone)) {
             condition.put("memberPhone", phone);
+        }
+        if (!StringUtils.isEmpty(memberId)) {
+            condition.put("memberId", memberId);
         }
         condition.put("blockFlag", false);
         ResultData response = memberService.fetch(condition);

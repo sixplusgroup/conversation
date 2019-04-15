@@ -18,4 +18,15 @@ public interface AssignService {
     @PostMapping("/install/assign/assign")
     ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("memberId") String memberId);
 
+    @GetMapping("/install/assign/overview")
+    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId);
+
+    @GetMapping("/install/assign/overview")
+    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
+
+    @PostMapping("/install/assign/recall")
+    ResultData recallAssign(@RequestParam("assignId") String assignId);
+
+    @PostMapping("/install/assign/cancel")
+    ResultData cancelAssign(@RequestParam("assignId") String assignId);
 }

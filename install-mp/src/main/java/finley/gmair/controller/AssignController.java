@@ -60,4 +60,56 @@ public class AssignController {
         return result;
     }
 
+    @GetMapping("/own")
+    public ResultData overview(String memberId, Integer status) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装工人的信息");
+            return result;
+        }
+        if (status == null) {
+            result = assignService.fetchOwnAssign(memberId);
+        } else {
+            result = assignService.fetchOwnAssign(memberId, status);
+        }
+        return result;
+    }
+
+    /**
+     * 安装负责人召回安装任务
+     *
+     * @param assignId
+     * @return
+     */
+    @PostMapping("/recall")
+    public ResultData recall(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息");
+            return result;
+        }
+        result = assignService.recallAssign(assignId);
+        return result;
+    }
+
+    /**
+     * 安装负责人取消安装任务
+     *
+     * @param assignId
+     * @return
+     */
+    @PostMapping("/cancel")
+    public ResultData cancel(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息");
+            return result;
+        }
+        result = assignService.cancelAssign(assignId);
+        return result;
+    }
+
 }
