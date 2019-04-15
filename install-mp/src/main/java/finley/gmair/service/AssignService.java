@@ -32,4 +32,7 @@ public interface AssignService {
 
     @GetMapping("/install/assign/trace")
     ResultData traceAssign(@RequestParam("assignId") String assignId);
+
+    @PostMapping("/install/assign/init")
+    ResultData initAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode);
 }

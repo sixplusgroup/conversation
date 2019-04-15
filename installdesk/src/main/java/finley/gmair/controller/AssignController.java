@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -388,6 +389,37 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询处理信息失败，请稍后尝试");
         }
+        return result;
+    }
+
+    /**
+     * 安装任务关联设备二维码
+     * @param assignId
+     * @param qrcode
+     * @return
+     */
+    @PostMapping("/init")
+    public ResultData init(String assignId, String qrcode) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息和二维码信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("codeValue", qrcode);
+        ResultData response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("二维码与安装任务关联失败，请稍后尝试");
+            return result;
+        }
+        //记录安装任务操作日志
+        InstallPool.getLogExecutor().execute(() -> {
+            AssignAction action = new AssignAction(assignId, "该安装任务使用二维码为" + qrcode + "的机器");
+            assignActionService.create(action);
+        });
         return result;
     }
 }

@@ -124,4 +124,21 @@ public class AssignController {
         return result;
     }
 
+    /**
+     * 安装工人将二维码与安装任务进行关联
+     *
+     * @return
+     */
+    @PostMapping("/init")
+    public ResultData init(String assignId, String qrcode) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息和二维码");
+            return result;
+        }
+        result = assignService.initAssign(assignId, qrcode);
+        return result;
+    }
+
 }
