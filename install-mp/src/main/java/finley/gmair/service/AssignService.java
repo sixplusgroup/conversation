@@ -25,8 +25,8 @@ public interface AssignService {
     ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
 
     @PostMapping("/install/assign/recall")
-    ResultData recallAssign(@RequestParam("assignId") String assignId);
+    ResultData recallAssign(@RequestParam("assignId") String assignId, @RequestParam("message") String message);
 
     @PostMapping("/install/assign/cancel")
-    ResultData cancelAssign(@RequestParam("assignId") String assignId);
+    ResultData cancelAssign(@RequestParam("assignId") String assignId, @RequestParam("message") String message);
 }

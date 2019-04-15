@@ -83,14 +83,14 @@ public class AssignController {
      * @return
      */
     @PostMapping("/recall")
-    public ResultData recall(String assignId) {
+    public ResultData recall(String assignId, String message) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(assignId)) {
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(message)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请提供安装任务信息");
+            result.setDescription("请提供安装任务信息和召回原因");
             return result;
         }
-        result = assignService.recallAssign(assignId);
+        result = assignService.recallAssign(assignId, message);
         return result;
     }
 
@@ -101,14 +101,14 @@ public class AssignController {
      * @return
      */
     @PostMapping("/cancel")
-    public ResultData cancel(String assignId) {
+    public ResultData cancel(String assignId, String message) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(assignId)) {
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(message)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装任务信息");
             return result;
         }
-        result = assignService.cancelAssign(assignId);
+        result = assignService.cancelAssign(assignId, message);
         return result;
     }
 

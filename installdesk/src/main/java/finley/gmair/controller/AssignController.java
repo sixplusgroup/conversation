@@ -1,11 +1,13 @@
 package finley.gmair.controller;
 
+import finley.gmair.dao.AssignActionDao;
 import finley.gmair.form.installation.AssignForm;
-import finley.gmair.model.installation.Assign;
-import finley.gmair.model.installation.AssignStatus;
-import finley.gmair.model.installation.TeamWatch;
+import finley.gmair.model.installation.*;
+import finley.gmair.pool.InstallPool;
+import finley.gmair.service.AssignActionService;
 import finley.gmair.service.AssignService;
 import finley.gmair.service.MemberService;
+import finley.gmair.service.TeamService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
@@ -41,6 +43,12 @@ public class AssignController {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private AssignActionService assignActionService;
+
+    @Autowired
+    private TeamService teamService;
+
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
      *
@@ -71,6 +79,12 @@ public class AssignController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
+            //记录安装任务操作日志
+            InstallPool.getLogExecutor().execute(() -> {
+                Assign a = (Assign) response.getData();
+                AssignAction action = new AssignAction(a.getAssignId(), "系统生成新的安装任务");
+                assignActionService.create(action);
+            });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("创建安装任务失败，请稍后尝试");
@@ -154,6 +168,16 @@ public class AssignController {
         ResultData response = assignService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            //记录安装任务操作日志
+            InstallPool.getLogExecutor().execute(() -> {
+                condition.clear();
+                condition.put("teamId", teamId);
+                condition.put("blockFlag", false);
+                ResultData r = teamService.fetch(condition);
+                Team team = ((List<Team>) r.getData()).get(0);
+                AssignAction action = new AssignAction(assignId, "分派安装任务到" + team.getTeamName() + "团队");
+                assignActionService.create(action);
+            });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("分配安装任务失败，请重新尝试");
@@ -176,6 +200,16 @@ public class AssignController {
         ResultData response = assignService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            //记录安装任务操作日志
+            InstallPool.getLogExecutor().execute(() -> {
+                condition.clear();
+                condition.put("memberId", memberId);
+                condition.put("blockFlag", false);
+                ResultData r = memberService.fetch(condition);
+                Member member = ((List<Member>) r.getData()).get(0);
+                AssignAction action = new AssignAction(assignId, "分派安装任务给安装工人: " + member.getMemberName());
+                assignActionService.create(action);
+            });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("分配安装任务给安装工人失败，请重新尝试");
@@ -200,15 +234,19 @@ public class AssignController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignId", assignId);
-        condition.put("teamId", "");
-        condition.put("memberId", "");
+        condition.put("teamId", null);
+        condition.put("memberId", null);
         condition.put("assignStatus", AssignStatus.TODOASSIGN.getValue());
         ResultData response = assignService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
+            InstallPool.getLogExecutor().execute(() -> {
+                AssignAction action = new AssignAction(assignId, "系统召回了安装任务, 原因为" + message);
+                assignActionService.create(action);
+            });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("分配安装任务给安装工人失败，请重新尝试");
+            result.setDescription("召回安装任务失败，请重新尝试");
         }
         return result;
     }
@@ -220,17 +258,21 @@ public class AssignController {
      * @return
      */
     @PostMapping("/cancel")
-    public ResultData cancel(String assignId) {
+    public ResultData cancel(String assignId, String message) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(assignId)) {
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(message)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请确保请求所需要的参数已设置");
+            result.setDescription("请提供安装任务的信息和取消的原因");
             return result;
         }
         ResultData response = assignService.block(assignId);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("撤销安装任务成功");
+            InstallPool.getLogExecutor().execute(() -> {
+                AssignAction action = new AssignAction(assignId, "系统取消了安装任务, 原因为" + message);
+                assignActionService.create(action);
+            });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("撤销安装任务失败，请重新尝试");

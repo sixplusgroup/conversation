@@ -26,3 +26,12 @@ CREATE TABLE `gmair_install`.`team_watch` (
   `create_time` DATETIME    NOT NULL,
   PRIMARY KEY (`watch_id`)
 );
+
+#2019-04-14
+CREATE TABLE `gmair_install`.`assign_action` (
+  `action_id` VARCHAR(20) NOT NULL,
+  `assign_id` VARCHAR(20) NOT NULL,
+  `action_message` VARCHAR(50) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`action_id`));

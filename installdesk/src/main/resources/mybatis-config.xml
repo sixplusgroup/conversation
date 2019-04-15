@@ -8,5 +8,6 @@
         <mapper resource="mapper/team.xml"/>
         <mapper resource="mapper/member.xml"/>
         <mapper resource="mapper/teamwatch.xml"/>
+        <mapper resource="mapper/assignaction.xml"/>
     </mappers>
 </configuration>
