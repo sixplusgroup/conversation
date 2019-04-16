@@ -22,27 +22,14 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     @Transactional
     public ResultData create(AccessToken token) {
         ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("accessToken", token.getAccessToken());
-        ResultData response = accessTokenDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("AccessToken already exist");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to query accesstoken information from database");
-            return result;
-        }
-        response = accessTokenDao.insert(token);
+        ResultData response = accessTokenDao.insert(token);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("Fail to store accesstoken to database");
+        result.setDescription("Fail to store access token to database");
         return result;
     }
 
@@ -66,80 +53,16 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     }
 
     @Override
-    public ResultData modify(AccessToken token) {
+    public ResultData renew(AccessToken token) {
         ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("accessToken", token.getAccessToken());
-        ResultData response = accessTokenDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No accesstoken found from database");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to query accesstoken information from database");
-            return result;
-        }
-        response = accessTokenDao.update(token);
+        //create a new record in database
+        ResultData response = accessTokenDao.insert(token);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("Fail to update accesstoken to database");
-        return result;
-    }
-
-    @Override
-    public boolean existToken(Map<String, Object> condition) {
-        Map<String, Object> con = new HashMap<>();
-        for (Map.Entry<String, Object> e : condition.entrySet()) {
-            con.clear();
-            con.put(e.getKey(), e.getValue());
-            ResultData response = accessTokenDao.query(con);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public ResultData renew(AccessToken token) {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag", false);
-        ResultData response = accessTokenDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            //call method to update the existing record
-            response = accessTokenDao.update(token);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setData(response.getData());
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription(new StringBuffer("Fail to update the existing access token to ").append(token.getAccessToken()).toString());
-            }
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            //create a new record in database
-            response = accessTokenDao.insert(token);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setData(response.getData());
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription(new StringBuffer("Fail to insert the access token: ").append(token.getAccessToken()).toString());
-            }
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            //something wrong with the db query
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to check whether any access token exist or not ");
+            result.setDescription(new StringBuffer("Fail to insert the access token: ").append(token.getAccessToken()).toString());
         }
         return result;
     }

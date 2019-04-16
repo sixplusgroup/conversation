@@ -2,10 +2,14 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.wechat.AccessToken;
 import finley.gmair.model.wechat.WechatUser;
+import finley.gmair.service.AccessTokenService;
 import finley.gmair.service.WechatUserService;
 import finley.gmair.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,13 +17,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/wechat/user")
+@PropertySource("classpath:wechat.properties")
 public class WechatUserController {
     @Autowired
     private WechatUserService wechatUserService;
+
+    @Value("${wechat_appid}")
+    private String wechatAppId;
+
+    @Autowired
+    private AccessTokenService accessTokenService;
 
     @GetMapping(value = "/list")
     public ResultData userList() {
@@ -83,15 +95,23 @@ public class WechatUserController {
     @PostMapping(value = "/create/byopenId")
     public ResultData createUser(String openId) {
         ResultData result = new ResultData();
-        String accessToken = WechatProperties.getAccessToken();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("appId", wechatAppId);
+        ResultData response = accessTokenService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("为能够查询到appid对应的access token");
+            return result;
+        }
+        String accessToken = ((AccessToken) response.getData()).getAccessToken();
         String url = new StringBuffer("https://api.weixin.qq.com/cgi-bin/user/info?access_token=").append(accessToken)
                 .append("&openid=").append(openId).append("&lang=zh_CN").toString();
         String resultStr = HttpDeal.getResponse(url);
         JSONObject json = JSON.parseObject(resultStr);
-        WechatUser user = new WechatUser(openId,json);
-        Map<String, Object> condition = new HashMap<>();
+        WechatUser user = new WechatUser(openId, json);
+        condition.clear();
         condition.put("wechatId", openId);
-        ResultData response = wechatUserService.fetch(condition);
+        response = wechatUserService.fetch(condition);
         switch (response.getResponseCode()) {
             case RESPONSE_OK:
                 result = wechatUserService.modify(user);

@@ -37,6 +37,9 @@ public class PictureReplyController {
     @Value("${file_save_path}")
     private String fileSavePath;
 
+    @Value("${wechat_appid}")
+    private String wechatAppId;
+
     @PostMapping(value = "/upload/and/reply")
     public ResultData upload_reply(String openId, MultipartFile file) {
         ResultData result = new ResultData();
@@ -103,6 +106,7 @@ public class PictureReplyController {
 
     private String getAccessToken() {
         Map<String, Object> condition = new HashMap<>();
+        condition.put("appId", wechatAppId);
         condition.put("blockFlag", false);
         ResultData response = accessTokenService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
