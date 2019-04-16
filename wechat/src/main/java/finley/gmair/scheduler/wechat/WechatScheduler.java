@@ -45,14 +45,14 @@ public class WechatScheduler {
      */
     @Scheduled(cron = "0 0 * * * ?")
     public void renewal() {
-        execute(wechatAppId, wechatSecret);
-        execute(miniAppId, miniSecret);
+        String at = token(wechatAppId, wechatSecret);
+        ticket(at);
+        token(miniAppId, miniSecret);
     }
 
-    private void execute(String appid, String secret) {
+    private String token(String appid, String secret) {
         logger.info("获取appid: " + appid + "的access token");
         String token = WechatUtil.queryAccessToken(appid, secret);
-        WechatProperties.setAccessToken(token);
         logger.info("获取成功, token为: " + token);
         //start a thread and save the valid token to database
         if (!StringUtils.isEmpty(token)) {
@@ -67,5 +67,11 @@ public class WechatScheduler {
         } else {
             //something wrong with the query access token in wechat util
         }
+        return token;
+    }
+
+    private void ticket(String accessToken) {
+        WechatProperties.setAccessToken(accessToken);
+        WechatProperties.setJsapiTicket(WechatUtil.queryJsApiTicket(accessToken));
     }
 }
