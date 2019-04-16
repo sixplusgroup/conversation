@@ -159,17 +159,17 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    let monitor_url = "https://microservice.gmair.net/monitor";
-    let codeValue = "";
-    let is_online = false;
-    let city_id = "";
-    let indoor_pm25 = "";
-    let co2 = "";
-    let temp = "";
-    let humid = "";
-    let outdoor_aqi = "";
-    let outdoor_pm25 = "";
-    let city_name = "";
+    var monitor_url = "https://microservice.gmair.net/monitor";
+    var codeValue = "";
+    var is_online = false;
+    var city_id = "";
+    var indoor_pm25 = "";
+    var co2 = "";
+    var temp = "";
+    var humid = "";
+    var outdoor_aqi = "";
+    var outdoor_pm25 = "";
+    var city_name = "";
 
     $(document).ready(function () {
         codeValue=obtainCodeValue("tv");
