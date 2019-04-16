@@ -164,7 +164,7 @@
     function obtainMonitorData(consumerId) {
         $.ajax({
             type: 'get',
-            url: "/monitor/consumer/machine/list/status?consumerId=" + consumerId,
+            url: "https://microservice.gmair.net/monitor/consumer/machine/list/status?consumerId=" + consumerId,
             data: {},
             cache: false,
             processData: false,

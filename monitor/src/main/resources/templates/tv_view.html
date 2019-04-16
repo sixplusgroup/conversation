@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh_CN" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>果麦新风</title>
@@ -159,7 +159,7 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    let monitor_url = "http://monitor.gmair.net:8022/monitor";
+    let monitor_url = "https://microservice.gmair.net/monitor";
     let codeValue = "";
     let is_online = false;
     let city_id = "";
@@ -193,8 +193,8 @@
     })
 
     function obtainCodeValue(name) {
-        let reg = new RegExp('(?:(?:&|\\?)' + name + '=([^&]*))|(?:/' + name + '/([^/]*))', 'i');
-        let r = window.location.href.match(reg);
+        var reg = new RegExp('(?:(?:&|\\?)' + name + '=([^&]*))|(?:/' + name + '/([^/]*))', 'i');
+        var r = window.location.href.match(reg);
         if (r != null)
             return decodeURI(r[1] || r[2]);
         return null;
@@ -203,13 +203,13 @@
     }
 
     function init_time() {
-        let today = new Date();
-        let year = today.getFullYear();
-        let month = ('0' + (today.getMonth() + 1)).slice(-2).toString();
-        let date = ('0' + today.getDate()).slice(-2).toString();
-        let hour = ('0' + today.getHours()).slice(-2).toString();
-        let minute = ('0' + today.getMinutes()).slice(-2).toString();
-        let date_string = year + "年" + month + "月" + date + "日" + "  " + hour + ":" + minute;
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = ('0' + (today.getMonth() + 1)).slice(-2).toString();
+        var date = ('0' + today.getDate()).slice(-2).toString();
+        var hour = ('0' + today.getHours()).slice(-2).toString();
+        var minute = ('0' + today.getMinutes()).slice(-2).toString();
+        var date_string = year + "年" + month + "月" + date + "日" + "  " + hour + ":" + minute;
         return date_string;
     }
 
@@ -270,7 +270,7 @@
     function obtainFile(codeValue) {
         $.ajax({
             type: 'get',
-            url: "/qrcode/profile?qrcode="+codeValue,
+            url: "/monitor/qrcode/profile?qrcode="+codeValue,
             data: {},
             cache: false,
             processData: false,
@@ -290,7 +290,7 @@
     function obtainAdvertisement(codeValue) {
         $.ajax({
             type: 'get',
-            url: "/qrcode/ads?qrcode="+codeValue,
+            url: monitor_url+"/qrcode/ads?qrcode="+codeValue,
             data: {},
             cache: false,
             processData: false,
@@ -310,7 +310,7 @@
 
     //根据codeValue获取单个机器在线状态
     function obtain_online_status(codeValue) {
-        let online_status_url = monitor_url + "/machine/online?codeValue=" + codeValue;
+        var online_status_url = monitor_url + "/machine/online?codeValue=" + codeValue;
         $.ajax({
             type: 'get',
             url: online_status_url,
@@ -356,7 +356,7 @@
 
     //根据qrcode获取机器测量信息
     function obtain_test_data(qrcode) {
-        let test_data_url = monitor_url + "/machine/status?qrcode=" + qrcode;
+        var test_data_url = monitor_url + "/machine/status?qrcode=" + qrcode;
         $.ajax({
             type: 'get',
             url: test_data_url,
@@ -390,7 +390,7 @@
 
     //根据qrcode获取城市
     function obtain_city(qrcode) {
-        let obtain_city_url = monitor_url + "/cityid/probe?qrcode=" + qrcode;
+        var obtain_city_url = monitor_url + "/cityid/probe?qrcode=" + qrcode;
         $.ajax({
             type: 'get',
             url: obtain_city_url,
@@ -411,7 +411,7 @@
 
     //根据cityId/provinceId获取城市空气质量
     function obtain_outdoor(cityId, provinceId) {
-        let outdoor_url = monitor_url + "/city/air?cityId=" + cityId + "&amp;provinceId=" + provinceId;
+        var outdoor_url = monitor_url + "/city/air?cityId=" + cityId + "&amp;provinceId=" + provinceId;
         $.ajax({
             type: 'get',
             url: outdoor_url,
