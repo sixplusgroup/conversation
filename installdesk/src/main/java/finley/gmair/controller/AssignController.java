@@ -266,7 +266,10 @@ public class AssignController {
             result.setDescription("请提供安装任务的信息和取消的原因");
             return result;
         }
-        ResultData response = assignService.block(assignId);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.CLOSED.getValue());
+        ResultData response = assignService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("撤销安装任务成功");
@@ -296,6 +299,7 @@ public class AssignController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("memberId", memberId);
+        condition.put("blockFlag", false);
         //根据memberid获取关注的团队
         ResultData response = memberService.fetchTeams(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -315,6 +319,7 @@ public class AssignController {
         }
         condition.clear();
         condition.put("teams", teams);
+        condition.put("blockFlag", false);
         if (status != null) {
             condition.put("assignStatus", status);
         }
@@ -394,6 +399,7 @@ public class AssignController {
 
     /**
      * 安装任务关联设备二维码
+     *
      * @param assignId
      * @param qrcode
      * @return
