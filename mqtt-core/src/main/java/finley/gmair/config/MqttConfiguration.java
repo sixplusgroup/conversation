@@ -184,6 +184,12 @@ public class MqttConfiguration {
                 }
                 dealAckMessage(payload);
             }
+            if (base_action.equals("get_time")) {
+                //todo set_time interface with machineId
+            }
+            if (base_action.equals("chk_update")) {
+                //todo update interface with machineId
+            }
         }
     }
 
