@@ -29,12 +29,30 @@ CREATE TABLE `gmair_install`.`team_watch` (
 
 #2019-04-14
 CREATE TABLE `gmair_install`.`assign_action` (
-  `action_id` VARCHAR(20) NOT NULL,
-  `assign_id` VARCHAR(20) NOT NULL,
+  `action_id`      VARCHAR(20) NOT NULL,
+  `assign_id`      VARCHAR(20) NOT NULL,
   `action_message` VARCHAR(50) NOT NULL,
-  `block_flag` TINYINT(1) NOT NULL,
-  `create_time` DATETIME NOT NULL,
-  PRIMARY KEY (`action_id`));
+  `block_flag`     TINYINT(1)  NOT NULL,
+  `create_time`    DATETIME    NOT NULL,
+  PRIMARY KEY (`action_id`)
+);
 
-ALTER SCHEMA `gmair_install`  DEFAULT CHARACTER SET utf8  DEFAULT COLLATE utf8_general_ci ;
+ALTER SCHEMA `gmair_install`
+DEFAULT CHARACTER SET utf8
+DEFAULT COLLATE utf8_general_ci;
+
+#2019-04-19
+CREATE TABLE `gmair_install`.`assign_snapshot` (
+  `snapshot_id`     VARCHAR(20) NOT NULL,
+  `assign_id`       VARCHAR(20) NOT NULL,
+  `code_value`      VARCHAR(45) NOT NULL,
+  `picture_path`    LONGTEXT    NOT NULL,
+  `wifi_configured` TINYINT(1)  NOT NULL DEFAULT 0,
+  `install_method`  VARCHAR(45) NOT NULL,
+  `description`     VARCHAR(45) NULL,
+  `block_flag`      TINYINT(1)  NOT NULL DEFAULT 0,
+  `create_time`     DATETIME    NOT NULL,
+  PRIMARY KEY (`snapshot_id`)
+);
+
 

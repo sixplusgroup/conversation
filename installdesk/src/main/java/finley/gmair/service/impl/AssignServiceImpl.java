@@ -82,7 +82,6 @@ public class AssignServiceImpl implements AssignService {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(response.getDescription());
         }
-        //todo 添加安装任务委派记录
         return result;
     }
 

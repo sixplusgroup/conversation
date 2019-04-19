@@ -88,7 +88,7 @@ public class ImageController {
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/image/{filename:.+}")
+    @RequestMapping(method = RequestMethod.GET, value = "/{filename:.+}")
     public ResultData image(HttpServletResponse hsr, @PathVariable("filename") String filename) {
         ResultData result = new ResultData();
         //通过文件名称获取文件实际的存储路径

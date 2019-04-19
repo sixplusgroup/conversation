@@ -4,10 +4,7 @@ import finley.gmair.dao.AssignActionDao;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
 import finley.gmair.pool.InstallPool;
-import finley.gmair.service.AssignActionService;
-import finley.gmair.service.AssignService;
-import finley.gmair.service.MemberService;
-import finley.gmair.service.TeamService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +46,9 @@ public class AssignController {
 
     @Autowired
     private TeamService teamService;
+
+    @Autowired
+    private AssignSnapshotService assignSnapshotService;
 
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
@@ -426,6 +426,36 @@ public class AssignController {
             AssignAction action = new AssignAction(assignId, "该安装任务使用二维码为" + qrcode + "的机器");
             assignActionService.create(action);
         });
+        return result;
+    }
+
+    @PostMapping("/submit")
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装快照相关的信息");
+            return result;
+        }
+        Snapshot snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description);
+        //存储安装快照
+        ResultData response = assignSnapshotService.create(snapshot);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("创建安装任务快照失败，请稍后尝试");
+            return result;
+        }
+        //更新安装任务状态
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.FINISHED.getValue());
+        response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("安装任务状态更改失败，请稍后尝试");
+            return result;
+        }
+        result.setDescription("安装任务完成");
         return result;
     }
 }

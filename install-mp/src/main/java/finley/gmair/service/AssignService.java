@@ -35,4 +35,10 @@ public interface AssignService {
 
     @PostMapping("/install/assign/init")
     ResultData initAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode);
+
+    @PostMapping("/install/assign/submit")
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method);
+
+    @PostMapping("/install/assign/submit")
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description);
 }

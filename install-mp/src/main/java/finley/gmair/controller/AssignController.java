@@ -141,4 +141,31 @@ public class AssignController {
         return result;
     }
 
+    /**
+     * 安装工人提交安装任务表单
+     *
+     * @param assignId
+     * @param qrcode
+     * @param picture
+     * @param wifi
+     * @param method
+     * @param description
+     * @return
+     */
+    @PostMapping("/submit")
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装快照相关的信息");
+            return result;
+        }
+        if (StringUtils.isEmpty(description)) {
+            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method);
+        } else {
+            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method, description);
+        }
+        return result;
+    }
+
 }
