@@ -304,7 +304,7 @@ public class MessageController {
             return "";
         }
         MachineType type = ((List<MachineType>) response.getData()).get(0);
-        return sb.append("/client").append(type.getDeviceName()).append("/").append(uid)
+        return sb.append("/client/").append(type.getDeviceName()).append("/").append(uid)
                 .append("/").append(action).toString();
     }
 
