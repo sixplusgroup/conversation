@@ -9,5 +9,6 @@
         <mapper resource="mapper/member.xml"/>
         <mapper resource="mapper/teamwatch.xml"/>
         <mapper resource="mapper/assignaction.xml"/>
+        <mapper resource="mapper/assignsnapshot.xml"/>
     </mappers>
 </configuration>
