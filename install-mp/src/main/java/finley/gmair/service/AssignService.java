@@ -41,4 +41,7 @@ public interface AssignService {
 
     @PostMapping("/install/assign/submit")
     ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description);
+
+    @GetMapping("/install/assign/snapshot")
+    ResultData snapshotAssign(@RequestParam("assignId") String assignId);
 }

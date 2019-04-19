@@ -1,6 +1,7 @@
 package finley.gmair.controller;
 
 import finley.gmair.service.AssignService;
+import finley.gmair.service.ResourceService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
@@ -25,6 +26,9 @@ public class AssignController {
 
     @Autowired
     private AssignService assignService;
+
+    @Autowired
+    private ResourceService resourceService;
 
     /**
      * 安装负责人查看安装任务
@@ -160,6 +164,11 @@ public class AssignController {
             result.setDescription("请提供安装快照相关的信息");
             return result;
         }
+        //提交安装图片资源
+        result = resourceService.save(picture);
+        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            return result;
+        }
         if (StringUtils.isEmpty(description)) {
             result = assignService.submitAssign(assignId, qrcode, picture, wifi, method);
         } else {
@@ -168,4 +177,15 @@ public class AssignController {
         return result;
     }
 
+    @GetMapping("/snapshot")
+    public ResultData snapshot(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息");
+            return result;
+        }
+        result = assignService.snapshotAssign(assignId);
+        return result;
+    }
 }

@@ -357,6 +357,7 @@ public class AssignController {
         if (status != null) {
             condition.put("assignStatus", status);
         }
+        condition.put("blockFlag", false);
         ResultData response = assignService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -456,6 +457,31 @@ public class AssignController {
             return result;
         }
         result.setDescription("安装任务完成");
+        return result;
+    }
+
+    @GetMapping("/snapshot")
+    public ResultData snapshot(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        ResultData response = assignSnapshotService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("获取安装任务快照失败，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前任务尚无安装任务快照");
+            return result;
+        }
+        result.setData(response.getData());
         return result;
     }
 }
