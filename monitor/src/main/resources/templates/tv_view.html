@@ -14,7 +14,7 @@
         <div class="location-div">
             <div style="float:left;width:30%" id="time1" class="time1">
             </div>
-            <img src="https://monitor.gmair.net/image/location_logo.png"  class="location-img"/>
+            <img src="https://monitor.gmair.net/image/location_logo.png" class="location-img"/>
             <img src="https://monitor.gmair.net/image/guomai.png" id="logo-img" class="geer-img"/>
             <div style="float:right;width:30%;display: none" class="run_type2" id="online2">
                 <img src="https://monitor.gmair.net/image/wind.png" class="wind-img"/>
@@ -51,7 +51,7 @@
                     空气&nbsp;&nbsp;<span class="font-bold" id="pm25-content">轻度污染</span>
                 </div>
                 <div class="content_right">
-                    <span class="test_value" id="indoor_pm25">120</span>
+                    <span class="test_value" id="indoor_pm25"></span>
                     <span class="test_unit">&nbsp;ug/m<sup>3</sup></span>
                 </div>
             </div>
@@ -85,11 +85,11 @@
                 </div>
                 <div class="content_right">
                     <div class="half-height margin-bottom-10">
-                        <span class="test_value" id="temp">12</span>
+                        <span class="test_value" id="temp"></span>
                         <span class="test_unit">&nbsp;<sup>o</sup>C</span>
                     </div>
                     <div class="half-height margin-top-10">
-                        <span class="test_value" id="humid">10</span>
+                        <span class="test_value" id="humid"></span>
                         <span class="test_unit">&nbsp;%</span>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
                 <img src="https://monitor.gmair.net/image/wechat_public.jpg" id="ad-img" class="qrcode-img"/>
             </div>
             <div class="aqi_measure">
-                <img class="aqi-img"  src="https://monitor.gmair.net/image/aqi_line.png"/>
+                <img class="aqi-img" src="https://monitor.gmair.net/image/aqi_line.png"/>
             </div>
         </div>
     </div>
@@ -172,7 +172,7 @@
     var city_name = "";
 
     $(document).ready(function () {
-        codeValue=obtainCodeValue("tv");
+        codeValue = obtainCodeValue("tv");
         $("#time").text(init_time());
         $("#time1").text(init_time());
         obtainFile(codeValue);
@@ -185,11 +185,21 @@
         obtain_city(codeValue);
         obtain_test_data(codeValue);
         obtain_online_status(codeValue);
-        setInterval(() => $("#time").text(init_time()), 1000);
-        setInterval(() => $("#time1").text(init_time()), 1000);
-        setInterval(() => obtain_city(codeValue), 1800000);
-        setInterval(() => obtain_online_status(codeValue), 10000);
-        setInterval(() => obtain_test_data(codeValue), 10000);
+        setInterval(function () {
+            $("#time").text(init_time())
+        }, 1000);
+        setInterval(function () {
+            $("#time1").text(init_time())
+        }, 1000);
+        setInterval(function () {
+            obtain_city(codeValue)
+        }, 1800000);
+        setInterval(function () {
+            obtain_online_status(codeValue)
+        }, 10000);
+        setInterval(function () {
+            obtain_test_data(codeValue)
+        }, 10000);
     })
 
     function obtainCodeValue(name) {
@@ -266,19 +276,20 @@
             $("#co2-content").html("<span>二氧化碳&nbsp;</span>");
         }
     }
+
     //根据qrcode获取文件信息
     function obtainFile(codeValue) {
         $.ajax({
             type: 'get',
-            url: "/monitor/qrcode/profile?qrcode="+codeValue,
+            url: "/monitor/qrcode/profile?qrcode=" + codeValue,
             data: {},
             cache: false,
             processData: false,
             contentType: false,
             success: function (response) {
                 if (response.responseCode === "RESPONSE_OK") {
-                    $("#logo-img").attr("src",response.data[0].logoPath);
-                    $("#ad-img").attr("src",response.data[0].qrcodePath);
+                    $("#logo-img").attr("src", response.data[0].logoPath);
+                    $("#ad-img").attr("src", response.data[0].qrcodePath);
                 } else {
                     console.log(response);
                 }
@@ -290,7 +301,7 @@
     function obtainAdvertisement(codeValue) {
         $.ajax({
             type: 'get',
-            url: monitor_url+"/qrcode/ads?qrcode="+codeValue,
+            url: monitor_url + "/qrcode/ads?qrcode=" + codeValue,
             data: {},
             cache: false,
             processData: false,
@@ -434,6 +445,7 @@
             }
         })
     }
+
     /*]]>*/
 </script>
 </body>

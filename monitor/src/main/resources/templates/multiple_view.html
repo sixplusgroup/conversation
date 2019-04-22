@@ -148,7 +148,7 @@
     }
 
     function setCO2Text(co2) {
-        let text = "";
+        var text = "";
         if (co2 === "") {
             text = "氧气充沛";
         }else if (co2 >=0 && co2 < 1000) {
@@ -220,7 +220,7 @@
 
             }
             $machineTemp.appendTo("#page_item");
-            for(let i=j*8;i<data_length;i++){
+            for(var i=j*8;i<data_length;i++){
                 setCO2Useful(response.data[i].co2,i);
             }
 
