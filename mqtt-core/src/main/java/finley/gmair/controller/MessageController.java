@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.mqtt.Firmware;
@@ -49,11 +51,12 @@ public class MessageController {
     /*
     * 服务端上报控制指令
     * 此条指令qos为2
+    * action = cmd
     * */
     @PostMapping(value = "/com/config/cmd")
     public ResultData configPower(String uid, String action, int qos,
-                                  int power, int level, int ptc, int mode,
-                                  int newwind, int backwind, int childlock, int led) {
+                                  Integer power, Integer level, Integer ptc, Integer mode,
+                                  Integer newwind, Integer backwind, Integer childlock, Integer led) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
                 || StringUtils.isEmpty(qos)) {
@@ -102,6 +105,7 @@ public class MessageController {
     /*
     * 服务端设置时间
     * 此条指令qos为2
+    * action = settime
     * */
     @PostMapping(value = "/com/config/time")
     public ResultData configTime(String uid, String action, int qos) {
@@ -114,7 +118,7 @@ public class MessageController {
         }
         String topic = produceTopic(uid, action);
         JSONObject json = new JSONObject();
-        json.put("time", System.currentTimeMillis());
+        json.put("time", System.currentTimeMillis() / 1000);
         try {
             publish(topic, json, qos);
         } catch (Exception e) {
@@ -128,6 +132,7 @@ public class MessageController {
     * 服务端固件更新
     * force为1，代表强制更新，force为0，代表非强制更新
     * 此条指令qos为2
+    * action = update
     * */
     @PostMapping(value = "/com/update")
     public ResultData updateFirmware(String uid, String action,
@@ -169,6 +174,7 @@ public class MessageController {
      * @param top    //表示顶层剩余寿命
      * 三者可以选填
      * 此条指令qos为2
+     * action = setsurplus
      * */
     @PostMapping(value = "/com/set/surplus")
     public ResultData setSurplus(String uid, String action, int qos,
@@ -198,6 +204,7 @@ public class MessageController {
      * 服务端rfid使能
      * enabled为0时，设备不读取RFID，enabled为1时，设备读取RFID
      * 此条指令qos为2
+     * action = setrfid
      * */
     @PostMapping(value = "/com/set/rfid")
     public ResultData setRFID(String uid, String action, int qos, int enabled) {
@@ -225,6 +232,7 @@ public class MessageController {
     * 1.当APP推送1时，不管设备的滤网是什么状态，强制写入1；
     * 2.当APP推送0X88时，不管设备的滤网还有多少寿命，一律作废
     * 此条指令qos为2
+    * action = setscreen
     * */
     @PostMapping(value = "/com/set/screen")
     public ResultData setScreen(String uid, String action, int qos, int valid) {
@@ -254,6 +262,7 @@ public class MessageController {
      *  2. status(机器运行状态)
      *  3. sensor(传感器数据)
      * 此条指令qos为1
+     * action = report
      * */
     @PostMapping(value = "/com/demand/report")
     public ResultData demandReport(String uid, String action, int qos) {
@@ -293,12 +302,13 @@ public class MessageController {
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return "";
         }
-        BoardVersion version = ((List<BoardVersion>) response.getData()).get(0);
+        JSONObject json = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+        //BoardVersion version = ((List<BoardVersion>) response.getData()).get(0);
 
         //根据board version获取machine type相关内容
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        condition.put("boardVersion", version.getVersion());
+        condition.put("boardVersion", json.getIntValue("version"));
         response = machineTypeService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return "";
@@ -308,17 +318,23 @@ public class MessageController {
                 .append("/").append(action).toString();
     }
 
+    /**
+     * 创建mqtt client建立连接
+     * */
     private MqttClient connect() throws MqttException{
         MqttClient client = new MqttClient(host, clientId, new MemoryPersistence());
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(false);
-        options.setKeepAliveInterval(20);
+        options.setKeepAliveInterval(30);
         options.setConnectionTimeout(10);
         client.setCallback(new PushCallback());
         client.connect(options);
         return client;
     }
 
+    /**
+     * 利用已建立连接的client完成消息publish
+     * */
     private void publish(String topic, JSONObject object, int qos) throws MqttException,
             MqttPersistenceException, InterruptedException {
         MqttClient client = connect();
