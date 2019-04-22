@@ -168,6 +168,13 @@ public class MemberController {
         return result;
     }
 
+    /**
+     * 安装负责人关注一个团队
+     *
+     * @param memberId
+     * @param teamId
+     * @return
+     */
     @PostMapping("/watch/team")
     public ResultData watch(String memberId, String teamId) {
         ResultData result = new ResultData();
@@ -187,4 +194,20 @@ public class MemberController {
         return result;
     }
 
+    /**
+     * 安装负责人查看自己负责的团队列表
+     *
+     * @param memberId
+     * @return
+     */
+    public ResultData watches(String memberId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装负责人的信息");
+            return result;
+        }
+
+        return result;
+    }
 }

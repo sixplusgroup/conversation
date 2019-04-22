@@ -69,7 +69,12 @@ public class AssignController {
         String phone = form.getConsumerPhone().trim();
         String address = form.getConsumerAddress().trim();
         String detail = form.getModel().trim();
-        Assign assign = new Assign(consignee, phone, address, detail);
+        Assign assign;
+        if (StringUtils.isEmpty(form.getDescription())) {
+            assign = new Assign(consignee, phone, address, detail);
+        } else {
+            assign = new Assign(consignee, phone, address, detail, form.getDescription());
+        }
         //若上传了二维码，则安装必须为该指定设备
         String qrcode = form.getQrcode();
         if (StringUtils.isEmpty(qrcode)) {

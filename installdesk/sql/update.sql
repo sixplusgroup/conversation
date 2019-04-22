@@ -55,4 +55,20 @@ CREATE TABLE `gmair_install`.`assign_snapshot` (
   PRIMARY KEY (`snapshot_id`)
 );
 
+#2019-04-22
+CREATE TABLE `gmair_install`.`assin_feedback` (
+  `feedback_id`     VARCHAR(20) NOT NULL,
+  `consumer_name`   VARCHAR(45) NOT NULL,
+  `consumer_phone`  VARCHAR(45) NOT NULL,
+  `assign_rank`     INT         NOT NULL,
+  `feedback_detail` LONGTEXT    NOT NULL,
+  `block_flag`      TINYINT(1)  NOT NULL,
+  `create_time`     DATETIME    NOT NULL,
+  PRIMARY KEY (`feedback_id`)
+);
+
+ALTER TABLE `gmair_install`.`install_assign`
+  ADD COLUMN `assign_description` VARCHAR(45) NULL
+  AFTER `assign_date`;
+
 

@@ -9,9 +9,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "install-agent")
 public interface InstallService {
-    //调度人员创建安装任务
+    /**
+     * 调度人员创建安装任务，不带备注
+     *
+     * @param consumerConsignee
+     * @param consumerPhone
+     * @param consumerAddress
+     * @param model
+     * @return
+     */
     @PostMapping("/install/assign/create")
     ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model);
+
+    /**
+     * 调度人员创建安装任务，带备注
+     *
+     * @param consumerConsignee
+     * @param consumerPhone
+     * @param consumerAddress
+     * @param model
+     * @param description
+     * @return
+     */
+    @PostMapping("/install/assign/create")
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam(value = "description", required = false) String description);
 
     //调度人员查看已有的安装任务
     @GetMapping("/install/assign/{assignId}/info")
@@ -31,6 +52,10 @@ public interface InstallService {
     @PostMapping("/install/assign/dispatch")
     ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("teamId") String teamId);
 
+    //调度人员创建安装团队
+    @PostMapping("/install/team/create")
+    ResultData createTeam(@RequestParam("teamName") String teamName, @RequestParam("teamArea") String teamArea, @RequestParam(value = "teamDescription", required = false) String teamDescription);
+
     @GetMapping("/install/team/{teamId}/info")
     ResultData fetchTeam(@PathVariable("teamId") String teamId);
 
@@ -39,4 +64,7 @@ public interface InstallService {
 
     @GetMapping("/install/team/list")
     ResultData fetchTeam(@RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
+
+    @PostMapping("/install/member/watch/team")
+    ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamid);
 }

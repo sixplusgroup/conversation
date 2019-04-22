@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
+import finley.gmair.form.installation.TeamForm;
 import finley.gmair.service.InstallService;
 import finley.gmair.util.ExcelUtil;
 import finley.gmair.util.ResponseCode;
@@ -92,7 +93,11 @@ public class InstallController {
         String consumerPhone = form.getConsumerPhone();
         String consumerAddress = form.getConsumerAddress();
         String model = form.getModel();
-        result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model);
+        if (StringUtils.isEmpty(form.getDescription())) {
+            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model);
+        } else {
+
+        }
         return result;
     }
 
@@ -143,6 +148,18 @@ public class InstallController {
         return result;
     }
 
+    @PostMapping("/team/create")
+    public ResultData create(TeamForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getTeamName()) || StringUtils.isEmpty(form.getTeamArea())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装团队的信息");
+            return result;
+        }
+        result = installService.createTeam(form.getTeamName(), form.getTeamArea(), form.getTeamDescription());
+        return result;
+    }
+
     @GetMapping("/team/list")
     public ResultData teams(Integer start, Integer length) {
         ResultData result;
@@ -163,6 +180,18 @@ public class InstallController {
             return result;
         }
         result = installService.fetchTeam(teamId);
+        return result;
+    }
+
+    @PostMapping("/leader/watch")
+    public ResultData watch(String memberId, String teamId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId) || StringUtils.isEmpty(teamId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供用户和团队信息");
+            return result;
+        }
+        result = installService.watch(memberId, teamId);
         return result;
     }
 }
