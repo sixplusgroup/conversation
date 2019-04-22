@@ -112,8 +112,8 @@ public class MqttConfiguration {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-//                System.out.println(message.getHeaders());
-//                System.out.println(message.getPayload());
+                System.out.println(message.getHeaders());
+                System.out.println(message.getPayload());
                 MessageHeaders headers = message.getHeaders();
                 String payload = ((String) message.getPayload());
                 String topic = headers.get("mqtt_topic").toString();

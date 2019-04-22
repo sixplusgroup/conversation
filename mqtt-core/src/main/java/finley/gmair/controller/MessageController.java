@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,9 +55,9 @@ public class MessageController {
     * action = cmd
     * */
     @PostMapping(value = "/com/config/cmd")
-    public ResultData configPower(String uid, String action, int qos,
-                                  Integer power, Integer level, Integer ptc, Integer mode,
-                                  Integer newwind, Integer backwind, Integer childlock, Integer led) {
+    public ResultData configPower(String uid, String action, int qos, Integer power,
+                                  Integer level, Integer ptc, Integer mode, Integer newwind,
+                                  Integer backwind, Integer childlock, Integer led, Integer light) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
                 || StringUtils.isEmpty(qos)) {
@@ -92,6 +93,9 @@ public class MessageController {
         }
         if (!StringUtils.isEmpty(led)) {
             json.put("led", led);
+        }
+        if (!StringUtils.isEmpty(light)) {
+            json.put("light", light);
         }
         try {
             publish(topic, json, qos);
@@ -136,7 +140,7 @@ public class MessageController {
     * */
     @PostMapping(value = "/com/update")
     public ResultData updateFirmware(String uid, String action,
-                                     int qos, String newVersion, int force) {
+                                     int qos, String newVersion, Integer force) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
                 || StringUtils.isEmpty(qos)) {
@@ -178,7 +182,7 @@ public class MessageController {
      * */
     @PostMapping(value = "/com/set/surplus")
     public ResultData setSurplus(String uid, String action, int qos,
-                                 int bottom, int middle, int top) {
+                                 Integer bottom, Integer middle, Integer top) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
                 || StringUtils.isEmpty(qos)) {
@@ -207,7 +211,7 @@ public class MessageController {
      * action = setrfid
      * */
     @PostMapping(value = "/com/set/rfid")
-    public ResultData setRFID(String uid, String action, int qos, int enabled) {
+    public ResultData setRFID(String uid, String action, int qos, Integer enabled) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
                 || StringUtils.isEmpty(qos)) {
@@ -235,7 +239,7 @@ public class MessageController {
     * action = setscreen
     * */
     @PostMapping(value = "/com/set/screen")
-    public ResultData setScreen(String uid, String action, int qos, int valid) {
+    public ResultData setScreen(String uid, String action, int qos, Integer valid) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
                 || StringUtils.isEmpty(qos)) {
@@ -279,9 +283,11 @@ public class MessageController {
         list.add("surplus"); //滤芯剩余寿命
         list.add("status");  //运行状态
         list.add("sensor");  //传感器数据
-        json.put("item", list);
         try {
-            publish(topic, json, qos);
+            for (String s : list) {
+                json.put("item", s);
+                publish(topic, json, qos);
+            }
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Demand report message publishing error with: " + e.getMessage());
