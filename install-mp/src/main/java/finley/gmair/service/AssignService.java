@@ -1,15 +1,47 @@
 package finley.gmair.service;
 
-import finley.gmair.model.installation.Assign;
 import finley.gmair.util.ResultData;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Map;
-
+@FeignClient("install-agent")
 public interface AssignService {
 
-    ResultData createAssign(Assign assign);
+    @GetMapping("/install/assign/tasks")
+    ResultData fetchAssign(@RequestParam("memberId") String memberId);
 
-    ResultData fetchAssign(Map<String, Object> condition);
+    @GetMapping("/install/assign/tasks")
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
 
-    ResultData updateAssign(Assign assign);
+    @PostMapping("/install/assign/assign")
+    ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("memberId") String memberId);
+
+    @GetMapping("/install/assign/overview")
+    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId);
+
+    @GetMapping("/install/assign/overview")
+    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
+
+    @PostMapping("/install/assign/recall")
+    ResultData recallAssign(@RequestParam("assignId") String assignId, @RequestParam("message") String message);
+
+    @PostMapping("/install/assign/cancel")
+    ResultData cancelAssign(@RequestParam("assignId") String assignId, @RequestParam("message") String message);
+
+    @GetMapping("/install/assign/trace")
+    ResultData traceAssign(@RequestParam("assignId") String assignId);
+
+    @PostMapping("/install/assign/init")
+    ResultData initAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode);
+
+    @PostMapping("/install/assign/submit")
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method);
+
+    @PostMapping("/install/assign/submit")
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description);
+
+    @GetMapping("/install/assign/snapshot")
+    ResultData snapshotAssign(@RequestParam("assignId") String assignId);
 }

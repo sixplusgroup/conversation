@@ -15,4 +15,7 @@ public interface IndoorPm25Service {
 
     ResultData fetchHourly(Map<String, Object> condition);
 
+    ResultData insertBatchDaily(List<IndoorPm25Hourly> list);
+
+    ResultData fetchDaily(Map<String, Object> condition);
 }

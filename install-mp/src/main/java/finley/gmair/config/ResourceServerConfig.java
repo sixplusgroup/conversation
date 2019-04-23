@@ -20,6 +20,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .authorizeRequests()
+                .antMatchers("/install-mp/member/bind").permitAll()
+                .antMatchers("/install-mp/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();

@@ -4,11 +4,18 @@ import finley.gmair.model.Entity;
 
 public class FileMap extends Entity {
     private String fileId;
+
     private String fileUrl;
+
     private String actualPath;
+
     private String fileName;
-    public FileMap(){super();}
-    public FileMap(String fileUrl, String actualPath, String fileName){
+
+    public FileMap() {
+        super();
+    }
+
+    public FileMap(String fileUrl, String actualPath, String fileName) {
         this();
         this.fileUrl = fileUrl;
         this.actualPath = actualPath;

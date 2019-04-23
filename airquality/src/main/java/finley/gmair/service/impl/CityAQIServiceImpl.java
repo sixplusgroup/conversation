@@ -121,14 +121,20 @@ public class CityAQIServiceImpl implements CityAQIService {
                 cd--;
             }
         }
-        JSONArray data = JSON.parseArray(content);
+        JSONArray data = new JSONArray();
+        try {
+            data = JSON.parseArray(content);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            logger.info(content);
+        }
         List<CityAirQuality> list = new ArrayList<>();
         CityAirQuality quality;
         for (int i = 0; i < data.size(); i++) {
             JSONObject item = data.getJSONObject(i);
             quality = new CityAirQuality();
-            quality.setCityId(item.getString("citycode"));
             try {
+                quality.setCityId(item.getString("citycode"));
                 quality.setAqi(item.getDouble("aqi"));
             } catch (Exception e) {
                 logger.info(JSON.toJSONString(item));

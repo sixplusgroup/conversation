@@ -146,10 +146,10 @@ public class PacketUtil {
                     LEN = ByteUtil.int2byte(pf.length(), 1);
                     byte[] DAT = new byte[pf.length()];
                     if (input instanceof Integer) {
-                        DAT = ByteUtil.int2byte((int) input, pf.length());
+                        DAT = ByteUtil.int2byte((Integer) input, pf.length());
                     }
                     if (input instanceof Long) {
-                        DAT = ByteUtil.long2byte((long) input, pf.length());
+                        DAT = ByteUtil.long2byte((Long) input, pf.length());
                     }
                     if (input instanceof byte[]) {
                         DAT = (byte[]) input;

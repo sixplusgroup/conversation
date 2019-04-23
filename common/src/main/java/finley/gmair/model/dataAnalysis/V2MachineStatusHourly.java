@@ -30,9 +30,9 @@ public class V2MachineStatusHourly extends Entity {
     private int powerOnMinute;
     private int powerOffMinute;
 
+    private int autoMinute;
     private int manualMinute;
-    private int cosyMinute;
-    private int warmMinute;
+    private int sleepMinute;
 
     private int heatOnMinute;
     private int heatOffMinute;
@@ -41,7 +41,7 @@ public class V2MachineStatusHourly extends Entity {
         super();
     }
 
-    public V2MachineStatusHourly(String machineId, double averagePm25, int maxPm25, int minPm25, double averageVolume, int maxVolume, int minVolume, double averageTemp, int maxTemp, int minTemp, double averageHumid, int maxHumid, int minHumid, double averageCo2, int maxCo2, int minCo2, int powerOnMinute, int powerOffMinute, int manualMinute, int cosyMinute, int warmMinute, int heatOnMinute, int heatOffMinute) {
+    public V2MachineStatusHourly(String machineId, double averagePm25, int maxPm25, int minPm25, double averageVolume, int maxVolume, int minVolume, double averageTemp, int maxTemp, int minTemp, double averageHumid, int maxHumid, int minHumid, double averageCo2, int maxCo2, int minCo2, int powerOnMinute, int powerOffMinute, int autoMinute, int manualMinute, int sleepMinute, int heatOnMinute, int heatOffMinute) {
         super();
         this.machineId = machineId;
         this.averagePm25 = averagePm25;
@@ -61,9 +61,9 @@ public class V2MachineStatusHourly extends Entity {
         this.minCo2 = minCo2;
         this.powerOnMinute = powerOnMinute;
         this.powerOffMinute = powerOffMinute;
+        this.autoMinute = autoMinute;
         this.manualMinute = manualMinute;
-        this.cosyMinute = cosyMinute;
-        this.warmMinute = warmMinute;
+        this.sleepMinute = sleepMinute;
         this.heatOnMinute = heatOnMinute;
         this.heatOffMinute = heatOffMinute;
     }
@@ -212,6 +212,14 @@ public class V2MachineStatusHourly extends Entity {
         this.powerOffMinute = powerOffMinute;
     }
 
+    public int getAutoMinute() {
+        return autoMinute;
+    }
+
+    public void setAutoMinute(int autoMinute) {
+        this.autoMinute = autoMinute;
+    }
+
     public int getManualMinute() {
         return manualMinute;
     }
@@ -220,20 +228,12 @@ public class V2MachineStatusHourly extends Entity {
         this.manualMinute = manualMinute;
     }
 
-    public int getCosyMinute() {
-        return cosyMinute;
+    public int getSleepMinute() {
+        return sleepMinute;
     }
 
-    public void setCosyMinute(int cosyMinute) {
-        this.cosyMinute = cosyMinute;
-    }
-
-    public int getWarmMinute() {
-        return warmMinute;
-    }
-
-    public void setWarmMinute(int warmMinute) {
-        this.warmMinute = warmMinute;
+    public void setSleepMinute(int sleepMinute) {
+        this.sleepMinute = sleepMinute;
     }
 
     public int getHeatOnMinute() {

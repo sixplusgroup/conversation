@@ -42,4 +42,28 @@ public interface MachineService {
 
     @GetMapping("/machine/status/hourly")
     ResultData fetchMachineHourlyPm2_5(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/consumer/owner/machine/list")
+    ResultData getOwnerMachineList(@RequestParam("curPage") int curPage,
+                                   @RequestParam("pageSize") int pageSize,
+                                   @RequestParam("qrcode") String qrcode,
+                                   @RequestParam("phone") String phone,
+                                   @RequestParam("createTimeGTE") String createTimeGTE,
+                                   @RequestParam("createTimeLTE") String createTimeLTE,
+                                   @RequestParam("online") String online,
+                                   @RequestParam("overCount") String overCount,
+                                   @RequestParam("overCountGTE") String overCountGTE,
+                                   @RequestParam("overCountLTE") String overCountLTE);
+
+    @GetMapping("/machine/latest/pm2_5/lastNday")
+    ResultData fetchLastNDayData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNday") int lastNday);
+
+    @GetMapping("/machine/latest/pm2_5/lastNhour")
+    ResultData fetchLastNHourData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNhour") int lastNhour);
+
+    @GetMapping("/machine/info/list/daily/cityaqi/lastNhour")
+    ResultData getCitylastNhourData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNhour") int lastNhour);
+
+    @GetMapping("/machine/info/list/daily/cityaqi/lastNday")
+    ResultData getCitylastNdayData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNday") int lastNday);
 }

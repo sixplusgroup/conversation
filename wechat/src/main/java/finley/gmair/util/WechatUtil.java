@@ -38,7 +38,6 @@ public class WechatUtil {
             String message = new String(bytes, "UTF-8");
             JSONObject object = JSON.parseObject(message);
             result = object.getString("access_token");
-            WechatProperties.setJsapiTicket(queryJsApiTicket(result));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

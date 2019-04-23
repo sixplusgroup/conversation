@@ -24,35 +24,32 @@ public class Assign extends Entity {
 
     private Date assignDate;
 
+    private String source;
+
+    private String region;
+
+    private String detail;
+
+    private String description;
+
     public Assign() {
         super();
         this.assignStatus = AssignStatus.TODOASSIGN;
     }
 
-    public Assign(String codeValue, String consumerConsignee, String consumerPhone, String consumerAddress) {
+    public Assign(String consumerConsignee, String consumerPhone, String consumerAddress, String detail, String source) {
         this();
-        this.codeValue = codeValue;
         this.consumerConsignee = consumerConsignee;
         this.consumerPhone = consumerPhone;
         this.consumerAddress = consumerAddress;
+        this.detail = detail;
+        this.source = source;
     }
 
-    public Assign(String consumerConsignee, String consumerPhone, String consumerAddress) {
-        this();
-        this.consumerConsignee = consumerConsignee;
-        this.consumerPhone = consumerPhone;
-        this.consumerAddress = consumerAddress;
-    }
+    public Assign(String consumerConsignee, String consumerPhone, String consumerAddress, String detail, String source, String description) {
+        this(consumerConsignee, consumerPhone, consumerAddress, detail, source);
+        this.description = description;
 
-    public Assign(String codeValue, String teamId, String memberId, Date assignDate, String consumerConsignee, String consumerPhone, String consumerAddress) {
-        this();
-        this.codeValue = codeValue;
-        this.teamId = teamId;
-        this.memberId = memberId;
-        this.assignDate = assignDate;
-        this.consumerConsignee = consumerConsignee;
-        this.consumerPhone = consumerPhone;
-        this.consumerAddress = consumerAddress;
     }
 
     public String getAssignId() {
@@ -125,6 +122,38 @@ public class Assign extends Entity {
 
     public void setConsumerAddress(String consumerAddress) {
         this.consumerAddress = consumerAddress;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
 

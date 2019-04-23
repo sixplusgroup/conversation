@@ -32,5 +32,8 @@
         <mapper resource="mapper/filter_light.xml"></mapper>
         <mapper resource="mapper/machine_on_off.xml"></mapper>
         <mapper resource="mapper/machine_power_daily.xml"></mapper>
+        <mapper resource="mapper/machine_list_view.xml"></mapper>
+        <mapper resource="mapper/machine_second_list_view.xml"></mapper>
+        <mapper resource="mapper/machine_list_daily.xml"></mapper>
     </mappers>
 </configuration>

@@ -7,6 +7,11 @@
         <groupId>finley.gmair</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>data-analysis</artifactId>
+    <version>1.0.0325-Weekly-SNAPSHOT</version>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -20,6 +25,22 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>finley.gmair</groupId>
             <artifactId>common</artifactId>
@@ -65,7 +86,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.6</version>
+            <version>8.0.11</version>
         </dependency>
 
         <dependency>
@@ -117,7 +138,20 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>finley.gmair</groupId>
+            <artifactId>mongo-common</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>data-analysis</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

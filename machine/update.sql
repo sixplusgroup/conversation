@@ -233,3 +233,70 @@ CREATE TABLE `machine_daily_power` (
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+#2018-01-14
+CREATE TABLE `machine_list_daily` (
+  `consumer_id` varchar(45) NOT NULL,
+  `bind_name` varchar(45) NOT NULL,
+  `code_value` varchar(45) NOT NULL,
+  `machine_id` varchar(45) NULL,
+  `consumer_name` varchar(45) NULL,
+  `consumer_phone` varchar(45) NULL,
+  `over_count` int(11) NOT NULL DEFAULT '0',
+  `offline` tinyint(1) NOT NULL DEFAULT '0',
+  `block_flag` tinyint(10) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`consumer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+#2018-01-14
+CREATE
+    ALGORITHM = UNDEFINED
+    DEFINER = `root`@`localhost`
+    SQL SECURITY DEFINER
+VIEW `gmair_machine`.`machine_list_view` AS
+    SELECT
+        `ccb`.`consumer_id` AS `consumer_id`,
+        `ccb`.`bind_name` AS `bind_name`,
+        `ccb`.`code_value` AS `code_value`,
+        `cmb`.`machine_id` AS `machine_id`,
+        `ci`.`consumer_name` AS `consumer_name`,
+        `cp`.`phone_number` AS `consumer_phone`,
+        `ccb`.`block_flag` AS `block_flag`,
+        `ccb`.`create_time` AS `create_time`
+    FROM
+        (((`gmair_machine`.`consumer_code_bind` `ccb`
+        LEFT JOIN `gmair_machine`.`code_machine_bind` `cmb` ON ((`ccb`.`code_value` = `cmb`.`code_value`)))
+        LEFT JOIN `gmair_userinfo`.`consumer_info` `ci` ON ((`ccb`.`consumer_id` = `ci`.`consumer_id`)))
+        LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ccb`.`consumer_id` = `cp`.`consumer_id`)))
+    WHERE
+        ((`ccb`.`ownership` = 0)
+            AND (`ccb`.`block_flag` = 0))
+
+#2018-01-15
+CREATE
+    ALGORITHM = UNDEFINED
+    DEFINER = `root`@`localhost`
+    SQL SECURITY DEFINER
+VIEW `gmair_machine`.`machine_list_second_view` AS
+    SELECT
+        `ccb`.`consumer_id` AS `consumer_id`,
+        `ccb`.`bind_name` AS `bind_name`,
+        `ccb`.`code_value` AS `code_value`,
+        `cmb`.`machine_id` AS `machine_id`,
+        `ci`.`consumer_name` AS `consumer_name`,
+        `cp`.`phone_number` AS `consumer_phone`,
+        `opd`.`over_count` AS `over_count`,
+        `ccb`.`block_flag` AS `block_flag`,
+        `ccb`.`create_time` AS `create_time`,
+        `opd`.`create_time` AS `out_pm25_time`
+    FROM
+        ((((`gmair_machine`.`consumer_code_bind` `ccb`
+        LEFT JOIN `gmair_machine`.`code_machine_bind` `cmb` ON ((`ccb`.`code_value` = `cmb`.`code_value`)))
+        LEFT JOIN `gmair_userinfo`.`consumer_info` `ci` ON ((`ccb`.`consumer_id` = `ci`.`consumer_id`)))
+        LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ccb`.`consumer_id` = `cp`.`consumer_id`)))
+        LEFT JOIN `gmair_machine`.`out_pm2_5_daily` `opd` ON ((`opd`.`machine_id` = `cmb`.`machine_id`)))
+    WHERE
+        ((`ccb`.`ownership` = 0)
+            AND (`ccb`.`block_flag` = 0)
+            AND ((TO_DAYS(CURDATE()) - TO_DAYS(`opd`.`create_time`)) < 1))

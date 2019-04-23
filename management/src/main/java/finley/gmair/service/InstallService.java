@@ -2,89 +2,69 @@ package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "install-agent")
 public interface InstallService {
+    /**
+     * 调度人员创建安装任务，不带备注
+     *
+     * @param consumerConsignee
+     * @param consumerPhone
+     * @param consumerAddress
+     * @param model
+     * @return
+     */
+    @PostMapping("/install/assign/create")
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model);
 
-    @GetMapping("/installation/team/list")
-    ResultData fetchTeamList();
+    /**
+     * 调度人员创建安装任务，带备注
+     *
+     * @param consumerConsignee
+     * @param consumerPhone
+     * @param consumerAddress
+     * @param model
+     * @param description
+     * @return
+     */
+    @PostMapping("/install/assign/create")
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam(value = "description", required = false) String description);
 
-    @PostMapping("/installation/team/create")
-    ResultData createTeam(@RequestParam("teamName") String teamName, @RequestParam("teamArea") String teamArea, @RequestParam("teamDescription") String teamDescription);
+    //调度人员查看已有的安装任务
+    @GetMapping("/install/assign/{assignId}/info")
+    ResultData fetchAssign(@PathVariable("assignId") String assignId);
 
-    @GetMapping("/installation/member/list")
-    ResultData fetchMemberList(@RequestParam("teamId") String teamId);
+    @GetMapping("/install/assign/list")
+    ResultData fetchAssign(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId);
 
-    @PostMapping("/installation/member/create")
-    ResultData createMember(@RequestParam("teamId") String teamId, @RequestParam("memberPhone") String memberPhone, @RequestParam("memberName") String memberName, @RequestParam("memberRole") int memberRole);
+    @GetMapping("/install/assign/list")
+    ResultData fetchAssignByPage(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId, @RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
 
-    @PostMapping("/installation/reconnaissance/{reconnaissanceId}/process")
-    ResultData reconnaissanceProcess(@PathVariable("reconnaissanceId") String reconnaissanceId,
-                                     @RequestParam("orderId") String orderId,
-                                     @RequestParam("setupMethod") String setupMethod,
-                                     @RequestParam("description") String description,
-                                     @RequestParam("reconDate") String reconDate,
-                                     @RequestParam("reconStatus") int reconStatus
-    );
+    //调度人员撤销安装任务
+    @PostMapping("/install/assign/cancel")
+    ResultData cancelAssign(@RequestParam(value = "assignId") String assignId);
 
-    @PostMapping("/installation/assign/allocate")
-    ResultData allocateInstallationAssign(@RequestParam("assignId") String assignId,
-                                          @RequestParam("teamName") String teamName,
-                                          @RequestParam("memberName") String memberName,
-                                          @RequestParam("installDate") String installDate);
+    //调度人员将安装任务分配到安装团队
+    @PostMapping("/install/assign/dispatch")
+    ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("teamId") String teamId);
 
-    @PostMapping("/installation/assign/create")
-    ResultData createInstallationAssign(@RequestParam("qrcode") String qrcode,
-                                        @RequestParam("consumerConsignee") String consumerConsignee,
-                                        @RequestParam("consumerPhone") String consumerPhone,
-                                        @RequestParam("consumerAddress") String consumerAddress);
+    //调度人员创建安装团队
+    @PostMapping("/install/team/create")
+    ResultData createTeam(@RequestParam("teamName") String teamName, @RequestParam("teamArea") String teamArea, @RequestParam(value = "teamDescription", required = false) String teamDescription);
 
+    @GetMapping("/install/team/{teamId}/info")
+    ResultData fetchTeam(@PathVariable("teamId") String teamId);
 
-    @PostMapping("/installation/assign/postpone")
-    ResultData postponeAssign(@RequestParam("assignId") String assignId,
-                                     @RequestParam("date") String date);
+    @GetMapping("/install/team/list")
+    ResultData fetchTeam();
 
-    @PostMapping("/installation/assign/cancel")
-    ResultData cancelAssign(@RequestParam("assignId") String assignId);
+    @GetMapping("/install/team/list")
+    ResultData fetchTeam(@RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
 
-    @GetMapping("/installation/assign/finishedinfo")
-    ResultData finishedInfo(@RequestParam("assignId") String assignId);
-
-
-    @GetMapping("/installation/assign/todolist")
-    ResultData todoAssignList();
-
-    @GetMapping("/installation/assign/assignedlist")
-    ResultData assignedList();
-
-    @GetMapping("/installation/assign/processinglist")
-    ResultData processingAssignList();
-
-    @GetMapping("/installation/assign/finishedlist")
-    ResultData finishedList();
-
-    @GetMapping("/installation/assign/closedlist")
-    ResultData closedList();
-
-    @GetMapping("/installation/assign/detail/list")
-    ResultData detailList(@RequestParam("status") int status);
-
-    @GetMapping("/installation/feedback/info")
-    ResultData assignFeedback(@RequestParam("assignId") String assignId);
-
-    @PostMapping("/installation/assign/delete")
-    ResultData deleteAssign(@RequestParam("codeValue") String codeValue);
-
-    @GetMapping(value = "/installation/reconnaissance/order/{orderId}")
-    ResultData orderReconnaissanceList(@PathVariable("orderId") String orderId);
-
-    @PostMapping("/installation/machine/pic/create")
-    ResultData createMachinePic(@RequestParam("codeValue")String codeValue,
-                                @RequestParam("picUrl1") String picUrl1,
-                                @RequestParam("picUrl2") String picUrl2,
-                                @RequestParam("picUrl3") String picUrl3);
-
-    @GetMapping("/installation/machine/pic/fetch")
-    ResultData fetchMachinePicByQRcode(@RequestParam("codeValue") String codeValue);
+    @PostMapping("/install/member/watch/team")
+    ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamid);
 }

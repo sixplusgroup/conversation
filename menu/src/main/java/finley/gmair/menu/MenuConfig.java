@@ -68,8 +68,14 @@ public class MenuConfig {
         //我的空气
         JSONObject mine_device = new JSONObject();
         mine_device.put("name", "我的空气");
-        mine_device.put("type", "click");
-        mine_device.put("key", "gmair");
+//        mine_device.put("type", "click");
+//        mine_device.put("key", "gmair");
+        mine_device.put("type", "view");
+        try {
+            mine_device.put("url", "https://reception.gmair.net/machine/list");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //售后服务
         JSONObject contact_us = new JSONObject();
@@ -94,9 +100,9 @@ public class MenuConfig {
         JSONObject card_exchange = new JSONObject();
         card_exchange.put("name", "卡券兑换");
         card_exchange.put("type", "view");
-        try{
+        try {
             card_exchange.put("url", "http://one.fw1860.com/recinzaixiantihuoxitongimages/wxth/njgm/wxth.aspx");
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

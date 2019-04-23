@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>果麦新风</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/monitor/static/limarquee/css/liMarquee.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/monitor/static/css/monitor_vertical.css}"/>
+    <script type="text/javascript" th:src="@{/monitor/static/limarquee/js/jquery-1.8.3.min.js}"></script>
+    <script th:src="@{/monitor/static/limarquee/js/jquery.liMarquee.js}"></script>
+</head>
+<body>
+<div>
+    <div class="monitor-header">
+        <div class="location-div">
+            <div style="float:left;width:30%" id="time1" class="time1">
+            </div>
+            <img src="https://monitor.gmair.net/image/location_logo.png" class="location-img"/>
+            <img src="https://monitor.gmair.net/image/guomai.png" id="logo-img" class="geer-img"/>
+            <div style="float:right;width:30%;display: none" class="run_type2" id="online2">
+                <img src="https://monitor.gmair.net/image/wind.png" class="wind-img"/>
+                <span>果麦新风净化系统运行中</span>
+            </div>
+            <div style="float:right;width:30%" class="run_type2" id="offline2">
+                <span>果麦新风净化系统离线中</span>
+            </div>
+        </div>
+        <div class="init-div">
+            <div style="float:left;width:50%" id="time">
+            </div>
+            <div style="float:right;width:50%;display: none" id="online">
+                <img src="https://monitor.gmair.net/image/wind.png" class="wind-img"/>
+                <span>果麦新风净化系统运行中</span>
+            </div>
+            <div style="float:right;width:50%" id="offline">
+                <span>果麦新风净化系统离线中</span>
+            </div>
+        </div>
+    </div>
+    <div class="monitor-indoor">
+        <div class="monitor-indoor-outdoor-header">
+            <span class="chinese-label">室内</span>
+            <span class="english-label">Indoor</span>
+        </div>
+        <div class="monitor-indoor-body">
+            <div class="monitor-indoor-body-item " id="div-indoor-pm25">
+                <div class="content_left">
+                    <img src="https://monitor.gmair.net/image/air_quality.png" class="indoor-img"/>
+                    <div class="content_left_text">PM2.5</div>
+                </div>
+                <div class="content_middle">
+                    空气&nbsp;&nbsp;<span class="font-bold" id="pm25-content">轻度污染</span>
+                </div>
+                <div class="content_right">
+                    <span class="test_value" id="indoor_pm25"></span>
+                    <span class="test_unit">&nbsp;ug/m<sup>3</sup></span>
+                </div>
+            </div>
+            <div class="seperate-div"></div>
+            <div class="monitor-indoor-body-item" id="co2-div">
+                <div class="content_left">
+                    <img src="https://monitor.gmair.net/image/co2.png" class="indoor-img"/>
+                    <div class="content_left_text">二氧化碳浓度</div>
+                </div>
+                <div class="content_middle" id="co2-content">
+                    氧气<span class="font-bold">&nbsp;&nbsp;充沛</span>
+                </div>
+                <div class="content_right">
+                    <span class="test_value" id="co2"></span>
+                    <span class="test_unit">&nbsp;ppm</span>
+                </div>
+            </div>
+            <div class="seperate-div"></div>
+            <div class="monitor-indoor-body-item border-bottom-raduis">
+                <div class="content_left">
+                    <img src="https://monitor.gmair.net/image/temprature_humidity.png" class="indoor-img"/>
+                    <div class="content_left_text">温度/湿度</div>
+                </div>
+                <div class="content_middle">
+                    <div class="content_middle_1">
+                        室内<span class="font-bold">&nbsp;&nbsp;&nbsp;温度</span>
+                    </div>
+                    <div class="content_middle_1">
+                        室内<span class="font-bold">&nbsp;&nbsp;&nbsp;湿度</span>
+                    </div>
+                </div>
+                <div class="content_right">
+                    <div class="half-height margin-bottom-10">
+                        <span class="test_value" id="temp"></span>
+                        <span class="test_unit">&nbsp;<sup>o</sup>C</span>
+                    </div>
+                    <div class="half-height margin-top-10">
+                        <span class="test_value" id="humid"></span>
+                        <span class="test_unit">&nbsp;%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="advertisement" id="advertisement">果麦新风&nbsp;简单实现好空气</div>
+    <div class="monitor-outdoor">
+        <div class="monitor-indoor-outdoor-header outdoor">
+                        <span class="chinese-label">
+                            <span></span>
+                            <span>室外</span>
+                        </span>
+            <span class="english-label" id="city_name">Outdoor</span>
+        </div>
+        <div class="monitor-outdoor-body">
+            <div class="monitor-indoor-body-item border-bottom-raduis" id="div-aqi">
+                <div class="content_left">
+                    <img src="https://monitor.gmair.net/image/air_quality.png" class="indoor-img"/>
+                    <div class="content_left_text">AQI/PM2.5</div>
+                </div>
+                <div class="content_middle">
+                    空气<span
+                        class="font-bold">&nbsp;&nbsp;</span>
+                </div>
+                <div class="content_right">
+                    <div class="content_right1" style="float: left">
+                        <div class="text_unit half-height">AQI</div>
+                        <div class="text_unit half-height">PM2.5</div>
+                    </div>
+                    <div class="content_right1" style="float:left">
+                        <div class="text_unit half-height" id="outdoor_aqi"></div>
+                        <div class="text_unit half-height" id="outdoor_pm25"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="contact-div">
+        <div class="footer_left">
+            <div class="half-height">
+                <img src="https://monitor.gmair.net/image/gmair_logo.png" class="gmair-image"/>
+                <div><img src="https://monitor.gmair.net/image/log.png" class="log-image"/></div>
+            </div>
+            <div style="height:5px"></div>
+            <div class="half-height footer_text">
+                <div><span>TEL&nbsp;:&nbsp;</span>4009946898</div>
+                <div><span>Email&nbsp;:&nbsp;</span>service@gmair.net</div>
+            </div>
+        </div>
+        <div class="aqi_measure2">
+            <img class="aqi-img" src="https://monitor.gmair.net/image/aqi_line.png"/>
+        </div>
+        <div class="footer_right">
+            <div class="footer_right_img_div">
+                <img src="https://monitor.gmair.net/image/wechat.png" class="qrcode-img"/>
+            </div>
+            <div class="footer_right_img_div">
+                <img src="https://monitor.gmair.net/image/wechat_public.jpg" id="ad-img" class="qrcode-img"/>
+            </div>
+            <div class="aqi_measure">
+                <img class="aqi-img" src="https://monitor.gmair.net/image/aqi_line.png"/>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var monitor_url = "https://microservice.gmair.net/monitor";
+    var codeValue = "";
+    var is_online = false;
+    var city_id = "";
+    var indoor_pm25 = "";
+    var co2 = "";
+    var temp = "";
+    var humid = "";
+    var outdoor_aqi = "";
+    var outdoor_pm25 = "";
+    var city_name = "";
+
+    $(document).ready(function () {
+        codeValue = obtainCodeValue("tv");
+        $("#time").text(init_time());
+        $("#time1").text(init_time());
+        obtainFile(codeValue);
+        obtainAdvertisement(codeValue);
+        $(function () {
+            $('#advertisement').liMarquee({
+                direction: 'left'
+            });
+        });
+        obtain_city(codeValue);
+        obtain_test_data(codeValue);
+        obtain_online_status(codeValue);
+        setInterval(function () {
+            $("#time").text(init_time())
+        }, 1000);
+        setInterval(function () {
+            $("#time1").text(init_time())
+        }, 1000);
+        setInterval(function () {
+            obtain_city(codeValue)
+        }, 1800000);
+        setInterval(function () {
+            obtain_online_status(codeValue)
+        }, 10000);
+        setInterval(function () {
+            obtain_test_data(codeValue)
+        }, 10000);
+    })
+
+    function obtainCodeValue(name) {
+        var reg = new RegExp('(?:(?:&|\\?)' + name + '=([^&]*))|(?:/' + name + '/([^/]*))', 'i');
+        var r = window.location.href.match(reg);
+        if (r != null)
+            return decodeURI(r[1] || r[2]);
+        return null;
+        // let path=path_name.split("/");
+        // return path[3];
+    }
+
+    function init_time() {
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = ('0' + (today.getMonth() + 1)).slice(-2).toString();
+        var date = ('0' + today.getDate()).slice(-2).toString();
+        var hour = ('0' + today.getHours()).slice(-2).toString();
+        var minute = ('0' + today.getMinutes()).slice(-2).toString();
+        var date_string = year + "年" + month + "月" + date + "日" + "  " + hour + ":" + minute;
+        return date_string;
+    }
+
+    function pm2_5_render(pm2_5) {
+
+        if (pm2_5 === "") {
+            $("#div-indoor-pm25").attr("class", "monitor-indoor-body-item");
+            $("#pm25-content").text("优秀")
+        } else if (pm2_5 >= 0 & pm2_5 <= 35) {
+            $("#div-indoor-pm25").attr("class", "monitor-indoor-body-item pm2_5_excellent");
+            $("#pm25-content").text("优秀")
+        } else if (pm2_5 > 35 && pm2_5 <= 75) {
+            $("#div-indoor-pm25").attr("class", "monitor-indoor-body-item pm2_5_moderate");
+            $("#pm25-content").text("良好")
+        } else if (pm2_5 > 75 && pm2_5 <= 115) {
+            $("#div-indoor-pm25").attr("class", "monitor-indoor-body-item pm2_5_sensative");
+            $("#pm25-content").text("轻度污染")
+        } else if (pm2_5 > 115 && pm2_5 <= 150) {
+            $("#div-indoor-pm25").attr("class", "monitor-indoor-body-item pm2_5_unhealthy");
+            $("#pm25-content").text("中度污染")
+        } else if (pm2_5 > 150 && pm2_5 <= 250) {
+            $("#div-indoor-pm25").attr("class", "monitor-indoor-body-item pm2_5_very_unhealthy");
+            $("#pm25-content").text("重度污染")
+        } else if (pm2_5 > 250) {
+            $("#div-indoor-pm25").attr("class", "monitor-indoor-body-item pm2_5_hazardous");
+            $("#pm25-content").text("严重污染")
+        }
+
+    }
+
+    function aqiBackgroundColor(aqi) {
+        if (aqi === "") {
+            $("#div-aqi").attr("class", "monitor-indoor-body-item")
+        } else if (aqi >= 0 && aqi <= 50) {
+            $("#div-aqi").attr("class", "monitor-indoor-body-item pm2_5_excellent")
+        } else if (aqi > 50 && aqi <= 100) {
+            $("#div-aqi").attr("class", "monitor-indoor-body-item pm2_5_moderate")
+        } else if (aqi > 100 && aqi <= 150) {
+            $("#div-aqi").attr("class", "monitor-indoor-body-item pm2_5_sensative")
+        } else if (aqi > 150 && aqi <= 200) {
+            $("#div-aqi").attr("class", "monitor-indoor-body-item pm2_5_unhealthy")
+        } else if (aqi > 200 && aqi <= 300) {
+            $("#div-aqi").attr("class", "monitor-indoor-body-item pm2_5_very_unhealthy")
+        } else if (aqi > 300) {
+            $("#div-aqi").attr("class", "monitor-indoor-body-item pm2_5_hazardous")
+        }
+    }
+
+    function co2_render(co2) {
+        if (co2 <= 1500) {
+            $("#co2-content").html("<span> 氧气&nbsp;&nbsp;<span class='font-bold'>充沛</span></span>");
+        }
+        if (co2 > 1500 && co2 < 2000) {
+            $("#co2-content").html("<span>二氧化碳&nbsp;</span>");
+        }
+    }
+
+    //根据qrcode获取文件信息
+    function obtainFile(codeValue) {
+        $.ajax({
+            type: 'get',
+            url: "/monitor/qrcode/profile?qrcode=" + codeValue,
+            data: {},
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.responseCode === "RESPONSE_OK") {
+                    $("#logo-img").attr("src", response.data[0].logoPath);
+                    $("#ad-img").attr("src", response.data[0].qrcodePath);
+                } else {
+                    console.log(response);
+                }
+            }
+        })
+    }
+
+    //根据qrcode获取广告信息
+    function obtainAdvertisement(codeValue) {
+        $.ajax({
+            type: 'get',
+            url: monitor_url + "/qrcode/ads?qrcode=" + codeValue,
+            data: {},
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.responseCode === "RESPONSE_OK") {
+                    $(".str_move.str_origin").text(response.data[0].content);
+                } else {
+                    console.log(response);
+                }
+            }
+        })
+        $('#advertisement').liMarquee({
+            direction: 'left'
+        });
+    }
+
+    //根据codeValue获取单个机器在线状态
+    function obtain_online_status(codeValue) {
+        var online_status_url = monitor_url + "/machine/online?codeValue=" + codeValue;
+        $.ajax({
+            type: 'get',
+            url: online_status_url,
+            data: {},
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.responseCode === "RESPONSE_OK") {
+                    is_online = true;
+                } else {
+                    is_online = false;
+                }
+                setOnline(is_online);
+            }
+        })
+    }
+
+    //根据在线状态显示
+    function setOnline(is_online) {
+        if (window.innerWidth > 2000) {
+            $("#online").hide();
+            $("#offline").hide();
+            if (is_online === true) {
+                $("#online2").show();
+                $("#offline2").hide();
+            } else {
+                $("#online2").hide();
+                $("#offline2").show();
+            }
+        } else {
+            $("#online2").hide();
+            $("#offline2").hide();
+            if (is_online === true) {
+                $("#online").show();
+                $("#offline").hide();
+            } else {
+                $("#online").hide();
+                $("#offline").show();
+            }
+        }
+    }
+
+    //根据qrcode获取机器测量信息
+    function obtain_test_data(qrcode) {
+        var test_data_url = monitor_url + "/machine/status?qrcode=" + qrcode;
+        $.ajax({
+            type: 'get',
+            url: test_data_url,
+            data: {},
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.responseCode === "RESPONSE_OK") {
+                    indoor_pm25 = response.data.pm2_5;
+                    co2 = response.data.co2;
+                    temp = response.data.temp;
+                    humid = response.data.humid;
+                } else {
+                    console.log(response.responseCode);
+                }
+                if (co2 >= 2000 || co2 === 0) {
+                    $("#co2-div").hide();
+                } else {
+                    $("#co2-div").show();
+                }
+                $("#indoor_pm25").text(indoor_pm25);
+                pm2_5_render(indoor_pm25);
+                $("#co2").text(co2);
+                co2_render(co2);
+                $("#temp").text(temp);
+                $("#humid").text(humid);
+            }
+        })
+    }
+
+    //根据qrcode获取城市
+    function obtain_city(qrcode) {
+        var obtain_city_url = monitor_url + "/cityid/probe?qrcode=" + qrcode;
+        $.ajax({
+            type: 'get',
+            url: obtain_city_url,
+            data: {},
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.responseCode === "RESPONSE_OK") {
+                    city_id = response.data[0].cityId;
+                } else {
+                    console.log(response.responseCode);
+                }
+                obtain_outdoor(city_id, "");
+            }
+        })
+    }
+
+    //根据cityId/provinceId获取城市空气质量
+    function obtain_outdoor(cityId, provinceId) {
+        var outdoor_url = monitor_url + "/city/air?cityId=" + cityId + "&amp;provinceId=" + provinceId;
+        $.ajax({
+            type: 'get',
+            url: outdoor_url,
+            data: {},
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.responseCode === "RESPONSE_OK") {
+                    outdoor_aqi = response.data[0].aqi;
+                    city_name = response.data[0].cityName;
+                    outdoor_pm25 = response.data[0].pm2_5;
+                } else {
+                    console.log(response.responseCode);
+                }
+                $("#city_name").text(city_name);
+                $("#outdoor_aqi").text(outdoor_aqi);
+                $("#outdoor_pm25").text(outdoor_pm25);
+                aqiBackgroundColor(outdoor_aqi);
+            }
+        })
+    }
+
+    /*]]>*/
+</script>
+</body>
+</html>

@@ -5,27 +5,30 @@ import finley.gmair.model.Entity;
 public class Snapshot extends Entity {
 
     private String snapshotId;
+
     private String assignId;
+
     private String codeValue;
-    private String wechatId;
-    private String memberPhone;
-    private String picPath;
-    private boolean net;
-    private String installType;
+
+    private String picturePath;
+
+    private boolean wifiConfigured;
+
+    private String installMethod;
+
+    private String description;
 
     public Snapshot() {
         super();
     }
 
-    public Snapshot(String assignId, String qrcode, String wechatId, String memberPhone, String picPath, boolean net,String installType) {
-        this();
+    public Snapshot(String assignId, String codeValue, String picturePath, boolean wifiConfigured, String installMethod, String description) {
         this.assignId = assignId;
-        this.codeValue = qrcode;
-        this.wechatId = wechatId;
-        this.memberPhone = memberPhone;
-        this.picPath = picPath;
-        this.net = net;
-        this.installType = installType;
+        this.codeValue = codeValue;
+        this.picturePath = picturePath;
+        this.wifiConfigured = wifiConfigured;
+        this.installMethod = installMethod;
+        this.description = description;
     }
 
     public String getSnapshotId() {
@@ -52,43 +55,35 @@ public class Snapshot extends Entity {
         this.codeValue = codeValue;
     }
 
-    public String getWechatId() {
-        return wechatId;
+    public String getPicturePath() {
+        return picturePath;
     }
 
-    public void setWechatId(String wechatId) {
-        this.wechatId = wechatId;
+    public void setPicturePath(String picturePath) {
+        this.picturePath = picturePath;
     }
 
-    public String getMemberPhone() {
-        return memberPhone;
+    public boolean isWifiConfigured() {
+        return wifiConfigured;
     }
 
-    public void setMemberPhone(String memberPhone) {
-        this.memberPhone = memberPhone;
+    public void setWifiConfigured(boolean wifiConfigured) {
+        this.wifiConfigured = wifiConfigured;
     }
 
-    public String getPicPath() {
-        return picPath;
+    public String getInstallMethod() {
+        return installMethod;
     }
 
-    public void setPicPath(String picPath) {
-        this.picPath = picPath;
+    public void setInstallMethod(String installMethod) {
+        this.installMethod = installMethod;
     }
 
-    public boolean isNet() {
-        return net;
+    public String getDescription() {
+        return description;
     }
 
-    public void setNet(boolean net) {
-        this.net = net;
-    }
-
-    public String getInstallType() {
-        return installType;
-    }
-
-    public void setInstallType(String installType) {
-        this.installType = installType;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

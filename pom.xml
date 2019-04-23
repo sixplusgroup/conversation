@@ -20,7 +20,6 @@
         <module>gateway</module>
         <module>gmbatis</module>
         <module>location</module>
-        <module>feign-server</module>
         <module>ribbon-server</module>
         <module>order</module>
         <module>airquality</module>
@@ -48,6 +47,8 @@
         <module>bill</module>
         <module>monitor</module>
         <module>data-analysis</module>
+        <module>installdesk</module>
+        <!--<module>mqtt-core</module>-->
     </modules>
 
     <parent>
@@ -101,10 +102,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>1.9</source>
-                    <target>1.9</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <jdkToolchain>
-                        <version>9</version>
+                        <version>8</version>
                     </jdkToolchain>
                 </configuration>
             </plugin>

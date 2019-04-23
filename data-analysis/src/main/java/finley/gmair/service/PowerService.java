@@ -12,4 +12,7 @@ public interface PowerService {
 
     ResultData fetchHourly(Map<String, Object> condition);
 
+    ResultData insertBatchDaily(List<PowerHourly> list);
+
+    ResultData fetchDaily(Map<String, Object> condition);
 }

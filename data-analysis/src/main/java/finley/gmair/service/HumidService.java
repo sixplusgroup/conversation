@@ -12,4 +12,8 @@ public interface HumidService {
 
     ResultData fetchHourly(Map<String, Object> condition);
 
+    ResultData insertBatchDaily(List<HumidHourly> list);
+
+    ResultData fetchDaily(Map<String, Object> condition);
+
 }
