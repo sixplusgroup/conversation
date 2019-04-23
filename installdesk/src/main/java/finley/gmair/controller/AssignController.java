@@ -2,10 +2,12 @@ package finley.gmair.controller;
 
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
+import finley.gmair.model.message.MessageTemplate;
 import finley.gmair.pool.InstallPool;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.SerialUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -212,11 +214,21 @@ public class AssignController {
                 Member member = ((List<Member>) r.getData()).get(0);
                 AssignAction action = new AssignAction(assignId, "分派安装任务给安装工人: " + member.getMemberName());
                 assignActionService.create(action);
+                //获取安装任务信息
+                condition.clear();
+                condition.put("assignId", assignId);
+                condition.put("blockFlag", false);
+                r = assignService.fetch(condition);
+                if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+                Assign assign = ((List<Assign>) r.getData()).get(0);
                 //获取短信模板
                 r = messageService.template("NOTIFICATION_DISPATCHED");
-                if (r.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    
-                }
+                if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+                MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
+                String candidate = template.getMessage().replaceAll("###", "%s");
+                candidate = String.format(candidate, assign.getDetail(), member.getMemberName(), member.getMemberPhone());
+                //发送短信
+                messageService.send(assign.getConsumerPhone(), candidate);
             });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -467,6 +479,24 @@ public class AssignController {
         InstallPool.getLogExecutor().execute(() -> {
             AssignAction action = new AssignAction(assignId, "安装完成，使用" + method + ", 网络" + ((wifi) ? "已配置" : "未配置") + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
             assignActionService.create(action);
+            //获取安装任务信息
+            condition.clear();
+            condition.put("assignId", assignId);
+            condition.put("blockFlag", false);
+            ResultData r = assignService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            Assign assign = ((List<Assign>) r.getData()).get(0);
+            //获取短信模板
+            r = messageService.template("NOTIFICATION_INSTALL");
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
+            String candidate = template.getMessage().replaceAll("###", "%s");
+            String code = SerialUtil.serial(4);
+            //todo 存储安装服务码
+
+//            candidate = String.format(candidate, assign.getDetail(), code);
+//            //发送短信
+//            messageService.send(assign.getConsumerPhone(), candidate);
         });
         result.setDescription("安装任务完成");
         return result;
