@@ -89,7 +89,7 @@ public class EurekaClientApplication {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST, value = "/sent/overview")
-    public ResultData overview(String phone,String starttime,String endtime) {
+    public ResultData overview(String phone, String starttime, String endtime) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(phone)) {
@@ -156,14 +156,11 @@ public class EurekaClientApplication {
             case "AUTHENTICATION":
                 condition.put("catalog", MessageCatalog.AUTHENTICATION.getCode());
                 break;
-            case "NOTIFICATION_NOTREACHABLE":
-                condition.put("catalog", MessageCatalog.NOTIFICATION_NOTREACHABLE.getCode());
+            case "NOTIFICATION_DISPATCHED":
+                condition.put("catalog", MessageCatalog.NOTIFICATION_DISPATCHED.getCode());
                 break;
-            case "NOTIFICATION_DELIVERY":
-                condition.put("catalog", MessageCatalog.NOTIFICATION_DELIVERY.getCode());
-                break;
-            case "NOTIFICATION_INSTALLATION":
-                condition.put("catalog", MessageCatalog.NOTIFICATION_INSTALLATION.getCode());
+            case "NOTIFICATION_INSTALL":
+                condition.put("catalog", MessageCatalog.NOTIFICATION_INSTALL.getCode());
                 break;
             default:
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
