@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import finley.gmair.dao.AssignActionDao;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
 import finley.gmair.pool.InstallPool;
@@ -11,14 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +42,9 @@ public class AssignController {
 
     @Autowired
     private AssignSnapshotService assignSnapshotService;
+
+    @Autowired
+    private MessageService messageService;
 
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
@@ -216,6 +212,11 @@ public class AssignController {
                 Member member = ((List<Member>) r.getData()).get(0);
                 AssignAction action = new AssignAction(assignId, "分派安装任务给安装工人: " + member.getMemberName());
                 assignActionService.create(action);
+                //获取短信模板
+                r = messageService.template("NOTIFICATION_DISPATCHED");
+                if (r.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    
+                }
             });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

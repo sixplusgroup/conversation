@@ -142,47 +142,6 @@ public class EurekaClientApplication {
         return result;
     }
 
-    /**
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/template/{key}")
-    public ResultData template(@PathVariable("key") String key) {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        switch (key.toUpperCase()) {
-            case "REGISTRATION":
-                condition.put("catalog", MessageCatalog.REGISTRATION.getCode());
-                break;
-            case "AUTHENTICATION":
-                condition.put("catalog", MessageCatalog.AUTHENTICATION.getCode());
-                break;
-            case "NOTIFICATION_DISPATCHED":
-                condition.put("catalog", MessageCatalog.NOTIFICATION_DISPATCHED.getCode());
-                break;
-            case "NOTIFICATION_INSTALL":
-                condition.put("catalog", MessageCatalog.NOTIFICATION_INSTALL.getCode());
-                break;
-            default:
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription(new StringBuffer("Key: ").append(key).append(" not listed").toString());
-                return result;
-        }
-        condition.put("blockFlag", false);
-        ResultData response = messageTemplateService.fetchTemplate(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to get message template.");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No message template found.");
-            return result;
-        }
-        result.setData(response.getData());
-        return result;
-    }
-
     @RequestMapping(method = RequestMethod.POST, value = "/template/create")
     public ResultData createTemplate(MessageTemplateForm form) {
         ResultData result = new ResultData();

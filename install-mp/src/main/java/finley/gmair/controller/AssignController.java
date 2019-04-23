@@ -61,6 +61,7 @@ public class AssignController {
             return result;
         }
         result = assignService.dispatchAssign(assignId, memberId);
+
         return result;
     }
 
