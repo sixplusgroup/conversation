@@ -71,4 +71,9 @@ ALTER TABLE `gmair_install`.`install_assign`
   ADD COLUMN `assign_description` VARCHAR(45) NULL
   AFTER `assign_date`;
 
+# 2019
+ALTER TABLE `gmair_install`.`install_assign`
+  ADD COLUMN `assign_source` VARCHAR(45) NULL
+  AFTER `assign_date`;
+
 

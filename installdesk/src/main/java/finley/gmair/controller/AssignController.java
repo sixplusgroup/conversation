@@ -59,7 +59,7 @@ public class AssignController {
     @PostMapping("/create")
     public ResultData create(AssignForm form) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone()) || StringUtils.isEmpty(form.getConsumerAddress()) || StringUtils.isEmpty(form.getModel())) {
+        if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone()) || StringUtils.isEmpty(form.getConsumerAddress()) || StringUtils.isEmpty(form.getModel()) || StringUtils.isEmpty(form.getSource())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确保安装客户的信息录入完整");
             return result;
@@ -69,11 +69,12 @@ public class AssignController {
         String phone = form.getConsumerPhone().trim();
         String address = form.getConsumerAddress().trim();
         String detail = form.getModel().trim();
+        String source = form.getSource().trim();
         Assign assign;
         if (StringUtils.isEmpty(form.getDescription())) {
-            assign = new Assign(consignee, phone, address, detail);
+            assign = new Assign(consignee, phone, address, detail, source);
         } else {
-            assign = new Assign(consignee, phone, address, detail, form.getDescription());
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription());
         }
         //若上传了二维码，则安装必须为该指定设备
         String qrcode = form.getQrcode();
@@ -461,6 +462,11 @@ public class AssignController {
             result.setDescription("安装任务状态更改失败，请稍后尝试");
             return result;
         }
+        //记录安装任务操作日志
+        InstallPool.getLogExecutor().execute(() -> {
+            AssignAction action = new AssignAction(assignId, "安装完成，使用" + method + ", 网络" + ((wifi) ? "已配置" : "未配置") + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
+            assignActionService.create(action);
+        });
         result.setDescription("安装任务完成");
         return result;
     }

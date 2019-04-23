@@ -12,6 +12,10 @@ public class AssignForm {
 
     private String model;
 
+    private String description;
+
+    private String source;
+
     public String getQrcode() {
         return qrcode;
     }
@@ -50,5 +54,21 @@ public class AssignForm {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }
