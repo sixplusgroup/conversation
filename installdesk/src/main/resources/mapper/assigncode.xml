@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="gmair.install.assigncode">
+<mapper namespace="gmair.install.assign.code">
     <resultMap id="assignCode" type="finley.gmair.model.installation.AssignCode">
         <result property="assignId" column="assign_id"></result>
         <result property="codeSerial" column="code_serial"></result>
@@ -9,11 +9,7 @@
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="assignCode">
-        SELECT
-        assign_id,
-        code_serial,
-        block_flag,
-        create_time
+        SELECT assign_id, code_serial, block_flag, create_time
         FROM gmair_install.assign_code
         WHERE 1 = 1
         <if test="assignId != null">

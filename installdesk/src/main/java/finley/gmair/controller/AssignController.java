@@ -48,6 +48,9 @@ public class AssignController {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private AssignCodeService assignCodeService;
+
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
      *
@@ -492,11 +495,16 @@ public class AssignController {
             MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
             String candidate = template.getMessage().replaceAll("###", "%s");
             String code = SerialUtil.serial(4);
-            //todo 存储安装服务码
-
-//            candidate = String.format(candidate, assign.getDetail(), code);
-//            //发送短信
-//            messageService.send(assign.getConsumerPhone(), candidate);
+            //存储安装服务码
+            AssignCode ac = new AssignCode(assignId, code);
+            r = assignCodeService.create(ac);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("Fail to create code for assign");
+                return;
+            }
+            candidate = String.format(candidate, assign.getDetail(), code);
+            //发送短信
+            messageService.send(assign.getConsumerPhone(), candidate);
         });
         result.setDescription("安装任务完成");
         return result;
@@ -545,10 +553,10 @@ public class AssignController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignId", assignId);
-        condition.put("", code); //todo 填入具体的成员属性的名称
+        condition.put("codeSerial", code);
         condition.put("blockFlag", false);
         //调用查询是否存在此服务码和此assignId的记录
-        ResultData response = new ResultData();
+        ResultData response = assignCodeService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("服务码查询异常，请稍后尝试");
