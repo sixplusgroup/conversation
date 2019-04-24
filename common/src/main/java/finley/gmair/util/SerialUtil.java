@@ -22,4 +22,13 @@ public class SerialUtil {
         StringBuffer result = new StringBuffer(new String(temp));
         return result.toString();
     }
+
+    public static String serial(int n) {
+        char[] temp = new char[n];
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = generate();
+        }
+        StringBuffer result = new StringBuffer(new String(temp));
+        return result.toString();
+    }
 }
