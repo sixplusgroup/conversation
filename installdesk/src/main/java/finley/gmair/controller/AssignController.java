@@ -502,6 +502,12 @@ public class AssignController {
         return result;
     }
 
+    /**
+     * 获取安装任务的快照
+     *
+     * @param assignId
+     * @return
+     */
     @GetMapping("/snapshot")
     public ResultData snapshot(String assignId) {
         ResultData result = new ResultData();
@@ -524,6 +530,46 @@ public class AssignController {
             return result;
         }
         result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 安装工人提交服务码
+     *
+     * @param assignId
+     * @param code
+     * @return
+     */
+    @PostMapping("/eval")
+    public ResultData eval(String assignId, String code) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("", code); //todo 填入具体的成员属性的名称
+        condition.put("blockFlag", false);
+        //调用查询是否存在此服务码和此assignId的记录
+        ResultData response = new ResultData();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务码查询异常，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("服务码错误，请重新输入");
+            return result;
+        }
+        //更新安装任务的状态
+        condition.clear();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.EVALUATED.getValue());
+        condition.put("blockFlag", false);
+        response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("安装任务状态更新异常，请稍后尝试");
+            return result;
+        }
         return result;
     }
 }
