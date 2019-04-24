@@ -44,4 +44,7 @@ public interface AssignService {
 
     @GetMapping("/install/assign/snapshot")
     ResultData snapshotAssign(@RequestParam("assignId") String assignId);
+
+    @PostMapping("/install/assign/eval")
+    ResultData evalAssign(@RequestParam("assignId") String assignId, @RequestParam("code") String code);
 }

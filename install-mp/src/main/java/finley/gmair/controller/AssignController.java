@@ -178,6 +178,12 @@ public class AssignController {
         return result;
     }
 
+    /**
+     * 查看安装任务的快照
+     *
+     * @param assignId
+     * @return
+     */
     @GetMapping("/snapshot")
     public ResultData snapshot(String assignId) {
         ResultData result = new ResultData();
@@ -187,6 +193,25 @@ public class AssignController {
             return result;
         }
         result = assignService.snapshotAssign(assignId);
+        return result;
+    }
+
+    /**
+     * 安装工人提交服务码
+     *
+     * @param assignId
+     * @param code
+     * @return
+     */
+    @PostMapping("/eval")
+    public ResultData eval(String assignId, String code) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(code)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务及服务码信息");
+            return result;
+        }
+        result = assignService.evalAssign(assignId, code);
         return result;
     }
 }
