@@ -297,7 +297,7 @@
         display: none;
     }
     .location-div{
-        padding: 10% 5% 5% 5%;
+        padding: 12% 5% 8% 5%;
     }
     .wind-img {
         width: 8%;
@@ -308,7 +308,7 @@
         width:5%;
     }
     .geer-img {
-        width:45%;
+        width:50%;
         margin-left: 3%;
     }
     .init-div {
@@ -337,10 +337,10 @@
         font-size: 30px;
     }
     .test_value{
-        font-size: 30px;
+        font-size: 38px;
     }
     .test_unit{
-        font-size: 28px;
+        font-size: 32px;
     }
     .footer_text{
         font-size: 20px;
@@ -358,7 +358,7 @@
         width:50%;
     }
     .text_unit{
-        font-size: 25px;
+        font-size: 28px;
     }
 
 }
