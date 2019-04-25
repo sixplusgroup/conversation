@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.mqtt.Firmware;
 import finley.gmair.service.FirmwareService;
@@ -15,10 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * achieve server to publish message, all the methods follow the steps as bellow
@@ -32,7 +31,7 @@ import java.util.Map;
 @RequestMapping("/mqtt/message")
 public class MessageController {
     private final static String host = "tcp://116.62.233.170:61613";
-    private final static String clientId = "core-server";
+    private final static String clientId = "mqtt-core";
 
     @Autowired
     private FirmwareService firmwareService;
@@ -256,12 +255,12 @@ public class MessageController {
             return result;
         }
         String topic = produceTopic(uid, action);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add("surplus"); //滤芯剩余寿命
+        jsonArray.add("status");  //运行状态
+        jsonArray.add("sensor");  //传感器数据
         JSONObject json = new JSONObject();
-        List<String> list = new ArrayList<>();
-        list.add("surplus"); //滤芯剩余寿命
-        list.add("status");  //运行状态
-        list.add("sensor");  //传感器数据
-        json.put("item", list);
+        json.put("item", jsonArray);;
         try {
             publish(topic, json, qos);
         } catch (Exception e) {
