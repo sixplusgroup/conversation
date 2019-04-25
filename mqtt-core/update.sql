@@ -8,16 +8,6 @@ CREATE TABLE IF NOT EXISTS `gmair_mqtt`.`mqtt_firmware` (
   PRIMARY KEY (`firmware_id`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `gmair_mqtt`.`machine_type` (
-  `board_id` VARCHAR(20) NOT NULL,
-  `board_version` INT NOT NULL,
-  `device_name` VARCHAR(20) NOT NULL,
-  `type_name` VARCHAR(50) NOT NULL,
-  `block_flag`   TINYINT(1) NOT NULL,
-  `create_time`  DATETIME NOT NULL,
-  PRIMARY KEY (`board_id`)
-) ENGINE = InnoDB;
-
 ##2019-04-11
 CREATE TABLE IF NOT EXISTS `gmair_mqtt`.`machine_alert` (
   `alert_id` VARCHAR(20) NOT NULL,

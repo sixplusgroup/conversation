@@ -9,17 +9,19 @@ public class SensorPayload {
     private String machineId;
     private String id;
     private Timestamp time;
-    private int pm2_5;
+    private int pm2_5a;
+    private int pm2_5b;
     private int co2;
     private int temperature_in;
     private int temperature_out;
     private int humidity;
 
-    public SensorPayload(String machineId, String id, Timestamp time, int pm2_5, int co2, int temperature_in, int temperature_out, int humidity) {
+    public SensorPayload(String machineId, String id, Timestamp time, int pm2_5a, int pm2_5b, int co2, int temperature_in, int temperature_out, int humidity) {
         this.machineId = machineId;
         this.id = id;
         this.time = time;
-        this.pm2_5 = pm2_5;
+        this.pm2_5a = pm2_5a;
+        this.pm2_5b = pm2_5b;
         this.co2 = co2;
         this.temperature_in = temperature_in;
         this.temperature_out = temperature_out;
@@ -27,9 +29,9 @@ public class SensorPayload {
     }
 
     public SensorPayload(String machineId, JSONObject object) {
-        this(machineId, object.getString("id"), new Timestamp(object.getLong("time")), object.getIntValue("pm2.5"),
-                object.getIntValue("co2"), object.getIntValue("temp"), object.getIntValue("temp_out"),
-                object.getIntValue("humidity"));
+        this(machineId, object.getString("id"), new Timestamp(object.getLong("time")), object.getIntValue("pm2.5a"),
+                object.getIntValue("pm2.5b"), object.getIntValue("co2"), object.getIntValue("temp"),
+                object.getIntValue("temp_out"), object.getIntValue("humidity"));
     }
 
     public String getMachineId() {
@@ -56,12 +58,20 @@ public class SensorPayload {
         this.time = time;
     }
 
-    public int getPm2_5() {
-        return pm2_5;
+    public int getPm2_5a() {
+        return pm2_5a;
     }
 
-    public void setPm2_5(int pm2_5) {
-        this.pm2_5 = pm2_5;
+    public void setPm2_5a(int pm2_5a) {
+        this.pm2_5a = pm2_5a;
+    }
+
+    public int getPm2_5b() {
+        return pm2_5b;
+    }
+
+    public void setPm2_5b(int pm2_5b) {
+        this.pm2_5b = pm2_5b;
     }
 
     public int getCo2() {

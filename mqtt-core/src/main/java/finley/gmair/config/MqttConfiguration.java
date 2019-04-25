@@ -95,7 +95,8 @@ public class MqttConfiguration {
 
     @Bean
     public MessageProducer inbound() {
-        String[] inboundTopic = topicDetail();
+        //String[] inboundTopic = topicDetail();
+        String[] inboundTopic = {"/FA/GM420/F0FE6BB0CF22/#"};
         MqttPahoMessageDrivenChannelAdapter adapter =
                 new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(),
                         inboundTopic);
@@ -216,7 +217,10 @@ public class MqttConfiguration {
      * 处理单个传感器数据消息publish
      * */
     private void dealSingleSensor(String detail_action, int value) {
-        if (detail_action.equals("pm2.5")) {
+        if (detail_action.equals("pm2.5a")) {
+
+        }
+        if (detail_action.equals("pm2.5b")) {
 
         }
         if (detail_action.equals("co2")) {

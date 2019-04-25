@@ -9,33 +9,30 @@ public class StatusPayload {
     private String id;
     private Timestamp time;
     private int power;
-    private int level;
-    private int ptc;
+    private int speed;
+    private int heat;
     private int mode;
-    private int newwind;
-    private int backwind;
     private int childlock;
     private int led;
+    private int light;
 
-    public StatusPayload(String machineId, String id, Timestamp time, int power, int level, int ptc, int mode, int newwind, int backwind, int childlock, int led) {
+    public StatusPayload(String machineId, String id, Timestamp time, int power, int speed, int heat, int mode, int childlock, int led, int light) {
         this.machineId = machineId;
         this.id = id;
         this.time = time;
         this.power = power;
-        this.level = level;
-        this.ptc = ptc;
+        this.speed = speed;
+        this.heat = heat;
         this.mode = mode;
-        this.newwind = newwind;
-        this.backwind = backwind;
         this.childlock = childlock;
         this.led = led;
+        this.light = light;
     }
 
     public StatusPayload(String machineId, JSONObject object) {
         this(machineId, object.getString("id"), new Timestamp(object.getLong("time")), object.getIntValue("power"),
-                object.getIntValue("level"), object.getIntValue("ptc"), object.getIntValue("mode"),
-                object.getIntValue("newwind"), object.getIntValue("backwind"), object.getIntValue("childlock"),
-                object.getIntValue("led"));
+                object.getIntValue("speed"), object.getIntValue("head"), object.getIntValue("mode"),
+                object.getIntValue("childlock"), object.getIntValue("led"), object.getIntValue("light"));
     }
 
     public String getMachineId() {
@@ -70,20 +67,20 @@ public class StatusPayload {
         this.power = power;
     }
 
-    public int getLevel() {
-        return level;
+    public int getSpeed() {
+        return speed;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 
-    public int getPtc() {
-        return ptc;
+    public int getHeat() {
+        return heat;
     }
 
-    public void setPtc(int ptc) {
-        this.ptc = ptc;
+    public void setHeat(int heat) {
+        this.heat = heat;
     }
 
     public int getMode() {
@@ -92,22 +89,6 @@ public class StatusPayload {
 
     public void setMode(int mode) {
         this.mode = mode;
-    }
-
-    public int getNewwind() {
-        return newwind;
-    }
-
-    public void setNewwind(int newwind) {
-        this.newwind = newwind;
-    }
-
-    public int getBackwind() {
-        return backwind;
-    }
-
-    public void setBackwind(int backwind) {
-        this.backwind = backwind;
     }
 
     public int getChildlock() {
@@ -124,5 +105,13 @@ public class StatusPayload {
 
     public void setLed(int led) {
         this.led = led;
+    }
+
+    public int getLight() {
+        return light;
+    }
+
+    public void setLight(int light) {
+        this.light = light;
     }
 }

@@ -1,9 +1,7 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.mqtt.MachineAlert;
-import finley.gmair.model.mqtt.MachineType;
 import finley.gmair.service.MachineAlertService;
-import finley.gmair.service.MachineTypeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +21,6 @@ public class MachineController {
 
     @Autowired
     private MachineAlertService machineAlertService;
-
-    @Autowired
-    private MachineTypeService machineTypeService;
 
     @PostMapping(value = "/alert/create")
     public ResultData createAlert(String machineId, int code, String msg) {
@@ -116,49 +111,5 @@ public class MachineController {
             result.setDescription("Update batch alert successfully");
             return result;
         }
-    }
-
-    @PostMapping(value = "/type/create")
-    public ResultData createType(int boardVersion, String deviceName, String typeName) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(boardVersion) || StringUtils.isEmpty(deviceName)
-                || StringUtils.isEmpty(typeName)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please make sure you fill all the required fields");
-            return result;
-        }
-        MachineType type = new MachineType(boardVersion, deviceName, typeName);
-        ResultData response = machineTypeService.create(type);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to store machine type");
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
-        return result;
-    }
-
-    @GetMapping(value = "/type/query")
-    public ResultData getType() {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag", false);
-        ResultData response = machineTypeService.fetch(condition);
-        switch (response.getResponseCode()) {
-            case RESPONSE_NULL:
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("No machine type found");
-                break;
-            case RESPONSE_ERROR:
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("Fail to get machine type");
-                break;
-            case RESPONSE_OK:
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setData(response.getData());
-                break;
-        }
-        return result;
     }
 }

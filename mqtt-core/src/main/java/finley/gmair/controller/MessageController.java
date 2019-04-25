@@ -1,14 +1,8 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.mqtt.Firmware;
-import finley.gmair.model.mqtt.MachineType;
 import finley.gmair.service.FirmwareService;
-import finley.gmair.service.MachineService;
-import finley.gmair.service.MachineTypeService;
 import finley.gmair.util.PushCallback;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -20,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,12 +36,6 @@ public class MessageController {
     @Autowired
     private FirmwareService firmwareService;
 
-    @Autowired
-    private MachineService machineService;
-
-    @Autowired
-    private MachineTypeService machineTypeService;
-
     /*
     * 服务端上报控制指令
     * 此条指令qos为2
@@ -56,8 +43,8 @@ public class MessageController {
     * */
     @PostMapping(value = "/com/config/cmd")
     public ResultData configPower(String uid, String action, int qos, Integer power,
-                                  Integer level, Integer ptc, Integer mode, Integer newwind,
-                                  Integer backwind, Integer childlock, Integer led, Integer light) {
+                                  Integer speed, Integer heat, Integer mode, Integer childlock,
+                                  Integer led, Integer light) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
                 || StringUtils.isEmpty(qos)) {
@@ -73,20 +60,14 @@ public class MessageController {
         if (!StringUtils.isEmpty(power)) {
             json.put("power", power);
         }
-        if (!StringUtils.isEmpty(level)) {
-            json.put("level", level);
+        if (!StringUtils.isEmpty(speed)) {
+            json.put("speed", speed);
         }
-        if (!StringUtils.isEmpty(ptc)) {
-            json.put("ptc", ptc);
+        if (!StringUtils.isEmpty(heat)) {
+            json.put("heat", heat);
         }
         if (!StringUtils.isEmpty(mode)) {
             json.put("mode", mode);
-        }
-        if (!StringUtils.isEmpty(newwind)) {
-            json.put("newwind", newwind);
-        }
-        if (!StringUtils.isEmpty(backwind)) {
-            json.put("backwind", backwind);
         }
         if (!StringUtils.isEmpty(childlock)) {
             json.put("childlock", childlock);
@@ -173,16 +154,13 @@ public class MessageController {
 
     /**
      * 服务端重置滤芯寿命
-     * @param bottom //表示底层剩余寿命
-     * @param middle //表示中层剩余寿命
-     * @param top    //表示顶层剩余寿命
-     * 三者可以选填
+     * @param remain //表示滤芯剩余寿命
      * 此条指令qos为2
      * action = setsurplus
      * */
     @PostMapping(value = "/com/set/surplus")
     public ResultData setSurplus(String uid, String action, int qos,
-                                 Integer bottom, Integer middle, Integer top) {
+                                 Integer remain) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
                 || StringUtils.isEmpty(qos)) {
@@ -192,9 +170,7 @@ public class MessageController {
         }
         String topic = produceTopic(uid, action);
         JSONObject json = new JSONObject();
-        json.put("1", bottom);
-        json.put("2", middle);
-        json.put("3", top);
+        json.put("remain", remain);
         try {
             publish(topic, json, qos);
         } catch (Exception e) {
@@ -283,11 +259,9 @@ public class MessageController {
         list.add("surplus"); //滤芯剩余寿命
         list.add("status");  //运行状态
         list.add("sensor");  //传感器数据
+        json.put("item", list);
         try {
-            for (String s : list) {
-                json.put("item", s);
-                publish(topic, json, qos);
-            }
+            publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Demand report message publishing error with: " + e.getMessage());
@@ -300,28 +274,7 @@ public class MessageController {
      * */
     private String produceTopic(String uid, String action) {
         StringBuffer sb = new StringBuffer();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)) {
-            return "";
-        }
-        //根据machineId获取board version
-        ResultData response = machineService.getBoardVersion(uid);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return "";
-        }
-        JSONObject json = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
-        //BoardVersion version = ((List<BoardVersion>) response.getData()).get(0);
-
-        //根据board version获取machine type相关内容
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag", false);
-        condition.put("boardVersion", json.getIntValue("version"));
-        response = machineTypeService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return "";
-        }
-        MachineType type = ((List<MachineType>) response.getData()).get(0);
-        return sb.append("/client/").append(type.getDeviceName()).append("/").append(uid)
-                .append("/").append(action).toString();
+        return sb.append("/client/FA/").append(uid).append("/").append(action).toString();
     }
 
     /**

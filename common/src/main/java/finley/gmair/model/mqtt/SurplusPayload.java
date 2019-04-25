@@ -8,22 +8,18 @@ public class SurplusPayload {
     private String machineId;
     private String id;
     private Timestamp time;
-    private int bottom;
-    private int middle;
-    private int top;
+    private int remain;
 
-    public SurplusPayload(String machineId, String id, Timestamp time, int bottom, int middle, int top) {
+    public SurplusPayload(String machineId, String id, Timestamp time, int remain) {
         this.machineId = machineId;
         this.id = id;
         this.time = time;
-        this.bottom = bottom;
-        this.middle = middle;
-        this.top = top;
+        this.remain = remain;
     }
 
     public SurplusPayload(String machineId, JSONObject object) {
         this(machineId, object.getString("id"), new Timestamp(object.getLong("time")),
-                object.getIntValue("1"), object.getIntValue("2"), object.getIntValue("3"));
+                object.getIntValue("remain"));
     }
 
     public String getMachineId() {
@@ -50,27 +46,11 @@ public class SurplusPayload {
         this.time = time;
     }
 
-    public int getBottom() {
-        return bottom;
+    public int getRemain() {
+        return remain;
     }
 
-    public void setBottom(int bottom) {
-        this.bottom = bottom;
-    }
-
-    public int getMiddle() {
-        return middle;
-    }
-
-    public void setMiddle(int middle) {
-        this.middle = middle;
-    }
-
-    public int getTop() {
-        return top;
-    }
-
-    public void setTop(int top) {
-        this.top = top;
+    public void setRemain(int remain) {
+        this.remain = remain;
     }
 }
