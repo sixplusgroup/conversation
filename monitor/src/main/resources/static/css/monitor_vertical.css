@@ -297,7 +297,7 @@
         display: none;
     }
     .location-div{
-        padding:5%;
+        padding: 10% 5% 5% 5%;
     }
     .wind-img {
         width: 8%;
@@ -312,34 +312,35 @@
         margin-left: 3%;
     }
     .init-div {
-        font-size: 20px;
+        font-size: 25px;
+        padding-bottom: 25px;
         overflow: hidden;
         /*padding-left: 5%;*/
         /*padding-right: 5%;*/
     }
     .chinese-label {
-        font-size: 45px;
+        font-size: 50px;
         margin-left: 5%;
     }
     .english-label {
-        font-size: 27px;
+        font-size: 30px;
         margin-left: 3%;
     }
     .content_left_text{
-        font-size: 13px;
+        font-size: 20px;
     }
     .content_middle{
         width:50%;
-        font-size: 24px;
+        font-size: 40px;
     }
     .content_middle_1{
-        font-size: 19px;
+        font-size: 30px;
     }
     .test_value{
-        font-size: 26px;
+        font-size: 30px;
     }
     .test_unit{
-        font-size: 20px;
+        font-size: 28px;
     }
     .footer_text{
         font-size: 20px;
@@ -354,10 +355,10 @@
         text-align: center;
     }
     .indoor-img {
-        width:40%;
+        width:50%;
     }
     .text_unit{
-        font-size: 19px;
+        font-size: 25px;
     }
 
 }
