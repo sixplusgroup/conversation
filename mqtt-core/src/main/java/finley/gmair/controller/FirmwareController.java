@@ -42,10 +42,11 @@ public class FirmwareController {
     }
 
     @GetMapping(value = "/query")
-    public ResultData getFirmware() {
+    public ResultData getFirmware(String version) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
+        condition.put("firmwareVersion", version);
         ResultData response = firmwareService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);

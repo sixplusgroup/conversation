@@ -92,7 +92,7 @@ public class MessageController {
     /*
     * 服务端设置时间
     * 此条指令qos为2
-    * action = settime
+    * action = set_time
     * */
     @PostMapping(value = "/com/config/time")
     public ResultData configTime(String uid, String action, int qos) {
@@ -158,7 +158,7 @@ public class MessageController {
      * 服务端重置滤芯寿命
      * @param remain //表示滤芯剩余寿命
      * 此条指令qos为2
-     * action = setsurplus
+     * action = set_surplus
      * */
     @PostMapping(value = "/com/set/surplus")
     public ResultData setSurplus(String uid, String action, int qos,
@@ -214,7 +214,7 @@ public class MessageController {
     * 1.当APP推送1时，不管设备的滤网是什么状态，强制写入1；
     * 2.当APP推送0X88时，不管设备的滤网还有多少寿命，一律作废
     * 此条指令qos为2
-    * action = setscreen
+    * action = invalid
     * */
     @PostMapping(value = "/com/set/screen")
     public ResultData setScreen(String uid, String action, int qos, Integer valid) {
@@ -276,8 +276,8 @@ public class MessageController {
      * 与上面不同，此接口参数为uid, 可变的component(pm2.5a, pm2.5b...)，以及qos
      * 需要根据component构造相应的action
      * */
-    @PostMapping(value = "/com/require/component/{component}")
-    public ResultData demandSingle(String uid, @PathVariable String component, int qos) {
+    @PostMapping(value = "/com/require/component")
+    public ResultData demandSingle(String uid, String component, int qos) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(component)
                 || StringUtils.isEmpty(qos)) {
