@@ -84,7 +84,7 @@ public class InstallController {
     public ResultData create(AssignForm form) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone())
-                || StringUtils.isEmpty(form.getConsumerAddress())) {
+                || StringUtils.isEmpty(form.getConsumerAddress()) || StringUtils.isEmpty(form.getSource())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请输入所有的安装任务用户相关的信息");
             return result;
@@ -93,23 +93,24 @@ public class InstallController {
         String consumerPhone = form.getConsumerPhone();
         String consumerAddress = form.getConsumerAddress();
         String model = form.getModel();
+        String source = form.getSource();
         if (StringUtils.isEmpty(form.getDescription())) {
-            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model);
+            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source);
         } else {
-
+            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription());
         }
         return result;
     }
 
     @PostMapping("/assign/cancel")
-    public ResultData cancel(String assignId) {
+    public ResultData cancel(String assignId, String message) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(assignId)) {
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(message)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请选择相应的安装任务");
             return result;
         }
-        result = installService.cancelAssign(assignId);
+        result = installService.cancelAssign(assignId, message);
         return result;
     }
 
@@ -145,6 +146,32 @@ public class InstallController {
             return result;
         }
         result = installService.dispatchAssign(assignId, teamId);
+        return result;
+    }
+
+    /**
+     * 调度人员补录安装快照
+     *
+     * @param assignId
+     * @param qrcode
+     * @param picture
+     * @param wifi
+     * @param method
+     * @param description
+     * @return
+     */
+    @PostMapping("/assign/record")
+    public ResultData record(String assignId, String qrcode, String picture, Boolean wifi, String method, String description) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || StringUtils.isEmpty(wifi) || StringUtils.isEmpty(method) || StringUtils.isEmpty(description)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供完整的安装快照的信息");
+            return result;
+        }
+        //提交安装图片源
+
+        //补录安装任务信息
+
         return result;
     }
 

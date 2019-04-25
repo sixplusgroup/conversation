@@ -19,7 +19,7 @@ public interface InstallService {
      * @return
      */
     @PostMapping("/install/assign/create")
-    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model);
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source);
 
     /**
      * 调度人员创建安装任务，带备注
@@ -32,7 +32,7 @@ public interface InstallService {
      * @return
      */
     @PostMapping("/install/assign/create")
-    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam(value = "description", required = false) String description);
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source, @RequestParam(value = "description", required = false) String description);
 
     //调度人员查看已有的安装任务
     @GetMapping("/install/assign/{assignId}/info")
@@ -46,7 +46,7 @@ public interface InstallService {
 
     //调度人员撤销安装任务
     @PostMapping("/install/assign/cancel")
-    ResultData cancelAssign(@RequestParam(value = "assignId") String assignId);
+    ResultData cancelAssign(@RequestParam(value = "assignId") String assignId, @RequestParam("message") String message);
 
     //调度人员将安装任务分配到安装团队
     @PostMapping("/install/assign/dispatch")
