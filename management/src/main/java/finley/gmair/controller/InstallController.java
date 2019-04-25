@@ -194,4 +194,19 @@ public class InstallController {
         result = installService.watch(memberId, teamId);
         return result;
     }
+
+    @GetMapping("/assign/{assignId}/info")
+    public ResultData detail(@PathVariable("assignId") String assignId){
+        return installService.detail(assignId);
+    }
+
+    @GetMapping("/assign/trace")
+    public ResultData trace(@RequestParam("assignId") String assignId){
+        return installService.trace(assignId);
+    }
+
+    @GetMapping("/assign/snapshot")
+    public ResultData snapshot(@RequestParam("assignId") String assignId){
+        return installService.snapshot(assignId);
+    }
 }

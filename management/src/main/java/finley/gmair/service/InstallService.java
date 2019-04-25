@@ -67,4 +67,13 @@ public interface InstallService {
 
     @PostMapping("/install/member/watch/team")
     ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamid);
+
+    @GetMapping("/install/assign/{assignId}/info")
+    ResultData detail(@PathVariable("assignId") String assignId);
+
+    @GetMapping("/install/assign/trace")
+    ResultData trace(@RequestParam("assignId") String assignId);
+
+    @GetMapping("/install/assign/snapshot")
+    ResultData snapshot(@RequestParam("assignId") String assignId);
 }
