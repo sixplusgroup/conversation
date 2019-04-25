@@ -142,7 +142,7 @@ public class MessageController {
         Firmware firmware = ((List<Firmware>)response.getData()).get(0);
         String topic = produceTopic(uid, action);
         JSONObject json = new JSONObject();
-        json.put("newver", newVersion);
+        json.put("newversion", newVersion);
         json.put("link", firmware.getFirmwareLink());
         json.put("force", force);
         try {
