@@ -10,6 +10,7 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,7 @@ public class MessageController {
 
     /*
     * 服务端上报控制指令
+    * led 表示屏显开关，light进行屏幕亮度调节
     * 此条指令qos为2
     * action = cmd
     * */
@@ -265,6 +267,33 @@ public class MessageController {
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Demand report message publishing error with: " + e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 根据服务端需要，获取指定传感器数据
+     * 与上面不同，此接口参数为uid, 可变的component(pm2.5a, pm2.5b...)，以及qos
+     * 需要根据component构造相应的action
+     * */
+    @PostMapping(value = "/com/require/component/{component}")
+    public ResultData demandSingle(String uid, @PathVariable String component, int qos) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(component)
+                || StringUtils.isEmpty(qos)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        //根据指定component构造相应的action
+        String action = new StringBuffer("component/").append(component).toString();
+        String topic = produceTopic(uid, action);
+        JSONObject json = new JSONObject();
+        try {
+            publish(topic, json, qos);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Require single sensor message publishing error with: " + e.getMessage());
         }
         return result;
     }
