@@ -51,6 +51,9 @@ public class AssignController {
     @Autowired
     private AssignCodeService assignCodeService;
 
+    @Autowired
+    private ConfigService configService;
+
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
      *
@@ -224,6 +227,13 @@ public class AssignController {
                 r = assignService.fetch(condition);
                 if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
                 Assign assign = ((List<Assign>) r.getData()).get(0);
+                //判断是否要发送短信
+                condition.clear();
+                condition.put("configComp", "message");
+                condition.put("status", true);
+                condition.put("blockFlag", false);
+                r = configService.fetch(condition);
+                if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
                 //获取短信模板
                 r = messageService.template("NOTIFICATION_DISPATCHED");
                 if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
@@ -489,6 +499,13 @@ public class AssignController {
             ResultData r = assignService.fetch(condition);
             if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
             Assign assign = ((List<Assign>) r.getData()).get(0);
+            //判断是否要发送短信
+            condition.clear();
+            condition.put("configComp", "message");
+            condition.put("status", true);
+            condition.put("blockFlag", false);
+            r = configService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
             //获取短信模板
             r = messageService.template("NOTIFICATION_INSTALL");
             if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
