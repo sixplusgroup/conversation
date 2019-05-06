@@ -159,7 +159,7 @@ public class AssignController {
             result.setDescription("查询安装任务失败，请稍后尝试");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            response.setData(((List) response.getData()).get(0));
+            result.setData(((List) response.getData()).get(0));
         }
         return result;
     }

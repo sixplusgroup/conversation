@@ -422,7 +422,7 @@
         vertical-align: middle;
     }
     .location-img {
-        width:5%;
+        width:4.5%;
     }
     .geer-img {
         width:50%;
@@ -434,7 +434,7 @@
         margin: 0.1%;
     }
     .chinese-label {
-        font-size: 60px;
+        font-size: 58px;
         margin-left: 5%;
     }
     .english-label {
@@ -442,7 +442,7 @@
         margin-left: 3%;
     }
     .content_left_text{
-        font-size: 26px;
+        font-size: 24px;
     }
     .content_middle{
         width:40%;
@@ -470,7 +470,7 @@
         text-align: center;
     }
     .indoor-img {
-        width:58%;
+        width:56%;
     }
     .text_unit{
         font-size: 38px;
