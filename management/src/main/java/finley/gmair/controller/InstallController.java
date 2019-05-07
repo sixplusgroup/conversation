@@ -221,4 +221,17 @@ public class InstallController {
         result = installService.watch(memberId, teamId);
         return result;
     }
+
+    //获取订单流水
+    @GetMapping("/trace")
+    public ResultData trace(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保任务ID信息已提供");
+            return result;
+        }
+        result = installService.trace(assignId);
+        return result;
+    }
 }
