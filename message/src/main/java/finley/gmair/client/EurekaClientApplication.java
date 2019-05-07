@@ -89,7 +89,7 @@ public class EurekaClientApplication {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST, value = "/sent/overview")
-    public ResultData overview(String phone,String starttime,String endtime) {
+    public ResultData overview(String phone, String starttime, String endtime) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(phone)) {
@@ -138,50 +138,6 @@ public class EurekaClientApplication {
             return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
-        return result;
-    }
-
-    /**
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/template/{key}")
-    public ResultData template(@PathVariable("key") String key) {
-        ResultData result = new ResultData();
-        Map<String, Object> condition = new HashMap<>();
-        switch (key.toUpperCase()) {
-            case "REGISTRATION":
-                condition.put("catalog", MessageCatalog.REGISTRATION.getCode());
-                break;
-            case "AUTHENTICATION":
-                condition.put("catalog", MessageCatalog.AUTHENTICATION.getCode());
-                break;
-            case "NOTIFICATION_NOTREACHABLE":
-                condition.put("catalog", MessageCatalog.NOTIFICATION_NOTREACHABLE.getCode());
-                break;
-            case "NOTIFICATION_DELIVERY":
-                condition.put("catalog", MessageCatalog.NOTIFICATION_DELIVERY.getCode());
-                break;
-            case "NOTIFICATION_INSTALLATION":
-                condition.put("catalog", MessageCatalog.NOTIFICATION_INSTALLATION.getCode());
-                break;
-            default:
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription(new StringBuffer("Key: ").append(key).append(" not listed").toString());
-                return result;
-        }
-        condition.put("blockFlag", false);
-        ResultData response = messageTemplateService.fetchTemplate(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to get message template.");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No message template found.");
-            return result;
-        }
         result.setData(response.getData());
         return result;
     }

@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.wechat.UserSession;
 import finley.gmair.service.UserService;
@@ -53,6 +54,7 @@ public class UserController {
         }
         //query the openid by code, via wechat appid & secret
         JSONObject info = WechatUtil.query(appid, secret, code);
+        logger.info(JSON.toJSONString(info));
         if (StringUtils.isEmpty(info) || !info.containsKey("openid") || !info.containsKey("session_key")) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("根据code获取用户的信息失败");

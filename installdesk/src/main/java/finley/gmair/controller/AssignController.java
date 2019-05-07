@@ -1,24 +1,19 @@
 package finley.gmair.controller;
 
-import finley.gmair.dao.AssignActionDao;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
+import finley.gmair.model.message.MessageTemplate;
 import finley.gmair.pool.InstallPool;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.SerialUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +44,15 @@ public class AssignController {
 
     @Autowired
     private AssignSnapshotService assignSnapshotService;
+
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
+    private AssignCodeService assignCodeService;
+
+    @Autowired
+    private ConfigService configService;
 
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
@@ -155,7 +159,7 @@ public class AssignController {
             result.setDescription("查询安装任务失败，请稍后尝试");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            response.setData(((List) response.getData()).get(0));
+            result.setData(((List) response.getData()).get(0));
         }
         return result;
     }
@@ -216,6 +220,28 @@ public class AssignController {
                 Member member = ((List<Member>) r.getData()).get(0);
                 AssignAction action = new AssignAction(assignId, "分派安装任务给安装工人: " + member.getMemberName());
                 assignActionService.create(action);
+                //获取安装任务信息
+                condition.clear();
+                condition.put("assignId", assignId);
+                condition.put("blockFlag", false);
+                r = assignService.fetch(condition);
+                if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+                Assign assign = ((List<Assign>) r.getData()).get(0);
+                //判断是否要发送短信
+                condition.clear();
+                condition.put("configComp", "message");
+                condition.put("status", true);
+                condition.put("blockFlag", false);
+                r = configService.fetch(condition);
+                if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+                //获取短信模板
+                r = messageService.template("NOTIFICATION_DISPATCHED");
+                if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+                MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
+                String candidate = template.getMessage().replaceAll("###", "%s");
+                candidate = String.format(candidate, assign.getDetail(), member.getMemberName(), member.getMemberPhone());
+                //发送短信
+                messageService.send(assign.getConsumerPhone(), candidate);
             });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -466,11 +492,47 @@ public class AssignController {
         InstallPool.getLogExecutor().execute(() -> {
             AssignAction action = new AssignAction(assignId, "安装完成，使用" + method + ", 网络" + ((wifi) ? "已配置" : "未配置") + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
             assignActionService.create(action);
+            //获取安装任务信息
+            condition.clear();
+            condition.put("assignId", assignId);
+            condition.put("blockFlag", false);
+            ResultData r = assignService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            Assign assign = ((List<Assign>) r.getData()).get(0);
+            //判断是否要发送短信
+            condition.clear();
+            condition.put("configComp", "message");
+            condition.put("status", true);
+            condition.put("blockFlag", false);
+            r = configService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            //获取短信模板
+            r = messageService.template("NOTIFICATION_INSTALL");
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
+            String candidate = template.getMessage().replaceAll("###", "%s");
+            String code = SerialUtil.serial(4);
+            //存储安装服务码
+            AssignCode ac = new AssignCode(assignId, code);
+            r = assignCodeService.create(ac);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("Fail to create code for assign");
+                return;
+            }
+            candidate = String.format(candidate, assign.getDetail(), code);
+            //发送短信
+            messageService.send(assign.getConsumerPhone(), candidate);
         });
         result.setDescription("安装任务完成");
         return result;
     }
 
+    /**
+     * 获取安装任务的快照
+     *
+     * @param assignId
+     * @return
+     */
     @GetMapping("/snapshot")
     public ResultData snapshot(String assignId) {
         ResultData result = new ResultData();
@@ -493,6 +555,46 @@ public class AssignController {
             return result;
         }
         result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 安装工人提交服务码
+     *
+     * @param assignId
+     * @param code
+     * @return
+     */
+    @PostMapping("/eval")
+    public ResultData eval(String assignId, String code) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("codeSerial", code);
+        condition.put("blockFlag", false);
+        //调用查询是否存在此服务码和此assignId的记录
+        ResultData response = assignCodeService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务码查询异常，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("服务码错误，请重新输入");
+            return result;
+        }
+        //更新安装任务的状态
+        condition.clear();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.EVALUATED.getValue());
+        condition.put("blockFlag", false);
+        response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("安装任务状态更新异常，请稍后尝试");
+            return result;
+        }
         return result;
     }
 }
