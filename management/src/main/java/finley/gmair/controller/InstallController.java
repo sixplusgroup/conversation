@@ -222,7 +222,12 @@ public class InstallController {
         return result;
     }
 
-    //获取订单流水
+    /**
+     * 获取安装任务的流水信息
+     *
+     * @param assignId 安装任务ID
+     * @return
+     */
     @GetMapping("/trace")
     public ResultData trace(String assignId) {
         ResultData result = new ResultData();
