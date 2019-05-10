@@ -66,5 +66,8 @@ public interface InstallService {
     ResultData fetchTeam(@RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
 
     @PostMapping("/install/member/watch/team")
-    ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamid);
+    ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamId);
+
+    @GetMapping("/install/assign/trace")
+    ResultData trace(@RequestParam("assignId") String assignId);
 }
