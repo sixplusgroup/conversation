@@ -111,4 +111,21 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData fuzzyquery(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List list = sqlSession.selectList("gmair.install.assign.fuzzyquery", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

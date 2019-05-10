@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
 import finley.gmair.model.message.MessageTemplate;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @ClassName: AssignController
@@ -163,6 +165,41 @@ public class AssignController {
         }
         return result;
     }
+
+    /**
+     * 获取安装任务列表，根据输入字符串进行模糊搜索
+     *
+     * @param search
+     * @return
+     */
+    @GetMapping("/fuzzylist")
+    public ResultData list(String search) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        ResultData response;
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        if (pattern.matcher(search).matches()) {//如果search为数字
+            condition.put("consumerPhone", search);
+        } else {
+            condition.put("consumerConsignee", search);
+            condition.put("teamName", search);
+            condition.put("memberName", search);
+        }
+        condition.put("blockFlag", false);
+        response = assignService.fuzzyfetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前没有符合条件的安装任务");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询安装任务失败，请稍后尝试");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
 
     /**
      * 调度人员分配安装工单

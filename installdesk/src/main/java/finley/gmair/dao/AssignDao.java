@@ -13,6 +13,8 @@ public interface AssignDao {
 
     ResultData query(Map<String, Object> condition, int start, int length);
 
+    ResultData fuzzyquery(Map<String, Object> condition);
+
     ResultData update(Map<String, Object> condition);
 
     ResultData block(String assignId);

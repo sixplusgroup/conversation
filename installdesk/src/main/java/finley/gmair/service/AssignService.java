@@ -17,4 +17,7 @@ public interface AssignService {
     ResultData block(String assignId);
 
     ResultData remove(String assignId);
+
+    ResultData fuzzyfetch(Map<String, Object> condition);
+
 }

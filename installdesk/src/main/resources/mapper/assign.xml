@@ -78,6 +78,34 @@
         ORDER BY create_time ASC
     </select>
 
+    <select id="fuzzyquery" parameterType="java.util.Map" resultMap="assignVo">
+        SELECT
+        assign_id,
+        code_value,
+        assign_status,
+        consumer_consignee,
+        consumer_phone,
+        consumer_address,
+        assign_date,
+        block_flag,
+        create_time
+        FROM gmair_install.assign_view
+        <where>
+            <if test="consumerPhone != null">
+                consumer_phone like "%"#{consumerPhone}"%"
+            </if>
+            <if test="consumerConsignee != null">
+                consumer_consignee like "%"#{consumerConsignee}"%"
+                or team_name like "%"#{teamName}"%"
+                or member_name like "%"#{memberName}"%"
+            </if>
+            <if test="blockFlag != null">
+                AND block_flag = #{blockFlag}
+            </if>
+            ORDER BY create_time ASC
+        </where>
+    </select>
+
     <insert id="insert" parameterType="finley.gmair.model.installation.Assign">
         INSERT INTO gmair_install.install_assign (assign_id, code_value, team_id, member_id, assign_status, consumer_consignee, consumer_phone, consumer_address, assign_region, assign_detail, assign_date, assign_source, assign_description, block_flag, create_time)
         VALUES (#{assignId}, #{codeValue}, #{teamId}, #{memberId},
