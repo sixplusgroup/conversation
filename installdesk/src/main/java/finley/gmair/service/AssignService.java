@@ -18,6 +18,6 @@ public interface AssignService {
 
     ResultData remove(String assignId);
 
-    ResultData fuzzyfetch(Map<String, Object> condition);
+    ResultData fuzzyFetch(Map<String, Object> condition);
 
 }

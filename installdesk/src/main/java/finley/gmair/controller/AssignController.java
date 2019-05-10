@@ -186,7 +186,7 @@ public class AssignController {
             condition.put("memberName", search);
         }
         condition.put("blockFlag", false);
-        response = assignService.fuzzyfetch(condition);
+        response = assignService.fuzzyFetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("当前没有符合条件的安装任务");

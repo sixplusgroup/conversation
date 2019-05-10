@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 /**
  * @ClassName: AssignController
  * @Description: TODO
@@ -212,6 +216,24 @@ public class AssignController {
             return result;
         }
         result = assignService.evalAssign(assignId, code);
+        return result;
+    }
+
+    /**
+     * 输入字符串进行模糊搜索,获取安装任务列表
+     *
+     * @param search
+     * @return
+     */
+    @GetMapping("/fuzzylist")
+    public ResultData list(String search) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(search)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("输入不能为空");
+            return result;
+        }
+        result = assignService.fuzzyFetch(search);
         return result;
     }
 }

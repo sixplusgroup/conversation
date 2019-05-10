@@ -12,6 +12,9 @@ public interface AssignService {
     @GetMapping("/install/assign/tasks")
     ResultData fetchAssign(@RequestParam("memberId") String memberId);
 
+    @GetMapping("/install/assign/fuzzylist")
+    ResultData fuzzyFetch(@RequestParam("search") String search);
+
     @GetMapping("/install/assign/tasks")
     ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
 

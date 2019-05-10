@@ -114,7 +114,7 @@ public class AssignServiceImpl implements AssignService {
     }
 
     @Override
-    public ResultData fuzzyfetch(Map<String, Object> condition) {
+    public ResultData fuzzyFetch(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = assignDao.fuzzyquery(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
