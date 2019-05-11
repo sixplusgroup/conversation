@@ -1,11 +1,14 @@
 package finley.gmair.util;
 
 public class MqttInbound {
+
     private String url;
+
     private String username;
+
     private String password;
+
     private String clientId;
-    private String topics;
 
     public String getUrl() {
         return url;
@@ -37,13 +40,5 @@ public class MqttInbound {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
-    }
-
-    public String getTopics() {
-        return topics;
-    }
-
-    public void setTopics(String topics) {
-        this.topics = topics;
     }
 }

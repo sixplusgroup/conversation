@@ -97,9 +97,7 @@ public class MqttConfiguration {
     public MessageProducer inbound() {
         String[] inboundTopic = topicDetail();
         //String[] inboundTopic = {"/FA/GM420/F0FE6BB0CF22/#"};
-        MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(),
-                        inboundTopic);
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopic);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
@@ -128,7 +126,7 @@ public class MqttConfiguration {
 
     /**
      * 获取当前需订阅的所有topic
-     * */
+     */
     private String[] topicDetail() {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
@@ -146,7 +144,7 @@ public class MqttConfiguration {
 
     /**
      * 处理当前message的信息
-     * */
+     */
     private void handle(String topic, JSONObject json) {
         //将topic根据"/"切分为string数组，方便处理
         String[] array = topic.split("/");
@@ -196,7 +194,7 @@ public class MqttConfiguration {
 
     /**
      * 处理警报消息publish
-     * */
+     */
     private void dealAlertMessage(String detail_action, AlertPayload payload) {
         int code = payload.getCode();
         String machineId = payload.getMachineId();
@@ -215,7 +213,7 @@ public class MqttConfiguration {
 
     /**
      * 处理单个传感器数据消息publish
-     * */
+     */
     private void dealSingleSensor(String detail_action, int value) {
         if (detail_action.equals("pm2.5a")) {
 
@@ -239,7 +237,7 @@ public class MqttConfiguration {
 
     /**
      * 处理ack确认消息publish
-     * */
+     */
     private void dealAckMessage(AckPayload payload) {
         if (payload.getCode() == 0) {
             new Thread(() -> {

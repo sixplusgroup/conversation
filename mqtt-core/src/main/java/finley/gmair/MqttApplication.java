@@ -1,4 +1,4 @@
-package finley.gmair.mqtt;
+package finley.gmair;
 
 import finley.gmair.util.MqttProperties;
 import org.springframework.boot.SpringApplication;
