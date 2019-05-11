@@ -196,7 +196,7 @@ public class MqttConfiguration {
                 topic = MQTTUtil.produceTopic(machineId, TopicExtension.SET_TIME);
                 json = new JSONObject();
                 json.put("time", System.currentTimeMillis() / 1000);
-                mqttService.publish(topic, json, 2);
+                mqttService.publish(topic, json);
                 return;
             }
             if (base_action.equals("chk_update")) {
