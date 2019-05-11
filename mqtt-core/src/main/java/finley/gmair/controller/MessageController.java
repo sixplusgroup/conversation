@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.mqtt.Firmware;
 import finley.gmair.service.FirmwareService;
+import finley.gmair.service.MqttService;
 import finley.gmair.util.*;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
@@ -29,10 +30,10 @@ import java.util.*;
 public class MessageController {
 
     @Autowired
-    private MqttProperties mqttProperties;
+    private FirmwareService firmwareService;
 
     @Autowired
-    private FirmwareService firmwareService;
+    private MqttService mqttService;
 
     /*
      * 服务端上报控制指令
@@ -49,7 +50,7 @@ public class MessageController {
             return result;
         }
         //根据uid生成对应的topic
-        String topic = MQTTUtil.produceTopic(uid, TopicExtension.cmd_action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.CMD_ACTION);
 
         //根据字段是否为空，向json push数据
         JSONObject json = new JSONObject();
@@ -75,7 +76,7 @@ public class MessageController {
             json.put("light", light);
         }
         try {
-            publish(topic, json, qos);
+            mqttService.publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Command message publishing error with: " + e.getMessage());
@@ -96,11 +97,11 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, TopicExtension.config_time_action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.SET_TIME);
         JSONObject json = new JSONObject();
         json.put("time", System.currentTimeMillis() / 1000);
         try {
-            publish(topic, json, qos);
+            mqttService.publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Set time message publishing error with: " + e.getMessage());
@@ -131,13 +132,13 @@ public class MessageController {
             return result;
         }
         Firmware firmware = ((List<Firmware>) response.getData()).get(0);
-        String topic = MQTTUtil.produceTopic(uid, TopicExtension.update_action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.UPDATE);
         JSONObject json = new JSONObject();
         json.put("newversion", newVersion);
         json.put("link", firmware.getFirmwareLink());
         json.put("force", force);
         try {
-            publish(topic, json, qos);
+            mqttService.publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Firmware update message publishing error with: " + e.getMessage());
@@ -160,11 +161,11 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, TopicExtension.set_surplus_action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.SET_SURPLUS);
         JSONObject json = new JSONObject();
         json.put("remain", remain);
         try {
-            publish(topic, json, qos);
+            mqttService.publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Reset surplus message publishing error with: " + e.getMessage());
@@ -186,11 +187,11 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, TopicExtension.set_rfid_action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.SET_RFID);
         JSONObject json = new JSONObject();
         json.put("enabled", enabled);
         try {
-            publish(topic, json, qos);
+            mqttService.publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Set rfid message publishing error with: " + e.getMessage());
@@ -213,11 +214,11 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, TopicExtension.set_screen_action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.SET_SCREEN);
         JSONObject json = new JSONObject();
         json.put("invalid", valid);
         try {
-            publish(topic, json, qos);
+            mqttService.publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Set screen message publishing error with: " + e.getMessage());
@@ -242,7 +243,7 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, TopicExtension.report_action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.REPORT);
         JSONArray jsonArray = new JSONArray();
         jsonArray.add("surplus"); //滤芯剩余寿命
         jsonArray.add("status");  //运行状态
@@ -250,7 +251,7 @@ public class MessageController {
         JSONObject json = new JSONObject();
         json.put("item", jsonArray);
         try {
-            publish(topic, json, qos);
+            mqttService.publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Demand report message publishing error with: " + e.getMessage());
@@ -277,45 +278,11 @@ public class MessageController {
         String topic = MQTTUtil.produceTopic(uid, action);
         JSONObject json = new JSONObject();
         try {
-            publish(topic, json, qos);
+            mqttService.publish(topic, json, qos);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Require single sensor message publishing error with: " + e.getMessage());
         }
         return result;
-    }
-
-    /**
-     * 创建mqtt client建立连接
-     */
-    private MqttClient connect() throws MqttException {
-        MqttClient client = new MqttClient(mqttProperties.getOutbound().getUrls(), mqttProperties.getOutbound().getClientId(), new MemoryPersistence());
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setCleanSession(false);
-        options.setKeepAliveInterval(30);
-        options.setConnectionTimeout(10);
-        client.setCallback(new PushCallback());
-        client.connect(options);
-        return client;
-    }
-
-    /**
-     * 利用已建立连接的client完成消息publish
-     */
-    private void publish(String topic, JSONObject object, int qos) throws MqttException {
-        MqttClient client = connect();
-        MqttMessage message = getMessage(object, qos);
-        client.publish(topic, message);
-    }
-
-    /**
-     * 根据json数据build相应的MqttMessage
-     */
-    private MqttMessage getMessage(JSONObject object, int qos) {
-        MqttMessage message = new MqttMessage();
-        message.setQos(qos);
-        message.setRetained(false);
-        message.setPayload(object.toString().getBytes());
-        return message;
     }
 }

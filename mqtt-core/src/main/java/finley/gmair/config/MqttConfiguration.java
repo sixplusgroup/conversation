@@ -5,10 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.controller.MachineController;
 import finley.gmair.model.mqtt.*;
 import finley.gmair.service.LogService;
+import finley.gmair.service.MqttService;
 import finley.gmair.service.TopicService;
-import finley.gmair.util.MqttProperties;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
+import finley.gmair.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ import java.util.Map;
 public class MqttConfiguration {
     private Logger logger = LoggerFactory.getLogger(MqttConfiguration.class);
 
-
     @Autowired
     private MqttProperties mqttProperties;
 
@@ -48,6 +46,9 @@ public class MqttConfiguration {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private MqttService mqttService;
 
     @Value("${inbound_url}")
     private String ip;
@@ -77,8 +78,7 @@ public class MqttConfiguration {
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler mqttOutbound() {
-        MqttPahoMessageHandler messageHandler =
-                new MqttPahoMessageHandler(mqttProperties.getOutbound().getClientId(), mqttClientFactory());
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttProperties.getOutbound().getClientId(), mqttClientFactory());
         messageHandler.setAsync(true);
         //messageHandler.setDefaultTopic(mqttProperties.getOutbound().getTopic());
         return messageHandler;
@@ -115,15 +115,14 @@ public class MqttConfiguration {
         return new MessageHandler() {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
-                System.out.println(message.getHeaders());
-                System.out.println(message.getPayload());
                 MessageHeaders headers = message.getHeaders();
                 String payload = ((String) message.getPayload());
+                logger.info(payload);
                 String topic = headers.get("mqtt_topic").toString();
-
                 //将payload转换为json数据格式，进行进一步处理
-                JSONObject json = JSON.parseObject(payload);
-                handle(topic, json);
+                if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate") == true)
+                    return;
+                handle(topic, JSON.parseObject(payload));
             }
         };
     }
@@ -159,13 +158,18 @@ public class MqttConfiguration {
         if (array.length == 7) {
             //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
             String detail_action = array[6];
-            if (base_action.equals("sensor")) {
-                int value = json.getIntValue("value");
-                dealSingleSensor(detail_action, value);
-            }
-            if (base_action.equals("alert")) {
-                AlertPayload payload = new AlertPayload(machineId, json);
-                dealAlertMessage(detail_action, payload);
+            switch (base_action) {
+                case "sensor":
+                    int value = json.getIntValue("value");
+                    dealSingleSensor(detail_action, value);
+                    break;
+                case "alert":
+                    AlertPayload payload = new AlertPayload(machineId, json);
+                    dealAlertMessage(detail_action, payload);
+                    break;
+                default:
+                    logger.error("Message cannot be handled. Topic: " + topic + ", data: " + json);
+                    break;
             }
         } else {
             if (base_action.equals("sys_status")) {
@@ -187,8 +191,13 @@ public class MqttConfiguration {
                 }
                 dealAckMessage(payload);
             }
+            //服务器端相应设备的同步时钟请求
             if (base_action.equals("get_time")) {
-
+                topic = MQTTUtil.produceTopic(machineId, TopicExtension.SET_TIME);
+                json = new JSONObject();
+                json.put("time", System.currentTimeMillis() / 1000);
+                mqttService.publish(topic, json, 2);
+                return;
             }
             if (base_action.equals("chk_update")) {
 

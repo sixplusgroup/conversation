@@ -5,15 +5,24 @@ import finley.gmair.model.Entity;
 
 import java.sql.Timestamp;
 
-public class SensorPayload {
+public class SensorPayload extends Entity {
+
     private String machineId;
+
     private String id;
+
     private Timestamp time;
+
     private int pm2_5a;
+
     private int pm2_5b;
+
     private int co2;
+
     private int temperature_in;
+
     private int temperature_out;
+
     private int humidity;
 
     public SensorPayload(String machineId, String id, Timestamp time, int pm2_5a, int pm2_5b, int co2, int temperature_in, int temperature_out, int humidity) {
@@ -105,5 +114,6 @@ public class SensorPayload {
     public void setHumidity(int humidity) {
         this.humidity = humidity;
     }
+
 
 }
