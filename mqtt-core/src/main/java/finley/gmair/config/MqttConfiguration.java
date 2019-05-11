@@ -96,7 +96,6 @@ public class MqttConfiguration {
     @Bean
     public MessageProducer inbound() {
         String[] inboundTopic = topicDetail();
-        //String[] inboundTopic = {"/FA/GM420/F0FE6BB0CF22/#"};
         MqttPahoMessageDrivenChannelAdapter adapter =
                 new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(),
                         inboundTopic);
@@ -168,15 +167,15 @@ public class MqttConfiguration {
         } else {
             if (base_action.equals("sys_status")) {
                 StatusPayload payload = new StatusPayload(machineId, json);
-                //todo something
+
             }
             if (base_action.equals("sys_surplus")) {
                 SurplusPayload payload = new SurplusPayload(machineId, json);
-                //todo something
+
             }
             if (base_action.equals("sensor")) {
                 SensorPayload payload = new SensorPayload(machineId, json);
-                //todo something
+
             }
             if (base_action.equals("ack")) {
                 AckPayload payload = new AckPayload(machineId, json);
@@ -186,10 +185,10 @@ public class MqttConfiguration {
                 dealAckMessage(payload);
             }
             if (base_action.equals("get_time")) {
-                //todo set_time interface with machineId
+
             }
             if (base_action.equals("chk_update")) {
-                //todo update interface with machineId
+
             }
         }
     }
