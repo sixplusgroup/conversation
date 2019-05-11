@@ -9,7 +9,6 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,16 +41,15 @@ public class MessageController {
      * action = cmd
      * */
     @PostMapping(value = "/com/config/cmd")
-    public ResultData configPower(String uid, String action, int qos, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer led, Integer light) {
+    public ResultData configPower(String uid, int qos, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer led, Integer light) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
-                || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
         //根据uid生成对应的topic
-        String topic = MQTTUtil.produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.cmd_action);
 
         //根据字段是否为空，向json push数据
         JSONObject json = new JSONObject();
@@ -91,15 +89,14 @@ public class MessageController {
      * action = set_time
      * */
     @PostMapping(value = "/com/config/time")
-    public ResultData configTime(String uid, String action, int qos) {
+    public ResultData configTime(String uid, int qos) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
-                || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.config_time_action);
         JSONObject json = new JSONObject();
         json.put("time", System.currentTimeMillis() / 1000);
         try {
@@ -118,9 +115,9 @@ public class MessageController {
      * action = update
      * */
     @PostMapping(value = "/com/update")
-    public ResultData updateFirmware(String uid, String action, int qos, String newVersion, Integer force) {
+    public ResultData updateFirmware(String uid, int qos, String newVersion, Integer force) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action) || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -134,7 +131,7 @@ public class MessageController {
             return result;
         }
         Firmware firmware = ((List<Firmware>) response.getData()).get(0);
-        String topic = MQTTUtil.produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.update_action);
         JSONObject json = new JSONObject();
         json.put("newversion", newVersion);
         json.put("link", firmware.getFirmwareLink());
@@ -156,15 +153,14 @@ public class MessageController {
      *               action = set_surplus
      */
     @PostMapping(value = "/com/set/surplus")
-    public ResultData setSurplus(String uid, String action, int qos, Integer remain) {
+    public ResultData setSurplus(String uid, int qos, Integer remain) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
-                || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.set_surplus_action);
         JSONObject json = new JSONObject();
         json.put("remain", remain);
         try {
@@ -183,15 +179,14 @@ public class MessageController {
      * action = setrfid
      */
     @PostMapping(value = "/com/set/rfid")
-    public ResultData setRFID(String uid, String action, int qos, Integer enabled) {
+    public ResultData setRFID(String uid, int qos, Integer enabled) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
-                || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.set_rfid_action);
         JSONObject json = new JSONObject();
         json.put("enabled", enabled);
         try {
@@ -211,15 +206,14 @@ public class MessageController {
      * action = invalid
      * */
     @PostMapping(value = "/com/set/screen")
-    public ResultData setScreen(String uid, String action, int qos, Integer valid) {
+    public ResultData setScreen(String uid, int qos, Integer valid) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
-                || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.set_screen_action);
         JSONObject json = new JSONObject();
         json.put("invalid", valid);
         try {
@@ -241,15 +235,14 @@ public class MessageController {
      * action = report
      */
     @PostMapping(value = "/com/demand/report")
-    public ResultData demandReport(String uid, String action, int qos) {
+    public ResultData demandReport(String uid, int qos) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(action)
-                || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = MQTTUtil.produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.report_action);
         JSONArray jsonArray = new JSONArray();
         jsonArray.add("surplus"); //滤芯剩余寿命
         jsonArray.add("status");  //运行状态
