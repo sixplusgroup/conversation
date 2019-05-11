@@ -9,6 +9,8 @@ import finley.gmair.service.TopicService;
 import finley.gmair.util.MqttProperties;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,9 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@PropertySource("classpath:auth.properties")
+@PropertySource({"classpath:auth.properties", "classpath:mqtt.properties"})
 @Configuration
 public class MqttConfiguration {
+    private Logger logger = LoggerFactory.getLogger(MqttConfiguration.class);
+
 
     @Autowired
     private MqttProperties mqttProperties;
@@ -45,7 +49,8 @@ public class MqttConfiguration {
     @Autowired
     private LogService logService;
 
-    private final static String ip = "116.62.233.170";
+    @Value("${inbound_url}")
+    private String ip;
 
     @Value("${username}")
     private String username;
@@ -185,6 +190,7 @@ public class MqttConfiguration {
             }
             if (base_action.equals("get_time")) {
                 //todo set_time interface with machineId
+
             }
             if (base_action.equals("chk_update")) {
                 //todo update interface with machineId

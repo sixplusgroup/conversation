@@ -51,7 +51,7 @@ public class MessageController {
             return result;
         }
         //根据uid生成对应的topic
-        String topic = produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, action);
 
         //根据字段是否为空，向json push数据
         JSONObject json = new JSONObject();
@@ -99,7 +99,7 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, action);
         JSONObject json = new JSONObject();
         json.put("time", System.currentTimeMillis() / 1000);
         try {
@@ -134,7 +134,7 @@ public class MessageController {
             return result;
         }
         Firmware firmware = ((List<Firmware>) response.getData()).get(0);
-        String topic = produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, action);
         JSONObject json = new JSONObject();
         json.put("newversion", newVersion);
         json.put("link", firmware.getFirmwareLink());
@@ -164,7 +164,7 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, action);
         JSONObject json = new JSONObject();
         json.put("remain", remain);
         try {
@@ -191,7 +191,7 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, action);
         JSONObject json = new JSONObject();
         json.put("enabled", enabled);
         try {
@@ -219,7 +219,7 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, action);
         JSONObject json = new JSONObject();
         json.put("invalid", valid);
         try {
@@ -249,7 +249,7 @@ public class MessageController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
-        String topic = produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, action);
         JSONArray jsonArray = new JSONArray();
         jsonArray.add("surplus"); //滤芯剩余寿命
         jsonArray.add("status");  //运行状态
@@ -282,7 +282,7 @@ public class MessageController {
         }
         //根据指定component构造相应的action
         String action = new StringBuffer("component/").append(component).toString();
-        String topic = produceTopic(uid, action);
+        String topic = MQTTUtil.produceTopic(uid, action);
         JSONObject json = new JSONObject();
         try {
             publish(topic, json, qos);
@@ -291,14 +291,6 @@ public class MessageController {
             result.setDescription("Require single sensor message publishing error with: " + e.getMessage());
         }
         return result;
-    }
-
-    /**
-     * 根据uid,action生成相应的topic
-     */
-    private String produceTopic(String uid, String action) {
-        StringBuffer sb = new StringBuffer();
-        return sb.append("/client/FA/").append(uid).append("/").append(action).toString();
     }
 
     /**
