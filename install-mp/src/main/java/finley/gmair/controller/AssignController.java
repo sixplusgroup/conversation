@@ -220,20 +220,48 @@ public class AssignController {
     }
 
     /**
-     * 输入字符串进行模糊搜索,获取安装任务列表
+     * 安装负责人模糊搜索,获取安装任务列表
      *
-     * @param search
+     * @param search，memberId
      * @return
      */
-    @GetMapping("/fuzzylist")
-    public ResultData list(String search) {
+    @GetMapping("/principal")
+    public ResultData principal(String search, String memberId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(search)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("输入不能为空");
             return result;
         }
-        result = assignService.fuzzyFetch(search);
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装负责人的信息");
+            return result;
+        }
+        result = assignService.principal(search, memberId);
+        return result;
+    }
+
+    /**
+     * 安装工人模糊搜索,获取安装任务列表
+     *
+     * @param search，memberId
+     * @return
+     */
+    @GetMapping("/worker")
+    public ResultData worker(String search, String memberId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(search)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("输入不能为空");
+            return result;
+        }
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装工人的信息");
+            return result;
+        }
+        result = assignService.worker(search, memberId);
         return result;
     }
 }

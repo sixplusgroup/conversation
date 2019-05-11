@@ -78,7 +78,7 @@
         ORDER BY create_time ASC
     </select>
 
-    <select id="fuzzyquery" parameterType="java.util.Map" resultMap="assignVo">
+    <select id="principal" parameterType="java.util.Map" resultMap="assignVo">
         SELECT
         assign_id,
         code_value,
@@ -89,21 +89,56 @@
         assign_date,
         block_flag,
         create_time
-        FROM gmair_install.assign_view
-        <where>
-            <if test="consumerPhone != null">
-                consumer_phone like "%"#{consumerPhone}"%"
-            </if>
-            <if test="consumerConsignee != null">
-                consumer_consignee like "%"#{consumerConsignee}"%"
-                or team_name like "%"#{teamName}"%"
-                or member_name like "%"#{memberName}"%"
-            </if>
-            <if test="blockFlag != null">
-                AND block_flag = #{blockFlag}
-            </if>
-            ORDER BY create_time ASC
-        </where>
+        FROM gmair_install.assign_member_view
+        WHERE 1 = 1
+        <if test="teams != null">
+            AND team_id IN
+            <foreach item="item" collection="teams" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="phone != null">
+            AND consumer_phone LIKE #{phone}
+        </if>
+        <if test="consumer != null">
+            AND (consumer_consignee LIKE #{consumer}
+            OR team_name LIKE #{consumer}
+            OR member_name LIKE #{consumer})
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time ASC
+    </select>
+
+    <select id="worker" parameterType="java.util.Map" resultMap="assignVo">
+        SELECT
+        assign_id,
+        code_value,
+        assign_status,
+        consumer_consignee,
+        consumer_phone,
+        consumer_address,
+        assign_date,
+        block_flag,
+        create_time
+        FROM gmair_install.assign_member_view
+        WHERE 1 = 1
+        <if test="memberId != null">
+            AND member_id = #{memberId}
+        </if>
+        <if test="phone != null">
+            AND consumer_phone LIKE #{phone}
+        </if>
+        <if test="consumer != null">
+            AND (consumer_consignee LIKE #{consumer}
+            OR team_name LIKE #{consumer}
+            OR member_name LIKE #{consumer})
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time ASC
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Assign">

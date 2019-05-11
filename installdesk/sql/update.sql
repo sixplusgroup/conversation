@@ -76,4 +76,30 @@ ALTER TABLE `gmair_install`.`install_assign`
   ADD COLUMN `assign_source` VARCHAR(45) NULL
   AFTER `assign_date`;
 
+#2019-5-11
+CREATE VIEW `gmair_install`.`assign_member_view` AS
+    SELECT
+        `install_assign`.`assign_id` AS `assign_id`,
+        `install_assign`.`code_value` AS `code_value`,
+        `install_team`.`team_id` AS `team_id`,
+        `install_team`.`team_name` AS `team_name`,
+        `team_member`.`member_id` AS `member_id`,
+        `team_member`.`member_name` AS `member_name`,
+        `install_assign`.`assign_status` AS `assign_status`,
+        `install_assign`.`assign_date` AS `assign_date`,
+        `install_assign`.`block_flag` AS `block_flag`,
+        `install_assign`.`create_time` AS `create_time`,
+        `install_assign`.`consumer_consignee` AS `consumer_consignee`,
+        `install_assign`.`consumer_phone` AS `consumer_phone`,
+        `install_assign`.`consumer_address` AS `consumer_address`
+    FROM
+        ((`gmair_install`.`install_assign`
+        JOIN `gmair_install`.`install_team`)
+        JOIN `gmair_install`.`team_member`)
+    WHERE
+        ((`gmair_install`.`install_assign`.`team_id` = `gmair_install`.`install_team`.`team_id`)
+            AND (`gmair_install`.`install_assign`.`member_id` = `gmair_install`.`team_member`.`member_id`));
+
+
+
 

@@ -12,11 +12,14 @@ public interface AssignService {
     @GetMapping("/install/assign/tasks")
     ResultData fetchAssign(@RequestParam("memberId") String memberId);
 
-    @GetMapping("/install/assign/fuzzylist")
-    ResultData fuzzyFetch(@RequestParam("search") String search);
-
     @GetMapping("/install/assign/tasks")
     ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
+
+    @GetMapping("/install/assign/principal")
+    ResultData principal(@RequestParam("memberId") String memberId, @RequestParam("search") String search);
+
+    @GetMapping("/install/assign/worker")
+    ResultData worker(@RequestParam("memberId") String memberId, @RequestParam("search") String search);
 
     @PostMapping("/install/assign/assign")
     ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("memberId") String memberId);

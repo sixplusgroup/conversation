@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import static org.apache.el.parser.ELParserConstants.CONCAT;
 
 /**
  * @ClassName: AssignController
@@ -166,27 +169,84 @@ public class AssignController {
         return result;
     }
 
+
     /**
-     * 获取安装任务列表，根据输入字符串进行模糊搜索
+     * 安装负责人模糊搜索，获取安装任务列表
+     *
+     * @param search，memberId
+     * @return
+     */
+    @GetMapping("/principal")
+    public ResultData principal(String search, String memberId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        ResultData response;
+        //查询安装负责人关注的团队列表
+        Map<String, Object> con = new HashMap<>();
+        ResultData res;
+        con.put("memberId", memberId);
+        con.put("blockFlag", false);
+        res = memberService.fetchTeams(con);
+        if (res.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前没有符合条件的安装任务");
+            return result;
+        } else if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询安装任务失败，请稍后尝试");
+            return result;
+        } else if (res.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<TeamWatch> list = (List<TeamWatch>) res.getData();
+            List<String> teams = new ArrayList<>();
+            for (TeamWatch item : list) {
+                teams.add(item.getTeamId());
+            }
+            condition.put("teams", teams);
+            String fuzzysearch = "%" + search + "%";
+            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+            if (pattern.matcher(search).matches()) {//如果search为数字
+                condition.put("phone", fuzzysearch);
+            } else {
+                condition.put("consumer", fuzzysearch);
+            }
+            condition.put("blockFlag", false);
+            response = assignService.principal(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("当前没有符合条件的安装任务");
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("查询安装任务失败，请稍后尝试");
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * 安装工人模糊搜索，获取安装任务列表，
      *
      * @param search
      * @return
      */
-    @GetMapping("/fuzzylist")
-    public ResultData list(String search) {
+    @GetMapping("/worker")
+    public ResultData worker(String search, String memberId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         ResultData response;
+        String fuzzysearch = "%" + search + "%";
         Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
         if (pattern.matcher(search).matches()) {//如果search为数字
-            condition.put("consumerPhone", search);
+            condition.put("phone", fuzzysearch);
         } else {
-            condition.put("consumerConsignee", search);
-            condition.put("teamName", search);
-            condition.put("memberName", search);
+            condition.put("consumer", fuzzysearch);
         }
+        condition.put("memberId", memberId);
         condition.put("blockFlag", false);
-        response = assignService.fuzzyFetch(condition);
+        response = assignService.worker(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("当前没有符合条件的安装任务");
@@ -199,7 +259,6 @@ public class AssignController {
         }
         return result;
     }
-
 
     /**
      * 调度人员分配安装工单
