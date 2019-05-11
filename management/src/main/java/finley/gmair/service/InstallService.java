@@ -70,4 +70,16 @@ public interface InstallService {
 
     @GetMapping("/install/assign/trace")
     ResultData trace(@RequestParam("assignId") String assignId);
+
+    @GetMapping("/install/member/list")
+    ResultData fetchTeamMember(@RequestParam("teamId") String teamId);
+
+    @PostMapping("/install/member/create")
+    ResultData createTeamMember(@RequestParam("teamId") String teamId, @RequestParam("memberPhone") String memberPhone, @RequestParam("memberName") String memberName, @RequestParam("memberRole") int memberRole);
+
+    @PostMapping("/install/member/update")
+    ResultData updatePhone(@RequestParam("memberPhone") String memberPhone, @RequestParam("memberId") String memberId);
+
+    @GetMapping("/install/member/block")
+    ResultData deleteMember(@RequestParam("memberId") String memberId);
 }

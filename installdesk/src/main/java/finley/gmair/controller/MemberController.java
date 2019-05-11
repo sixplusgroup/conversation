@@ -82,6 +82,7 @@ public class MemberController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("teamId", teamId);
+        condition.put("blockFlag",false);
         ResultData response = memberService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -210,4 +211,58 @@ public class MemberController {
 
         return result;
     }
+
+    /**
+     * 修改成员联系方式
+     * @param memberPhone
+     * @return
+     */
+    @PostMapping("/update")
+    public ResultData update(String memberPhone,String memberId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberPhone)||StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确认memberId和memberPhone均已提供");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("memberId", memberId);
+        condition.put("memberPhone", memberPhone);
+        condition.put("blockFlag", false);
+        ResultData response = memberService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("联系方式修改成功");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("修改联系方式失败，请稍后尝试");
+        }
+        return result;
+    }
+
+    /**
+     * 根据memberId删除成员
+     * @param memberId
+     * @return
+     */
+
+    @GetMapping("/block")
+    public ResultData block(String memberId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供成员ID");
+            return result;
+        }
+        ResultData response = memberService.block(memberId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("团队成员删除成功");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("团队成员删除失败，请稍后尝试");
+        }
+        return result;
+    }
+
 }

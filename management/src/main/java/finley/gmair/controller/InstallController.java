@@ -239,4 +239,74 @@ public class InstallController {
         result = installService.trace(assignId);
         return result;
     }
+
+    /**
+     * 根据teamId获取团队成员信息
+     *
+     * @param teamId
+     * @return
+     */
+    @GetMapping("/team/member")
+    public ResultData obtainTeamMember(String teamId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(teamId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保团队ID信息已提供");
+            return result;
+        }
+        result = installService.fetchTeamMember(teamId);
+        return result;
+    }
+    /**
+     * 创建团队成员
+     *
+     * @param teamId
+     * @param memberPhone
+     * @param memberName
+     * @param memberRole
+     * @return
+     */
+
+    @PostMapping("/member/create")
+    public ResultData createTeamMember(String teamId,String memberPhone,String memberName,int memberRole) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(teamId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保团队ID信息已提供");
+            return result;
+        }
+        result = installService.createTeamMember(teamId,memberPhone,memberName,memberRole);
+        return result;
+    }
+
+    /**
+     * 修改联系方式
+     * @param memberPhone
+     * @param memberId
+     * @return
+     */
+
+    @PostMapping("/member/update")
+    public ResultData updatePhone(String memberPhone,String memberId){
+        ResultData result=new ResultData();
+        if(StringUtils.isEmpty(memberId)||StringUtils.isEmpty(memberPhone)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保输入了正确的memberId和需要更新的联系方式");
+            return result;
+        }
+        result=installService.updatePhone(memberPhone,memberId);
+        return result;
+    }
+
+    @GetMapping("/member/block")
+    public ResultData deleteMember(String memberId){
+        ResultData result=new ResultData();
+        if(StringUtils.isEmpty(memberId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请输入成员ID");
+            return result;
+        }
+        result=installService.deleteMember(memberId);
+        return result;
+    }
 }
