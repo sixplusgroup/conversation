@@ -90,18 +90,18 @@ public class MessageController {
      * action = set_time
      * */
     @PostMapping(value = "/com/config/time")
-    public ResultData configTime(String uid, int qos) {
+    public ResultData configTime(String uid) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure you fill all the required fields");
+            result.setDescription("请提供设备相关的信息");
             return result;
         }
         String topic = MQTTUtil.produceTopic(uid, TopicExtension.SET_TIME);
         JSONObject json = new JSONObject();
         json.put("time", System.currentTimeMillis() / 1000);
         try {
-            mqttService.publish(topic, json, qos);
+            mqttService.publish(topic, json, 2);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Set time message publishing error with: " + e.getMessage());
