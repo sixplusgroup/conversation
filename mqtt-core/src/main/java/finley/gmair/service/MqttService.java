@@ -15,5 +15,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface MqttService {
 
-    ResultData publish(String topic, JSONObject object, int qos);
+    ResultData publish(String topic, JSONObject object);
 }

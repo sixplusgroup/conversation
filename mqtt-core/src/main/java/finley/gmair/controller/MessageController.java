@@ -42,9 +42,9 @@ public class MessageController {
      * action = cmd
      * */
     @PostMapping(value = "/com/config/cmd")
-    public ResultData configPower(String uid, int qos, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer led, Integer light) {
+    public ResultData configPower(String uid, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer led, Integer light) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -76,7 +76,7 @@ public class MessageController {
             json.put("light", light);
         }
         try {
-            mqttService.publish(topic, json, qos);
+            mqttService.publish(topic, json);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Command message publishing error with: " + e.getMessage());
@@ -101,7 +101,7 @@ public class MessageController {
         JSONObject json = new JSONObject();
         json.put("time", System.currentTimeMillis() / 1000);
         try {
-            mqttService.publish(topic, json, 2);
+            mqttService.publish(topic, json);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Set time message publishing error with: " + e.getMessage());
@@ -116,9 +116,9 @@ public class MessageController {
      * action = update
      * */
     @PostMapping(value = "/com/update")
-    public ResultData updateFirmware(String uid, int qos, String newVersion, Integer force) {
+    public ResultData updateFirmware(String uid, String newVersion, Integer force) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -138,7 +138,7 @@ public class MessageController {
         json.put("link", firmware.getFirmwareLink());
         json.put("force", force);
         try {
-            mqttService.publish(topic, json, qos);
+            mqttService.publish(topic, json);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Firmware update message publishing error with: " + e.getMessage());
@@ -154,9 +154,9 @@ public class MessageController {
      *               action = set_surplus
      */
     @PostMapping(value = "/com/set/surplus")
-    public ResultData setSurplus(String uid, int qos, Integer remain) {
+    public ResultData setSurplus(String uid, Integer remain) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -165,7 +165,7 @@ public class MessageController {
         JSONObject json = new JSONObject();
         json.put("remain", remain);
         try {
-            mqttService.publish(topic, json, qos);
+            mqttService.publish(topic, json);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Reset surplus message publishing error with: " + e.getMessage());
@@ -180,9 +180,9 @@ public class MessageController {
      * action = setrfid
      */
     @PostMapping(value = "/com/set/rfid")
-    public ResultData setRFID(String uid, int qos, Integer enabled) {
+    public ResultData setRFID(String uid, Integer enabled) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -191,7 +191,7 @@ public class MessageController {
         JSONObject json = new JSONObject();
         json.put("enabled", enabled);
         try {
-            mqttService.publish(topic, json, qos);
+            mqttService.publish(topic, json);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Set rfid message publishing error with: " + e.getMessage());
@@ -207,9 +207,9 @@ public class MessageController {
      * action = invalid
      * */
     @PostMapping(value = "/com/set/screen")
-    public ResultData setScreen(String uid, int qos, Integer valid) {
+    public ResultData setScreen(String uid, Integer valid) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -218,7 +218,7 @@ public class MessageController {
         JSONObject json = new JSONObject();
         json.put("invalid", valid);
         try {
-            mqttService.publish(topic, json, qos);
+            mqttService.publish(topic, json);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Set screen message publishing error with: " + e.getMessage());
@@ -236,9 +236,9 @@ public class MessageController {
      * action = report
      */
     @PostMapping(value = "/com/demand/report")
-    public ResultData demandReport(String uid, int qos) {
+    public ResultData demandReport(String uid) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -251,7 +251,7 @@ public class MessageController {
         JSONObject json = new JSONObject();
         json.put("item", jsonArray);
         try {
-            mqttService.publish(topic, json, qos);
+            mqttService.publish(topic, json);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Demand report message publishing error with: " + e.getMessage());
@@ -265,10 +265,9 @@ public class MessageController {
      * 需要根据component构造相应的action
      */
     @PostMapping(value = "/com/require/component")
-    public ResultData demandSingle(String uid, String component, int qos) {
+    public ResultData demandSingle(String uid, String component) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(component)
-                || StringUtils.isEmpty(qos)) {
+        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(component)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -278,7 +277,7 @@ public class MessageController {
         String topic = MQTTUtil.produceTopic(uid, action);
         JSONObject json = new JSONObject();
         try {
-            mqttService.publish(topic, json, qos);
+            mqttService.publish(topic, json);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Require single sensor message publishing error with: " + e.getMessage());

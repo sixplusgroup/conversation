@@ -35,10 +35,10 @@ public class MqttServiceImpl implements MqttService {
     }
 
     @Override
-    public ResultData publish(String topic, JSONObject object, int qos) {
+    public ResultData publish(String topic, JSONObject object) {
         ResultData result = new ResultData();
         if (client == null) init();
-        MqttMessage message = getMessage(object, qos);
+        MqttMessage message = getMessage(object);
         try {
             client.publish(topic, message);
         } catch (Exception e) {
@@ -64,9 +64,9 @@ public class MqttServiceImpl implements MqttService {
     /**
      * 根据json数据build相应的MqttMessage
      */
-    private MqttMessage getMessage(JSONObject object, int qos) {
+    private MqttMessage getMessage(JSONObject object) {
         MqttMessage message = new MqttMessage();
-        message.setQos(qos);
+        message.setQos(2);
         message.setRetained(false);
         message.setPayload(object.toString().getBytes());
         return message;
