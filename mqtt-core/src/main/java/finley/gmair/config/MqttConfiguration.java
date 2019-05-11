@@ -9,6 +9,8 @@ import finley.gmair.service.TopicService;
 import finley.gmair.util.MqttProperties;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,9 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@PropertySource("classpath:auth.properties")
+@PropertySource({"classpath:auth.properties", "classpath:mqtt.properties"})
 @Configuration
 public class MqttConfiguration {
+    private Logger logger = LoggerFactory.getLogger(MqttConfiguration.class);
+
 
     @Autowired
     private MqttProperties mqttProperties;
@@ -45,7 +49,8 @@ public class MqttConfiguration {
     @Autowired
     private LogService logService;
 
-    private final static String ip = "116.62.233.170";
+    @Value("${inbound_url}")
+    private String ip;
 
     @Value("${username}")
     private String username;
@@ -96,9 +101,7 @@ public class MqttConfiguration {
     @Bean
     public MessageProducer inbound() {
         String[] inboundTopic = topicDetail();
-        MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(),
-                        inboundTopic);
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopic);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
@@ -127,7 +130,7 @@ public class MqttConfiguration {
 
     /**
      * 获取当前需订阅的所有topic
-     * */
+     */
     private String[] topicDetail() {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
@@ -145,7 +148,7 @@ public class MqttConfiguration {
 
     /**
      * 处理当前message的信息
-     * */
+     */
     private void handle(String topic, JSONObject json) {
         //将topic根据"/"切分为string数组，方便处理
         String[] array = topic.split("/");
@@ -195,7 +198,7 @@ public class MqttConfiguration {
 
     /**
      * 处理警报消息publish
-     * */
+     */
     private void dealAlertMessage(String detail_action, AlertPayload payload) {
         int code = payload.getCode();
         String machineId = payload.getMachineId();
@@ -214,7 +217,7 @@ public class MqttConfiguration {
 
     /**
      * 处理单个传感器数据消息publish
-     * */
+     */
     private void dealSingleSensor(String detail_action, int value) {
         if (detail_action.equals("pm2.5a")) {
 
@@ -238,7 +241,7 @@ public class MqttConfiguration {
 
     /**
      * 处理ack确认消息publish
-     * */
+     */
     private void dealAckMessage(AckPayload payload) {
         if (payload.getCode() == 0) {
             new Thread(() -> {

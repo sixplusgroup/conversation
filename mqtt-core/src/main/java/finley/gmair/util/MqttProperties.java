@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.mqtt")
 public class MqttProperties {
     private MqttInbound inbound;
+    
     private MqttOutbound outbound;
 
     public MqttInbound getInbound() {
