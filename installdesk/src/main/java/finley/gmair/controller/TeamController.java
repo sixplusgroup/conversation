@@ -97,4 +97,21 @@ public class TeamController {
         }
         return result;
     }
+
+    @GetMapping("/block")
+    public ResultData block(String teamId){
+        ResultData result = new ResultData();
+        ResultData response = teamService.block(teamId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("没有找到要删除的团队");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("删除团队失败，请稍后尝试");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
 }

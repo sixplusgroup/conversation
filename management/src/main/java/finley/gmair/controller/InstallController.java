@@ -298,6 +298,12 @@ public class InstallController {
         return result;
     }
 
+    /**
+     * 根据memberId删除成员
+     * @param memberId
+     * @return
+     */
+
     @GetMapping("/member/block")
     public ResultData deleteMember(String memberId){
         ResultData result=new ResultData();
@@ -307,6 +313,35 @@ public class InstallController {
             return result;
         }
         result=installService.deleteMember(memberId);
+        return result;
+    }
+
+    /**
+     * 管理员获取任务快照
+     * @param assignId
+     * @return
+     */
+    @GetMapping("/assign/snapshot")
+    public ResultData snapshot(String assignId){
+        ResultData result=new ResultData();
+        if(StringUtils.isEmpty(assignId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请输入任务ID");
+            return result;
+        }
+        result=installService.snapshot(assignId);
+        return result;
+    }
+
+    @GetMapping("/team/block")
+    public ResultData deleteTeam(String teamId){
+        ResultData result=new ResultData();
+        if(StringUtils.isEmpty(teamId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供团队ID");
+            return result;
+        }
+        result=installService.deleteTeam(teamId);
         return result;
     }
 }

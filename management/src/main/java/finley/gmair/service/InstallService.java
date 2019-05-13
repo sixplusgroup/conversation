@@ -82,4 +82,10 @@ public interface InstallService {
 
     @GetMapping("/install/member/block")
     ResultData deleteMember(@RequestParam("memberId") String memberId);
+
+    @GetMapping("/install/assign/snapshot")
+    ResultData snapshot(@RequestParam("assignId") String assignId);
+
+    @GetMapping("/install/team/block")
+    ResultData deleteTeam(@RequestParam("teamId") String teamId);
 }
