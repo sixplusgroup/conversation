@@ -42,7 +42,7 @@ public class MessageController {
      * action = cmd
      * */
     @PostMapping(value = "/com/config/cmd")
-    public ResultData configPower(String uid, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer led, Integer light) {
+    public ResultData configPower(String uid, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer light) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -69,10 +69,9 @@ public class MessageController {
         if (!StringUtils.isEmpty(childlock)) {
             json.put("childlock", childlock);
         }
-        if (!StringUtils.isEmpty(led)) {
-            json.put("led", led);
-        }
-        if (!StringUtils.isEmpty(light)) {
+        if (!StringUtils.isEmpty(light) && light == 0) {
+            json.put("led", 0);
+        } else {
             json.put("light", light);
         }
         try {

@@ -6,6 +6,7 @@ import finley.gmair.controller.MachineController;
 import finley.gmair.model.mqtt.*;
 import finley.gmair.service.LogService;
 import finley.gmair.service.MqttService;
+import finley.gmair.service.RedisService;
 import finley.gmair.service.TopicService;
 import finley.gmair.util.*;
 import org.slf4j.Logger;
@@ -25,7 +26,6 @@ import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +58,9 @@ public class MqttConfiguration {
 
     @Value("${password}")
     private String password;
+
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 实现MqttOutbound
@@ -117,7 +120,6 @@ public class MqttConfiguration {
             public void handleMessage(Message<?> message) throws MessagingException {
                 MessageHeaders headers = message.getHeaders();
                 String payload = ((String) message.getPayload());
-                logger.info(payload);
                 String topic = headers.get("mqtt_topic").toString();
                 //将payload转换为json数据格式，进行进一步处理
                 if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate") == true)
@@ -174,15 +176,20 @@ public class MqttConfiguration {
         } else {
             if (base_action.equals("sys_status")) {
                 StatusPayload payload = new StatusPayload(machineId, json);
-
+                logger.info("sys_status: " + JSON.toJSONString(payload));
             }
             if (base_action.equals("sys_surplus")) {
                 SurplusPayload payload = new SurplusPayload(machineId, json);
-
+                logger.info("sys_surplus: " + JSON.toJSONString(payload));
             }
+            //传感器数据上传
             if (base_action.equals("sensor")) {
                 SensorPayload payload = new SensorPayload(machineId, json);
-
+                if (payload == null) {
+                    logger.error("该报文无法正常解析");
+                    return;
+                }
+                logger.info("sensor: " + JSON.toJSONString(payload));
             }
             if (base_action.equals("ack")) {
                 AckPayload payload = new AckPayload(machineId, json);
@@ -196,7 +203,7 @@ public class MqttConfiguration {
                 topic = MQTTUtil.produceTopic(machineId, TopicExtension.SET_TIME);
                 json = new JSONObject();
                 json.put("time", System.currentTimeMillis() / 1000);
-                mqttService.publish(topic, json, 2);
+                mqttService.publish(topic, json);
                 return;
             }
             if (base_action.equals("chk_update")) {

@@ -1,11 +1,13 @@
 package finley.gmair.model.mqtt;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import finley.gmair.model.Entity;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class SensorPayload extends Entity {
+public class SensorPayload extends Entity implements Serializable {
 
     private String machineId;
 
@@ -37,10 +39,8 @@ public class SensorPayload extends Entity {
         this.humidity = humidity;
     }
 
-    public SensorPayload(String machineId, JSONObject object) {
-        this(machineId, object.getString("id"), new Timestamp(object.getLong("time")), object.getIntValue("pm2.5a"),
-                object.getIntValue("pm2.5b"), object.getIntValue("co2"), object.getIntValue("temp"),
-                object.getIntValue("temp_out"), object.getIntValue("humidity"));
+    public SensorPayload(String machineId, JSONObject json) {
+        this(machineId, json.getString("id"), new Timestamp(json.getLong("time")), json.getIntValue("pm2.5a"), json.getIntValue("pm2.5b"), json.getIntValue("co2"), json.getIntValue("temp"), json.getIntValue("temp_out"), json.getIntValue("humidity"));
     }
 
     public String getMachineId() {
@@ -115,5 +115,8 @@ public class SensorPayload extends Entity {
         this.humidity = humidity;
     }
 
-
+    @Override
+    public String toString() {
+        return JSONObject.toJSONString(this, SerializerFeature.DisableCircularReferenceDetect);
+    }
 }
