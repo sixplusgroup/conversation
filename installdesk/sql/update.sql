@@ -97,7 +97,8 @@ CREATE VIEW `gmair_install`.`assign_member_view` AS
         JOIN `gmair_install`.`install_team`)
         JOIN `gmair_install`.`team_member`)
     WHERE
-        ((`gmair_install`.`install_assign`.`team_id` = `gmair_install`.`install_team`.`team_id`)
+        ((`gmair_install`.`install_assign`.`block_flag` = FALSE)
+            AND (`gmair_install`.`install_assign`.`team_id` = `gmair_install`.`install_team`.`team_id`)
             AND (`gmair_install`.`install_assign`.`member_id` = `gmair_install`.`team_member`.`member_id`));
 
 
