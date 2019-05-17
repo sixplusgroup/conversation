@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 @EnableMongoRepositories(basePackages = "finley.gmair.repo")
 @EnableFeignClients({"finley.gmair.service"})
 @EnableEurekaClient
-@ComponentScan({"finley.gmair.config", "finley.gmair.util", "finley.gmair.dao", "finley.gmair.service", "finley.gmair.controller"})
 public class MqttApplication {
     public static void main(String[] args) {
         SpringApplication.run(MqttApplication.class, args);

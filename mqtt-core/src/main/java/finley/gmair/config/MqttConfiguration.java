@@ -174,13 +174,16 @@ public class MqttConfiguration {
                     break;
             }
         } else {
+            if (base_action.equals("allrep")) {
+                logger.info("allrep: " + json);
+            }
             if (base_action.equals("sys_status")) {
                 StatusPayload payload = new StatusPayload(machineId, json);
-                logger.info("sys_status: " + JSON.toJSONString(payload));
+//                logger.info("sys_status: " + JSON.toJSONString(payload));
             }
             if (base_action.equals("sys_surplus")) {
                 SurplusPayload payload = new SurplusPayload(machineId, json);
-                logger.info("sys_surplus: " + JSON.toJSONString(payload));
+//                logger.info("sys_surplus: " + JSON.toJSONString(payload));
             }
             //传感器数据上传
             if (base_action.equals("sensor")) {
@@ -189,7 +192,7 @@ public class MqttConfiguration {
                     logger.error("该报文无法正常解析");
                     return;
                 }
-                logger.info("sensor: " + JSON.toJSONString(payload));
+//                logger.info("sensor: " + JSON.toJSONString(payload));
             }
             if (base_action.equals("ack")) {
                 AckPayload payload = new AckPayload(machineId, json);
@@ -197,6 +200,7 @@ public class MqttConfiguration {
                     payload.setError(json.getString("error"));
                 }
                 dealAckMessage(payload);
+                logger.info("ack: " + JSON.toJSONString(payload));
             }
             //服务器端相应设备的同步时钟请求
             if (base_action.equals("get_time")) {
