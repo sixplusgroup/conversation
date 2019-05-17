@@ -87,10 +87,14 @@
         consumer_phone,
         consumer_address,
         assign_date,
+        assign_detail,
         block_flag,
         create_time
         FROM gmair_install.assign_member_view
         WHERE 1 = 1
+        <if test="assignStatus != null">
+            AND assign_status = #{assignStatus}
+        </if>
         <if test="teams != null">
             AND team_id IN
             <foreach item="item" collection="teams" separator="," open="(" close=")">
@@ -120,12 +124,16 @@
         consumer_phone,
         consumer_address,
         assign_date,
+        assign_detail,
         block_flag,
         create_time
         FROM gmair_install.assign_member_view
         WHERE 1 = 1
         <if test="memberId != null">
             AND member_id = #{memberId}
+        </if>
+        <if test="assignStatus != null">
+            AND assign_status = #{assignStatus}
         </if>
         <if test="phone != null">
             AND consumer_phone LIKE #{phone}

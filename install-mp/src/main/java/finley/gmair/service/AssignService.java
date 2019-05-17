@@ -13,13 +13,7 @@ public interface AssignService {
     ResultData fetchAssign(@RequestParam("memberId") String memberId);
 
     @GetMapping("/install/assign/tasks")
-    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
-
-    @GetMapping("/install/assign/principal")
-    ResultData principal(@RequestParam("memberId") String memberId, @RequestParam("search") String search);
-
-    @GetMapping("/install/assign/worker")
-    ResultData worker(@RequestParam("memberId") String memberId, @RequestParam("search") String search);
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search);
 
     @PostMapping("/install/assign/assign")
     ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("memberId") String memberId);
@@ -28,7 +22,7 @@ public interface AssignService {
     ResultData fetchOwnAssign(@RequestParam("memberId") String memberId);
 
     @GetMapping("/install/assign/overview")
-    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
+    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search);
 
     @PostMapping("/install/assign/recall")
     ResultData recallAssign(@RequestParam("assignId") String assignId, @RequestParam("message") String message);

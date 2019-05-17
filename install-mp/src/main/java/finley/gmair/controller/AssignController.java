@@ -41,18 +41,14 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData assigns(String memberId, Integer status) {
+    public ResultData assigns(String memberId, Integer status, String search) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装负责人的信息");
             return result;
         }
-        if (status == null) {
-            result = assignService.fetchAssign(memberId);
-        } else {
-            result = assignService.fetchAssign(memberId, status);
-        }
+        result = assignService.fetchAssign(memberId, status, search);
         return result;
     }
 
@@ -70,18 +66,14 @@ public class AssignController {
     }
 
     @GetMapping("/own")
-    public ResultData overview(String memberId, Integer status) {
+    public ResultData overview(String memberId, Integer status, String search) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装工人的信息");
             return result;
         }
-        if (status == null) {
-            result = assignService.fetchOwnAssign(memberId);
-        } else {
-            result = assignService.fetchOwnAssign(memberId, status);
-        }
+        result = assignService.fetchOwnAssign(memberId, status, search);
         return result;
     }
 
@@ -216,52 +208,6 @@ public class AssignController {
             return result;
         }
         result = assignService.evalAssign(assignId, code);
-        return result;
-    }
-
-    /**
-     * 安装负责人模糊搜索,获取安装任务列表
-     *
-     * @param search，memberId
-     * @return
-     */
-    @GetMapping("/principal")
-    public ResultData principal(String search, String memberId) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(search)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("输入不能为空");
-            return result;
-        }
-        if (StringUtils.isEmpty(memberId)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请提供安装负责人的信息");
-            return result;
-        }
-        result = assignService.principal(search, memberId);
-        return result;
-    }
-
-    /**
-     * 安装工人模糊搜索,获取安装任务列表
-     *
-     * @param search，memberId
-     * @return
-     */
-    @GetMapping("/worker")
-    public ResultData worker(String search, String memberId) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(search)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("输入不能为空");
-            return result;
-        }
-        if (StringUtils.isEmpty(memberId)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请提供安装工人的信息");
-            return result;
-        }
-        result = assignService.worker(search, memberId);
         return result;
     }
 }

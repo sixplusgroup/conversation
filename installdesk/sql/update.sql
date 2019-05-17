@@ -76,11 +76,12 @@ ALTER TABLE `gmair_install`.`install_assign`
   ADD COLUMN `assign_source` VARCHAR(45) NULL
   AFTER `assign_date`;
 
-#2019-5-11
+#2019-5-17
 CREATE VIEW `gmair_install`.`assign_member_view` AS
     SELECT
         `install_assign`.`assign_id` AS `assign_id`,
         `install_assign`.`code_value` AS `code_value`,
+        `install_assign`.`assign_detail` AS `assign_detail`,
         `install_team`.`team_id` AS `team_id`,
         `install_team`.`team_name` AS `team_name`,
         `team_member`.`member_id` AS `member_id`,
