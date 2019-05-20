@@ -1,6 +1,9 @@
 package finley.gmair.util;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.v3.MachineStatusV3;
+import finley.gmair.pool.CorePool;
+import finley.gmair.service.MqttService;
 import org.springframework.util.StringUtils;
 
 /**
@@ -18,15 +21,13 @@ public class MQTTUtil {
         return sb.append("/client/FA/").append(uid).append("/").append(action).toString();
     }
 
-    public static MachineStatusV3 merge(MachineStatusV3 origin, MachineStatusV3 current) {
-        MachineStatusV3 result = new MachineStatusV3();
-        if (StringUtils.isEmpty(current.getCo2())) {
-            result.setCo2(origin.getCo2());
-        }
-        if (StringUtils.isEmpty(current.getHeat())) {
-            result.setHeat(origin.getHeat());
-        }
-
-        return result;
+    public static boolean publishTimeSyncTopic(final MqttService service, final String machineId) {
+        String topic = produceTopic(machineId, TopicExtension.SET_TIME);
+        JSONObject json = new JSONObject();
+        json.put("time", System.currentTimeMillis() / 1000);
+        CorePool.getComPool().execute(() -> {
+            service.publish(topic, json);
+        });
+        return true;
     }
 }

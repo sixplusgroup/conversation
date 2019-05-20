@@ -8,6 +8,6 @@ package finley.gmair.util;
  */
 public class TimeUtil {
     public static boolean exceed(long t1, long t2, int duration) {
-        return Math.abs(t1 - t2) / 1000 >= duration;
+        return Math.abs(t1 - t2) / 1000 > duration;
     }
 }

@@ -1,8 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.MqttCommunicationDao;
-import finley.gmair.model.machine.MachineSensorData;
-import finley.gmair.model.machine.MachineStateData;
+import finley.gmair.model.machine.MachineStatusV3;
 import finley.gmair.service.MqttCommunicationService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -16,28 +15,15 @@ public class MqttCommunicationServiceImpl implements MqttCommunicationService {
     private MqttCommunicationDao communicationDao;
 
     @Override
-    public ResultData createStateData(MachineStateData stateData) {
+    public ResultData create(MachineStatusV3 status) {
         ResultData result = new ResultData();
-        ResultData response = communicationDao.insertMachineStateData(stateData);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        ResultData response = communicationDao.insertV3(status);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to insert machine state data");
-            return result;
+            result.setDescription(response.getDescription());
         }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        return result;
-    }
-
-    @Override
-    public ResultData createSensorData(MachineSensorData sensorData) {
-        ResultData result = new ResultData();
-        ResultData response = communicationDao.insertMachineSensorData(sensorData);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to insert machine sensor data");
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
         return result;
     }
 }

@@ -3,7 +3,11 @@ package finley.gmair.config;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.controller.MachineController;
+import finley.gmair.datastructrue.LimitQueue;
+import finley.gmair.model.machine.MachineStatusV3;
 import finley.gmair.model.mqtt.*;
+import finley.gmair.pool.CorePool;
+import finley.gmair.repo.MachineStatusV3Repository;
 import finley.gmair.service.LogService;
 import finley.gmair.service.MqttService;
 import finley.gmair.service.RedisService;
@@ -62,6 +66,9 @@ public class MqttConfiguration {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private MachineStatusV3Repository repository;
+
     /**
      * 实现MqttOutbound
      */
@@ -119,6 +126,11 @@ public class MqttConfiguration {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
                 MessageHeaders headers = message.getHeaders();
+                //判断是否要丢弃报文
+                if (TimeUtil.exceed(headers.getTimestamp(), System.currentTimeMillis(), 300)) {
+                    logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
+                    return;
+                }
                 String payload = ((String) message.getPayload());
                 String topic = headers.get("mqtt_topic").toString();
                 //将payload转换为json数据格式，进行进一步处理
@@ -156,6 +168,13 @@ public class MqttConfiguration {
         //根据定义的topic格式，获取message对应的machineId
         String machineId = array[2];
         String base_action = array[5];
+        //检查报文中的时间戳内容
+        if (json.containsKey("time")) {
+            if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
+                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
+                logger.info("send message to sync time for client: " + machineId);
+            }
+        }
         //对于长度为7的topic，只有上传单项传感器数据和警报处理
         if (array.length == 7) {
             //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
@@ -176,6 +195,19 @@ public class MqttConfiguration {
         } else {
             if (base_action.equals("allrep")) {
                 logger.info("allrep: " + json);
+                MachineStatusV3 status = new MachineStatusV3(machineId, json);
+                LimitQueue<MachineStatusV3> queue;
+                if (redisService.exists(machineId)) {
+                    queue = (LimitQueue) redisService.get(machineId);
+                    queue.offer(status);
+                } else {
+                    queue = new LimitQueue<>(120);
+                    queue.offer(status);
+                }
+                redisService.set(machineId, queue, (long) 120);
+                CorePool.getComPool().execute(() -> {
+                    repository.save(status);
+                });
             }
             if (base_action.equals("sys_status")) {
                 StatusPayload payload = new StatusPayload(machineId, json);
@@ -204,11 +236,7 @@ public class MqttConfiguration {
             }
             //服务器端相应设备的同步时钟请求
             if (base_action.equals("get_time")) {
-                topic = MQTTUtil.produceTopic(machineId, TopicExtension.SET_TIME);
-                json = new JSONObject();
-                json.put("time", System.currentTimeMillis() / 1000);
-                mqttService.publish(topic, json);
-                return;
+                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
             }
             if (base_action.equals("chk_update")) {
 

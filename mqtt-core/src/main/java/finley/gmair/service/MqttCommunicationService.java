@@ -1,11 +1,8 @@
 package finley.gmair.service;
 
-import finley.gmair.model.machine.MachineSensorData;
-import finley.gmair.model.machine.MachineStateData;
+import finley.gmair.model.machine.MachineStatusV3;
 import finley.gmair.util.ResultData;
 
 public interface MqttCommunicationService {
-    ResultData createStateData(MachineStateData stateData);
-
-    ResultData createSensorData(MachineSensorData sensorData);
+    ResultData create(MachineStatusV3 status);
 }
