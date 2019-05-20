@@ -37,6 +37,7 @@ public class WechatProperties {
         if (StringUtils.isEmpty(jsapiTicket)) {
             getAccessToken();
         }
+        jsapiTicket = WechatUtil.queryJsApiTicket(accessToken);
         return jsapiTicket;
     }
 

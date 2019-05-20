@@ -6,7 +6,7 @@
                     pattern="%style{%d{UTF-8}}{black} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
         </Console>
 
-        <RollingFile name="RollingFile" fileName="./logs/reception.log"
+        <RollingFile name="RollingFile" fileName="./logs/install-mp.log"
                      filePattern="./logs/$${date:yyyy-MM}/reception-%d{-dd-MMMM-yyyy}-%i.log.gz">
             <PatternLayout>
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>

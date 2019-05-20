@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <mappers>
+        <mapper resource="mapper/assign.xml"/>
+        <mapper resource="mapper/team.xml"/>
+        <mapper resource="mapper/member.xml"/>
+        <mapper resource="mapper/teamwatch.xml"/>
+        <mapper resource="mapper/assignaction.xml"/>
+        <mapper resource="mapper/assignsnapshot.xml"/>
+        <mapper resource="mapper/assigncode.xml"/>
+        <mapper resource="mapper/config.xml"/>
+    </mappers>
+</configuration>

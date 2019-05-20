@@ -14,6 +14,9 @@
     margin-left: 3%;
 }
 @media screen and (max-width: 500px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -126,7 +129,126 @@
     }
 
 }
-@media screen and (min-width: 500px) and (max-width: 700px){
+/*@media screen and (min-width: 500px) and (max-width: 700px){*/
+    /*.gmair-image {*/
+        /*width:50%;*/
+    /*}*/
+    /*.advertisement{*/
+        /*display: none;*/
+    /*}*/
+    /*.aqi_measure2{*/
+        /*display: none;*/
+    /*}*/
+    /*.footer_left{*/
+        /*float:left;*/
+        /*width:50%;*/
+    /*}*/
+    /*.aqi_measure{*/
+        /*padding-top: 45%*/
+    /*}*/
+    /*.footer_right{*/
+        /*float: right;*/
+        /*width: 42%;*/
+    /*}*/
+
+    /*.footer_right_img_div{*/
+        /*float:left;*/
+        /*width:42%;*/
+        /*padding:0 4% 0 4%;*/
+    /*}*/
+    /*.log-image {*/
+        /*width: 65%;*/
+        /*margin-left: 15px;*/
+    /*}*/
+    /*.monitor-indoor-outdoor-header {*/
+        /*background-color: rgb(29, 81, 141);*/
+        /*color: white;*/
+        /*padding-top: 2%;*/
+        /*padding-bottom: 2%;*/
+        /*border-top-left-radius: 10px;*/
+        /*border-top-right-radius: 10px;*/
+    /*}*/
+    /*.monitor-indoor {*/
+        /*padding-left:4%;*/
+        /*padding-right:4%;*/
+        /*padding-top: 1%;*/
+        /*border-radius: 10px;*/
+    /*}*/
+    /*.time1{*/
+        /*display: none;*/
+    /*}*/
+    /*.run_type2{*/
+        /*display: none;*/
+    /*}*/
+    /*.location-div{*/
+        /*padding:2%;*/
+    /*}*/
+    /*.wind-img {*/
+        /*width: 8%;*/
+        /*-webkit-animation:rotateImg 1s linear infinite;*/
+        /*vertical-align: middle;*/
+    /*}*/
+    /*.location-img {*/
+        /*width:5%;*/
+    /*}*/
+    /*.geer-img {*/
+        /*width:60%;*/
+        /*margin-left: 3%;*/
+    /*}*/
+    /*.init-div {*/
+        /*font-size: 14px;*/
+        /*overflow: hidden;*/
+        /*padding-left: 5%;*/
+        /*padding-right: 5%;*/
+    /*}*/
+    /*.chinese-label {*/
+        /*font-size: 26px;*/
+        /*margin-left: 5%;*/
+    /*}*/
+    /*.english-label {*/
+        /*font-size: 16px;*/
+        /*margin-left: 3%;*/
+    /*}*/
+    /*.content_left_text{*/
+        /*font-size: 14px;*/
+    /*}*/
+    /*.content_middle{*/
+        /*width:50%;*/
+        /*font-size: 18px;*/
+    /*}*/
+    /*.content_middle_1{*/
+        /*font-size: 16px;*/
+    /*}*/
+    /*.test_value{*/
+        /*font-size: 22px;*/
+    /*}*/
+    /*.test_unit{*/
+        /*font-size: 15px;*/
+    /*}*/
+    /*.footer_text{*/
+        /*font-size: 15px;*/
+    /*}*/
+    /*.monitor-outdoor {*/
+        /*padding: 3% 4% 3% 4%;*/
+        /*border-radius: 10px;*/
+    /*}*/
+    /*.content_left {*/
+        /*width: 10%;*/
+        /*padding: 4% 8% 4% 8%;*/
+        /*text-align: center;*/
+    /*}*/
+    /*.indoor-img {*/
+        /*width:90%;*/
+    /*}*/
+    /*.text_unit{*/
+        /*font-size: 18px;*/
+    /*}*/
+
+/*}*/
+@media screen and (min-width: 500px) and (max-width: 800px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -175,7 +297,7 @@
         display: none;
     }
     .location-div{
-        padding:2%;
+        padding: 12% 5% 8% 5%;
     }
     .wind-img {
         width: 8%;
@@ -186,151 +308,39 @@
         width:5%;
     }
     .geer-img {
-        width:60%;
+        width:50%;
         margin-left: 3%;
     }
     .init-div {
-        font-size: 14px;
+        font-size: 25px;
+        padding-bottom: 25px;
         overflow: hidden;
-        padding-left: 5%;
-        padding-right: 5%;
+        /*padding-left: 5%;*/
+        /*padding-right: 5%;*/
     }
     .chinese-label {
-        font-size: 26px;
+        font-size: 50px;
         margin-left: 5%;
     }
     .english-label {
-        font-size: 16px;
+        font-size: 30px;
         margin-left: 3%;
     }
     .content_left_text{
-        font-size: 14px;
-    }
-    .content_middle{
-        width:50%;
-        font-size: 18px;
-    }
-    .content_middle_1{
-        font-size: 16px;
-    }
-    .test_value{
-        font-size: 22px;
-    }
-    .test_unit{
-        font-size: 15px;
-    }
-    .footer_text{
-        font-size: 15px;
-    }
-    .monitor-outdoor {
-        padding: 3% 4% 3% 4%;
-        border-radius: 10px;
-    }
-    .content_left {
-        width: 10%;
-        padding: 4% 8% 4% 8%;
-        text-align: center;
-    }
-    .indoor-img {
-        width:90%;
-    }
-    .text_unit{
-        font-size: 18px;
-    }
-
-}
-@media screen and (min-width: 700px) and (max-width: 800px){
-    .advertisement{
-        display: none;
-    }
-    .aqi_measure2{
-        display: none;
-    }
-    .footer_left{
-        float:left;
-        width:50%;
-    }
-    .aqi_measure{
-        padding-top: 45%
-    }
-    .footer_right{
-        float: right;
-        width: 42%;
-    }
-
-    .footer_right_img_div{
-        float:left;
-        width:42%;
-        padding:0 4% 0 4%;
-    }
-    .log-image {
-        width: 65%;
-        margin-left: 15px;
-    }
-    .monitor-indoor-outdoor-header {
-        background-color: rgb(29, 81, 141);
-        color: white;
-        padding-top: 2%;
-        padding-bottom: 2%;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
-    .monitor-indoor {
-        padding-left:4%;
-        padding-right:4%;
-        padding-top: 1%;
-        border-radius: 10px;
-    }
-    .time1{
-        display: none;
-    }
-    .run_type2{
-        display: none;
-    }
-    .location-div{
-        padding:2%;
-    }
-    .wind-img {
-        width: 8%;
-        -webkit-animation:rotateImg 1s linear infinite;
-        vertical-align: middle;
-    }
-    .location-img {
-        width:5%;
-    }
-    .geer-img {
-        width:45%;
-        margin-left: 3%;
-    }
-    .init-div {
-        font-size: 14px;
-        overflow: hidden;
-        padding-left: 5%;
-        padding-right: 5%;
-    }
-    .chinese-label {
-        font-size: 28px;
-        margin-left: 5%;
-    }
-    .english-label {
-        font-size: 18px;
-        margin-left: 3%;
-    }
-    .content_left_text{
-        font-size: 13px;
-    }
-    .content_middle{
-        width:50%;
-        font-size: 24px;
-    }
-    .content_middle_1{
-        font-size: 19px;
-    }
-    .test_value{
-        font-size: 26px;
-    }
-    .test_unit{
         font-size: 20px;
+    }
+    .content_middle{
+        width:50%;
+        font-size: 40px;
+    }
+    .content_middle_1{
+        font-size: 30px;
+    }
+    .test_value{
+        font-size: 38px;
+    }
+    .test_unit{
+        font-size: 32px;
     }
     .footer_text{
         font-size: 20px;
@@ -345,14 +355,131 @@
         text-align: center;
     }
     .indoor-img {
-        width:40%;
+        width:50%;
     }
     .text_unit{
-        font-size: 19px;
+        font-size: 28px;
     }
 
 }
-@media screen and (min-width: 800px) and (max-width: 1500px){
+@media screen and (min-width: 800px) and (max-width: 1000px){
+    .gmair-image {
+        width:46%;
+    }
+    .advertisement{
+        display: none;
+    }
+    .aqi_measure2{
+        display: none;
+    }
+    .footer_left{
+        float:left;
+        width:50%;
+    }
+    .aqi_measure{
+        padding-top: 45%
+    }
+    .footer_right{
+        float: right;
+        width: 42%;
+    }
+
+    .footer_right_img_div{
+        float:left;
+        width:42%;
+        padding:0 4% 0 4%;
+    }
+    .log-image {
+        width: 65%;
+        margin-left: 15px;
+    }
+    .monitor-indoor-outdoor-header {
+        background-color: rgb(29, 81, 141);
+        color: white;
+        padding-top: 2%;
+        padding-bottom: 2%;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    .monitor-indoor {
+        padding-left:4%;
+        padding-right:4%;
+        padding-top: 1%;
+        border-radius: 10px;
+    }
+    .time1{
+        display: none;
+    }
+    .run_type2{
+        display: none;
+    }
+    .location-div{
+        padding:2%;
+    }
+    .wind-img {
+        width: 8%;
+        -webkit-animation:rotateImg 1s linear infinite;
+        vertical-align: middle;
+    }
+    .location-img {
+        width:4.5%;
+    }
+    .geer-img {
+        width:50%;
+        margin-left: 3%;
+    }
+    .init-div {
+        font-size: 26px;
+        overflow: hidden;
+        margin: 0.1%;
+    }
+    .chinese-label {
+        font-size: 58px;
+        margin-left: 5%;
+    }
+    .english-label {
+        font-size: 36px;
+        margin-left: 3%;
+    }
+    .content_left_text{
+        font-size: 24px;
+    }
+    .content_middle{
+        width:40%;
+        font-size: 44px;
+    }
+    .content_middle_1{
+        font-size: 36px;
+    }
+    .test_value{
+        font-size: 52px;
+    }
+    .test_unit{
+        font-size: 28px;
+    }
+    .footer_text{
+        font-size: 36px;
+    }
+    .monitor-outdoor {
+        padding: 2% 4% 2% 4%;
+        border-radius: 10px;
+    }
+    .content_left {
+        width: 18%;
+        padding: 5% 5% 5% 2%;
+        text-align: center;
+    }
+    .indoor-img {
+        width:56%;
+    }
+    .text_unit{
+        font-size: 38px;
+    }
+}
+@media screen and (min-width: 1000px) and (max-width: 1500px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -464,6 +591,9 @@
     }
 }
 @media screen and (min-width: 1500px) and (max-width: 2000px){
+    .gmair-image {
+        width:50%;
+    }
     .advertisement{
         display: none;
     }
@@ -575,6 +705,9 @@
     }
 }
 @media screen and (min-width: 2000px) and (max-width: 4000px){
+    .gmair-image {
+        width:20%;
+    }
     .footer_left{
         float:left;
         width:30%;
@@ -598,7 +731,7 @@
         padding: 0 1% 0 5%;
     }
     .log-image {
-        width: 60%;
+        width: 40%;
         margin-left: 15px;
     }
     .monitor-indoor-outdoor-header {
@@ -667,7 +800,7 @@
         font-size: 75px;
     }
     .footer_text{
-        font-size: 70px;
+        font-size: 55px;
     }
     .monitor-outdoor {
         padding: 0.5% 2.5% 1% 2.5%;
@@ -750,9 +883,6 @@
     overflow: hidden;
     padding-left: 4%;
     padding-right: 4%;
-}
-.gmair-image {
-    width:50%;
 }
 .qrcode-img {
     width:100%;

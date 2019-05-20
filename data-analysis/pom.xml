@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>data-analysis</artifactId>
-    <version>1.0.0110-Weekly-SNAPSHOT</version>
+    <version>1.0.0325-Weekly-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>

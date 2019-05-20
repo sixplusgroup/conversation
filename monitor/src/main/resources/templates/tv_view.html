@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh_CN" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>果麦新风</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/limarquee/css/liMarquee.css}"/>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/css/monitor_vertical.css}"/>
-    <script type="text/javascript" th:src="@{/static/limarquee/js/jquery-1.8.3.min.js}"></script>
-    <script th:src="@{/static/limarquee/js/jquery.liMarquee.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/monitor/static/limarquee/css/liMarquee.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/monitor/static/css/monitor_vertical.css}"/>
+    <script type="text/javascript" th:src="@{/monitor/static/limarquee/js/jquery-1.8.3.min.js}"></script>
+    <script th:src="@{/monitor/static/limarquee/js/jquery.liMarquee.js}"></script>
 </head>
 <body>
 <div>
@@ -14,7 +14,7 @@
         <div class="location-div">
             <div style="float:left;width:30%" id="time1" class="time1">
             </div>
-            <img src="https://monitor.gmair.net/image/location_logo.png"  class="location-img"/>
+            <img src="https://monitor.gmair.net/image/location_logo.png" class="location-img"/>
             <img src="https://monitor.gmair.net/image/guomai.png" id="logo-img" class="geer-img"/>
             <div style="float:right;width:30%;display: none" class="run_type2" id="online2">
                 <img src="https://monitor.gmair.net/image/wind.png" class="wind-img"/>
@@ -51,7 +51,7 @@
                     空气&nbsp;&nbsp;<span class="font-bold" id="pm25-content">轻度污染</span>
                 </div>
                 <div class="content_right">
-                    <span class="test_value" id="indoor_pm25">120</span>
+                    <span class="test_value" id="indoor_pm25"></span>
                     <span class="test_unit">&nbsp;ug/m<sup>3</sup></span>
                 </div>
             </div>
@@ -85,11 +85,11 @@
                 </div>
                 <div class="content_right">
                     <div class="half-height margin-bottom-10">
-                        <span class="test_value" id="temp">12</span>
+                        <span class="test_value" id="temp"></span>
                         <span class="test_unit">&nbsp;<sup>o</sup>C</span>
                     </div>
                     <div class="half-height margin-top-10">
-                        <span class="test_value" id="humid">10</span>
+                        <span class="test_value" id="humid"></span>
                         <span class="test_unit">&nbsp;%</span>
                     </div>
                 </div>
@@ -132,6 +132,7 @@
     <div class="contact-div">
         <div class="footer_left">
             <div class="half-height">
+                <img src="https://monitor.gmair.net/image/gmair_logo.png" class="gmair-image"/>
                 <div><img src="https://monitor.gmair.net/image/log.png" class="log-image"/></div>
             </div>
             <div style="height:5px"></div>
@@ -151,27 +152,27 @@
                 <img src="https://monitor.gmair.net/image/wechat_public.jpg" id="ad-img" class="qrcode-img"/>
             </div>
             <div class="aqi_measure">
-                <img class="aqi-img"  src="https://monitor.gmair.net/image/aqi_line.png"/>
+                <img class="aqi-img" src="https://monitor.gmair.net/image/aqi_line.png"/>
             </div>
         </div>
     </div>
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    let monitor_url = "http://monitor.gmair.net:8022/monitor";
-    let codeValue = "";
-    let is_online = false;
-    let city_id = "";
-    let indoor_pm25 = "";
-    let co2 = "";
-    let temp = "";
-    let humid = "";
-    let outdoor_aqi = "";
-    let outdoor_pm25 = "";
-    let city_name = "";
+    var monitor_url = "https://microservice.gmair.net/monitor";
+    var codeValue = "";
+    var is_online = false;
+    var city_id = "";
+    var indoor_pm25 = "";
+    var co2 = "";
+    var temp = "";
+    var humid = "";
+    var outdoor_aqi = "";
+    var outdoor_pm25 = "";
+    var city_name = "";
 
     $(document).ready(function () {
-        codeValue=obtainCodeValue(window.location.pathname);
+        codeValue = obtainCodeValue("tv");
         $("#time").text(init_time());
         $("#time1").text(init_time());
         obtainFile(codeValue);
@@ -184,26 +185,41 @@
         obtain_city(codeValue);
         obtain_test_data(codeValue);
         obtain_online_status(codeValue);
-        setInterval(() => $("#time").text(init_time()), 1000);
-        setInterval(() => $("#time1").text(init_time()), 1000);
-        setInterval(() => obtain_city(codeValue), 1800000);
-        setInterval(() => obtain_online_status(codeValue), 10000);
-        setInterval(() => obtain_test_data(codeValue), 10000);
+        setInterval(function () {
+            $("#time").text(init_time())
+        }, 1000);
+        setInterval(function () {
+            $("#time1").text(init_time())
+        }, 1000);
+        setInterval(function () {
+            obtain_city(codeValue)
+        }, 1800000);
+        setInterval(function () {
+            obtain_online_status(codeValue)
+        }, 10000);
+        setInterval(function () {
+            obtain_test_data(codeValue)
+        }, 10000);
     })
 
-    function obtainCodeValue(path_name) {
-        let path=path_name.split("/");
-        return path[3];
+    function obtainCodeValue(name) {
+        var reg = new RegExp('(?:(?:&|\\?)' + name + '=([^&]*))|(?:/' + name + '/([^/]*))', 'i');
+        var r = window.location.href.match(reg);
+        if (r != null)
+            return decodeURI(r[1] || r[2]);
+        return null;
+        // let path=path_name.split("/");
+        // return path[3];
     }
 
     function init_time() {
-        let today = new Date();
-        let year = today.getFullYear();
-        let month = ('0' + (today.getMonth() + 1)).slice(-2).toString();
-        let date = ('0' + today.getDate()).slice(-2).toString();
-        let hour = ('0' + today.getHours()).slice(-2).toString();
-        let minute = ('0' + today.getMinutes()).slice(-2).toString();
-        let date_string = year + "年" + month + "月" + date + "日" + "  " + hour + ":" + minute;
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = ('0' + (today.getMonth() + 1)).slice(-2).toString();
+        var date = ('0' + today.getDate()).slice(-2).toString();
+        var hour = ('0' + today.getHours()).slice(-2).toString();
+        var minute = ('0' + today.getMinutes()).slice(-2).toString();
+        var date_string = year + "年" + month + "月" + date + "日" + "  " + hour + ":" + minute;
         return date_string;
     }
 
@@ -253,27 +269,27 @@
     }
 
     function co2_render(co2) {
-        if (co2 <= 1500) {
+        if (co2 <= 1000) {
             $("#co2-content").html("<span> 氧气&nbsp;&nbsp;<span class='font-bold'>充沛</span></span>");
         }
-        if (co2 > 1500 && co2 < 2000) {
+        if (co2 > 1000 && co2 < 2000) {
             $("#co2-content").html("<span>二氧化碳&nbsp;</span>");
         }
     }
+
     //根据qrcode获取文件信息
     function obtainFile(codeValue) {
         $.ajax({
             type: 'get',
-            url: "/qrcode/profile?qrcode="+codeValue,
+            url: "/monitor/qrcode/profile?qrcode=" + codeValue,
             data: {},
             cache: false,
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log(response);
                 if (response.responseCode === "RESPONSE_OK") {
-                    $("#logo-img").attr("src",response.data[0].logoPath);
-                    $("#ad-img").attr("src",response.data[0].qrcodePath);
+                    $("#logo-img").attr("src", response.data[0].logoPath);
+                    $("#ad-img").attr("src", response.data[0].qrcodePath);
                 } else {
                     console.log(response);
                 }
@@ -285,13 +301,12 @@
     function obtainAdvertisement(codeValue) {
         $.ajax({
             type: 'get',
-            url: "/qrcode/ads?qrcode="+codeValue,
+            url: monitor_url + "/qrcode/ads?qrcode=" + codeValue,
             data: {},
             cache: false,
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log(response);
                 if (response.responseCode === "RESPONSE_OK") {
                     $(".str_move.str_origin").text(response.data[0].content);
                 } else {
@@ -306,7 +321,7 @@
 
     //根据codeValue获取单个机器在线状态
     function obtain_online_status(codeValue) {
-        let online_status_url = monitor_url + "/machine/online?codeValue=" + codeValue;
+        var online_status_url = monitor_url + "/machine/online?codeValue=" + codeValue;
         $.ajax({
             type: 'get',
             url: online_status_url,
@@ -352,7 +367,7 @@
 
     //根据qrcode获取机器测量信息
     function obtain_test_data(qrcode) {
-        let test_data_url = monitor_url + "/machine/status?qrcode=" + qrcode;
+        var test_data_url = monitor_url + "/machine/status?qrcode=" + qrcode;
         $.ajax({
             type: 'get',
             url: test_data_url,
@@ -386,7 +401,7 @@
 
     //根据qrcode获取城市
     function obtain_city(qrcode) {
-        let obtain_city_url = monitor_url + "/cityid/probe?qrcode=" + qrcode;
+        var obtain_city_url = monitor_url + "/cityid/probe?qrcode=" + qrcode;
         $.ajax({
             type: 'get',
             url: obtain_city_url,
@@ -407,7 +422,7 @@
 
     //根据cityId/provinceId获取城市空气质量
     function obtain_outdoor(cityId, provinceId) {
-        let outdoor_url = monitor_url + "/city/air?cityId=" + cityId + "&amp;provinceId=" + provinceId;
+        var outdoor_url = monitor_url + "/city/air?cityId=" + cityId + "&amp;provinceId=" + provinceId;
         $.ajax({
             type: 'get',
             url: outdoor_url,
@@ -430,6 +445,7 @@
             }
         })
     }
+
     /*]]>*/
 </script>
 </body>

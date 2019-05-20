@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @SpringBootApplication
-@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.config"})
+@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.config"})
 @RestController
 @EnableFeignClients(basePackages = "finley.gmair.service")
-@RequestMapping("/install-mp")
 @EnableDiscoveryClient
 public class InstallMPApplication {
     public static void main(String[] args) {

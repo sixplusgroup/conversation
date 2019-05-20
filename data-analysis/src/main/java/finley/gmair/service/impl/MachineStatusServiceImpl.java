@@ -82,17 +82,21 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             logger.info("not find any data in redis");
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find any data in redis");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             logger.info("error happen when fetch machine status from redis");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error happen when fetch machine status from redis");
             return result;
         }
         Map<String, Object> map = (HashMap) response.getData();
+        logger.info("[Processing] data set size: " + map.size());
         //2.统计获取到的数据
         List<Object> statisticalDataList = new ArrayList<>();
         try {
             for (String machineId : map.keySet()) {
+                logger.info("[Processing] machine mac: " + machineId);
                 Object queue = map.get(machineId);
                 //若这个queue存了v1的status
                 if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatus) {
@@ -116,13 +120,16 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                 }
             }
         } catch (Exception e) {
-            logger.debug(e.getMessage());
+            e.printStackTrace();
+            logger.info(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
             return result;
         }
         if (statisticalDataList.isEmpty()) {
-            logger.debug("after statistical data,result is null");
+            logger.info("after statistical data,result is null");
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("after statistical data,result is null");
             return result;
         }
         //3.将统计结果插入到数据库
@@ -156,56 +163,71 @@ public class MachineStatusServiceImpl implements MachineStatusService {
 
     private V1MachineStatusHourly countV1Status(LinkedList<MachineStatus> list) {
         int packetCountForOneMinute = 12;
-        double averagePm25 = list.stream().filter(e -> e.getPower() == 1).mapToDouble(MachineStatus::getPm2_5).average().getAsDouble();
-        int maxPm25 = list.stream().mapToInt(MachineStatus::getPm2_5).max().getAsInt();
-        int minPm25 = list.stream().mapToInt(MachineStatus::getPm2_5).min().getAsInt();
-        double averageVolume = list.stream().mapToDouble(MachineStatus::getVolume).average().getAsDouble();
-        int maxVolume = list.stream().mapToInt(MachineStatus::getVolume).max().getAsInt();
-        int minVolume = list.stream().mapToInt(MachineStatus::getVolume).min().getAsInt();
-        double averageHumid = list.stream().mapToDouble(MachineStatus::getHumid).average().getAsDouble();
-        int maxHumid = list.stream().mapToInt(MachineStatus::getHumid).max().getAsInt();
-        int minHumid = list.stream().mapToInt(MachineStatus::getHumid).min().getAsInt();
-        double averageTemp = list.stream().mapToDouble(MachineStatus::getTemp).average().getAsDouble();
-        int maxTemp = list.stream().mapToInt(MachineStatus::getTemp).max().getAsInt();
-        int minTemp = list.stream().mapToInt(MachineStatus::getTemp).min().getAsInt();
-        int powerOffMinute = (int) list.stream().filter(a -> a.getPower() == 0).count() / packetCountForOneMinute;
-        int powerOnMinute = (int) list.stream().filter(a -> a.getPower() == 1).count() / packetCountForOneMinute;
-        int autoMinute = (int) list.stream().filter(a -> a.getMode() == 0).count() / packetCountForOneMinute;
-        int manualMinute = (int) list.stream().filter(a -> a.getMode() == 1).count() / packetCountForOneMinute;
-        int sleepMinute = (int) list.stream().filter(a -> a.getMode() == 2).count() / packetCountForOneMinute;
-        int heatOffMinute = (int) list.stream().filter(a -> a.getHeat() == 0).count() / packetCountForOneMinute;
-        int heatOnMinute = (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute;
-        String machineId = list.get(0).getUid();
-        V1MachineStatusHourly msh = new V1MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, powerOnMinute, powerOffMinute, autoMinute, manualMinute, sleepMinute, heatOnMinute, heatOffMinute);
+        V1MachineStatusHourly msh = null;
+        int count = list.size();
+        int workingCount = (int) list.stream().filter(e -> e.getPower() == 1).count();
+        try {
+            double averagePm25 = workingCount > 0 ? list.stream().filter(e -> e.getPower() == 1).mapToDouble(MachineStatus::getPm2_5).average().getAsDouble() : 0;
+            int maxPm25 = count > 0 ? list.stream().mapToInt(MachineStatus::getPm2_5).max().getAsInt() : 0;
+            int minPm25 = count > 0 ? list.stream().mapToInt(MachineStatus::getPm2_5).min().getAsInt() : 0;
+            double averageVolume = workingCount > 0 ? list.stream().mapToDouble(MachineStatus::getVolume).average().getAsDouble() : 0;
+            int maxVolume = count > 0 ? list.stream().mapToInt(MachineStatus::getVolume).max().getAsInt() : 0;
+            int minVolume = count > 0 ? list.stream().mapToInt(MachineStatus::getVolume).min().getAsInt() : 0;
+            double averageHumid = count > 0 ? list.stream().mapToDouble(MachineStatus::getHumid).average().getAsDouble() : 0;
+            int maxHumid = count > 0 ? list.stream().mapToInt(MachineStatus::getHumid).max().getAsInt() : 0;
+            int minHumid = count > 0 ? list.stream().mapToInt(MachineStatus::getHumid).min().getAsInt() : 0;
+            double averageTemp = count > 0 ? list.stream().mapToDouble(MachineStatus::getTemp).average().getAsDouble() : 0;
+            int maxTemp = count > 0 ? list.stream().mapToInt(MachineStatus::getTemp).max().getAsInt() : 0;
+            int minTemp = count > 0 ? list.stream().mapToInt(MachineStatus::getTemp).min().getAsInt() : 0;
+            int powerOffMinute = count > 0 ? (int) list.stream().filter(a -> a.getPower() == 0).count() / packetCountForOneMinute : 0;
+            int powerOnMinute = count > 0 ? (int) list.stream().filter(a -> a.getPower() == 1).count() / packetCountForOneMinute : 0;
+            int autoMinute = workingCount > 0 ? (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 0).count() / packetCountForOneMinute : 0;
+            int manualMinute = workingCount > 0 ? (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 1).count() / packetCountForOneMinute : 0;
+            int sleepMinute = workingCount > 0 ? (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 2).count() / packetCountForOneMinute : 0;
+            int heatOffMinute = count > 0 ? (int) list.stream().filter(a -> a.getHeat() == 0).count() / packetCountForOneMinute : 0;
+            int heatOnMinute = count > 0 ? (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute : 0;
+            String machineId = list.get(0).getUid();
+            msh = new V1MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, powerOnMinute, powerOffMinute, autoMinute, manualMinute, sleepMinute, heatOnMinute, heatOffMinute);
+        } catch (Exception e) {
+            logger.error("[Error: ]" + e.getMessage());
+        }
         return msh;
     }
 
     private V2MachineStatusHourly countV2Status(LinkedList<finley.gmair.model.machine.MachineStatus> list) {
         int packetCountForOneMinute = 2;
-        double averagePm25 = list.stream().filter(e -> e.getPower() == 1).mapToDouble(finley.gmair.model.machine.MachineStatus::getPm2_5).average().getAsDouble();
-        int maxPm25 = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getPm2_5).max().getAsInt();
-        int minPm25 = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getPm2_5).min().getAsInt();
-        double averageVolume = list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getVolume).average().getAsDouble();
-        int maxVolume = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getVolume).max().getAsInt();
-        int minVolume = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getVolume).min().getAsInt();
-        double averageTemp = list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getTemp).average().getAsDouble();
-        int maxTemp = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getTemp).max().getAsInt();
-        int minTemp = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getTemp).min().getAsInt();
-        double averageHumid = list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getHumid).average().getAsDouble();
-        int maxHumid = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getHumid).max().getAsInt();
-        int minHumid = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getHumid).min().getAsInt();
-        double averageCo2 = list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getCo2).average().getAsDouble();
-        int maxCo2 = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getCo2).max().getAsInt();
-        int minCo2 = list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getCo2).min().getAsInt();
-        int powerOffMinute = (int) list.stream().filter(a -> a.getPower() == 0).count() / packetCountForOneMinute;
-        int powerOnMinute = (int) list.stream().filter(a -> a.getPower() == 1).count() / packetCountForOneMinute;
-        int autoMinute = (int) list.stream().filter(a -> a.getMode() == 0).count() / packetCountForOneMinute;
-        int manualMinute = (int) list.stream().filter(a -> a.getMode() == 1).count() / packetCountForOneMinute;
-        int sleepMinute = (int) list.stream().filter(a -> a.getMode() == 2).count() / packetCountForOneMinute;
-        int heatOffMinute = (int) list.stream().filter(a -> a.getHeat() == 0).count() / packetCountForOneMinute;
-        int heatOnMinute = (int) list.stream().filter(a -> a.getHeat() == 1).count() / packetCountForOneMinute;
-        String machineId = list.get(0).getUid();
-        V2MachineStatusHourly msh = new V2MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, averageCo2, maxCo2, minCo2, powerOnMinute, powerOffMinute, autoMinute, manualMinute, sleepMinute, heatOnMinute, heatOffMinute);
+
+        V2MachineStatusHourly msh = null;
+        int count = list.size();
+        int workingCount = (int) list.stream().filter(e -> e.getPower() == 1).count();
+        try {
+            double averagePm25 = workingCount > 0 ? list.stream().filter(e -> e.getPower() == 1).mapToDouble(finley.gmair.model.machine.MachineStatus::getPm2_5).average().getAsDouble() : 0;
+            int maxPm25 = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getPm2_5).max().getAsInt() : 0;
+            int minPm25 = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getPm2_5).min().getAsInt() : 0;
+            double averageVolume = workingCount > 0 ? list.stream().filter(e -> e.getPower() == 1).mapToDouble(finley.gmair.model.machine.MachineStatus::getVolume).average().getAsDouble() : 0;
+            int maxVolume = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getVolume).max().getAsInt() : 0;
+            int minVolume = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getVolume).min().getAsInt() : 0;
+            double averageTemp = count > 0 ? list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getTemp).average().getAsDouble() : 0;
+            int maxTemp = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getTemp).max().getAsInt() : 0;
+            int minTemp = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getTemp).min().getAsInt() : 0;
+            double averageHumid = count > 0 ? list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getHumid).average().getAsDouble() : 0;
+            int maxHumid = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getHumid).max().getAsInt() : 0;
+            int minHumid = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getHumid).min().getAsInt() : 0;
+            double averageCo2 = count > 0 ? list.stream().mapToDouble(finley.gmair.model.machine.MachineStatus::getCo2).average().getAsDouble() : 0;
+            int maxCo2 = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getCo2).max().getAsInt() : 0;
+            int minCo2 = count > 0 ? list.stream().mapToInt(finley.gmair.model.machine.MachineStatus::getCo2).min().getAsInt() : 0;
+            int powerOffMinute = count > 0 ? (int) list.stream().filter(e -> e.getPower() == 0).count() / packetCountForOneMinute : 0;
+            int powerOnMinute = count > 0 ? (int) list.stream().filter(e -> e.getPower() == 1).count() / packetCountForOneMinute : 0;
+            int autoMinute = workingCount > 0 ? (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 0).count() / packetCountForOneMinute : 0;
+            int manualMinute = workingCount > 0 ? (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 1).count() / packetCountForOneMinute : 0;
+            int sleepMinute = workingCount > 0 ? (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 2).count() / packetCountForOneMinute : 0;
+            int heatOffMinute = count > 0 ? (int) list.stream().filter(e -> e.getHeat() == 0).count() / packetCountForOneMinute : 0;
+            int heatOnMinute = count > 0 ? (int) list.stream().filter(e -> e.getHeat() != 0).count() / packetCountForOneMinute : 0;
+            String machineId = list.get(0).getUid();
+            msh = new V2MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, averageCo2, maxCo2, minCo2, powerOnMinute, powerOffMinute, autoMinute, manualMinute, sleepMinute, heatOnMinute, heatOffMinute);
+        } catch (Exception e) {
+
+        }
         return msh;
     }
 

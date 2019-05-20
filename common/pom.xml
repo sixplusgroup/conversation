@@ -25,16 +25,24 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.1</version>
         </dependency>
+        
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>RELEASE</version>
+            <version>1.4.11</version>
         </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>21.0</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+            <version>1.46</version>
         </dependency>
     </dependencies>
 </project>

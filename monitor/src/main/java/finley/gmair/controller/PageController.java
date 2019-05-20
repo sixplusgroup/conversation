@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @create_time 2019-2019/2/26 9:47 PM
  */
 @RestController
-@RequestMapping("/machine")
+@RequestMapping("/monitor/machine")
 public class PageController {
 
     @GetMapping("/tv/{qrcode}")
@@ -19,6 +19,21 @@ public class PageController {
         ModelAndView view = new ModelAndView();
         view.setViewName("tv_view");
         view.addObject("qrcode", qrcode);
+        return view;
+    }
+
+//    @GetMapping("/tv/test")
+//    public ModelAndView viewOnTest() {
+//        ModelAndView view = new ModelAndView();
+//        view.setViewName("tv_test");
+//        return view;
+//    }
+
+    @GetMapping("/tv/multiple/{consumerId}")
+    public ModelAndView viewOnMultiple(@PathVariable("consumerId") String consumerId) {
+        ModelAndView view = new ModelAndView();
+        view.setViewName("multiple_view");
+        view.addObject("consumerId", consumerId);
         return view;
     }
 }

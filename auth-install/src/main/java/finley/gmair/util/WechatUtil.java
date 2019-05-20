@@ -10,6 +10,32 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class WechatUtil {
+    public static JSONObject query(String appid, String secret, String code) {
+        JSONObject result;
+        String url = new StringBuffer("https://api.weixin.qq.com/sns/jscode2session?appid=").append(appid).append("&secret=").append(secret).append("&js_code=").append(code).append("&grant_type=authorization_code").toString();
+        try {
+            URL address = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) address.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            System.setProperty("sun.net.client.defaultConnectTimeout", "30000");
+            System.setProperty("sun.net.client.defaultReadTimeout", "30000");
+            connection.connect();
+            InputStream is = connection.getInputStream();
+            int size = is.available();
+            byte[] bytes = new byte[size];
+            is.read(bytes);
+            String message = new String(bytes, "UTF-8");
+            result = JSON.parseObject(message);
+        } catch (Exception e) {
+            result = new JSONObject();
+        }
+        return result;
+    }
+
     public static String queryAccessToken(String appid, String secret) {
         String result = "";
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="
@@ -63,7 +89,7 @@ public class WechatUtil {
             String message = new String(bytes, "UTF-8");
             JSONObject object = JSON.parseObject(message);
             result = object.getString("openid");
-        }  catch (Exception e) {
+        } catch (Exception e) {
             //fail to do the query
         }
         return result;

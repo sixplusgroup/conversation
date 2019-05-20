@@ -1,9 +1,13 @@
 package finley.gmair.form.installation;
 
 public class MemberForm {
+
     private String teamId;
+
     private String memberPhone;
+
     private String memberName;
+
     private int memberRole;
 
     public String getTeamId() {

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
 import finley.gmair.model.wechat.Article;
+import finley.gmair.scheduler.wechat.WechatScheduler;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.wechat.ArticleReplyVo;
@@ -19,6 +20,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -50,8 +52,16 @@ public class WechatApplication {
     @Autowired
     private MachineService machineService;
 
+    @Autowired
+    private WechatScheduler wechatScheduler;
+
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
+    }
+
+    @PostConstruct
+    public void init() {
+        wechatScheduler.renewal();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/wechat")

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.install.team">
+    <resultMap id="teamVo" type="finley.gmair.model.installation.Team">
+        <result property="teamId" column="team_id"></result>
+        <result property="teamName" column="team_name"></result>
+        <result property="teamArea" column="team_area"></result>
+        <result property="teamDescription" column="team_description"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="teamVo">
+        SELECT team_id, team_name, team_area, team_description, block_flag, create_time
+        FROM gmair_install.install_team
+        WHERE 1 = 1
+        <if test="teamId != null">
+            AND team_id = #{teamId}
+        </if>
+        <if test="teamName != null">
+            AND team_name = #{teamName}
+        </if>
+        <if test="teamArea != null">
+            AND team_area = #{teamArea}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time ASC
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.installation.Team" useGeneratedKeys="false">
+        INSERT INTO gmair_install.install_team (team_id, team_name, team_area, team_description, block_flag, create_time)
+        VALUES (#{teamId}, #{teamName}, #{teamArea}, #{teamDescription}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_install.install_team
+        <set>
+            <if test="teamName != null">
+                team_name = #{teamName},
+            </if>
+            <if test="teamArea != null">
+                team_area = #{teamArea},
+            </if>
+            <if test="teamDescription != null">
+                team_description = #{teamDescription},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            team_id = #{teamId}
+        </set>
+        WHERE team_id = #{teamId}
+    </update>
+
+    <update id="block">
+        UPDATE gmair_install.install_team
+        SET block_flag = TRUE
+        WHERE team_id = #{teamId}
+    </update>
+
+    <delete id="remove">
+        DELETE FROM gmair_install.install_team
+        WHERE team_id = #{teamId}
+    </delete>
+</mapper>
