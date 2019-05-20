@@ -6,8 +6,10 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * @author fan
- */
+ * @ClassName: InstallDeskApplication
+ * @Description: TODO
+ * @Author fan
+ * @Date 2019/3/19 5:18 PM
 
 @SpringBootApplication
 @EnableFeignClients(basePackages = "finley.gmair.service")

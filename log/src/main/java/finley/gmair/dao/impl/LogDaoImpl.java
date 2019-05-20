@@ -26,6 +26,8 @@ public class LogDaoImpl extends BaseDao implements LogDao {
 
     private final static String Collection_UserLog = "user_account_operation_log";
 
+    private final static String Collection_MqttAckLog = "mqtt_ack_log";
+
     @Override
     public ResultData insertMachineComLog(MachineComLog machineComLog) {
         ResultData result = new ResultData();
@@ -202,6 +204,49 @@ public class LogDaoImpl extends BaseDao implements LogDao {
                 list = mongoTemplate.find(new Query(Criteria.where("userId").is(condition.get("userId"))), UserAccountOperationLog.class, Collection_UserLog);
             } else {
                 list = mongoTemplate.findAll(UserAccountOperationLog.class, Collection_UserLog);
+            }
+
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData insertMqttAckLog(MqttAckLog mqttAckLog) {
+        ResultData result = new ResultData();
+        mqttAckLog.setLogId(IDGenerator.generate("MAL"));
+        try {
+            mongoTemplate.insert(mqttAckLog, Collection_MqttAckLog);
+            result.setData(mqttAckLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryMqttAckLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<MqttAckLog> list;
+            if (condition.containsKey("machineId") && condition.containsKey("ackId")) {
+                list = mongoTemplate.find(new Query(Criteria.where("machineId").is(condition.get("machineId"))
+                .and("ackId").is(condition.get("ackId"))), MqttAckLog.class, Collection_MqttAckLog);
+            } else if (condition.containsKey("machineId")) {
+                list = mongoTemplate.find(new Query(Criteria.where("machineId").is(condition.get("machineId"))), MqttAckLog.class, Collection_MqttAckLog);
+            } else if (condition.containsKey("ackId")) {
+                list = mongoTemplate.find(new Query(Criteria.where("ackId").is(condition.get("ackId"))), MqttAckLog.class, Collection_MqttAckLog);
+            } else {
+                list = mongoTemplate.findAll(MqttAckLog.class, Collection_MqttAckLog);
             }
 
             if (list.isEmpty()) {

@@ -48,7 +48,7 @@
         <module>monitor</module>
         <module>data-analysis</module>
         <module>installdesk</module>
-        <!--<module>mqtt-core</module>-->
+        <module>mqtt-core</module>
     </modules>
 
     <parent>

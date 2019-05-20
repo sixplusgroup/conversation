@@ -27,4 +27,7 @@ public interface LogService {
 
     ResultData fetchUserLog(Map<String, Object> condition);
 
+    ResultData createMqttAckLog(MqttAckLog mqttAckLog);
+
+    ResultData fetchMqttAckLog(Map<String, Object> condition);
 }
