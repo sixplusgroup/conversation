@@ -1,8 +1,13 @@
 package finley.gmair.model.machine.v3;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.Entity;
 import finley.gmair.model.machine.v2.PowerStatus;
 import finley.gmair.model.machine.v2.WorkMode;
+import finley.gmair.model.packet.PacketV3Info;
+
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * @ClassName: MachineStatusV3
@@ -10,7 +15,7 @@ import finley.gmair.model.machine.v2.WorkMode;
  * @Author fan
  * @Date 2019/5/11 7:53 PM
  */
-public class MachineStatusV3 extends Entity {
+public class MachineStatusV3 extends Entity implements Serializable {
     private String uid;
 
     private int pm2_5a;
@@ -25,15 +30,70 @@ public class MachineStatusV3 extends Entity {
 
     private int co2;
 
-    private PowerStatus status;
+    private int status;
 
-    private WorkMode mode;
+    private int mode;
 
     private int volume;
 
     private int heat;
 
     private int light;
+
+    private int childlock;
+
+    public MachineStatusV3() {
+        super();
+    }
+
+    public MachineStatusV3(JSONObject json) {
+        this();
+        if (json.containsKey(PacketV3Info.POWER)) {
+            this.heat = json.getInteger(PacketV3Info.POWER);
+        }
+        if (json.containsKey(PacketV3Info.MODE)) {
+            this.mode = json.getInteger(PacketV3Info.MODE);
+        }
+        if (json.containsKey(PacketV3Info.PM2_5A)) {
+            this.pm2_5a = json.getInteger(PacketV3Info.HEAT);
+        }
+        if (json.containsKey(PacketV3Info.PM2_5B)) {
+            this.pm2_5b = json.getInteger(PacketV3Info.PM2_5B);
+        }
+        if (json.containsKey(PacketV3Info.SPEED)) {
+            this.volume = json.getInteger(PacketV3Info.SPEED);
+        }
+        if (json.containsKey(PacketV3Info.CHILDLOCK)) {
+            this.childlock = json.getInteger(PacketV3Info.CHILDLOCK);
+        }
+        if (json.containsKey(PacketV3Info.TEMPERATURE_INDOOR)) {
+            this.tempIndoor = json.getInteger(PacketV3Info.TEMPERATURE_INDOOR);
+        }
+        if (json.containsKey(PacketV3Info.TEMPERATURE_OUTDOOR)) {
+            this.tempOutdoor = json.getInteger(PacketV3Info.TEMPERATURE_OUTDOOR);
+        }
+        if (json.containsKey(PacketV3Info.CO2)) {
+            this.co2 = json.getInteger(PacketV3Info.CO2);
+        }
+        if (json.containsKey(PacketV3Info.LED)) {
+            int led = json.getInteger(PacketV3Info.LED);
+            if (led == 0) {
+                if (json.containsKey(PacketV3Info.LIGHT)) {
+                    this.light = 0;
+                }
+            } else {
+                if (json.containsKey(PacketV3Info.LIGHT)) {
+                    this.light = json.getInteger(PacketV3Info.LIGHT);
+                }
+            }
+        }
+        if (json.containsKey(PacketV3Info.HUMIDITY)) {
+            this.humidity = json.getInteger(PacketV3Info.HUMIDITY);
+        }
+        if (json.containsKey(PacketV3Info.CREATE_AT)) {
+            this.createAt = new Timestamp(json.getLongValue(PacketV3Info.CREATE_AT) * 1000);
+        }
+    }
 
     public String getUid() {
         return uid;
@@ -91,19 +151,19 @@ public class MachineStatusV3 extends Entity {
         this.co2 = co2;
     }
 
-    public PowerStatus getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(PowerStatus status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public WorkMode getMode() {
+    public int getMode() {
         return mode;
     }
 
-    public void setMode(WorkMode mode) {
+    public void setMode(int mode) {
         this.mode = mode;
     }
 
