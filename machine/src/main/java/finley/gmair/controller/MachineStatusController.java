@@ -34,6 +34,10 @@ public class MachineStatusController {
     private CoreV1Service coreV1Service;
 
     @Autowired
+    private CoreV3Service coreV3Service;
+    //todo 添加Core-v3设备的状态统计
+
+    @Autowired
     private BoardVersionService boardVersionService;
 
     @Autowired

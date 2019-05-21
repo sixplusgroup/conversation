@@ -5,17 +5,19 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.mqtt.Firmware;
 import finley.gmair.service.FirmwareService;
 import finley.gmair.service.MqttService;
-import finley.gmair.util.*;
-import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import finley.gmair.util.MQTTUtil;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
+import finley.gmair.util.TopicExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * achieve server to publish message, all the methods follow the steps as bellow
@@ -26,7 +28,7 @@ import java.util.*;
  * finally: publish(topic, message，qos)
  */
 @RestController
-@RequestMapping("/mqtt/message")
+@RequestMapping("/core")
 public class MessageController {
 
     @Autowired
@@ -41,7 +43,7 @@ public class MessageController {
      * 此条指令qos为2
      * action = cmd
      * */
-    @PostMapping(value = "/com/config/cmd")
+    @PostMapping(value = "/com/control")
     public ResultData configPower(String uid, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer light) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid)) {
@@ -72,6 +74,7 @@ public class MessageController {
         if (!StringUtils.isEmpty(light) && light == 0) {
             json.put("led", 0);
         } else {
+            json.put("led", 1);
             json.put("light", light);
         }
         try {

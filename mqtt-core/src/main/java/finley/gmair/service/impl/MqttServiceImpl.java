@@ -38,6 +38,18 @@ public class MqttServiceImpl implements MqttService {
     public ResultData publish(String topic, JSONObject object) {
         ResultData result = new ResultData();
         if (client == null) init();
+        if (!client.isConnected()) {
+            try {
+                MqttConnectOptions options = new MqttConnectOptions();
+                options.setCleanSession(false);
+                options.setKeepAliveInterval(30);
+                options.setConnectionTimeout(10);
+                client.setCallback(new PushCallback());
+                client.connect(options);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+        }
         MqttMessage message = getMessage(object);
         try {
             client.publish(topic, message);

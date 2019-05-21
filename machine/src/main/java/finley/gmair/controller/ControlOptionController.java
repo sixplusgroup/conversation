@@ -4,12 +4,16 @@ import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.model.machine.*;
 import finley.gmair.model.machine.v1.MachineStatus;
+import finley.gmair.model.machine.v3.MachineStatusV3;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
+import finley.gmair.util.MachineConstant;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.ControlOptionActionVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +30,8 @@ import java.util.Map;
 @RequestMapping("/machine/control/option")
 public class ControlOptionController {
 
+    private Logger logger = LoggerFactory.getLogger(ControlOptionController.class);
+
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
 
@@ -37,6 +43,9 @@ public class ControlOptionController {
 
     @Autowired
     private CoreV1Service coreV1Service;
+
+    @Autowired
+    private CoreV3Service coreV3Service;
 
     @Autowired
     private QRCodeService qrCodeService;
@@ -128,7 +137,7 @@ public class ControlOptionController {
     public ResultData chooseComponent(String qrcode, String component, String operation) {
         ResultData result = new ResultData();
         //check empty
-        if (ControlOptionController.isEmpty(qrcode, component, operation)) {
+        if (isEmpty(qrcode, component, operation)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("provide all the information");
             return result;
@@ -141,7 +150,7 @@ public class ControlOptionController {
         ResultData response = machineQrcodeBindService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the qrcode or server is busy");
+            result.setDescription("未能查询到二维码所对应的设备信息");
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
@@ -190,77 +199,78 @@ public class ControlOptionController {
         condition.put("machineId", machineId);
         condition.put("blockFlag", false);
         response = boardVersionService.fetchBoardVersion(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find board version by machineId");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find borad version by machineId");
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result = boardVersionResponse(machineId, response);
             return result;
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
 
         //according the value to control the machine
         if (component.equals("power")) {
-            if (version == 2)
-                response = coreV2Service.configPower(machineId, commandValue, version);
-            else if (version == 1) {
-                response = coreV1Service.configPower(machineId, commandValue, version);
-                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    if (redisService.exists(machineId) == true) {
-                        LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
-                        MachineStatus machineStatus = statusQueue.getLast();
-                        machineStatus.setPower(commandValue);
-                        statusQueue.offer(machineStatus);
-                        redisService.set(machineId, statusQueue, (long) 120);
-                    }
-                }
+            switch (version) {
+                case 1:
+                    response = coreV1Service.configPower(machineId, commandValue, version);
+                    break;
+                case 2:
+                    response = coreV2Service.configPower(machineId, commandValue, version);
+                    break;
+                case 3:
+                    response = coreV3Service.configPower(machineId, commandValue);
+                    break;
+                default:
+                    logger.error("Unrecognized board version in power");
+
             }
         } else if (component.equals("lock")) {
-            if (version == 2)
-                response = coreV2Service.configLock(machineId, commandValue);
-            else if (version == 1) {
-                response.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                response.setDescription("board v1 have no component lock");
-                return response;
+            switch (version) {
+                case 1:
+                    response = coreV1Service.configLock(machineId, commandValue);
+                    break;
+                case 2:
+                    response = coreV2Service.configLock(machineId, commandValue);
+                    break;
+                case 3:
+                    response = coreV3Service.configLock(machineId, commandValue);
+                    break;
+                default:
+                    logger.error("Unrecognized board version in lock");
+
             }
         } else if (component.equals("heat")) {
-            if (version == 2)
-                response = coreV2Service.configHeat(machineId, commandValue, version);
-            else if (version == 1) {
-                response = coreV1Service.configHeat(machineId, commandValue, version);
-                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    if (redisService.exists(machineId) == true) {
-                        LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
-                        MachineStatus machineStatus = statusQueue.getLast();
-                        machineStatus.setHeat(commandValue);
-                        statusQueue.offer(machineStatus);
-                        redisService.set(machineId, statusQueue, (long) 120);
-                    }
-                }
+            switch (version) {
+                case 1:
+                    response = coreV1Service.configHeat(machineId, commandValue, version);
+                    break;
+                case 2:
+                    response = coreV2Service.configHeat(machineId, commandValue, version);
+                    break;
+                case 3:
+                    response = coreV3Service.configHeat(machineId, commandValue);
+                    break;
+                default:
+                    logger.error("Unrecognized board version in heat");
+
             }
         } else if (component.equals("mode")) {
-            if (version == 2)
-                response = coreV2Service.configMode(machineId, commandValue, version);
-            else if (version == 1) {
-                response = coreV1Service.configMode(machineId, commandValue, version);
-                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    if (redisService.exists(machineId) == true) {
-                        LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
-                        MachineStatus machineStatus = statusQueue.getLast();
-                        machineStatus.setMode(commandValue);
-                        statusQueue.offer(machineStatus);
-                        redisService.set(machineId, statusQueue, (long) 120);
-                    }
-                }
+            switch (version) {
+                case 1:
+                    response = coreV1Service.configMode(machineId, commandValue, version);
+                    break;
+                case 2:
+                    response = coreV2Service.configMode(machineId, commandValue, version);
+                    break;
+                case 3:
+                    response = coreV3Service.configMode(machineId, commandValue);
+                    break;
+                default:
+                    logger.error("Unrecognized board version in heat");
+
             }
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("no such component");
             return result;
         }
-
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to operate the machine");
@@ -277,7 +287,6 @@ public class ControlOptionController {
     //用户操作风量
     @RequestMapping(value = "/config/speed", method = RequestMethod.POST)
     public ResultData configSpeed(String qrcode, int speed) {
-
         ResultData result = new ResultData();
         //check empty
         if (ControlOptionController.isEmpty(qrcode)) {
@@ -285,7 +294,6 @@ public class ControlOptionController {
             result.setDescription("provide all the speed");
             return result;
         }
-
         //根据qrcode 查 code_machine_bind表,取出machineId
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
@@ -301,43 +309,32 @@ public class ControlOptionController {
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
-
         //根据machineId查board_version表,获取version
         condition.clear();
         condition.put("machineId", machineId);
         condition.put("blockFlag", false);
         response = boardVersionService.fetchBoardVersion(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find board version by machineId");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find borad version by machineId");
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result = boardVersionResponse(machineId, response);
             return result;
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
-        if (version == 2)
-            response = coreV2Service.configSpeed(machineId, speed, version);
-        else if (version == 1) {
-            coreV1Service.configMode(machineId, 2, version);
-            try {
-                new Thread().sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        switch (version) {
+            case 1:
+                coreV1Service.configMode(machineId, MachineConstant.MACHINE_V1_MANUAL, version);
+                response = coreV1Service.configSpeed(machineId, speed, version);
+                break;
+            case 2:
+                coreV2Service.configMode(machineId, MachineConstant.MACHINE_V2_MANUAL, version);
+                response = coreV2Service.configSpeed(machineId, speed, version);
+                break;
+            case 3:
+                coreV3Service.configMode(machineId, MachineConstant.MACHINE_V3_MANUAL);
+                response = coreV3Service.configSpeed(machineId, speed);
+                break;
+            default:
+                logger.error("Unrecognized board version in heat");
 
-            response = coreV1Service.configSpeed(machineId, speed, version);
-            //设置成功则更新缓存
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                if (redisService.exists(machineId) == true) {
-                    LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
-                    MachineStatus machineStatus = statusQueue.getLast();
-                    machineStatus.setVolume(speed);
-                    statusQueue.offer(machineStatus);
-                    redisService.set(machineId, statusQueue, (long) 120);
-                }
-            }
         }
         return response;
     }
@@ -361,11 +358,11 @@ public class ControlOptionController {
         ResultData response = machineQrcodeBindService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("sorry, can not find the qrcode");
+            result.setDescription("未能查找到该二维码");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find the machineId by qrcode");
+            result.setDescription("查询二维码的");
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
@@ -375,13 +372,8 @@ public class ControlOptionController {
         condition.put("machineId", machineId);
         condition.put("blockFlag", false);
         response = boardVersionService.fetchBoardVersion(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find board version by machineId");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find borad version by machineId");
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result = boardVersionResponse(machineId, response);
             return result;
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
@@ -405,6 +397,39 @@ public class ControlOptionController {
 
     }
 
+    @PostMapping("/config/screen")
+    public ResultData configScreen(String qrcode, int screen) {
+        ResultData result = new ResultData();
+        //根据qrcode 查 code_machine_bind表,取出machineId
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("sorry, can not find the qrcode");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the machineId by qrcode");
+            return result;
+        }
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+        //根据machineId查board_version表,获取version
+        condition.clear();
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
+        response = boardVersionService.fetchBoardVersion(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result = boardVersionResponse(machineId, response);
+            return result;
+        }
+        int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+        if (version == 2)
+            response = coreV2Service.configScreen(machineId, screen);
+        return result;
+    }
+
 
     public static boolean isEmpty(String... args) {
         for (String arg : args) {
@@ -412,5 +437,19 @@ public class ControlOptionController {
                 return true;
         }
         return false;
+    }
+
+    private ResultData boardVersionResponse(String machineId, ResultData response) {
+        ResultData result = new ResultData();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查找到" + machineId + "所对应的控制板版本号");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("控制板版本号查找出现异常，请稍后尝试");
+            return result;
+        }
+        return result;
     }
 }
