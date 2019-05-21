@@ -31,8 +31,8 @@
         consumer_phone,
         consumer_address,
         assign_region,
-        assign_detail,
         assign_date,
+        assign_detail,
         assign_source,
         assign_description,
         block_flag,
@@ -175,6 +175,9 @@
             </if>
             <if test="assignStatus != null">
                 assign_status = #{assignStatus},
+            </if>
+            <if test="assignDate != null">
+                assign_date = #{assignDate},
             </if>
             <if test="consumerConsignee != null">
                 consumer_consignee = #{consumerConsignee},

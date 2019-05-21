@@ -32,6 +32,7 @@ import java.util.Map;
  * @Author fan
  * @Date 2019/4/16 3:24 PM
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/resource/image")
 @PropertySource("classpath:resource.properties")
@@ -89,7 +90,7 @@ public class ImageController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{filename:.+}")
-    public ResultData image(HttpServletResponse hsr, @PathVariable("filename") String filename) {
+    public String image(HttpServletResponse hsr, @PathVariable("filename") String filename) {
         ResultData result = new ResultData();
         //通过文件名称获取文件实际的存储路径
         Map<String, Object> condition = new HashMap<>();
@@ -98,11 +99,9 @@ public class ImageController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("获取文件存储路径失败，请稍后尝试");
-            return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("当前没有该文件对应的存储路径");
-            return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("find pic by url");
@@ -121,7 +120,7 @@ public class ImageController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
-        return result;
+        return null;
     }
 
 }

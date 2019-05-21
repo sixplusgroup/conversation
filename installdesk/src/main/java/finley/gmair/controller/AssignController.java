@@ -490,7 +490,7 @@ public class AssignController {
     }
 
     @PostMapping("/submit")
-    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description) {
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -504,6 +504,14 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("创建安装任务快照失败，请稍后尝试");
             return result;
+        }
+        //更新完成时间
+        if(!StringUtils.isEmpty(date)){
+            Map<String, Object> install_assign_condition = new HashMap<>();
+            install_assign_condition.put("assignDate",date);
+            install_assign_condition.put("assignId",assignId);
+            install_assign_condition.put("blockFlag",false);
+            assignService.update(install_assign_condition);
         }
         //更新安装任务状态
         Map<String, Object> condition = new HashMap<>();
