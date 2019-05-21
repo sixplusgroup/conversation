@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @Description: TODO
  * @Author fan
  * @Date 2019/3/19 5:18 PM
+ */
 
 @SpringBootApplication
 @EnableFeignClients(basePackages = "finley.gmair.service")

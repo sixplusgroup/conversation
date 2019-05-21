@@ -82,6 +82,8 @@
         SELECT
         assign_id,
         code_value,
+        team_id,
+        member_id,
         assign_status,
         consumer_consignee,
         consumer_phone,
@@ -119,6 +121,8 @@
         SELECT
         assign_id,
         code_value,
+        team_id,
+        member_id,
         assign_status,
         consumer_consignee,
         consumer_phone,
