@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.TeamForm;
 import finley.gmair.service.InstallService;
+import finley.gmair.service.ResourceService;
 import finley.gmair.util.ExcelUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -34,6 +35,9 @@ public class InstallController {
 
     @Autowired
     private InstallService installService;
+
+    @Autowired
+    private ResourceService resourceService;
 
     @Value("${temp_path}")
     private String baseDir;
@@ -342,6 +346,38 @@ public class InstallController {
             return result;
         }
         result=installService.deleteTeam(teamId);
+        return result;
+    }
+
+    /**
+     * 管理员提交安装快照
+     * @param assignId
+     * @param qrcode
+     * @param picture
+     * @param wifi
+     * @param method
+     * @param description
+     * @return
+     */
+
+    @PostMapping("assign/submit")
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
+        ResultData result = new ResultData();
+        if (org.apache.commons.lang.StringUtils.isEmpty(assignId) || org.apache.commons.lang.StringUtils.isEmpty(qrcode) || org.apache.commons.lang.StringUtils.isEmpty(picture) || wifi == null || org.apache.commons.lang.StringUtils.isEmpty(method)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装快照相关的信息");
+            return result;
+        }
+        //提交安装图片资源
+        result = resourceService.save(picture);
+        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            return result;
+        }
+        if (org.apache.commons.lang.StringUtils.isEmpty(description)) {
+            result = installService.submitAssign(assignId, qrcode, picture, wifi, method,date);
+        } else {
+            result = installService.submitAssign(assignId, qrcode, picture, wifi, method, description,date);
+        }
         return result;
     }
 }

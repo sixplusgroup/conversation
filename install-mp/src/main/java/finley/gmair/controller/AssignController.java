@@ -154,7 +154,7 @@ public class AssignController {
      * @return
      */
     @PostMapping("/submit")
-    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description) {
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -167,9 +167,9 @@ public class AssignController {
             return result;
         }
         if (StringUtils.isEmpty(description)) {
-            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method);
+            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method,date);
         } else {
-            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method, description);
+            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method,description,date);
         }
         return result;
     }

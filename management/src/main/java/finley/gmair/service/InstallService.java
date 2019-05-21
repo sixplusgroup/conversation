@@ -88,4 +88,10 @@ public interface InstallService {
 
     @GetMapping("/install/team/block")
     ResultData deleteTeam(@RequestParam("teamId") String teamId);
+
+    @PostMapping("/install/assign/submit")
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method,@RequestParam("date") String date);
+
+    @PostMapping("/install/assign/submit")
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description,@RequestParam("date") String date);
 }
