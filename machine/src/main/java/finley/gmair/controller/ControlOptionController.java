@@ -377,21 +377,18 @@ public class ControlOptionController {
             return result;
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
-        if (version == 2)
-            response = coreV2Service.configLight(machineId, light, version);
-        else if (version == 1) {
-            response = coreV1Service.configLight(machineId, light, version);
-
-            //设置成功更新缓存
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                if (redisService.exists(machineId) == true) {
-                    LimitQueue<MachineStatus> statusQueue = (LimitQueue<MachineStatus>) redisService.get(machineId);
-                    MachineStatus machineStatus = statusQueue.getLast();
-                    machineStatus.setLight(light);
-                    statusQueue.offer(machineStatus);
-                    redisService.set(machineId, statusQueue, (long) 120);
-                }
-            }
+        switch (version) {
+            case 1:
+                response = coreV1Service.configLight(machineId, light, version);
+                break;
+            case 2:
+                response = coreV2Service.configLight(machineId, light, version);
+                break;
+            case 3:
+                response = coreV3Service.configLight(machineId, light);
+                break;
+            default:
+                logger.info("Unrecognized board version in light control");
         }
         return response;
 
@@ -425,9 +422,22 @@ public class ControlOptionController {
             return result;
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+        switch (version) {
+            case 1:
+                //第一代控制板不具备滤网提示功能
+                break;
+            case 2:
+                response = coreV2Service.configScreen(machineId, screen);
+                break;
+            case 3:
+                response = coreV3Service.configScreen(machineId, screen);
+                break;
+            default:
+                logger.info("Unrecognized board version in screen control");
+        }
         if (version == 2)
             response = coreV2Service.configScreen(machineId, screen);
-        return result;
+        return response;
     }
 
 

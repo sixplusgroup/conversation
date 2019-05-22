@@ -33,4 +33,8 @@ public interface CoreV3Service {
     /*控制设备的亮度*/
     @PostMapping("/core/com/control")
     ResultData configLight(@RequestParam("uid") String uid, @RequestParam("light") Integer light);
+
+    /*控制设备的滤网灯*/
+    @PostMapping("/core/com/set/screen")
+    ResultData configScreen(@RequestParam("uid") String uid, @RequestParam("valid") Integer valid);
 }
