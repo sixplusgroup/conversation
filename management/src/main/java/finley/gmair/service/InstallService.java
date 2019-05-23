@@ -39,7 +39,7 @@ public interface InstallService {
     ResultData fetchAssign(@PathVariable("assignId") String assignId);
 
     @GetMapping("/install/assign/list")
-    ResultData fetchAssign(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId);
+    ResultData fetchAssign(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId,@RequestParam(value = "search", required = false) String search);
 
     @GetMapping("/install/assign/list")
     ResultData fetchAssignByPage(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId, @RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);

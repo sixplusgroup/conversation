@@ -115,7 +115,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/list")
-    public ResultData list(String status, String teamId, Integer start, Integer length) {
+    public ResultData list(String status, String teamId, Integer start, Integer length ,String search) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(status)) {
@@ -127,7 +127,16 @@ public class AssignController {
         condition.put("blockFlag", false);
         ResultData response;
         if (start == null || length == null) {
-            response = assignService.fetch(condition);
+            if (!StringUtils.isEmpty(search)) {
+                String fuzzysearch = "%" + search + "%";
+                Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+                if (pattern.matcher(search).matches()) {//如果search为数字
+                    condition.put("phone", fuzzysearch);
+                } else {
+                    condition.put("consumer", fuzzysearch);
+                }
+                response = assignService.principal(condition);
+            } else response = assignService.fetch(condition);
         } else {
             response = assignService.fetch(condition, start, length);
         }

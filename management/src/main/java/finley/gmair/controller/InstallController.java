@@ -119,10 +119,10 @@ public class InstallController {
     }
 
     @GetMapping("/assign/list")
-    public ResultData assigns(String status, String teamId, Integer start, Integer length) {
+    public ResultData assigns(String status, String teamId, Integer start, Integer length,String search) {
         ResultData result;
         if (start == null || length == null) {
-            result = installService.fetchAssign(status, teamId);
+            result = installService.fetchAssign(status, teamId , search);
         } else {
             result = installService.fetchAssignByPage(status, teamId, start, length);
         }
