@@ -46,8 +46,9 @@ public class MachineStatusV3 extends Entity implements Serializable {
         super();
     }
 
-    public MachineStatusV3(JSONObject json) {
+    public MachineStatusV3(String uid, JSONObject json) {
         this();
+        this.uid = uid;
         if (json.containsKey(PacketV3Info.POWER)) {
             this.heat = json.getInteger(PacketV3Info.POWER);
         }
@@ -189,5 +190,13 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     public void setLight(int light) {
         this.light = light;
+    }
+
+    public int getChildlock() {
+        return childlock;
+    }
+
+    public void setChildlock(int childlock) {
+        this.childlock = childlock;
     }
 }
