@@ -186,7 +186,7 @@ public class MachinePartialStatusController {
                             response = filterLightService.fetch(condition);
                             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                                 condition.put("lightStatus", true);
-                                condition.put("createAt",new Timestamp(System.currentTimeMillis()));
+                                condition.put("createAt", new Timestamp(System.currentTimeMillis()));
                                 filterLightService.update(condition);
                             } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                                 filterLightService.create(new FilterLight(machineId, true));

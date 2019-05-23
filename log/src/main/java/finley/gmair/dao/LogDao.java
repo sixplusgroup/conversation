@@ -26,4 +26,7 @@ public interface LogDao {
 
     ResultData queryUserLog(Map<String, Object> condition);
 
+    ResultData insertMqttAckLog(MqttAckLog mqttAckLog);
+
+    ResultData queryMqttAckLog(Map<String, Object> condition);
 }

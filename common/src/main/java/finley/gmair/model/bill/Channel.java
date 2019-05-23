@@ -8,6 +8,15 @@ public class Channel extends Entity {
 
     private String channelName;
 
+    public Channel() {
+        super();
+    }
+
+    public Channel(String channelName) {
+        this();
+        this.channelName = channelName;
+    }
+
     public String getChannelId() {
         return channelId;
     }
@@ -23,13 +32,5 @@ public class Channel extends Entity {
     public void setChannelName(String channelName) {
         this.channelName = channelName;
     }
-
-    public Channel(String channelId, String channelName){
-
-        this.channelId = channelId;
-        this.channelName = channelName;
-
-    }
-
 
 }

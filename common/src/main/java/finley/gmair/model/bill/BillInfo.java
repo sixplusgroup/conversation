@@ -13,15 +13,18 @@ public class BillInfo extends Entity {
 
     private BillStatus status;
 
+    private String accountId;
+
+    private String channelId;
+
     public BillInfo() {
         super();
         this.status = BillStatus.UNPAYED;
     }
 
-    public BillInfo(String orderId, double orderPrice, double actualPrice) {
+    public BillInfo(String orderId, double actualPrice) {
         this();
         this.orderId = orderId;
-        this.orderPrice = orderPrice;
         this.actualPrice = actualPrice;
     }
 
@@ -41,14 +44,6 @@ public class BillInfo extends Entity {
         this.orderId = orderId;
     }
 
-    public double getOrderPrice() {
-        return orderPrice;
-    }
-
-    public void setOrderPrice(double orderPrice) {
-        this.orderPrice = orderPrice;
-    }
-
     public double getActualPrice() {
         return actualPrice;
     }
@@ -64,4 +59,29 @@ public class BillInfo extends Entity {
     public void setStatus(BillStatus status) {
         this.status = status;
     }
+
+    public double getOrderPrice() { return orderPrice; }
+
+    public void setOrderPrice(double orderPrice) {
+        this.orderPrice = orderPrice;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
+    }
+
+
 }
+

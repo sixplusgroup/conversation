@@ -2,10 +2,13 @@ package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+<<<<<<< HEAD
+=======
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.CityAirQualityDao;
 import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.service.AirQualityCacheService;
+>>>>>>> 604af76d3ca7ddd34966c8430afdd4fcb881e77f
 import finley.gmair.service.CityAQIService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -37,8 +40,8 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     private Logger logger = LoggerFactory.getLogger(CityAQIServiceImpl.class);
 
-    @Value("${username}")
-    private String username;
+    @Value("${account}")
+    private String account;
 
     @Value("${password}")
     private String password;
@@ -78,6 +81,25 @@ public class CityAQIServiceImpl implements CityAQIService {
         String content = "[]";
         while (cd > 0) {
             try {
+<<<<<<< HEAD
+                URL location = new URL(url.toString());
+                HttpURLConnection connection = (HttpURLConnection) location.openConnection();
+                String origin = new StringBuffer(account).append(":").append(password).toString();
+                String auth = new String(Base64.encodeBase64(origin.getBytes()));
+                connection.setRequestProperty("Authorization", new StringBuffer("Basic ").append(auth).toString());
+                connection.setRequestProperty("User-Agent", "MSIE 7.0");
+                connection.setConnectTimeout(5000);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                StringBuffer temp = new StringBuffer();
+                while (null != (line = reader.readLine())) {
+                    temp.append(line);
+                }
+                reader.close();
+                connection.disconnect();
+                JSONArray data = JSONArray.parseArray(temp.toString());
+                result.setData(data);
+=======
                 ChromeDriverService service = new ChromeDriverService.Builder().usingDriverExecutable(new File(path)).usingAnyFreePort().build();
                 service.start();
                 WebDriver driver = new ChromeDriver();
@@ -89,6 +111,7 @@ public class CityAQIServiceImpl implements CityAQIService {
                 driver.close();
                 driver.quit();
                 service.stop();
+>>>>>>> 604af76d3ca7ddd34966c8430afdd4fcb881e77f
                 break;
             } catch (Exception e) {
                 logger.error(e.getMessage());

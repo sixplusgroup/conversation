@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 /**
  * @ClassName: AssignController
  * @Description: TODO
@@ -37,18 +41,14 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData assigns(String memberId, Integer status) {
+    public ResultData assigns(String memberId, Integer status, String search) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装负责人的信息");
             return result;
         }
-        if (status == null) {
-            result = assignService.fetchAssign(memberId);
-        } else {
-            result = assignService.fetchAssign(memberId, status);
-        }
+        result = assignService.fetchAssign(memberId, status, search);
         return result;
     }
 
@@ -66,18 +66,14 @@ public class AssignController {
     }
 
     @GetMapping("/own")
-    public ResultData overview(String memberId, Integer status) {
+    public ResultData overview(String memberId, Integer status, String search) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装工人的信息");
             return result;
         }
-        if (status == null) {
-            result = assignService.fetchOwnAssign(memberId);
-        } else {
-            result = assignService.fetchOwnAssign(memberId, status);
-        }
+        result = assignService.fetchOwnAssign(memberId, status, search);
         return result;
     }
 
@@ -158,7 +154,7 @@ public class AssignController {
      * @return
      */
     @PostMapping("/submit")
-    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description) {
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -171,9 +167,9 @@ public class AssignController {
             return result;
         }
         if (StringUtils.isEmpty(description)) {
-            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method);
+            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method,date);
         } else {
-            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method, description);
+            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method,description,date);
         }
         return result;
     }

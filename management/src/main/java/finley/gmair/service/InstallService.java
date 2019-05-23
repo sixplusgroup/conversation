@@ -66,5 +66,32 @@ public interface InstallService {
     ResultData fetchTeam(@RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
 
     @PostMapping("/install/member/watch/team")
-    ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamid);
+    ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamId);
+
+    @GetMapping("/install/assign/trace")
+    ResultData trace(@RequestParam("assignId") String assignId);
+
+    @GetMapping("/install/member/list")
+    ResultData fetchTeamMember(@RequestParam("teamId") String teamId);
+
+    @PostMapping("/install/member/create")
+    ResultData createTeamMember(@RequestParam("teamId") String teamId, @RequestParam("memberPhone") String memberPhone, @RequestParam("memberName") String memberName, @RequestParam("memberRole") int memberRole);
+
+    @PostMapping("/install/member/update")
+    ResultData updatePhone(@RequestParam("memberPhone") String memberPhone, @RequestParam("memberId") String memberId);
+
+    @GetMapping("/install/member/block")
+    ResultData deleteMember(@RequestParam("memberId") String memberId);
+
+    @GetMapping("/install/assign/snapshot")
+    ResultData snapshot(@RequestParam("assignId") String assignId);
+
+    @GetMapping("/install/team/block")
+    ResultData deleteTeam(@RequestParam("teamId") String teamId);
+
+    @PostMapping("/install/assign/submit")
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method,@RequestParam("date") String date);
+
+    @PostMapping("/install/assign/submit")
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description,@RequestParam("date") String date);
 }

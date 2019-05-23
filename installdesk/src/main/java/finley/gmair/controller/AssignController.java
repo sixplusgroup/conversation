@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
 import finley.gmair.model.message.MessageTemplate;
@@ -18,6 +20,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import static org.apache.el.parser.ELParserConstants.CONCAT;
 
 /**
  * @ClassName: AssignController
@@ -322,7 +327,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData tasks(String memberId, Integer status) {
+    public ResultData tasks(String memberId, Integer status, String search) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -355,7 +360,16 @@ public class AssignController {
         if (status != null) {
             condition.put("assignStatus", status);
         }
-        response = assignService.fetch(condition);
+        if (search != null) {
+            String fuzzysearch = "%" + search + "%";
+            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+            if (pattern.matcher(search).matches()) {//如果search为数字
+                condition.put("phone", fuzzysearch);
+            } else {
+                condition.put("consumer", fuzzysearch);
+            }
+            response = assignService.principal(condition);
+        } else response = assignService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询安装负责人所负责的安装任务失败，请稍后尝试");
@@ -370,6 +384,7 @@ public class AssignController {
         return result;
     }
 
+
     /**
      * 安装工人查看所有的订单
      *
@@ -377,7 +392,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/overview")
-    public ResultData overview(String memberId, Integer status) {
+    public ResultData overview(String memberId, Integer status, String search) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -390,7 +405,19 @@ public class AssignController {
             condition.put("assignStatus", status);
         }
         condition.put("blockFlag", false);
-        ResultData response = assignService.fetch(condition);
+        ResultData response;
+        if (search != null) {
+            String fuzzysearch = "%" + search + "%";
+            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+            if (pattern.matcher(search).matches()) {//如果search为数字
+                condition.put("phone", fuzzysearch);
+            } else {
+                condition.put("consumer", fuzzysearch);
+            }
+            response = assignService.worker(condition);
+        } else {
+            response = assignService.fetch(condition);
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询安装任务失败，请稍后尝试");
@@ -463,7 +490,7 @@ public class AssignController {
     }
 
     @PostMapping("/submit")
-    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description) {
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -477,6 +504,14 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("创建安装任务快照失败，请稍后尝试");
             return result;
+        }
+        //更新完成时间
+        if(!StringUtils.isEmpty(date)){
+            Map<String, Object> install_assign_condition = new HashMap<>();
+            install_assign_condition.put("assignDate",date);
+            install_assign_condition.put("assignId",assignId);
+            install_assign_condition.put("blockFlag",false);
+            assignService.update(install_assign_condition);
         }
         //更新安装任务状态
         Map<String, Object> condition = new HashMap<>();

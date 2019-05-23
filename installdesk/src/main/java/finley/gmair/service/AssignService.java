@@ -17,4 +17,9 @@ public interface AssignService {
     ResultData block(String assignId);
 
     ResultData remove(String assignId);
+
+    ResultData principal(Map<String, Object> condition);
+
+    ResultData worker(Map<String, Object> condition);
+
 }
