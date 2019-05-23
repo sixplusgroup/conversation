@@ -274,7 +274,7 @@ public class MachineController {
         response = machineService.probeCityIdByQRcode(qrcode);
         //如果能够获取到室外配置，则显示室外城市信息
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+            BufferedImage bufferedImage = share(path, "果麦新风", null, pm2_5, temperature, humidity, co2,null);
             savaAndUpload(bufferedImage);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("当前无法获取室外的城市信息");
@@ -296,7 +296,7 @@ public class MachineController {
             String provinceId = location.getString("provinceId");
             response = airqualityService.getLatestCityAirQuality(provinceId);
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2);
+                BufferedImage bufferedImage = share(path, "果麦新风", null, pm2_5, temperature, humidity, co2,null);
                 savaAndUpload(bufferedImage);
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription("当前无法获取最新的城市PM2.5信息");
@@ -314,7 +314,7 @@ public class MachineController {
         no2 = outdoor.getDouble("no2");
         o3 = outdoor.getDouble("o3");
         so2 = outdoor.getDouble("so2");
-        BufferedImage bufferedImage = share(path, "果麦新风", pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+        BufferedImage bufferedImage = share(path, "果麦新风", null, pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2,null);
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
             logService.createUserMachineOperationLog(consumerId, qrcode, "share", new StringBuffer("User:").append(consumerId).append(" share machine image with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "image");
         }));
@@ -326,12 +326,12 @@ public class MachineController {
         return result;
     }
 
-    private BufferedImage share(String path, String name, int pm2_5, int temperature, int humidity, int co2) {
-        return ImageShareUtil.share(path, name, pm2_5, temperature, humidity, co2);
+    private BufferedImage share(String path, String name, String city, int pm2_5, int temperature, int humidity, int co2, int[] pastlist) {
+        return ImageShareUtil.share(path, name, city, pm2_5, temperature, humidity, co2,pastlist);
     }
 
-    private BufferedImage share(String path, String name, int pm2_5, int temperature, int humidity, int co2, int outPM2_5, int aqi, String primary, int pm10, double co, double no2, double o3, double so2) {
-        return ImageShareUtil.share(path, name, pm2_5, temperature, humidity, co2, outPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+    private BufferedImage share(String path, String name, String city, int pm2_5, int temperature, int humidity, int co2, int outPM2_5, int aqi, String primary, int pm10, double co, double no2, double o3, double so2,int[] pastlist) {
+        return ImageShareUtil.share(path, name, city, pm2_5, temperature, humidity, co2, outPM2_5, aqi, primary, pm10, co, no2, o3, so2, pastlist);
     }
 
     private void savaAndUpload(BufferedImage bufferedImage) {
