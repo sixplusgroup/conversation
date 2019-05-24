@@ -1,9 +1,11 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.service.BoardVersionService;
 import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.service.impl.RedisService;
+import finley.gmair.util.MachineUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
@@ -45,7 +47,8 @@ public class MachineStatusCacheController {
             return result;
         }
         LimitQueue<Object> statusQueue = (LimitQueue<Object>) redisService.get(uid);
-        result.setData(statusQueue.getLast());
+        JSONObject json = MachineUtil.normalize(statusQueue.getLast());
+        result.setData(json);
         result.setDescription("success to find machine status in redis cache");
         return result;
     }
