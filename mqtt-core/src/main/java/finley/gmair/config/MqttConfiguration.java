@@ -195,7 +195,7 @@ public class MqttConfiguration {
         } else {
             //该类型的数据报文将存入内存缓存
             if (base_action.equals("allrep")) {
-                logger.info("allrep: " + json);
+                logger.info("uid: " + machineId + ", all rep: " + json);
                 //写入内存缓存的数据使用common模块中的结构
                 finley.gmair.model.machine.v3.MachineStatusV3 status = new finley.gmair.model.machine.v3.MachineStatusV3(machineId, json);
                 LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3> queue;
@@ -215,7 +215,7 @@ public class MqttConfiguration {
             }
             //该类型的数据报文仅用于更新内存缓存中的数据状态，不存入数据库
             if (base_action.equals("sys_status")) {
-                partial(machineId, json);
+                MQTTUtil.partial(redisService, machineId, json);
             }
             if (base_action.equals("sys_surplus")) {
                 SurplusPayload payload = new SurplusPayload(machineId, json);
@@ -223,7 +223,7 @@ public class MqttConfiguration {
             }
             //传感器数据上传
             if (base_action.equals("sensor")) {
-                partial(machineId, json);
+                MQTTUtil.partial(redisService, machineId, json);
             }
             if (base_action.equals("ack")) {
                 AckPayload payload = new AckPayload(machineId, json);
@@ -290,68 +290,17 @@ public class MqttConfiguration {
      * 处理ack确认消息publish
      */
     private void dealAckMessage(AckPayload payload) {
+        logger.info("ack: " + JSON.toJSONString(payload));
         if (payload.getCode() == 0) {
-            new Thread(() -> {
-                logService.createMqttAckLog(payload.getAckId(), payload.getMachineId(),
-                        payload.getCode(), "Mqtt", ip, new StringBuffer("The machine: ")
-                                .append(payload.getMachineId()).append("operate the command successfully").toString());
-            }).start();
+//            new Thread(() -> {
+//                logService.createMqttAckLog(payload.getAckId(), payload.getMachineId(),
+//                        payload.getCode(), "Mqtt", ip, new StringBuffer("The machine: ")
+//                                .append(payload.getMachineId()).append("operate the command successfully").toString());
+//            }).start();
         }
         if (payload.getCode() != 0) {
-            new Thread(() -> {
-                logService.createMqttAckLog(payload.getAckId(), payload.getMachineId(),
-                        payload.getCode(), "Mqtt", ip, payload.getError());
-            }).start();
+            CorePool.getLogPool().execute(() -> logService.createMqttAckLog(payload.getAckId(), payload.getMachineId(), payload.getCode(), "Mqtt", ip, payload.getError())
+            );
         }
-    }
-
-    private void partial(String uid, JSONObject json) {
-        if (redisService.exists(uid)) {
-            LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3> queue = (LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3>) redisService.get(uid);
-            finley.gmair.model.machine.v3.MachineStatusV3 last = queue.getLast();
-            last = merge(last, json);
-            queue.replaceLast(last);
-        }
-    }
-
-
-    private finley.gmair.model.machine.v3.MachineStatusV3 merge(finley.gmair.model.machine.v3.MachineStatusV3 origin, JSONObject candidate) {
-        if (candidate.containsKey("pm2_5a")) {
-            origin.setPm2_5a(candidate.getIntValue("pm2_5a"));
-        }
-        if (candidate.containsKey("pm2_5b")) {
-            origin.setPm2_5b(candidate.getIntValue("pm2_5b"));
-        }
-        if (candidate.containsKey("tempIndoor")) {
-            origin.setTempIndoor(candidate.getIntValue("tempIndoor"));
-        }
-        if (candidate.containsKey("tempOutdoor")) {
-            origin.setTempOutdoor(candidate.getIntValue("tempOutdoor"));
-        }
-        if (candidate.containsKey("humidity")) {
-            origin.setHumidity(candidate.getIntValue("humidity"));
-        }
-        if (candidate.containsKey("co2")) {
-            origin.setCo2(candidate.getIntValue("co2"));
-        }
-        if (candidate.containsKey("status")) {
-            origin.setStatus(candidate.getIntValue("status"));
-        }
-        if (candidate.containsKey("mode")) {
-            origin.setMode(candidate.getIntValue("mode"));
-        }
-        if (candidate.containsKey("volume")) {
-            origin.setVolume(candidate.getIntValue("volume"));
-        }
-        if (candidate.containsKey("heat")) {
-            origin.setHeat(candidate.getIntValue("heat"));
-        }
-        if (candidate.containsKey("light")) {
-            origin.setLight(candidate.getIntValue("light"));
-        }
-        if (candidate.containsKey("childlock")) {
-            origin.setChildlock(candidate.getIntValue("childlock"));
-        }
-        return origin;
     }
 }

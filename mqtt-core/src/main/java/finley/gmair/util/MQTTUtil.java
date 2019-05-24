@@ -1,9 +1,11 @@
 package finley.gmair.util;
 
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.machine.v3.MachineStatusV3;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.MqttService;
+import finley.gmair.service.RedisService;
 import org.springframework.util.StringUtils;
 
 /**
@@ -29,5 +31,55 @@ public class MQTTUtil {
             service.publish(topic, json);
         });
         return true;
+    }
+
+    public static void partial(RedisService redisService, String uid, JSONObject json) {
+        if (redisService.exists(uid)) {
+            LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3> queue = (LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3>) redisService.get(uid);
+            finley.gmair.model.machine.v3.MachineStatusV3 last = queue.getLast();
+            last = merge(last, json);
+            queue.replaceLast(last);
+            redisService.set(uid, queue);
+        }
+    }
+
+    private static finley.gmair.model.machine.v3.MachineStatusV3 merge(finley.gmair.model.machine.v3.MachineStatusV3 origin, JSONObject candidate) {
+        if (candidate.containsKey("pm2_5a") && candidate.getIntValue("pm2_5a") != origin.getPm2_5a()) {
+            origin.setPm2_5a(candidate.getIntValue("pm2_5a"));
+        }
+        if (candidate.containsKey("pm2_5b") && candidate.getIntValue("pm2_5b") != origin.getPm2_5b()) {
+            origin.setPm2_5b(candidate.getIntValue("pm2_5b"));
+        }
+        if (candidate.containsKey("tempIndoor") && candidate.getIntValue("tempIndoor") != origin.getTempIndoor()) {
+            origin.setTempIndoor(candidate.getIntValue("tempIndoor"));
+        }
+        if (candidate.containsKey("tempOutdoor") && candidate.getIntValue("tempOutdoor") != origin.getTempOutdoor()) {
+            origin.setTempOutdoor(candidate.getIntValue("tempOutdoor"));
+        }
+        if (candidate.containsKey("humidity") && candidate.getIntValue("humidity") != origin.getHumidity()) {
+            origin.setHumidity(candidate.getIntValue("humidity"));
+        }
+        if (candidate.containsKey("co2")) {
+            origin.setCo2(candidate.getIntValue("co2"));
+        }
+        if (candidate.containsKey("power")) {
+            origin.setPower(candidate.getIntValue("power"));
+        }
+        if (candidate.containsKey("mode")) {
+            origin.setMode(candidate.getIntValue("mode"));
+        }
+        if (candidate.containsKey("volume")) {
+            origin.setVolume(candidate.getIntValue("volume"));
+        }
+        if (candidate.containsKey("heat")) {
+            origin.setHeat(candidate.getIntValue("heat"));
+        }
+        if (candidate.containsKey("light")) {
+            origin.setLight(candidate.getIntValue("light"));
+        }
+        if (candidate.containsKey("childlock")) {
+            origin.setChildlock(candidate.getIntValue("childlock"));
+        }
+        return origin;
     }
 }

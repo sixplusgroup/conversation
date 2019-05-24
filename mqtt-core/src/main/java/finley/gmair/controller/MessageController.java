@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.mqtt.Firmware;
 import finley.gmair.service.FirmwareService;
 import finley.gmair.service.MqttService;
+import finley.gmair.service.RedisService;
 import finley.gmair.util.MQTTUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -37,6 +38,9 @@ public class MessageController {
     @Autowired
     private MqttService mqttService;
 
+    @Autowired
+    private RedisService redisService;
+
     /*
      * 服务端上报控制指令
      * led 表示屏显开关，light进行屏幕亮度调节
@@ -53,32 +57,40 @@ public class MessageController {
         }
         //根据uid生成对应的topic
         String topic = MQTTUtil.produceTopic(uid, TopicExtension.CMD_ACTION);
-
+        JSONObject temp = new JSONObject();
         //根据字段是否为空，向json push数据
         JSONObject json = new JSONObject();
         if (!StringUtils.isEmpty(power)) {
             json.put("power", power);
+            temp.put("power", power);
         }
         if (!StringUtils.isEmpty(speed)) {
             json.put("speed", speed);
+            temp.put("volume", speed);
         }
         if (!StringUtils.isEmpty(heat)) {
             json.put("heat", heat);
+            temp.put("heat", heat);
         }
         if (!StringUtils.isEmpty(mode)) {
             json.put("mode", mode);
+            temp.put("mode", mode);
         }
         if (!StringUtils.isEmpty(childlock)) {
             json.put("childlock", childlock);
+            temp.put("childlock", childlock);
         }
         if (!StringUtils.isEmpty(light) && light == 0) {
             json.put("led", 0);
+            temp.put("light", 0);
         } else {
             json.put("led", 1);
             json.put("light", light);
+            temp.put("light", light);
         }
         try {
             mqttService.publish(topic, json);
+            MQTTUtil.partial(redisService, uid, temp);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Command message publishing error with: " + e.getMessage());
@@ -286,4 +298,6 @@ public class MessageController {
         }
         return result;
     }
+
+
 }
