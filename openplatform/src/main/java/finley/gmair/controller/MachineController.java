@@ -1,16 +1,25 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.openplatform.CorpProfile;
+import finley.gmair.model.openplatform.MachineSubscription;
 import finley.gmair.service.AirQualityService;
+import finley.gmair.service.CorpMachineSubsService;
+import finley.gmair.service.CorpProfileService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName: MachineController
@@ -29,6 +38,12 @@ public class MachineController {
     @Autowired
     private AirQualityService airQualityService;
 
+    @Autowired
+    private CorpProfileService corpProfileService;
+
+    @Autowired
+    private CorpMachineSubsService corpMachineSubsService;
+
     /**
      * appid 订阅设备
      *
@@ -39,14 +54,64 @@ public class MachineController {
     @PostMapping("/subscribe")
     public ResultData subscribe(String appid, String qrcode) {
         ResultData result = new ResultData();
-
+        if(StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供appid和qrcode");
+            return result;
+        }
         //检查appid的合法性
-
-
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("appid",appid);
+        condition.put("blockFlag",false);
+        ResultData response = corpProfileService.fetch(condition);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询失败，请稍后尝试");
+            return result;
+        }
+        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("请提供正确的appid");
+            return result;
+        }
+        CorpProfile corpProfile = ((List<CorpProfile>)response.getData()).get(0);
+        String corpId = corpProfile.getProfileId();
         //检查qrcode的合法性
-
+        ResultData res = machineService.indoor(qrcode);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询失败，请稍后尝试");
+            return result;
+        }
+        if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("请提供正确的qrcode");
+            return result;
+        }
         //检查appid和qrcode是否已经存在订阅关系
-
+        Map<String,Object> con = new HashMap<>();
+        con.put("corpId", corpId);
+        con.put("qrcode",qrcode);
+        con.put("blockFlag",false);
+        ResultData r = corpMachineSubsService.fetch(con);
+        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询失败，请稍后尝试");
+            return result;
+        }
+        if(response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("已订阅该机器");
+            return result;
+        }
+        MachineSubscription machineSubscription = new MachineSubscription(corpId,qrcode);
+        response = corpMachineSubsService.create(machineSubscription);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            response.setDescription("订阅机器成功");
+        }else {
+            response.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            response.setDescription("订阅失败，请稍后尝试");
+        }
         return result;
     }
 

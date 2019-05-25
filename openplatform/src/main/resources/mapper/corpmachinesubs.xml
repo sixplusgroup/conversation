@@ -10,7 +10,8 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.openplatform.MachineSubscription">
-
+        INSERT INTO open_platform.corp_machine_subscribe(subs_id,corp_id,code_value,block_flag,create_time)
+        VALUES (#{subscriptionId},#{corpId},#{qrcode},#{blockFlag},#{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="subscriptionVo">

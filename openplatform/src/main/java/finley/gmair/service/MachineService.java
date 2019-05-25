@@ -10,11 +10,11 @@ public interface MachineService {
     /**
      * 获取设备的当前运行状态
      *
-     * @param qrcdoe
+     * @param qrcode
      * @return
      */
     @GetMapping("/machine/status/byqrcode")
-    ResultData indoor(@RequestParam(value = "qrcode") String qrcdoe);
+    ResultData indoor(@RequestParam(value = "qrcode") String qrcode);
 
     /**
      * 获取设备所处城市的cityId
