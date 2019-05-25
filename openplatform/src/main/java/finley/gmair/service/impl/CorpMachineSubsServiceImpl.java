@@ -51,5 +51,19 @@ public class CorpMachineSubsServiceImpl implements CorpMachineSubsService {
         return result;
     }
 
+    @Override
+    public ResultData remove(String subscriptionId) {
+        ResultData result = new ResultData();
+        ResultData response = corpMachineSubsDao.remove(subscriptionId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
+    }
+
 
 }

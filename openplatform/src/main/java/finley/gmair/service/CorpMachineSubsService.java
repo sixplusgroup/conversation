@@ -10,4 +10,6 @@ public interface CorpMachineSubsService {
     ResultData create(MachineSubscription machineSubscription);
 
     ResultData fetch(Map<String, Object> condition);
+
+    ResultData remove(String subscriptionId);
 }

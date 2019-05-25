@@ -49,4 +49,19 @@ public class CorpMachineSubsDaoImpl extends BaseDao implements CorpMachineSubsDa
         }
         return result;
     }
+
+
+    @Override
+    public ResultData remove(String subscriptionId) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.openplatform.subscribe.remove", subscriptionId);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
 }

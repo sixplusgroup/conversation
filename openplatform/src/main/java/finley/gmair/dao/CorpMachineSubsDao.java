@@ -10,4 +10,6 @@ public interface CorpMachineSubsDao {
     ResultData insert(MachineSubscription machineSubscription);
 
     ResultData query(Map<String, Object> condition);
+
+    ResultData remove(String subscriptionId);
 }

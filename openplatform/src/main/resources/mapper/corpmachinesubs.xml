@@ -37,4 +37,9 @@
         SET block_flag = TRUE
         WHERE subs_id = #{subscriptionId}
     </update>
+
+    <delete id="remove">
+        DELETE FROM open_platform.corp_machine_subscribe
+        WHERE subs_id = #{subscriptionId}
+    </delete>
 </mapper>
