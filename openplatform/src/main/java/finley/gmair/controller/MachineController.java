@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.service.AirQualityService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -23,6 +24,9 @@ public class MachineController {
 
     @Autowired
     private MachineService machineService;
+
+    @Autowired
+    private AirQualityService airQualityService;
 
     /**
      * 获取设备的状态信息
@@ -58,7 +62,11 @@ public class MachineController {
             result.setDescription("请确保该appid有效，且已订阅了该设备二维码");
             return result;
         }
+        //获取设备所处的城市
         ResultData response = machineService.outdoor(qrcode);
+
+        //根据设备所处的城市id获取该城市的空气数据
+        response = airQualityService.airquality(""); //从上述response结果中获取cityId
         return result;
     }
 
