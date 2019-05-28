@@ -13,10 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -207,20 +204,50 @@ public class MachineController {
             result.setDescription("查询失败，请稍后尝试");
             return result;
         }
-        MachineDefaultLocation machineDefaultLocation = ((List<MachineDefaultLocation>)response.getData()).get(0);
+        MachineDefaultLocation machineDefaultLocation = ((List<MachineDefaultLocation>) response.getData()).get(0);
         String cityId = machineDefaultLocation.getCityId();
         //根据设备所处的城市id获取该城市的空气数据
         response = airQualityService.airquality(cityId); //从上述response结果中获取cityId
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询空气数据失败，请稍后尝试");
             return result;
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("未查询到该设备城市的空气数据");
             return result;
         }
+        return result;
+    }
+
+    @PostMapping("/power/{value}")
+    public ResultData power(String appid, String qrcode, @PathVariable("value") String value) {
+        ResultData result = new ResultData();
+        if (!prerequisities(appid, qrcode)) {
+
+        }
+
+        if ("on".equalsIgnoreCase(value)) {
+
+        }
+        if ("off".equalsIgnoreCase(value)) {
+
+        }
+        //若value值不为on或者off，提示无法操作
+
+
+        return result;
+    }
+
+    @PostMapping("/speed")
+    public ResultData speed(String appid, String qrcode, Integer speed) {
+        ResultData result = new ResultData();
+
+        if (!prerequisities(appid, qrcode)) {
+
+        }
+
         return result;
     }
 

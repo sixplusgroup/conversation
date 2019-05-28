@@ -3,6 +3,7 @@ package finley.gmair.service;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("machine-agent")
@@ -24,4 +25,25 @@ public interface MachineService {
      */
     @GetMapping("/machine/default/location/probe/cityid")
     ResultData outdoor(@RequestParam("qrcode") String qrcode);
+
+
+    /**
+     * 开关设备
+     *
+     * @param qrcode
+     * @param component
+     * @param operation
+     * @return
+     */
+    @PostMapping("/machine/control/option/operate")
+    ResultData power(@RequestParam("qrcode") String qrcode, @RequestParam("component") String component, @RequestParam("operation") String operation);
+
+    /**
+     * 调节风量
+     *
+     * @param qrcode
+     * @param speed
+     * @return
+     */
+    ResultData speed(@RequestParam("qrcode") String qrcode, @RequestParam("speed") Integer speed);
 }
