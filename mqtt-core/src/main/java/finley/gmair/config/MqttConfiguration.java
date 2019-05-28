@@ -170,10 +170,17 @@ public class MqttConfiguration {
         String base_action = array[5];
         //检查报文中的时间戳内容
         if (json.containsKey("time")) {
-            if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
-                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
-                logger.info("send message to sync time for client: " + machineId);
-            }
+//            if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
+//                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
+//                if (machineId.equals("F0FEif (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
+////                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
+////                if (machineId.equals("F0FE6BB0CE1E")) {
+////                    logger.info("send message to sync time for client: " + machineId);
+////                }
+////            }6BB0CE1E")) {
+//                    logger.info("send message to sync time for client: " + machineId);
+//                }
+//            }
         }
         //对于长度为7的topic，只有上传单项传感器数据和警报处理
         if (array.length == 7) {
@@ -195,7 +202,7 @@ public class MqttConfiguration {
         } else {
             //该类型的数据报文将存入内存缓存
             if (base_action.equals("allrep")) {
-                logger.info("uid: " + machineId + ", all rep: " + json);
+                logger.info("uid: " + machineId + ", allrep: " + json);
                 //写入内存缓存的数据使用common模块中的结构
                 finley.gmair.model.machine.v3.MachineStatusV3 status = new finley.gmair.model.machine.v3.MachineStatusV3(machineId, json);
                 LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3> queue;
@@ -223,6 +230,7 @@ public class MqttConfiguration {
             }
             //传感器数据上传
             if (base_action.equals("sensor")) {
+                logger.info("uid: " + machineId + ", sensor: " + json);
                 MQTTUtil.partial(redisService, machineId, json);
             }
             if (base_action.equals("ack")) {

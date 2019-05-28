@@ -322,10 +322,20 @@ public class ControlOptionController {
         switch (version) {
             case 1:
                 coreV1Service.configMode(machineId, MachineConstant.MACHINE_V1_MANUAL, version);
+                try {
+                    new Thread().sleep(500);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 response = coreV1Service.configSpeed(machineId, speed, version);
                 break;
             case 2:
                 coreV2Service.configMode(machineId, MachineConstant.MACHINE_V2_MANUAL, version);
+                try {
+                    new Thread().sleep(500);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 response = coreV2Service.configSpeed(machineId, speed, version);
                 break;
             case 3:
