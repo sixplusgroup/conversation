@@ -45,5 +45,6 @@ public interface MachineService {
      * @param speed
      * @return
      */
+    @PostMapping("/machine/control/option/config/speed")
     ResultData speed(@RequestParam("qrcode") String qrcode, @RequestParam("speed") Integer speed);
 }

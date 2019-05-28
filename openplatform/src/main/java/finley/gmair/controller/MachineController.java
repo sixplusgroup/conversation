@@ -168,6 +168,11 @@ public class MachineController {
     @GetMapping("/indoor")
     public ResultData indoor(String appid, String qrcode) {
         ResultData result = new ResultData();
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供appid和qrcode");
+            return result;
+        }
         if (!prerequisities(appid, qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确保该appid有效，且已订阅了该设备二维码");
@@ -192,6 +197,11 @@ public class MachineController {
     @GetMapping("/outdoor")
     public ResultData outdoor(String appid, String qrcode) {
         ResultData result = new ResultData();
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供appid和qrcode");
+            return result;
+        }
         if (!prerequisities(appid, qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确保该appid有效，且已订阅了该设备二维码");
@@ -221,36 +231,93 @@ public class MachineController {
         return result;
     }
 
+    /**
+     * 开关设备
+     *
+     * @param appid
+     * @param qrcode
+     * @param value
+     * @return
+     */
     @PostMapping("/power/{value}")
     public ResultData power(String appid, String qrcode, @PathVariable("value") String value) {
         ResultData result = new ResultData();
-        if (!prerequisities(appid, qrcode)) {
-
+        //check empty
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供appid和qrcode");
+            return result;
         }
-
+        //检查该appid是否订阅该qrcode
+        if (!prerequisities(appid, qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保该appid有效，且已订阅了该设备二维码");
+            return result;
+        }
         if ("on".equalsIgnoreCase(value)) {
-
+            ResultData response = machineService.power(qrcode, "power", "on");
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("开机失败，请稍后尝试");
+                return result;
+            }
         }
         if ("off".equalsIgnoreCase(value)) {
-
+            ResultData response = machineService.power(qrcode, "power", "off");
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("关机失败，请稍后尝试");
+                return result;
+            }
         }
         //若value值不为on或者off，提示无法操作
-
-
+        else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("无法操作，请输入合法值");
+            return result;
+        }
         return result;
     }
 
+    /**
+     * 调节风量
+     *
+     * @param appid
+     * @param qrcode
+     * @param speed
+     * @return
+     */
     @PostMapping("/speed")
     public ResultData speed(String appid, String qrcode, Integer speed) {
         ResultData result = new ResultData();
-
-        if (!prerequisities(appid, qrcode)) {
-
+        //check empty
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供appid和qrcode");
+            return result;
         }
-
+        //检查该appid是否订阅该qrcode
+        if (!prerequisities(appid, qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保该appid有效，且已订阅了该设备二维码");
+            return result;
+        }
+        ResultData response = machineService.speed(qrcode, speed);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("调节风量失败，请稍后尝试");
+            return result;
+        }
         return result;
     }
 
+    /**
+     * 判断appid和qrcode是否存在订阅关系
+     *
+     * @param appid
+     * @param qrcode
+     * @return
+     */
     private boolean prerequisities(String appid, String qrcode) {
         ResultData result = new ResultData();
         //判断appid是否合法
