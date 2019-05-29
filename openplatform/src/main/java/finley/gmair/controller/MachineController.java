@@ -1,5 +1,8 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.MachineDefaultLocation;
 import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.model.openplatform.MachineSubscription;
@@ -158,6 +161,47 @@ public class MachineController {
         return result;
     }
 
+    @GetMapping("/subscriptions")
+    public ResultData subscription(String appid) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(appid)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供appid");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("appid", appid);
+        condition.put("blockFlag", false);
+        ResultData response = corpProfileService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供正确的appid");
+            return result;
+        }
+        CorpProfile profile = ((List<CorpProfile>) response.getData()).get(0);
+        String corpId = profile.getProfileId();
+        condition.clear();
+        condition.put("corpId", corpId);
+        condition.put("blockFlag", false);
+        response = corpMachineSubsService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未能查询到设备的任何订阅信息");
+            return result;
+        }
+        JSONArray data = new JSONArray();
+        for (MachineSubscription subscription : (List<MachineSubscription>) response.getData()) {
+            JSONObject temp = ((JSONObject) JSONObject.parse(JSON.toJSONString(subscription)));
+            temp.remove("subscriptionId");
+            temp.remove("corpId");
+            temp.remove("blockFlag");
+            data.add(temp);
+        }
+        result.setData(data);
+        return result;
+    }
+
+
     /**
      * 获取设备的状态信息
      *
@@ -184,6 +228,11 @@ public class MachineController {
             result.setDescription("查询失败，请稍后尝试");
             return result;
         }
+        //去除设备的UID信息，加入设备的二维码信息
+        JSONObject json = JSONObject.parseObject(JSON.toJSONString(response.getData()));
+        json.remove("uid");
+        json.put("qrcode", qrcode);
+        result.setData(json);
         return result;
     }
 
@@ -214,8 +263,8 @@ public class MachineController {
             result.setDescription("查询失败，请稍后尝试");
             return result;
         }
-        MachineDefaultLocation machineDefaultLocation = ((List<MachineDefaultLocation>) response.getData()).get(0);
-        String cityId = machineDefaultLocation.getCityId();
+        JSONObject json = JSONArray.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+        String cityId = json.getString("cityId");
         //根据设备所处的城市id获取该城市的空气数据
         response = airQualityService.airquality(cityId); //从上述response结果中获取cityId
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -228,6 +277,11 @@ public class MachineController {
             result.setDescription("未查询到该设备城市的空气数据");
             return result;
         }
+        json = JSONArray.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+        json.remove("blockFlag");
+        json.remove("recordTime");
+        json.remove("url");
+        result.setData(json);
         return result;
     }
 
@@ -261,17 +315,19 @@ public class MachineController {
                 result.setDescription("开机失败，请稍后尝试");
                 return result;
             }
-        }
-        if ("off".equalsIgnoreCase(value)) {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+        } else if ("off".equalsIgnoreCase(value)) {
             ResultData response = machineService.power(qrcode, "power", "off");
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("关机失败，请稍后尝试");
                 return result;
             }
-        }
-        //若value值不为on或者off，提示无法操作
-        else {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+        } else {
+            //若value值不为on或者off，提示无法操作
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("无法操作，请输入合法值");
             return result;
