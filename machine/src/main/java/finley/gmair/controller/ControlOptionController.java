@@ -56,6 +56,9 @@ public class ControlOptionController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private ModelVolumeService modelVolumeService;
+
     //先查control_option表,如果对应的操作不存在,则创建.
     //如果存在,取出controlId,并根据传入的值新建control_option_action配置.
     @PostMapping(value = "/create")
@@ -294,11 +297,52 @@ public class ControlOptionController {
             result.setDescription("provide all the speed");
             return result;
         }
-        //根据qrcode 查 code_machine_bind表,取出machineId
+        //根据qrcode 查 qrcode表，取出model_id
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
-        ResultData response = machineQrcodeBindService.fetch(condition);
+        ResultData response = qrCodeService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("sorry, can not find the qrcode");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the model_id by qrcode");
+            return result;
+        }
+        String modelId = ((List<QRCode>) response.getData()).get(0).getModelId();
+        //根据modelId查 model_volume_config表，取风量范围
+        condition.clear();
+        condition.put("modelId", modelId);
+        condition.put("blockFlag", false);
+        response = modelVolumeService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("sorry, can not find the volume config");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the volume config");
+            return result;
+        }
+        int minVolume = ((List<ModelVolume>) response.getData()).get(0).getMinVolume();
+        int maxVolume = ((List<ModelVolume>) response.getData()).get(0).getMaxVolume();
+        //根据风量范围判断是否可运行
+        if (speed < minVolume) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("volume is too low");
+            return result;
+        } else if (speed > maxVolume) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("volume is too high");
+            return result;
+        }
+        //根据qrcode 查 code_machine_bind表,取出machineId
+        condition.clear();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        response = machineQrcodeBindService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("sorry, can not find the qrcode");
