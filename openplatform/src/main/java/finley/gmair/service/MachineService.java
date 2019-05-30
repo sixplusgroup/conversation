@@ -47,4 +47,22 @@ public interface MachineService {
      */
     @PostMapping("/machine/control/option/config/speed")
     ResultData speed(@RequestParam("qrcode") String qrcode, @RequestParam("speed") Integer speed);
+
+    /**
+     * 根据qrcode查model_id
+     *
+     * @param qrcode
+     * @return
+     */
+    @GetMapping("/machine/qrcode/model")
+    ResultData getModel(@RequestParam("qrcode") String qrcode);
+
+    /**
+     * 根据model_id查风量范围
+     *
+     * @param modelId
+     * @return
+     */
+    @GetMapping("/machine/model/volume/probe/by/modelId")
+    ResultData probeModelVolumeByModelId(@RequestParam("modelId") String modelId);
 }
