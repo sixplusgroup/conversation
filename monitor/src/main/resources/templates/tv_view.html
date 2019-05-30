@@ -379,8 +379,8 @@
                 if (response.responseCode === "RESPONSE_OK") {
                     indoor_pm25 = response.data.pm2_5;
                     co2 = response.data.co2;
-                    temp = response.data.temp;
-                    humid = response.data.humid;
+                    temp = response.data.temperature;
+                    humid = response.data.humidity;
                 } else {
                     console.log(response.responseCode);
                 }

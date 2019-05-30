@@ -451,7 +451,7 @@ public class MachineController {
      * @param appid
      * @return
      */
-    @PostMapping("/speed/range")
+    @GetMapping("/speed/range")
     public ResultData speedRange(String qrcode, String appid) {
         ResultData result = new ResultData();
         //check empty
@@ -489,7 +489,13 @@ public class MachineController {
             result.setDescription("查询风量可调范围失败");
             return result;
         }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        json = JSONArray.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+        json.remove("configId");
+        json.remove("modelId");
+        json.remove("blockFlag");
+        json.remove("createAt");
+        json.put("qrcode", qrcode);
+        result.setData(json);
         return result;
     }
 

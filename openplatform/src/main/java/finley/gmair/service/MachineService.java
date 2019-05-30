@@ -55,7 +55,7 @@ public interface MachineService {
      * @return
      */
     @GetMapping("/machine/qrcode/model")
-    ResultData getModel(@RequestParam("qrcode") String qrcode);
+    ResultData getModel(@RequestParam("codeValue") String qrcode);
 
     /**
      * 根据model_id查风量范围
