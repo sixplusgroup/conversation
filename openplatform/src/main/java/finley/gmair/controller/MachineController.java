@@ -66,12 +66,7 @@ public class MachineController {
         condition.put("appid", appid);
         condition.put("blockFlag", false);
         ResultData response = corpProfileService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("检查appid合法性失败");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供正确的appid");
             return result;
@@ -80,12 +75,7 @@ public class MachineController {
         String corpId = corpProfile.getProfileId();
         //检查qrcode的合法性
         response = machineService.indoor(qrcode);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("检查qrcode合法性失败");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供正确的qrcode");
             return result;
@@ -140,12 +130,7 @@ public class MachineController {
         condition.put("appid", appid);
         condition.put("blockFlag", false);
         ResultData response = corpProfileService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("检查appid合法性失败");
-            return result;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供正确的appid");
             return result;
@@ -185,7 +170,7 @@ public class MachineController {
     }
 
     /**
-     * appid 查询订阅设备信息
+     * appid 获取订阅设备列表
      *
      * @param appid
      * @return
@@ -373,6 +358,8 @@ public class MachineController {
             result.setDescription("无法操作，请输入合法值");
             return result;
         }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("操作成功");
         return result;
     }
 
