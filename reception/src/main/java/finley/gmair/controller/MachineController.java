@@ -241,6 +241,11 @@ public class MachineController {
         return machineService.getRecord(qrcode);
     }
 
+    /**
+     * @Description: TODO
+     * city和pastlist参数未传
+     * @Date 2019/5/31 3:27 PM
+     */
     @PostMapping("/share")
     public ResultData share(String qrcode, HttpServletRequest request) {
         ResultData result = new ResultData();
