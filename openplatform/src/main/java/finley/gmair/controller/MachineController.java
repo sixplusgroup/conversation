@@ -279,7 +279,11 @@ public class MachineController {
             }
             JSONObject js = JSONArray.parseArray(JSON.toJSONString(res.getData())).getJSONObject(0);
             String actionName = js.getString("actionName");
-            json.replace("mode", actionName);
+            String actionOperator = js.getString("actionOperator");
+            JSONObject action = new JSONObject();
+            action.put("actionName", actionName);
+            action.put("actionOperator", actionOperator);
+            json.replace("mode", action);
         }
         //从结果里获取heat值替换成action_name
         String heatValue = json.getString("heat");
@@ -547,4 +551,37 @@ public class MachineController {
         return result;
     }
 
+    /**
+     * 调节风量
+     *
+     * @param appid
+     * @param qrcode
+     * @param mode
+     * @return
+     */
+    @PostMapping("/mode")
+    public ResultData mode(String appid, String qrcode, String mode) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供正确的appid和qrcode");
+            return result;
+        }
+        //检查appid和qrcode是否存在订阅关系
+        if (!prerequisities(appid, qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保该appid有效，且已订阅该设备二维码");
+            return result;
+        }
+        //调节mode
+        ResultData response = machineService.mode(qrcode, "mode", mode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        result.setDescription("已转换成" + mode + "模式");
+        return result;
+    }
 }

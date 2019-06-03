@@ -75,4 +75,14 @@ public interface MachineService {
      */
     @GetMapping("/machine/control/option/search")
     ResultData search(@RequestParam("modelId") String modelId, @RequestParam("component") String component, @RequestParam("value") String value);
+
+    /**
+     * 模式转换
+     *
+     * @param qrcode
+     * @param mode
+     * @return
+     */
+    @PostMapping("/machine/control/option/operate")
+    ResultData mode(@RequestParam("qrcode") String qrcode, @RequestParam("component") String component, @RequestParam("operation") String mode);
 }
