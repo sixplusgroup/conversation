@@ -517,22 +517,22 @@ public class ControlOptionController {
             Map<String, Object> con = new HashMap<>();
             con.put("optionComponent", component);
             ResultData res = controlOptionService.fetchControlOption(con);
-            if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("fail to find the option_id by component");
                 return result;
             }
-            if (res.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            if (res.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("sorry, can not find the option_id");
                 return result;
             }
             ControlOption controlOption = ((List<ControlOption>) res.getData()).get(0);
             String controlId = controlOption.getControlId();
-            condition.put("controlId",controlId);
+            condition.put("controlId", controlId);
         }
         if (!StringUtils.isEmpty(operation)) {
-            condition.put("actionOperator",operation);
+            condition.put("actionOperator", operation);
         }
         if (!StringUtils.isEmpty(value)) {
             condition.put("commandValue", value);
