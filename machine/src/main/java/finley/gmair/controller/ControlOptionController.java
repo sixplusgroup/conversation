@@ -495,6 +495,35 @@ public class ControlOptionController {
     }
 
 
+    /**
+     * 根据设备二维码及设备组件查询
+     *
+     * @param modelId
+     * @param component
+     * @return
+     */
+    @GetMapping("/search")
+    public ResultData search(String modelId, String component, String operation, String value) {
+        ResultData result = new ResultData();
+        //若没有型号参数，则无法进行查询
+        if (StringUtils.isEmpty(modelId)) {
+
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("modelId", modelId);
+        if (!StringUtils.isEmpty(component)) {
+
+        }
+        if (!StringUtils.isEmpty(operation)) {
+
+        }
+        if (!StringUtils.isEmpty(value)) {
+
+        }
+
+        return result;
+    }
+
     public static boolean isEmpty(String... args) {
         for (String arg : args) {
             if (StringUtils.isEmpty(arg))
