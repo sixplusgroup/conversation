@@ -507,20 +507,46 @@ public class ControlOptionController {
         ResultData result = new ResultData();
         //若没有型号参数，则无法进行查询
         if (StringUtils.isEmpty(modelId)) {
-
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide the modelId");
+            return result;
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("modelId", modelId);
         if (!StringUtils.isEmpty(component)) {
-
+            Map<String, Object> con = new HashMap<>();
+            con.put("optionComponent", component);
+            ResultData res = controlOptionService.fetchControlOption(con);
+            if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                res.setDescription("fail to find the option_id by component");
+                return result;
+            }
+            if (res.getResponseCode() == ResponseCode.RESPONSE_NULL){
+                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                res.setDescription("sorry, can not find the option_id");
+                return result;
+            }
+            ControlOption controlOption = ((List<ControlOption>) res.getData()).get(0);
+            String controlId = controlOption.getControlId();
+            condition.put("controlId",controlId);
         }
         if (!StringUtils.isEmpty(operation)) {
-
+            condition.put("actionOperator",operation);
         }
         if (!StringUtils.isEmpty(value)) {
-
+            condition.put("commandValue", value);
         }
-
+        ResultData response = controlOptionService.fetchControlOptionAction(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("sorry, can not find the action name");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find the action name");
+            return result;
+        }
         return result;
     }
 

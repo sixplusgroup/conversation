@@ -65,4 +65,14 @@ public interface MachineService {
      */
     @GetMapping("/machine/model/volume/probe/by/modelId")
     ResultData probeModelVolumeByModelId(@RequestParam("modelId") String modelId);
+
+    /**
+     * 根据设备二维码及设备组件查询
+     *
+     * @param modelId
+     * @param component
+     * @return
+     */
+    @GetMapping("/machine/control/option/search")
+    ResultData search(@RequestParam("modelId") String modelId, @RequestParam("component") String component, @RequestParam("value") String value);
 }
