@@ -530,12 +530,12 @@ public class ControlOptionController {
             ControlOption controlOption = ((List<ControlOption>) res.getData()).get(0);
             String controlId = controlOption.getControlId();
             condition.put("controlId", controlId);
-        }
-        if (!StringUtils.isEmpty(operation)) {
-            condition.put("actionOperator", operation);
-        }
-        if (!StringUtils.isEmpty(value)) {
-            condition.put("commandValue", value);
+            if (!StringUtils.isEmpty(operation)) {
+                condition.put("actionOperator", operation);
+            }
+            if (!StringUtils.isEmpty(value)) {
+                condition.put("commandValue", value);
+            }
         }
         ResultData response = controlOptionService.fetchControlOptionAction(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
@@ -547,6 +547,7 @@ public class ControlOptionController {
             result.setDescription("fail to find the action name");
             return result;
         }
+        result.setData(response.getData());
         return result;
     }
 
