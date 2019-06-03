@@ -262,12 +262,12 @@ public class MachineController {
         }
         JSONObject j = JSONArray.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
         String modelId = j.getString("modelId");
-        //去除设备的UID信息，加入设备的二维码信息
+        //从结果里获取mode值替换成action_name
         JSONObject json = JSONObject.parseObject(JSON.toJSONString(response.getData()));
-        String value = json.getString("mode");
-        if (!StringUtils.isEmpty(value)) {
+        String modeValue = json.getString("mode");
+        if (!StringUtils.isEmpty(modeValue)) {
             //根据modelId,component和value获取action name
-            ResultData res = machineService.search(modelId, "mode", value);
+            ResultData res = machineService.search(modelId, "mode", modeValue);
             if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("查询action_name失败");
@@ -279,9 +279,28 @@ public class MachineController {
             }
             JSONObject js = JSONArray.parseArray(JSON.toJSONString(res.getData())).getJSONObject(0);
             String actionName = js.getString("actionName");
-            json.remove("uid");
             json.replace("mode", actionName);
         }
+        //从结果里获取heat值替换成action_name
+        String heatValue = json.getString("heat");
+        if (!StringUtils.isEmpty(heatValue)) {
+            //根据modelId,component和value获取action name
+            ResultData res = machineService.search(modelId, "heat", heatValue);
+            if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("查询action_name失败");
+                return result;
+            } else if (res.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("未查询到action_name");
+                return result;
+            }
+            JSONObject js = JSONArray.parseArray(JSON.toJSONString(res.getData())).getJSONObject(0);
+            String actionName = js.getString("actionName");
+            json.replace("heat", actionName);
+        }
+        //去除设备的UID信息，加入设备的二维码信息
+        json.remove("uid");
         json.put("qrcode", qrcode);
         result.setData(json);
         return result;
