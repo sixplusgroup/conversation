@@ -74,6 +74,23 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
     }
 
     @Override
+    public ResultData report_query(Map<String,Object> condition){
+        ResultData result = new ResultData();
+        try {
+            List list = sqlSession.selectList("gmair.install.assign_report.report_query", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {

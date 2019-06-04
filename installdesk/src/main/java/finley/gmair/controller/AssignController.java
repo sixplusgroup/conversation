@@ -641,4 +641,39 @@ public class AssignController {
         }
         return result;
     }
+
+    @GetMapping("/report")
+    public ResultData report_query(String assignId,String teamId,String memberId,String beginTime,String endTime){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if(!StringUtils.isEmpty(assignId)){
+            condition.put("assignId",assignId);
+        }
+        if(!StringUtils.isEmpty(teamId)){
+            condition.put("teamId",teamId);
+        }
+        if(!StringUtils.isEmpty(memberId)){
+            condition.put("memberId",memberId);
+        }
+        if(!StringUtils.isEmpty(beginTime)){
+            condition.put("beginTime",beginTime);
+        }
+        if(!StringUtils.isEmpty(endTime)){
+            condition.put("endTime",endTime);
+        }
+        condition.put("blockFlag",false);
+        ResultData response=assignService.report_fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询异常，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前查询条件无记录");
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
 }

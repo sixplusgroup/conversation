@@ -4,11 +4,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.TeamForm;
+import finley.gmair.model.installation.AssignReport;
 import finley.gmair.service.InstallService;
 import finley.gmair.service.ResourceService;
 import finley.gmair.util.ExcelUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -24,6 +29,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.io.File;
 
 @CrossOrigin
@@ -360,12 +372,17 @@ public class InstallController {
      * @return
      */
 
-    @PostMapping("assign/submit")
+    @PostMapping("/assign/submit")
     public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
         ResultData result = new ResultData();
         if (org.apache.commons.lang.StringUtils.isEmpty(assignId) || org.apache.commons.lang.StringUtils.isEmpty(qrcode) || org.apache.commons.lang.StringUtils.isEmpty(picture) || wifi == null || org.apache.commons.lang.StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装快照相关的信息");
+            return result;
+        }
+        //存储二维码
+        result=installService.initAssign(assignId,qrcode);
+        if(result.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             return result;
         }
         //提交安装图片资源
@@ -379,5 +396,104 @@ public class InstallController {
             result = installService.submitAssign(assignId, qrcode, picture, wifi, method, description,date);
         }
         return result;
+    }
+
+    /**
+     * 查询安装报告
+     * @param assignId
+     * @param teamId
+     * @param memberId
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    @GetMapping("/assign/report")
+    public ResultData report_query(String assignId,String teamId,String memberId,String beginTime,String endTime){
+        ResultData result=new ResultData();
+        if(!StringUtils.isEmpty(assignId)){
+            result=installService.reportQueryByAssignId(assignId,beginTime,endTime);
+        }else if(!StringUtils.isEmpty(memberId)){
+            result=installService.reportQueryByMemberId(memberId,beginTime,endTime);
+        }else if(!StringUtils.isEmpty(teamId)){
+            result=installService.reportQueryByTeamId(teamId,beginTime,endTime);
+        }else{
+            result=installService.reportQueryByMemberTime(beginTime,endTime);
+        }
+        return result;
+    }
+
+    @GetMapping("/assign/report/download")
+    public String report_download(String assignId,String teamId,String memberId,String beginTime,String endTime,HttpServletResponse response){
+        ResultData result=new ResultData();
+        if(!StringUtils.isEmpty(assignId)){
+            result=installService.reportQueryByAssignId(assignId,beginTime,endTime);
+        }else if(!StringUtils.isEmpty(memberId)){
+            result=installService.reportQueryByMemberId(memberId,beginTime,endTime);
+        }else if(!StringUtils.isEmpty(teamId)){
+            result=installService.reportQueryByTeamId(teamId,beginTime,endTime);
+        }else{
+            result=installService.reportQueryByMemberTime(beginTime,endTime);
+        }
+        String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".xls";
+        try {
+            //查询数据库中所有的数据
+            String data=JSONObject.toJSONString(result.getData());
+            List<AssignReport> list=JSONArray.parseArray(data,AssignReport.class);
+            logger.info(result.getData().toString());
+            HSSFWorkbook wb = new HSSFWorkbook();
+            HSSFSheet sheet = wb.createSheet("temp.xls");
+            String[] n = { "编号", "二维码", "型号", "用户" ,"联系方式","联系地址","团队","安装工人","完成时间"};
+            Object[][] value = new Object[list.size() + 1][9];
+            for (int m = 0; m < n.length; m++) {
+                value[0][m] = n[m];
+            }
+            for (int i = 0; i < list.size(); i++) {
+                value[i + 1][0] = list.get(i).getAssignId();
+                value[i + 1][1] = list.get(i).getCodeValue();
+                value[i + 1][2] = list.get(i).getAssignDetail();
+                value[i + 1][3] = list.get(i).getConsumerConsignee();
+                value[i + 1][4] = list.get(i).getConsumerPhone();
+                value[i + 1][5] = list.get(i).getConsumerAddress();
+                value[i + 1][6] = list.get(i).getTeamName();
+                value[i + 1][7] = list.get(i).getMemberName();
+                value[i + 1][8] = DateFormat.getDateInstance(DateFormat.DEFAULT).format(list.get(i).getCreateAt());
+            }
+            HSSFRow row[]=new HSSFRow[list.size()+1];
+            HSSFCell cell[]=new HSSFCell[n.length];
+            for(int i=0;i<row.length;i++){
+                row[i]=sheet.createRow(i);
+                for(int j=0;j<cell.length;j++){
+                    cell[j]=row[i].createCell(j);
+                    cell[j].setCellValue(value[i][j].toString());
+                }
+            }
+            OutputStream os = response.getOutputStream();
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            wb.write(os);
+            os.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+//        File file = new File(path);
+//        if (!file.exists()) {
+//            logger.error("未能找到文件: " + path);
+//        }
+//        try {
+//            Workbook book = WorkbookFactory.create(file);
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            book.write(byteArrayOutputStream);
+//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+//            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+//            response.setContentLength(byteArrayOutputStream.size());
+//            ServletOutputStream outputstream = response.getOutputStream();
+//            byteArrayOutputStream.writeTo(outputstream);
+//            byteArrayOutputStream.close();
+//            outputstream.flush();
+//            outputstream.close();
+//        } catch (Exception e) {
+//            logger.error(e.getMessage());
+//        }
+        return "";
     }
 }

@@ -12,5 +12,6 @@
         <mapper resource="mapper/assignsnapshot.xml"/>
         <mapper resource="mapper/assigncode.xml"/>
         <mapper resource="mapper/config.xml"/>
+        <mapper resource="mapper/assign_report_view.xml"/>
     </mappers>
 </configuration>

@@ -69,6 +69,24 @@ public class AssignServiceImpl implements AssignService {
     }
 
     @Override
+    public ResultData report_fetch(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = assignDao.report_query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = assignDao.update(condition);
