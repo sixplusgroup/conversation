@@ -456,7 +456,7 @@ public class InstallController {
                 value[i + 1][5] = list.get(i).getConsumerAddress();
                 value[i + 1][6] = list.get(i).getTeamName();
                 value[i + 1][7] = list.get(i).getMemberName();
-                value[i + 1][8] = DateFormat.getDateInstance(DateFormat.DEFAULT).format(list.get(i).getCreateAt());
+                value[i + 1][8] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateAt());
             }
             HSSFRow row[]=new HSSFRow[list.size()+1];
             HSSFCell cell[]=new HSSFCell[n.length];
