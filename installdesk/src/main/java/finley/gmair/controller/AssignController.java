@@ -115,7 +115,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/list")
-    public ResultData list(String status, String teamId, Integer start, Integer length ,String search) {
+    public ResultData list(String status, String teamId, Integer start, Integer length, String search) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(status)) {
@@ -369,7 +369,7 @@ public class AssignController {
         if (status != null) {
             condition.put("assignStatus", status);
         }
-        if (search != null) {
+        if (!StringUtils.isEmpty(search)) {
             String fuzzysearch = "%" + search + "%";
             Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
             if (pattern.matcher(search).matches()) {//如果search为数字
@@ -415,7 +415,7 @@ public class AssignController {
         }
         condition.put("blockFlag", false);
         ResultData response;
-        if (search != null) {
+        if (!StringUtils.isEmpty(search)) {
             String fuzzysearch = "%" + search + "%";
             Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
             if (pattern.matcher(search).matches()) {//如果search为数字
@@ -499,7 +499,7 @@ public class AssignController {
     }
 
     @PostMapping("/submit")
-    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description, String date) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -515,11 +515,11 @@ public class AssignController {
             return result;
         }
         //更新完成时间
-        if(!StringUtils.isEmpty(date)){
+        if (!StringUtils.isEmpty(date)) {
             Map<String, Object> install_assign_condition = new HashMap<>();
-            install_assign_condition.put("assignDate",date);
-            install_assign_condition.put("assignId",assignId);
-            install_assign_condition.put("blockFlag",false);
+            install_assign_condition.put("assignDate", date);
+            install_assign_condition.put("assignId", assignId);
+            install_assign_condition.put("blockFlag", false);
             assignService.update(install_assign_condition);
         }
         //更新安装任务状态
@@ -643,27 +643,27 @@ public class AssignController {
     }
 
     @GetMapping("/report")
-    public ResultData report_query(String assignId,String teamId,String memberId,String beginTime,String endTime){
+    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if(!StringUtils.isEmpty(assignId)){
-            condition.put("assignId",assignId);
+        if (!StringUtils.isEmpty(assignId)) {
+            condition.put("assignId", assignId);
         }
-        if(!StringUtils.isEmpty(teamId)){
-            condition.put("teamId",teamId);
+        if (!StringUtils.isEmpty(teamId)) {
+            condition.put("teamId", teamId);
         }
-        if(!StringUtils.isEmpty(memberId)){
-            condition.put("memberId",memberId);
+        if (!StringUtils.isEmpty(memberId)) {
+            condition.put("memberId", memberId);
         }
-        if(!StringUtils.isEmpty(beginTime)){
-            condition.put("beginTime",beginTime);
+        if (!StringUtils.isEmpty(beginTime)) {
+            condition.put("beginTime", beginTime);
         }
-        if(!StringUtils.isEmpty(endTime)){
-            condition.put("endTime",endTime);
+        if (!StringUtils.isEmpty(endTime)) {
+            condition.put("endTime", endTime);
         }
-        condition.put("blockFlag",false);
-        ResultData response=assignService.report_fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        condition.put("blockFlag", false);
+        ResultData response = assignService.report_fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询异常，请稍后尝试");
             return result;
