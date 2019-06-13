@@ -80,11 +80,7 @@ public class MessageController {
             json.put("childlock", childlock);
             temp.put("childlock", childlock);
         }
-        if (!StringUtils.isEmpty(light) && light == 0) {
-            json.put("led", 0);
-            temp.put("light", 0);
-        } else {
-            json.put("led", 1);
+        if (!StringUtils.isEmpty(light)) {
             json.put("light", light);
             temp.put("light", light);
         }

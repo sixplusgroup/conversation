@@ -27,9 +27,7 @@ public class MQTTUtil {
         String topic = produceTopic(machineId, TopicExtension.SET_TIME);
         JSONObject json = new JSONObject();
         json.put("time", System.currentTimeMillis() / 1000);
-        CorePool.getComPool().execute(() -> {
-            service.publish(topic, json);
-        });
+        CorePool.getComPool().execute(() -> service.publish(topic, json));
         return true;
     }
 
@@ -39,7 +37,7 @@ public class MQTTUtil {
             finley.gmair.model.machine.v3.MachineStatusV3 last = queue.getLast();
             last = merge(last, json);
             queue.replaceLast(last);
-            redisService.set(uid, queue);
+            redisService.set(uid, queue, (long) 120);
         }
     }
 

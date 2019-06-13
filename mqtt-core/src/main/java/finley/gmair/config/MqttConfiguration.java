@@ -230,7 +230,6 @@ public class MqttConfiguration {
             }
             //传感器数据上传
             if (base_action.equals("sensor")) {
-                logger.info("uid: " + machineId + ", sensor: " + json);
                 MQTTUtil.partial(redisService, machineId, json);
             }
             if (base_action.equals("ack")) {

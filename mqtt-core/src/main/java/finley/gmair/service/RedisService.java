@@ -1,8 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.datastructrue.LimitQueue;
-import finley.gmair.model.machine.v3.MachineStatusV3;
-import finley.gmair.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +25,7 @@ public class RedisService {
         RedisSerializer stringSerializer = new StringRedisSerializer();
         redisTemplate.setKeySerializer(stringSerializer);
         //redisTemplate.setValueSerializer(stringSerializer);
-        redisTemplate.setHashKeySerializer(stringSerializer);
+        //redisTemplate.setHashKeySerializer(stringSerializer);
         //redisTemplate.setHashValueSerializer(stringSerializer);
         this.redisTemplate = redisTemplate;
     }
@@ -221,20 +218,5 @@ public class RedisService {
     public Set<Object> rangeByScore(String key, double scoure, double scoure1) {
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
         return zset.rangeByScore(key, scoure, scoure1);
-    }
-
-    public void save(String uid, MachineStatusV3 status) {
-        if (!exists(uid)) {
-            LimitQueue<MachineStatusV3> queue = new LimitQueue<>(120);
-            queue.offer(status);
-        }
-        LimitQueue<MachineStatusV3> queue = (LimitQueue<MachineStatusV3>) get(uid);
-        MachineStatusV3 last = queue.getLast();
-        if (TimeUtil.exceed(last.getCreateAt().getTime(), System.currentTimeMillis(), 30)) {
-            queue.offer(status);
-        } else {
-            //update existing status
-
-        }
     }
 }
