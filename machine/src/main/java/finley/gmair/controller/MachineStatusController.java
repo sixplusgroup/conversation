@@ -35,7 +35,6 @@ public class MachineStatusController {
 
     @Autowired
     private CoreV3Service coreV3Service;
-    //todo 添加Core-v3设备的状态统计
 
     @Autowired
     private BoardVersionService boardVersionService;
@@ -114,10 +113,16 @@ public class MachineStatusController {
                 return result;
             }
             int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
-            if (version == 2)
-                response = coreV2Service.isOnline(machineQrcodeBindVo.getMachineId());
-            else if (version == 1)
-                response = coreV1Service.isOnline(machineQrcodeBindVo.getMachineId());
+            switch (version) {
+                case 1:
+                    response = coreV1Service.isOnline(machineQrcodeBindVo.getMachineId());
+                    break;
+                case 2:
+                    response = coreV2Service.isOnline(machineQrcodeBindVo.getMachineId());
+                    break;
+                case 3:
+                    break;
+            }
             return response;
         }
     }

@@ -260,7 +260,7 @@ public class MachineController {
             result.setDescription("查询该设备model_id失败");
             return result;
         }
-        JSONObject j = JSONArray.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+        JSONObject j = JSONArray.parseArray(JSON.toJSONString(r.getData())).getJSONObject(0);
         String modelId = j.getString("modelId");
         //从结果里获取mode值替换成action_name
         JSONObject json = JSONObject.parseObject(JSON.toJSONString(response.getData()));

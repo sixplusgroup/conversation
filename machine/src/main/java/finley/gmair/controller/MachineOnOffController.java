@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.model.machine.Machine_on_off;
 import finley.gmair.service.MachineOnOffService;
 import finley.gmair.service.MachineQrcodeBindService;
@@ -8,6 +7,8 @@ import finley.gmair.service.impl.ActionNotifier;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,14 +16,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/machine/power/onoff")
 public class MachineOnOffController {
+    private Logger logger = LoggerFactory.getLogger(MachineOnOffController.class);
 
     @Autowired
     private MachineOnOffService machineOnOffService;
@@ -204,7 +207,7 @@ public class MachineOnOffController {
                 notifier.sendTurnOff(uid);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 }

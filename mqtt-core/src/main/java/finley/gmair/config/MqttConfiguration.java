@@ -170,17 +170,10 @@ public class MqttConfiguration {
         String base_action = array[5];
         //检查报文中的时间戳内容
         if (json.containsKey("time")) {
-//            if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
-//                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
-//                if (machineId.equals("F0FEif (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
-////                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
-////                if (machineId.equals("F0FE6BB0CE1E")) {
-////                    logger.info("send message to sync time for client: " + machineId);
-////                }
-////            }6BB0CE1E")) {
-//                    logger.info("send message to sync time for client: " + machineId);
-//                }
-//            }
+            if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
+                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
+                logger.info("send message to sync time for client: " + machineId);
+            }
         }
         //对于长度为7的topic，只有上传单项传感器数据和警报处理
         if (array.length == 7) {
