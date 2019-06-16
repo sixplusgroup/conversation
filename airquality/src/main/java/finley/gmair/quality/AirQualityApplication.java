@@ -2,7 +2,7 @@ package finley.gmair.quality;
 
 import finley.gmair.service.CityAQIService;
 import finley.gmair.service.MonitorStationCrawler;
-import finley.gmair.service.RankCrawler;
+import finley.gmair.service.impl.CityAqiService4Pm25ComImpl;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +12,6 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
@@ -26,8 +25,11 @@ public class AirQualityApplication {
         SpringApplication.run(AirQualityApplication.class, args);
     }
 
+//    @Autowired
+//    private RankCrawler rankCrawler;
+
     @Autowired
-    private RankCrawler rankCrawler;
+    private CityAqiService4Pm25ComImpl rankCrawler;
 
     @Autowired
     private MonitorStationCrawler monitorStationCrawler;
@@ -38,6 +40,7 @@ public class AirQualityApplication {
     @PostMapping("/airquality/city/crawler")
     public ResultData crawler() {
         cityAQIService.obtain();
+//        rankCrawler.rank();
         return new ResultData();
     }
 
