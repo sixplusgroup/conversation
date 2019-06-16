@@ -2,16 +2,14 @@ package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-<<<<<<< HEAD
-=======
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.CityAirQualityDao;
 import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.service.AirQualityCacheService;
->>>>>>> 604af76d3ca7ddd34966c8430afdd4fcb881e77f
 import finley.gmair.service.CityAQIService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.codec.binary.Base64;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -27,7 +25,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,7 +83,7 @@ public class CityAQIServiceImpl implements CityAQIService {
         String content = "[]";
         while (cd > 0) {
             try {
-<<<<<<< HEAD
+
                 URL location = new URL(url.toString());
                 HttpURLConnection connection = (HttpURLConnection) location.openConnection();
                 String origin = new StringBuffer(account).append(":").append(password).toString();
@@ -99,7 +101,6 @@ public class CityAQIServiceImpl implements CityAQIService {
                 connection.disconnect();
                 JSONArray data = JSONArray.parseArray(temp.toString());
                 result.setData(data);
-=======
                 ChromeDriverService service = new ChromeDriverService.Builder().usingDriverExecutable(new File(path)).usingAnyFreePort().build();
                 service.start();
                 WebDriver driver = new ChromeDriver();
@@ -111,7 +112,6 @@ public class CityAQIServiceImpl implements CityAQIService {
                 driver.close();
                 driver.quit();
                 service.stop();
->>>>>>> 604af76d3ca7ddd34966c8430afdd4fcb881e77f
                 break;
             } catch (Exception e) {
                 logger.error(e.getMessage());
