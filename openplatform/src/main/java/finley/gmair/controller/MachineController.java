@@ -552,7 +552,7 @@ public class MachineController {
     }
 
     /**
-     * 调节风量
+     * 调节模式
      *
      * @param appid
      * @param qrcode
@@ -582,6 +582,92 @@ public class MachineController {
             return result;
         }
         result.setDescription("已转换成" + mode + "模式");
+        return result;
+    }
+
+    /**
+     * 开关童锁
+     *
+     * @param appid
+     * @param qrcode
+     * @param value
+     * @return
+     */
+    @PostMapping("/lock/{value}")
+    public ResultData lock(String appid, String qrcode, @PathVariable("value") String value) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供appid和qrcode");
+            return result;
+        }
+        //检查appid和qrcode是否存在订阅关系
+        if (!prerequisities(appid, qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保该appid有效，且已订阅了该设备二维码");
+            return result;
+        }
+        //开关童锁
+        if ("on".equalsIgnoreCase(value)) {
+            ResultData response = machineService.lock(qrcode, "lock", "on");
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("开启童锁失败");
+                return result;
+            }
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+        } else if ("off".equalsIgnoreCase(value)) {
+            ResultData response = machineService.lock(qrcode, "lock", "off");
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("关闭童锁失败");
+                return result;
+            }
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+        } else {
+            //若value值不为on或者off，提示无法操作
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("无法操作，请输入合法值");
+            return result;
+        }
+        result.setDescription("操作成功");
+        return result;
+    }
+
+    /**
+     * 调节辅热
+     *
+     * @param appid
+     * @param qrcode
+     * @param operation
+     * @return
+     */
+    @PostMapping("/heat")
+    public ResultData heat(String appid, String qrcode, String operation) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供正确的appid和qrcode");
+            return result;
+        }
+        //检查appid和qrcode是否存在订阅关系
+        if (!prerequisities(appid, qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保该appid有效，且已订阅该设备二维码");
+            return result;
+        }
+        //调节辅热
+        ResultData response = machineService.heat(qrcode, "heat", operation);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        result.setDescription("操作成功");
         return result;
     }
 }

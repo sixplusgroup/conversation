@@ -85,4 +85,28 @@ public interface MachineService {
      */
     @PostMapping("/machine/control/option/operate")
     ResultData mode(@RequestParam("qrcode") String qrcode, @RequestParam("component") String component, @RequestParam("operation") String mode);
+
+
+    /**
+     * 开关童锁
+     *
+     * @param qrcode
+     * @param component
+     * @param operation
+     * @return
+     */
+    @PostMapping("/machine/control/option/operate")
+    ResultData lock(@RequestParam("qrcode") String qrcode, @RequestParam("component") String component, @RequestParam("operation") String operation);
+
+
+    /**
+     * 调节辅热
+     *
+     * @param qrcode
+     * @param operation
+     * @return
+     */
+    @PostMapping("/machine/control/option/operate")
+    ResultData heat(@RequestParam("qrcode") String qrcode, @RequestParam("component") String component, @RequestParam("operation") String operation);
+
 }
