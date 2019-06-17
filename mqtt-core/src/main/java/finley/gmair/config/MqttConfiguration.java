@@ -196,6 +196,9 @@ public class MqttConfiguration {
             //该类型的数据报文将存入内存缓存
             if (base_action.equals("allrep")) {
                 logger.info("uid: " + machineId + ", allrep: " + json);
+                if (json.containsKey("power") && json.getIntValue("power") == 0) {
+                    json.replace("volume", 0);
+                }
                 //写入内存缓存的数据使用common模块中的结构
                 finley.gmair.model.machine.v3.MachineStatusV3 status = new finley.gmair.model.machine.v3.MachineStatusV3(machineId, json);
                 LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3> queue;

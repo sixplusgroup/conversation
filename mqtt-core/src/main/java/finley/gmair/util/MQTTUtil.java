@@ -60,14 +60,21 @@ public class MQTTUtil {
         if (candidate.containsKey("co2")) {
             origin.setCo2(candidate.getIntValue("co2"));
         }
+        //电源关闭情况下不显示风量数值
         if (candidate.containsKey("power")) {
             origin.setPower(candidate.getIntValue("power"));
+            if (candidate.getIntValue("power") == 1) {
+                if (candidate.containsKey("volume")) {
+                    origin.setVolume(candidate.getIntValue("volume"));
+                }
+            } else {
+                if (candidate.containsKey("volume")) {
+                    origin.setVolume(0);
+                }
+            }
         }
         if (candidate.containsKey("mode")) {
             origin.setMode(candidate.getIntValue("mode"));
-        }
-        if (candidate.containsKey("volume")) {
-            origin.setVolume(candidate.getIntValue("volume"));
         }
         if (candidate.containsKey("heat")) {
             origin.setHeat(candidate.getIntValue("heat"));
