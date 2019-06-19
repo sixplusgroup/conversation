@@ -42,17 +42,17 @@ public class MQTTUtil {
     }
 
     private static finley.gmair.model.machine.v3.MachineStatusV3 merge(finley.gmair.model.machine.v3.MachineStatusV3 origin, JSONObject candidate) {
-        if (candidate.containsKey("pm2_5a") && candidate.getIntValue("pm2_5a") != origin.getPm2_5a()) {
-            origin.setPm2_5a(candidate.getIntValue("pm2_5a"));
+        if (candidate.containsKey("pm2.5a") && candidate.getIntValue("pm2.5a") != origin.getPm2_5a()) {
+            origin.setPm2_5a(candidate.getIntValue("pm2.5a"));
         }
-        if (candidate.containsKey("pm2_5b") && candidate.getIntValue("pm2_5b") != origin.getPm2_5b()) {
-            origin.setPm2_5b(candidate.getIntValue("pm2_5b"));
+        if (candidate.containsKey("pm2.5b") && candidate.getIntValue("pm2.5b") != origin.getPm2_5b()) {
+            origin.setPm2_5b(candidate.getIntValue("pm2.5b"));
         }
-        if (candidate.containsKey("tempIndoor") && candidate.getIntValue("tempIndoor") != origin.getTempIndoor()) {
-            origin.setTempIndoor(candidate.getIntValue("tempIndoor"));
+        if (candidate.containsKey("temp") && candidate.getIntValue("temp") != origin.getTempIndoor()) {
+            origin.setTempIndoor(candidate.getIntValue("temp"));
         }
-        if (candidate.containsKey("tempOutdoor") && candidate.getIntValue("tempOutdoor") != origin.getTempOutdoor()) {
-            origin.setTempOutdoor(candidate.getIntValue("tempOutdoor"));
+        if (candidate.containsKey("temp_out") && candidate.getIntValue("temp_out") != origin.getTempOutdoor()) {
+            origin.setTempOutdoor(candidate.getIntValue("temp_out"));
         }
         if (candidate.containsKey("humidity") && candidate.getIntValue("humidity") != origin.getHumidity()) {
             origin.setHumidity(candidate.getIntValue("humidity"));
@@ -64,11 +64,11 @@ public class MQTTUtil {
         if (candidate.containsKey("power")) {
             origin.setPower(candidate.getIntValue("power"));
             if (candidate.getIntValue("power") == 1) {
-                if (candidate.containsKey("volume")) {
-                    origin.setVolume(candidate.getIntValue("volume"));
+                if (candidate.containsKey("speed")) {
+                    origin.setVolume(candidate.getIntValue("speed"));
                 }
             } else {
-                if (candidate.containsKey("volume")) {
+                if (candidate.containsKey("speed")) {
                     origin.setVolume(0);
                 }
             }
