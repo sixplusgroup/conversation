@@ -2,13 +2,16 @@ package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("corev3-agent")
 public interface CoreV3Service {
-//    ResultData isOnline(@PathVariable("machineId") String machineId);
+    /*查询河北的在线状态*/
+    @GetMapping("/core/repo/{machineId}/online")
+    ResultData isOnline(@PathVariable("machineId") String machineId);
 
     /*控制设备的电源状态*/
     @PostMapping("/core/com/control")

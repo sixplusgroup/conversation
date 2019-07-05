@@ -32,7 +32,7 @@ public class MachineStatusCacheController {
     @Autowired
     private BoardVersionService boardVersionService;
 
-    //通过uid获取缓存中v1或v2的机器状态
+    //通过uid获取缓存中v1或v2或v3的机器状态
     @RequestMapping(value = "/status/byuid", method = RequestMethod.GET)
     public ResultData machineStatus(String uid) {
         ResultData result = new ResultData();

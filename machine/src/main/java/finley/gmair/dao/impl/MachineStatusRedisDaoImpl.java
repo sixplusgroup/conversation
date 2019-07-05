@@ -4,6 +4,7 @@ import finley.gmair.dao.MachineStatusRedisDao;
 import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.machine.MachinePm2_5;
 import finley.gmair.model.machine.v1.MachineStatus;
+import finley.gmair.model.machine.v3.MachineStatusV3;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -44,11 +45,21 @@ public class MachineStatusRedisDaoImpl implements MachineStatusRedisDao {
 
                 double sumPm2_5 = 0;
                 int dataLength = ((LimitQueue<finley.gmair.model.machine.MachineStatus>) queue).size();
-                for(int i=0; i<dataLength;i++){
+                for (int i = 0; i < dataLength; i++) {
                     finley.gmair.model.machine.MachineStatus v2status = ((LimitQueue<finley.gmair.model.machine.MachineStatus>) queue).get(i);
                     sumPm2_5 += v2status.getPm2_5();
                 }
                 resultList.add(new MachinePm2_5(((LimitQueue<finley.gmair.model.machine.MachineStatus>) queue).getLast().getUid(), sumPm2_5 / dataLength));
+            }
+            //若这个queue存了v3的status
+            else if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatusV3) {
+                double sumPm2_5 = 0;
+                int length = ((LimitQueue<Object>) queue).size();
+                for (int i = 0; i < length; i++) {
+                    MachineStatusV3 statusV3 = ((LimitQueue<MachineStatusV3>) queue).get(i);
+                    sumPm2_5 += statusV3.getPm2_5a();
+                }
+                resultList.add(new MachinePm2_5(((LimitQueue<MachineStatusV3>) queue).getLast().getUid(), sumPm2_5 / length));
             }
         }
         result.setData(resultList);
