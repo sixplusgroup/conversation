@@ -15,4 +15,6 @@ public class TopicExtension {
 
     public final static String REPORT = "report";
 
+    public final static String CHECK_VERSION = "chk_ver";
+
 }

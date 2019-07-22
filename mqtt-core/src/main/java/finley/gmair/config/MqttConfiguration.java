@@ -3,6 +3,7 @@ package finley.gmair.config;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.controller.MachineController;
+import finley.gmair.controller.MessageController;
 import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.machine.MachineStatusV3;
 import finley.gmair.model.mqtt.*;
@@ -30,9 +31,8 @@ import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @PropertySource({"classpath:auth.properties", "classpath:mqtt.properties"})
 @Configuration
@@ -54,6 +54,9 @@ public class MqttConfiguration {
     @Autowired
     private MqttService mqttService;
 
+    @Autowired
+    private MessageController messageController;
+
     @Value("${inbound_url}")
     private String ip;
 
@@ -68,6 +71,8 @@ public class MqttConfiguration {
 
     @Autowired
     private MachineStatusV3Repository repository;
+
+    private Map<String, Integer> devices = new ConcurrentHashMap<>();
 
     /**
      * 实现MqttOutbound
@@ -163,6 +168,7 @@ public class MqttConfiguration {
      * 处理当前message的信息
      */
     private void handle(String topic, JSONObject json) {
+        logger.info("topic: " + topic);
         //将topic根据"/"切分为string数组，方便处理
         String[] array = topic.split("/");
         //根据定义的topic格式，获取message对应的machineId
@@ -195,6 +201,7 @@ public class MqttConfiguration {
         } else {
             //该类型的数据报文将存入内存缓存
             if (base_action.equals("allrep")) {
+                messageController.checkVersion(machineId);
                 logger.info("uid: " + machineId + ", allrep: " + json);
                 if (json.containsKey("power") && json.getIntValue("power") == 0) {
                     json.replace("volume", 0);
@@ -242,6 +249,15 @@ public class MqttConfiguration {
             }
             if (base_action.equals("chk_update")) {
 
+            }
+            if (base_action.equals("ver")) {
+                logger.info("content" + JSON.toJSONString(json));
+                if (json.containsKey("DISPLAY_BOARD_SW")) {
+                    if (!"1.0.0.201907131849_RELEASE".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW")) && !"1.0.0.201907130238_release".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW"))) {
+                        messageController.updateFirmware(machineId, "1.6.420S.2", 1);
+                        logger.info("upgrade: " + machineId + " has been sent successfully");
+                    }
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import finley.gmair.model.drift.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -40,17 +41,25 @@ public class OrderController {
     private EquipmentService equipmentService;
 
 
-
     /**
-     * The method is called to create order
+     * Once user click on the submit form, the request will be forwarded here to process the order
      *
+     * @param form
      * @return
-     * */
+     * @throws Exception
+     */
     @PostMapping(value = "/create")
     public ResultData createDriftOrder(DriftOrderForm form) throws Exception {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getConsumerId()) || StringUtils.isEmpty(form.getEquipId()) ||StringUtils.isEmpty(form.getAddress()) || StringUtils.isEmpty(form.getConsignee())
-            || StringUtils.isEmpty(form.getPhone()) || StringUtils.isEmpty(form.getExpectedDate()) || StringUtils.isEmpty(form.getIntervalDate()) || StringUtils.isEmpty(form.getDistrict())) {
+        // activityId is the unique identification for an activity
+        // consumerId is the openid for a wechat user in this mini program
+        // equipid is the unique identification for the equipment used in the activity
+        // address is the place where we will deliver/go to for the check
+        // consignee is the name of the applicant
+        // phone is the contact phone number of the consignee
+        // expectedDate is an optional argument for an apply, if enabled in activity
+        // intervalDate indicates how long the consignee can keep the device
+        if (StringUtil.isEmpty(form.getActivityId(), form.getConsumerId(), form.getConsignee(), form.getEquipId(), form.getProvince(), form.getCity(), form.getDistrict())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -62,11 +71,13 @@ public class OrderController {
         ResultData response = activityService.fetchActivity(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Activity match errors");
+            result.setDescription("No activity found by activity id: ".concat(form.getActivityId()));
             return result;
         }
+        // obtain activity profile
         Activity activity = ((List<Activity>) response.getData()).get(0);
         String activityName = activity.getActivityName();
+
         String consumerId = form.getConsumerId();
         String equipId = form.getEquipId();
         String consignee = form.getConsignee();
@@ -82,9 +93,8 @@ public class OrderController {
         String description = form.getDescription();
         String testTarget = form.getTestTarget();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date expected = sdf.parse(expectedDate);
-        condition.remove("activityId");
+        //reset query condition
+        condition.clear();
         condition.put("equipId", equipId);
         condition.put("blockFlag", false);
         response = equipmentService.fetchEquipment(condition);
@@ -93,6 +103,9 @@ public class OrderController {
             result.setDescription("Equipment match errors");
             return result;
         }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date expected = sdf.parse(expectedDate);
         Equipment equipment = ((List<Equipment>) response.getData()).get(0);
         //构建item list
         List<DriftOrderItem> list = new ArrayList<>();
@@ -172,7 +185,7 @@ public class OrderController {
      * The function is called  to delete the order with orderId
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/delete")
     public ResultData deleteOrder(String orderId) {
         ResultData result = new ResultData();
@@ -187,7 +200,7 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to delete drift order");
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("Succeed to delete drift order");
         }
@@ -198,7 +211,7 @@ public class OrderController {
      * The method is called to deal order when order is payed in bill
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/payed")
     public ResultData orderPayed(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
@@ -236,7 +249,7 @@ public class OrderController {
      * 2. check the repository is enough to use
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/check")
     public ResultData check(String activityId, String selectDate) throws Exception {
         ResultData result = new ResultData();
@@ -340,7 +353,7 @@ public class OrderController {
      * The function is called to confirm the order whether can be accepted or not
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/confirm")
     public ResultData orderConfirm(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
@@ -376,7 +389,7 @@ public class OrderController {
      * The method is called to deliver order
      *
      * @return
-     * */
+     */
     @PostMapping(value = "/deliver")
     public ResultData orderDeliver(@RequestParam("orderId") String orderId) {
         ResultData result = new ResultData();
@@ -412,7 +425,7 @@ public class OrderController {
      * contains time, province, city and so on
      *
      * @return
-     * */
+     */
     @GetMapping(value = "/list")
     public ResultData orderList(String startTime, String endTime, String provinceName, String cityName, String status) {
         ResultData result = new ResultData();

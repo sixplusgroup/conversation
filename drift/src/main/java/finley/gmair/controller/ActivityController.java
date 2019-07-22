@@ -46,6 +46,7 @@ public class ActivityController {
     private AttachmentService attachmentService;
 
     private Object lock = new Object();
+
     /**
      * the method is used to create activity
      *
@@ -54,16 +55,12 @@ public class ActivityController {
     @PostMapping(value = "/create")
     public ResultData createDriftActivity(ActivityForm form) throws Exception {
         ResultData result = new ResultData();
-
-        //judge the parameter complete or not
-        if (StringUtils.isEmpty(form.getActivityName()) || StringUtils.isEmpty(form.getRepositorySize())
-                || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getReservableDays())
-                || StringUtils.isEmpty(form.getStartTime()) || StringUtils.isEmpty(form.getEndTime()) || StringUtils.isEmpty(form.getIntroduction())) {
+        // 检查参数的完成性
+        if (StringUtils.isEmpty(form.getActivityName()) || StringUtils.isEmpty(form.getRepositorySize()) || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getReservableDays()) || StringUtils.isEmpty(form.getStartTime()) || StringUtils.isEmpty(form.getEndTime()) || StringUtils.isEmpty(form.getIntroduction())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please make sure you fill all the required fields");
+            result.setDescription("请提供创建检测设备预约活动所需的所有内容. 包括活动名称, 库存总量, 阈值, 可预约使用的时间段, 活动起讫时间, 活动介绍");
             return result;
         }
-
         //build activity entity
         String activityName = form.getActivityName().trim();
         int repositorySize = form.getRepositorySize();
@@ -91,6 +88,7 @@ public class ActivityController {
      *
      * @return
      */
+    //todo 添加设备图片
     @PostMapping(value = "/equip/create")
     public ResultData createEquipment(String equipmentName, double equipPrice) {
         ResultData result = new ResultData();

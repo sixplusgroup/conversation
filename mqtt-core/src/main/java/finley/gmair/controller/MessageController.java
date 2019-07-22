@@ -10,6 +10,9 @@ import finley.gmair.util.MQTTUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.TopicExtension;
+import org.eclipse.paho.client.mqttv3.MqttTopic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +34,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/core")
 public class MessageController {
+    private Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     @Autowired
     private FirmwareService firmwareService;
@@ -295,5 +299,25 @@ public class MessageController {
         return result;
     }
 
+
+    @PostMapping("/com/checkver")
+    public ResultData checkVersion(String uid) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(uid)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the uid is provided");
+            return result;
+        }
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.CHECK_VERSION);
+        JSONObject json = new JSONObject();
+        try {
+            mqttService.publish(topic, json);
+            logger.info("Check version for: " + uid);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Check version error: " + e.getMessage());
+        }
+        return result;
+    }
 
 }

@@ -18,7 +18,7 @@
 
 ## Data Structure
 * User registration
-    * Registration will call auth consumer service, which is transparent here.
+    * No limitation to access the mini program.
 * Drift goods
     * Columns: goods_id | goods_name | block_flag | create_time
 * Repository
@@ -29,7 +29,7 @@
     * Columns: reservation_id | consumer_id | activity_id | expected_date | interval | consignee_name | consignee_phone | consignee_address | province_id | city_id | block_flag | create_time
 
 ## API List
-
+1. Activity create
 
 ##2018.10.10@hushenghao
 #### Interface
