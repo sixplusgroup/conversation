@@ -46,7 +46,8 @@
     </select>
 
     <select id="query" parameterType="java.util.Map" resultMap="activityVo">
-        select activity_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, introduction, block_flag, create_time
+        select activity_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time,
+        introduction, block_flag, create_time
         from gmair_drift.drift_activity
         where 1 = 1
         <if test="activityId != null">
@@ -80,8 +81,9 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.Activity">
-        insert into gmair_drift.drift_activity(activity_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, introduction, block_flag, create_time)
-        values (#{activityId}, #{activityName}, #{repositorySize}, #{threshold}, #{reservableDays}, #{startTime}, #{endTime}, #{introduction}, #{blockFlag}, #{createAt})
+        INSERT INTO gmair_drift.drift_activity (activity_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time, introduction, block_flag, create_time)
+        VALUES (#{activityId}, #{activityName}, #{repositorySize}, #{threshold}, #{reservableDays}, #{startTime},
+                #{endTime}, #{introduction}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">

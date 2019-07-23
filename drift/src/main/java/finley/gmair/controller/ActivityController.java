@@ -5,10 +5,7 @@ import finley.gmair.form.drift.AttachmentForm;
 import finley.gmair.form.drift.EXCodeCreateForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.service.*;
-import finley.gmair.util.DriftProperties;
-import finley.gmair.util.IDGenerator;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
+import finley.gmair.util.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -19,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -55,10 +53,15 @@ public class ActivityController {
     @PostMapping(value = "/create")
     public ResultData createDriftActivity(ActivityForm form) throws Exception {
         ResultData result = new ResultData();
-        // 检查参数的完成性
-        if (StringUtils.isEmpty(form.getActivityName()) || StringUtils.isEmpty(form.getRepositorySize()) || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getReservableDays()) || StringUtils.isEmpty(form.getStartTime()) || StringUtils.isEmpty(form.getEndTime()) || StringUtils.isEmpty(form.getIntroduction())) {
+        // 检查参数的完整性
+        if (StringUtil.isEmpty(form.getActivityName(), form.getStartTime(), form.getEndTime(), form.getIntroduction())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请提供创建检测设备预约活动所需的所有内容. 包括活动名称, 库存总量, 阈值, 可预约使用的时间段, 活动起讫时间, 活动介绍");
+            result.setDescription("请确认活动名称、起讫时间及活动介绍的完整性");
+            return result;
+        }
+        if (form.getRepositorySize() <= 0 || form.getReservableDays() <= 0) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请设置有效的活动所使用的设备数量、设备的可持有天数");
             return result;
         }
         //build activity entity
@@ -75,6 +78,7 @@ public class ActivityController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to store activity to database");
+            return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -191,8 +195,8 @@ public class ActivityController {
      *
      * @return
      */
-    @PostMapping(value = "/getActivity/byId")
-    public ResultData getActivityById(String activityId) {
+    @GetMapping(value = "/{activityId}/profile")
+    public ResultData profile(@PathVariable("activityId") String activityId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(activityId)) {
