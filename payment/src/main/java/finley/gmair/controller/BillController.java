@@ -32,18 +32,7 @@ public class BillController {
      */
     @PostMapping("/create")
     public ResultData createTrade(String orderId, String openid, int price, String body, String ip) {
-        ResultData result = new ResultData();
-
-        ResultData response = wechatService.payCreate(orderId,openid,price+"", ip, body);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-        }
-        return result;
+        return wechatService.payCreate(orderId,openid,price+"", ip, body);
     }
 
     /**

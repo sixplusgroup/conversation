@@ -12,7 +12,7 @@
         <result property="tradeOpenId" column="openid"></result>
         <result property="tradeStartTime" column="start_time"></result>
         <result property="tradeEndTime" column="end_time"></result>
-        <result property="status" column="trade_status"
+        <result property="tradeState" column="trade_status"
                 typeHandler="finley.gmair.mybatis.handler.TradeStateHandler"></result>
     </resultMap>
 

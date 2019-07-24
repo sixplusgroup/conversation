@@ -44,7 +44,7 @@ public class WechatServiceImpl implements WechatService {
 
         ResultData result = new ResultData();
 
-        String payUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        String payUrl = "https://api.mch.weixin.qq.com/sandboxnew/pay/unifiedorder";
 
         String tradeId = PayUtil.generateTradeNo();
 
