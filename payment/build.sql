@@ -30,8 +30,8 @@ CREATE TABLE `trade`  (
   `spbill_create_ip` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `trade_type` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `openid` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `start_time` datetime(0) NOT NULL,
-  `end_time` datetime(0) NULL DEFAULT NULL,
+  `start_time` datetime NOT NULL,
+  `end_time` datetime NULL DEFAULT NULL,
   `trade_status` tinyint(1) NOT NULL,
   PRIMARY KEY (`trade_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
