@@ -495,4 +495,19 @@ public class OrderController {
         }
         return result;
     }
+
+    /**
+     * 根据活动ID查询当前活动的概述，包括活动当前报名人数
+     * todo
+     * @param activityId
+     * @return
+     */
+    @GetMapping("/summary")
+    public ResultData summary(String activityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        return result;
+    }
 }
