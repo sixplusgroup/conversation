@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.service.*;
+import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -40,6 +42,9 @@ public class OrderController {
     @Autowired
     private EquipmentService equipmentService;
 
+    @Autowired
+    private PaymentService paymentService;
+
 
     /**
      * Once user click on the submit form, the request will be forwarded here to process the order
@@ -49,7 +54,7 @@ public class OrderController {
      * @throws Exception
      */
     @PostMapping(value = "/create")
-    public ResultData createDriftOrder(DriftOrderForm form) throws Exception {
+    public ResultData createDriftOrder(DriftOrderForm form, HttpServletRequest request) throws Exception {
         ResultData result = new ResultData();
         // activityId is the unique identification for an activity
         // consumerId is the openid for a wechat user in this mini program
@@ -64,6 +69,7 @@ public class OrderController {
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
+        String ip = IPUtil.getIP(request);
         String activityId = form.getActivityId();
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
@@ -178,6 +184,9 @@ public class OrderController {
             }).start();
             result.setData(response.getData());
         }
+        DriftOrder order = (DriftOrder) response.getData();
+        //call payment feign to create a to-pay bill
+        response = paymentService.createPay(order.getOrderId(), order.getConsumerId(), (int) order.getTotalPrice() * 100, "测试", ip);
         return result;
     }
 
