@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.service.*;
@@ -138,7 +139,6 @@ public class OrderController {
         DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, orderNo, province, city, district, description, activityName, expected, intervalDate);
         driftOrder.setTotalPrice(price);
         driftOrder.setList(list);
-        driftOrder.setTestTarget(testTarget);
         if (!StringUtils.isEmpty(form.getExcode())) {
             condition.clear();
             condition.put("codeValue", form.getExcode());
@@ -499,15 +499,29 @@ public class OrderController {
     /**
      * 根据活动ID查询当前活动的概述，包括活动当前报名人数
      * todo
+     *
      * @param activityId
      * @return
      */
     @GetMapping("/summary")
     public ResultData summary(String activityId) {
         ResultData result = new ResultData();
+        JSONObject json = new JSONObject();
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
         condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            json.put("size", 0);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            json.put("size", ((List) response.getData()).size());
+        }
+        result.setData(json);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未能够成功查询到活动信息");
+        }
         return result;
     }
 }

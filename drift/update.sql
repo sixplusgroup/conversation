@@ -133,5 +133,30 @@ CREATE TABLE `gmair_install`.`user_session` (
   PRIMARY KEY (`open_id`)
 );
 
+ALTER TABLE `gmair_drift`.`drift_order`
+  ADD COLUMN `consumer_id` VARCHAR(45) NULL AFTER `order_no`;
+
+
+ALTER TABLE `gmair_drift`.`drift_order`
+  CHANGE COLUMN `province` `province` VARCHAR(45) NULL DEFAULT NULL AFTER `phone`,
+  ADD COLUMN `activity_id` VARCHAR(45) NULL AFTER `consumer_id`;
+
+
+ALTER TABLE `gmair_drift`.`drift_order`
+  CHANGE COLUMN `activity_id` `activity_id` VARCHAR(45) NULL DEFAULT NULL AFTER `order_no`,
+  ADD COLUMN `equip_id` VARCHAR(45) NULL AFTER `activity_id`;
+
+ALTER TABLE `gmair_drift`.`drift_order`
+  ADD COLUMN `expected_date` DATE NOT NULL AFTER `machine_orderNo`;
+
+ALTER TABLE `gmair_drift`.`drift_order`
+  ADD COLUMN `interval_date` INT NOT NULL AFTER `expected_date`;
+
+ALTER TABLE `gmair_drift`.`drift_order`
+  ADD COLUMN `real_pay` DOUBLE NULL AFTER `total_price`;
+
+ALTER TABLE `gmair_drift`.`drift_order`
+  ADD COLUMN `excode` VARCHAR(45) NULL AFTER `interval_date`;
+
 
 

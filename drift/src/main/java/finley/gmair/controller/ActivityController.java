@@ -74,7 +74,7 @@ public class ActivityController {
         Date end = sdf.parse(form.getEndTime());
         String introduction = form.getIntroduction();
         String host=form.getHost();
-        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction,host);
+        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction, host);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
