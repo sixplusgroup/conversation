@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,7 +41,11 @@ public class PayUtil {
 		}
 		StringBuilder sign=new StringBuilder();
 		Set<String> params = sArray.keySet();
-		for (String paramKey : params) {
+		String[] sa = {};
+		sa = params.toArray(sa);
+		Arrays.sort(sa);
+
+		for (String paramKey : sa) {
 			String value = sArray.get(paramKey);
 			if (StringUtils.isBlank(value)|| paramKey.equals("sign")) {
 				continue;
@@ -138,6 +143,9 @@ public class PayUtil {
 		}
 		if (paraMap.containsKey("return_msg")) {
 			paramBuffer.append("<return_msg>"+paraMap.get("return_msg")+"</return_msg>");
+		}
+		if (paraMap.containsKey("sign_type")) {
+			paramBuffer.append("<sign_type>"+paraMap.get("sign_type")+"</sign_type>");
 		}
 		paramBuffer.append("</xml>");
 		return paramBuffer.toString();

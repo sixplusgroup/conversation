@@ -81,29 +81,37 @@ public class WechatServiceImpl implements WechatService {
                 Map<String,String> paramMap=new TreeMap<>();
                 paramMap.put("mch_id", merchantId);
                 paramMap.put("nonce_str", nonce_str);
+                paramMap.put("sign_type","MD5");
                 String tempsign = PayUtil.generateSignature(paramMap,key);
                 paramMap.put("sign", tempsign);
                 String paramXml=PayUtil.mapToXml(paramMap);
                 String returnStr = PayUtil.httpRequest("https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", "POST", paramXml);
+System.out.println("sandbox get result：" + returnStr);
                 Map<String, String> respMap = XMLUtil.doXMLParse(returnStr);
-                key = respMap.get("sandbox_signkey");
+                if ("SUCCESS".equals(respMap.get("return_code"))) {
+                    key = respMap.get("sandbox_signkey");
+                }
             }
+System.out.println("sandbox get key：" + key);
 
             Map<String,String> paramMap=new TreeMap<>();
             paramMap.put("appid", appId);
+            paramMap.put("body", body);
             paramMap.put("mch_id", merchantId);
             paramMap.put("nonce_str", nonce_str);
-            paramMap.put("body", body);
+            paramMap.put("sign_type","MD5");
             paramMap.put("out_trade_no", out_trade_no);
             paramMap.put("total_fee", total_fee);
             paramMap.put("spbill_create_ip", spbill_create_ip);
             paramMap.put("notify_url", notify_url);
             paramMap.put("trade_type", trade_type);
             paramMap.put("openid", openId);
-            String sign=PayUtil.generateSignature(paramMap,key);
+            String sign = PayUtil.generateSignature(paramMap,key);
             paramMap.put("sign", sign);
+
             //转换 xml
             String paramXml=PayUtil.mapToXml(paramMap);
+System.out.println(paramXml);
             //发送请求
             String resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
             logger.info("result:"+resultXml);
@@ -124,7 +132,7 @@ public class WechatServiceImpl implements WechatService {
 
             String return_code = respMap.get("return_code");
             if ("SUCCESS".equals(return_code)) {
-                if (respMap.containsKey("err_code_des")) {
+                if (respMap.containsKey("err_code_des") && !respMap.get("err_code_des").toLowerCase().equals("ok")) {
                     logger.error("err_code_des:"+respMap.get("err_code_des"));
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription(respMap.get("err_code_des"));
@@ -132,6 +140,7 @@ public class WechatServiceImpl implements WechatService {
                 }
                 String result_code = respMap.get("result_code");
                 if ("SUCCESS".equals(result_code)) {//业务结果
+                    tradeDao.insert(trade);
                     //返回的map
                     result.setResponseCode(ResponseCode.RESPONSE_OK);
                     result.setData(respMap);
