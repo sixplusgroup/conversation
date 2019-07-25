@@ -35,9 +35,6 @@ public class OrderController {
     private EXCodeService exCodeService;
 
     @Autowired
-    private BillService billService;
-
-    @Autowired
     private AttachmentService attachmentService;
 
     @Autowired
@@ -178,7 +175,7 @@ public class OrderController {
             result.setDescription("无相关数据，请仔细检查");
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            new Thread(() -> billService.createBill(driftOrder.getOrderId(), ((int) driftOrder.getRealPay()) * 100)).start();
+            new Thread(() -> paymentService.createPay(driftOrder.getOrderId(), consumerId,((int) driftOrder.getRealPay()) * 100, activityName + "订单", ip) ).start();
             result.setData(response.getData());
         }
         return result;
