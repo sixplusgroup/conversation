@@ -5,11 +5,9 @@ import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("bill-agent")
+@FeignClient("payment-agent")
 public interface BillService {
 
-    @PostMapping("/bill/create")
-    ResultData createBill(@RequestParam("orderId") String orderId,
-                          @RequestParam("orderPrice") double orderPrice,
-                          @RequestParam("actualPrice") double actualPrice);
+    @PostMapping("/payment/bill/create")
+    ResultData createBill(@RequestParam("orderId") String orderId, @RequestParam("price") int actualPrice);
 }

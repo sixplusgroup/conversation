@@ -178,12 +178,9 @@ public class OrderController {
             result.setDescription("无相关数据，请仔细检查");
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            new Thread(() -> billService.createBill(driftOrder.getOrderId(), driftOrder.getTotalPrice(), driftOrder.getRealPay())).start();
+            new Thread(() -> billService.createBill(driftOrder.getOrderId(), ((int) driftOrder.getRealPay()) * 100)).start();
             result.setData(response.getData());
         }
-        DriftOrder order = (DriftOrder) response.getData();
-        //call payment feign to create a to-pay bill
-        response = paymentService.createPay(order.getOrderId(), order.getConsumerId(), (int) order.getTotalPrice() * 100, "测试", ip);
         return result;
     }
 
