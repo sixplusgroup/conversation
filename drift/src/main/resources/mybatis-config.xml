@@ -13,5 +13,6 @@
         <mapper resource="mapper/equipactivity.xml" />
         <mapper resource="mapper/qrexcode.xml" />
         <mapper resource="mapper/attachment.xml" />
+        <mapper resource="mapper/usersession.xml"></mapper>
     </mappers>
 </configuration>
