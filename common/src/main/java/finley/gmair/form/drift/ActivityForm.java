@@ -15,6 +15,16 @@ public class ActivityForm {
 
     private String introduction;
 
+    private String host;
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
     public String getActivityName() {
         return activityName;
     }
