@@ -83,22 +83,27 @@ public class OrderController {
         }
         // obtain activity profile
         Activity activity = ((List<Activity>) response.getData()).get(0);
-        String activityName = activity.getActivityName();
-
-        String consumerId = form.getConsumerId();
+        int intervalDate = activity.getReservableDays();
+        if (intervalDate != form.getIntervalDate()) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("活动信息发生变更，请重新申请");
+            return result;
+        }
         String equipId = form.getEquipId();
+        //todo check whether the equipid is consistent with the pre-defined activity equipment id
+
+        String activityName = activity.getActivityName();
+        String consumerId = form.getConsumerId();
         String consignee = form.getConsignee();
         String phone = form.getPhone();
         String address = form.getAddress();
-        String orderNo = form.getOrderNo();
-        String orderDate = form.getOrderDate();
+
         String province = form.getProvince();
         String city = form.getCity();
         String district = form.getDistrict();
         String expectedDate = form.getExpectedDate();
-        int intervalDate = form.getIntervalDate();
+
         String description = form.getDescription();
-        String testTarget = form.getTestTarget();
 
         //reset query condition
         condition.clear();
@@ -110,7 +115,6 @@ public class OrderController {
             result.setDescription("Equipment match errors");
             return result;
         }
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date expected = sdf.parse(expectedDate);
         Equipment equipment = ((List<Equipment>) response.getData()).get(0);
@@ -136,7 +140,7 @@ public class OrderController {
         for (DriftOrderItem orderItem : list) {
             price += orderItem.getItemPrice() * orderItem.getQuantity();
         }
-        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, orderNo, province, city, district, description, activityName, expected, intervalDate);
+        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityName, expected, intervalDate);
         driftOrder.setTotalPrice(price);
         driftOrder.setList(list);
         if (!StringUtils.isEmpty(form.getExcode())) {
@@ -165,11 +169,6 @@ public class OrderController {
         } else {
             driftOrder.setRealPay(price);
         }
-        //set time by orderDate
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d");
-        LocalDate localDate = LocalDate.parse(orderDate, dateTimeFormatter);
-        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
-        driftOrder.setCreateAt(Timestamp.valueOf(localDateTime));
         response = orderService.createDriftOrder(driftOrder);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -179,9 +178,7 @@ public class OrderController {
             result.setDescription("无相关数据，请仔细检查");
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            new Thread(() -> {
-                billService.createBill(driftOrder.getOrderId(), driftOrder.getTotalPrice(), driftOrder.getRealPay());
-            }).start();
+            new Thread(() -> billService.createBill(driftOrder.getOrderId(), driftOrder.getTotalPrice(), driftOrder.getRealPay())).start();
             result.setData(response.getData());
         }
         DriftOrder order = (DriftOrder) response.getData();

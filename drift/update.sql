@@ -158,5 +158,8 @@ ALTER TABLE `gmair_drift`.`drift_order`
 ALTER TABLE `gmair_drift`.`drift_order`
   ADD COLUMN `excode` VARCHAR(45) NULL AFTER `interval_date`;
 
+ALTER TABLE `gmair_drift`.`drift_order`
+  DROP COLUMN `order_no`;
+
 
 

@@ -3,7 +3,6 @@
 <mapper namespace="gmair.drift.order">
     <resultMap id="orderVo" type="finley.gmair.model.drift.DriftOrder">
         <result property="orderId" column="order_id"></result>
-        <result property="orderNo" column="order_no"></result>
         <result property="consumerId" column="consumer_id"></result>
         <result property="activityId" column="activity_id"></result>
         <result property="equipId" column="equip_id"></result>
@@ -50,9 +49,9 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrder" useGeneratedKeys="false">
-        INSERT INTO gmair_drift.drift_order (order_id, order_no, consumer_id, activity_id, equip_id, consignee, phone, address, expected_date, interval_date, province, city, district, total_price, real_pay,
+        INSERT INTO gmair_drift.drift_order (order_id, consumer_id, activity_id, equip_id, consignee, phone, address, expected_date, interval_date, province, city, district, total_price, real_pay,
                                              excode, description, order_status, block_flag, create_time)
-        VALUES (#{orderId}, #{orderNo}, #{consumerId}, #{activityId}, #{equipId}, #{consignee}, #{phone}, #{address},
+        VALUES (#{orderId}, #{consumerId}, #{activityId}, #{equipId}, #{consignee}, #{phone}, #{address},
                             #{expectedDate}, #{intervalDate}, #{province}, #{city}, #{district}, #{totalPrice},
                                                                            #{realPay},
                                                                            #{excode}, #{description},
@@ -61,16 +60,13 @@
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        select order_id, order_no, consumer_id, activity_id, equip_id, consignee, phone, address, expected_date,
+        select order_id, consumer_id, activity_id, equip_id, consignee, phone, address, expected_date,
         interval_date, province, city, district, total_price, real_pay,
         excode, description, order_status, block_flag, create_time
         from gmair_drift.drift_order
         where 1 = 1
         <if test="orderId != null">
             AND order_id = #{orderId}
-        </if>
-        <if test="orderNo != null">
-            AND order_no = #{orderNo}
         </if>
         <if test="phone != null">
             AND phone = #{phone}
