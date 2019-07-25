@@ -48,6 +48,7 @@ public class WechatServiceImpl implements WechatService {
         ResultData result = new ResultData();
 
         String payUrl = "https://api.mch.weixin.qq.com/sandboxnew/pay/unifiedorder";
+
         if(environment.equals("actual")) {
             payUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
         }
@@ -74,6 +75,20 @@ public class WechatServiceImpl implements WechatService {
 
         //组装参数map
         try {
+
+            //沙盒测试获取key
+            if(!environment.equals("actual")) {
+                Map<String,String> paramMap=new TreeMap<>();
+                paramMap.put("mch_id", merchantId);
+                paramMap.put("nonce_str", nonce_str);
+                String tempsign = PayUtil.generateSignature(paramMap,key);
+                paramMap.put("sign", tempsign);
+                String paramXml=PayUtil.mapToXml(paramMap);
+                String returnStr = PayUtil.httpRequest("https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", "POST", paramXml);
+                Map<String, String> respMap = XMLUtil.doXMLParse(returnStr);
+                key = respMap.get("sandbox_signkey");
+            }
+
             Map<String,String> paramMap=new TreeMap<>();
             paramMap.put("appid", appId);
             paramMap.put("mch_id", merchantId);
@@ -207,10 +222,10 @@ public class WechatServiceImpl implements WechatService {
         ResultData result = tradeDao.existOrder(orderId);
         if(result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             logger.error("checkOrderExisted出错");
-            return false;
+            return true;
         }
 
-        boolean exist = false;
+        boolean exist = true;
         if(result.getResponseCode() == ResponseCode.RESPONSE_OK) {
             exist = (Boolean)result.getData();
         }

@@ -22,6 +22,12 @@ public class TradeDaoImpl extends BaseDao implements TradeDao {
         map.put("orderId", orderId);
         ResultData res = query(map);
 
+        if(res.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(Boolean.valueOf(false));
+            return result;
+        }
+
         if(res.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             List<Trade> list = (List<Trade>) result.getData();
