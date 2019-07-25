@@ -34,7 +34,10 @@ public class WechatServiceImpl implements WechatService {
     private String merchantId;
 
     @Value("${key}")
-    private String key;//微信支付的商户密钥, api秘钥，不是小程序秘钥
+    private String key;
+
+    @Value("${environment}")
+    private String environment;
 
     @Autowired
     private TradeDao tradeDao;
@@ -45,6 +48,9 @@ public class WechatServiceImpl implements WechatService {
         ResultData result = new ResultData();
 
         String payUrl = "https://api.mch.weixin.qq.com/sandboxnew/pay/unifiedorder";
+        if(environment.equals("actual")) {
+            payUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        }
 
         String tradeId = PayUtil.generateTradeNo();
 
