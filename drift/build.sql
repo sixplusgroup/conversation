@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `gmair_drift`.`drift_activity` (
   `end_time` DATE NOT NULL,
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL,
+  `host` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`activity_id`)
 )ENGINE = InnoDB;
 

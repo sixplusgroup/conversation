@@ -54,9 +54,9 @@ public class ActivityController {
     public ResultData createDriftActivity(ActivityForm form) throws Exception {
         ResultData result = new ResultData();
         // 检查参数的完整性
-        if (StringUtil.isEmpty(form.getActivityName(), form.getStartTime(), form.getEndTime(), form.getIntroduction())) {
+        if (StringUtil.isEmpty(form.getActivityName(), form.getStartTime(), form.getEndTime(), form.getIntroduction(),form.getHost())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请确认活动名称、起讫时间及活动介绍的完整性");
+            result.setDescription("请确认活动名称、起讫时间、活动介绍及主办方信息的完整性");
             return result;
         }
         if (form.getRepositorySize() <= 0 || form.getReservableDays() <= 0) {
@@ -73,7 +73,8 @@ public class ActivityController {
         Date start = sdf.parse(form.getStartTime());
         Date end = sdf.parse(form.getEndTime());
         String introduction = form.getIntroduction();
-        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction);
+        String host=form.getHost();
+        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction,host);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -219,6 +220,20 @@ public class ActivityController {
         }
         return result;
     }
+
+    /**
+     * the method is used to select actual equipment by activityId
+     *
+     * @return
+
+    @GetMapping("/{activityId}/equipment")
+    public ResultData equipment(@PathVariable("activityId") String activityId) {
+        ResultData result = new ResultData();
+
+
+        return result;
+    }
+    */
 
     /**
      * the method is called to create excode if activity needs
