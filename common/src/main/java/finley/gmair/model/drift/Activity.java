@@ -21,11 +21,13 @@ public class Activity extends Entity {
 
     private String introduction;
 
+    private String host;
+
     public Activity() {
         super();
     }
 
-    public Activity(String activityName, int repositorySize, double threshold, int reservableDays, Date startTime, Date endTime, String introduction) {
+    public Activity(String activityName, int repositorySize, double threshold, int reservableDays, Date startTime, Date endTime, String introduction,String host) {
         this();
         this.activityName = activityName;
         this.repositorySize = repositorySize;
@@ -34,6 +36,7 @@ public class Activity extends Entity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.introduction = introduction;
+        this.host=host;
     }
 
     public String getActivityId() {
@@ -98,5 +101,13 @@ public class Activity extends Entity {
 
     public void setIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }
