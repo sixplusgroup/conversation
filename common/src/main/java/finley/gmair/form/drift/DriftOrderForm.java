@@ -1,11 +1,7 @@
 package finley.gmair.form.drift;
 
 public class DriftOrderForm {
-    private String orderNo;
-
     private String consumerId;
-
-    private String orderDate;
 
     private String activityId;
 
@@ -29,19 +25,9 @@ public class DriftOrderForm {
 
     private int intervalDate;
 
-    private String testTarget;
-
     private String excode;
 
     private int itemQuantity;
-
-    public String getOrderNo() {
-        return orderNo;
-    }
-
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
-    }
 
     public String getConsumerId() {
         return consumerId;
@@ -49,14 +35,6 @@ public class DriftOrderForm {
 
     public void setConsumerId(String consumerId) {
         this.consumerId = consumerId;
-    }
-
-    public String getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
     }
 
     public String getActivityId() {
@@ -145,14 +123,6 @@ public class DriftOrderForm {
 
     public void setIntervalDate(int intervalDate) {
         this.intervalDate = intervalDate;
-    }
-
-    public String getTestTarget() {
-        return testTarget;
-    }
-
-    public void setTestTarget(String testTarget) {
-        this.testTarget = testTarget;
     }
 
     public String getExcode() {
