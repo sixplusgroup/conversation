@@ -1,5 +1,3 @@
 app_id=
 merchant_id=
 key=
-#run environment：test environment(value: test)；actual environment(value: actual)
-environment=test

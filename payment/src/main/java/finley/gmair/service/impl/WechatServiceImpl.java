@@ -1,9 +1,12 @@
 package finley.gmair.service.impl;
 
+import finley.gmair.dao.ConfigurationDao;
 import finley.gmair.dao.TradeDao;
+import finley.gmair.model.payment.Configuration;
 import finley.gmair.model.payment.TradeState;
 import finley.gmair.service.WechatService;
 import finley.gmair.model.payment.Trade;
+import finley.gmair.service.feign.OrderService;
 import finley.gmair.util.*;
 
 import java.sql.Timestamp;
@@ -36,21 +39,28 @@ public class WechatServiceImpl implements WechatService {
     @Value("${key}")
     private String key;
 
-    @Value("${environment}")
-    private String environment;
-
     @Autowired
     private TradeDao tradeDao;
+
+    @Autowired
+    private ConfigurationDao configurationDao;
+
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public ResultData payCreate(String orderId, String openId, String money, String ipAddress, String body) {
 
         ResultData result = new ResultData();
 
-        String payUrl = "https://api.mch.weixin.qq.com/sandboxnew/pay/unifiedorder";
+        String payUrl = null;
+        String environment = null;
 
-        if(environment.equals("actual")) {
-            payUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        ResultData configData = configurationDao.query();
+        if(configData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            Configuration config = ((List<Configuration>)configData.getData()).get(0);
+            environment = config.getEnvironment();
+            payUrl = config.getPayUrl();
         }
 
         String tradeId = PayUtil.generateTradeNo();
@@ -111,7 +121,7 @@ System.out.println("sandbox get key：" + key);
 
             //转换 xml
             String paramXml=PayUtil.mapToXml(paramMap);
-System.out.println(paramXml);
+
             //发送请求
             String resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
             logger.info("result:"+resultXml);
@@ -205,7 +215,7 @@ System.out.println(paramXml);
                             tradeDao.update(trade);
 
                             //调用并更改订单的状态
-
+                            orderService.updateOrderPayed(trade.getOrderId());
 
                             //返回给微信
                             Map<String,String> paraMap=new HashMap<>();
@@ -239,6 +249,12 @@ System.out.println(paramXml);
             exist = (Boolean)result.getData();
         }
         return exist;
+    }
+
+    public ResultData getTradeByOrderId(String orderId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderId", orderId);
+        return tradeDao.query(map);
     }
 
 }

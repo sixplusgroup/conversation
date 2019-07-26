@@ -8,4 +8,5 @@ public interface WechatService {
 
     String payNotify(String notifyXml);
 
+    ResultData getTradeByOrderId(String orderId);
 }

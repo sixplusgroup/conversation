@@ -44,4 +44,15 @@ public class BillController {
     public String notified(String xml) {
         return wechatService.payNotify(xml);
     }
+
+    /**
+     * 根据订单号获得账单信息
+     * @param orderId 订单号
+     * @return
+     */
+    @PostMapping("/getTrade")
+    public ResultData getTrade(String orderId) {
+        return wechatService.getTradeByOrderId(orderId);
+    }
+
 }

@@ -30,10 +30,10 @@ public class TradeDaoImpl extends BaseDao implements TradeDao {
 
         if(res.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            List<Trade> list = (List<Trade>) result.getData();
+            List<Trade> list = (List<Trade>) res.getData();
             if(list == null || list.size() == 0) {
                 result.setData(Boolean.valueOf(false));
-            } else if(list.size() == 1) {
+            } else if(list.size() >= 1) {
                 result.setData(Boolean.valueOf(true));
             }
             return result;
@@ -79,6 +79,8 @@ public class TradeDaoImpl extends BaseDao implements TradeDao {
             List<Trade> list = sqlSession.selectList("gmair.payment.trade.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            } else {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
             }
             result.setData(list);
         }
