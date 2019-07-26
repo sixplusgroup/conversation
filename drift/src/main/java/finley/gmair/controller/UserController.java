@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.wechat.UserSession;
 import finley.gmair.service.UserService;
+import finley.gmair.util.Encryption;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.WechatUtil;
@@ -16,6 +17,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName: UserController
@@ -65,6 +71,39 @@ public class UserController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(response.getDescription());
         }
+        return result;
+    }
+
+    @PostMapping("/decode/phone")
+    public ResultData decode(String data, String iv, String openid) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(data) || StringUtils.isEmpty(iv)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供待解密的用户信息和解密矩阵");
+            return result;
+        }
+        //获取用户的session key
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("openId", openid);
+        condition.put("blockFlag", false);
+        ResultData response = userService.fetchSession(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("当前无法解密用户的数据");
+            return result;
+        }
+        UserSession session = ((List<UserSession>) response.getData()).get(0);
+        try {
+            byte[] info = Encryption.aesDecrypt(Base64.getDecoder().decode(data.getBytes()), Base64.getDecoder().decode(session.getSessionKey().getBytes()), Base64.getDecoder().decode(iv.getBytes()));
+            data = new String(info);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("该信息无法解析");
+            return result;
+        }
+        String phone = JSONObject.parseObject(data).getString("purePhoneNumber");
+        result.setData(phone);
         return result;
     }
 }
