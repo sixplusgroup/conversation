@@ -23,13 +23,15 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `configuration`;
 CREATE TABLE `configuration`  (
   `environment` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'value of test or actual',
-  `pay_url` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
+  `pay_url` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `state` tinyint(1) NULL DEFAULT NULL
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of configuration
 -- ----------------------------
-INSERT INTO `configuration` VALUES ('test', 'https://api.mch.weixin.qq.com/sandboxnew/pay/unifiedorder');
+INSERT INTO `configuration` VALUES ('test', 'https://api.mch.weixin.qq.com/sandboxnew/pay/unifiedorder', 1);
+INSERT INTO `configuration` VALUES ('actual', 'https://api.mch.weixin.qq.com/pay/unifiedorder', 0);
 
 -- ----------------------------
 -- Table structure for return_info

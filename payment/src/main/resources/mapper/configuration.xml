@@ -9,6 +9,7 @@
     <select id="query" parameterType="java.util.Map" resultMap="infoVo">
         select environment, pay_url
         from gmair_payment.configuration
+        where state=1
     </select>
 
 </mapper>
