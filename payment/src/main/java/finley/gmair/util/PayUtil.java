@@ -166,7 +166,7 @@ public class PayUtil {
 		return ip;
 	}
 
-	public static String generateTradeNo() {
+	public static String generateId() {
 		String today = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		String code=createCode(8);
 		return today+code;

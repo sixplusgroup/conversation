@@ -6,5 +6,6 @@
     <mappers>
         <mapper resource="mapper/trade.xml" />
         <mapper resource="mapper/configuration.xml" />
+        <mapper resource="mapper/returnInfo.xml" />
     </mappers>
 </configuration>

@@ -55,4 +55,14 @@ public class BillController {
         return wechatService.getTradeByOrderId(orderId);
     }
 
+    /**
+     * 根据订单号获取创建微信支付请求的结果
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/getCreateResult")
+    public ResultData getCreateResult(String orderId) {
+        return wechatService.getCreateResult(orderId);
+    }
+
 }

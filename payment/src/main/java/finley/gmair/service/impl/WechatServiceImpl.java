@@ -1,8 +1,11 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.ConfigurationDao;
+import finley.gmair.dao.ReturnInfoDao;
 import finley.gmair.dao.TradeDao;
 import finley.gmair.model.payment.Configuration;
+import finley.gmair.model.payment.ReturnInfo;
 import finley.gmair.model.payment.TradeState;
 import finley.gmair.service.WechatService;
 import finley.gmair.model.payment.Trade;
@@ -46,6 +49,9 @@ public class WechatServiceImpl implements WechatService {
     private ConfigurationDao configurationDao;
 
     @Autowired
+    private ReturnInfoDao returnInfoDao;
+
+    @Autowired
     private OrderService orderService;
 
     @Override
@@ -63,7 +69,7 @@ public class WechatServiceImpl implements WechatService {
             payUrl = config.getPayUrl();
         }
 
-        String tradeId = PayUtil.generateTradeNo();
+        String tradeId = PayUtil.generateId();
 
         //必传参数
         String nonce_str=UUID.randomUUID().toString().replace("-", "");
@@ -96,13 +102,13 @@ public class WechatServiceImpl implements WechatService {
                 paramMap.put("sign", tempsign);
                 String paramXml=PayUtil.mapToXml(paramMap);
                 String returnStr = PayUtil.httpRequest("https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", "POST", paramXml);
-System.out.println("sandbox get result：" + returnStr);
                 Map<String, String> respMap = XMLUtil.doXMLParse(returnStr);
                 if ("SUCCESS".equals(respMap.get("return_code"))) {
                     key = respMap.get("sandbox_signkey");
+System.out.println("sandbox get key：" + key);
                 }
             }
-System.out.println("sandbox get key：" + key);
+
 
             Map<String,String> paramMap=new TreeMap<>();
             paramMap.put("appid", appId);
@@ -121,6 +127,7 @@ System.out.println("sandbox get key：" + key);
 
             //转换 xml
             String paramXml=PayUtil.mapToXml(paramMap);
+System.out.println("send xml: " + paramXml);
 
             //发送请求
             String resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
@@ -151,6 +158,18 @@ System.out.println("sandbox get key：" + key);
                 String result_code = respMap.get("result_code");
                 if ("SUCCESS".equals(result_code)) {//业务结果
                     tradeDao.insert(trade);
+
+                    //存储微信返回的map
+                    ReturnInfo info = new ReturnInfo();
+                    info.setInfoId(PayUtil.generateId());
+                    info.setOrderId(orderId);
+                    info.setDeviceInfo(respMap.get("device_info"));
+                    info.setNonceStr(respMap.get("nonce_str"));
+                    info.setPrepayId(respMap.get("prepay_id"));
+                    info.setSign(respMap.get("sign"));
+                    info.setTradeType(respMap.get("trade_type"));
+                    returnInfoDao.insert(info);
+
                     //返回的map
                     result.setResponseCode(ResponseCode.RESPONSE_OK);
                     result.setData(respMap);
@@ -255,6 +274,47 @@ System.out.println("sandbox get key：" + key);
         Map<String, Object> map = new HashMap<>();
         map.put("orderId", orderId);
         return tradeDao.query(map);
+    }
+
+    public ResultData getCreateResult(String orderId) {
+
+        ResultData result = new ResultData();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderId", orderId);
+        ResultData returnData = returnInfoDao.query(map);
+        if(returnData.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(returnData.getDescription());
+        } else if(returnData.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("order id does not exist !");
+        } else {
+            ReturnInfo info = ((List<ReturnInfo>)returnData.getData()).get(0);
+
+            Timestamp timeStamp = info.getCreateAt();
+            String nonceStr = info.getNonceStr();
+            String packageStr = "prepay_id=" + info.getPrepayId();
+            String signType = "MD5";
+
+            Map<String,String> paramMap=new TreeMap<>();
+            paramMap.put("appId", appId);
+            paramMap.put("timeStamp", timeStamp.getTime()+ "");
+            paramMap.put("nonceStr", nonceStr);
+            paramMap.put("package", packageStr);
+            paramMap.put("signType", signType);
+            String paySign = PayUtil.generateSignature(paramMap,key);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("timeStamp", timeStamp.getTime()+ "");
+            jsonObject.put("nonceStr", nonceStr);
+            jsonObject.put("package", packageStr);
+            jsonObject.put("signType", signType);
+            jsonObject.put("paySign", paySign);
+
+            result.setData(jsonObject);
+        }
+        return result;
     }
 
 }

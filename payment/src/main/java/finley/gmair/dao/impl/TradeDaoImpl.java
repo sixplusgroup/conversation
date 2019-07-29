@@ -79,8 +79,6 @@ public class TradeDaoImpl extends BaseDao implements TradeDao {
             List<Trade> list = sqlSession.selectList("gmair.payment.trade.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
             }
             result.setData(list);
         }
