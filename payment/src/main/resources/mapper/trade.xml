@@ -37,11 +37,12 @@
         update gmair_payment.trade
         <set>
             <if test="tradeState != null">
-                trade_status = #{tradeState, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+                trade_status = #{tradeState, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}，
             </if>
             <if test="tradeEndTime != null">
-                end_time = #{tradeEndTime}
+                end_time = #{tradeEndTime}，
             </if>
+            trade_id = #{tradeId}
         </set>
         where trade_id = #{tradeId}
     </update>
