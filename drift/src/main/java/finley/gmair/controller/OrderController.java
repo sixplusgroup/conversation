@@ -515,4 +515,27 @@ public class OrderController {
         }
         return result;
     }
+
+    @GetMapping("/{orderId}")
+    public ResultData info(@PathVariable("orderId") String orderId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("获取订单信息失败，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前未查询到order id为".concat(orderId).concat("的信息"));
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(((List) response.getData()).get(0));
+        }
+        return result;
+    }
 }

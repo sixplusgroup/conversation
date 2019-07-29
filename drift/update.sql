@@ -166,4 +166,3 @@ ALTER TABLE `gmair_drift`.`drift_order_item`
   DROP COLUMN `test_target`;
 
 
-

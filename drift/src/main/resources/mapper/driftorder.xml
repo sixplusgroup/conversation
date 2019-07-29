@@ -30,7 +30,7 @@
         <result property="orderId" column="order_id"></result>
         <result property="itemName" column="item_name"></result>
         <result property="itemPrice" column="item_price"></result>
-        <result property="itemQuantity" column="item_quantity"></result>
+        <result property="quantity" column="quantity"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
@@ -41,7 +41,7 @@
             order_id,
             item_name,
             item_price,
-            item_quantity,
+            quantity,
             block_flag,
             create_time
         FROM gmair_drift.drift_order_item
