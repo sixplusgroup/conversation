@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.payment.trade">
+    <resultMap id="infoVo" type="finley.gmair.model.payment.Trade">
+        <result property="tradeId" column="trade_id"></result>
+        <result property="orderId" column="out_trade_no"></result>
+        <result property="tradeDescription" column="trade_description"></result>
+        <result property="tradeNonceStr" column="nonce_str"></result>
+        <result property="tradeTotalFee" column="total_fee"></result>
+        <result property="tradeSpbillCreateIp" column="spbill_create_ip"></result>
+        <result property="tradeType" column="trade_type"></result>
+        <result property="tradeOpenId" column="openid"></result>
+        <result property="tradeStartTime" column="start_time"></result>
+        <result property="tradeEndTime" column="end_time"></result>
+        <result property="tradeState" column="trade_status"
+                typeHandler="finley.gmair.mybatis.handler.TradeStateHandler"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="infoVo">
+        select trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status
+        from gmair_payment.trade
+        where 1 = 1
+        <if test="tradeId != null">
+            AND trade_id = #{tradeId}
+        </if>
+        <if test="orderId != null">
+            AND out_trade_no = #{orderId}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.payment.Trade">
+        insert into gmair_payment.trade(trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status)
+        values (#{tradeId}, #{orderId}, #{tradeDescription}, #{tradeNonceStr},#{tradeTotalFee},#{tradeSpbillCreateIp},#{tradeType},#{tradeOpenId},#{tradeStartTime},#{tradeEndTime}, #{tradeState, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler})
+    </insert>
+
+    <update id="update" parameterType="finley.gmair.model.payment.Trade">
+        update gmair_payment.trade
+        <set>
+            <if test="tradeState != null">
+                trade_status = #{tradeState, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+            </if>
+            <if test="tradeEndTime != null">
+                end_time = #{tradeEndTime}
+            </if>
+        </set>
+        where trade_id = #{tradeId}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from gmair_payment.trade
+        where trade_id = #{tradeId}
+    </delete>
+</mapper>

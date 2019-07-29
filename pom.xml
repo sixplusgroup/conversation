@@ -49,6 +49,7 @@
         <module>installdesk</module>
         <module>openplatform</module>
         <module>mqtt-core</module>
+        <module>payment</module>
     </modules>
 
     <parent>
