@@ -12,6 +12,6 @@ public interface PaymentService {
     ResultData createPay(@RequestParam("orderId") String orderId, @RequestParam("openid") String openid, @RequestParam("price") int price, @RequestParam("body") String body, @RequestParam("ip") String ip);
 
 
-    @GetMapping("/payment/bill/getTrade")
+    @GetMapping("/payment/bill/getCreateResult")
     ResultData getTrade(@RequestParam("orderId") String orderId);
 }
