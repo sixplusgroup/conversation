@@ -299,7 +299,7 @@ System.out.println("send xml: " + paramXml);
 
             Map<String,String> paramMap=new TreeMap<>();
             paramMap.put("appId", appId);
-            paramMap.put("timeStamp", timeStamp.getTime()+ "");
+            paramMap.put("timeStamp", timeStamp.getTime()/1000+ "");
             paramMap.put("nonceStr", nonceStr);
             paramMap.put("package", packageStr);
             paramMap.put("signType", signType);
