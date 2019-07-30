@@ -306,7 +306,7 @@ System.out.println("send xml: " + paramXml);
             String paySign = PayUtil.generateSignature(paramMap,key);
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("timeStamp", timeStamp.getTime()+ "");
+            jsonObject.put("timeStamp", timeStamp.getTime()/1000+ "");
             jsonObject.put("nonceStr", nonceStr);
             jsonObject.put("package", packageStr);
             jsonObject.put("signType", signType);
