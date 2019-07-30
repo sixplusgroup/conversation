@@ -2,6 +2,7 @@ package finley.gmair.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,7 +13,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 public class XMLUtil {
-    public static Map<String, String> doXMLParse(String strxml) throws Exception {
+    public static Map<String, String> doXMLParse(String strxml) {
         if (StringUtils.isBlank(strxml)) {
             return null;
         }
@@ -33,6 +34,8 @@ public class XMLUtil {
             }
         } catch (DocumentException e) {
             e.printStackTrace();
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();;
         }
         return map;
     }

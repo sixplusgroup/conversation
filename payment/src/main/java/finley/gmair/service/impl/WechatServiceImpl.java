@@ -42,6 +42,9 @@ public class WechatServiceImpl implements WechatService {
     @Value("${key}")
     private String key;
 
+    private String environment;
+    private String sandboxKey;
+
     @Autowired
     private TradeDao tradeDao;
 
@@ -60,7 +63,6 @@ public class WechatServiceImpl implements WechatService {
         ResultData result = new ResultData();
 
         String payUrl = null;
-        String environment = null;
 
         ResultData configData = configurationDao.query();
         if(configData.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -104,8 +106,8 @@ public class WechatServiceImpl implements WechatService {
                 String returnStr = PayUtil.httpRequest("https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", "POST", paramXml);
                 Map<String, String> respMap = XMLUtil.doXMLParse(returnStr);
                 if ("SUCCESS".equals(respMap.get("return_code"))) {
-                    key = respMap.get("sandbox_signkey");
-System.out.println("sandbox get key：" + key);
+                    sandboxKey = respMap.get("sandbox_signkey");
+System.out.println("sandbox get key：" + sandboxKey);
                 }
             }
 
@@ -122,7 +124,7 @@ System.out.println("sandbox get key：" + key);
             paramMap.put("notify_url", notify_url);
             paramMap.put("trade_type", trade_type);
             paramMap.put("openid", openId);
-            String sign = PayUtil.generateSignature(paramMap,key);
+            String sign = PayUtil.generateSignature(paramMap,environment.equals("actual")?key:sandboxKey);
             paramMap.put("sign", sign);
 
             //转换 xml
