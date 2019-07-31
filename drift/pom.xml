@@ -11,7 +11,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>drift</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.7.4-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

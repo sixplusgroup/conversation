@@ -54,7 +54,7 @@ public class ActivityController {
     public ResultData createDriftActivity(ActivityForm form) throws Exception {
         ResultData result = new ResultData();
         // 检查参数的完整性
-        if (StringUtil.isEmpty(form.getActivityName(), form.getStartTime(), form.getEndTime(), form.getIntroduction(),form.getHost())) {
+        if (StringUtil.isEmpty(form.getActivityName(), form.getStartTime(), form.getEndTime(), form.getIntroduction(), form.getHost())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确认活动名称、起讫时间、活动介绍及主办方信息的完整性");
             return result;
@@ -73,7 +73,7 @@ public class ActivityController {
         Date start = sdf.parse(form.getStartTime());
         Date end = sdf.parse(form.getEndTime());
         String introduction = form.getIntroduction();
-        String host=form.getHost();
+        String host = form.getHost();
         Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction, host);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -226,14 +226,13 @@ public class ActivityController {
      *
      * @return
 
-    @GetMapping("/{activityId}/equipment")
-    public ResultData equipment(@PathVariable("activityId") String activityId) {
-        ResultData result = new ResultData();
+     @GetMapping("/{activityId}/equipment") public ResultData equipment(@PathVariable("activityId") String activityId) {
+     ResultData result = new ResultData();
 
 
-        return result;
-    }
-    */
+     return result;
+     }
+     */
 
     /**
      * the method is called to create excode if activity needs
@@ -597,6 +596,14 @@ public class ActivityController {
         list.add(EXCodeStatus.EXCHANGED.getValue());
         condition.put("status", list);
         result = exCodeService.fetchEXCode(condition);
+        return result;
+    }
+
+    //todo obtain notification corresponding to a given activity identified by activityId
+    @GetMapping("/{activityId}/notification")
+    public ResultData notification(@PathVariable("activityId") String activityId) {
+        ResultData result = new ResultData();
+
         return result;
     }
 }
