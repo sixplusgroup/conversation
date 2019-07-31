@@ -237,7 +237,7 @@ System.out.println("order id: " + out_trade_no);
                 if(tradeResult.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                     logger.error("orderId query null !");
                 }
-                Trade trade = (Trade)tradeResult.getData();
+                Trade trade = ((List<Trade>)tradeResult.getData()).get(0);
                 if (trade!=null) {
                     //签名验证,并校验返回的订单金额是否与商户侧的订单金额一致
                     Map<String, String> signMap=notifyMap;
