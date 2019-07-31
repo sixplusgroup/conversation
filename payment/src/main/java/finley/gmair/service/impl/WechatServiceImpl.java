@@ -247,6 +247,7 @@ System.out.println("order id: " + out_trade_no);
                         int total_fee = trade.getTradeTotalFee();
                         int total_fee_resp = Integer.parseInt(notifyMap.get("total_fee"));
                         if (total_fee==total_fee_resp) {
+System.out.println("tradeid" + trade.getTradeId());
                             trade.setTradeEndTime(new Timestamp(System.currentTimeMillis()));
                             //支付完成,更新订单状态
                             trade.setTradeState(TradeState.PAYED);
