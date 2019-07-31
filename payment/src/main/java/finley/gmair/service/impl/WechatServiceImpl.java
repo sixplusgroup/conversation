@@ -206,7 +206,7 @@ System.out.println("send xml: " + paramXml);
 
     @Override
     public String payNotify(String notifyXml) {
-
+System.out.println("notify String" + notifyXml);
         try {
             Map<String, String> notifyMap = XMLUtil.doXMLParse(notifyXml);
             //判断该通知是否已经处理过
@@ -227,11 +227,15 @@ System.out.println("send xml: " + paramXml);
             }
             if ("SUCCESS".equals(notifyMap.get("result_code"))) {
                 String out_trade_no = notifyMap.get("out_trade_no");//没有订单号这个返回值，要修改
+System.out.println("order id: " + out_trade_no);
                 Map<String, Object> queryMap = new HashMap<>();
                 queryMap.put("orderId", out_trade_no);
                 ResultData tradeResult = tradeDao.query(queryMap);
                 if(tradeResult.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                     logger.error(tradeResult.getDescription());
+                }
+                if(tradeResult.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                    logger.error("orderId query null !");
                 }
                 Trade trade = (Trade)tradeResult.getData();
                 if (trade!=null) {
@@ -247,10 +251,10 @@ System.out.println("send xml: " + paramXml);
                             //支付完成,更新订单状态
                             trade.setTradeState(TradeState.PAYED);
                             tradeDao.update(trade);
-
+System.out.println("trade state updated!");
                             //调用并更改订单的状态
                             orderService.updateOrderPayed(trade.getOrderId());
-
+System.out.println("order state updated!");
                             //返回给微信
                             Map<String,String> paraMap=new HashMap<>();
                             paraMap.put("return_code", "SUCCESS");
@@ -267,7 +271,7 @@ System.out.println("send xml: " + paramXml);
             logger.error("error message:"+e.getMessage());
             return null;
         }
-        logger.error("咋执行到这了，trade null");
+        logger.error("咋执行到这了，try catch 都没return");
         return null;
     }
 
