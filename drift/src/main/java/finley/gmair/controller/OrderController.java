@@ -43,6 +43,8 @@ public class OrderController {
     @Autowired
     private PaymentService paymentService;
 
+    private Object lock = new Object();
+
 
     /**
      * Once user click on the submit form, the request will be forwarded here to process the order
@@ -75,10 +77,10 @@ public class OrderController {
         ResultData response = activityService.fetchActivity(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("No activity found by activity id: ".concat(form.getActivityId()));
+            result.setDescription("未能查询到与".concat(form.getActivityId()).concat("相关的活动"));
             return result;
         }
-        // obtain activity profile
+        //获取活动的信息
         Activity activity = ((List<Activity>) response.getData()).get(0);
         int intervalDate = activity.getReservableDays();
         if (intervalDate != form.getIntervalDate()) {
@@ -87,44 +89,54 @@ public class OrderController {
             return result;
         }
         String equipId = form.getEquipId();
-        //todo check whether the equipid is consistent with the pre-defined activity equipment id
-
-        String activityName = activity.getActivityName();
-        String consumerId = form.getConsumerId();
-        String consignee = form.getConsignee();
-        String phone = form.getPhone();
-        String address = form.getAddress();
-
-        String province = form.getProvince();
-        String city = form.getCity();
-        String district = form.getDistrict();
-        String expectedDate = form.getExpectedDate();
-
-        String description = form.getDescription();
-
-        //reset query condition
+        // 检查设备的ID是否与活动存在关联
+        condition.clear();
+        condition.put("activityId", activityId);
+        condition.put("equipId", equipId);
+        condition.put("blockFlag", false);
+        response = activityService.fetchActivityEquipment(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("[Error]未能查询到活动和设备的关联信息，请稍后尝试");
+            return result;
+        }
+        // 查询设备是否存在
         condition.clear();
         condition.put("equipId", equipId);
         condition.put("blockFlag", false);
         response = equipmentService.fetchEquipment(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Equipment match errors");
+            result.setDescription("[Error]未能查询到该设备，请稍后尝试");
             return result;
         }
+        // 开始处理用户的申请
+        String activityName = activity.getActivityName();
+        String consumerId = form.getConsumerId();
+        String consignee = form.getConsignee();
+        String phone = form.getPhone();
+        String address = form.getAddress();
+        String province = form.getProvince();
+        String city = form.getCity();
+        String district = form.getDistrict();
+        String expectedDate = form.getExpectedDate();
+        String description = form.getDescription();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date expected = sdf.parse(expectedDate);
         Equipment equipment = ((List<Equipment>) response.getData()).get(0);
-        //构建item list
+        //todo 检查当天是否可以继续借出设备
+
+        //构建订单中的子订单项
         List<DriftOrderItem> list = new ArrayList<>();
         DriftOrderItem equipItem = new DriftOrderItem();
-        double price = 0;
+
+        int price = 0;
         equipItem.setItemName(equipment.getEquipName());
         equipItem.setItemPrice(equipment.getEquipPrice());
         equipItem.setQuantity(1);
         list.add(equipItem);
         response = attachmentService.fetch(condition);
-
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             Attachment attachment = ((List<Attachment>) response.getData()).get(0);
             DriftOrderItem attachItem = new DriftOrderItem();
@@ -134,12 +146,15 @@ public class OrderController {
             list.add(attachItem);
         }
 
+        // 计算该订单的总价格
         for (DriftOrderItem orderItem : list) {
-            price += orderItem.getItemPrice() * orderItem.getQuantity();
+            price += (int) (orderItem.getItemPrice() * 100) * orderItem.getQuantity() * 1.0 / 100;
         }
+
         DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityName, expected, intervalDate);
         driftOrder.setTotalPrice(price);
         driftOrder.setList(list);
+        // 若订单使用了优惠券
         if (!StringUtils.isEmpty(form.getExcode())) {
             condition.clear();
             condition.put("codeValue", form.getExcode());
@@ -175,7 +190,11 @@ public class OrderController {
             result.setDescription("无相关数据，请仔细检查");
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            new Thread(() -> paymentService.createPay(driftOrder.getOrderId(), consumerId, (int) (driftOrder.getRealPay() * 100), "test order - 001", ip)).start();
+            if ((int) driftOrder.getRealPay() * 100 / 100 == 0) {
+                //todo 若订单金额为0，则自动更新订单状态为已付款
+            } else {
+                new Thread(() -> paymentService.createPay(driftOrder.getOrderId(), consumerId, (int) (driftOrder.getRealPay() * 100), activityName, ip)).start();
+            }
             result.setData(response.getData());
         }
         return result;
