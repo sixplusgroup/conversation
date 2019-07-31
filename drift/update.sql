@@ -134,29 +134,38 @@ CREATE TABLE `gmair_install`.`user_session` (
 );
 
 ALTER TABLE `gmair_drift`.`drift_order`
-  ADD COLUMN `consumer_id` VARCHAR(45) NULL AFTER `order_no`;
+  ADD COLUMN `consumer_id` VARCHAR(45) NULL
+  AFTER `order_no`;
 
 
 ALTER TABLE `gmair_drift`.`drift_order`
-  CHANGE COLUMN `province` `province` VARCHAR(45) NULL DEFAULT NULL AFTER `phone`,
-  ADD COLUMN `activity_id` VARCHAR(45) NULL AFTER `consumer_id`;
+  CHANGE COLUMN `province` `province` VARCHAR(45) NULL DEFAULT NULL
+  AFTER `phone`,
+  ADD COLUMN `activity_id` VARCHAR(45) NULL
+  AFTER `consumer_id`;
 
 
 ALTER TABLE `gmair_drift`.`drift_order`
-  CHANGE COLUMN `activity_id` `activity_id` VARCHAR(45) NULL DEFAULT NULL AFTER `order_no`,
-  ADD COLUMN `equip_id` VARCHAR(45) NULL AFTER `activity_id`;
+  CHANGE COLUMN `activity_id` `activity_id` VARCHAR(45) NULL DEFAULT NULL
+  AFTER `order_no`,
+  ADD COLUMN `equip_id` VARCHAR(45) NULL
+  AFTER `activity_id`;
 
 ALTER TABLE `gmair_drift`.`drift_order`
-  ADD COLUMN `expected_date` DATE NOT NULL AFTER `machine_orderNo`;
+  ADD COLUMN `expected_date` DATE NOT NULL
+  AFTER `machine_orderNo`;
 
 ALTER TABLE `gmair_drift`.`drift_order`
-  ADD COLUMN `interval_date` INT NOT NULL AFTER `expected_date`;
+  ADD COLUMN `interval_date` INT NOT NULL
+  AFTER `expected_date`;
 
 ALTER TABLE `gmair_drift`.`drift_order`
-  ADD COLUMN `real_pay` DOUBLE NULL AFTER `total_price`;
+  ADD COLUMN `real_pay` DOUBLE NULL
+  AFTER `total_price`;
 
 ALTER TABLE `gmair_drift`.`drift_order`
-  ADD COLUMN `excode` VARCHAR(45) NULL AFTER `interval_date`;
+  ADD COLUMN `excode` VARCHAR(45) NULL
+  AFTER `interval_date`;
 
 ALTER TABLE `gmair_drift`.`drift_order`
   DROP COLUMN `order_no`;
@@ -164,5 +173,15 @@ ALTER TABLE `gmair_drift`.`drift_order`
 
 ALTER TABLE `gmair_drift`.`drift_order_item`
   DROP COLUMN `test_target`;
+
+## 2019-07-30
+CREATE TABLE `gmair_drift`.`activity_notification` (
+  `notification_id`      VARCHAR(20) NOT NULL,
+  `activity_id`          VARCHAR(20) NOT NULL,
+  `notification_context` LONGTEXT    NOT NULL,
+  `block_flag`           TINYINT(1)  NOT NULL,
+  `create_time`          DATETIME    NOT NULL,
+  PRIMARY KEY (`notification_id`)
+);
 
 
