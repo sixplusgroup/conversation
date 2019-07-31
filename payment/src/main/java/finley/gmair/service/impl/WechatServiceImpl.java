@@ -107,7 +107,7 @@ public class WechatServiceImpl implements WechatService {
                 Map<String, String> respMap = XMLUtil.doXMLParse(returnStr);
                 if ("SUCCESS".equals(respMap.get("return_code"))) {
                     sandboxKey = respMap.get("sandbox_signkey");
-System.out.println("sandbox get key：" + sandboxKey);
+                    logger.info("sandbox key：" + sandboxKey);
                 }
             }
 
@@ -129,14 +129,19 @@ System.out.println("sandbox get key：" + sandboxKey);
 
             //转换 xml
             String paramXml=PayUtil.mapToXml(paramMap);
-System.out.println("send xml: " + paramXml);
+            logger.info("send xml: " + paramXml);
 
             //发送请求
             String resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
-            logger.info("result:"+resultXml);
+            logger.info("tryNum:0, result:"+resultXml);
 
             int tryCount = 0;
             while(tryCount < 5 && resultXml.contains("<title>302")) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 tryCount++;
                 resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
                 logger.info("tryNum:" + tryCount + ", result:"+resultXml);
@@ -164,7 +169,8 @@ System.out.println("send xml: " + paramXml);
 
             String return_code = respMap.get("return_code");
             if ("SUCCESS".equals(return_code)) {
-                if (respMap.containsKey("err_code_des") && !respMap.get("err_code_des").toLowerCase().equals("ok")) {
+                if (respMap.containsKey("err_code_des") && !respMap.get("err_code_des").toLowerCase().equals("ok")
+                        && !respMap.get("err_code_des").toUpperCase().equals("SUCCESS")) {
                     logger.error("err_code_des:"+respMap.get("err_code_des"));
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription(respMap.get("err_code_des"));
@@ -190,6 +196,11 @@ System.out.println("send xml: " + paramXml);
                     result.setData(respMap);
                     return result;
                 }
+            } else {
+                logger.error("return_msg:" + respMap.get("return_msg"));
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription(respMap.get("return_msg"));
+                return result;
             }
 
         } catch (Exception e) {
@@ -206,7 +217,7 @@ System.out.println("send xml: " + paramXml);
 
     @Override
     public String payNotify(String notifyXml) {
-System.out.println("notify String" + notifyXml);
+        logger.info("notify String: " + notifyXml);
         try {
             Map<String, String> notifyMap = XMLUtil.doXMLParse(notifyXml);
             //判断该通知是否已经处理过
@@ -227,7 +238,6 @@ System.out.println("notify String" + notifyXml);
             }
             if ("SUCCESS".equals(notifyMap.get("result_code"))) {
                 String out_trade_no = notifyMap.get("out_trade_no");//没有订单号这个返回值，要修改
-System.out.println("order id: " + out_trade_no);
                 Map<String, Object> queryMap = new HashMap<>();
                 queryMap.put("orderId", out_trade_no);
                 ResultData tradeResult = tradeDao.query(queryMap);
@@ -247,15 +257,17 @@ System.out.println("order id: " + out_trade_no);
                         int total_fee = trade.getTradeTotalFee();
                         int total_fee_resp = Integer.parseInt(notifyMap.get("total_fee"));
                         if (total_fee==total_fee_resp) {
-System.out.println("tradeid" + trade.getTradeId());
                             trade.setTradeEndTime(new Timestamp(System.currentTimeMillis()));
                             //支付完成,更新订单状态
                             trade.setTradeState(TradeState.PAYED);
-                            tradeDao.update(trade);
-System.out.println("trade state updated!");
+
                             //调用并更改订单的状态
                             orderService.updateOrderPayed(trade.getOrderId());
-System.out.println("order state updated!");
+                            logger.info("order state updated!");
+
+                            tradeDao.update(trade);
+                            logger.info("trade state updated!");
+
                             //返回给微信
                             Map<String,String> paraMap=new HashMap<>();
                             paraMap.put("return_code", "SUCCESS");
@@ -333,6 +345,135 @@ System.out.println("order state updated!");
             jsonObject.put("paySign", paySign);
 
             result.setData(jsonObject);
+        }
+        return result;
+    }
+
+    public ResultData checkTradePayed() {
+        ResultData result = new ResultData();
+        // 查询数据库获取所有满足条件的未支付状态的订单编号
+        ResultData orderResult = tradeDao.queryUnpayed();
+        if(orderResult.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(orderResult.getDescription());
+            logger.error("query error:" + orderResult.getDescription());
+            return result;
+        }
+        List<Trade> tradeList = null;
+        if(orderResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            tradeList = (List<Trade>)orderResult.getData();
+        }
+
+        String queryUrl = "https://api.mch.weixin.qq.com/sandboxnew/pay/orderquery";
+        ResultData configData = configurationDao.query();
+        if(configData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            Configuration config = ((List<Configuration>)configData.getData()).get(0);
+            environment = config.getEnvironment();
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(orderResult.getDescription());
+            logger.error(orderResult.getDescription());
+            return result;
+        }
+        //沙盒测试获取key
+        if(!environment.equals("actual")) {
+            Map<String,String> paramMap=new TreeMap<>();
+            paramMap.put("mch_id", merchantId);
+            paramMap.put("nonce_str", UUID.randomUUID().toString().replace("-", ""));
+            paramMap.put("sign_type","MD5");
+            String tempsign = PayUtil.generateSignature(paramMap,key);
+            paramMap.put("sign", tempsign);
+            String paramXml=PayUtil.mapToXml(paramMap);
+            String returnStr = PayUtil.httpRequest("https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", "POST", paramXml);
+            Map<String, String> respMap = XMLUtil.doXMLParse(returnStr);
+            if ("SUCCESS".equals(respMap.get("return_code"))) {
+                sandboxKey = respMap.get("sandbox_signkey");
+                logger.info("sandbox key：" + sandboxKey);
+            }
+        }
+        //遍历逐个查询当前账单的支付状态，若发现账单已支付，则更新账单状态，并通知drift模块进行更新
+        for(Trade trade : tradeList) {
+            String orderId = trade.getOrderId();
+            logger.info("orderid : " + orderId);
+
+            Map<String,String> paramMap=new TreeMap<>();
+            paramMap.put("appid", appId);
+            paramMap.put("mch_id", merchantId);
+            paramMap.put("out_trade_no", orderId);
+            paramMap.put("nonce_str", UUID.randomUUID().toString().replace("-", ""));
+            paramMap.put("sign_type", "MD5");
+            String sign = PayUtil.generateSignature(paramMap,environment.equals("actual")?key:sandboxKey);
+            paramMap.put("sign", sign);
+
+            //转换 xml
+            String paramXml=PayUtil.mapToXml(paramMap);
+            logger.info("send xml: " + paramXml);
+
+            //发送请求
+            String resultXml =PayUtil.httpRequest(queryUrl, "POST", paramXml);
+            logger.info("tryNum:0, result:"+resultXml);
+            int tryCount = 0;
+            while(tryCount < 5 && resultXml.contains("<title>302")) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                tryCount++;
+                resultXml =PayUtil.httpRequest(queryUrl, "POST", paramXml);
+                logger.info("tryNum:" + tryCount + ", result:"+resultXml);
+            }
+            if(resultXml.contains("<title>302")) {
+                logger.error("302 error: try 5 times fail");
+                continue;
+//                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                result.setDescription("302 error");
+//                return result;
+            }
+
+            //解析响应xml
+            Map<String, String> respMap = XMLUtil.doXMLParse(resultXml);
+
+            String return_code = respMap.get("return_code");
+            if ("SUCCESS".equals(return_code)) {
+                if (respMap.containsKey("err_code_des") && !respMap.get("err_code_des").toLowerCase().equals("ok")
+                        && !respMap.get("err_code_des").toUpperCase().equals("SUCCESS")) {
+                    logger.error("err_code_des:" + respMap.get("err_code_des"));
+                    continue;
+//                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                    result.setDescription(respMap.get("err_code_des"));
+//                    return result;
+                }
+                String result_code = respMap.get("result_code");
+                if ("SUCCESS".equals(result_code)) {//业务结果
+                    String trade_state = respMap.get("trade_state");
+                    if(trade_state.equals("SUCCESS")) {
+System.out.println("trade openid:" + trade.getTradeOpenId());
+System.out.println("return openid:" + respMap.get("openid"));
+System.out.println("orderId:" + trade.getOrderId());
+System.out.println("out_trade_no:" + respMap.get("out_trade_no"));
+                        if(trade.getTradeTotalFee() == Integer.parseInt(respMap.get("total_fee"))
+                            && trade.getTradeOpenId().equals(respMap.get("openid"))
+                            && trade.getOrderId().equals(respMap.get("out_trade_no"))) {
+                            trade.setTradeState(TradeState.PAYED);
+                            trade.setTradeEndTime(new Timestamp(Long.parseLong(respMap.get("time_end")) * 1000));
+                            orderService.updateOrderPayed(trade.getOrderId());
+                            logger.info("order state updated!");
+
+                            tradeDao.update(trade);
+                            logger.info("trade state updated!");
+                        }
+                    } else {
+                        logger.info("state of orderId ( " + orderId + ") : " + trade_state);
+                    }
+                }
+            } else {
+                logger.error("return_msg:" + respMap.get("return_msg"));
+                continue;
+//                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                result.setDescription(respMap.get("return_msg"));
+//                return result;
+            }
         }
         return result;
     }

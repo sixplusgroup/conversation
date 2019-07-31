@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.TradeDao;
 import finley.gmair.model.payment.Trade;
+import finley.gmair.model.payment.TradeState;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -103,4 +104,23 @@ public class TradeDaoImpl extends BaseDao implements TradeDao {
         return result;
     }
 
+    @Override
+    public ResultData queryUnpayed(){
+        ResultData result = new ResultData();
+        try{
+            Map<String, Object> map = new HashMap<>();
+            map.put("tradeState", TradeState.UNPAYED);
+            List<Trade> list = sqlSession.selectList("gmair.payment.trade.queryUnpayed", map);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

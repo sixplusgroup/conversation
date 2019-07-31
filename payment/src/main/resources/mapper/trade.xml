@@ -51,4 +51,13 @@
         delete from gmair_payment.trade
         where trade_id = #{tradeId}
     </delete>
+
+    <select id="queryUnpayed" parameterType="java.util.Map" resultMap="infoVo">
+        select trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status
+        from gmair_payment.trade
+        where start_time >= ADDDATE(NOW(),-1)
+        <if test="tradeState != null">
+            AND trade_status = #{tradeState, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+        </if>
+    </select>
 </mapper>

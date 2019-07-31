@@ -11,4 +11,6 @@ public interface WechatService {
     ResultData getTradeByOrderId(String orderId);
 
     ResultData getCreateResult(String orderId);
+
+    ResultData checkTradePayed();
 }

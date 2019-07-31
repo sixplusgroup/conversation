@@ -17,4 +17,5 @@ public interface TradeDao {
 
     ResultData delete(String tradeId);
 
+    ResultData queryUnpayed();
 }

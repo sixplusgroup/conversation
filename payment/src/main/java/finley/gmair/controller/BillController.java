@@ -120,11 +120,10 @@ public class BillController {
      */
     @PostMapping("/sync")
     public ResultData sync() {
-        ResultData result = new ResultData();
         // 查询数据库获取所有满足条件的未支付状态的订单编号
 
         //遍历逐个查询当前账单的支付状态，若发现账单已支付，则更新账单状态，并通知drift模块进行更新
-        return result;
+        return wechatService.checkTradePayed();
     }
 
 }
