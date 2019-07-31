@@ -134,6 +134,19 @@ System.out.println("send xml: " + paramXml);
             //发送请求
             String resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
             logger.info("result:"+resultXml);
+
+            int tryCount = 0;
+            while(tryCount < 5 && resultXml.contains("<title>302")) {
+                tryCount++;
+                resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
+                logger.info("tryNum:" + tryCount + ", result:"+resultXml);
+            }
+            if(resultXml.contains("<title>302")) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("302 error");
+                return result;
+            }
+
             //解析响应xml
             Map<String, String> respMap = XMLUtil.doXMLParse(resultXml);
 
@@ -305,7 +318,7 @@ System.out.println("send xml: " + paramXml);
             paramMap.put("nonceStr", nonceStr);
             paramMap.put("package", packageStr);
             paramMap.put("signType", signType);
-            String paySign = PayUtil.generateSignature(paramMap,key);
+            String paySign = PayUtil.generateSignature(paramMap,environment.equals("actual")?key:sandboxKey);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("timeStamp", timeStamp.getTime()/1000+ "");

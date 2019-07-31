@@ -53,6 +53,7 @@ public class PayUtil {
 			sign.append(paramKey+"="+value+"&");
 		}
 		sign.append("key="+key);
+System.out.println("before sign: " + sign.toString());
 		return MD5Util.MD5Encryption(sign.toString(),"UTF-8");
 	}
 
