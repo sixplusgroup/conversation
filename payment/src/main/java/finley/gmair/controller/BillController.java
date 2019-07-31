@@ -1,13 +1,18 @@
 package finley.gmair.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import finley.gmair.service.WechatService;
-import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @ClassName: PaymentController
@@ -38,12 +43,51 @@ public class BillController {
 
     /**
      * 微信支付回调方法
-     * @param xml
+     * @param
      * @return
      */
     @PostMapping("/notify")
-    public String notified(String xml) {
-        return wechatService.payNotify(xml);
+    @ResponseBody
+    public void notified(HttpServletRequest request, HttpServletResponse response) {
+        PrintWriter writer = null;
+        try{
+            writer = response.getWriter();
+            String notityXml = parseRequst(request);
+            String responseXml = wechatService.payNotify(notityXml);
+            writer.write(responseXml);
+            writer.flush();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            writer.close();
+        }
+        //return wechatService.payNotify(xml);
+    }
+
+    private static String parseRequst(HttpServletRequest request) throws UnsupportedEncodingException {
+        request.setCharacterEncoding("utf-8");
+        String body = "";
+        try {
+            ServletInputStream inputStream = request.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "utf-8")); // 设置编码格式“utf-8”否则获取中文为乱码
+            while (true) {
+                String info = br.readLine();
+                if (info == null) {
+                    break;
+                }
+                if (body == null || "".equals(body)) {
+                    body = info;
+                } else {
+                    body += info;
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return body;
     }
 
     /**
