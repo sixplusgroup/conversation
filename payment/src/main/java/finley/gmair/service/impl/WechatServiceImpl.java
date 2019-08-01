@@ -13,6 +13,8 @@ import finley.gmair.service.feign.OrderService;
 import finley.gmair.util.*;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -385,6 +387,12 @@ public class WechatServiceImpl implements WechatService {
             paramMap.put("sign", tempsign);
             String paramXml=PayUtil.mapToXml(paramMap);
             String returnStr = PayUtil.httpRequest("https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", "POST", paramXml);
+            int tryCount = 0;
+            while(tryCount < 5 && returnStr.contains("<title>302")) {
+                returnStr = PayUtil.httpRequest("https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", "POST", paramXml);
+                tryCount++;
+                logger.info("tryNum:" + tryCount + ", sandbox key result:"+returnStr);
+            }
             Map<String, String> respMap = XMLUtil.doXMLParse(returnStr);
             if ("SUCCESS".equals(respMap.get("return_code"))) {
                 sandboxKey = respMap.get("sandbox_signkey");
@@ -434,6 +442,11 @@ public class WechatServiceImpl implements WechatService {
             //解析响应xml
             Map<String, String> respMap = XMLUtil.doXMLParse(resultXml);
 
+            if(!PayUtil.generateSignature(respMap,environment.equals("actual")?key:sandboxKey).equals(respMap.get("sign"))) {
+                logger.error("微信返回签名失败");
+                continue;
+            }
+
             String return_code = respMap.get("return_code");
             if ("SUCCESS".equals(return_code)) {
                 if (respMap.containsKey("err_code_des") && !respMap.get("err_code_des").toLowerCase().equals("ok")
@@ -448,23 +461,32 @@ public class WechatServiceImpl implements WechatService {
                 if ("SUCCESS".equals(result_code)) {//业务结果
                     String trade_state = respMap.get("trade_state");
                     if(trade_state.equals("SUCCESS")) {
-System.out.println("trade openid:" + trade.getTradeOpenId());
-System.out.println("return openid:" + respMap.get("openid"));
-System.out.println("orderId:" + trade.getOrderId());
-System.out.println("out_trade_no:" + respMap.get("out_trade_no"));
                         if(trade.getTradeTotalFee() == Integer.parseInt(respMap.get("total_fee"))
-                            && trade.getTradeOpenId().equals(respMap.get("openid"))
+                            //&& trade.getTradeOpenId().equals(respMap.get("openid"))
                             && trade.getOrderId().equals(respMap.get("out_trade_no"))) {
                             trade.setTradeState(TradeState.PAYED);
-                            trade.setTradeEndTime(new Timestamp(Long.parseLong(respMap.get("time_end")) * 1000));
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+                            Date date = new Date();
+                            try {
+                                date = (Date) sdf.parse(respMap.get("time_end"));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            trade.setTradeEndTime(new Timestamp(date.getTime()));
                             orderService.updateOrderPayed(trade.getOrderId());
                             logger.info("order state updated!");
 
                             tradeDao.update(trade);
                             logger.info("trade state updated!");
+                        } else {
+                            logger.error("check wx and db info fail");
                         }
                     } else {
                         logger.info("state of orderId ( " + orderId + ") : " + trade_state);
+                        logger.info("trade total_fee:" + trade.getTradeTotalFee());
+                        logger.info("return total_fee:" + Integer.parseInt(respMap.get("total_fee")));
+                        logger.info("orderId:" + trade.getOrderId());
+                        logger.info("out_trade_no:" + respMap.get("out_trade_no"));
                     }
                 }
             } else {
