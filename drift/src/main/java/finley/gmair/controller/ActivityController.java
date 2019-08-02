@@ -43,6 +43,9 @@ public class ActivityController {
     @Autowired
     private AttachmentService attachmentService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     private Object lock = new Object();
 
     /**
@@ -602,7 +605,22 @@ public class ActivityController {
     @GetMapping("/{activityId}/notification")
     public ResultData notification(@PathVariable("activityId") String activityId) {
         ResultData result = new ResultData();
-
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(activityId)) {
+            condition.put("activityId", activityId);
+        }
+        condition.put("blockFlag", false);
+        ResultData response = notificationService.fetchNotification(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get notification by activityId");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No notification found by activityId");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
         return result;
     }
 }

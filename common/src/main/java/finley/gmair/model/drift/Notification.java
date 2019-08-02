@@ -15,6 +15,8 @@ public class Notification extends Entity {
 
     private String context;
 
+    public Notification(){super();}
+
     public Notification(String activityId, String context) {
         super();
         this.activityId = activityId;

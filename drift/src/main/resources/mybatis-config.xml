@@ -14,5 +14,6 @@
         <mapper resource="mapper/qrexcode.xml" />
         <mapper resource="mapper/attachment.xml" />
         <mapper resource="mapper/usersession.xml"></mapper>
+        <mapper resource="mapper/notification.xml"></mapper>
     </mappers>
 </configuration>
