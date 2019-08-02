@@ -374,7 +374,6 @@ public class ActivityController {
         BufferedOutputStream outputStream = null;
         try {
             inputStream = new BufferedInputStream(new FileInputStream(file));
-            response.setCharacterEncoding("UTF-8");
             response.setContentType("application/octet-stream");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             outputStream = new BufferedOutputStream(response.getOutputStream());
