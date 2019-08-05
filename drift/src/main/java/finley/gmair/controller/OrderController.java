@@ -557,4 +557,19 @@ public class OrderController {
         }
         return result;
     }
+
+    @GetMapping("/{openid}/list")
+    public ResultData list(@PathVariable("openid") String openid) {
+        ResultData result = new ResultData();
+        if (StringUtil.isEmpty(openid)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供所需要获取订单的用户的信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerId", openid);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        return result;
+    }
 }

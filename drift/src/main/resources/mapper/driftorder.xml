@@ -53,10 +53,10 @@
                                              excode, description, order_status, block_flag, create_time)
         VALUES (#{orderId}, #{consumerId}, #{activityId}, #{equipId}, #{consignee}, #{phone}, #{address},
                             #{expectedDate}, #{intervalDate}, #{province}, #{city}, #{district}, #{totalPrice},
-                                                                           #{realPay},
-                                                                           #{excode}, #{description},
-                                                                           #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
-                                                                           #{blockFlag}, #{createAt})
+                #{realPay},
+                #{excode}, #{description},
+                #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+                #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
@@ -67,6 +67,9 @@
         where 1 = 1
         <if test="orderId != null">
             AND order_id = #{orderId}
+        </if>
+        <if test="consumerId != null">
+            AND consumer_id = #{consumerId}
         </if>
         <if test="phone != null">
             AND phone = #{phone}

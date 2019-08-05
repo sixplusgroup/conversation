@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -104,6 +105,13 @@ public class UserController {
         }
         String phone = JSONObject.parseObject(data).getString("purePhoneNumber");
         result.setData(phone);
+        return result;
+    }
+
+    @GetMapping("/score")
+    public ResultData score(String openid) {
+        ResultData result = new ResultData();
+        
         return result;
     }
 }
