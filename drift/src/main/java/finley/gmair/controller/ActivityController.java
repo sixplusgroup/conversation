@@ -606,9 +606,12 @@ public class ActivityController {
     public ResultData notification(@PathVariable("activityId") String activityId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if (!StringUtils.isEmpty(activityId)) {
-            condition.put("activityId", activityId);
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供活动的基本信息");
+            return result;
         }
+        condition.put("activityId", activityId);
         condition.put("blockFlag", false);
         ResultData response = notificationService.fetchNotification(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {

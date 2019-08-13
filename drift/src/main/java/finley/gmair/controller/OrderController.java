@@ -570,6 +570,17 @@ public class OrderController {
         condition.put("consumerId", openid);
         condition.put("blockFlag", false);
         ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未能查询用户订单信息，请稍后尝试");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前用户暂无订单信息");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+        }
         return result;
     }
 }

@@ -56,8 +56,8 @@ public class PageController {
                 logger.error(e.getMessage());
             }
         } else {
-            ResultData r = alipayService.code2openid(auth_code);
-            logger.info("token: ".concat(JSON.toJSONString(r.getData())));
+//            ResultData r = alipayService.code2openid(auth_code);
+//            logger.info("token: ".concat(JSON.toJSONString(r.getData())));
         }
         view.setViewName("credit");
         return view;
