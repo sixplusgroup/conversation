@@ -35,6 +35,47 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <select id="query" parameterType="java.util.Map" resultMap="orderVo">
+        select order_id, activity_id, equip_id, consumer_id, consignee, phone, address, province, city, district,
+        expected_date, interval_date, total_price, real_pay, excode, description, order_status, block_flag, create_time
+        from gmair_drift.drift_order
+        where 1 = 1
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="activityId != null">
+            AND activity_id = #{activityId}
+        </if>
+        <if test="consumerId != null">
+            AND consumer_id = #{consumerId}
+        </if>
+        <if test="phone != null">
+            AND phone = #{phone}
+        </if>
+        <if test="cityName != null">
+            AND (city like #{cityName}
+            OR district like #{cityName})
+        </if>
+        <if test="provinceName != null">
+            AND province like #{provinceName}
+        </if>
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            <![CDATA[
+                AND create_time <= #{endTime}
+            ]]>
+        </if>
+        <if test="status != null">
+            AND order_status = #{status}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time ASC
+    </select>
+
     <select id="queryDriftItem" parameterType="java.lang.String" resultMap="orderItemVo">
         SELECT
             item_id,
@@ -58,48 +99,6 @@
                 #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
                 #{blockFlag}, #{createAt})
     </insert>
-
-    <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        select order_id, consumer_id, activity_id, equip_id, consignee, phone, address, expected_date,
-        interval_date, province, city, district, total_price, real_pay,
-        excode, description, order_status, block_flag, create_time
-        from gmair_drift.drift_order
-        where 1 = 1
-        <if test="orderId != null">
-            AND order_id = #{orderId}
-        </if>
-        <if test="consumerId != null">
-            AND consumer_id = #{consumerId}
-        </if>
-        <if test="phone != null">
-            AND phone = #{phone}
-        </if>
-        <if test="cityName != null">
-            AND city like #{cityName}
-            OR district like #{cityName}
-        </if>
-        <if test="provinceName != null">
-            AND province like #{provinceName}
-        </if>
-        <if test="startTime != null">
-            AND create_time >= #{startTime}
-        </if>
-        <if test="endTime != null">
-            <![CDATA[
-                AND create_time <= #{endTime}
-            ]]>
-        </if>
-        <if test="activityId != null">
-            AND activity_id = #{activityId}
-        </if>
-        <if test="status != null">
-            AND order_status = #{status}
-        </if>
-        <if test="blockFlag != null">
-            AND block_flag = #{blockFlag}
-        </if>
-        ORDER BY create_time ASC
-    </select>
 
     <update id="update" parameterType="finley.gmair.model.drift.DriftOrder">
         update gmair_drift.drift_order

@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ActivityDao;
+import finley.gmair.dao.ActivityThumbnailDao;
 import finley.gmair.model.drift.Activity;
 import finley.gmair.service.ActivityService;
 import finley.gmair.util.ResponseCode;
@@ -8,6 +9,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.transform.Result;
 import java.util.Map;
 
 @Service
@@ -15,6 +17,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private ActivityDao activityDao;
+
+    @Autowired
+    private ActivityThumbnailDao activityThumbnailDao;
 
     @Override
     public ResultData fetchActivity(Map<String, Object> condition) {
@@ -82,6 +87,24 @@ public class ActivityServiceImpl implements ActivityService {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setData(response.getData());
                 break;
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData fetchActivityThumbnail(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = activityThumbnailDao.query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
         }
         return result;
     }

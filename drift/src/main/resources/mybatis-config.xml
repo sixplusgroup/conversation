@@ -15,5 +15,6 @@
         <mapper resource="mapper/attachment.xml" />
         <mapper resource="mapper/usersession.xml"></mapper>
         <mapper resource="mapper/notification.xml"></mapper>
+        <mapper resource="mapper/thumbnail.xml"></mapper>
     </mappers>
 </configuration>

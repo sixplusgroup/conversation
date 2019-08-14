@@ -151,7 +151,7 @@ public class OrderController {
             price += (int) (orderItem.getItemPrice() * 100) * orderItem.getQuantity() * 1.0 / 100;
         }
 
-        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityName, expected, intervalDate);
+        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate);
         driftOrder.setTotalPrice(price);
         driftOrder.setList(list);
         // 若订单使用了优惠券

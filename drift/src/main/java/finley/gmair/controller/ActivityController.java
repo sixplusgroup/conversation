@@ -224,6 +224,32 @@ public class ActivityController {
         return result;
     }
 
+    @GetMapping("/{activityId}/thumbnail")
+    public ResultData thumbnail(@PathVariable("activityId") String activityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供活动的基本信息");
+            return result;
+        }
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivityThumbnail(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到和该活动相关的图片");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询活动图片失败，请稍后尝试");
+        }
+        return result;
+    }
+
     /**
      * the method is used to select actual equipment by activityId
      *
