@@ -51,3 +51,15 @@
     * Controller: create | list
 * @FeignService
     * Auth-consumer service: login | register (maybe change later)
+    
+#### API
+
+##### 活动模块
+
+1. 查询活动的预览图
+
+    `/drift/activity/{activityId}/thumbnail`
+
+2. 查询活动的通知消息
+    
+    `/drift/activity/{activityId}/notification`

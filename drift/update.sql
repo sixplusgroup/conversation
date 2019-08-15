@@ -184,4 +184,17 @@ CREATE TABLE `gmair_drift`.`activity_notification` (
   PRIMARY KEY (`notification_id`)
 );
 
+## 2019-8-14
+CREATE TABLE `gmair_drift`.`activity_thumbnail` (
+  `thumbnail_id`    VARCHAR(20) NOT NULL,
+  `thumbnail_path`  VARCHAR(45) NOT NULL,
+  `thumbnail_index` INT         NOT NULL,
+  `block_flag`      TINYINT(1)  NOT NULL,
+  `create_time`     DATETIME    NOT NULL,
+  PRIMARY KEY (`thumbnail_id`)
+);
+
+ALTER TABLE `gmair_drift`.`activity_thumbnail`
+  ADD COLUMN `activity_id` VARCHAR(20) NULL AFTER `thumbnail_id`;
+
 
