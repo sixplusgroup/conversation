@@ -198,3 +198,12 @@ ALTER TABLE `gmair_drift`.`activity_thumbnail`
   ADD COLUMN `activity_id` VARCHAR(20) NULL AFTER `thumbnail_id`;
 
 
+## 2018-08-15
+CREATE TABLE `gmair_drift`.`drift_promotion` (
+  `promotion_id` VARCHAR(20) NOT NULL,
+  `activity_id` VARCHAR(20) NOT NULL,
+  `promotion_value` DOUBLE NOT NULL,
+  `promotion_description` VARCHAR(100) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`promotion_id`));
