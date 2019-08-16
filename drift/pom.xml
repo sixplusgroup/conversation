@@ -84,6 +84,13 @@
             <artifactId>alipay-sdk-java</artifactId>
             <version>3.7.110.ALL</version>
         </dependency>
+
+        <!-- 腾讯云sdk -->
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java</artifactId>
+            <version>3.0.85</version>
+        </dependency>
     </dependencies>
 
     <build>
