@@ -613,6 +613,8 @@ public class OrderController {
             result.setDescription("未能查询到与".concat(orderId).concat("相关的订单"));
             return result;
         }
+
+        //update order status
         Express express = new Express(orderId, expressId, company);
         express.setStatus(ExpressStatus.valueOf(expressFlag));
         if(express.getStatus()==null){
@@ -620,15 +622,30 @@ public class OrderController {
             result.setDescription("订单标识异常");
             return result;
         }
-        ResultData response = expressService.createExpress(express);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        else{
+            DriftOrder order = ((List<DriftOrder>) response1.getData()).get(0);
+            if(express.getStatus() == ExpressStatus.DELIVERED)
+                order.setStatus(DriftOrderStatus.DELIVERED);
+            else if(express.getStatus() == ExpressStatus.BACk)
+                order.setStatus(DriftOrderStatus.BACK);
+            response1 = orderService.updateDriftOrder(order);
+            if (response1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
+                return result;
+            }
+        }
+
+        //create express
+        ResultData response2 = expressService.createExpress(express);
+        if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to store express message to database");
             return result;
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
+            result.setData(response2.getData());
         }
         return result;
     }

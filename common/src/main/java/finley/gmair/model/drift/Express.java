@@ -1,6 +1,8 @@
 package finley.gmair.model.drift;
 
-public class Express {
+import finley.gmair.model.Entity;
+
+public class Express extends Entity {
 
     private String orderId;
 
