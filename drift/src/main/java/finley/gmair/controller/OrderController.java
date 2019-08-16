@@ -43,6 +43,9 @@ public class OrderController {
     @Autowired
     private PaymentService paymentService;
 
+    @Autowired
+    private ExpressService expressService;
+
     private Object lock = new Object();
 
 
@@ -579,6 +582,52 @@ public class OrderController {
             result.setDescription("当前用户暂无订单信息");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    /**
+     * The method is called to create OrderExpress and update the status of the order
+     *
+     * @param orderId
+     * @param expressId
+     * @param expressFlag 0-->delivered ;1-->back ;other value is wrong
+     * @param company
+     * @return
+     */
+    @PostMapping(value = "/express/create")
+    public ResultData createOrderExpress(String orderId, String expressId, int expressFlag, String company){
+        ResultData result = new ResultData();
+        if(StringUtil.isEmpty(orderId,expressId,company)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId",orderId);
+        condition.put("blockFlag", false);
+        ResultData response1 = orderService.fetchDriftOrder(condition);
+        if (response1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未能查询到与".concat(orderId).concat("相关的订单"));
+            return result;
+        }
+        Express express = new Express(orderId, expressId, company);
+        express.setStatus(ExpressStatus.valueOf(expressFlag));
+        if(express.getStatus()==null){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("订单标识异常");
+            return result;
+        }
+        ResultData response = expressService.createExpress(express);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store express message to database");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
         return result;

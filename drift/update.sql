@@ -207,3 +207,14 @@ CREATE TABLE `gmair_drift`.`drift_promotion` (
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`promotion_id`));
+
+
+## 2019-08-15
+CREATE TABLE `gmair_drift`.`order_express`  (
+  `order_id` varchar(45) NULL,
+  `express_id` varchar(45) NULL,
+  `express_status` tinyint(1) NULL,
+  `company` varchar(45) NULL,
+  `block_flag` tinyint(1) NULL,
+  `create_time` datetime(0) NULL
+);

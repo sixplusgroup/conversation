@@ -16,5 +16,6 @@
         <mapper resource="mapper/usersession.xml"></mapper>
         <mapper resource="mapper/notification.xml"></mapper>
         <mapper resource="mapper/thumbnail.xml"></mapper>
+        <mapper resource="mapper/express.xml"></mapper>
     </mappers>
 </configuration>
