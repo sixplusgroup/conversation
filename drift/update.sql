@@ -218,3 +218,13 @@ CREATE TABLE `gmair_drift`.`order_express`  (
   `block_flag` tinyint(1) NULL,
   `create_time` datetime(0) NULL
 );
+
+## 2019-08-22
+CREATE TABLE `drift_verification`  (
+  `verify_id` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `id_card` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `id_name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `block_flag` tinyint(1) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`verify_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
