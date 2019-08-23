@@ -12,6 +12,9 @@
         <result property="introduction" column="introduction"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
+        <result property="openDate" column="open_date"></result>
+        <result property="closeDate" column="close_date"></result>
+        <result property="delayDays" column="delay_days"></result>
     </resultMap>
 
     <resultMap id="activityEquipmentVo" type="finley.gmair.vo.drift.ActivityEquipmentVo">
@@ -47,7 +50,7 @@
 
     <select id="query" parameterType="java.util.Map" resultMap="activityVo">
         select activity_id, activity_name, repository_size, threshold, reservable_days, start_time, end_time,
-        introduction, block_flag, create_time, host
+        introduction, block_flag, create_time, host,open_date,close_date,delay_days
         from gmair_drift.drift_activity
         where 1 = 1
         <if test="activityId != null">
