@@ -195,39 +195,61 @@ CREATE TABLE `gmair_drift`.`activity_thumbnail` (
 );
 
 ALTER TABLE `gmair_drift`.`activity_thumbnail`
-  ADD COLUMN `activity_id` VARCHAR(20) NULL AFTER `thumbnail_id`;
-
+  ADD COLUMN `activity_id` VARCHAR(20) NULL
+  AFTER `thumbnail_id`;
 
 ## 2018-08-15
 CREATE TABLE `gmair_drift`.`drift_promotion` (
-  `promotion_id` VARCHAR(20) NOT NULL,
-  `activity_id` VARCHAR(20) NOT NULL,
-  `promotion_value` DOUBLE NOT NULL,
+  `promotion_id`          VARCHAR(20)  NOT NULL,
+  `activity_id`           VARCHAR(20)  NOT NULL,
+  `promotion_value`       DOUBLE       NOT NULL,
   `promotion_description` VARCHAR(100) NOT NULL,
-  `block_flag` TINYINT(1) NOT NULL,
-  `create_time` DATETIME NOT NULL,
-  PRIMARY KEY (`promotion_id`));
-
+  `block_flag`            TINYINT(1)   NOT NULL,
+  `create_time`           DATETIME     NOT NULL,
+  PRIMARY KEY (`promotion_id`)
+);
 
 ## 2019-08-15
-CREATE TABLE `gmair_drift`.`order_express`  (
-  `order_id` varchar(45) NULL,
-  `express_id` varchar(45) NULL,
-  `express_status` tinyint(1) NULL,
-  `company` varchar(45) NULL,
-  `block_flag` tinyint(1) NULL,
-  `create_time` datetime(0) NULL
+CREATE TABLE `gmair_drift`.`order_express` (
+  `order_id`       VARCHAR(45) NULL,
+  `express_id`     VARCHAR(45) NULL,
+  `express_status` TINYINT(1)  NULL,
+  `company`        VARCHAR(45) NULL,
+  `block_flag`     TINYINT(1)  NULL,
+  `create_time`    DATETIME(0) NULL
 );
 
 ## 2019-08-21
 ALTER TABLE `gmair_drift`.`drift_activity`
-  ADD COLUMN `open_date` date NULL
+  ADD COLUMN `open_date` DATE NULL
   AFTER `create_time`;
 
 ALTER TABLE `gmair_drift`.`drift_activity`
-  ADD COLUMN `close_date` date NULL
+  ADD COLUMN `close_date` DATE NULL
   AFTER `open_date`;
 
 ALTER TABLE `gmair_drift`.`drift_activity`
-  ADD COLUMN `delay_days` int NULL
+  ADD COLUMN `delay_days` INT NULL
   AFTER `close_date`;
+
+## 2019-08-23
+
+CREATE TABLE `drift_verification` (
+  `verify_id`   VARCHAR(30) CHARACTER SET utf8
+  COLLATE utf8_general_ci  NOT NULL,
+  `id_card`     VARCHAR(20) CHARACTER SET utf8
+  COLLATE utf8_general_ci  NOT NULL,
+  `id_name`     VARCHAR(30) CHARACTER SET utf8
+  COLLATE utf8_general_ci  NOT NULL,
+  `block_flag`  TINYINT(1) NOT NULL,
+  `create_time` DATETIME   NOT NULL,
+  PRIMARY KEY (`verify_id`) USING BTREE
+)
+  ENGINE = InnoDB
+  CHARACTER SET = utf8
+  COLLATE = utf8_general_ci
+  ROW_FORMAT = DYNAMIC;
+
+ALTER TABLE `gmair_drift`.`drift_verification`
+  ADD COLUMN `open_id` VARCHAR(50) NOT NULL
+  AFTER `verify_id`;

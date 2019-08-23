@@ -87,7 +87,7 @@
             create_time
         FROM gmair_drift.drift_order_item
         WHERE drift_order_item.order_id = #{order_id}
-        ORDER BY item_id ASC
+        ORDER BY item_name ASC
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrder" useGeneratedKeys="false">

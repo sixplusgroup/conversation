@@ -43,22 +43,38 @@ public class VerificationServiceImpl implements VerificationService {
     private VerificationDao verificationDao;
 
     @Override
-    public ResultData verify(String idCard, String name) {
+    public ResultData fetch(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = verificationDao.query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能找到相关信息的记录");
+        } else {
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData verify(String openid, String idCard, String name) {
         ResultData result = new ResultData();
 
         Map<String, Object> queryMap = new HashMap<>();
         queryMap.put("idCard", idCard);
         queryMap.put("name", name);
         ResultData existResult = verificationDao.query(queryMap);
-        if(existResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        if (existResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setData(Boolean.valueOf(true));
             return result;
         }
-        if(existResult.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+        if (existResult.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             logger.error("query error : " + existResult.getDescription());
         }
 
-        try{
+        try {
 
             Credential cred = new Credential(secretId, secretKey);
 
@@ -71,9 +87,10 @@ public class VerificationServiceImpl implements VerificationService {
             //region 暂时设置为  华东地区（上海）
             FaceidClient client = new FaceidClient(cred, "ap-shanghai", clientProfile);
 
+            //todo 用JSONObject来构造参数，不要自己拼字符串
             String cardStr = "\"IdCard\":\"" + idCard + "\"";
             String nameStr = "\"Name\":\"" + name + "\"";
-            String params = "{" + cardStr + ","  + nameStr + "}";
+            String params = "{" + cardStr + "," + nameStr + "}";
             logger.info("params json : " + params);
             IdCardVerificationRequest req = IdCardVerificationRequest.fromJsonString(params, IdCardVerificationRequest.class);
 
@@ -81,12 +98,9 @@ public class VerificationServiceImpl implements VerificationService {
 
             logger.info("response json : " + IdCardVerificationRequest.toJsonString(resp));
 
-            if(resp.getResult().trim().equals("0")) {
+            if (resp.getResult().trim().equals("0")) {
                 result.setData(Boolean.valueOf(true));
-
-                VerifyInfo info = new VerifyInfo();
-                info.setIdCard(idCard);
-                info.setName(name);
+                VerifyInfo info = new VerifyInfo(openid, idCard, name);
                 verificationDao.insert(info);
             } else {
                 result.setData(Boolean.valueOf(false));

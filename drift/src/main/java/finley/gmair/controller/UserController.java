@@ -4,10 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.wechat.UserSession;
 import finley.gmair.service.UserService;
-import finley.gmair.util.Encryption;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
-import finley.gmair.util.WechatUtil;
+import finley.gmair.service.VerificationService;
+import finley.gmair.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/drift/user")
 @PropertySource("classpath:wechat.properties")
-public class UserController {
+public class UserController extends BaseController {
     private Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
@@ -44,6 +42,9 @@ public class UserController {
 
     @Value("${wechat_secret}")
     private String secret;
+
+    @Autowired
+    private VerificationService verificationService;
 
     @PostMapping("/openid")
     public ResultData openid(String code) {
@@ -108,10 +109,31 @@ public class UserController {
         return result;
     }
 
-    @GetMapping("/score")
-    public ResultData score(String openid) {
+    @GetMapping("/authorized")
+    public ResultData authorized(String openid) {
         ResultData result = new ResultData();
-        
+        if (StringUtils.isEmpty(openid)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供用户的openid");
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("openid", openid);
+        condition.put("blockFlag", false);
         return result;
+    }
+
+    @PostMapping("/check")
+    public ResultData check(String openid, String name, String idno) {
+        ResultData result = new ResultData();
+        if (StringUtil.isEmpty(openid, name, idno)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return error(result, "请提供用户的openid、姓名和身份证号");
+        }
+        ResultData response = verificationService.verify(openid, idno, name);
+        if ((boolean) response.getData() == true) {
+            return ok(result, "身份信息核验成功");
+        } else {
+            return empty(result, "未能查询到微信号为: " + openid + ", 身份证号为: " + idno + "，姓名为: " + name + "的用户");
+        }
     }
 }
