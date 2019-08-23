@@ -13,6 +13,12 @@ public class ActivityForm {
 
     private String endTime;
 
+    private String openDate;
+
+    private String closeDate;
+
+    private int delayDays;
+
     private String introduction;
 
     private String host;
@@ -67,6 +73,30 @@ public class ActivityForm {
 
     public String getEndTime() {
         return endTime;
+    }
+
+    public String getOpenDate() {
+        return openDate;
+    }
+
+    public void setOpenDate(String openDate) {
+        this.openDate = openDate;
+    }
+
+    public String getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(String closeDate) {
+        this.closeDate = closeDate;
+    }
+
+    public int getDelayDays() {
+        return delayDays;
+    }
+
+    public void setDelayDays(int delayDays) {
+        this.delayDays = delayDays;
     }
 
     public void setEndTime(String endTime) {

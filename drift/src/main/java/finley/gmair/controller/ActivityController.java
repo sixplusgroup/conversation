@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Path;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -75,9 +74,12 @@ public class ActivityController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date start = sdf.parse(form.getStartTime());
         Date end = sdf.parse(form.getEndTime());
+        Date open = sdf.parse(form.getOpenDate());
+        Date close = sdf.parse(form.getCloseDate());
+        int delaydays=form.getDelayDays();
         String introduction = form.getIntroduction();
         String host = form.getHost();
-        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction, host);
+        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction, host,open,close,delaydays);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
