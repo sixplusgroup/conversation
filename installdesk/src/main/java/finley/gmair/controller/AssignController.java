@@ -128,9 +128,12 @@ public class AssignController {
         ResultData response;
         if (start == null || length == null) {
             if (!StringUtils.isEmpty(search)) {
+                //删除对于订单状态的选择
+                condition.remove("assignStatus");
                 String fuzzysearch = "%" + search + "%";
                 Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-                if (pattern.matcher(search).matches()) {//如果search为数字
+                //如果搜索内容为数字
+                if (pattern.matcher(search).matches()) {
                     condition.put("phone", fuzzysearch);
                 } else {
                     condition.put("consumer", fuzzysearch);

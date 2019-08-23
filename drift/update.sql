@@ -218,16 +218,3 @@ CREATE TABLE `gmair_drift`.`order_express`  (
   `block_flag` tinyint(1) NULL,
   `create_time` datetime(0) NULL
 );
-
-## 2019-08-21
-ALTER TABLE `gmair_drift`.`drift_activity`
-  ADD COLUMN `open_date` date NULL
-  AFTER `create_time`;
-
-ALTER TABLE `gmair_drift`.`drift_activity`
-  ADD COLUMN `close_date` date NULL
-  AFTER `open_date`;
-
-ALTER TABLE `gmair_drift`.`drift_activity`
-  ADD COLUMN `delay_days` int NULL
-  AFTER `close_date`;

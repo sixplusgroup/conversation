@@ -37,6 +37,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <version>2.1.6.RELEASE</version>
+        </dependency>
+
+        <dependency>
             <groupId>finley.gmair</groupId>
             <artifactId>http-common</artifactId>
             <version>1.0.0-SNAPSHOT</version>
