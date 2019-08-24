@@ -119,7 +119,12 @@ public class UserController extends BaseController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("openid", openid);
         condition.put("blockFlag", false);
-        return result;
+        ResultData response = verificationService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            return ok(result, "您的身份核验成功，本次将直接使用之前的身份信息");
+        } else {
+            return empty(result, "未能查询到相关的实名信息，需要再次核验");
+        }
     }
 
     @PostMapping("/check")
