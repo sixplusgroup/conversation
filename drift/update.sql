@@ -251,5 +251,5 @@ CREATE TABLE `drift_verification` (
   ROW_FORMAT = DYNAMIC;
 
 ALTER TABLE `gmair_drift`.`drift_verification`
-  ADD COLUMN `open_id` VARCHAR(50) NOT NULL
+  ADD COLUMN `openid` VARCHAR(50) NOT NULL
   AFTER `verify_id`;
