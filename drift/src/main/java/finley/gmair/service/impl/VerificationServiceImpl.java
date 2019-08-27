@@ -3,22 +3,14 @@ package finley.gmair.service.impl;
 import finley.gmair.dao.VerificationDao;
 import finley.gmair.model.drift.VerifyInfo;
 import finley.gmair.service.VerificationService;
+import finley.gmair.service.VerifyService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-
-import com.tencentcloudapi.common.Credential;
-import com.tencentcloudapi.common.profile.ClientProfile;
-import com.tencentcloudapi.common.profile.HttpProfile;
-import com.tencentcloudapi.common.exception.TencentCloudSDKException;
-import com.tencentcloudapi.faceid.v20180301.FaceidClient;
-import com.tencentcloudapi.faceid.v20180301.models.IdCardVerificationRequest;
-import com.tencentcloudapi.faceid.v20180301.models.IdCardVerificationResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,14 +25,11 @@ public class VerificationServiceImpl implements VerificationService {
 
     private Logger logger = LoggerFactory.getLogger(VerificationServiceImpl.class);
 
-    @Value("${secret_id}")
-    private String secretId;
-
-    @Value("${secret_key}")
-    private String secretKey;
-
     @Autowired
     private VerificationDao verificationDao;
+
+    @Autowired
+    private VerifyService verifyService;
 
     @Override
     public ResultData fetch(Map<String, Object> condition) {
@@ -74,45 +63,17 @@ public class VerificationServiceImpl implements VerificationService {
             logger.error("query error : " + existResult.getDescription());
         }
 
-        try {
+        ResultData verifyResult = verifyService.check(name, idCard);
 
-            Credential cred = new Credential(secretId, secretKey);
-
-            HttpProfile httpProfile = new HttpProfile();
-            httpProfile.setEndpoint("faceid.tencentcloudapi.com");
-
-            ClientProfile clientProfile = new ClientProfile();
-            clientProfile.setHttpProfile(httpProfile);
-
-            //region 暂时设置为  华东地区（上海）
-            FaceidClient client = new FaceidClient(cred, "ap-shanghai", clientProfile);
-
-            //todo 用JSONObject来构造参数，不要自己拼字符串
-            String cardStr = "\"IdCard\":\"" + idCard + "\"";
-            String nameStr = "\"Name\":\"" + name + "\"";
-            String params = "{" + cardStr + "," + nameStr + "}";
-            logger.info("params json : " + params);
-            IdCardVerificationRequest req = IdCardVerificationRequest.fromJsonString(params, IdCardVerificationRequest.class);
-
-            IdCardVerificationResponse resp = client.IdCardVerification(req);
-
-            logger.info("response json : " + IdCardVerificationRequest.toJsonString(resp));
-
-            if (resp.getResult().trim().equals("0")) {
-                result.setData(Boolean.valueOf(true));
-                VerifyInfo info = new VerifyInfo(openid, idCard, name);
-                verificationDao.insert(info);
-            } else {
-                result.setData(Boolean.valueOf(false));
-                //logger.warn("result : " + resp.getResult() + " , description : " + resp.getDescription());
-            }
-            result.setDescription(resp.getDescription());
-
-        } catch (TencentCloudSDKException e) {
-            logger.error(e.toString());
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.toString());
+        if (verifyResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(Boolean.valueOf(true));
+            VerifyInfo info = new VerifyInfo(openid, idCard, name);
+            verificationDao.insert(info);
+        } else {
+            result.setData(Boolean.valueOf(false));
+            //logger.warn("result : " + resp.getResult() + " , description : " + resp.getDescription());
         }
+        result.setDescription(verifyResult.getDescription());
 
         return result;
     }

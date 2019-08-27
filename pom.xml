@@ -50,6 +50,7 @@
         <module>openplatform</module>
         <module>mqtt-core</module>
         <module>payment</module>
+        <module>verify</module>
     </modules>
 
     <parent>
