@@ -70,8 +70,15 @@
         <if test="status != null">
             AND order_status = #{status}
         </if>
+        <if test="statusList != null">
+            AND order_status IN
+            <foreach collection="statusList" open="(" close=")" separator="," item="item">#{item}</foreach>
+        </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
+        </if>
+        <if test="createDate != null">
+            AND from_unixtime(create_time, '%Y-%m-%d') = #{createDate}
         </if>
         ORDER BY create_time ASC
     </select>

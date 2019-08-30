@@ -19,6 +19,9 @@
         <if test="configComp != null">
             AND component_name = #{configComp}
         </if>
+        <if test="status != null">
+            AND component_status = #{status}
+        </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>

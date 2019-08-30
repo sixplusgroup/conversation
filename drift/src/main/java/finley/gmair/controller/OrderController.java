@@ -134,7 +134,6 @@ public class OrderController {
         List<DriftOrderItem> list = new ArrayList<>();
         DriftOrderItem equipItem = new DriftOrderItem();
 
-        int price = 0;
         equipItem.setItemName(equipment.getEquipName());
         equipItem.setItemPrice(equipment.getEquipPrice());
         equipItem.setQuantity(1);
@@ -149,9 +148,10 @@ public class OrderController {
             list.add(attachItem);
         }
 
+        double price = 0;
         // 计算该订单的总价格
         for (DriftOrderItem orderItem : list) {
-            price += (int) (orderItem.getItemPrice() * 100) * orderItem.getQuantity() * 1.0 / 100;
+            price += (orderItem.getItemPrice()) * orderItem.getQuantity();
         }
 
         DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate);
@@ -193,7 +193,7 @@ public class OrderController {
             result.setDescription("无相关数据，请仔细检查");
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-            if ((int) driftOrder.getRealPay() * 100 / 100 == 0) {
+            if ((int) (driftOrder.getRealPay() * 100) == 0) {
                 //todo 若订单金额为0，则自动更新订单状态为已付款
             } else {
                 new Thread(() -> paymentService.createPay(driftOrder.getOrderId(), consumerId, (int) (driftOrder.getRealPay() * 100), activityName, ip)).start();

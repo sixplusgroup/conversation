@@ -15,7 +15,12 @@ public class GmairConfig extends Entity {
 
     private boolean status;
 
+    public GmairConfig() {
+        super();
+    }
+
     public GmairConfig(String configComp, boolean status) {
+        this();
         this.configComp = configComp;
         this.status = status;
     }

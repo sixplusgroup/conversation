@@ -21,7 +21,7 @@ public class Activity extends Entity {
 
     private Date openDate;
 
-    private  Date closeDate;
+    private Date closeDate;
 
     private int delayDays;
 
@@ -33,7 +33,7 @@ public class Activity extends Entity {
         super();
     }
 
-    public Activity(String activityName, int repositorySize, double threshold, int reservableDays, Date startTime, Date endTime, String introduction,String host, Date openDate,Date closeDate,int delayDays) {
+    public Activity(String activityName, int repositorySize, double threshold, int reservableDays, Date startTime, Date endTime, String introduction, String host, Date openDate, Date closeDate, int delayDays) {
         this();
         this.activityName = activityName;
         this.repositorySize = repositorySize;
@@ -42,10 +42,10 @@ public class Activity extends Entity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.introduction = introduction;
-        this.host=host;
-        this.openDate=openDate;
-        this.closeDate=closeDate;
-        this.delayDays=delayDays;
+        this.host = host;
+        this.openDate = openDate;
+        this.closeDate = closeDate;
+        this.delayDays = delayDays;
     }
 
     public String getActivityId() {

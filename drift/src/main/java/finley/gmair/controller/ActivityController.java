@@ -1,5 +1,7 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ActivityForm;
 import finley.gmair.form.drift.AttachmentForm;
 import finley.gmair.form.drift.EXCodeCreateForm;
@@ -11,6 +13,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +26,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/drift/activity")
-public class ActivityController {
+public class ActivityController extends BaseController {
 
     @Autowired
     private ActivityService activityService;
@@ -45,7 +49,12 @@ public class ActivityController {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private OrderService orderService;
+
     private Object lock = new Object();
+
+    private Logger logger = LoggerFactory.getLogger(ActivityController.class);
 
     /**
      * the method is used to create activity
@@ -76,10 +85,10 @@ public class ActivityController {
         Date end = sdf.parse(form.getEndTime());
         Date open = sdf.parse(form.getOpenDate());
         Date close = sdf.parse(form.getCloseDate());
-        int delaydays=form.getDelayDays();
+        int delaydays = form.getDelayDays();
         String introduction = form.getIntroduction();
         String host = form.getHost();
-        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction, host,open,close,delaydays);
+        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction, host, open, close, delaydays);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -653,5 +662,85 @@ public class ActivityController {
             result.setData(response.getData());
         }
         return result;
+    }
+
+    @GetMapping("/{activityId}/available")
+    public ResultData available(@PathVariable("activityId") String activityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            return error(result, "未能够根据活动ID: " + activityId + "查询到相应的活动信息");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            return empty(result, "当前不存在ID为: " + activityId + "的活动");
+        }
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        Date start = activity.getStartTime();
+        Date end = activity.getEndTime();
+
+        Calendar current = Calendar.getInstance();
+        if (start.compareTo(current.getTime()) < 0) start = current.getTime();
+        current.setTime(start);
+        JSONArray array = new JSONArray();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for (int i = 0; i < CalendarUtil.daysBetween(start, end); i++) {
+            JSONObject json = new JSONObject();
+            if (i <= activity.getDelayDays()) {
+                json.put(sdf.format(current.getTime()), false);
+                array.add(json);
+                current.add(Calendar.DATE, 1);
+                continue;
+            }
+            //获取当前活动每天的预约情况
+            if (available(activityId, current.getTime())) {
+                json.put(sdf.format(current.getTime()), true);
+                array.add(json);
+            } else {
+                json.put(sdf.format(current.getTime()), false);
+                array.add(json);
+            }
+            current.add(Calendar.DATE, 1);
+        }
+        result.setData(array);
+        return result;
+    }
+
+    private boolean available(String activityId, Date date) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.info("未能查询到活动相关的信息");
+            return false;
+        }
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        //判断传入的日期是否可以预约
+        if (date.compareTo(activity.getStartTime()) < 0 || date.compareTo(activity.getEndTime()) > 0) {
+            return false;
+        }
+        Calendar current = Calendar.getInstance();
+        if (date.compareTo(current.getTime()) < 0) return false;
+
+        //获取当天的预约情况
+        condition.clear();
+        condition.put("activityId", activityId);
+        List statusList = new ArrayList();
+        statusList.add(DriftOrderStatus.PAYED.getValue());
+        statusList.add(DriftOrderStatus.CONFIRMED.getValue());
+        statusList.add(DriftOrderStatus.DELIVERED.getValue());
+        statusList.add(DriftOrderStatus.FINISHED.getValue());
+        condition.put("statusList", statusList);
+        condition.put("createDate", date);
+        response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) return true;
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            int size = ((List<Activity>) response.getData()).size();
+            if (size < activity.getRepositorySize() * activity.getThreshold()) return true;
+        }
+        return false;
     }
 }
