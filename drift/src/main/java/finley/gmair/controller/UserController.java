@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -128,8 +129,9 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/check")
-    public ResultData check(String openid, String name, String idno) {
+    public ResultData check(String openid, String name, String idno, HttpServletRequest request) {
         ResultData result = new ResultData();
+        logger.info("request encoding: " + request.getCharacterEncoding());
         if (StringUtil.isEmpty(openid, name, idno)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return error(result, "请提供用户的openid、姓名和身份证号");

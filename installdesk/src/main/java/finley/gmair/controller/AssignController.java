@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
@@ -253,10 +254,14 @@ public class AssignController {
                 if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
                 //获取短信模板
                 r = messageService.template("NOTIFICATION_DISPATCHED");
-                if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
-                MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
-                String candidate = template.getMessage().replaceAll("###", "%s");
+                logger.info("template message: " + JSON.toJSONString(r));
+                JSONObject json = JSONObject.parseObject(JSON.toJSONString(r));
+                if (!json.getString("responseCode").equalsIgnoreCase("RESPONSE_OK")) return;
+                json = json.getJSONArray("data").getJSONObject(0);
+                String template = json.getString("message");
+                String candidate = template.replaceAll("###", "%s");
                 candidate = String.format(candidate, assign.getDetail(), member.getMemberName(), member.getMemberPhone());
+                logger.info("message content: " + candidate);
                 //发送短信
                 messageService.send(assign.getConsumerPhone(), candidate);
             });
