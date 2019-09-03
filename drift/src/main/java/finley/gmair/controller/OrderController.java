@@ -198,10 +198,16 @@ public class OrderController {
             result.setDescription("请确认输入必要字段");
             return result;
         }
+        ResultData response = paymentService.getTrade(orderId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("该订单已在交易中，无法继续使用优惠码，若需要使用优惠码，请重新创建订单");
+            return result;
+        }
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
         condition.put("orderId", orderId);
-        ResultData response = orderService.fetchDriftOrder(condition);
+        response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("无此订单内容，请确认无误后重试");
