@@ -79,7 +79,7 @@ public class PaymentController {
         }
         result = paymentService.createPay(orderId, order.getConsumerId(), (int) (order.getRealPay() * 100), activityName, ip);
         if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            return result;
+            return paymentService.getTrade(orderId);
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         result.setDescription("交易失败，请稍后重试");
