@@ -30,6 +30,7 @@
         <result property="orderId" column="order_id"></result>
         <result property="itemName" column="item_name"></result>
         <result property="itemPrice" column="item_price"></result>
+        <result property="singleNum" column="single_num"></result>
         <result property="quantity" column="quantity"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
@@ -88,6 +89,7 @@
             item_id,
             order_id,
             item_name,
+            single_num,
             item_price,
             quantity,
             block_flag,
@@ -123,8 +125,14 @@
             <if test="district != null">
                 district = #{district},
             </if>
+            <if test="excode != null">
+                excode = #{excode},
+            </if>
             <if test="status != null">
                 order_status = #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+            </if>
+            <if test="realPay != null">
+                real_pay = #{realPay},
             </if>
             order_id = #{orderId}
         </set>

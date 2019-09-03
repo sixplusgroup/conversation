@@ -253,3 +253,15 @@ CREATE TABLE `drift_verification` (
 ALTER TABLE `gmair_drift`.`drift_verification`
   ADD COLUMN `openid` VARCHAR(50) NOT NULL
   AFTER `verify_id`;
+
+#2019-09-03
+ALTER TABLE `gmair_drift`.`attachment`
+ADD COLUMN `set_meal` VARCHAR(45) NULL AFTER `attach_name`;
+
+ALTER TABLE `gmair_drift`.`attachment`
+ADD COLUMN `attach_single` INT NOT NULL AFTER `set_meal`;
+
+ALTER TABLE `gmair_drift`.`drift_order_item`
+ADD COLUMN `single_num` INT NOT NULL AFTER `item_name`;
+
+

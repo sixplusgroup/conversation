@@ -8,6 +8,7 @@ import finley.gmair.form.drift.EXCodeCreateForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
+import finley.gmair.vo.drift.ActivityEquipmentVo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -145,7 +146,13 @@ public class ActivityController extends BaseController {
         String equipId = form.getEquipId().trim();
         String attachName = form.getAttachName().trim();
         double attachPrice = form.getAttachPrice();
+        int attachSingle = form.getAttachSingle();
+        String meal = form.getMeal();
         Attachment attachment = new Attachment(equipId, attachName, attachPrice);
+        attachment.setAttachSingle(attachSingle);
+        if (!StringUtils.isEmpty(meal)) {
+            attachment.setMeal(meal);
+        }
         ResultData response = attachmentService.create(attachment);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -623,6 +630,41 @@ public class ActivityController extends BaseController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
+        return result;
+    }
+
+    @GetMapping(value = "/attachment/list")
+    public ResultData getAttachment(String activityId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivityEquipment(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务器正忙，请稍后重试");
+            return result;
+        }
+        ActivityEquipmentVo vo = ((List<ActivityEquipmentVo>) response.getData()).get(0);
+        List<Attachment> list = new ArrayList();
+        condition.remove("activityId");
+        condition.put("equipId", vo.getEquipmentId());
+        response = attachmentService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            list = (List<Attachment>) response.getData();
+        }
+        if (list.isEmpty()) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未获取到相关附属品");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(list);
         return result;
     }
 

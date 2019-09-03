@@ -9,6 +9,8 @@ public class DriftOrderItem extends Entity {
 
     private String itemName;
 
+    private int singleNum;
+
     private int quantity;
 
     private double itemPrice;
@@ -51,6 +53,14 @@ public class DriftOrderItem extends Entity {
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
+    }
+
+    public int getSingleNum() {
+        return singleNum;
+    }
+
+    public void setSingleNum(int singleNum) {
+        this.singleNum = singleNum;
     }
 
     public int getQuantity() {

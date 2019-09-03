@@ -23,9 +23,6 @@ public class EXCodeServiceImpl implements EXCodeService {
     @Autowired
     private EXCodeDao exCodeDao;
 
-    @Autowired
-    private ActivityDao activityDao;
-
     @Override
     public ResultData createEXCode(String activityId, int num, double price) {
         ResultData result = new ResultData();
@@ -34,25 +31,13 @@ public class EXCodeServiceImpl implements EXCodeService {
             result.setDescription("需要批量生成的兑换码的数量为:" + num + ", 无需进行处理");
             return result;
         }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("activityId", activityId);
-        ResultData response = activityDao.queryActivity(condition);
-        Activity activity = ((List<Activity>) response.getData()).get(0);
         List<EXCode> list = new ArrayList<>();
-        if (activity.getActivityName().contains("果麦")) {
-            for (int i = 0; i < num; i++) {
-                String codeValue = new StringBuffer(EXSerialGenerator.generate()).toString();
-                EXCode code = new EXCode(activityId, codeValue, price);
-                list.add(code);
-            }
-        } else {
-            for (int i = 0; i < num; i++) {
-                String codeValue = new StringBuffer(EXSerialGenerator.generate()).toString();
-                EXCode code = new EXCode(activityId, codeValue, price);
-                code.setStatus(EXCodeStatus.EXCHANGED);
-                list.add(code);
-            }
+        for (int i = 0; i < num; i++) {
+            String codeValue = new StringBuffer(EXSerialGenerator.generate()).toString();
+            EXCode code = new EXCode(activityId, codeValue, price);
+            list.add(code);
         }
+        ResultData response = new ResultData();
         for (EXCode code : list) {
             response = exCodeDao.insert(code);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

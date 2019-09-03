@@ -1,5 +1,8 @@
 package finley.gmair.form.drift;
 
+import java.util.List;
+import java.util.Map;
+
 public class DriftOrderForm {
     private String consumerId;
 
@@ -27,7 +30,7 @@ public class DriftOrderForm {
 
     private String excode;
 
-    private int itemQuantity;
+    private String attachItem;
 
     public String getConsumerId() {
         return consumerId;
@@ -133,11 +136,11 @@ public class DriftOrderForm {
         this.excode = excode;
     }
 
-    public int getItemQuantity() {
-        return itemQuantity;
+    public String getAttachItem() {
+        return attachItem;
     }
 
-    public void setItemQuantity(int itemQuantity) {
-        this.itemQuantity = itemQuantity;
+    public void setAttachItem(String attachItem) {
+        this.attachItem = attachItem;
     }
 }
