@@ -73,13 +73,16 @@ public class PaymentController {
             return result;
         }
         String activityName = ((List<Activity>) response.getData()).get(0).getActivityName();
-        response = paymentService.createPay(orderId, order.getConsumerId(), (int) (order.getRealPay() * 100), activityName, ip);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("交易创建失败，请稍后重试");
+        result = paymentService.getTrade(orderId);
+        if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
             return result;
         }
-        result = paymentService.getTrade(orderId);
+        result = paymentService.createPay(orderId, order.getConsumerId(), (int) (order.getRealPay() * 100), activityName, ip);
+        if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("交易失败，请稍后重试");
         return result;
     }
 }
