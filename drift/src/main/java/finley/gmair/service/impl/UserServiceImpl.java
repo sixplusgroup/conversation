@@ -1,6 +1,8 @@
 package finley.gmair.service.impl;
 
+import finley.gmair.dao.UserDao;
 import finley.gmair.dao.UserSessionDao;
+import finley.gmair.model.drift.DriftUser;
 import finley.gmair.model.wechat.UserSession;
 import finley.gmair.service.UserService;
 import finley.gmair.util.ResponseCode;
@@ -24,6 +26,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserSessionDao userSessionDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Override
     public ResultData createSession(UserSession session) {
@@ -52,5 +57,43 @@ public class UserServiceImpl implements UserService {
             result.setDescription("获取用户的会话数据失败，请稍后尝试");
         }
         return result;
+    }
+
+    @Override
+    public ResultData createUser(DriftUser user) {
+        ResultData result = new ResultData();
+        ResultData response = userDao.insert(user);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to create drift user into database");
+        return result;
+    }
+
+    @Override
+    public ResultData fetchUser(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = userDao.query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No drift user found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve drift user from database");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData updateUser(DriftUser user) {
+        return userDao.update(user);
     }
 }

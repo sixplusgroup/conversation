@@ -264,4 +264,39 @@ ADD COLUMN `attach_single` INT NOT NULL AFTER `set_meal`;
 ALTER TABLE `gmair_drift`.`drift_order_item`
 ADD COLUMN `single_num` INT NOT NULL AFTER `item_name`;
 
+#2019-09-04
+CREATE TABLE `gmair_drift`.`drift_address` (
+  `address_id` VARCHAR(45) NOT NULL,
+  `consumer_id` VARCHAR(45) NOT NULL,
+  `consignee` VARCHAR(45) NOT NULL,
+  `province` VARCHAR(45) NOT NULL,
+  `city` VARCHAR(45) NOT NULL,
+  `district` VARCHAR(45) NOT NULL,
+  `address_detail` VARCHAR(45) NOT NULL,
+  `phone` VARCHAR(45) NOT NULL,
+  `default_address` TINYINT(1) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`address_id`));
+
+CREATE TABLE `gmair_drift`.`drift_user` (
+  `user_id` VARCHAR(45) NOT NULL,
+  `open_id` VARCHAR(50) NOT NULL,
+  `nickname` VARCHAR(45) NOT NULL,
+  `phone` VARCHAR(45) NOT NULL,
+  `province` VARCHAR(45) NOT NULL,
+  `city` VARCHAR(45) NOT NULL,
+  `country` VARCHAR(45) NOT NULL,
+  `user_sex` TINYINT(1) NOT NULL,
+  `avatar_url` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`user_id`));
+
+ALTER TABLE `gmair_drift`.`drift_order_item`
+ADD COLUMN `real_quantity` INT NULL AFTER `quantity`;
+
+ALTER TABLE `gmair_drift`.`drift_order_item`
+CHANGE COLUMN `single_num` `single_num` INT(11) NULL ,
+
 

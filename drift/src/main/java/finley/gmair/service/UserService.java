@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.model.drift.DriftUser;
 import finley.gmair.model.wechat.UserSession;
 import finley.gmair.util.ResultData;
 
@@ -15,4 +16,10 @@ public interface UserService {
     ResultData createSession(UserSession session);
 
     ResultData fetchSession(Map<String, Object> condition);
+
+    ResultData createUser(DriftUser user);
+
+    ResultData fetchUser(Map<String, Object> condition);
+
+    ResultData updateUser(DriftUser user);
 }

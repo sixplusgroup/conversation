@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.drift.DriftUser;
 import finley.gmair.model.wechat.UserSession;
 import finley.gmair.service.UserService;
 import finley.gmair.service.VerificationService;
@@ -77,6 +78,75 @@ public class UserController extends BaseController {
         return result;
     }
 
+    @GetMapping("/probe/byopenid")
+    public ResultData probeUserByOpenId(String openId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(openId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供用户的openId");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("openId", openId);
+        ResultData response = userService.fetchUser(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到相关的授权信息，请先完成授权");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务器正忙，请稍后重试");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @PostMapping("/decode/user")
+    public ResultData decode2user(String data, String iv, String openid) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(data) || StringUtils.isEmpty(iv)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供待解密的用户信息和解密矩阵");
+            return result;
+        }
+        //获取用户的session key
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("openId", openid);
+        condition.put("blockFlag", false);
+        ResultData response = userService.fetchSession(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("当前无法解密用户的数据");
+            return result;
+        }
+        UserSession session = ((List<UserSession>) response.getData()).get(0);
+        try {
+            byte[] info = Encryption.aesDecrypt(Base64.getDecoder().decode(data.getBytes()), Base64.getDecoder().decode(session.getSessionKey().getBytes()), Base64.getDecoder().decode(iv.getBytes()));
+            //byte[] info = Encryption.aesDecrypt(Base64.getDecoder().decode(data.getBytes()), Base64.getDecoder().decode(sessionkey.getBytes()), Base64.getDecoder().decode(iv.getBytes()));
+            data = new String(info);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("该信息无法解析");
+            return result;
+        }
+        JSONObject data2json = JSONObject.parseObject(data);
+        DriftUser user = new DriftUser(openid, data2json);
+        response = userService.createUser(user);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("创建甲醛检测用户信息失败");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
     @PostMapping("/decode/phone")
     public ResultData decode(String data, String iv, String openid) {
         ResultData result = new ResultData();
@@ -98,6 +168,7 @@ public class UserController extends BaseController {
         UserSession session = ((List<UserSession>) response.getData()).get(0);
         try {
             byte[] info = Encryption.aesDecrypt(Base64.getDecoder().decode(data.getBytes()), Base64.getDecoder().decode(session.getSessionKey().getBytes()), Base64.getDecoder().decode(iv.getBytes()));
+            //byte[] info = Encryption.aesDecrypt(Base64.getDecoder().decode(data.getBytes()), Base64.getDecoder().decode(sessionkey.getBytes()), Base64.getDecoder().decode(iv.getBytes()));
             data = new String(info);
         } catch (Exception e) {
             logger.error(e.getMessage());

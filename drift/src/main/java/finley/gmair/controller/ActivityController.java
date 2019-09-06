@@ -290,7 +290,7 @@ public class ActivityController extends BaseController {
     public ResultData createEXCode(EXCodeCreateForm form) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getNum())
-                || StringUtils.isEmpty(form.getPrice())) {
+                || StringUtils.isEmpty(form.getPrice()) || StringUtils.isEmpty(form.getStatus())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -309,7 +309,8 @@ public class ActivityController extends BaseController {
 
         int num = form.getNum();
         double price = form.getPrice();
-        response = exCodeService.createEXCode(activityId, num, price);
+        int status = form.getStatus();
+        response = exCodeService.createEXCode(activityId, status, num, price);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             new Thread(() -> {

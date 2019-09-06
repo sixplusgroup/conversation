@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.drift.user">
+    <resultMap id="userVo" type="finley.gmair.model.drift.DriftUser">
+        <result property="userId" column="user_id"></result>
+        <result property="openId" column="open_id"></result>
+        <result property="nickname" column="nickname"></result>
+        <result property="phone" column="phone"></result>
+        <result property="province" column="province"></result>
+        <result property="city" column="city"></result>
+        <result property="country" column="country"></result>
+        <result property="userSex" column="user_sex"></result>
+        <result property="avatarUrl" column="avatar_url"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="userVo">
+        select user_id, open_id, nickname, phone, province, city, country, user_sex, avatar_url, block_flag, create_time
+        from gmair_drift.drift_user
+        where 1 = 1
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
+        <if test="openId != null">
+            and open_id = #{openId}
+        </if>
+        <if test="nickname != null">
+            and nickname = #{nickname}
+        </if>
+        <if test="province != null">
+            and province = #{province}
+        </if>
+        <if test="city != null">
+            and city = #{city}
+        </if>
+        <if test="country != null">
+            and country = #{country}
+        </if>
+        <if test="userSex != null">
+            and user_sex = #{userSex}
+        </if>
+        <if test="avatarUrl != null">
+            and avatar_url = #{avatarUrl}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by create_time desc
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.DriftUser">
+        insert into gmair_drift.drift_user(user_id, open_id, nickname, phone, province, city, country, user_sex, avatar_url, block_flag, create_time)
+        values  (#{userId}, #{openId}, #{nickname}, #{province}, #{city}, #{country}, #{userSex}, #{avatarUrl}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="update" parameterType="finley.gmair.model.drift.DriftUser">
+        update gmair_drift.drift_user
+        <set>
+            <if test="nickName != null">
+                nickname = #{nickName},
+            </if>
+            <if test="userSex != null">
+                user_sex = #{userSex},
+            </if>
+            <if test="city != null">
+                city = #{city},
+            </if>
+            <if test="province != null">
+                province = #{province},
+            </if>
+            <if test="country != null">
+                country = #{country},
+            </if>
+            <if test="avatarUrl != null">
+                avatar_url = #{avatarUrl},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag}
+            </if>
+        </set>
+        where open_id = #{openId}
+    </update>
+</mapper>
