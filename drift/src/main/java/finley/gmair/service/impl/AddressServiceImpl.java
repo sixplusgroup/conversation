@@ -81,4 +81,18 @@ public class AddressServiceImpl implements AddressService {
         result.setData(response.getData());
         return result;
     }
+
+    @Override
+    public ResultData blockAddress(String addressId) {
+        ResultData result = new ResultData();
+        ResultData response = addressDao.block(addressId);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to delete drift address");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
 }

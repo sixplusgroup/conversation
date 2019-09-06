@@ -87,4 +87,10 @@
         </set>
         where address_id = #{addressId}
     </update>
+
+    <update id="block" parameterType="finley.gmair.model.drift.DriftAddress">
+        update gmair_drift.drift_address
+        SET block_flag = TRUE
+        where address_id = #{addressId}
+    </update>
 </mapper>

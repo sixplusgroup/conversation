@@ -59,4 +59,18 @@ public class AddressDaoImpl extends BaseDao implements AddressDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData block(String addressId) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.drift.address.block", addressId);
+            result.setData(addressId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

@@ -53,6 +53,30 @@ public class AddressController {
         return result;
     }
 
+    @GetMapping(value = "/by/addressid")
+    public ResultData getAddress(String addressId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("addressId", addressId);
+        ResultData response = addressService.fetchAddress(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("未找到相关地址信息");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("查询地址信息失败");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
+        return result;
+    }
+
     @GetMapping(value = "/list/byopenid")
     public ResultData getList(String consumerId) {
         ResultData result = new ResultData();
@@ -160,6 +184,33 @@ public class AddressController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
+        return result;
+    }
+
+    //删除地址
+    @GetMapping(value = "/delete")
+    public ResultData deleteAddress(String addressId) {
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(addressId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供addressId");
+            return result;
+        }
+        ResultData response = addressService.blockAddress(addressId);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("未找到相关地址信息");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("删除地址失败");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
         return result;
     }
 

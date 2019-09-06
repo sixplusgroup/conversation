@@ -12,4 +12,6 @@ public interface AddressService {
 
     ResultData updateAddress(DriftAddress address);
 
+    ResultData blockAddress(String addressId);
+
 }

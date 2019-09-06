@@ -11,4 +11,6 @@ public interface AddressDao {
     ResultData insert(DriftAddress address);
 
     ResultData update(DriftAddress address);
+
+    ResultData block(String addressId);
 }
