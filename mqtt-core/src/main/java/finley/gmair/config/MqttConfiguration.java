@@ -168,7 +168,7 @@ public class MqttConfiguration {
      * 处理当前message的信息
      */
     private void handle(String topic, JSONObject json) {
-        logger.info("topic: " + topic);
+//        logger.info("topic: " + topic);
         //将topic根据"/"切分为string数组，方便处理
         String[] array = topic.split("/");
         //根据定义的topic格式，获取message对应的machineId
@@ -202,7 +202,7 @@ public class MqttConfiguration {
             //该类型的数据报文将存入内存缓存
             if (base_action.equals("allrep")) {
                 messageController.checkVersion(machineId);
-                logger.info("uid: " + machineId + ", allrep: " + json);
+//                logger.info("uid: " + machineId + ", allrep: " + json);
                 if (json.containsKey("power") && json.getIntValue("power") == 0) {
                     json.replace("volume", 0);
                 }
@@ -241,7 +241,7 @@ public class MqttConfiguration {
                     payload.setError(json.getString("error"));
                 }
                 dealAckMessage(payload);
-                logger.info("ack: " + JSON.toJSONString(payload));
+//                logger.info("ack: " + JSON.toJSONString(payload));
             }
             //服务器端相应设备的同步时钟请求
             if (base_action.equals("get_time")) {
@@ -251,13 +251,19 @@ public class MqttConfiguration {
 
             }
             if (base_action.equals("ver")) {
-                logger.info("content" + JSON.toJSONString(json));
-                if (json.containsKey("DISPLAY_BOARD_SW")) {
-                    if (!"1.0.0.201907131849_RELEASE".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW")) && !"1.0.0.201907130238_release".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW"))) {
-                        messageController.updateFirmware(machineId, "1.6.420S.2", 1);
-                        logger.info("upgrade: " + machineId + " has been sent successfully");
-                    }
-                }
+//                String model = array[1];
+//                logger.info("Device Model: ".concat(model).concat(", Device Version: ".concat(json.getString("DISPLAY_BOARD_SW"))));
+//                if (json.containsKey("DISPLAY_BOARD_SW")) {
+//                    String version = json.getString("DISPLAY_BOARD_SW");
+//                    if ("GM420S".equalsIgnoreCase(model) && !"1.0.0.201907131849_RELEASE".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW")) && !"1.0.0.201907130238_release".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW"))) {
+//                        messageController.updateFirmware(machineId, "1.6.420S.2", 1);
+//                        logger.info("upgrade: " + machineId + " has been sent successfully");
+//                    }
+//                    if ("GM420".equalsIgnoreCase(model) && !"1.0.0.201907221619_RELEASE".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW"))) {
+//                        messageController.updateFirmware(machineId, "1.7.420SZ.1", 1);
+//                        logger.info("GM420SZ upgrade: ".concat(machineId).concat(" has been sent successfully"));
+//                    }
+//                }
             }
         }
     }
@@ -309,7 +315,7 @@ public class MqttConfiguration {
      * 处理ack确认消息publish
      */
     private void dealAckMessage(AckPayload payload) {
-        logger.info("ack: " + JSON.toJSONString(payload));
+//        logger.info("ack: " + JSON.toJSONString(payload));
         if (payload.getCode() == 0) {
 //            new Thread(() -> {
 //                logService.createMqttAckLog(payload.getAckId(), payload.getMachineId(),
