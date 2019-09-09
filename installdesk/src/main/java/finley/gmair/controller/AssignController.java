@@ -1,16 +1,13 @@
 package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
-import finley.gmair.model.message.MessageTemplate;
 import finley.gmair.pool.InstallPool;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.util.SerialUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import static org.apache.el.parser.ELParserConstants.CONCAT;
 
 /**
  * @ClassName: AssignController
@@ -561,17 +556,22 @@ public class AssignController {
             //获取短信模板
             r = messageService.template("NOTIFICATION_INSTALL");
             if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
-            MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
-            String candidate = template.getMessage().replaceAll("###", "%s");
-            String code = SerialUtil.serial(4);
-            //存储安装服务码
-            AssignCode ac = new AssignCode(assignId, code);
-            r = assignCodeService.create(ac);
-            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                logger.error("Fail to create code for assign");
-                return;
-            }
-            candidate = String.format(candidate, assign.getDetail(), code);
+
+            logger.info("template message: " + JSON.toJSONString(r));
+            JSONObject json = JSONObject.parseObject(JSON.toJSONString(r));
+            if (!json.getString("responseCode").equalsIgnoreCase("RESPONSE_OK")) return;
+            json = json.getJSONArray("data").getJSONObject(0);
+            String template = json.getString("message");
+            String candidate = template.replaceAll("###", "%s");
+//            String code = SerialUtil.serial(4);
+//            //存储安装服务码
+//            AssignCode ac = new AssignCode(assignId, code);
+//            r = assignCodeService.create(ac);
+//            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                logger.error("Fail to create code for assign");
+//                return;
+//            }
+//            candidate = String.format(candidate, assign.getDetail(), code);
             //发送短信
             messageService.send(assign.getConsumerPhone(), candidate);
         });
