@@ -134,7 +134,9 @@ public class UserController extends BaseController {
             result.setDescription("该信息无法解析");
             return result;
         }
+        logger.info(data);
         JSONObject data2json = JSONObject.parseObject(data);
+        logger.info("",data2json);
         DriftUser user = new DriftUser(openid, data2json);
         response = userService.createUser(user);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -213,5 +215,27 @@ public class UserController extends BaseController {
         } else {
             return empty(result, "未能查询到微信号为: " + openid + ", 身份证号为: " + idno + "，姓名为: " + name + "的用户");
         }
+    }
+
+    @GetMapping("/info")
+    public ResultData getUser(String openid) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(openid)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供openid");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("openId", openid);
+        ResultData response = userService.fetchUser(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setDescription("查询用户信息成功");
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
     }
 }

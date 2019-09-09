@@ -51,7 +51,7 @@
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftUser">
         insert into gmair_drift.drift_user(user_id, open_id, nickname, phone, province, city, country, user_sex, avatar_url, block_flag, create_time)
-        values  (#{userId}, #{openId}, #{nickname}, #{province}, #{city}, #{country}, #{userSex}, #{avatarUrl}, #{blockFlag}, #{createAt})
+        values  (#{userId}, #{openId}, #{nickname}, #{phone},#{province}, #{city}, #{country}, #{userSex}, #{avatarUrl}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="finley.gmair.model.drift.DriftUser">

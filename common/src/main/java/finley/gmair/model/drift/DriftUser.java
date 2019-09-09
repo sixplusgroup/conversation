@@ -26,11 +26,11 @@ public class DriftUser extends Entity {
         super();
     }
 
-    public DriftUser(String openId, String nickname, String phone, String province, String city, String country, int userSex, String avatarUrl) {
+    public DriftUser(String openId, String nickname,  String province, String city, String country, int userSex, String avatarUrl) {
         this();
         this.openId = openId;
         this.nickname = nickname;
-        this.phone = phone;
+//        this.phone = phone;
         this.province = province;
         this.city = city;
         this.country = country;
@@ -39,8 +39,8 @@ public class DriftUser extends Entity {
     }
 
     public DriftUser(String openId, JSONObject object) {
-        this(openId, object.getString("nickname"), object.getString("phone"), object.getString("province"),
-                object.getString("city"), object.getString("country"), object.getInteger("sex"),
+        this(openId, object.getString("nickName") , object.getString("province"),
+                object.getString("city"), object.getString("country"), object.getInteger("gender"),
                 object.getString("avatarUrl"));
     }
 

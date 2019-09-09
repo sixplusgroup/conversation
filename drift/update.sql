@@ -297,6 +297,6 @@ ALTER TABLE `gmair_drift`.`drift_order_item`
 ADD COLUMN `real_quantity` INT NULL AFTER `quantity`;
 
 ALTER TABLE `gmair_drift`.`drift_order_item`
-CHANGE COLUMN `single_num` `single_num` INT(11) NULL ,
+CHANGE COLUMN `single_num` `single_num` INT(11) NULL ;
 
 

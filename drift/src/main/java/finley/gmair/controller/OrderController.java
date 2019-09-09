@@ -760,4 +760,34 @@ public class OrderController {
         }
         return result;
     }
+
+    @PostMapping(value = "/cancel")
+    public ResultData orderCancel(@RequestParam("orderId") String orderId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to retrieve drift order with orderId: ").append(orderId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("The drift order with orderId: ").append(orderId).append(" doesn't exist").toString());
+            return result;
+        }
+        DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+        order.setStatus(DriftOrderStatus.CANCELED);
+        response = orderService.updateDriftOrder(order);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to cancel drift order with: ").append(order.toString()).toString());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setDescription("Drift order is already cancel");
+        return result;
+    }
 }
