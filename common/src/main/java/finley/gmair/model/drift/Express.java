@@ -12,12 +12,15 @@ public class Express extends Entity {
 
     private String company;
 
+    private String expressNum;
+
     public Express(){}
 
-    public Express(String orderId, String expressId, String company){
+    public Express(String orderId, String expressId, String company,String expressNum){
         this.orderId=orderId;
         this.expressId=expressId;
         this.company=company;
+        this.expressNum = expressNum;
         //this.status=ExpressStatus.DELIVERED;
     }
 
@@ -51,5 +54,13 @@ public class Express extends Entity {
 
     public void setCompany(String company) {
         this.company = company;
+    }
+
+    public String getExpressNum() {
+        return expressNum;
+    }
+
+    public void setExpressNum(String expressNum) {
+        this.expressNum = expressNum;
     }
 }

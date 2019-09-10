@@ -708,9 +708,9 @@ public class OrderController {
      * @return
      */
     @PostMapping(value = "/express/create")
-    public ResultData createOrderExpress(String orderId, String expressId, int expressFlag, String company){
+    public ResultData createOrderExpress(String orderId, String expressNum, int expressFlag, String company){
         ResultData result = new ResultData();
-        if(StringUtil.isEmpty(orderId,expressId,company)){
+        if(StringUtil.isEmpty(orderId,expressNum,company)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -726,7 +726,7 @@ public class OrderController {
         }
 
         //update order status
-        Express express = new Express(orderId, expressId, company);
+        Express express = new Express(orderId, "", company,expressNum);
         express.setStatus(ExpressStatus.valueOf(expressFlag));
         if(express.getStatus()==null){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

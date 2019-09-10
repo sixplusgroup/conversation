@@ -299,4 +299,19 @@ ADD COLUMN `real_quantity` INT NULL AFTER `quantity`;
 ALTER TABLE `gmair_drift`.`drift_order_item`
 CHANGE COLUMN `single_num` `single_num` INT(11) NULL ;
 
+#2019-09-09
+
+CREATE TABLE `gmair_drift`.`express_detail` (
+  `detail_id` VARCHAR(45) NOT NULL,
+  `context` VARCHAR(45) NOT NULL,
+  `time` DATETIME NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  `express_id` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`detail_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+#2019-10-10
+ALTER TABLE `gmair_drift`.`order_express`
+ADD COLUMN `express_num` VARCHAR(45) NOT NULL AFTER `block_flag`;
 

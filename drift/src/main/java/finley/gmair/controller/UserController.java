@@ -178,8 +178,33 @@ public class UserController extends BaseController {
             result.setDescription("该信息无法解析");
             return result;
         }
+        Map<String,Object> con = new HashMap<>();
+        con.put("openId",openid);
+        con.put("blockFlag",false);
+        response = userService.fetchUser(con);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("null");
+            return result;
+        }
+        DriftUser user = ((List<DriftUser>) response.getData()).get(0);
         String phone = JSONObject.parseObject(data).getString("purePhoneNumber");
-        result.setData(phone);
+        user.setPhone(phone);
+        response = userService.updateUser(user);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setData(response.getData());
+            result.setDescription("成功存储联系方式");
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("error");
+        }
+//        result.setData(phone);
         return result;
     }
 

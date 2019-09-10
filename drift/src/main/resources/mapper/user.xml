@@ -57,11 +57,14 @@
     <update id="update" parameterType="finley.gmair.model.drift.DriftUser">
         update gmair_drift.drift_user
         <set>
-            <if test="nickName != null">
-                nickname = #{nickName},
+            <if test="nickname != null">
+                nickname = #{nickname},
             </if>
             <if test="userSex != null">
                 user_sex = #{userSex},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
             </if>
             <if test="city != null">
                 city = #{city},
@@ -79,6 +82,6 @@
                 block_flag = #{blockFlag}
             </if>
         </set>
-        where open_id = #{openId}
+        where user_id = #{userId}
     </update>
 </mapper>
