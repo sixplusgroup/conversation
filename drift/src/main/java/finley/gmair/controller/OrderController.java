@@ -254,7 +254,7 @@ public class OrderController {
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);
                 //实现优惠码价格抵消
                 order.setExcode(exCode.getCodeValue());
-                order.setRealPay((order.getTotalPrice() - exCode.getPrice()));
+                order.setRealPay(Math.round(order.getTotalPrice()*100 - exCode.getPrice()*100)/100.0);
                 new Thread(() -> {
                     ResultData rd = updateExcode(code, exCode);
                 }).start();
@@ -272,7 +272,7 @@ public class OrderController {
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);
                 //实现优惠码价格抵消
                 order.setExcode(code);
-                order.setRealPay((order.getTotalPrice() - exCode.getPrice()));
+                order.setRealPay(Math.round(order.getTotalPrice()*100 - exCode.getPrice()*100)/100.0);
                 new Thread(() -> {
                     condition.clear();
                     condition.put("codeId", exCode.getCodeId());
@@ -702,7 +702,7 @@ public class OrderController {
      * The method is called to create OrderExpress and update the status of the order
      *
      * @param orderId
-     * @param expressId
+     * @param expressNum
      * @param expressFlag 0-->delivered ;1-->back ;other value is wrong
      * @param company
      * @return
