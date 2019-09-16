@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/drift/express")
+@RequestMapping("/express")
 @PropertySource("classpath:express.properties")
 public class ExpressController {
 
