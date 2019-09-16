@@ -56,21 +56,6 @@ public class ExpressServiceImpl implements ExpressService {
         return result;
     }
 
-    @Override
-    public ResultData modifyExpress(Map<String, Object> condition){
-        ResultData result = new ResultData();
-        ResultData response = expressDao.updateExpress(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to update express");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("Succeed to update express");
-        }
-        return result;
-    }
-
     /**
      * 发送post请求
      */

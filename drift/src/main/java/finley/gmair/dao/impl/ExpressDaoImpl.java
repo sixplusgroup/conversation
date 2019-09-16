@@ -45,17 +45,4 @@ public class ExpressDaoImpl extends BaseDao implements ExpressDao {
         }
         return result;
     }
-
-    @Override
-    public ResultData updateExpress(Map<String, Object> condition){
-        ResultData result = new ResultData();
-        try {
-            sqlSession.update("gmair.drift.express.update", condition);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.getMessage());
-        }
-        return result;
-    }
 }
