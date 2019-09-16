@@ -43,6 +43,9 @@ public class OrderController {
     private ExpressService expressService;
 
     @Autowired
+    private ExpressAgentService expressAgentService;
+
+    @Autowired
     private MachineService machineService;
 
     @Autowired
@@ -698,15 +701,15 @@ public class OrderController {
      * The method is called to create OrderExpress and update the status of the order
      *
      * @param orderId
-     * @param expressNum
+     * @param expressNo
      * @param expressFlag 0-->delivered ;1-->back ;other value is wrong
      * @param company
      * @return
      */
     @PostMapping(value = "/express/create")
-    public ResultData createOrderExpress(String orderId, String expressNum, int expressFlag, String company){
+    public ResultData createOrderExpress(String orderId, String expressNo, int expressFlag, String company){
         ResultData result = new ResultData();
-        if(StringUtil.isEmpty(orderId,expressNum,company)){
+        if(StringUtil.isEmpty(orderId,expressNo,company)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -722,7 +725,7 @@ public class OrderController {
         }
 
         //update order status
-        DriftExpress driftExpress = new DriftExpress(orderId, "", company,expressNum);
+        DriftExpress driftExpress = new DriftExpress(orderId, "", company,expressNo);
         driftExpress.setStatus(DriftExpressStatus.valueOf(expressFlag));
         if(driftExpress.getStatus()==null){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -751,6 +754,9 @@ public class OrderController {
             return result;
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            new Thread(()->{
+                expressAgentService.subscribe(company, expressNo);
+            }).start();
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response2.getData());
         }

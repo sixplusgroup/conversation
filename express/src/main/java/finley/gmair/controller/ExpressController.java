@@ -88,4 +88,30 @@ public class ExpressController {
         }
         return result;
     }
+
+    @GetMapping("/query/by/no")
+    public ResultData queryByNo(String expressNo) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(expressNo)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please ensure you fill all the required fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("expressNo", expressNo);
+        ResultData response = expressService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("为查询到相关订单：" + expressNo);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务器正忙，请稍后重试");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
 }
