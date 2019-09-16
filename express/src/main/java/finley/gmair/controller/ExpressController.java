@@ -28,19 +28,19 @@ public class ExpressController {
 
     /**
      * 订阅快递消息
-     * @param company
-     * @param number
-     * @param callbackurl
+     * @param expressCompany
+     * @param expressNo
+     * @param callbackUrl
      * @return
      */
     @PostMapping("/subscribe")
-    public String subscribeData(String company, String number, String callbackurl) {
+    public String subscribeData(String expressCompany, String expressNo, String callbackUrl) {
         StringBuilder param = new StringBuilder("{");
-        param.append("\"company\":\"").append(company).append("\"");
-        param.append(",\"number\":\"").append(number).append("\"");
+        param.append("\"company\":\"").append(expressCompany).append("\"");
+        param.append(",\"number\":\"").append(expressNo).append("\"");
         param.append(",\"key\":\"").append(this.key).append("\"");
         param.append(",\"parameters\":{");
-        param.append("\"callbackurl\":\"").append(callbackurl).append("\"");
+        param.append("\"callbackurl\":\"").append(callbackUrl).append("\"");
         param.append(",\"resultv2\":1");
         param.append(",\"autoCom\":0");
         param.append(",\"interCom\":0");
