@@ -107,6 +107,6 @@ public interface InstallService {
     @GetMapping("/install/assign/report")
     ResultData reportQueryByMemberTime(@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime);
 
-    @GetMapping("/install/assign/init")
+    @PostMapping("/install/assign/init")
     ResultData initAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode);
 }
