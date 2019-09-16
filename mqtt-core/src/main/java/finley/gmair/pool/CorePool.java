@@ -15,12 +15,18 @@ public class CorePool {
 
     private static ExecutorService comPool = new ThreadPoolExecutor(3, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
+    private static ExecutorService handlePool = new ThreadPoolExecutor(4, 8, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+
     public static ExecutorService getLogPool() {
         return logPool;
     }
 
     public static ExecutorService getComPool() {
         return comPool;
+    }
+
+    public static ExecutorService getHandlePool() {
+        return handlePool;
     }
 }
 

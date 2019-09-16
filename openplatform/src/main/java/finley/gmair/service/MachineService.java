@@ -8,6 +8,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("machine-agent")
 public interface MachineService {
+
+    /**
+     * 检查二维码是否存在
+     *
+     * @param codeValue
+     * @return
+     */
+    @GetMapping("/machine/qrcode/findbyqrcode")
+    ResultData exist(@RequestParam("codeValue") String codeValue);
+
     /**
      * 获取设备的当前运行状态
      *

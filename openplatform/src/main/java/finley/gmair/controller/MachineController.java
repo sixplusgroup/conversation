@@ -74,7 +74,7 @@ public class MachineController {
         CorpProfile corpProfile = ((List<CorpProfile>) response.getData()).get(0);
         String corpId = corpProfile.getProfileId();
         //检查qrcode的合法性
-        response = machineService.indoor(qrcode);
+        response = machineService.exist(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供正确的qrcode");

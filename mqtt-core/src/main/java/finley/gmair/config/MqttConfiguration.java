@@ -6,7 +6,10 @@ import finley.gmair.controller.MachineController;
 import finley.gmair.controller.MessageController;
 import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.machine.MachineStatusV3;
-import finley.gmair.model.mqtt.*;
+import finley.gmair.model.mqtt.AckPayload;
+import finley.gmair.model.mqtt.AlertPayload;
+import finley.gmair.model.mqtt.SurplusPayload;
+import finley.gmair.model.mqtt.Topic;
 import finley.gmair.pool.CorePool;
 import finley.gmair.repo.MachineStatusV3Repository;
 import finley.gmair.service.LogService;
@@ -29,9 +32,14 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
-import org.springframework.messaging.*;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.MessageHeaders;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @PropertySource({"classpath:auth.properties", "classpath:mqtt.properties"})
@@ -65,6 +73,9 @@ public class MqttConfiguration {
 
     @Value("${password}")
     private String password;
+
+    @Value("${replica}")
+    private boolean isReplica;
 
     @Autowired
     private RedisService redisService;
@@ -129,19 +140,26 @@ public class MqttConfiguration {
     public MessageHandler handler() {
         return new MessageHandler() {
             @Override
-            public void handleMessage(Message<?> message) throws MessagingException {
-                MessageHeaders headers = message.getHeaders();
-                //判断是否要丢弃报文
-                if (TimeUtil.exceed(headers.getTimestamp(), System.currentTimeMillis(), 300)) {
-                    logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
-                    return;
-                }
-                String payload = ((String) message.getPayload());
-                String topic = headers.get("mqtt_topic").toString();
-                //将payload转换为json数据格式，进行进一步处理
-                if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate") == true)
-                    return;
-                handle(topic, JSON.parseObject(payload));
+            public void handleMessage(Message<?> message) {
+                CorePool.getHandlePool().execute(() -> {
+                    if (message == null) {
+                        logger.error("[Error] illegal message received.");
+                        return;
+                    }
+                    MessageHeaders headers = message.getHeaders();
+                    if (headers == null) return;
+                    //判断是否要丢弃报文
+                    if (TimeUtil.exceed(headers.getTimestamp(), System.currentTimeMillis(), 300)) {
+                        logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
+                        return;
+                    }
+                    String payload = ((String) message.getPayload());
+                    String topic = headers.get("mqtt_topic").toString();
+                    //将payload转换为json数据格式，进行进一步处理
+                    if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate") == true)
+                        return;
+                    handle(topic, JSON.parseObject(payload));
+                });
             }
         };
     }
@@ -168,103 +186,97 @@ public class MqttConfiguration {
      * 处理当前message的信息
      */
     private void handle(String topic, JSONObject json) {
+        try {
 //        logger.info("topic: " + topic);
-        //将topic根据"/"切分为string数组，方便处理
-        String[] array = topic.split("/");
-        //根据定义的topic格式，获取message对应的machineId
-        String machineId = array[2];
-        String base_action = array[5];
-        //检查报文中的时间戳内容
-        if (json.containsKey("time")) {
-            if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
-                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
-                logger.info("send message to sync time for client: " + machineId);
+            //将topic根据"/"切分为string数组，方便处理
+            String[] array = topic.split("/");
+            //根据定义的topic格式，获取message对应的machineId
+            String machineId = array[2];
+            String base_action = array[5];
+            //检查报文中的时间戳内容
+            if (json.containsKey("time")) {
+                if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
+                    MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
+                    logger.info("send message to sync time for client: " + machineId);
+                }
             }
-        }
-        //对于长度为7的topic，只有上传单项传感器数据和警报处理
-        if (array.length == 7) {
-            //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
-            String detail_action = array[6];
-            switch (base_action) {
-                case "sensor":
-                    int value = json.getIntValue("value");
-                    dealSingleSensor(detail_action, value);
-                    break;
-                case "alert":
-                    AlertPayload payload = new AlertPayload(machineId, json);
-                    dealAlertMessage(detail_action, payload);
-                    break;
-                default:
-                    logger.error("Message cannot be handled. Topic: " + topic + ", data: " + json);
-                    break;
-            }
-        } else {
-            //该类型的数据报文将存入内存缓存
-            if (base_action.equals("allrep")) {
-                messageController.checkVersion(machineId);
+            //对于长度为7的topic，只有上传单项传感器数据和警报处理
+            if (array.length == 7) {
+                //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
+                String detail_action = array[6];
+                switch (base_action) {
+                    case "sensor":
+                        int value = json.getIntValue("value");
+                        dealSingleSensor(detail_action, value);
+                        break;
+                    case "alert":
+                        AlertPayload payload = new AlertPayload(machineId, json);
+                        dealAlertMessage(detail_action, payload);
+                        break;
+                    default:
+                        logger.error("Message cannot be handled. Topic: " + topic + ", data: " + json);
+                        break;
+                }
+            } else {
+                //该类型的数据报文将存入内存缓存
+                if (base_action.equals("allrep")) {
+                    messageController.checkVersion(machineId);
 //                logger.info("uid: " + machineId + ", allrep: " + json);
-                if (json.containsKey("power") && json.getIntValue("power") == 0) {
-                    json.replace("volume", 0);
+                    if (json.containsKey("power") && json.getIntValue("power") == 0) {
+                        json.replace("volume", 0);
+                    }
+                    //写入内存缓存的数据使用common模块中的结构
+                    finley.gmair.model.machine.v3.MachineStatusV3 status = new finley.gmair.model.machine.v3.MachineStatusV3(machineId, json);
+                    LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3> queue;
+                    if (redisService.exists(machineId)) {
+                        queue = (LimitQueue) redisService.get(machineId);
+                        queue.offer(status);
+                    } else {
+                        queue = new LimitQueue<>(120);
+                        queue.offer(status);
+                    }
+                    redisService.set(machineId, queue, (long) 120);
+                    CorePool.getComPool().execute(() -> {
+                        if (!isReplica) {
+                            //写入mongodb的使用mongo-common中的结构
+                            finley.gmair.model.machine.MachineStatusV3 mongo = new MachineStatusV3(machineId, json);
+                            repository.save(mongo);
+                        }
+                    });
                 }
-                //写入内存缓存的数据使用common模块中的结构
-                finley.gmair.model.machine.v3.MachineStatusV3 status = new finley.gmair.model.machine.v3.MachineStatusV3(machineId, json);
-                LimitQueue<finley.gmair.model.machine.v3.MachineStatusV3> queue;
-                if (redisService.exists(machineId)) {
-                    queue = (LimitQueue) redisService.get(machineId);
-                    queue.offer(status);
-                } else {
-                    queue = new LimitQueue<>(120);
-                    queue.offer(status);
+                //该类型的数据报文仅用于更新内存缓存中的数据状态，不存入数据库
+                if (base_action.equals("sys_status")) {
+                    MQTTUtil.partial(redisService, machineId, json);
                 }
-                redisService.set(machineId, queue, (long) 120);
-                CorePool.getComPool().execute(() -> {
-                    //写入mongodb的使用mongo-common中的结构
-                    finley.gmair.model.machine.MachineStatusV3 mongo = new MachineStatusV3(machineId, json);
-                    repository.save(mongo);
-                });
-            }
-            //该类型的数据报文仅用于更新内存缓存中的数据状态，不存入数据库
-            if (base_action.equals("sys_status")) {
-                MQTTUtil.partial(redisService, machineId, json);
-            }
-            if (base_action.equals("sys_surplus")) {
-                SurplusPayload payload = new SurplusPayload(machineId, json);
+                if (base_action.equals("sys_surplus")) {
+                    SurplusPayload payload = new SurplusPayload(machineId, json);
 //                logger.info("sys_surplus: " + JSON.toJSONString(payload));
-            }
-            //传感器数据上传
-            if (base_action.equals("sensor")) {
-                MQTTUtil.partial(redisService, machineId, json);
-            }
-            if (base_action.equals("ack")) {
-                AckPayload payload = new AckPayload(machineId, json);
-                if (payload.getCode() != 0) {
-                    payload.setError(json.getString("error"));
                 }
-                dealAckMessage(payload);
+                //传感器数据上传
+                if (base_action.equals("sensor")) {
+                    MQTTUtil.partial(redisService, machineId, json);
+                }
+                if (base_action.equals("ack")) {
+                    AckPayload payload = new AckPayload(machineId, json);
+                    if (payload.getCode() != 0) {
+                        payload.setError(json.getString("error"));
+                    }
+                    dealAckMessage(payload);
 //                logger.info("ack: " + JSON.toJSONString(payload));
-            }
-            //服务器端相应设备的同步时钟请求
-            if (base_action.equals("get_time")) {
-                MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
-            }
-            if (base_action.equals("chk_update")) {
+                }
+                //服务器端相应设备的同步时钟请求
+                if (base_action.equals("get_time")) {
+                    MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
+                }
+                if (base_action.equals("chk_update")) {
 
+                }
+                if (base_action.equals("ver")) {
+
+                }
             }
-            if (base_action.equals("ver")) {
-//                String model = array[1];
-//                logger.info("Device Model: ".concat(model).concat(", Device Version: ".concat(json.getString("DISPLAY_BOARD_SW"))));
-//                if (json.containsKey("DISPLAY_BOARD_SW")) {
-//                    String version = json.getString("DISPLAY_BOARD_SW");
-//                    if ("GM420S".equalsIgnoreCase(model) && !"1.0.0.201907131849_RELEASE".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW")) && !"1.0.0.201907130238_release".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW"))) {
-//                        messageController.updateFirmware(machineId, "1.6.420S.2", 1);
-//                        logger.info("upgrade: " + machineId + " has been sent successfully");
-//                    }
-//                    if ("GM420".equalsIgnoreCase(model) && !"1.0.0.201907221619_RELEASE".equalsIgnoreCase(json.getString("DISPLAY_BOARD_SW"))) {
-//                        messageController.updateFirmware(machineId, "1.7.420SZ.1", 1);
-//                        logger.info("GM420SZ upgrade: ".concat(machineId).concat(" has been sent successfully"));
-//                    }
-//                }
-            }
+        } catch (Exception e) {
+            logger.error("[Error ] " + e.getMessage());
         }
     }
 

@@ -322,7 +322,7 @@ public class WechatServiceImpl implements WechatService {
             result.setDescription(returnData.getDescription());
         } else if(returnData.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("order id does not exist !");
+            result.setDescription("order id: " + orderId + " does not exist !");
         } else {
             ReturnInfo info = ((List<ReturnInfo>)returnData.getData()).get(0);
 
