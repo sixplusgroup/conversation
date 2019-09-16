@@ -1,6 +1,6 @@
 server.port=8006
 
-spring.application.name=express-agent
+spring.application.name=driftExpress-agent
 
 eureka.client.healthcheck=true
 eureka.client.service-url.defaultZone=http://127.0.0.1:8000/eureka/

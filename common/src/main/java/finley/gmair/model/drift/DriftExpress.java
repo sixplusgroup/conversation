@@ -1,27 +1,31 @@
 package finley.gmair.model.drift;
 
 import finley.gmair.model.Entity;
+import finley.gmair.model.drift.DriftExpressStatus;
 
-public class Express extends Entity {
-
-    private String orderId;
+public class DriftExpress extends Entity {
 
     private String expressId;
 
-    private ExpressStatus status;
+    private String orderId;
 
     private String company;
 
     private String expressNum;
 
-    public Express(){}
+    private DriftExpressStatus status;
 
-    public Express(String orderId, String expressId, String company,String expressNum){
-        this.orderId=orderId;
+    public DriftExpress(){
+        super();
+        this.status = DriftExpressStatus.DELIVERED;
+    }
+
+    public DriftExpress(String expressId, String orderId, String company, String expressNum){
+        this();
         this.expressId=expressId;
+        this.orderId=orderId;
         this.company=company;
         this.expressNum = expressNum;
-        //this.status=ExpressStatus.DELIVERED;
     }
 
     public String getOrderId() {
@@ -40,14 +44,6 @@ public class Express extends Entity {
         this.expressId = expressId;
     }
 
-    public ExpressStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ExpressStatus status) {
-        this.status = status;
-    }
-
     public String getCompany() {
         return company;
     }
@@ -62,5 +58,13 @@ public class Express extends Entity {
 
     public void setExpressNum(String expressNum) {
         this.expressNum = expressNum;
+    }
+
+    public DriftExpressStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DriftExpressStatus status) {
+        this.status = status;
     }
 }

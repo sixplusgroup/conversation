@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.drift.*;
+import finley.gmair.model.drift.DriftExpress;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
@@ -13,12 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
@@ -726,18 +722,18 @@ public class OrderController {
         }
 
         //update order status
-        Express express = new Express(orderId, "", company,expressNum);
-        express.setStatus(ExpressStatus.valueOf(expressFlag));
-        if(express.getStatus()==null){
+        DriftExpress driftExpress = new DriftExpress(orderId, "", company,expressNum);
+        driftExpress.setStatus(DriftExpressStatus.valueOf(expressFlag));
+        if(driftExpress.getStatus()==null){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("订单标识异常");
             return result;
         }
         else{
             DriftOrder order = ((List<DriftOrder>) response1.getData()).get(0);
-            if(express.getStatus() == ExpressStatus.DELIVERED)
+            if(driftExpress.getStatus() == DriftExpressStatus.DELIVERED)
                 order.setStatus(DriftOrderStatus.DELIVERED);
-            else if(express.getStatus() == ExpressStatus.BACk)
+            else if(driftExpress.getStatus() == DriftExpressStatus.BACk)
                 order.setStatus(DriftOrderStatus.BACK);
             response1 = orderService.updateDriftOrder(order);
             if (response1.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -747,16 +743,50 @@ public class OrderController {
             }
         }
 
-        //create express
-        ResultData response2 = expressService.createExpress(express);
+        //create driftExpress
+        ResultData response2 = expressService.createExpress(driftExpress);
         if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to store express message to database");
+            result.setDescription("Fail to store driftExpress message to database");
             return result;
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response2.getData());
+        }
+        return result;
+    }
+
+    /**
+     * 根据orderId查询快递信息
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/express/list")
+    public ResultData getExpress(String orderId, int status){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请输入orderId");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("orderId", orderId);
+        if (StringUtils.isEmpty(status)) {
+            condition.put("status", status);
+        }
+        ResultData response = expressService.fetchExpress(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            result.setData(response.getData());
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("查询成功");
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未找到相关记录");
+        }else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询失败");
         }
         return result;
     }

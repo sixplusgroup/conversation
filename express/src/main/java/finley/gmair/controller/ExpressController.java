@@ -26,9 +26,6 @@ public class ExpressController {
     @Value("${key}")
     private String key;
 
-    @Value("${url}")
-    private String url;
-
     /**
      * 订阅快递信息
      * @param company
@@ -88,36 +85,5 @@ public class ExpressController {
         params.put("param", param.toString());
 
         return expressService.post(params);
-    }
-
-    /**
-     * 根据orderId查询快递信息
-     * @param orderId
-     * @return
-     */
-    @GetMapping
-    public ResultData getExpress(String orderId){
-        ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请输入orderId");
-            return result;
-        }
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("blockFlag", false);
-        condition.put("orderId", orderId);
-        ResultData response = expressService.fetchExpress(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setData(response.getData());
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("查询成功");
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("未找到相关记录");
-        }else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("查询失败");
-        }
-        return result;
     }
 }
