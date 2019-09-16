@@ -6,7 +6,7 @@ import finley.gmair.util.ResultData;
 import java.util.Map;
 
 public interface ExpressDao {
-    ResultData fetch(Map<String, Object> condition);
+    ResultData query(Map<String, Object> condition);
 
     ResultData insert(Express express);
 

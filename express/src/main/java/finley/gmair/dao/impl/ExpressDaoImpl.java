@@ -21,14 +21,12 @@ public class ExpressDaoImpl extends BaseDao implements ExpressDao {
     private final static String Collection_Express = "express_record";
 
     @Override
-    public ResultData fetch(Map<String, Object> condition) {
+    public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        List<Express> list;
+        List<Express> list = new ArrayList<>();
         try {
-            if (condition.containsKey("expressId")) {
-                list = mongoTemplate.find(new Query(Criteria.where("expressId").is(condition.get("expressId"))), Express.class, Collection_Express);
-            } else {
-                list = mongoTemplate.findAll(Express.class, Collection_Express);
+            if (condition.containsKey("expressNo")) {
+                list = mongoTemplate.find(new Query(Criteria.where("expressNo").is(condition.get("expressNo"))), Express.class, Collection_Express);
             }
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);

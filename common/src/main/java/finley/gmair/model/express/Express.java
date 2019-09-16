@@ -1,5 +1,7 @@
 package finley.gmair.model.express;
 
+import finley.gmair.model.Entity;
+
 public class Express {
 
     //对应 status，订阅状态
@@ -12,16 +14,16 @@ public class Express {
     private String company;
 
     //对应nu 快递单号
-    private String expressNum;
+    private String expressNo;
 
     //对应data 快递详细信息
     private String data;
 
-    public Express(String status, String state, String company, String expressNum, String data) {
+    public Express(String status, String state, String company, String expressNo, String data) {
         this.status = status;
         this.state = state;
         this.company = company;
-        this.expressNum = expressNum;
+        this.expressNo = expressNo;
         this.data = data;
     }
 
@@ -49,12 +51,12 @@ public class Express {
         this.company = company;
     }
 
-    public String getExpressNum() {
-        return expressNum;
+    public String getExpressNo() {
+        return expressNo;
     }
 
-    public void setExpressNum(String expressNum) {
-        this.expressNum = expressNum;
+    public void setExpressNo(String expressNo) {
+        this.expressNo = expressNo;
     }
 
     public String getData() {
