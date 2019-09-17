@@ -25,8 +25,9 @@ public class ExpressDaoImpl extends BaseDao implements ExpressDao {
         ResultData result = new ResultData();
         List<Express> list = new ArrayList<>();
         try {
-            if (condition.containsKey("expressNo")) {
-                list = mongoTemplate.find(new Query(Criteria.where("expressNo").is(condition.get("expressNo"))), Express.class, Collection_Express);
+            if (condition.containsKey("expressNo") && condition.containsKey("company")) {
+                list = mongoTemplate.find(new Query(Criteria.where("expressNo").is(condition.get("expressNo"))
+                        .and("company").is(condition.get("company"))), Express.class, Collection_Express);
             }
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -58,8 +59,10 @@ public class ExpressDaoImpl extends BaseDao implements ExpressDao {
     public ResultData update(Express express) {
         ResultData result = new ResultData();
         try {
-            Query query = new Query(Criteria.where("expressNo").is(express));
-            //WriteResult wr = mongoTemplate.updateFirst();
+            Query query = new Query(Criteria.where("expressNo").is(express.getExpressNo())
+                    .and("company").is(express.getCompany()));
+            mongoTemplate.remove(query, Collection_Express);
+            mongoTemplate.save(express, Collection_Express);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
