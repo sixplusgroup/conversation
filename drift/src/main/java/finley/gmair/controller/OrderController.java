@@ -754,6 +754,7 @@ public class OrderController {
             return result;
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            //快递100订阅此物流单
             new Thread(()->{
                 expressAgentService.subscribe(company, expressNo);
             }).start();
@@ -793,6 +794,36 @@ public class OrderController {
         }else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询失败");
+        }
+        return result;
+    }
+
+    /**
+     * 根据快递单号、快递公司号查询快递信息
+     * @param expressNo
+     * @param expressCompany
+     * @return
+     * */
+    @GetMapping("/express/information")
+    public ResultData obtainExpressInformation(String expressNo, String expressCompany) {
+        ResultData result = new ResultData();
+        if (StringUtil.isEmpty(expressNo, expressCompany)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please ensure you fill all the required fields");
+            return result;
+        }
+        ResultData response = expressAgentService.getExpress(expressNo, expressCompany);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未获取到相关的快递信息:" + expressNo);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务器繁忙，请稍后重试");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
         }
         return result;
     }

@@ -61,11 +61,10 @@ public class AddressDaoImpl extends BaseDao implements AddressDao {
     }
 
     @Override
-    public ResultData block(String addressId) {
+    public ResultData delete(String addressId) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.drift.address.block", addressId);
-            result.setData(addressId);
+            sqlSession.update("gmair.drift.address.delete", addressId);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

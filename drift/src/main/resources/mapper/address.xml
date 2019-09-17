@@ -88,9 +88,9 @@
         where address_id = #{addressId}
     </update>
 
-    <update id="block" parameterType="finley.gmair.model.drift.DriftAddress">
+    <update id="delete" parameterType="java.lang.String">
         update gmair_drift.drift_address
-        SET block_flag = TRUE
+        set block_flag = true
         where address_id = #{addressId}
     </update>
 </mapper>

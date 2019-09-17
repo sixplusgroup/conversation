@@ -196,21 +196,23 @@ public class AddressController {
             result.setDescription("请提供addressId");
             return result;
         }
-        ResultData response = addressService.blockAddress(addressId);
-        switch (response.getResponseCode()) {
-            case RESPONSE_NULL:
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("未找到相关地址信息");
-                break;
-            case RESPONSE_ERROR:
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("删除地址失败");
-                break;
-            case RESPONSE_OK:
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setData(response.getData());
-                break;
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("addressId", addressId);
+        condition.put("blockFlag", false);
+        ResultData response = addressService.fetchAddress(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未获取到相关的地址信息：" + addressId);
+            return result;
         }
+        response = addressService.blockAddress(addressId);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("地址删除失败");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData("地址删除成功");
         return result;
     }
 

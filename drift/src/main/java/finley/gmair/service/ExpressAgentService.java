@@ -12,6 +12,7 @@ public interface ExpressAgentService {
     ResultData subscribe(@RequestParam("expressCompany") String expressCompany,
                          @RequestParam("expressNo") String expressNo);
 
-    @GetMapping("/express/query/by/no")
-    ResultData getExpress(@RequestParam("expressNo") String expressNo);
+    @GetMapping("/express/query")
+    ResultData getExpress(@RequestParam("expressNo") String expressNo,
+                          @RequestParam("expressCompany") String expressCompany);
 }
