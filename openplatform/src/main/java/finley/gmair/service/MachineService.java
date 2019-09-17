@@ -12,7 +12,8 @@ public interface MachineService {
     /**
      * Check whether the machine is online
     */
-    ResultData isOnline(@RequestParam("qrcode") String qrcode);
+    @GetMapping("/machine/status/isonline/{qrcode}")
+    ResultData isOnline(@PathVariable("qrcode") String qrcode);
     
     /**
      * 检查二维码是否存在
