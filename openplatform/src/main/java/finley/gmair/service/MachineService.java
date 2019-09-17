@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface MachineService {
 
     /**
+     * Check whether the machine is online
+    */
+    ResultData isOnline(@RequestParam("qrcode") String qrcode);
+    
+    /**
      * 检查二维码是否存在
      *
      * @param codeValue
