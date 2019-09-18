@@ -41,14 +41,18 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData assigns(String memberId, Integer status, String search) {
+    public ResultData assigns(String memberId, Integer status, String search,String page,String pageLength) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装负责人的信息");
             return result;
         }
-        result = assignService.fetchAssign(memberId, status, search);
+        if(!StringUtils.isEmpty(page)&&!StringUtils.isEmpty(pageLength)){
+            result=assignService.fetchAssign(memberId, status, search,page,pageLength);
+        }else {
+            result = assignService.fetchAssign(memberId, status, search);
+        }
         return result;
     }
 

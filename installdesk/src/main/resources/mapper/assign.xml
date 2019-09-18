@@ -76,6 +76,10 @@
             AND block_flag = #{blockFlag}
         </if>
         ORDER BY create_time ASC
+        LIMIT 0,800
+        <!--<if test="page != null and pageLength!= null">-->
+            <!--LIMIT page,pageLength-->
+        <!--</if>-->
     </select>
 
     <select id="principal" parameterType="java.util.Map" resultMap="assignVo">

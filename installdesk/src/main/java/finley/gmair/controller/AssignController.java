@@ -9,6 +9,7 @@ import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -339,7 +340,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData tasks(String memberId, Integer status, String search) {
+    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -381,18 +382,43 @@ public class AssignController {
                 condition.put("consumer", fuzzysearch);
             }
             response = assignService.principal(condition);
-        } else response = assignService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("查询安装负责人所负责的安装任务失败，请稍后尝试");
-            return result;
+            List<Assign> resultList = (List<Assign>) response.getData();
+            int totalPage = resultList.size();
+            result.setResponseCode(response.getResponseCode());
+            JSONObject json = new JSONObject();
+            json.put("totalPage", totalPage);
+            json.put("list", resultList);
+            result.setData(json);
+        } else {
+            response = assignService.fetch(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("查询安装负责人所负责的安装任务失败，请稍后尝试");
+                return result;
+            }
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("未查询到相关的安装任务");
+                return result;
+            }
+            if(!StringUtils.isEmpty(page)&&!StringUtils.isEmpty(pageLength)){
+                List<Assign> resultList = (List<Assign>) response.getData();
+                int totalPage = resultList.size();
+                if(totalPage>Integer.parseInt(page)*Integer.parseInt(pageLength)){
+                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),Integer.parseInt(page)*Integer.parseInt(pageLength));
+                }else {
+//                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),totalPage-1);
+                }
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("totalPage", totalPage);
+                jsonObject.put("list", resultList);
+                result.setData(jsonObject);
+//                result.setData(resultList);
+            }else {
+                result.setData(response.getData());
+            }
+
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("未查询到相关的安装任务");
-            return result;
-        }
-        result.setData(response.getData());
         return result;
     }
 
