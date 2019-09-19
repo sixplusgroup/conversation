@@ -77,7 +77,8 @@ public class PaymentController {
         if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
             return result;
         }
-        result = paymentService.createPay(orderId, order.getConsumerId(), (int) (order.getRealPay() * 100), activityName, ip);
+        double pay = (order.getRealPay() * 100)*1.0;
+        result = paymentService.createPay(orderId, order.getConsumerId(), (int) Math.ceil(pay), activityName, ip);
         if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
             return paymentService.getTrade(orderId);
         }
