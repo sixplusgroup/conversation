@@ -9,3 +9,8 @@ CREATE TABLE `gmair_resource`.`tempfile_location` (
   `block_flag` TINYINT(1) NOT NULL DEFAULT '0',
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`file_id`));
+
+#2019-09-23
+ALTER TABLE `gmair_resource`.`tempfile_location`
+ADD COLUMN `md5` VARCHAR(45) NOT NULL AFTER `filename`;
+

@@ -4,12 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
+import finley.gmair.model.resource.FileMap;
 import finley.gmair.pool.InstallPool;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +55,12 @@ public class AssignController {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private PictureMd5Service pictureMd5Service;
+
+    @Autowired
+    private ResourcesService resourcesService;
 
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
@@ -535,9 +541,29 @@ public class AssignController {
             result.setDescription("请提供安装快照相关的信息");
             return result;
         }
+        //检测图片是否已存在
+        String[] urls = picture.split(",");
+        List<String> newUrls=new ArrayList<>();
+        ResultData response = null;
+        Map<String, Object> md5_condition = new HashMap<>();
+        for(int i = 0; i<urls.length;i++){
+            response = resourcesService.getTempFileMap(urls[i]);
+            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                String md5 = (String) response.getData();
+                newUrls.add(urls[i]);
+                md5_condition.clear();
+                md5_condition.put("md5",md5);
+                md5_condition.put("blockFlag",false);
+                response = pictureMd5Service.fetch(md5_condition);
+                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                    pictureMd5Service.create(new PictureMd5(urls[i],md5));
+                }
+            }
+        }
+        picture = StringUtils.join(newUrls,",");
         Snapshot snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description);
         //存储安装快照
-        ResultData response = assignSnapshotService.create(snapshot);
+        response = assignSnapshotService.create(snapshot);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("创建安装任务快照失败，请稍后尝试");
