@@ -221,6 +221,36 @@ public class MachineController {
 
 
     /**
+     *
+     */
+    @GetMapping("/online/{qrcode}")
+    public ResultData isOnline(String appid, @PathVariable("qrcode") String qrcode) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供正确的appid和qrcode");
+            return result;
+        }
+        //检查appid和qrcode是否存在订阅关系
+        if (!prerequisities(appid, qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保该appid有效，且已订阅该设备二维码");
+            return result;
+        }
+        ResultData response = machineService.isOnline(qrcode);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(true);
+            result.setDescription("当前设备在线");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setData(false);
+            result.setDescription("未能查询到该设备的在线状态，请检查设备的联网状态");
+        }
+        return result;
+    }
+
+    /**
      * 获取设备的状态信息
      *
      * @param appid

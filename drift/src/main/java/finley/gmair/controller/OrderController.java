@@ -5,6 +5,7 @@ import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.model.drift.DriftExpress;
 import finley.gmair.model.express.Express;
+import finley.gmair.model.order.OrderStatus;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
@@ -50,7 +51,7 @@ public class OrderController {
     private MachineService machineService;
 
     @Autowired
-    private  QrExCodeService qrExCodeService;
+    private QrExCodeService qrExCodeService;
 
     private Object lock = new Object();
 
@@ -254,7 +255,7 @@ public class OrderController {
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);
                 //实现优惠码价格抵消
                 order.setExcode(exCode.getCodeValue());
-                order.setRealPay(Math.round(order.getTotalPrice()*100 - exCode.getPrice()*100)/100.0);
+                order.setRealPay(Math.round(order.getTotalPrice() * 100 - exCode.getPrice() * 100) / 100.0);
                 new Thread(() -> {
                     ResultData rd = updateExcode(code, exCode);
                 }).start();
@@ -272,7 +273,7 @@ public class OrderController {
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);
                 //实现优惠码价格抵消
                 order.setExcode(code);
-                order.setRealPay(Math.round(order.getTotalPrice()*100 - exCode.getPrice()*100)/100.0);
+                order.setRealPay(Math.round(order.getTotalPrice() * 100 - exCode.getPrice() * 100) / 100.0);
                 new Thread(() -> {
                     condition.clear();
                     condition.put("codeId", exCode.getCodeId());
@@ -680,9 +681,11 @@ public class OrderController {
             result.setDescription("请提供所需要获取订单的用户的信息");
             return result;
         }
+        int[] statusList = new int[]{OrderStatus.PROCESSING.getValue(), OrderStatus.PAYED.getValue(), OrderStatus.COMMENTED.getValue(), OrderStatus.FINISHED.getValue()};
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", openid);
         condition.put("blockFlag", false);
+        condition.put("statusList", statusList);
         ResultData response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -708,15 +711,15 @@ public class OrderController {
      * @return
      */
     @PostMapping(value = "/express/create")
-    public ResultData createOrderExpress(String orderId, String expressNo, int expressFlag, String company){
+    public ResultData createOrderExpress(String orderId, String expressNo, int expressFlag, String company) {
         ResultData result = new ResultData();
-        if(StringUtil.isEmpty(orderId,expressNo,company)){
+        if (StringUtil.isEmpty(orderId, expressNo, company)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("orderId",orderId);
+        condition.put("orderId", orderId);
         condition.put("blockFlag", false);
         ResultData response1 = orderService.fetchDriftOrder(condition);
         if (response1.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -726,18 +729,17 @@ public class OrderController {
         }
 
         //update order status
-        DriftExpress driftExpress = new DriftExpress(orderId, "", company,expressNo);
+        DriftExpress driftExpress = new DriftExpress(orderId, "", company, expressNo);
         driftExpress.setStatus(DriftExpressStatus.valueOf(expressFlag));
-        if(driftExpress.getStatus()==null){
+        if (driftExpress.getStatus() == null) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("订单标识异常");
             return result;
-        }
-        else{
+        } else {
             DriftOrder order = ((List<DriftOrder>) response1.getData()).get(0);
-            if(driftExpress.getStatus() == DriftExpressStatus.DELIVERED)
+            if (driftExpress.getStatus() == DriftExpressStatus.DELIVERED)
                 order.setStatus(DriftOrderStatus.DELIVERED);
-            else if(driftExpress.getStatus() == DriftExpressStatus.BACk)
+            else if (driftExpress.getStatus() == DriftExpressStatus.BACk)
                 order.setStatus(DriftOrderStatus.BACK);
             response1 = orderService.updateDriftOrder(order);
             if (response1.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -756,7 +758,7 @@ public class OrderController {
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
             //快递100订阅此物流单
-            new Thread(()->{
+            new Thread(() -> {
                 expressAgentService.subscribe(company, expressNo);
             }).start();
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -767,18 +769,19 @@ public class OrderController {
 
     /**
      * 根据orderId查询快递信息
+     *
      * @param orderId
      * @return
      */
     @GetMapping(value = "/express/list")
-    public ResultData getExpress(String orderId, int status){
+    public ResultData getExpress(String orderId, int status) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)){
+        if (StringUtils.isEmpty(orderId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请输入orderId");
             return result;
         }
-        Map<String,Object> condition = new HashMap<>();
+        Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
         condition.put("orderId", orderId);
         if (StringUtils.isEmpty(status)) {
@@ -799,7 +802,7 @@ public class OrderController {
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("未找到相关记录");
-        }else {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询失败");
         }
@@ -808,10 +811,11 @@ public class OrderController {
 
     /**
      * 根据快递单号、快递公司号查询快递信息
+     *
      * @param expressNo
      * @param expressCompany
      * @return
-     * */
+     */
     @GetMapping("/express/information")
     public ResultData obtainExpressInformation(String expressNo, String expressCompany) {
         ResultData result = new ResultData();

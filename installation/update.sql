@@ -35,7 +35,7 @@ CREATE TABLE `gmair_install`.`install_pic` (
 
 ALTER TABLE `gmair_install`.`install_feedback`
   ADD COLUMN `assign_id` VARCHAR(20) NOT NULL AFTER `feedback_id`,
-  ADD COLUMN `status` VARCHAR(45) NOT NULL AFTER `member_phone`;
+  ADD COLUMN `power` VARCHAR(45) NOT NULL AFTER `member_phone`;
 
 ALTER TABLE `gmair_install`.`install_snapshot`
   DROP COLUMN `hole_direction`,
@@ -193,7 +193,7 @@ VIEW `assign_view` AS
 
 #2018.06.06
 ALTER TABLE `gmair_install`.`install_feedback`
-  DROP COLUMN `status`,
+  DROP COLUMN `power`,
   DROP COLUMN `member_phone`, RENAME TO  `gmair_install`.`install_cancel_feedback` ;
 
 ALTER TABLE `gmair_install`.`install_cancel_feedback`

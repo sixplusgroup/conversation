@@ -5,6 +5,7 @@ import finley.gmair.dao.*;
 import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.dataAnalysis.*;
 import finley.gmair.model.machine.v1.MachineStatus;
+import finley.gmair.model.machine.v3.MachineStatusV3;
 import finley.gmair.service.MachineStatusService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -117,6 +118,12 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                     V2MachineStatusHourly msh = countV2Status(list);
                     if (msh != null)
                         statisticalDataList.add(msh);
+                } else if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatusV3) {
+                    List<MachineStatusV3> list = new ArrayList<>(120);
+                    for (int i = 0; i < ((LimitQueue<Object>) queue).size(); i++) {
+                        list.add(((LimitQueue<MachineStatusV3>) queue).get(i));
+
+                    }
                 }
             }
         } catch (Exception e) {

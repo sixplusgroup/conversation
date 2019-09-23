@@ -3,6 +3,7 @@ package finley.gmair.service;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -11,10 +12,10 @@ public interface MachineService {
 
     /**
      * Check whether the machine is online
-    */
+     */
     @GetMapping("/machine/status/isonline/{qrcode}")
     ResultData isOnline(@PathVariable("qrcode") String qrcode);
-    
+
     /**
      * 检查二维码是否存在
      *
