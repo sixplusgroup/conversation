@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.model.drift.DriftExpress;
+import finley.gmair.model.express.Express;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
@@ -785,9 +786,16 @@ public class OrderController {
         }
         ResultData response = expressService.fetchExpress(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setData(response.getData());
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("查询成功");
+            String expressNo = ((List<Express>)response.getData()).get(0).getExpressNo();
+            String expressCompany = ((List<Express>)response.getData()).get(0).getCompany();
+            response = expressAgentService.getExpress(expressNo, expressCompany);
+            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("查询物流信息失败");
+            }
+            result.setData(response.getData());
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("未找到相关记录");
