@@ -28,6 +28,22 @@
         order by create_time desc
     </select>
 
+    <update id="update" parameterType="finley.gmair.model.drift.QR_EXcode">
+        update gmair_drift.machine_excode
+        <set>
+            <if test="qrcode != null">
+                and qrcode = #{qrcode}
+            </if>
+            <if test="excode != null">
+                and excode = #{excode}
+            </if>
+            <if test="blockFlag != null">
+                and block_flag = #{blockFlag}
+            </if>
+        </set>
+        where excode = #{excode}
+    </update>
+
     <insert id="insert" parameterType="finley.gmair.model.drift.QR_EXcode">
         insert into gmair_drift.machine_excode(id, qrcode, excode, block_flag, create_time)
         values(#{Id}, #{qrcode}, #{excode}, #{blockFlag}, #{createAt})
