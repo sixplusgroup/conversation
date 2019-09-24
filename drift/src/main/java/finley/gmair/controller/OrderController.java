@@ -157,7 +157,9 @@ public class OrderController {
                 attachItem.setItemName(attachment.getAttachName());
                 attachItem.setItemPrice(attachment.getAttachPrice());
                 attachItem.setSingleNum(attachment.getAttachSingle());
-                attachItem.setQuantity(((Integer) e.getValue()).intValue());
+                int num = ((Integer) e.getValue()).intValue();
+                num = num + num/5;
+                attachItem.setQuantity(num);
                 list.add(attachItem);
             }
         }
@@ -165,7 +167,9 @@ public class OrderController {
         double price = 0;
         // 计算该订单的总价格
         for (DriftOrderItem orderItem : list) {
-            price += (orderItem.getItemPrice()) * orderItem.getQuantity();
+            int quantity = orderItem.getQuantity();
+            quantity = quantity - (quantity-1)/5;
+            price += (orderItem.getItemPrice()) * quantity;
         }
 
         DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate);
