@@ -20,14 +20,7 @@ public class DriftController {
 
     @GetMapping("/order/list")
     ResultData driftOrderList(String startTime,String endTime,String status){
-        ResultData result = new ResultData();
-        if(StringUtils.isEmpty(startTime)&&StringUtils.isEmpty(endTime)&&StringUtils.isEmpty(status)){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请提供正确的参数");
-            return result;
-        }
-        result = driftService.driftOrderList(startTime,endTime,status);
-        return result;
+        return driftService.driftOrderList(startTime,endTime,status);
     }
 
     @GetMapping("/order/{orderId}")
