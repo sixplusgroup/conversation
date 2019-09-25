@@ -17,6 +17,7 @@
         <result property="totalPrice" column="total_price"></result>
         <result property="realPay" column="real_pay"></result>
         <result property="excode" column="excode"></result>
+        <result property="machineOrderNo" column="machine_orderNo"></result>
         <result property="description" column="description"></result>
         <result property="status" column="order_status"
                 typeHandler="finley.gmair.mybatis.handler.DriftOrderStatusHandler"></result>
@@ -37,7 +38,7 @@
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        select order_id, activity_id, equip_id, consumer_id, consignee, phone, address, province, city, district,
+        select order_id, activity_id, equip_id, consumer_id, consignee, phone, address, province, city, district,machine_orderNo,
         expected_date, interval_date, total_price, real_pay, excode, description, order_status, block_flag, create_time
         from gmair_drift.drift_order
         where 1 = 1
@@ -70,6 +71,9 @@
         </if>
         <if test="status != null">
             AND order_status = #{status}
+        </if>
+        <if test="machineOrderNo != null">
+            AND machine_orderNo = #{machineOrderNo}
         </if>
         <if test="statusList != null">
             AND order_status IN
@@ -125,6 +129,9 @@
             <if test="district != null">
                 district = #{district},
             </if>
+            <if test="machineOrderNo != null">
+                machine_orderNo = #{machineOrderNo}
+            </if>
             <if test="excode != null">
                 excode = #{excode},
             </if>
@@ -134,7 +141,6 @@
             <if test="realPay != null">
                 real_pay = #{realPay},
             </if>
-            block_flag = true,
             order_id = #{orderId}
         </set>
         where order_id = #{orderId}

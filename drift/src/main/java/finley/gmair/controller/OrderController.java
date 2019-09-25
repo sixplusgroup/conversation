@@ -733,7 +733,7 @@ public class OrderController {
         }
 
         //update order status
-        DriftExpress driftExpress = new DriftExpress(orderId, "", company, expressNo);
+        DriftExpress driftExpress = new DriftExpress("", orderId, company, expressNo);
         driftExpress.setStatus(DriftExpressStatus.valueOf(expressFlag));
         if (driftExpress.getStatus() == null) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -906,4 +906,38 @@ public class OrderController {
         result.setDescription("Drift order is already cancel");
         return result;
     }
+
+    //将订单绑定机器码
+    @PostMapping("/machinecode/submit")
+    ResultData submitMachineCode(String orderId,String machineCode){
+        ResultData result = new ResultData();
+        if(org.apache.commons.lang.StringUtils.isEmpty(orderId)|| org.apache.commons.lang.StringUtils.isEmpty(machineCode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供正确的参数");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId",orderId);
+        condition.put("blockFlag",false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("订单查找失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        DriftOrder order = ((List<DriftOrder>)response.getData()).get(0);
+        order.setMachineOrderNo(machineCode);
+        response = orderService.updateDriftOrder(order);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("更新失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        return result;
+    }
+
 }

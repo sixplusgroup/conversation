@@ -21,6 +21,8 @@ public class DriftOrder extends AbstractDriftOrder {
 
     private String excode;
 
+    private String machineOrderNo;
+
     private DriftOrderStatus status;
 
     private List<DriftOrderItem> list;
@@ -120,5 +122,13 @@ public class DriftOrder extends AbstractDriftOrder {
 
     public void setList(List<DriftOrderItem> list) {
         this.list = list;
+    }
+
+    public String getMachineOrderNo() {
+        return machineOrderNo;
+    }
+
+    public void setMachineOrderNo(String machineOrderNo) {
+        this.machineOrderNo = machineOrderNo;
     }
 }
