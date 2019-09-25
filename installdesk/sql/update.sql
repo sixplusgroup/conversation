@@ -134,5 +134,17 @@ CREATE VIEW `gmair_install`.`assign_report_view` AS
             ORDER BY `gmair_install`.`install_assign`.`team_id`,`gmair_install`.`install_assign`.`member_id`,`gmair_install`.`assign_snapshot`.`create_time`;
 
 
+#2019-09-23
+CREATE TABLE `gmair_install`.`picture_md5` (
+  `image_id` VARCHAR(45) NOT NULL,
+  `picture_path` LONGTEXT NOT NULL,
+  `md5` VARCHAR(100) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`image_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin;
+
 
 

@@ -15,6 +15,9 @@ public interface AssignService {
     @GetMapping("/install/assign/tasks")
     ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search);
 
+    @GetMapping("/install/assign/tasks")
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,@RequestParam("page") String page,@RequestParam("pageLength") String pageLength);
+
     @PostMapping("/install/assign/assign")
     ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("memberId") String memberId);
 

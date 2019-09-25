@@ -10,12 +10,28 @@ public class VerifyInfo extends Entity {
 
     private String verifyId;
 
+    private String openid;
+
     private String idCard;
 
     private String name;
 
     public VerifyInfo() {
         super();
+    }
+
+    public VerifyInfo(String openid, String idCard, String name) {
+        this.openid = openid;
+        this.idCard = idCard;
+        this.name = name;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
     }
 
     public String getVerifyId() {

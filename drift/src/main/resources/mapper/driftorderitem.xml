@@ -5,6 +5,7 @@
         <result property="itemId" column="item_id"></result>
         <result property="orderId" column="order_id"></result>
         <result property="itemName" column="item_name"></result>
+        <result property="singleNum" column="single_num"></result>
         <result property="quantity" column="quantity"></result>
         <result property="itemPrice" column="item_price"></result>
         <result property="blockFlag" column="block_flag"></result>
@@ -12,12 +13,12 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrderItem" useGeneratedKeys="false">
-        insert into gmair_drift.drift_order_item(item_id, order_id, item_name, quantity, item_price, block_flag, create_time)
-        values(#{itemId}, #{orderId}, #{itemName}, #{quantity}, #{itemPrice}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_order_item(item_id, order_id, item_name, single_num, quantity, item_price, block_flag, create_time)
+        values(#{itemId}, #{orderId}, #{itemName}, #{singleNum}, #{quantity}, #{itemPrice}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="itemVo">
-        select item_id, order_id, item_name, quantity, item_price, block_flag, create_time
+        select item_id, order_id, item_name, single_num, quantity, item_price, block_flag, create_time
         from gmair_drift.drift_order_item
         where 1 = 1
         <if test="itemId != null">
@@ -36,6 +37,9 @@
         <set>
             <if test="itemName != null">
                 item_name = #{itemName},
+            </if>
+            <if test="singleNum != null">
+                single_num = #{singleNum},
             </if>
             <if test="quantity != null">
                 quantity = #{quantity},

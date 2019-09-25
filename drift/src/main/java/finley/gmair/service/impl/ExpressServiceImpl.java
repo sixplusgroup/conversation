@@ -1,7 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ExpressDao;
-import finley.gmair.model.drift.Express;
+import finley.gmair.model.drift.DriftExpress;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -36,31 +36,16 @@ public class ExpressServiceImpl implements ExpressService {
     }
 
     @Override
-    public ResultData createExpress(Express express){
+    public ResultData createExpress(DriftExpress driftExpress){
         ResultData result = new ResultData();
-        ResultData response = expressDao.insertExpress(express);
+        ResultData response = expressDao.insertExpress(driftExpress);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to insert express message to database");
+            result.setDescription("Fail to insert driftExpress message to database");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-        }
-        return result;
-    }
-
-    @Override
-    public ResultData modifyExpress(Map<String, Object> condition){
-        ResultData result = new ResultData();
-        ResultData response = expressDao.updateExpress(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to update express");
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("Succeed to update express");
         }
         return result;
     }

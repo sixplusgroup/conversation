@@ -58,6 +58,6 @@
                 block_flag = #{blockFlag},
             </if>
         </set>
-        where code_id = #{codeId}
+        where code_value = #{codeValue}
     </update>
 </mapper>

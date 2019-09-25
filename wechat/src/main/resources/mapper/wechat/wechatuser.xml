@@ -82,7 +82,7 @@
                 user_unionid = #{userUnionid},
             </if>
             <if test="blockFlag != null">
-                block_flag = #{blockFlag},
+                block_flag = #{blockFlag}
             </if>
         </set>
         WHERE wechat_id = #{wechatId}

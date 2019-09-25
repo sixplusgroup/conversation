@@ -9,6 +9,10 @@ public class Attachment extends Entity {
 
     private String attachName;
 
+    private String meal;
+
+    private int attachSingle;
+
     private double attachPrice;
 
     public Attachment() {
@@ -44,6 +48,22 @@ public class Attachment extends Entity {
 
     public void setAttachName(String attachName) {
         this.attachName = attachName;
+    }
+
+    public String getMeal() {
+        return meal;
+    }
+
+    public void setMeal(String meal) {
+        this.meal = meal;
+    }
+
+    public int getAttachSingle() {
+        return attachSingle;
+    }
+
+    public void setAttachSingle(int attachSingle) {
+        this.attachSingle = attachSingle;
     }
 
     public double getAttachPrice() {

@@ -195,36 +195,123 @@ CREATE TABLE `gmair_drift`.`activity_thumbnail` (
 );
 
 ALTER TABLE `gmair_drift`.`activity_thumbnail`
-  ADD COLUMN `activity_id` VARCHAR(20) NULL AFTER `thumbnail_id`;
-
+  ADD COLUMN `activity_id` VARCHAR(20) NULL
+  AFTER `thumbnail_id`;
 
 ## 2018-08-15
 CREATE TABLE `gmair_drift`.`drift_promotion` (
-  `promotion_id` VARCHAR(20) NOT NULL,
-  `activity_id` VARCHAR(20) NOT NULL,
-  `promotion_value` DOUBLE NOT NULL,
+  `promotion_id`          VARCHAR(20)  NOT NULL,
+  `activity_id`           VARCHAR(20)  NOT NULL,
+  `promotion_value`       DOUBLE       NOT NULL,
   `promotion_description` VARCHAR(100) NOT NULL,
-  `block_flag` TINYINT(1) NOT NULL,
-  `create_time` DATETIME NOT NULL,
-  PRIMARY KEY (`promotion_id`));
-
-
-## 2019-08-15
-CREATE TABLE `gmair_drift`.`order_express`  (
-  `order_id` varchar(45) NULL,
-  `express_id` varchar(45) NULL,
-  `express_status` tinyint(1) NULL,
-  `company` varchar(45) NULL,
-  `block_flag` tinyint(1) NULL,
-  `create_time` datetime(0) NULL
+  `block_flag`            TINYINT(1)   NOT NULL,
+  `create_time`           DATETIME     NOT NULL,
+  PRIMARY KEY (`promotion_id`)
 );
 
-## 2019-08-22
-CREATE TABLE `drift_verification`  (
-  `verify_id` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `id_card` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `id_name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `block_flag` tinyint(1) NOT NULL,
-  `create_time` datetime NOT NULL,
+## 2019-08-15
+CREATE TABLE `gmair_drift`.`order_express` (
+  `order_id`       VARCHAR(45) NULL,
+  `express_id`     VARCHAR(45) NULL,
+  `express_status` TINYINT(1)  NULL,
+  `company`        VARCHAR(45) NULL,
+  `block_flag`     TINYINT(1)  NULL,
+  `create_time`    DATETIME(0) NULL
+);
+
+## 2019-08-21
+ALTER TABLE `gmair_drift`.`drift_activity`
+  ADD COLUMN `open_date` DATE NULL
+  AFTER `create_time`;
+
+ALTER TABLE `gmair_drift`.`drift_activity`
+  ADD COLUMN `close_date` DATE NULL
+  AFTER `open_date`;
+
+ALTER TABLE `gmair_drift`.`drift_activity`
+  ADD COLUMN `delay_days` INT NULL
+  AFTER `close_date`;
+
+## 2019-08-23
+
+CREATE TABLE `drift_verification` (
+  `verify_id`   VARCHAR(30) CHARACTER SET utf8
+  COLLATE utf8_general_ci  NOT NULL,
+  `id_card`     VARCHAR(20) CHARACTER SET utf8
+  COLLATE utf8_general_ci  NOT NULL,
+  `id_name`     VARCHAR(30) CHARACTER SET utf8
+  COLLATE utf8_general_ci  NOT NULL,
+  `block_flag`  TINYINT(1) NOT NULL,
+  `create_time` DATETIME   NOT NULL,
   PRIMARY KEY (`verify_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+)
+  ENGINE = InnoDB
+  CHARACTER SET = utf8
+  COLLATE = utf8_general_ci
+  ROW_FORMAT = DYNAMIC;
+
+ALTER TABLE `gmair_drift`.`drift_verification`
+  ADD COLUMN `openid` VARCHAR(50) NOT NULL
+  AFTER `verify_id`;
+
+#2019-09-03
+ALTER TABLE `gmair_drift`.`attachment`
+ADD COLUMN `set_meal` VARCHAR(45) NULL AFTER `attach_name`;
+
+ALTER TABLE `gmair_drift`.`attachment`
+ADD COLUMN `attach_single` INT NOT NULL AFTER `set_meal`;
+
+ALTER TABLE `gmair_drift`.`drift_order_item`
+ADD COLUMN `single_num` INT NOT NULL AFTER `item_name`;
+
+#2019-09-04
+CREATE TABLE `gmair_drift`.`drift_address` (
+  `address_id` VARCHAR(45) NOT NULL,
+  `consumer_id` VARCHAR(45) NOT NULL,
+  `consignee` VARCHAR(45) NOT NULL,
+  `province` VARCHAR(45) NOT NULL,
+  `city` VARCHAR(45) NOT NULL,
+  `district` VARCHAR(45) NOT NULL,
+  `address_detail` VARCHAR(45) NOT NULL,
+  `phone` VARCHAR(45) NOT NULL,
+  `default_address` TINYINT(1) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`address_id`));
+
+CREATE TABLE `gmair_drift`.`drift_user` (
+  `user_id` VARCHAR(45) NOT NULL,
+  `open_id` VARCHAR(50) NOT NULL,
+  `nickname` VARCHAR(45) NOT NULL,
+  `phone` VARCHAR(45) NOT NULL,
+  `province` VARCHAR(45) NOT NULL,
+  `city` VARCHAR(45) NOT NULL,
+  `country` VARCHAR(45) NOT NULL,
+  `user_sex` TINYINT(1) NOT NULL,
+  `avatar_url` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`user_id`));
+
+ALTER TABLE `gmair_drift`.`drift_order_item`
+ADD COLUMN `real_quantity` INT NULL AFTER `quantity`;
+
+ALTER TABLE `gmair_drift`.`drift_order_item`
+CHANGE COLUMN `single_num` `single_num` INT(11) NULL ;
+
+#2019-09-09
+
+CREATE TABLE `gmair_drift`.`express_detail` (
+  `detail_id` VARCHAR(45) NOT NULL,
+  `context` VARCHAR(45) NOT NULL,
+  `time` DATETIME NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  `express_id` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`detail_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+#2019-10-10
+ALTER TABLE `gmair_drift`.`order_express`
+ADD COLUMN `express_num` VARCHAR(45) NOT NULL AFTER `block_flag`;
+

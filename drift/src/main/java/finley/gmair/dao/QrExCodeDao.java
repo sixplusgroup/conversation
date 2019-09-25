@@ -9,4 +9,6 @@ public interface QrExCodeDao {
     ResultData query(Map<String, Object> condition);
 
     ResultData insert(QR_EXcode code);
+
+    ResultData update(Map<String, Object> condition);
 }

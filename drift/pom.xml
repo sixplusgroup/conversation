@@ -11,7 +11,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>drift</artifactId>
-    <version>1.7.5-SNAPSHOT</version>
+    <version>1.8.6-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -85,18 +85,11 @@
             <version>3.15-beta2</version>
         </dependency>
 
-        <!-- 芝麻信用 -->
-        <dependency>
-            <groupId>com.alipay.sdk</groupId>
-            <artifactId>alipay-sdk-java</artifactId>
-            <version>3.7.110.ALL</version>
-        </dependency>
-
         <!-- 腾讯云sdk -->
         <dependency>
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java</artifactId>
-            <version>3.0.85</version>
+            <version>3.0.86</version>
         </dependency>
     </dependencies>
 

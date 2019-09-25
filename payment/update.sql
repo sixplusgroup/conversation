@@ -46,7 +46,7 @@ CREATE TABLE `return_info`  (
   `sign` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `trade_type` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `block_flag` tinyint(1) NOT NULL,
-  `create_time` datetime(0) NOT NULL,
+  `create_time` datetime NOT NULL,
   PRIMARY KEY (`info_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 

@@ -1,8 +1,10 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.mqtt.Firmware;
+import finley.gmair.pool.CorePool;
 import finley.gmair.service.FirmwareService;
 import finley.gmair.service.MqttService;
 import finley.gmair.service.RedisService;
@@ -90,7 +92,8 @@ public class MessageController {
         }
         try {
             mqttService.publish(topic, json);
-            MQTTUtil.partial(redisService, uid, temp);
+            CorePool.getComPool().execute(() -> MQTTUtil.partial(redisService, uid, temp));
+            logger.info("Send message to " + uid + ", content: " + JSON.toJSONString(json) + " on topic " + topic);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Command message publishing error with: " + e.getMessage());

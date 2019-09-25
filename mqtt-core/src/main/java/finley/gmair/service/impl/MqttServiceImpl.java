@@ -12,7 +12,6 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 /**
@@ -54,12 +53,14 @@ public class MqttServiceImpl implements MqttService {
         try {
             client.publish(topic, message);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("[Error] publish topic failure " + e.getMessage());
+
         }
         return result;
     }
 
     private void init() {
+        logger.info("[Info] prepare a new client");
         try {
             client = new MqttClient(properties.getOutbound().getUrls(), properties.getOutbound().getClientId(), new MemoryPersistence());
             MqttConnectOptions options = new MqttConnectOptions();
@@ -68,8 +69,9 @@ public class MqttServiceImpl implements MqttService {
             options.setConnectionTimeout(10);
             client.setCallback(new PushCallback());
             client.connect(options);
+            logger.info("[Info] MQTT client initialize successfully");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("[Error]" + e.getMessage());
         }
     }
 

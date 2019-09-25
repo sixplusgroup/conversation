@@ -1,15 +1,14 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.installation.*;
-import finley.gmair.model.message.MessageTemplate;
+import finley.gmair.model.resource.FileMap;
 import finley.gmair.pool.InstallPool;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.util.SerialUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import static org.apache.el.parser.ELParserConstants.CONCAT;
 
 /**
  * @ClassName: AssignController
@@ -58,6 +55,12 @@ public class AssignController {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private PictureMd5Service pictureMd5Service;
+
+    @Autowired
+    private ResourcesService resourcesService;
 
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
@@ -253,10 +256,14 @@ public class AssignController {
                 if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
                 //获取短信模板
                 r = messageService.template("NOTIFICATION_DISPATCHED");
-                if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
-                MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
-                String candidate = template.getMessage().replaceAll("###", "%s");
+                logger.info("template message: " + JSON.toJSONString(r));
+                JSONObject json = JSONObject.parseObject(JSON.toJSONString(r));
+                if (!json.getString("responseCode").equalsIgnoreCase("RESPONSE_OK")) return;
+                json = json.getJSONArray("data").getJSONObject(0);
+                String template = json.getString("message");
+                String candidate = template.replaceAll("###", "%s");
                 candidate = String.format(candidate, assign.getDetail(), member.getMemberName(), member.getMemberPhone());
+                logger.info("message content: " + candidate);
                 //发送短信
                 messageService.send(assign.getConsumerPhone(), candidate);
             });
@@ -339,7 +346,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData tasks(String memberId, Integer status, String search) {
+    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -381,18 +388,43 @@ public class AssignController {
                 condition.put("consumer", fuzzysearch);
             }
             response = assignService.principal(condition);
-        } else response = assignService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("查询安装负责人所负责的安装任务失败，请稍后尝试");
-            return result;
+            List<Assign> resultList = (List<Assign>) response.getData();
+            int totalPage = resultList.size();
+            result.setResponseCode(response.getResponseCode());
+            JSONObject json = new JSONObject();
+            json.put("totalPage", totalPage);
+            json.put("list", resultList);
+            result.setData(json);
+        } else {
+            response = assignService.fetch(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("查询安装负责人所负责的安装任务失败，请稍后尝试");
+                return result;
+            }
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("未查询到相关的安装任务");
+                return result;
+            }
+            if(!StringUtils.isEmpty(page)&&!StringUtils.isEmpty(pageLength)){
+                List<Assign> resultList = (List<Assign>) response.getData();
+                int totalPage = resultList.size();
+                if(totalPage>Integer.parseInt(page)*Integer.parseInt(pageLength)){
+                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),Integer.parseInt(page)*Integer.parseInt(pageLength));
+                }else {
+//                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),totalPage-1);
+                }
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("totalPage", totalPage);
+                jsonObject.put("list", resultList);
+                result.setData(jsonObject);
+//                result.setData(resultList);
+            }else {
+                result.setData(response.getData());
+            }
+
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("未查询到相关的安装任务");
-            return result;
-        }
-        result.setData(response.getData());
         return result;
     }
 
@@ -509,9 +541,29 @@ public class AssignController {
             result.setDescription("请提供安装快照相关的信息");
             return result;
         }
+        //检测图片是否已存在
+        String[] urls = picture.split(",");
+        List<String> newUrls=new ArrayList<>();
+        ResultData response = null;
+        Map<String, Object> md5_condition = new HashMap<>();
+        for(int i = 0; i<urls.length;i++){
+            response = resourcesService.getTempFileMap(urls[i]);
+            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                String md5 = (String) response.getData();
+                newUrls.add(urls[i]);
+                md5_condition.clear();
+                md5_condition.put("md5",md5);
+                md5_condition.put("blockFlag",false);
+                response = pictureMd5Service.fetch(md5_condition);
+                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                    pictureMd5Service.create(new PictureMd5(urls[i],md5));
+                }
+            }
+        }
+        picture = StringUtils.join(newUrls,",");
         Snapshot snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description);
         //存储安装快照
-        ResultData response = assignSnapshotService.create(snapshot);
+        response = assignSnapshotService.create(snapshot);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("创建安装任务快照失败，请稍后尝试");
@@ -556,17 +608,22 @@ public class AssignController {
             //获取短信模板
             r = messageService.template("NOTIFICATION_INSTALL");
             if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
-            MessageTemplate template = ((List<MessageTemplate>) r.getData()).get(0);
-            String candidate = template.getMessage().replaceAll("###", "%s");
-            String code = SerialUtil.serial(4);
-            //存储安装服务码
-            AssignCode ac = new AssignCode(assignId, code);
-            r = assignCodeService.create(ac);
-            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                logger.error("Fail to create code for assign");
-                return;
-            }
-            candidate = String.format(candidate, assign.getDetail(), code);
+
+            logger.info("template message: " + JSON.toJSONString(r));
+            JSONObject json = JSONObject.parseObject(JSON.toJSONString(r));
+            if (!json.getString("responseCode").equalsIgnoreCase("RESPONSE_OK")) return;
+            json = json.getJSONArray("data").getJSONObject(0);
+            String template = json.getString("message");
+            String candidate = template.replaceAll("###", "%s");
+//            String code = SerialUtil.serial(4);
+//            //存储安装服务码
+//            AssignCode ac = new AssignCode(assignId, code);
+//            r = assignCodeService.create(ac);
+//            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                logger.error("Fail to create code for assign");
+//                return;
+//            }
+//            candidate = String.format(candidate, assign.getDetail(), code);
             //发送短信
             messageService.send(assign.getConsumerPhone(), candidate);
         });

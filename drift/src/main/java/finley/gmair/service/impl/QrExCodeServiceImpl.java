@@ -51,4 +51,19 @@ public class QrExCodeServiceImpl implements QrExCodeService {
         }
         return result;
     }
+
+    @Override
+    public ResultData updateQrExCode(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = qrExCodeDao.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to update code to database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
 }

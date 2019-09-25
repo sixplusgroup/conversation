@@ -11,6 +11,8 @@ public class FileMap extends Entity {
 
     private String fileName;
 
+    private String md5;
+
     public FileMap() {
         super();
     }
@@ -20,6 +22,14 @@ public class FileMap extends Entity {
         this.fileUrl = fileUrl;
         this.actualPath = actualPath;
         this.fileName = fileName;
+    }
+
+    public FileMap(String fileUrl, String actualPath, String fileName, String md5) {
+        this();
+        this.fileUrl = fileUrl;
+        this.actualPath = actualPath;
+        this.fileName = fileName;
+        this.md5 = md5;
     }
 
     public String getFileId() {
@@ -52,5 +62,13 @@ public class FileMap extends Entity {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
     }
 }

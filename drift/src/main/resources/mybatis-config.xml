@@ -18,5 +18,7 @@
         <mapper resource="mapper/thumbnail.xml"></mapper>
         <mapper resource="mapper/express.xml"></mapper>
         <mapper resource="mapper/verification.xml"></mapper>
+        <mapper resource="mapper/address.xml"></mapper>
+        <mapper resource="mapper/user.xml"></mapper>
     </mappers>
 </configuration>

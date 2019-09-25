@@ -4,11 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeHandlers>
-        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="finley.gmair.model.payment.TradeState"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+                     javaType="finley.gmair.model.payment.TradeState"/>
     </typeHandlers>
     <mappers>
-        <mapper resource="mapper/trade.xml" />
-        <mapper resource="mapper/configuration.xml" />
-        <mapper resource="mapper/returnInfo.xml" />
+        <mapper resource="mapper/trade.xml"/>
+        <mapper resource="mapper/configuration.xml"/>
+        <mapper resource="mapper/returnInfo.xml"/>
     </mappers>
 </configuration>

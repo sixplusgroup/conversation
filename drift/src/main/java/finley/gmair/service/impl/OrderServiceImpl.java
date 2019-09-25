@@ -113,4 +113,18 @@ public class OrderServiceImpl implements OrderService {
         result = orderDao.deleteOrder(orderId);
         return result;
     }
+
+    @Override
+    public ResultData cancelDriftOrder(DriftOrder driftOrder) {
+        ResultData result = new ResultData();
+        ResultData response = orderDao.updateOrder(driftOrder);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to cancel order");
+        }
+        return result;
+    }
 }

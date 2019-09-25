@@ -1,485 +1,128 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.company.CompanyTransfer;
-import finley.gmair.form.express.ExpressCompanyForm;
-import finley.gmair.form.express.ExpressOrderForm;
-import finley.gmair.form.express.ExpressParcelForm;
-import finley.gmair.model.express.*;
-import finley.gmair.schedule.OrderStatusSchedule;
-import finley.gmair.schedule.ParcelStatusSchedule;
+import finley.gmair.model.express.Express;
 import finley.gmair.service.ExpressService;
-import finley.gmair.service.LogService;
-import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/express")
+@PropertySource("classpath:express.properties")
 public class ExpressController {
 
     @Autowired
     private ExpressService expressService;
 
-    @Autowired
-    private CompanyTransfer companyTransfer;
+    @Value("${key}")
+    private String key;
 
-    @Autowired
-    private OrderStatusSchedule orderStatusSchedule;
-
-    @Autowired
-    private ParcelStatusSchedule parcelStatusSchedule;
-
-    @Autowired
-    private LogService logService;
+    @Value("${callbackUrl}")
+    private String callbackUrl;
 
     /**
-     * This method is used to add express company in the system
-     *
+     * 订阅快递消息
+     * @param expressCompany
+     * @param expressNo
      * @return
      */
-    @PostMapping("/company/create")
-    public ResultData addCompany(ExpressCompanyForm form, HttpServletRequest request) {
-        ResultData result = new ResultData();
-        //check required input
-        if (StringUtils.isEmpty(form.getCompanyName()) || StringUtils.isEmpty(form.getCompanyCode()) || StringUtils.isEmpty(form.getCompanyUrl())) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the express company name or code is specified");
-            return result;
-        }
-        //get variable value
-        String companyName = form.getCompanyName().trim();
-        String companyCode = form.getCompanyCode().trim();
-        String companyUrl = form.getCompanyUrl().trim();
-        //check whether the express with same company already exist or not
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("companyName", companyName);
-        condition.put("blockFlag", false);
-        ResultData response = expressService.fetchExpressCompany(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription(new StringBuffer("Express company: ").append(companyName).append(" already exist").toString());
-            return result;
-        }
-        ExpressCompany company = new ExpressCompany(companyName, companyUrl, companyCode);
-        response = expressService.createExpressCompany(company);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            logService.createSysLog("SUCCESS", "express", new StringBuffer("Succeed to create a new express company named ").append(companyName).toString(), IPUtil.getIP(request));
-            result.setData(response.getData());
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            logService.createSysLog("ERROR", "express", new StringBuffer("Fail to create a new express company named ").append(companyName).toString(), IPUtil.getIP(request));
-            result.setDescription(new StringBuffer("Fail to add express company: ").append(companyName).toString());
-        }
-        return result;
+    @PostMapping("/subscribe")
+    public String subscribeData(String expressCompany, String expressNo) {
+        StringBuffer param = new StringBuffer("{");
+        param.append("\"company\":\"").append(expressCompany).append("\"");
+        param.append(",\"number\":\"").append(expressNo).append("\"");
+        param.append(",\"key\":\"").append(this.key).append("\"");
+        param.append(",\"parameters\":{");
+        param.append("\"callbackurl\":\"").append(callbackUrl).append("\"");
+        param.append(",\"resultv2\":1");
+        param.append(",\"autoCom\":0");
+        param.append(",\"interCom\":0");
+        param.append("}");
+        param.append("}");
+        Map<String, String> params = new HashMap<>();
+        params.put("schema", "json");
+        params.put("param", param.toString());
+        return expressService.post(params);
     }
 
     /**
-     * This method is used to query all express companies in the system
-     *
-     * @return
-     */
-    @GetMapping({"/company/query", "/company/{companyId}/query"})
-    public ResultData queryCompany(@PathVariable(required = false, name = "companyId") String companyId) {
+     * 快递100推送消息接收
+     * */
+    @PostMapping("/receive")
+    public ResultData receive(HttpServletRequest request) throws Exception {
         ResultData result = new ResultData();
+        String param = request.getParameter("param");
+        JSONObject paramJson = JSONObject.parseObject(param);
+        String status = paramJson.getString("status");
+        JSONObject lastResultJson = paramJson.getJSONObject("lastResult");
+        String state = lastResultJson.getString("state");
+        String expressCompany = lastResultJson.getString("com");
+        String expressNo = lastResultJson.getString("nu");
+        String data = lastResultJson.getJSONArray("data").toJSONString();
+        Express express = new Express(status, state, expressCompany, expressNo, data);
         Map<String, Object> condition = new HashMap<>();
-        if (!StringUtils.isEmpty(companyId)) {
-            condition.put("companyId", companyId);
-        }
-        condition.put("blockFlag", false);
-        ResultData response = expressService.fetchExpressCompany(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to find express company");
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(response.getData());
-        return result;
-    }
-
-    /**
-     * This method is used to add express order in the system
-     *
-     * @return
-     */
-    @PostMapping("/order/create")
-    public ResultData addOrder(ExpressOrderForm form) {
-        ResultData result = new ResultData();
-        String orderId = form.getOrderId().trim();
-        String companyName = form.getCompanyName().trim();
-        String expressNo = form.getExpressNo().trim();
-        if (StringUtils.isEmpty(orderId) || StringUtils.isEmpty(companyName) || StringUtils.isEmpty(expressNo)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the order id or express company or no is specified");
-            return result;
-        }
-        Map<String, Object> condition_company = new HashMap<>();
-        condition_company.put("companyName", companyName);
-        ResultData response_company = expressService.fetchExpressCompany(condition_company);
-        String companyId;
-        if (response_company.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<ExpressCompany> list = (List<ExpressCompany>) response_company.getData();
-            companyId = list.get(0).getCompanyId();
-        } else {
-            return response_company;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("orderId", orderId);
-        condition.put("blockFlag", false);
-        ResultData response = expressService.fetchExpressOrder(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription(new StringBuffer("Express order: ").append(orderId).append(" already exist").toString());
-            return result;
-        }
-        condition.remove("orderId");
         condition.put("expressNo", expressNo);
-        response = expressService.fetchExpressOrder(condition);
+        condition.put("company", expressCompany);
+        ResultData response = expressService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription(new StringBuffer("Express order_expressNo: ").append(expressNo).append(" already exist").toString());
+            result = expressService.update(express);
             return result;
         }
-        ExpressOrder order = new ExpressOrder(orderId, companyId, expressNo);
-        try {
-            response = expressService.createExpressOrder(order, form.getQrcode().split(","));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result = expressService.create(express);
+            return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("Fail to add express order: ").append(orderId).toString());
+            result.setDescription("服务器正忙，请稍后重试");
         }
         return result;
     }
 
     /**
-     * This method is used to query express_order in the system
-     *
+     * 快递查询接口
+     * @param expressNo 物流单号
+     * @param expressCompany 物流公司号
      * @return
-     */
-    @GetMapping("/order/query/{orderId}")
-    public ResultData queryOrder(@PathVariable String orderId) {
+     * */
+    @GetMapping("/query")
+    public ResultData query(String expressNo, String expressCompany) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(orderId)) {
+        if (StringUtils.isEmpty(expressNo) || StringUtils.isEmpty(expressCompany)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the order id is specified");
-            return result;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("orderId", orderId);
-        condition.put("blockFlag", false);
-        ResultData response = expressService.fetchExpressOrder(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<ExpressOrder> list = (List<ExpressOrder>) response.getData();
-            result.setData(list.get(0));
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            return result;
-        } else {
-            return response;
-        }
-    }
-
-    /**
-     * This method is used to query express details in the system
-     *
-     * @return
-     */
-    @GetMapping("/query/{expressNo}")
-    public ResultData queryRoute(@PathVariable String expressNo) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(expressNo)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the express no is specified");
+            result.setDescription("Please ensure you fill all the required fields");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("expressNo", expressNo);
-        condition.put("blockFlag", false);
-        ResultData response = expressService.fetchExpressOrder(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<ExpressOrder> list = (List<ExpressOrder>) response.getData();
-            ExpressOrder expressOrder = list.get(0);
-            condition.remove("expressNo");
-            condition.put("companyId", expressOrder.getCompanyId());
-            response = expressService.fetchExpressCompany(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                List<ExpressCompany> listCompany = (List<ExpressCompany>) response.getData();
-                ExpressCompany expressCompany = listCompany.get(0);
-                response = companyTransfer.transfer(expressCompany.getCompanyCode(), expressOrder.getExpressNo(), true);
-                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    result.setData(response.getData());
-                    result.setResponseCode(ResponseCode.RESPONSE_OK);
-                    return result;
-                } else {
-                    return response;
-                }
-            } else {
-                return response;
-            }
-        } else {
-            return response;
+        condition.put("company", expressCompany);
+        ResultData response = expressService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("为查询到相关订单：" + expressNo);
         }
-    }
-
-    /**
-     * This method is used to add parcel in the system
-     *
-     * @return
-     */
-    @PostMapping("/parcel/create")
-    public ResultData addParcel(ExpressParcelForm form) {
-        ResultData result = new ResultData();
-        String parentExpress = form.getParentExpress().trim();
-        String expressNo = form.getExpressNo().trim();
-        String codeValue = form.getCodeValue();
-        int parcelType = form.getParcelType();
-        if (StringUtils.isEmpty(parentExpress) || StringUtils.isEmpty(parcelType)) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the parentExpress or parcelType is specified");
-            return result;
+            result.setDescription("查询失败，请稍后重试");
         }
-        if (StringUtils.isEmpty(codeValue) && parcelType == 0) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the codeValue is specified");
-            return result;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        ResultData response;
-        if (!StringUtils.isEmpty(codeValue)) {
-            condition.put("codeValue", codeValue);
-            condition.put("blockFlag", false);
-            response = expressService.fetchExpressParcel(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription(new StringBuffer("Express parcel belongs to order_express: ").append(parentExpress).append(" already exist").toString());
-                return result;
-            }
-        }
-        if (StringUtils.isEmpty(expressNo)) {
-            Map<String, Object> condition_order = new HashMap<>();
-            condition_order.put("expressId", parentExpress);
-            condition_order.put("blockFlag", false);
-            ResultData response_order = expressService.fetchExpressOrder(condition_order);
-            if (response_order.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                List<ExpressOrder> list = (List<ExpressOrder>) response_order.getData();
-                expressNo = list.get(0).getExpressNo();
-            } else {
-                return response_order;
-            }
-        }
-        ParcelType temp;
-        if (parcelType == 0) {
-            temp = ParcelType.MACHINE;
-        } else {
-            temp = ParcelType.ORDINARY;
-        }
-        ExpressParcel expressParcel = new ExpressParcel(parentExpress, expressNo, codeValue, temp);
-        response = expressService.createExpressParcel(expressParcel);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("Fail to add express parcel belongs to: ").append(parentExpress).toString());
-        }
         return result;
     }
-
-    /**
-     * This method is used to query orderId in the system by codeValue
-     *
-     * @return
-     */
-    @GetMapping("/parcel/query/order/{codeValue}")
-    public ResultData getOrderId(@PathVariable String codeValue) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(codeValue)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the code_value is specified");
-            return result;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("codeValue", codeValue);
-        condition.put("blockFlag", false);
-        ResultData response = expressService.fetchExpressParcel(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            ExpressParcel parcel = ((List<ExpressParcel>) response.getData()).get(0);
-            condition.clear();
-            condition.put("expressId", parcel.getParentExpress());
-            condition.put("blockFlag", false);
-            response = expressService.fetchExpressOrder(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                ExpressOrder order = ((List<ExpressOrder>) response.getData()).get(0);
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setData(order);
-                return result;
-            } else {
-                return response;
-            }
-
-        } else {
-            return response;
-        }
-    }
-
-    /**
-     * This method is used to query codeValue in the system by orderId
-     *
-     * @return
-     */
-    @GetMapping("/order/query/parcel/{orderId}")
-    public ResultData getCodeValue(@PathVariable String orderId) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(orderId)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the order_id is specified");
-            return result;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("orderId", orderId);
-        condition.put("blockFlag", false);
-        ResultData response = expressService.fetchExpressOrder(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            ExpressOrder expressOrder = ((List<ExpressOrder>) response.getData()).get(0);
-            condition.clear();
-            condition.put("parentExpress", expressOrder.getExpressId());
-            condition.put("parcelType", 0);
-            condition.put("blockFlag", false);
-            response = expressService.fetchExpressParcel(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                List<ExpressParcel> expressParcels = (List<ExpressParcel>) response.getData();
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                JSONArray json = new JSONArray();
-                for (ExpressParcel expressParcel : expressParcels) {
-                    JSONObject temp = new JSONObject();
-                    temp.put("codeValue", expressParcel.getCodeValue());
-                    json.add(temp);
-                }
-                result.setData(json);
-                return result;
-            } else {
-                return response;
-            }
-
-        } else {
-            return response;
-        }
-    }
-
-    /**
-     * This method is used to query all parcels of order
-     *
-     * @return
-     */
-    @GetMapping("/parcel/query/{parentExpress}")
-    public ResultData queryAllParcels(@PathVariable String parentExpress) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(parentExpress)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please make sure the parent express is specified");
-            return result;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("parentExpress", parentExpress);
-        condition.put("blockFlag", false);
-        ResultData response = expressService.fetchExpressParcel(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setData(response.getData());
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            return result;
-        } else {
-            return response;
-        }
-    }
-
-    @PostMapping("/receive/confirm")
-    public ResultData confirmReceived(String expressId, HttpServletRequest request) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(expressId)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Please provide all required information");
-            return result;
-        }
-        ResultData response = expressService.confirmReceive(expressId);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to update express status to received.");
-            logService.createSysLog("ERROR", "express", new StringBuffer("Fail to set the status for express id: ").append(expressId).append(" to received.").toString(), IPUtil.getIP(request));
-            return result;
-        }
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setDescription("Succeed to set express status to received.");
-        return result;
-    }
-
-    @PostMapping(value = "/delete")
-    public ResultData delete(String orderId) {
-        ResultData result = new ResultData();
-        if (StringUtils.isEmpty(orderId)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please make sure you fill the required field");
-            return result;
-        }
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("orderId", orderId);
-        ResultData response = expressService.fetchExpressOrder(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to retrieve expressOrder, please try again later");
-            return result;
-        }
-        ExpressOrder expressOrder = ((List<ExpressOrder>) response.getData()).get(0);
-        String parent_express = expressOrder.getExpressId();
-        condition.clear();
-        condition.put("parentExpress", parent_express);
-        response = expressService.fetchExpressParcel(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to retrieve expressParcel, please try again later");
-            return result;
-        }
-        List<ExpressParcel> list = (List<ExpressParcel>) response.getData();
-        for (ExpressParcel expressParcel : list) {
-            expressService.deleteExpressParcel(expressParcel.getExpressId());
-        }
-        result = expressService.deleteExpressOrder(expressOrder.getExpressId());
-        return result;
-    }
-
-    /**
-     * This method is used to update order status every hour
-     */
-    @PostMapping("/schedule/order")
-    public ResultData updateOrderStatus() {
-        ResultData result = orderStatusSchedule.update();
-        return result;
-    }
-
-    /**
-     * This method is used to update parcel status every hour
-     */
-    @PostMapping("/schedule/parcel")
-    public ResultData updateParcelStatus() {
-        ResultData result = parcelStatusSchedule.update();
-        return result;
-    }
-
 }

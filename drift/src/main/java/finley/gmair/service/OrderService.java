@@ -16,4 +16,6 @@ public interface OrderService {
 
     ResultData deleteDriftOrder(String orderId);
 
+    ResultData cancelDriftOrder(DriftOrder order);
+
 }

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -55,6 +56,13 @@ public class ImageController {
     public ResultData upload(MultipartHttpServletRequest request) {
         ResultData result = new ResultData();
         MultipartFile file = request.getFile("image");
+        String md5 = "null";
+        try {
+            md5 = tempFileMapService.transToMD5(file);
+            logger.info(md5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String name = file.getOriginalFilename();
         String path = tempDir + File.separator + "image" + File.separator + new SimpleDateFormat("yyyyMMdd").format(new Date());
         File base = null;
@@ -78,7 +86,7 @@ public class ImageController {
             return result;
         }
         String url = imageBase + File.separator + filename;
-        FileMap temp = new FileMap(url, path, filename);
+        FileMap temp = new FileMap(url, path, filename, md5);
         ResultData response = tempFileMapService.createTempFileMap(temp);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

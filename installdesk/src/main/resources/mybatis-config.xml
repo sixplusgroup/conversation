@@ -13,5 +13,6 @@
         <mapper resource="mapper/assigncode.xml"/>
         <mapper resource="mapper/config.xml"/>
         <mapper resource="mapper/assign_report_view.xml"/>
+        <mapper resource="mapper/picture_md5.xml"/>
     </mappers>
 </configuration>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.drift.address">
+    <resultMap id="addressVo" type="finley.gmair.model.drift.DriftAddress">
+        <result property="addressId" column="address_id"></result>
+        <result property="consumerId" column="consumer_id"></result>
+        <result property="consignee" column="consignee"></result>
+        <result property="province" column="province"></result>
+        <result property="city" column="city"></result>
+        <result property="district" column="district"></result>
+        <result property="addressDetail" column="address_detail"></result>
+        <result property="phone" column="phone"></result>
+        <result property="defaultAddress" column="default_address"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="addressVo">
+        select address_id, consumer_id, consignee, province, city, district, address_detail, phone, default_address, block_flag, create_time
+        from gmair_drift.drift_address
+        where 1 = 1
+        <if test="addressId != null">
+            and address_id = #{addressId}
+        </if>
+        <if test="consumerId != null">
+            and consumer_id = #{consumerId}
+        </if>
+        <if test="consignee != null">
+            and consignee = #{consignee}
+        </if>
+        <if test="province != null">
+            and province = #{province}
+        </if>
+        <if test="city != null">
+            and city = #{city}
+        </if>
+        <if test="district != null">
+            and district = #{district}
+        </if>
+        <if test="addressDetail != null">
+            and address_detail = #{addressDetail}
+        </if>
+        <if test="phone != null">
+            and phone = #{phone}
+        </if>
+        <if test="defaultAddress != null">
+            and default_address = #{defaultAddress}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by default_address desc ,create_time desc
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.DriftAddress">
+        insert into gmair_drift.drift_address(address_id, consumer_id, consignee, province, city, district, address_detail, phone, default_address, block_flag, create_time)
+        values (#{addressId}, #{consumerId}, #{consignee}, #{province}, #{city}, #{district}, #{addressDetail}, #{phone}, #{defaultAddress}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="update" parameterType="finley.gmair.model.drift.DriftAddress">
+        update gmair_drift.drift_address
+        <set>
+            <if test="consignee != null">
+                consignee = #{consignee},
+            </if>
+            <if test="province != null">
+                province = #{province},
+            </if>
+            <if test="city != null">
+                city = #{city},
+            </if>
+            <if test="district != null">
+                district = #{district},
+            </if>
+            <if test="addressDetail != null">
+                address_detail = #{addressDetail},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="defaultAddress != null">
+                default_address = #{defaultAddress},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag}
+            </if>
+        </set>
+        where address_id = #{addressId}
+    </update>
+
+    <update id="delete" parameterType="java.lang.String">
+        update gmair_drift.drift_address
+        set block_flag = true
+        where address_id = #{addressId}
+    </update>
+</mapper>
