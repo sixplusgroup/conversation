@@ -171,6 +171,23 @@ public class OrderController {
             quantity = quantity - (quantity-1)/5;
             price += (orderItem.getItemPrice()) * quantity;
         }
+        //查询同一消费者的订单，检查预计使用日期在15天内添加提示
+        condition.clear();
+        int[] statusList = new int[]{DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(),DriftOrderStatus.BACK.getValue(),DriftOrderStatus.FINISHED.getValue()};
+        condition.put("consumerId",consumerId);
+        condition.put("blockFlag",false);
+        condition.put("statusList",statusList);
+        response = orderService.fetchDriftOrder(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            for(int i=0;i<((List<DriftOrder>) response.getData()).size();i++){
+                long day1 = expected.getTime();
+                long day2 = ((List<DriftOrder>) response.getData()).get(i).getExpectedDate().getTime();
+                if(-1296000000<day1-day2&&day1-day2<1296000000){
+                    description = "该用户15天内已预约使用";
+                    break;
+                }
+            }
+        }
 
         DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate);
         driftOrder.setTotalPrice(price);
@@ -685,7 +702,7 @@ public class OrderController {
             result.setDescription("请提供所需要获取订单的用户的信息");
             return result;
         }
-        int[] statusList = new int[]{OrderStatus.PROCESSING.getValue(), OrderStatus.PAYED.getValue(), OrderStatus.COMMENTED.getValue(), OrderStatus.FINISHED.getValue()};
+        int[] statusList = new int[]{DriftOrderStatus.APPLIED.getValue(), DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(),DriftOrderStatus.BACK.getValue(),DriftOrderStatus.FINISHED.getValue()};
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", openid);
         condition.put("blockFlag", false);
