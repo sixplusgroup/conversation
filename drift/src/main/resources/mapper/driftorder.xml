@@ -85,7 +85,12 @@
         <if test="createDate != null">
             AND from_unixtime(create_time, '%Y-%m-%d') = #{createDate}
         </if>
-        ORDER BY create_time ASC
+        <if test="consumerId != null">
+            ORDER BY create_time ASC
+        </if>
+        <if test="consumerId == null">
+            ORDER BY expected_date ASC
+        </if>
     </select>
 
     <select id="queryDriftItem" parameterType="java.lang.String" resultMap="orderItemVo">
