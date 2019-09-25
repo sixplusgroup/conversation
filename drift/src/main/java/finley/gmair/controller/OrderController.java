@@ -733,7 +733,7 @@ public class OrderController {
         }
 
         //update order status
-        DriftExpress driftExpress = new DriftExpress(orderId, "", company, expressNo);
+        DriftExpress driftExpress = new DriftExpress("", orderId, company, expressNo);
         driftExpress.setStatus(DriftExpressStatus.valueOf(expressFlag));
         if (driftExpress.getStatus() == null) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
