@@ -30,4 +30,14 @@ public class ActivityOrderController {
     public ResultData fetchOrderList(){
         return activityOrderService.fetchOrderList();
     }
+
+    @GetMapping("order/deliver")
+    public ResultData OrderDeliver(String orderId){
+        return activityOrderService.OrderDeliver(orderId);
+    }
+
+    @GetMapping("order/info")
+    public ResultData fetchInfo(String orderId){
+        return activityOrderService.fetchInfo(orderId);
+    }
 }
