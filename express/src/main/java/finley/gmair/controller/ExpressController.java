@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,12 +64,37 @@ public class ExpressController {
      * 快递100推送消息接收
      * */
     @PostMapping("/receive")
-    public ResultData receive(HttpServletRequest request) throws Exception {
+    public void doReceive(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        JSONObject resJson = new JSONObject();
+        try {
+            String param = request.getParameter("param");
+            JSONObject json = JSONObject.parseObject(param);
+            ResultData result = receive(json);
+            if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                resJson.put("result", false);
+                resJson.put("returnCode", "500");
+                resJson.put("message", "服务器错误");
+                response.getWriter().print(resJson);
+                return;
+            }
+            resJson.put("result", true);
+            resJson.put("returnCode", "200");
+            resJson.put("message", "成功");
+            response.getWriter().print(resJson);
+            return;
+        } catch (Exception e) {
+            resJson.put("result", false);
+            resJson.put("returnCode", "500");
+            resJson.put("message", "保存失败" + e.getMessage());
+            response.getWriter().print(resJson);
+            return;
+        }
+    }
+
+    private ResultData receive(JSONObject json) {
         ResultData result = new ResultData();
-        String param = request.getParameter("param");
-        JSONObject paramJson = JSONObject.parseObject(param);
-        String status = paramJson.getString("status");
-        JSONObject lastResultJson = paramJson.getJSONObject("lastResult");
+        String status = json.getString("status");
+        JSONObject lastResultJson = json.getJSONObject("lastResult");
         String state = lastResultJson.getString("state");
         String expressCompany = lastResultJson.getString("com");
         String expressNo = lastResultJson.getString("nu");
