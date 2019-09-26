@@ -139,7 +139,7 @@ public class ExpressController {
         ResultData response = expressService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("为查询到相关订单：" + expressNo);
+            result.setDescription("未查询到相关订单：" + expressNo);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
