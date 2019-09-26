@@ -881,37 +881,37 @@ public class OrderController {
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
 
         //取消优惠码使用
-        String excode = order.getExcode();
-        condition.clear();
-        condition.put("excode",excode);
-        condition.put("blockFlag",false);
-        response = qrExCodeService.fetchQrExCode(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            condition.clear();
-            condition.put("excode",excode);
-            condition.put("blockFlag",true);
-            response = qrExCodeService.updateQrExCode(condition);
-            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("恢复优惠券失败");
-                return result;
-            }
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-            condition.clear();
-            condition.put("codeValue",excode);
-            condition.put("status",EXCodeStatus.EXCHANGED);
-            response = exCodeService.modifyEXCode(condition);
-            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("恢复优惠券失败");
-                return result;
-            }
-        }else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("服务器错误");
-            return result;
-        }
+//        String excode = order.getExcode();
+////        condition.clear();
+////        condition.put("excode",excode);
+////        condition.put("blockFlag",false);
+////        response = qrExCodeService.fetchQrExCode(condition);
+////        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+////            result.setResponseCode(ResponseCode.RESPONSE_OK);
+////            condition.clear();
+////            condition.put("excode",excode);
+////            condition.put("blockFlag",true);
+////            response = qrExCodeService.updateQrExCode(condition);
+////            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+////                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+////                result.setDescription("恢复优惠券失败");
+////                return result;
+////            }
+////        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+////            condition.clear();
+////            condition.put("codeValue",excode);
+////            condition.put("status",EXCodeStatus.EXCHANGED);
+////            response = exCodeService.modifyEXCode(condition);
+////            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+////                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+////                result.setDescription("恢复优惠券失败");
+////                return result;
+////            }
+////        }else {
+////            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+////            result.setDescription("服务器错误");
+////            return result;
+////        }
         order.setStatus(DriftOrderStatus.CANCELED);
         response = orderService.updateDriftOrder(order);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
