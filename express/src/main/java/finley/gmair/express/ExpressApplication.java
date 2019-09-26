@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.schedule", "finley.gmair.company"})
+@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao"})
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableScheduling
