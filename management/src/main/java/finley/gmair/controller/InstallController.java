@@ -442,7 +442,7 @@ public class InstallController {
             logger.info(result.getData().toString());
             HSSFWorkbook wb = new HSSFWorkbook();
             HSSFSheet sheet = wb.createSheet("temp.xls");
-            String[] n = { "编号", "二维码", "型号", "用户" ,"联系方式","联系地址","团队","安装工人","完成时间"};
+            String[] n = { "编号", "二维码", "型号", "用户" ,"联系方式","联系地址","来源","团队","安装工人","完成时间"};
             Object[][] value = new Object[list.size() + 1][9];
             for (int m = 0; m < n.length; m++) {
                 value[0][m] = n[m];
@@ -454,9 +454,10 @@ public class InstallController {
                 value[i + 1][3] = list.get(i).getConsumerConsignee();
                 value[i + 1][4] = list.get(i).getConsumerPhone();
                 value[i + 1][5] = list.get(i).getConsumerAddress();
-                value[i + 1][6] = list.get(i).getTeamName();
-                value[i + 1][7] = list.get(i).getMemberName();
-                value[i + 1][8] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateAt());
+                value[i + 1][6] = list.get(i).getAssignSource();
+                value[i + 1][7] = list.get(i).getTeamName();
+                value[i + 1][8] = list.get(i).getMemberName();
+                value[i + 1][9] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateAt());
             }
             HSSFRow row[]=new HSSFRow[list.size()+1];
             HSSFCell cell[]=new HSSFCell[n.length];
