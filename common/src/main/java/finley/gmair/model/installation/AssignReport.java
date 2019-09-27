@@ -19,6 +19,8 @@ public class AssignReport extends Entity {
 
     private Date assignDate;
 
+    private String assignSource;
+
     private String consumerConsignee;
 
     private String consumerPhone;

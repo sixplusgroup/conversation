@@ -113,6 +113,7 @@ CREATE VIEW `gmair_install`.`assign_report_view` AS
         `install_assign`.`consumer_consignee` AS `consumer_consignee`,
         `install_assign`.`consumer_phone` AS `consumer_phone`,
         `install_assign`.`consumer_address` AS `consumer_address`,
+        `install_assign`.`assign_source` AS `assign_source`,
         `install_team`.`team_id` AS `team_id`,
         `install_team`.`team_name` AS `team_name`,
         `team_member`.`member_id` AS `member_id`,
