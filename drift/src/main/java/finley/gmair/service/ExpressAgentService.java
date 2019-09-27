@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @FeignClient("express-agent")
 public interface ExpressAgentService {
     @PostMapping("/express/subscribe")
@@ -15,4 +18,8 @@ public interface ExpressAgentService {
     @GetMapping("/express/query")
     ResultData getExpress(@RequestParam("expressNo") String expressNo,
                           @RequestParam("expressCompany") String expressCompany);
+
+    @PostMapping("/express/receive")
+    void receive(@RequestParam("request") HttpServletRequest request,
+                         @RequestParam("response") HttpServletResponse response);
 }

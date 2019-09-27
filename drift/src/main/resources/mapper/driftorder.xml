@@ -83,7 +83,7 @@
             AND block_flag = #{blockFlag}
         </if>
         <if test="createDate != null">
-            AND from_unixtime(create_time, '%Y-%m-%d') = #{createDate}
+            AND to_days(expected_date)= to_days(#{createDate})
         </if>
         <if test="consumerId != null">
             ORDER BY create_time ASC

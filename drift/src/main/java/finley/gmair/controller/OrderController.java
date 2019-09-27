@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -135,7 +136,12 @@ public class OrderController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date expected = sdf.parse(expectedDate);
         Equipment equipment = ((List<Equipment>) response.getData()).get(0);
-        //todo 检查当天是否可以继续借出设备
+        //检查当天是否可以继续借出设备
+        if(!available(activityId, expected)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("该日期仪器已被预定完，请重新选择日期");
+            return result;
+        }
 
         //构建订单中的子订单项
         List<DriftOrderItem> list = new ArrayList<>();
@@ -210,6 +216,41 @@ public class OrderController {
             result.setData(response.getData());
         }
         return result;
+    }
+
+    private boolean available(String activityId, Date date) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return false;
+        }
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        //判断传入的日期是否可以预约
+        if (date.compareTo(activity.getStartTime()) < 0 || date.compareTo(activity.getEndTime()) > 0) {
+            return false;
+        }
+        Calendar current = Calendar.getInstance();
+        if (date.compareTo(current.getTime()) < 0) return false;
+
+        //获取当天的预约情况
+        condition.clear();
+        condition.put("activityId", activityId);
+        List statusList = new ArrayList();
+        statusList.add(DriftOrderStatus.PAYED.getValue());
+        statusList.add(DriftOrderStatus.CONFIRMED.getValue());
+        statusList.add(DriftOrderStatus.DELIVERED.getValue());
+        statusList.add(DriftOrderStatus.FINISHED.getValue());
+        condition.put("statusList", statusList);
+        condition.put("createDate", date);
+        response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) return true;
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            int size = ((List<Activity>) response.getData()).size();
+            if (size < activity.getRepositorySize() * activity.getThreshold()) return true;
+        }
+        return false;
     }
 
     @PostMapping(value = "/pay/confirm")
@@ -957,4 +998,8 @@ public class OrderController {
         return result;
     }
 
+    @PostMapping("/express/receive")
+    void receive(HttpServletRequest request, HttpServletResponse response){
+        expressAgentService.receive(request,response);
+    }
 }
