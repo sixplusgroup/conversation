@@ -855,8 +855,8 @@ public class OrderController {
         if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("查询成功");
-            String expressNo = ((List<Express>)response.getData()).get(0).getExpressNo();
-            String expressCompany = ((List<Express>)response.getData()).get(0).getCompany();
+            String expressNo = ((List<DriftExpress>)response.getData()).get(0).getExpressNum();
+            String expressCompany = ((List<DriftExpress>)response.getData()).get(0).getCompany();
             response = expressAgentService.getExpress(expressNo, expressCompany);
             if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
