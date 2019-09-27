@@ -7,6 +7,8 @@ import finley.gmair.model.express.Express;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -34,6 +36,8 @@ public class ExpressController {
 
     @Value("${callbackUrl}")
     private String callbackUrl;
+
+    private Logger logger = LoggerFactory.getLogger(ExpressController.class);
 
     /**
      * 订阅快递消息
@@ -64,34 +68,9 @@ public class ExpressController {
      * 快递100推送消息接收
      * */
     @PostMapping("/receive")
-    public void doReceive(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        JSONObject resJson = new JSONObject();
-        try {
-            String param = request.getParameter("param");
-            JSONObject json = JSONObject.parseObject(param);
-            ResultData result = receive(json);
-            if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                resJson.put("result", false);
-                resJson.put("returnCode", "500");
-                resJson.put("message", "服务器错误");
-                response.getWriter().print(resJson);
-                return;
-            }
-            resJson.put("result", true);
-            resJson.put("returnCode", "200");
-            resJson.put("message", "成功");
-            response.getWriter().print(resJson);
-            return;
-        } catch (Exception e) {
-            resJson.put("result", false);
-            resJson.put("returnCode", "500");
-            resJson.put("message", "保存失败" + e.getMessage());
-            response.getWriter().print(resJson);
-            return;
-        }
-    }
-
-    private ResultData receive(JSONObject json) {
+    public ResultData receive(String param) {
+        JSONObject json = JSONObject.parseObject(param);
+        System.out.println(json);
         ResultData result = new ResultData();
         String status = json.getString("status");
         JSONObject lastResultJson = json.getJSONObject("lastResult");

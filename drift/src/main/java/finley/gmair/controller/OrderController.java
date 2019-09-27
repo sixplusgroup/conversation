@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -999,7 +1001,28 @@ public class OrderController {
     }
 
     @PostMapping("/express/receive")
-    void receive(HttpServletRequest request, HttpServletResponse response){
-        expressAgentService.receive(request,response);
+    public void doReceive(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        JSONObject resJson = new JSONObject();
+        try {
+            String param = request.getParameter("param");
+            ResultData result = expressAgentService.receive(param);
+            if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                resJson.put("result", false);
+                resJson.put("returnCode", "500");
+                resJson.put("message", "error");
+                response.getWriter().print(resJson);
+                return;
+            }
+            resJson.put("result", true);
+            resJson.put("returnCode", "200");
+            resJson.put("message", "success");
+            response.getWriter().print(resJson);
+        } catch (Exception e) {
+            resJson.put("result", false);
+            resJson.put("returnCode", "500");
+            resJson.put("message", "error");
+            e.printStackTrace();
+            response.getWriter().print(resJson);
+        }
     }
 }

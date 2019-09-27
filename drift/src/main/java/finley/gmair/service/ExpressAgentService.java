@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,5 @@ public interface ExpressAgentService {
                           @RequestParam("expressCompany") String expressCompany);
 
     @PostMapping("/express/receive")
-    void receive(@RequestParam("request") HttpServletRequest request,
-                         @RequestParam("response") HttpServletResponse response);
+    ResultData receive(@RequestParam("param") String param);
 }
