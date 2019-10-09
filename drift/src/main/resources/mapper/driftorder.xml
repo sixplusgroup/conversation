@@ -135,7 +135,7 @@
                 district = #{district},
             </if>
             <if test="machineOrderNo != null">
-                machine_orderNo = #{machineOrderNo}
+                machine_orderNo = #{machineOrderNo},
             </if>
             <if test="excode != null">
                 excode = #{excode},

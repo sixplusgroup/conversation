@@ -60,4 +60,9 @@ public class DriftController {
         result.setDescription(response.getDescription());
         return result;
     }
+
+    @GetMapping("activity/{activityId}/profile")
+    ResultData getActivityDetail(@PathVariable("activityId") String activityId){
+        return driftService.getActivityDetail(activityId);
+    }
 }

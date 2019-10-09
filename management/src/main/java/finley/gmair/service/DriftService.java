@@ -21,4 +21,7 @@ public interface DriftService {
 
     @PostMapping(value = "drift/order/express/create")
     ResultData createOrderExpress(@RequestParam("orderId") String orderId, @RequestParam("expressNo") String expressNo, @RequestParam("expressFlag") int expressFlag, @RequestParam("company") String company);
+
+    @GetMapping("/drift/activity/{activityId}/profile")
+    ResultData getActivityDetail(@PathVariable("activityId") String activityId);
 }

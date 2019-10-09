@@ -35,7 +35,7 @@ public class ExpressDaoImpl extends BaseDao implements ExpressDao {
         ResultData result = new ResultData();
         driftExpress.setExpressId(IDGenerator.generate("ACT"));
         try {
-            sqlSession.insert("gmair.drift.driftExpress.insert", driftExpress);
+            sqlSession.insert("gmair.drift.express.insert", driftExpress);
             result.setData(driftExpress);
         } catch (Exception e) {
             e.printStackTrace();
