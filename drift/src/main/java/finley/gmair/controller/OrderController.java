@@ -848,7 +848,7 @@ public class OrderController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
         condition.put("orderId", orderId);
-        if (StringUtils.isEmpty(status)) {
+        if (!StringUtils.isEmpty(status)) {
             condition.put("status", status);
         }
         ResultData response = expressService.fetchExpress(condition);
