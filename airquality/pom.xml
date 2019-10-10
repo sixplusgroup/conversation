@@ -11,7 +11,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>airquality</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.10.1-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
@@ -136,6 +136,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <!-- XML文件解析 -->
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>2.1.1</version>
         </dependency>
     </dependencies>
 

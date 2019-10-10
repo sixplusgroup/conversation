@@ -160,3 +160,11 @@ ALTER TABLE `gmair_airquality`.`city_monthly_aqi`
 ADD COLUMN `id` INT NOT NULL AUTO_INCREMENT FIRST,
 ADD PRIMARY KEY (`id`);
 
+CREATE TABLE `gmair_airquality`.`moji_aqi_cities` (
+  `moji_id` INT NOT NULL,
+  `region_id` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`moji_id`));
+
+
