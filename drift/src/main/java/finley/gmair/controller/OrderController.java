@@ -1025,4 +1025,68 @@ public class OrderController {
             response.getWriter().print(resJson);
         }
     }
+
+    /**
+     * 更新订单信息
+     * @param orderId
+     * @param consignee
+     * @param phone
+     * @param province
+     * @param city
+     * @param district
+     * @param address
+     * @param status
+     * @return
+     */
+    @PostMapping("/update")
+    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供orderId");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId",orderId);
+        condition.put("blockFlag",false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("订单查找失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        DriftOrder driftOrder = ((List<DriftOrder>)response.getData()).get(0);
+        if(!StringUtils.isEmpty(consignee)){
+            driftOrder.setConsignee(consignee);
+        }
+        if(!StringUtils.isEmpty(phone)){
+            driftOrder.setPhone(phone);
+        }
+        if(!StringUtils.isEmpty(province)){
+            driftOrder.setProvince(province);
+        }
+        if(!StringUtils.isEmpty(city)){
+            driftOrder.setCity(city);
+        }
+        if(!StringUtils.isEmpty(district)){
+            driftOrder.setDistrict(district);
+        }
+        if(!StringUtils.isEmpty(address)){
+            driftOrder.setAddress(address);
+        }
+        if(!StringUtils.isEmpty(status)){
+            driftOrder.setStatus(DriftOrderStatus.valueOf(status));
+        }
+        response = orderService.updateDriftOrder(driftOrder);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("更新失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        return result;
+    }
 }

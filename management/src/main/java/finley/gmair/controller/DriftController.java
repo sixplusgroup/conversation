@@ -61,8 +61,65 @@ public class DriftController {
         return result;
     }
 
-    @GetMapping("activity/{activityId}/profile")
+    /**
+     * 根据activityId查询活动详情
+     * @param activityId
+     * @return
+     */
+    @GetMapping("/activity/{activityId}/profile")
     ResultData getActivityDetail(@PathVariable("activityId") String activityId){
         return driftService.getActivityDetail(activityId);
+    }
+
+    /**
+     * 取消订单
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/order/cancel")
+    ResultData cancelOrder(String orderId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供订单编号");
+            return result;
+        }
+        result = driftService.cancelOrder(orderId);
+        return result;
+    }
+
+    /**
+     * 获取快递详情信息
+     * @param orderId
+     * @param status
+     * @return
+     */
+    @GetMapping("/order/express/select")
+    ResultData getExpressDetail(String orderId,int status){
+        return driftService.getExpressDetail(orderId,status);
+    }
+
+    /**
+     * 更新订单信息
+     * @param orderId
+     * @param consignee
+     * @param phone
+     * @param province
+     * @param city
+     * @param district
+     * @param address
+     * @param status
+     * @return
+     */
+    @PostMapping("/order/update")
+    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供orderId");
+            return result;
+        }
+        result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status);
+        return result;
     }
 }

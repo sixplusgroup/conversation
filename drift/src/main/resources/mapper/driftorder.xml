@@ -122,6 +122,12 @@
     <update id="update" parameterType="finley.gmair.model.drift.DriftOrder">
         update gmair_drift.drift_order
         <set>
+            <if test="consignee != null">
+                consignee = #{consignee},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
             <if test="address != null">
                 address = #{address},
             </if>
