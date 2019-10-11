@@ -546,6 +546,7 @@ public class AssignController {
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
+        List<String> md5s=new ArrayList<>();
         List<String> newUrls=new ArrayList<>();
         ResultData response = null;
         Map<String, Object> md5_condition = new HashMap<>();
@@ -559,13 +560,16 @@ public class AssignController {
                 md5_condition.put("blockFlag",false);
                 response = pictureMd5Service.fetch(md5_condition);
                 if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-                    pictureMd5Service.create(new PictureMd5(urls[i],md5));
+                    md5s.add(md5);
                 }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("请勿上传重复图片");
                     return result;
                 }
             }
+        }
+        for (int i=0;i<md5s.size();i++){
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
         }
         picture = StringUtils.join(newUrls,",");
         Snapshot snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description);
