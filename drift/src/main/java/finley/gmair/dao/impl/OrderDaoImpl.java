@@ -3,6 +3,7 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.OrderDao;
 import finley.gmair.model.drift.DriftOrder;
+import finley.gmair.model.drift.DriftOrderPanel;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -33,7 +34,7 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
     public ResultData queryOrder(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<DriftOrder> list = sqlSession.selectList("gmair.drift.order.query", condition);
+            List<DriftOrderPanel> list = sqlSession.selectList("gmair.drift.order.querydashboard", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }

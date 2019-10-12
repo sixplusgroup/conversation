@@ -26,6 +26,35 @@
         <collection property="list" select="queryDriftItem" column="order_id"></collection>
     </resultMap>
 
+    <resultMap id="orderDashboardVo" type="finley.gmair.model.drift.DriftOrderPanel">
+        <result property="activityName" column="activity_name"></result>
+        <result property="equipName" column="equip_name"></result>
+        <result property="expressAddress" column="express_address"></result>
+        <result property="quantity" column="quantity"></result>
+        <result property="orderId" column="order_id"></result>
+        <result property="consumerId" column="consumer_id"></result>
+        <result property="activityId" column="activity_id"></result>
+        <result property="equipId" column="equip_id"></result>
+        <result property="consignee" column="consignee"></result>
+        <result property="phone" column="phone"></result>
+        <result property="address" column="address"></result>
+        <result property="expectedDate" column="expected_date"></result>
+        <result property="intervalDate" column="interval_date"></result>
+        <result property="province" column="province"></result>
+        <result property="city" column="city"></result>
+        <result property="district" column="district"></result>
+        <result property="totalPrice" column="total_price"></result>
+        <result property="realPay" column="real_pay"></result>
+        <result property="excode" column="excode"></result>
+        <result property="machineOrderNo" column="machine_orderNo"></result>
+        <result property="description" column="description"></result>
+        <result property="status" column="order_status"
+                typeHandler="finley.gmair.mybatis.handler.DriftOrderStatusHandler"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createTime" column="create_time"></result>
+        <collection property="list" select="queryDriftItem" column="order_id"></collection>
+    </resultMap>
+
     <resultMap id="orderItemVo" type="finley.gmair.model.drift.DriftOrderItem">
         <result property="itemId" column="item_id"></result>
         <result property="orderId" column="order_id"></result>
@@ -84,6 +113,43 @@
         </if>
         <if test="createDate != null">
             AND from_unixtime(create_time, '%Y-%m-%d') = #{createDate}
+        </if>
+        ORDER BY create_time ASC
+    </select>
+
+    <select id="querydashboard" parameterType="java.util.Map" resultMap="orderDashboardVo">
+        select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, consignee, phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,
+        expected_date, interval_date,excode, block_flag,create_time
+        from order_activity_equipment_item_view
+        where 1 = 1
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="activityId != null">
+            AND activity_id = #{activityId}
+        </if>
+        <if test="consumerId != null">
+            AND consumer_id = #{consumerId}
+        </if>
+        <if test="phone != null">
+            AND phone = #{phone}
+        </if>
+        <if test="consignee != null">
+            AND consignee = #{consignee}
+        </if>
+        <if test="status != null">
+            AND order_status = #{status}
+        </if>
+        <if test="startTime != null">
+            AND date(create_time) >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            <![CDATA[
+                AND date(create_time) <= #{endTime}
+            ]]>
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
         </if>
         ORDER BY create_time ASC
     </select>

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/drift/order")
@@ -565,7 +566,7 @@ public class OrderController {
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultData orderList(String startTime, String endTime, String provinceName, String cityName, String status) {
+    public ResultData orderList(String startTime, String endTime, String provinceName, String cityName, String status,String search) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
@@ -606,7 +607,18 @@ public class OrderController {
                     break;
             }
         }
-
+        if (!StringUtils.isEmpty(search)) {
+            //删除对于订单状态的选择
+//            condition.remove("status");
+            String fuzzysearch =  search ;
+            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+            //如果搜索内容为数字
+            if (pattern.matcher(search).matches()) {
+                condition.put("phone", fuzzysearch);
+            } else {
+                condition.put("consignee", fuzzysearch);
+            }
+        }
         ResultData response = orderService.fetchDriftOrder(condition);
         switch (response.getResponseCode()) {
             case RESPONSE_NULL:
