@@ -28,6 +28,11 @@ public class LocationController {
         return locationService.city(provinceId);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{cityId}/districts")
+    ResultData district(@PathVariable("cityId") String cityId){
+        return locationService.district(cityId);
+    }
+
     @GetMapping("/city/profile")
     public ResultData cityProfile(String cityId) {
         return locationService.cityProfile(cityId);
