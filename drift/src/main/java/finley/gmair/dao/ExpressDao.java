@@ -9,4 +9,6 @@ public interface ExpressDao {
     ResultData queryExpress(Map<String, Object> condition);
 
     ResultData insertExpress(DriftExpress driftExpress);
+
+    ResultData update(Map<String, Object> condition);
 }

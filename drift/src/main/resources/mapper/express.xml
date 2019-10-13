@@ -47,4 +47,14 @@
         #{blockFlag},
         #{createAt})
     </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        update gmair_drift.order_express
+        <set>
+            <if test="expressNum != null">
+                express_num = #{expressNum},
+            </if>
+        </set>
+        where express_id = #{expressId}
+    </update>
 </mapper>
