@@ -422,6 +422,7 @@ public class InstallController {
         return result;
     }
 
+
     @GetMapping("/assign/report/download")
     public String report_download(String assignId,String teamId,String memberId,String beginTime,String endTime,HttpServletResponse response){
         ResultData result=new ResultData();
@@ -480,9 +481,9 @@ public class InstallController {
         }catch (IOException e) {
             e.printStackTrace();
         }
-        File file = new File(path);
+        File file = new File(baseDir);
         if (!file.exists()) {
-            logger.error("未能找到文件: " + path);
+            logger.error("未能找到文件: " + baseDir);
         }
         try {
             Workbook book = WorkbookFactory.create(file);

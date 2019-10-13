@@ -1,26 +1,52 @@
 package finley.gmair.controller;
 
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.drift.DriftOrderPanel;
+import finley.gmair.model.installation.AssignReport;
 import finley.gmair.service.DriftService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.print.DocFlavor;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/management/drift")
 public class DriftController {
+    private Logger logger = LoggerFactory.getLogger(DriftController.class);
 
     @Autowired
     private DriftService driftService;
 
+    @Value("${temp_path}")
+    private String baseDir;
+
     @GetMapping("/order/list")
-    ResultData driftOrderList(String startTime,String endTime,String status){
-        return driftService.driftOrderList(startTime,endTime,status);
+    ResultData driftOrderList(String startTime,String endTime,String status,String search){
+        return driftService.driftOrderList(startTime,endTime,status,search);
     }
 
     @GetMapping("/order/{orderId}")
@@ -36,7 +62,7 @@ public class DriftController {
     }
 
     @PostMapping("/order/express/submit")
-    ResultData submitMachineCode(String orderId,String machineCode,String expressNo, int expressFlag, String company){
+    ResultData submitMachineCode(String orderId,String machineCode,String expressNo, int expressFlag, String company{
         ResultData result = new ResultData();
         if(StringUtils.isEmpty(orderId)||StringUtils.isEmpty(machineCode)||StringUtils.isEmpty(expressNo)||StringUtils.isEmpty(company)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -121,5 +147,86 @@ public class DriftController {
         }
         result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status);
         return result;
+    }
+
+    @GetMapping("/order/download")
+    String order_download(String startTime,String endTime,String status,String search,HttpServletResponse response){
+        ResultData result=new ResultData();
+        result = driftService.driftOrderList(startTime,endTime,status,search);
+        String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".xls";
+        try {
+            //查询数据库中所有的数据
+            String data= JSONObject.toJSONString(result.getData());
+            List<DriftOrderPanel> list= JSONArray.parseArray(data,DriftOrderPanel.class);
+//            logger.info(result.getData().toString());
+            HSSFWorkbook wb = new HSSFWorkbook();
+            HSSFSheet sheet = wb.createSheet("sheet1");
+            String[] n = {"订单号",
+                    "活动名称",
+                    "设备名称",
+                    "姓名",
+                    "联系方式",
+                    "地址",
+                    "试纸数量",
+                    "使用日期",
+                    "优惠码",
+                    "创建时间"};
+            Object[][] value = new Object[list.size() + 1][n.length];
+            for (int m = 0; m < n.length; m++) {
+                value[0][m] = n[m];
+            }
+            for (int i = 0; i < list.size(); i++) {
+                value[i + 1][0] = list.get(i).getOrderId();
+                value[i + 1][1] = list.get(i).getActivityName();
+                value[i + 1][2] = list.get(i).getEquipName();
+                value[i + 1][3] = list.get(i).getConsignee();
+                value[i + 1][4] = list.get(i).getPhone();
+                value[i + 1][5] = list.get(i).getExpressAddress();
+                value[i + 1][6] = list.get(i).getQuantity();
+                value[i + 1][7] = list.get(i).getExpectedDate();
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExcode())){
+                    value[i + 1][8] = "无";
+                }else {
+                    value[i + 1][8] = list.get(i).getExcode();
+                }
+                value[i + 1][9] = list.get(i).getCreateTime();
+            }
+            HSSFRow row[]=new HSSFRow[list.size()+1];
+            HSSFCell cell[]=new HSSFCell[n.length];
+            for(int i=0;i<row.length;i++){
+                row[i]=sheet.createRow(i);
+                for(int j=0;j<cell.length;j++){
+                    cell[j]=row[i].createCell(j);
+                    cell[j].setCellValue(value[i][j].toString());
+                }
+            }
+            OutputStream os = response.getOutputStream();
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            wb.write(os);
+            os.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+        File file = new File(baseDir);
+        if (!file.exists()) {
+            logger.error("未能找到文件: " + baseDir);
+        }
+        try {
+            Workbook book = WorkbookFactory.create(file);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            book.write(byteArrayOutputStream);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.setContentLength(byteArrayOutputStream.size());
+            ServletOutputStream outputstream = response.getOutputStream();
+            byteArrayOutputStream.writeTo(outputstream);
+            byteArrayOutputStream.close();
+            outputstream.flush();
+            outputstream.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return "";
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface DriftService {
 
     @GetMapping("/drift/order/list")
-    ResultData driftOrderList(@RequestParam("startTime") String startTime,@RequestParam("endTime") String endTime,@RequestParam("status") String status);
+    ResultData driftOrderList(@RequestParam("startTime") String startTime,@RequestParam("endTime") String endTime,@RequestParam("status") String status,@RequestParam("search") String search);
 
     @GetMapping("/drift/order/{orderId}")
     ResultData selectByOrderId(@PathVariable("orderId") String orderId);
