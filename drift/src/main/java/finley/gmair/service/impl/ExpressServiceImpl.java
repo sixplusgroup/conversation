@@ -49,4 +49,19 @@ public class ExpressServiceImpl implements ExpressService {
         }
         return result;
     }
+
+    @Override
+    public ResultData updateExpress(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = expressDao.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to modify express from database");
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("Success to modify express from database");
+        }
+        return result;
+    }
 }

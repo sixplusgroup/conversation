@@ -826,11 +826,29 @@ public class OrderController {
         }
 
         //create driftExpress
-        ResultData response2 = expressService.createExpress(driftExpress);
-        if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to store driftExpress message to database");
-            return result;
+        condition.clear();
+        condition.put("blockFlag",false);
+        condition.put("orderId",orderId);
+        condition.put("status",expressFlag);
+        ResultData response2 = expressService.fetchExpress(condition);
+        System.out.println(response2.getData());
+        if(response2.getResponseCode()==ResponseCode.RESPONSE_OK){
+            condition.clear();
+            condition.put("expressId",((List<DriftExpress>)response2.getData()).get(0).getExpressId());
+            condition.put("expressNum",expressNo);
+            response2 = expressService.updateExpress(condition);
+            if(response2.getResponseCode()!=ResponseCode.RESPONSE_OK){
+                result.setResponseCode(response2.getResponseCode());
+                result.setDescription(response2.getDescription());
+                return result;
+            }
+        }else {
+            response2 = expressService.createExpress(driftExpress);
+            if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to store driftExpress message to database");
+                return result;
+            }
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
             //快递100订阅此物流单

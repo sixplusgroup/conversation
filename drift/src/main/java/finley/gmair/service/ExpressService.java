@@ -10,4 +10,6 @@ public interface ExpressService {
 
     ResultData createExpress(DriftExpress driftExpress);
 
+    ResultData updateExpress(Map<String, Object> condition);
+
 }
