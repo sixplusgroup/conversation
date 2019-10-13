@@ -626,7 +626,7 @@ public class OrderController {
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultData orderList(String startTime, String endTime, String provinceName, String cityName, String status,String search) {
+    public ResultData orderList(String startTime, String endTime,String status,String search) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);

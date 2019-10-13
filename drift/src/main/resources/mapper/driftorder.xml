@@ -146,11 +146,11 @@
             AND order_status = #{status}
         </if>
         <if test="startTime != null">
-            AND date(create_time) >= #{startTime}
+            AND expected_date >= #{startTime}
         </if>
         <if test="endTime != null">
             <![CDATA[
-                AND date(create_time) <= #{endTime}
+                AND expected_date <= #{endTime}
             ]]>
         </if>
         <if test="blockFlag != null">
