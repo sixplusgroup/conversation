@@ -31,13 +31,13 @@ public class ActivityOrderController {
         return activityOrderService.fetchOrderList();
     }
 
-    @GetMapping("order/deliver")
-    public ResultData OrderDeliver(String orderId){
-        return activityOrderService.OrderDeliver(orderId);
-    }
-
-    @GetMapping("order/info")
-    public ResultData fetchInfo(String orderId){
-        return activityOrderService.fetchInfo(orderId);
-    }
+//    @GetMapping("order/deliver")
+//    public ResultData OrderDeliver(String orderId){
+//        return activityOrderService.OrderDeliver(orderId);
+//    }
+//
+//    @GetMapping("order/info")
+//    public ResultData fetchInfo(String orderId){
+//        return activityOrderService.fetchInfo(orderId);
+//    }
 }

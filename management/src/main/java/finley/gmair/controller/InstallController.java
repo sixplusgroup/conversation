@@ -475,25 +475,25 @@ public class InstallController {
         }catch (IOException e) {
             e.printStackTrace();
         }
-//        File file = new File(path);
-//        if (!file.exists()) {
-//            logger.error("未能找到文件: " + path);
-//        }
-//        try {
-//            Workbook book = WorkbookFactory.create(file);
-//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//            book.write(byteArrayOutputStream);
-//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-//            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
-//            response.setContentLength(byteArrayOutputStream.size());
-//            ServletOutputStream outputstream = response.getOutputStream();
-//            byteArrayOutputStream.writeTo(outputstream);
-//            byteArrayOutputStream.close();
-//            outputstream.flush();
-//            outputstream.close();
-//        } catch (Exception e) {
-//            logger.error(e.getMessage());
-//        }
+        File file = new File(path);
+        if (!file.exists()) {
+            logger.error("未能找到文件: " + path);
+        }
+        try {
+            Workbook book = WorkbookFactory.create(file);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            book.write(byteArrayOutputStream);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.setContentLength(byteArrayOutputStream.size());
+            ServletOutputStream outputstream = response.getOutputStream();
+            byteArrayOutputStream.writeTo(outputstream);
+            byteArrayOutputStream.close();
+            outputstream.flush();
+            outputstream.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
         return "";
     }
 }
