@@ -656,14 +656,17 @@ public class OrderController {
                 case "DELIVERED":
                     condition.put("status", 3);
                     break;
-                case "FINISHED":
+                case "BACK":
                     condition.put("status", 4);
                     break;
-                case "CLOSED":
+                case "FINISHED":
                     condition.put("status", 5);
                     break;
-                case "CANCELED":
+                case "CLOSED":
                     condition.put("status", 6);
+                    break;
+                case "CANCELED":
+                    condition.put("status", 7);
                     break;
             }
         }
