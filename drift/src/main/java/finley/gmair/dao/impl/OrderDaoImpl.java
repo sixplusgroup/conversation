@@ -34,6 +34,23 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
     public ResultData queryOrder(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
+            List<DriftOrder> list = sqlSession.selectList("gmair.drift.order.query", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryOrderPanel(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
             List<DriftOrderPanel> list = sqlSession.selectList("gmair.drift.order.querydashboard", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);

@@ -679,7 +679,7 @@ public class OrderController {
                 condition.put("consignee", fuzzysearch);
             }
         }
-        ResultData response = orderService.fetchDriftOrder(condition);
+        ResultData response = orderService.fetchDriftOrderPanel(condition);
         switch (response.getResponseCode()) {
             case RESPONSE_NULL:
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
