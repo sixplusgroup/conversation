@@ -41,7 +41,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData assigns(String memberId, Integer status, String search,String page,String pageLength) {
+    public ResultData assigns(String memberId, Integer status, String search,String page,String pageLength,String reverse) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -49,9 +49,9 @@ public class AssignController {
             return result;
         }
         if(!StringUtils.isEmpty(page)&&!StringUtils.isEmpty(pageLength)){
-            result=assignService.fetchAssign(memberId, status, search,page,pageLength);
+            result=assignService.fetchAssign(memberId, status, search,page,pageLength,reverse);
         }else {
-            result = assignService.fetchAssign(memberId, status, search);
+            result = assignService.fetchAssign(memberId, status, search,reverse);
         }
         return result;
     }

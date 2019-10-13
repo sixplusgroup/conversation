@@ -7,6 +7,8 @@ import finley.gmair.model.express.Express;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +36,8 @@ public class ExpressController {
 
     @Value("${callbackUrl}")
     private String callbackUrl;
+
+    private Logger logger = LoggerFactory.getLogger(ExpressController.class);
 
     /**
      * 订阅快递消息
@@ -63,12 +68,12 @@ public class ExpressController {
      * 快递100推送消息接收
      * */
     @PostMapping("/receive")
-    public ResultData receive(HttpServletRequest request) throws Exception {
+    public ResultData receive(String param) {
+        JSONObject json = JSONObject.parseObject(param);
+        System.out.println(json);
         ResultData result = new ResultData();
-        String param = request.getParameter("param");
-        JSONObject paramJson = JSONObject.parseObject(param);
-        String status = paramJson.getString("status");
-        JSONObject lastResultJson = paramJson.getJSONObject("lastResult");
+        String status = json.getString("status");
+        JSONObject lastResultJson = json.getJSONObject("lastResult");
         String state = lastResultJson.getString("state");
         String expressCompany = lastResultJson.getString("com");
         String expressNo = lastResultJson.getString("nu");
@@ -113,7 +118,7 @@ public class ExpressController {
         ResultData response = expressService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("为查询到相关订单：" + expressNo);
+            result.setDescription("未查询到相关订单：" + expressNo);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

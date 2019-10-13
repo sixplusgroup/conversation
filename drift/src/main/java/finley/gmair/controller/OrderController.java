@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -136,7 +139,12 @@ public class OrderController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date expected = sdf.parse(expectedDate);
         Equipment equipment = ((List<Equipment>) response.getData()).get(0);
-        //todo 检查当天是否可以继续借出设备
+        //检查当天是否可以继续借出设备
+        if(!available(activityId, expected)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("该日期仪器已被预定完，请重新选择日期");
+            return result;
+        }
 
         //构建订单中的子订单项
         List<DriftOrderItem> list = new ArrayList<>();
@@ -172,6 +180,23 @@ public class OrderController {
             quantity = quantity - (quantity-1)/5;
             price += (orderItem.getItemPrice()) * quantity;
         }
+        //查询同一消费者的订单，检查预计使用日期在15天内添加提示
+        condition.clear();
+        int[] statusList = new int[]{DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(),DriftOrderStatus.BACK.getValue(),DriftOrderStatus.FINISHED.getValue()};
+        condition.put("consumerId",consumerId);
+        condition.put("blockFlag",false);
+        condition.put("statusList",statusList);
+        response = orderService.fetchDriftOrder(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            for(int i=0;i<((List<DriftOrder>) response.getData()).size();i++){
+                long day1 = expected.getTime();
+                long day2 = ((List<DriftOrder>) response.getData()).get(i).getExpectedDate().getTime();
+                if(-1296000000<day1-day2&&day1-day2<1296000000){
+                    description = "该用户15天内已预约使用";
+                    break;
+                }
+            }
+        }
 
         DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate);
         driftOrder.setTotalPrice(price);
@@ -194,6 +219,41 @@ public class OrderController {
             result.setData(response.getData());
         }
         return result;
+    }
+
+    private boolean available(String activityId, Date date) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return false;
+        }
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        //判断传入的日期是否可以预约
+        if (date.compareTo(activity.getStartTime()) < 0 || date.compareTo(activity.getEndTime()) > 0) {
+            return false;
+        }
+        Calendar current = Calendar.getInstance();
+        if (date.compareTo(current.getTime()) < 0) return false;
+
+        //获取当天的预约情况
+        condition.clear();
+        condition.put("activityId", activityId);
+        List statusList = new ArrayList();
+        statusList.add(DriftOrderStatus.PAYED.getValue());
+        statusList.add(DriftOrderStatus.CONFIRMED.getValue());
+        statusList.add(DriftOrderStatus.DELIVERED.getValue());
+        statusList.add(DriftOrderStatus.FINISHED.getValue());
+        condition.put("statusList", statusList);
+        condition.put("createDate", date);
+        response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) return true;
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            int size = ((List<Activity>) response.getData()).size();
+            if (size < activity.getRepositorySize() * activity.getThreshold()) return true;
+        }
+        return false;
     }
 
     @PostMapping(value = "/pay/confirm")
@@ -697,7 +757,7 @@ public class OrderController {
             result.setDescription("请提供所需要获取订单的用户的信息");
             return result;
         }
-        int[] statusList = new int[]{OrderStatus.PROCESSING.getValue(), OrderStatus.PAYED.getValue(), OrderStatus.COMMENTED.getValue(), OrderStatus.FINISHED.getValue()};
+        int[] statusList = new int[]{DriftOrderStatus.APPLIED.getValue(), DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(),DriftOrderStatus.BACK.getValue(),DriftOrderStatus.FINISHED.getValue()};
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", openid);
         condition.put("blockFlag", false);
@@ -800,15 +860,15 @@ public class OrderController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
         condition.put("orderId", orderId);
-        if (StringUtils.isEmpty(status)) {
+        if (!StringUtils.isEmpty(status)) {
             condition.put("status", status);
         }
         ResultData response = expressService.fetchExpress(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("查询成功");
-            String expressNo = ((List<Express>)response.getData()).get(0).getExpressNo();
-            String expressCompany = ((List<Express>)response.getData()).get(0).getCompany();
+            String expressNo = ((List<DriftExpress>)response.getData()).get(0).getExpressNum();
+            String expressCompany = ((List<DriftExpress>)response.getData()).get(0).getCompany();
             response = expressAgentService.getExpress(expressNo, expressCompany);
             if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -876,37 +936,37 @@ public class OrderController {
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
 
         //取消优惠码使用
-        String excode = order.getExcode();
-        condition.clear();
-        condition.put("excode",excode);
-        condition.put("blockFlag",false);
-        response = qrExCodeService.fetchQrExCode(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            condition.clear();
-            condition.put("excode",excode);
-            condition.put("blockFlag",true);
-            response = qrExCodeService.updateQrExCode(condition);
-            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("恢复优惠券失败");
-                return result;
-            }
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-            condition.clear();
-            condition.put("codeValue",excode);
-            condition.put("status",EXCodeStatus.EXCHANGED);
-            response = exCodeService.modifyEXCode(condition);
-            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("恢复优惠券失败");
-                return result;
-            }
-        }else {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("服务器错误");
-            return result;
-        }
+//        String excode = order.getExcode();
+////        condition.clear();
+////        condition.put("excode",excode);
+////        condition.put("blockFlag",false);
+////        response = qrExCodeService.fetchQrExCode(condition);
+////        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+////            result.setResponseCode(ResponseCode.RESPONSE_OK);
+////            condition.clear();
+////            condition.put("excode",excode);
+////            condition.put("blockFlag",true);
+////            response = qrExCodeService.updateQrExCode(condition);
+////            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+////                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+////                result.setDescription("恢复优惠券失败");
+////                return result;
+////            }
+////        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+////            condition.clear();
+////            condition.put("codeValue",excode);
+////            condition.put("status",EXCodeStatus.EXCHANGED);
+////            response = exCodeService.modifyEXCode(condition);
+////            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+////                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+////                result.setDescription("恢复优惠券失败");
+////                return result;
+////            }
+////        }else {
+////            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+////            result.setDescription("服务器错误");
+////            return result;
+////        }
         order.setStatus(DriftOrderStatus.CANCELED);
         response = orderService.updateDriftOrder(order);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -952,4 +1012,93 @@ public class OrderController {
         return result;
     }
 
+    @PostMapping("/express/receive")
+    public void doReceive(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        JSONObject resJson = new JSONObject();
+        try {
+            String param = request.getParameter("param");
+            ResultData result = expressAgentService.receive(param);
+            if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                resJson.put("result", false);
+                resJson.put("returnCode", "500");
+                resJson.put("message", "error");
+                response.getWriter().print(resJson);
+                return;
+            }
+            resJson.put("result", true);
+            resJson.put("returnCode", "200");
+            resJson.put("message", "success");
+            response.getWriter().print(resJson);
+        } catch (Exception e) {
+            resJson.put("result", false);
+            resJson.put("returnCode", "500");
+            resJson.put("message", "error");
+            e.printStackTrace();
+            response.getWriter().print(resJson);
+        }
+    }
+
+    /**
+     * 更新订单信息
+     * @param orderId
+     * @param consignee
+     * @param phone
+     * @param province
+     * @param city
+     * @param district
+     * @param address
+     * @param status
+     * @return
+     */
+    @PostMapping("/update")
+    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供orderId");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId",orderId);
+        condition.put("blockFlag",false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("订单查找失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        DriftOrder driftOrder = ((List<DriftOrder>)response.getData()).get(0);
+        if(!StringUtils.isEmpty(consignee)){
+            driftOrder.setConsignee(consignee);
+        }
+        if(!StringUtils.isEmpty(phone)){
+            driftOrder.setPhone(phone);
+        }
+        if(!StringUtils.isEmpty(province)){
+            driftOrder.setProvince(province);
+        }
+        if(!StringUtils.isEmpty(city)){
+            driftOrder.setCity(city);
+        }
+        if(!StringUtils.isEmpty(district)){
+            driftOrder.setDistrict(district);
+        }
+        if(!StringUtils.isEmpty(address)){
+            driftOrder.setAddress(address);
+        }
+        if(!StringUtils.isEmpty(status)){
+            driftOrder.setStatus(DriftOrderStatus.valueOf(status));
+        }
+        response = orderService.updateDriftOrder(driftOrder);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("更新失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        return result;
+    }
 }

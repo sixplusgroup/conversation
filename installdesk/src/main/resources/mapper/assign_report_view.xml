@@ -8,6 +8,7 @@
         <result property="assignStatus" column="assign_status"
                 typeHandler="finley.gmair.mybatis.handler.AssignStatusHandler"></result>
         <result property="assignDate" column="assign_date"></result>
+        <result property="assignSource" column="assign_source"></result>
         <result property="consumerConsignee" column="consumer_consignee"></result>
         <result property="consumerPhone" column="consumer_phone"></result>
         <result property="consumerAddress" column="consumer_address"></result>
@@ -30,6 +31,7 @@
         consumer_consignee,
         consumer_phone,
         consumer_address,
+        assign_source,
         team_id,
         team_name,
         member_id,

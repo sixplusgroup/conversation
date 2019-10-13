@@ -2,7 +2,6 @@ package finley.gmair.quality;
 
 import finley.gmair.service.CityAQIService;
 import finley.gmair.service.MonitorStationCrawler;
-import finley.gmair.service.impl.CityAqiService4Pm25ComImpl;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -27,9 +26,9 @@ public class AirQualityApplication {
 
 //    @Autowired
 //    private RankCrawler rankCrawler;
-
-    @Autowired
-    private CityAqiService4Pm25ComImpl rankCrawler;
+//
+//    @Autowired
+//    private CityAqiService4Pm25ComImpl rankCrawler;
 
     @Autowired
     private MonitorStationCrawler monitorStationCrawler;
@@ -46,7 +45,7 @@ public class AirQualityApplication {
 
     @PostMapping("/airquality/monitorStation/crawler")
     public ResultData monitorStationCrawler() {
-        monitorStationCrawler.craw();
+//        monitorStationCrawler.craw();
         return new ResultData();
     }
 }

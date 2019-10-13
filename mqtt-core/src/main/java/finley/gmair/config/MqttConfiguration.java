@@ -118,8 +118,7 @@ public class MqttConfiguration implements MqttCallback {
      * 订阅topic
      * */
     @Bean
-    public ResultData subscribe() {
-        ResultData result = new ResultData();
+    public MqttClient subscribe() {
         if (client == null) init();
         if (!client.isConnected()) {
             try {
@@ -138,7 +137,7 @@ public class MqttConfiguration implements MqttCallback {
         } catch (Exception e) {
             logger.error("[Error] subscribe topics failure " + e.getMessage());
         }
-        return result;
+        return client;
     }
 
     public void messageArrived(String topic, MqttMessage message) throws MqttException {
@@ -167,6 +166,7 @@ public class MqttConfiguration implements MqttCallback {
 
     public void connectionLost(Throwable cause) {
         logger.error("[Error] Connection lost because: " + cause);
+        subscribe();
     }
 
     public void deliveryComplete(IMqttDeliveryToken token) {

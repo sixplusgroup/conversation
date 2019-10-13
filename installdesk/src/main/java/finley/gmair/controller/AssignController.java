@@ -15,10 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -346,7 +343,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength) {
+    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength,String reverse) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -389,6 +386,9 @@ public class AssignController {
             }
             response = assignService.principal(condition);
             List<Assign> resultList = (List<Assign>) response.getData();
+            if(!StringUtils.isEmpty(reverse)&&reverse.equals("true")){
+                Collections.reverse(resultList);
+            }
             int totalPage = resultList.size();
             result.setResponseCode(response.getResponseCode());
             JSONObject json = new JSONObject();
@@ -409,6 +409,9 @@ public class AssignController {
             }
             if(!StringUtils.isEmpty(page)&&!StringUtils.isEmpty(pageLength)){
                 List<Assign> resultList = (List<Assign>) response.getData();
+                if(!StringUtils.isEmpty(reverse)&&reverse.equals("true")){
+                    Collections.reverse(resultList);
+                }
                 int totalPage = resultList.size();
                 if(totalPage>Integer.parseInt(page)*Integer.parseInt(pageLength)){
                     resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),Integer.parseInt(page)*Integer.parseInt(pageLength));
@@ -543,6 +546,7 @@ public class AssignController {
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
+        List<String> md5s=new ArrayList<>();
         List<String> newUrls=new ArrayList<>();
         ResultData response = null;
         Map<String, Object> md5_condition = new HashMap<>();
@@ -556,9 +560,16 @@ public class AssignController {
                 md5_condition.put("blockFlag",false);
                 response = pictureMd5Service.fetch(md5_condition);
                 if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
-                    pictureMd5Service.create(new PictureMd5(urls[i],md5));
+                    md5s.add(md5);
+                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("请勿上传重复图片");
+                    return result;
                 }
             }
+        }
+        for (int i=0;i<md5s.size();i++){
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
         }
         picture = StringUtils.join(newUrls,",");
         Snapshot snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description);

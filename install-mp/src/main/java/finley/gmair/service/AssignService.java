@@ -13,10 +13,11 @@ public interface AssignService {
     ResultData fetchAssign(@RequestParam("memberId") String memberId);
 
     @GetMapping("/install/assign/tasks")
-    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search);
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,@RequestParam("reverse") String reverse);
 
     @GetMapping("/install/assign/tasks")
-    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,@RequestParam("page") String page,@RequestParam("pageLength") String pageLength);
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,
+                           @RequestParam("page") String page,@RequestParam("pageLength") String pageLength,@RequestParam("reverse") String reverse);
 
     @PostMapping("/install/assign/assign")
     ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("memberId") String memberId);

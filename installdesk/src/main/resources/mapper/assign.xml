@@ -93,6 +93,7 @@
         consumer_phone,
         consumer_address,
         assign_date,
+        assign_source,
         assign_detail,
         block_flag,
         create_time

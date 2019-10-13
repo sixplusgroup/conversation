@@ -112,9 +112,14 @@
             AND block_flag = #{blockFlag}
         </if>
         <if test="createDate != null">
-            AND from_unixtime(create_time, '%Y-%m-%d') = #{createDate}
+            AND to_days(expected_date)= to_days(#{createDate})
         </if>
-        ORDER BY create_time ASC
+        <if test="consumerId != null">
+            ORDER BY create_time ASC
+        </if>
+        <if test="consumerId == null">
+            ORDER BY expected_date ASC
+        </if>
     </select>
 
     <select id="querydashboard" parameterType="java.util.Map" resultMap="orderDashboardVo">
@@ -183,6 +188,12 @@
     <update id="update" parameterType="finley.gmair.model.drift.DriftOrder">
         update gmair_drift.drift_order
         <set>
+            <if test="consignee != null">
+                consignee = #{consignee},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
             <if test="address != null">
                 address = #{address},
             </if>
@@ -196,7 +207,7 @@
                 district = #{district},
             </if>
             <if test="machineOrderNo != null">
-                machine_orderNo = #{machineOrderNo}
+                machine_orderNo = #{machineOrderNo},
             </if>
             <if test="excode != null">
                 excode = #{excode},
