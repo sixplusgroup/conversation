@@ -62,7 +62,7 @@ public class DriftController {
     }
 
     @PostMapping("/order/express/submit")
-    ResultData submitMachineCode(String orderId,String machineCode,String expressNo, int expressFlag, String company{
+    ResultData submitMachineCode(String orderId,String machineCode,String expressNo, int expressFlag, String company){
         ResultData result = new ResultData();
         if(StringUtils.isEmpty(orderId)||StringUtils.isEmpty(machineCode)||StringUtils.isEmpty(expressNo)||StringUtils.isEmpty(company)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -183,13 +183,13 @@ public class DriftController {
                 value[i + 1][4] = list.get(i).getPhone();
                 value[i + 1][5] = list.get(i).getExpressAddress();
                 value[i + 1][6] = list.get(i).getQuantity();
-                value[i + 1][7] = list.get(i).getExpectedDate();
+                value[i + 1][7] = new SimpleDateFormat("yyyy-MM-dd").format(list.get(i).getExpectedDate());
                 if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExcode())){
                     value[i + 1][8] = "无";
                 }else {
                     value[i + 1][8] = list.get(i).getExcode();
                 }
-                value[i + 1][9] = list.get(i).getCreateTime();
+                value[i + 1][9] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
             }
             HSSFRow row[]=new HSSFRow[list.size()+1];
             HSSFCell cell[]=new HSSFCell[n.length];
