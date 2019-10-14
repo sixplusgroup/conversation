@@ -319,5 +319,5 @@ ADD COLUMN `express_num` VARCHAR(45) NOT NULL AFTER `block_flag`;
 CREATE VIEW `gmair_drift`.`order_activity_equipment_item_view`
 AS SELECT drift_order.order_id as order_id,activity_name,drift_order.activity_id as activity_id,equip_name,drift_order.equip_id as equip_id,consumer_id,consignee,phone,province,address,city,district,concat(province,city,district,address) AS 'express_address',total_price,real_pay,description,order_status,buy_machine,machine_orderNo,quantity,expected_date,interval_date,excode,drift_order.block_flag as block_flag,drift_order.create_time as create_time
 FROM drift_order,drift_activity,drift_equipment,drift_order_item
-WHERE drift_order.activity_id = drift_activity.activity_id and drift_order.equip_id = drift_equipment.equip_id and drift_order.order_id = drift_order_item.order_id
+WHERE drift_order.activity_id = drift_activity.activity_id and drift_order.equip_id = drift_equipment.equip_id and drift_order.order_id = drift_order_item.order_id and item_name = '甲醛检测试纸'
 ORDER BY expected_date
