@@ -22,19 +22,19 @@ public class DailyNoonJob implements Job {
     @Autowired
     private MachineFeignService machineFeignService;
 
-    @Autowired
-    private TaskService taskService;
+//    @Autowired
+//    private TaskService taskService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        Map<String, Object> condition = new HashMap<>();
+//        Map<String, Object> condition = new HashMap<>();
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI20181130ex72fi16");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
+//            condition.clear();
+//            condition.put("taskId", "GTI20181130ex72fi16");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
                 machineFeignService.turnOnScreenDaily();
-            }
+//            }
         }));
     }
 }

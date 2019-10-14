@@ -487,25 +487,29 @@ public class CityAQIServiceImpl implements CityAQIService {
             return null;
         }
         JSONObject data = json.getJSONObject("data").getJSONObject("aqi");
-        double aqi = data.getDouble("value");
-        String level = data.getString("level");
-        double pm2_5 = data.getDouble("pm25C");
-        double pm10 = data.getDouble("pm10C");
-        double co = data.getDouble("coC");
-        double no2 = data.getDouble("no2C");
-        double o3 = data.getDouble("o3C");
-        double so2 = data.getDouble("so2C");
         CityAirQuality quality = new CityAirQuality();
-        quality.setCityId(id);
-        quality.setAqi(aqi);
-        quality.setAqiLevel(level);
-        quality.setPm2_5(pm2_5);
-        quality.setPm10(pm10);
-        quality.setCo(co);
-        quality.setNo2(no2);
-        quality.setO3(o3);
-        quality.setSo2(so2);
-        quality.setRecordTime(new Timestamp(System.currentTimeMillis() / (3600000) * 3600000));
+        try {
+            double aqi = data.getDouble("value");
+            String level = data.getString("level");
+            double pm2_5 = data.getDouble("pm25C");
+            double pm10 = data.getDouble("pm10C");
+            double co = data.getDouble("coC");
+            double no2 = data.getDouble("no2C");
+            double o3 = data.getDouble("o3C");
+            double so2 = data.getDouble("so2C");
+            quality.setCityId(id);
+            quality.setAqi(aqi);
+            quality.setAqiLevel(level);
+            quality.setPm2_5(pm2_5);
+            quality.setPm10(pm10);
+            quality.setCo(co);
+            quality.setNo2(no2);
+            quality.setO3(o3);
+            quality.setSo2(so2);
+            quality.setRecordTime(new Timestamp(System.currentTimeMillis() / (3600000) * 3600000));
+        } catch (Exception e) {
+            return null;
+        }
         return quality;
     }
 

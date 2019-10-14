@@ -10,6 +10,8 @@ public interface OrderService {
 
     ResultData fetchDriftOrder(Map<String, Object> condition);
 
+    ResultData fetchDriftOrderPanel(Map<String, Object> condition);
+
     ResultData createDriftOrder(DriftOrder order);
 
     ResultData updateDriftOrder(DriftOrder order);

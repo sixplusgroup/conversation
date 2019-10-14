@@ -23,35 +23,27 @@ public class HalfHourlyJob implements Job {
     @Autowired
     private MachineFeignService machineFeignService;
 
-    @Autowired
-    private TaskService taskService;
+//    @Autowired
+//    private TaskService taskService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        Map<String, Object> condition = new HashMap<>();
+//        Map<String, Object> condition = new HashMap<>();
+//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//            condition.clear();
+//            condition.put("taskId", "GTI20181130gn56nl79");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+//                airQualityFeignService.monitorStationCrawler();
+//            }
+//        }));
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI20181130hana2n87");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                airQualityFeignService.cityCrawler();
-            }
-        }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI20181130gn56nl79");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                airQualityFeignService.monitorStationCrawler();
-            }
-        }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI201811307oaxgf42");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                machineFeignService.powerTurnOnOff();
-            }
+//            condition.clear();
+//            condition.put("taskId", "GTI201811307oaxgf42");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+            machineFeignService.powerTurnOnOff();
+//            }
         }));
     }
 

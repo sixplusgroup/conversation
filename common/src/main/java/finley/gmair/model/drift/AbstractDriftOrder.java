@@ -19,9 +19,8 @@ public abstract class AbstractDriftOrder extends Entity {
 
     private double totalPrice;
 
-    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
     private Date expectedDate;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+
     private Date createTime;
 
     private int intervalDate;

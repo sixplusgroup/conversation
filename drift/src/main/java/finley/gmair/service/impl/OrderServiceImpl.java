@@ -45,6 +45,27 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
+    @Override
+    public ResultData fetchDriftOrderPanel(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = orderDao.queryOrderPanel(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No drift order found");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to query drift order");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
+        return result;
+    }
+
     /**
      * This method will save the drift order to database
      * step 1: save the drift order
