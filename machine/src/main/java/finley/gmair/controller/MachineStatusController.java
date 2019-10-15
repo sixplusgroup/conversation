@@ -121,6 +121,7 @@ public class MachineStatusController {
                     response = coreV2Service.isOnline(machineQrcodeBindVo.getMachineId());
                     break;
                 case 3:
+                    response = coreV3Service.isOnline(machineQrcodeBindVo.getMachineId());
                     break;
             }
             return response;

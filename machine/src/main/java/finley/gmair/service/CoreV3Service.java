@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("corev3-agent")
 public interface CoreV3Service {
-    /*查询河北的在线状态*/
+    /*查询设备的在线状态*/
     @GetMapping("/core/repo/{machineId}/online")
     ResultData isOnline(@PathVariable("machineId") String machineId);
 
