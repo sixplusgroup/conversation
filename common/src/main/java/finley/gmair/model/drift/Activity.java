@@ -29,6 +29,10 @@ public class Activity extends Entity {
 
     private String host;
 
+    private String reservationName;
+
+    private String reservationText;
+
     public Activity() {
         super();
     }
@@ -142,5 +146,21 @@ public class Activity extends Entity {
 
     public void setDelayDays(int delayDays) {
         this.delayDays = delayDays;
+    }
+
+    public String getReservationName() {
+        return reservationName;
+    }
+
+    public void setReservationName(String reservationName) {
+        this.reservationName = reservationName;
+    }
+
+    public String getReservationText() {
+        return reservationText;
+    }
+
+    public void setReservationText(String reservationText) {
+        this.reservationText = reservationText;
     }
 }

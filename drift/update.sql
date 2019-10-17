@@ -321,3 +321,27 @@ AS SELECT drift_order.order_id as order_id,activity_name,drift_order.activity_id
 FROM drift_order,drift_activity,drift_equipment,drift_order_item
 WHERE drift_order.activity_id = drift_activity.activity_id and drift_order.equip_id = drift_equipment.equip_id and drift_order.order_id = drift_order_item.order_id and item_name = '甲醛检测试纸'
 ORDER BY expected_date
+
+#2019-10-15
+ALTER TABLE `gmair_drift`.`drift_activity`
+ADD COLUMN `reservation_name` VARCHAR(45) NULL AFTER `text`,
+ADD COLUMN `reservation_text` LONGTEXT NULL AFTER `reservation_name`;
+
+ALTER TABLE `gmair_drift`.`drift_equipment`
+ADD COLUMN `text` VARCHAR(45) NULL AFTER `create_time`;
+
+ALTER TABLE `gmair_drift`.`drift_equipment`
+ADD COLUMN `url` VARCHAR(45) NULL AFTER `text`;
+
+ALTER TABLE `gmair_drift`.`drift_equipment`
+ADD COLUMN `detail_url` VARCHAR(45) NULL AFTER `url`;
+
+#2019-10-17
+ALTER TABLE `gmair_drift`.`drift_order_item`
+ADD COLUMN `text` VARCHAR(45) NULL AFTER `create_time`,
+ADD COLUMN `url` VARCHAR(100) NULL AFTER `text`;
+
+ALTER TABLE `gmair_drift`.`attachment`
+ADD COLUMN `text` VARCHAR(45) NULL AFTER `attach_top`,
+ADD COLUMN `url` VARCHAR(100) NULL AFTER `text`;
+

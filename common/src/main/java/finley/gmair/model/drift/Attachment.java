@@ -15,6 +15,10 @@ public class Attachment extends Entity {
 
     private double attachPrice;
 
+    private String text;
+
+    private String url;
+
     public Attachment() {
         super();
     }
@@ -72,5 +76,21 @@ public class Attachment extends Entity {
 
     public void setAttachPrice(double attachPrice) {
         this.attachPrice = attachPrice;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
