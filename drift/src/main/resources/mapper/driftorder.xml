@@ -27,6 +27,8 @@
     </resultMap>
 
     <resultMap id="orderDashboardVo" type="finley.gmair.model.drift.DriftOrderPanel">
+        <result property="expressNum" column="express_num"></result>
+        <result property="expressStatus" column="express_status"></result>
         <result property="activityName" column="activity_name"></result>
         <result property="equipName" column="equip_name"></result>
         <result property="expressAddress" column="express_address"></result>
@@ -124,7 +126,7 @@
 
     <select id="querydashboard" parameterType="java.util.Map" resultMap="orderDashboardVo">
         select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, consignee, phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,
-        expected_date, interval_date,excode, block_flag,create_time
+        expected_date, interval_date,excode, block_flag,create_time,express_num,express_status
         from order_activity_equipment_item_view
         where 1 = 1
         <if test="orderId != null">
@@ -141,6 +143,9 @@
         </if>
         <if test="consignee != null">
             AND consignee = #{consignee}
+        </if>
+        <if test="machineOrderNo != null">
+            AND machine_orderNo = #{machineOrderNo}
         </if>
         <if test="status != null">
             AND order_status = #{status}

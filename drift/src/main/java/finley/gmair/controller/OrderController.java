@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
@@ -674,12 +675,18 @@ public class OrderController {
             //删除对于订单状态的选择
 //            condition.remove("status");
             String fuzzysearch =  search ;
-            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-            //如果搜索内容为数字
-            if (pattern.matcher(search).matches()) {
+            Pattern pattern = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
+            Pattern patternc =  Pattern.compile("[\\u4e00-\\u9fa5]");
+            Matcher m = pattern.matcher(search);
+            Matcher mc = patternc.matcher(search);
+            if (m.find()) {//如果搜索内容为手机号
                 condition.put("phone", fuzzysearch);
-            } else {
+            } else if(mc.find()){//如果搜索内容为汉字
                 condition.put("consignee", fuzzysearch);
+                System.out.println("汉字");
+            }else{
+                condition.put("machineOrderNo", fuzzysearch);
+                System.out.println("asfa");
             }
         }
         ResultData response = orderService.fetchDriftOrderPanel(condition);

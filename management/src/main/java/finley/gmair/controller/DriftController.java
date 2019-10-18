@@ -161,15 +161,24 @@ public class DriftController {
 //            logger.info(result.getData().toString());
             HSSFWorkbook wb = new HSSFWorkbook();
             HSSFSheet sheet = wb.createSheet("sheet1");
-            String[] n = {"订单号",
+            String[] n = {
+                    "订单编号",
                     "活动名称",
                     "设备名称",
+                    "消费者编号",
                     "姓名",
                     "联系方式",
                     "地址",
                     "试纸数量",
                     "使用日期",
                     "优惠码",
+                    "机器码",
+                    "快递单号",
+                    "订单状态",
+                    "原价",
+                    "实际价格",
+                    "使用时长",
+                    "备注",
                     "创建时间"};
             Object[][] value = new Object[list.size() + 1][n.length];
             for (int m = 0; m < n.length; m++) {
@@ -179,17 +188,41 @@ public class DriftController {
                 value[i + 1][0] = list.get(i).getOrderId();
                 value[i + 1][1] = list.get(i).getActivityName();
                 value[i + 1][2] = list.get(i).getEquipName();
-                value[i + 1][3] = list.get(i).getConsignee();
-                value[i + 1][4] = list.get(i).getPhone();
-                value[i + 1][5] = list.get(i).getExpressAddress();
-                value[i + 1][6] = list.get(i).getQuantity();
-                value[i + 1][7] = new SimpleDateFormat("yyyy-MM-dd").format(list.get(i).getExpectedDate());
+                value[i + 1][3] = list.get(i).getConsumerId();
+                value[i + 1][4] = list.get(i).getConsignee();
+                value[i + 1][5] = list.get(i).getPhone();
+                value[i + 1][6] = list.get(i).getExpressAddress();
+                value[i + 1][7] = list.get(i).getQuantity();
+                value[i + 1][8] = new SimpleDateFormat("yyyy-MM-dd").format(list.get(i).getExpectedDate());
                 if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExcode())){
-                    value[i + 1][8] = "无";
+                    value[i + 1][9] = "无";
                 }else {
-                    value[i + 1][8] = list.get(i).getExcode();
+                    value[i + 1][9] = list.get(i).getExcode();
                 }
-                value[i + 1][9] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getMachineOrderNo())){
+                    value[i + 1][10] = "无";
+                }else {
+                    value[i + 1][10] = list.get(i).getMachineOrderNo();
+                }
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressNum())){
+                    value[i + 1][11] = "无";
+                }else {
+                    value[i + 1][11] = list.get(i).getExpressNum();
+                }
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressStatus())){
+                    value[i + 1][12] = "无";
+                }else {
+                    value[i + 1][12] = list.get(i).getExpressStatus();
+                }
+                value[i + 1][13] = list.get(i).getTotalPrice();
+                value[i + 1][14] = list.get(i).getRealPay();
+                value[i + 1][15] = list.get(i).getIntervalDate();
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())){
+                    value[i + 1][16] = "无";
+                }else {
+                    value[i + 1][16] = list.get(i).getDescription();
+                }
+                value[i + 1][17] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
             }
             HSSFRow row[]=new HSSFRow[list.size()+1];
             HSSFCell cell[]=new HSSFCell[n.length];

@@ -5,6 +5,10 @@ import java.util.List;
 
 public class DriftOrderPanel extends AbstractDriftOrder {
 
+    private String expressNum;
+
+    private String expressStatus;
+
     private String equipName;
 
     private String activityName;
@@ -56,6 +60,22 @@ public class DriftOrderPanel extends AbstractDriftOrder {
         this.activityId = activityId;
         this.status = DriftOrderStatus.APPLIED;
 
+    }
+
+    public String getExpressNum() {
+        return expressNum;
+    }
+
+    public void setExpressNum(String expressNum) {
+        this.expressNum = expressNum;
+    }
+
+    public String getExpressStatus() {
+        return expressStatus;
+    }
+
+    public void setExpressStatus(String expressStatus) {
+        this.expressStatus = expressStatus;
     }
 
     public int getQuantity() {
