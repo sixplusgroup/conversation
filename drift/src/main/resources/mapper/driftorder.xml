@@ -127,7 +127,7 @@
     </select>
 
     <select id="querydashboard" parameterType="java.util.Map" resultMap="orderDashboardVo">
-        select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, consignee, phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,
+        select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, order_status,consignee, phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,
         expected_date, interval_date,excode, block_flag,create_time,express_num,express_status
         from order_activity_equipment_item_view
         where 1 = 1

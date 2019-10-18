@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.drift.DriftOrderPanel;
 import finley.gmair.model.installation.AssignReport;
 import finley.gmair.service.DriftService;
+import finley.gmair.util.DriftUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
@@ -212,7 +213,7 @@ public class DriftController {
                 if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressStatus())){
                     value[i + 1][12] = "无";
                 }else {
-                    value[i + 1][12] = list.get(i).getExpressStatus();
+                    value[i + 1][12] = DriftUtil.setStatus(list.get(i).getStatus().getValue());
                 }
                 value[i + 1][13] = list.get(i).getTotalPrice();
                 value[i + 1][14] = list.get(i).getRealPay();
