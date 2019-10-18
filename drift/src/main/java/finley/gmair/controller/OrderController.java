@@ -152,6 +152,8 @@ public class OrderController {
         DriftOrderItem equipItem = new DriftOrderItem();
 
         equipItem.setItemName(equipment.getEquipName());
+        equipItem.setText(equipment.getText());
+        equipItem.setUrl(equipment.getUrl());
         equipItem.setItemPrice(equipment.getEquipPrice());
         equipItem.setSingleNum(1);
         equipItem.setQuantity(1);
@@ -165,6 +167,8 @@ public class OrderController {
                 Attachment attachment = ((List<Attachment>) response.getData()).get(0);
                 DriftOrderItem attachItem = new DriftOrderItem();
                 attachItem.setItemName(attachment.getAttachName());
+                attachItem.setText(attachment.getText());
+                attachItem.setUrl(attachment.getUrl());
                 attachItem.setItemPrice(attachment.getAttachPrice());
                 attachItem.setSingleNum(attachment.getAttachSingle());
                 int num = ((Integer) e.getValue()).intValue();

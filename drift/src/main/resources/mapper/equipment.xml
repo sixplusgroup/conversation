@@ -5,12 +5,15 @@
         <result property="equipId" column="equip_id"></result>
         <result property="equipName" column="equip_name"></result>
         <result property="equipPrice" column="equip_price"></result>
+        <result property="text" column="text"></result>
+        <result property="url" column="url"></result>
+        <result property="detailUrl" column="detail_url"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="equipVo">
-        select equip_id, equip_name, equip_price, block_flag, create_time
+        select equip_id, equip_name, equip_price, text,url,detail_url,block_flag, create_time
         from gmair_drift.drift_equipment
         where 1 = 1
         <if test="equipId != null">
