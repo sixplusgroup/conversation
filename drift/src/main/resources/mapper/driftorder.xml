@@ -163,7 +163,7 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
-        ORDER BY create_time ASC
+        ORDER BY expected_date ASC
     </select>
 
     <select id="queryDriftItem" parameterType="java.lang.String" resultMap="orderItemVo">

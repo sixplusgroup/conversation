@@ -901,12 +901,16 @@ public class OrderController {
             result.setDescription("查询成功");
             String expressNo = ((List<DriftExpress>)response.getData()).get(0).getExpressNum();
             String expressCompany = ((List<DriftExpress>)response.getData()).get(0).getCompany();
+            DriftExpress express = ((List<DriftExpress>)response.getData()).get(0);
             response = expressAgentService.getExpress(expressNo, expressCompany);
             if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("查询物流信息失败");
             }
-            result.setData(response.getData());
+            JSONObject json = new JSONObject();
+            json.put("data",response.getData());
+            json.put("express",express);
+            result.setData(json);
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("未找到相关记录");
