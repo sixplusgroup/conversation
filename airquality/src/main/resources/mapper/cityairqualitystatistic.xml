@@ -87,7 +87,7 @@
         </if>
         <if test="createTimeLTE != null">
             <![CDATA[
-              AND create_time <= #{createTimeLTE}
+              AND to_days(create_time) <= to_days(#{createTimeLTE})
             ]]>
         </if>
         <if test="last7day != null">
