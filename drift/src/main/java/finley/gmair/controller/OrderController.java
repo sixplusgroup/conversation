@@ -255,6 +255,7 @@ public class OrderController {
         statusList.add(DriftOrderStatus.FINISHED.getValue());
         condition.put("statusList", statusList);
         condition.put("createDate", date);
+        condition.put("blockFlag",false);
         response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) return true;
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
