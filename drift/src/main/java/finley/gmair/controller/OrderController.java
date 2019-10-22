@@ -58,6 +58,9 @@ public class OrderController {
     @Autowired
     private QrExCodeService qrExCodeService;
 
+    @Autowired
+    private DriftOrderCancelService driftOrderCancelService;
+
     private Object lock = new Object();
 
 
@@ -969,7 +972,19 @@ public class OrderController {
             result.setDescription(new StringBuffer("The drift order with orderId: ").append(orderId).append(" doesn't exist").toString());
             return result;
         }
+
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+
+        //取消订单表记录
+        String openId = order.getConsumerId();
+        double price = order.getRealPay();
+        DriftOrderCancel driftOrderCancel = new DriftOrderCancel(orderId,openId,price);
+        response = driftOrderCancelService.createCancel(driftOrderCancel);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("取消订单表记录失败");
+            return result;
+        }
 
         //取消优惠码使用
 //        String excode = order.getExcode();

@@ -347,3 +347,22 @@ ALTER TABLE `gmair_drift`.`attachment`
 ADD COLUMN `text` VARCHAR(45) NULL AFTER `attach_top`,
 ADD COLUMN `url` VARCHAR(100) NULL AFTER `text`;
 
+#2019-10-22
+CREATE TABLE `gmair_drift`.`drift_cancel_order` (
+  `order_id` VARCHAR(45) NOT NULL,
+  `open_id` VARCHAR(45) NOT NULL,
+  `price` DOUBLE NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin;
+
+ALTER TABLE `gmair_drift`.`drift_cancel_order`
+ADD COLUMN `cancel_id` VARCHAR(45) NOT NULL FIRST,
+ADD PRIMARY KEY (`cancel_id`);
+;
+
+ALTER TABLE `gmair_drift`.`drift_cancel_order`
+ADD COLUMN `is_finish` TINYINT(1) NOT NULL AFTER `price`;
+

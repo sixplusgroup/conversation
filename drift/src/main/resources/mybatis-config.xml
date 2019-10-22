@@ -20,5 +20,6 @@
         <mapper resource="mapper/verification.xml"></mapper>
         <mapper resource="mapper/address.xml"></mapper>
         <mapper resource="mapper/user.xml"></mapper>
+        <mapper resource="mapper/driftordercancel.xml"></mapper>
     </mappers>
 </configuration>
