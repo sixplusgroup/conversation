@@ -298,41 +298,46 @@ public class OrderController {
         if (!StringUtils.isEmpty(code)) {
             //判断码的长度，13位即为二维码，6位即为优惠码
             if (code.length() > 6) {
-                response = machineService.checkQrcode(code);
-                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    result.setDescription("二维码有误，请确认后重试");
-                    return result;
-                }
-                condition.remove("orderId");
-                condition.put("qrcode", code);
-                response = qrExCodeService.fetchQrExCode(condition);
-                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    result.setDescription("二维码已兑换过，不能重复使用");
-                    return result;
-                }
-                if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    result.setDescription("服务器正忙，请稍后重试");
-                    return result;
-                }
-                condition.remove("qrcode");
-                condition.put("activityId", activityId);
-                condition.put("status", EXCodeStatus.CREATED.getValue());
-                response = exCodeService.fetchEXCode(condition);
-                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    result.setDescription("服务器正忙，请稍后重试");
-                    return result;
-                }
-                EXCode exCode = ((List<EXCode>) response.getData()).get(0);
-                //实现优惠码价格抵消
-                order.setExcode(exCode.getCodeValue());
-                order.setRealPay(Math.round(order.getTotalPrice() * 100 - exCode.getPrice() * 100) / 100.0);
-                new Thread(() -> {
-                    ResultData rd = updateExcode(code, exCode);
-                }).start();
+                //暂时关闭扫机器码功能
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("机器二维码兑换功能暂未开通");
+                return result;
+
+//                response = machineService.checkQrcode(code);
+//                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                    result.setDescription("二维码有误，请确认后重试");
+//                    return result;
+//                }
+//                condition.remove("orderId");
+//                condition.put("qrcode", code);
+//                response = qrExCodeService.fetchQrExCode(condition);
+//                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                    result.setDescription("二维码已兑换过，不能重复使用");
+//                    return result;
+//                }
+//                if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+//                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                    result.setDescription("服务器正忙，请稍后重试");
+//                    return result;
+//                }
+//                condition.remove("qrcode");
+//                condition.put("activityId", activityId);
+//                condition.put("status", EXCodeStatus.CREATED.getValue());
+//                response = exCodeService.fetchEXCode(condition);
+//                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                    result.setDescription("服务器正忙，请稍后重试");
+//                    return result;
+//                }
+//                EXCode exCode = ((List<EXCode>) response.getData()).get(0);
+//                //实现优惠码价格抵消
+//                order.setExcode(exCode.getCodeValue());
+//                order.setRealPay(Math.round(order.getTotalPrice() * 100 - exCode.getPrice() * 100) / 100.0);
+//                new Thread(() -> {
+//                    ResultData rd = updateExcode(code, exCode);
+//                }).start();
             } else if (code.length() == 6) {
                 condition.remove("orderId");
                 condition.put("activityId", activityId);
