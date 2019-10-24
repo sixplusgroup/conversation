@@ -7,7 +7,10 @@
         <result property="itemName" column="item_name"></result>
         <result property="singleNum" column="single_num"></result>
         <result property="quantity" column="quantity"></result>
+        <result property="exQuantity" column="ex_quantity"></result>
         <result property="itemPrice" column="item_price"></result>
+        <result property="totalPrice" column="total_price"></result>
+        <result property="realPrice" column="real_price"></result>
         <result property="text" column="text"></result>
         <result property="url" column="url"></result>
         <result property="blockFlag" column="block_flag"></result>
@@ -15,12 +18,12 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrderItem" useGeneratedKeys="false">
-        insert into gmair_drift.drift_order_item(item_id, order_id, item_name, single_num, quantity, item_price,text,url,block_flag, create_time)
-        values(#{itemId}, #{orderId}, #{itemName}, #{singleNum}, #{quantity}, #{itemPrice},#{text},#{url}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_order_item(item_id, order_id, item_name, single_num, quantity,ex_quantity,item_price,total_price,real_price,text,url,block_flag, create_time)
+        values(#{itemId}, #{orderId}, #{itemName}, #{singleNum}, #{quantity},#{exQuantity}, #{itemPrice},#{totalPrice},#{realPrice},#{text},#{url}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="itemVo">
-        select item_id, order_id, item_name, single_num, quantity, item_price,text,url,block_flag, create_time
+        select item_id, order_id, item_name, single_num, quantity,ex_quantity, item_price,total_price,real_price,text,url,block_flag, create_time
         from gmair_drift.drift_order_item
         where 1 = 1
         <if test="itemId != null">
@@ -46,8 +49,17 @@
             <if test="quantity != null">
                 quantity = #{quantity},
             </if>
+            <if test="exQuantity != null">
+                ex_quantity = #{exQuantity},
+            </if>
             <if test="itemPrice != null">
                 item_price = #{itemPrice},
+            </if>
+            <if test="totalPrice != null">
+                total_price = #{totalPrice},
+            </if>
+            <if test="realPrice != null">
+                real_price = #{realPrice},
             </if>
             <if test="blockFlag != null">
                 block_flag = #{blockFlag},

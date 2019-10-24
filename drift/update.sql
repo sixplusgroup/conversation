@@ -294,7 +294,7 @@ CREATE TABLE `gmair_drift`.`drift_user` (
   PRIMARY KEY (`user_id`));
 
 ALTER TABLE `gmair_drift`.`drift_order_item`
-ADD COLUMN `real_quantity` INT NULL AFTER `quantity`;
+ADD COLUMN `ex_quantity` INT NULL AFTER `quantity`;
 
 ALTER TABLE `gmair_drift`.`drift_order_item`
 CHANGE COLUMN `single_num` `single_num` INT(11) NULL ;
@@ -365,4 +365,9 @@ ADD PRIMARY KEY (`cancel_id`);
 
 ALTER TABLE `gmair_drift`.`drift_cancel_order`
 ADD COLUMN `is_finish` TINYINT(1) NOT NULL AFTER `price`;
+
+#2019-10-24
+ALTER TABLE `gmair_drift`.`drift_order_item`
+ADD COLUMN `total_price` DOUBLE NULL AFTER `item_price`,
+ADD COLUMN `real_price` DOUBLE NULL AFTER `total_price`;
 

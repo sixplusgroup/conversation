@@ -160,6 +160,9 @@ public class OrderController {
         equipItem.setItemPrice(equipment.getEquipPrice());
         equipItem.setSingleNum(1);
         equipItem.setQuantity(1);
+        equipItem.setTotalPrice(equipment.getEquipPrice()*1);
+        equipItem.setExQuantity(1);
+        equipItem.setRealPrice(equipment.getEquipPrice()*1);
         list.add(equipItem);
         //处理订单中的试纸子项
         JSONObject attachItems = JSONObject.parseObject(form.getAttachItem());
@@ -175,7 +178,11 @@ public class OrderController {
                 attachItem.setItemPrice(attachment.getAttachPrice());
                 attachItem.setSingleNum(attachment.getAttachSingle());
                 int num = ((Integer) e.getValue()).intValue();
+                attachItem.setRealPrice(attachment.getAttachPrice()*num);
+                attachItem.setExQuantity(num);
                 num = num + num/5;
+                attachItem.setTotalPrice(attachment.getAttachPrice()*num);
+
                 attachItem.setQuantity(num);
                 list.add(attachItem);
             }

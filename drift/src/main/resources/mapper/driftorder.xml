@@ -62,8 +62,11 @@
         <result property="orderId" column="order_id"></result>
         <result property="itemName" column="item_name"></result>
         <result property="itemPrice" column="item_price"></result>
+        <result property="totalPrice" column="total_price"></result>
+        <result property="realPrice" column="real_price"></result>
         <result property="singleNum" column="single_num"></result>
         <result property="quantity" column="quantity"></result>
+        <result property="exQuantity" column="ex_quantity"></result>
         <result property="text" column="text"></result>
         <result property="url" column="url"></result>
         <result property="blockFlag" column="block_flag"></result>
@@ -174,6 +177,9 @@
             single_num,
             item_price,
             quantity,
+            ex_quantity,
+            total_price,
+            real_price,
             text,
             url,
             block_flag,

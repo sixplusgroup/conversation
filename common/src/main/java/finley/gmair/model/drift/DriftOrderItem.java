@@ -13,7 +13,13 @@ public class DriftOrderItem extends Entity {
 
     private int quantity;
 
+    private int exQuantity;
+
     private double itemPrice;
+
+    private double totalPrice;
+
+    private double realPrice;
 
     private String text;
 
@@ -97,5 +103,29 @@ public class DriftOrderItem extends Entity {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public double getRealPrice() {
+        return realPrice;
+    }
+
+    public void setRealPrice(double realPrice) {
+        this.realPrice = realPrice;
+    }
+
+    public int getExQuantity() {
+        return exQuantity;
+    }
+
+    public void setExQuantity(int exQuantity) {
+        this.exQuantity = exQuantity;
     }
 }
