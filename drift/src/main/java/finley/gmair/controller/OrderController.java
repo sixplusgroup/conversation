@@ -297,7 +297,7 @@ public class OrderController {
         }
         if (!StringUtils.isEmpty(code)) {
             //判断码的长度，13位即为二维码，6位即为优惠码
-            if (code.length() > 6) {
+            if (code.length() > 12) {
                 //暂时关闭扫机器码功能
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("机器二维码兑换功能暂未开通");
@@ -338,7 +338,7 @@ public class OrderController {
 //                new Thread(() -> {
 //                    ResultData rd = updateExcode(code, exCode);
 //                }).start();
-            } else if (code.length() == 6) {
+            } else {
                 condition.remove("orderId");
                 condition.put("activityId", activityId);
                 condition.put("status", EXCodeStatus.EXCHANGED.getValue());

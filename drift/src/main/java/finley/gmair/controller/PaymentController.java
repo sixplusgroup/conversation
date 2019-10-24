@@ -10,6 +10,7 @@ import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,14 @@ public class PaymentController {
             return result;
         }
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+
+        //暂时关闭全款支付功能
+        if(StringUtils.isEmpty(order.getExcode())){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("不使用优惠码无法支付");
+            return result;
+        }
+
         String ip = IPUtil.getIP(request);
         condition.clear();
         condition.put("blockFlag", false);
@@ -72,6 +81,7 @@ public class PaymentController {
             result.setDescription("活动信息有误，请确认后重试");
             return result;
         }
+
         String activityName = ((List<Activity>) response.getData()).get(0).getActivityName();
         result = paymentService.getTrade(orderId);
         if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
