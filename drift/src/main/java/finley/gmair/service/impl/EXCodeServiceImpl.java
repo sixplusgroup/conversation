@@ -55,6 +55,20 @@ public class EXCodeServiceImpl implements EXCodeService {
     }
 
     @Override
+    public ResultData createOneExcode(EXCode excode) {
+        ResultData result = new ResultData();
+        ResultData response = exCodeDao.insert(excode);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("insert excode error");
+        }
+        return result;
+    }
+
+    @Override
     public ResultData fetchEXCode(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = exCodeDao.query(condition);

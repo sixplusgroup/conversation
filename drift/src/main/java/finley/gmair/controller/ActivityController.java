@@ -324,6 +324,17 @@ public class ActivityController extends BaseController {
         return result;
     }
 
+    @PostMapping(value = "/excode/one/create")
+    public ResultData createOneEXCode(String activityId,String codeValue,double price,int status) {
+        ResultData result = new ResultData();
+        EXCode code = new EXCode(activityId, codeValue, price);
+        if (status == 1) {
+            code.setStatus(EXCodeStatus.EXCHANGED);
+        }
+        result = exCodeService.createOneExcode(code);
+        return result;
+    }
+
     /**
      * This method is used to generate the excode xls when create batch excode
      * method is private, just called in create batch
