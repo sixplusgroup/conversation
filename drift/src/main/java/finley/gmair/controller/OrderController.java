@@ -731,9 +731,11 @@ public class OrderController {
     public ResultData summary(String activityId) {
         ResultData result = new ResultData();
         JSONObject json = new JSONObject();
+        int[] statusList = new int[]{DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(),DriftOrderStatus.BACK.getValue(),DriftOrderStatus.FINISHED.getValue()};
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
         condition.put("blockFlag", false);
+        condition.put("statusList", statusList);
         ResultData response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             json.put("size", 0);
