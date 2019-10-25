@@ -210,7 +210,7 @@ public class DriftController {
                 }else {
                     value[i + 1][11] = list.get(i).getExpressNum();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressStatus())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getStatus())){
                     value[i + 1][12] = "无";
                 }else {
                     value[i + 1][12] = DriftUtil.setStatus(list.get(i).getStatus().getValue());
