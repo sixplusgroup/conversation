@@ -157,6 +157,15 @@ public class DriftController {
         return result;
     }
 
+    /**
+     * 下载当前搜索到的订单
+     * @param startTime
+     * @param endTime
+     * @param status
+     * @param search
+     * @param response
+     * @return
+     */
     @GetMapping("/order/download")
     String order_download(String startTime,String endTime,String status,String search,HttpServletResponse response){
         ResultData result=new ResultData();
@@ -277,6 +286,11 @@ public class DriftController {
         return "";
     }
 
+    /**
+     * 上传文件进行存储和解析
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/order/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResultData upload(MultipartHttpServletRequest request) {
         ResultData result = new ResultData();
@@ -290,7 +304,7 @@ public class DriftController {
         } catch (Exception e) {
             if (base != null) base.mkdirs();
         }
-        File target = new File("d:/Test" + baseDir + File.separator + name);
+        File target = new File(baseDir + File.separator + name);
         try {
             file.transferTo(target);
         } catch (Exception e) {
@@ -319,6 +333,11 @@ public class DriftController {
         return result;
     }
 
+    /**
+     * 根据上传excel表格更新数据库drift_order和eorder_xpress表
+     * @param form
+     * @return
+     */
     @PostMapping("/order/changeStatus")
     public ResultData changeStatus(ChangeOrderStatusForm form) {
         ResultData result = new ResultData();
