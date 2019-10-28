@@ -100,6 +100,7 @@ public class MqttConfiguration implements MqttCallback {
     private void init() {
         logger.info("[Info] prepare a new client");
         try {
+            //TODO @户胜浩 目前的client实例化需要使用依赖注入的配置项，但配置项是在实例化之后加载
             client = new MqttClient(mqttProperties.getOutbound().getUrls(), mqttProperties.getOutbound().getClientId(), new MemoryPersistence());
             MqttConnectOptions options = new MqttConnectOptions();
             options.setCleanSession(true);
@@ -114,9 +115,8 @@ public class MqttConfiguration implements MqttCallback {
     }
 
     /**
-     *
      * 订阅topic
-     * */
+     */
     @Bean
     public MqttClient subscribe() {
         if (client == null) init();
@@ -299,7 +299,8 @@ public class MqttConfiguration implements MqttCallback {
             } else {
                 //该类型的数据报文将存入内存缓存
                 if (base_action.equals("allrep")) {
-                    messageController.checkVersion(machineId);
+                    //不需要发送检查更新的报文
+//                    messageController.checkVersion(machineId);
 //                logger.info("uid: " + machineId + ", allrep: " + json);
                     if (json.containsKey("power") && json.getIntValue("power") == 0) {
                         json.replace("volume", 0);
@@ -382,12 +383,18 @@ public class MqttConfiguration implements MqttCallback {
      * 处理单个传感器数据消息publish
      */
     private void dealSingleSensor(String detail_action, int value) {
-        if (detail_action.equals("pm2.5a")) {}
-        if (detail_action.equals("pm2.5b")) {}
-        if (detail_action.equals("co2")) {}
-        if (detail_action.equals("temp")) {}
-        if (detail_action.equals("temp_out")) {}
-        if (detail_action.equals("humidity")) {}
+        if (detail_action.equals("pm2.5a")) {
+        }
+        if (detail_action.equals("pm2.5b")) {
+        }
+        if (detail_action.equals("co2")) {
+        }
+        if (detail_action.equals("temp")) {
+        }
+        if (detail_action.equals("temp_out")) {
+        }
+        if (detail_action.equals("humidity")) {
+        }
     }
 
     /**
