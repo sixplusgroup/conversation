@@ -11,6 +11,7 @@ import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
+import javassist.expr.Expr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -864,17 +865,18 @@ public class OrderController {
         condition.put("status",expressFlag);
         ResultData response2 = expressService.fetchExpress(condition);
         System.out.println(response2.getData());
-        if(response2.getResponseCode()==ResponseCode.RESPONSE_OK){
+        if(response2.getResponseCode()==ResponseCode.RESPONSE_OK){//express已存在则进行修改
             condition.clear();
             condition.put("expressId",((List<DriftExpress>)response2.getData()).get(0).getExpressId());
             condition.put("expressNum",expressNo);
+            condition.put("company",company);
             response2 = expressService.updateExpress(condition);
             if(response2.getResponseCode()!=ResponseCode.RESPONSE_OK){
                 result.setResponseCode(response2.getResponseCode());
                 result.setDescription(response2.getDescription());
                 return result;
             }
-        }else {
+        }else {//express不存在则创建
             response2 = expressService.createExpress(driftExpress);
             if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1174,6 +1176,89 @@ public class OrderController {
         }
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 根据上传excel表格更新对应order和express
+     * @param orderId
+     * @param machineOrderNo
+     * @param expressNum
+     * @param company
+     * @param description
+     * @return
+     */
+
+    @PostMapping("/changeStatus")
+    public ResultData changeStatus(String orderId,String machineOrderNo,String expressNum,String company,String description){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to retrieve drift order with orderId: ").append(orderId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("The drift order with orderId: ").append(orderId).append(" doesn't exist").toString());
+            return result;
+        }
+
+        DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+        if(!order.getDescription().equals(description) || !order.getMachineOrderNo().equals(machineOrderNo)){//判断order是否需要改动
+            order.setMachineOrderNo(machineOrderNo);
+            order.setDescription(description);
+            System.out.println(description);
+            response = orderService.updateDriftOrder(order);
+        }
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
+
+            return result;
+        }
+
+        Map<String, Object> condition1 = new HashMap<>();
+
+        condition1.put("blockFlag",false);
+        condition1.put("orderId",orderId);
+        ResultData response2 = expressService.fetchExpress(condition);
+        System.out.println(response2.getData());
+        if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to retrieve express with orderId: ").append(orderId).toString());
+            return result;
+        }
+        if (response2.getResponseCode() == ResponseCode.RESPONSE_NULL) {//判断该订单对应的快递单是否存在，不存在则创建
+            if(company == null && expressNum == null){
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription(new StringBuffer("The express do not need to change （null）").toString());
+                return result;
+            }
+            else{
+                createOrderExpress( orderId,  expressNum,0, company);
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription(new StringBuffer("The express is created ").toString());
+                return result;
+            }
+        }
+
+
+        DriftExpress express = ((List<DriftExpress>) response2.getData()).get(0);
+
+        if(!express.getExpressNum().equals(expressNum)||!express.getCompany().equals(company)){//express存在时，判断express是否需要更改
+            createOrderExpress( orderId,  expressNum,0, company);
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription(new StringBuffer("The express is updated ").toString());
+        }
+        else{
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription(new StringBuffer("The express do not need to be update ").toString());
+        }
+
         return result;
     }
 }

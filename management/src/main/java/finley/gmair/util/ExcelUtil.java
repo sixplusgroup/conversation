@@ -22,6 +22,26 @@ public class ExcelUtil {
 
     public final static String[] HEADER = {"收货人", "联系方式", "收货地址", "数量", "发货内容", "备注", "订单来源"};
 
+    public final static String[] ORDERHEADER = {"订单编号",
+            "活动名称",
+            "设备名称",
+            "消费者编号",
+            "姓名",
+            "联系方式",
+            "地址",
+            "试纸数量",
+            "使用日期",
+            "优惠码",
+            "机器码",
+            "快递单号",
+            "快递公司",
+            "订单状态",
+            "原价",
+            "实际价格",
+            "使用时长",
+            "备注",
+            "创建时间"};
+
     public static JSONArray decode(Sheet sheet) {
         JSONArray result = new JSONArray();
         int num = sheet.getLastRowNum() + 1;
@@ -48,6 +68,60 @@ public class ExcelUtil {
                 item.put("source", source);
                 result.add(item);
             }
+        }
+        return result;
+    }
+
+    public static JSONArray decodeDriftOrder(Sheet sheet) {
+        JSONArray result = new JSONArray();
+        int num = sheet.getLastRowNum() + 1;
+        Row header = sheet.getRow(0);
+        int[] index = index(ORDERHEADER, header);
+        if (index == null) return result;
+        for (int i = 1; i < num; i++) {
+            Row current = sheet.getRow(i);
+            if (current == null) break;
+            String order_id = getCellValue(current.getCell(index[0]));
+            String activity_name = getCellValue(current.getCell(index[1]));
+            String equip_name = getCellValue(current.getCell(index[2]));
+            String consumer_id = getCellValue(current.getCell(index[3]));
+            String consignee = getCellValue(current.getCell(index[4]));
+            String phone = getCellValue(current.getCell(index[5]));
+            String express_address = getCellValue(current.getCell(index[6]));
+            String quantity = getCellValue(current.getCell(index[7]));
+            String expected_date = getCellValue(current.getCell(index[8]));
+            String excode = getCellValue(current.getCell(index[9]));
+            String machine_orderNo = getCellValue(current.getCell(index[10]));//修改字段
+            String express_num = getCellValue(current.getCell(index[11]));//修改字段
+            String company = getCellValue(current.getCell(index[12]));//修改字段
+            String express_status = getCellValue(current.getCell(index[13]));
+            String total_price = getCellValue(current.getCell(index[14]));
+            String real_pay = getCellValue(current.getCell(index[15]));
+            String interval_date = getCellValue(current.getCell(index[16]));
+            String description = getCellValue(current.getCell(index[17]));//修改字段
+            String create_time = getCellValue(current.getCell(index[18]));
+
+            JSONObject item = new JSONObject();
+            item.put("orderId", order_id);
+            item.put("activityName", activity_name);
+            item.put("equipName", equip_name);
+            item.put("consumerId", consumer_id);
+            item.put("consignee", consignee);
+            item.put("description", phone);
+            item.put("expressAddress", express_address);
+            item.put("quantity", quantity);
+            item.put("expectedDate", expected_date);
+            item.put("excode", excode);
+            item.put("machineOrderNo", machine_orderNo);
+            item.put("expressNum", express_num);
+            item.put("company", company);
+            item.put("expressStatus", express_status);
+            item.put("totalPrice", total_price);
+            item.put("realPay", real_pay);
+            item.put("intervalDate", interval_date);
+            item.put("description", description);
+            item.put("createTime", create_time);
+            result.add(item);
         }
         return result;
     }
@@ -84,6 +158,8 @@ public class ExcelUtil {
         }
         return "";
     }
+
+
 
     private static int[] index(final String[] header, Row row) {
         int[] index = new int[header.length];

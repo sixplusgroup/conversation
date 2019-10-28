@@ -3,10 +3,13 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.form.drift.ChangeOrderStatusForm;
+import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.drift.DriftOrderPanel;
 import finley.gmair.model.installation.AssignReport;
 import finley.gmair.service.DriftService;
 import finley.gmair.util.DriftUtil;
+import finley.gmair.util.ExcelUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
@@ -14,13 +17,17 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.print.DocFlavor;
 import javax.servlet.ServletOutputStream;
@@ -175,6 +182,7 @@ public class DriftController {
                     "优惠码",
                     "机器码",
                     "快递单号",
+                    "快递公司",
                     "订单状态",
                     "原价",
                     "实际价格",
@@ -210,20 +218,25 @@ public class DriftController {
                 }else {
                     value[i + 1][11] = list.get(i).getExpressNum();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getStatus())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getCompany())){
                     value[i + 1][12] = "无";
                 }else {
-                    value[i + 1][12] = DriftUtil.setStatus(list.get(i).getStatus().getValue());
+                    value[i + 1][12] = list.get(i).getCompany();
                 }
-                value[i + 1][13] = list.get(i).getTotalPrice();
-                value[i + 1][14] = list.get(i).getRealPay();
-                value[i + 1][15] = list.get(i).getIntervalDate();
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())){
-                    value[i + 1][16] = "无";
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getStatus())){
+                    value[i + 1][13] = "无";
                 }else {
-                    value[i + 1][16] = list.get(i).getDescription();
+                    value[i + 1][13] = DriftUtil.setStatus(list.get(i).getStatus().getValue());
                 }
-                value[i + 1][17] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
+                value[i + 1][14] = list.get(i).getTotalPrice();
+                value[i + 1][15] = list.get(i).getRealPay();
+                value[i + 1][16] = list.get(i).getIntervalDate();
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())){
+                    value[i + 1][17] = "无";
+                }else {
+                    value[i + 1][17] = list.get(i).getDescription();
+                }
+                value[i + 1][18] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
             }
             HSSFRow row[]=new HSSFRow[list.size()+1];
             HSSFCell cell[]=new HSSFCell[n.length];
@@ -262,5 +275,77 @@ public class DriftController {
             logger.error(e.getMessage());
         }
         return "";
+    }
+
+    @RequestMapping(value = "/order/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResultData upload(MultipartHttpServletRequest request) {
+        ResultData result = new ResultData();
+        //存储文件
+        MultipartFile file = request.getFile("file");
+        String name = file.getOriginalFilename();
+        File base = null;
+        try {
+            base = new File(baseDir);
+            if (!base.exists()) base.mkdirs();
+        } catch (Exception e) {
+            if (base != null) base.mkdirs();
+        }
+        File target = new File("d:/Test" + baseDir + File.separator + name);
+        try {
+            file.transferTo(target);
+        } catch (Exception e) {
+            logger.error("文件: " + name + "处理失败, " + e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("文件上传失败");
+            return result;
+        }
+        //解析文件
+        try {
+            Workbook book = WorkbookFactory.create(target);
+            int nums = book.getNumberOfSheets();
+            if (nums <= 0) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("请确保上传的文件中有列表数据");
+                return result;
+            }
+            //获取第一页的数据
+            Sheet sheet = book.getSheetAt(0);
+            JSONArray data = ExcelUtil.decodeDriftOrder(sheet);
+            result.setData(data);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("文件未能成功解析");
+        }
+        return result;
+    }
+
+    @PostMapping("/order/changeStatus")
+    public ResultData changeStatus(ChangeOrderStatusForm form) {
+        ResultData result = new ResultData();
+        if (org.springframework.util.StringUtils.isEmpty(form.getExpressNum()) || org.springframework.util.StringUtils.isEmpty(form.getMachineOrderNo())
+                || org.springframework.util.StringUtils.isEmpty(form.getOrderId()) || org.springframework.util.StringUtils.isEmpty(form.getCompany()) ) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请输入所有的安装任务用户相关的信息，如果为空填无");
+            return result;
+        }
+        String expressNum = form.getExpressNum().trim();
+        String machineOrderNo = form.getMachineOrderNo().trim();
+        String orderId = form.getOrderId().trim();
+        String company = form.getCompany().trim();
+        String description = form.getDescription().trim();
+        if(expressNum.equals("无")){//将“无”转换为空值
+            expressNum = null;
+        }
+        if(machineOrderNo.equals("无")){
+            machineOrderNo = null;
+        }
+        if(company.equals("无")){
+            company = null;
+        }
+        if(description.equals("无")){
+            description = null;
+        }
+        result = driftService.changeStatus(orderId,machineOrderNo,expressNum,company,description);
+        return result;
     }
 }
