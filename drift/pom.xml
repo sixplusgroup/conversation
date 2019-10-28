@@ -11,7 +11,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>drift</artifactId>
-    <version>1.9.2-SNAPSHOT</version>
+    <version>1.10.1.6-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -90,6 +90,13 @@
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java</artifactId>
             <version>3.0.86</version>
+        </dependency>
+
+        <!--去除emoij表情-->
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
+            <version>4.0.0</version>
         </dependency>
     </dependencies>
 

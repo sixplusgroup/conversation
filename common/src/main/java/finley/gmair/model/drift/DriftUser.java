@@ -38,8 +38,8 @@ public class DriftUser extends Entity {
         this.avatarUrl = avatarUrl;
     }
 
-    public DriftUser(String openId, JSONObject object) {
-        this(openId, object.getString("nickName") , object.getString("province"),
+    public DriftUser(String openId, String nickname,JSONObject object) {
+        this(openId, nickname , object.getString("province"),
                 object.getString("city"), object.getString("country"), object.getInteger("gender"),
                 object.getString("avatarUrl"));
     }
