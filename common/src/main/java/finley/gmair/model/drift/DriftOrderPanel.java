@@ -5,6 +5,8 @@ import java.util.List;
 
 public class DriftOrderPanel extends AbstractDriftOrder {
 
+    private String company;
+
     private String expressNum;
 
     private String expressStatus;
@@ -45,7 +47,7 @@ public class DriftOrderPanel extends AbstractDriftOrder {
     }
 
     public DriftOrderPanel(String equipName,String activityName,String expressAddress,int quantity, String consumerId, String equipId, String consignee, String phone, String address, String province,
-                      String city, String district, String description, String activityId, Date expectedDate, int intervalDate) {
+                      String city, String district, String description, String activityId, Date expectedDate, int intervalDate,String company) {
         super(consumerId, consignee, phone, address, expectedDate, intervalDate);
         this.equipName = equipName;
         this.activityName = activityName;
@@ -58,8 +60,17 @@ public class DriftOrderPanel extends AbstractDriftOrder {
         this.district = district;
         this.description = description;
         this.activityId = activityId;
+        this.company = company;
         this.status = DriftOrderStatus.APPLIED;
 
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
     }
 
     public String getExpressNum() {

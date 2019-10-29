@@ -54,6 +54,9 @@
             <if test="expressNum != null">
                 express_num = #{expressNum},
             </if>
+            <if test="company != null">
+                company = #{company},
+            </if>
         </set>
         where express_id = #{expressId}
     </update>
