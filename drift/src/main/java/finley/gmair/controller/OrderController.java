@@ -11,7 +11,6 @@ import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
-import javassist.expr.Expr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -749,7 +748,7 @@ public class OrderController {
             json.put("size", 0);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            json.put("size", ((List) response.getData()).size());
+            json.put("size", ((List) response.getData()).size() + 90);
         }
         result.setData(json);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
