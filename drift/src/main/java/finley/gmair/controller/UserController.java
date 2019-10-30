@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.vdurmont.emoji.EmojiParser;
 import finley.gmair.model.drift.DriftUser;
 import finley.gmair.model.wechat.UserSession;
 import finley.gmair.service.UserService;
@@ -137,7 +138,10 @@ public class UserController extends BaseController {
         logger.info(data);
         JSONObject data2json = JSONObject.parseObject(data);
         logger.info("",data2json);
-        DriftUser user = new DriftUser(openid, data2json);
+        String nickname = data2json.getString("nickName");
+        nickname = EmojiParser.removeAllEmojis(nickname);
+        logger.info(nickname);
+        DriftUser user = new DriftUser(openid,nickname,data2json);
         response = userService.createUser(user);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

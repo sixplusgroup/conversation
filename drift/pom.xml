@@ -11,7 +11,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>drift</artifactId>
-    <version>1.9.2-SNAPSHOT</version>
+    <version>1.10.1.6-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -72,7 +72,6 @@
             <version>1.4.3.RELEASE</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-dao</artifactId>
@@ -102,6 +101,13 @@
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java</artifactId>
             <version>3.0.86</version>
+        </dependency>
+
+        <!--去除emoij表情-->
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
+            <version>4.0.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
