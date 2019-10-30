@@ -695,7 +695,7 @@ public class OrderController {
         if (!StringUtils.isEmpty(search)) {
             //删除对于订单状态的选择
 //            condition.remove("status");
-            String fuzzysearch =  search ;
+            String fuzzysearch =  search.trim();
             Pattern pattern = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
             Pattern patternc =  Pattern.compile("[\\u4e00-\\u9fa5]");
             Matcher m = pattern.matcher(search);
@@ -1196,6 +1196,7 @@ public class OrderController {
         condition.put("orderId", orderId);
         condition.put("blockFlag", false);
         ResultData response = orderService.fetchDriftOrder(condition);
+
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to retrieve drift order with orderId: ").append(orderId).toString());
@@ -1208,6 +1209,13 @@ public class OrderController {
         }
 
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+
+        if(order.getStatus().getValue() != 2){//只有订单状态为已确认才可修改order和express
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Can not update order without status 'CONFIRMED' ").append(orderId).toString());
+            return result;
+        }
+
         if(!order.getDescription().equals(description) || !order.getMachineOrderNo().equals(machineOrderNo)){//判断order是否需要改动
             order.setMachineOrderNo(machineOrderNo);
             order.setDescription(description);
