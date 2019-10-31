@@ -48,7 +48,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @PropertySource({"classpath:auth.properties", "classpath:mqtt.properties"})
 @Configuration
-public class MqttConfiguration implements MqttCallback {
+public class MqttConfiguration {
     private Logger logger = LoggerFactory.getLogger(MqttConfiguration.class);
 
     @Autowired
@@ -69,9 +69,9 @@ public class MqttConfiguration implements MqttCallback {
     @Autowired
     private MessageController messageController;
 
-    private MqttClient client;
-
-    private static final int[] qos = {2};
+//    private MqttClient client;
+//
+//    private static final int[] qos = {2};
 
     @Value("${inbound_url}")
     private String ip;
@@ -93,162 +93,162 @@ public class MqttConfiguration implements MqttCallback {
 
     private Map<String, Integer> devices = new ConcurrentHashMap<>();
 
-    public MqttConfiguration() {
-        init();
-    }
-
-    private void init() {
-        logger.info("[Info] prepare a new client");
-        try {
-            //TODO @户胜浩 目前的client实例化需要使用依赖注入的配置项，但配置项是在实例化之后加载
-            client = new MqttClient(mqttProperties.getOutbound().getUrls(), mqttProperties.getOutbound().getClientId(), new MemoryPersistence());
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setCleanSession(true);
-            options.setKeepAliveInterval(30);
-            options.setConnectionTimeout(10);
-            client.setCallback(this);
-            client.connect(options);
-            logger.info("[Info] MQTT client initialize successfully");
-        } catch (Exception e) {
-            logger.error("[Error]" + e.getMessage());
-        }
-    }
-
+//    public MqttConfiguration() {
+//        init();
+//    }
+//
+//    private void init() {
+//        logger.info("[Info] prepare a new client");
+//        try {
+//            //TODO @户胜浩 目前的client实例化需要使用依赖注入的配置项，但配置项是在实例化之后加载
+//            client = new MqttClient(mqttProperties.getOutbound().getUrls(), mqttProperties.getOutbound().getClientId(), new MemoryPersistence());
+//            MqttConnectOptions options = new MqttConnectOptions();
+//            options.setCleanSession(true);
+//            options.setKeepAliveInterval(30);
+//            options.setConnectionTimeout(10);
+//            client.setCallback(this);
+//            client.connect(options);
+//            logger.info("[Info] MQTT client initialize successfully");
+//        } catch (Exception e) {
+//            logger.error("[Error]" + e.getMessage());
+//        }
+//    }
+//
+//    /**
+//     * 订阅topic
+//     */
+//    @Bean
+//    public MqttClient subscribe() {
+//        if (client == null) init();
+//        if (!client.isConnected()) {
+//            try {
+//                MqttConnectOptions options = new MqttConnectOptions();
+//                options.setCleanSession(true);
+//                options.setKeepAliveInterval(30);
+//                options.setConnectionTimeout(10);
+//                client.setCallback(this);
+//                client.connect(options);
+//            } catch (Exception e) {
+//                logger.error(e.getMessage());
+//            }
+//        }
+//        try {
+//            client.subscribe(topicDetail(), qos);
+//        } catch (Exception e) {
+//            logger.error("[Error] subscribe topics failure " + e.getMessage());
+//        }
+//        return client;
+//    }
+//
+//    public void messageArrived(String topic, MqttMessage message) throws MqttException {
+//        CorePool.getHandlePool().execute(() -> {
+//            if (message == null) {
+//                logger.error("[Error] illegal message received.");
+//                return;
+//            }
+//            JSONObject json = JSON.parseObject(new String(message.getPayload(), StandardCharsets.UTF_8));
+//            //判断是否要丢弃报文
+//            if (json.containsKey("time")) {
+//                if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
+//                    //同步时间
+//                    String machineId = topic.split("/")[2];
+//                    MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
+//                    logger.info("send message to sync time for client: " + machineId);
+//                    logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
+//                    return;
+//                }
+//            }
+//            if (message.isDuplicate())
+//                return;
+//            handle(topic, json);
+//        });
+//    }
+//
+//    public void connectionLost(Throwable cause) {
+//        logger.error("[Error] Connection lost because: " + cause);
+//        subscribe();
+//    }
+//
+//    public void deliveryComplete(IMqttDeliveryToken token) {
+//    }
     /**
-     * 订阅topic
+     * 实现MqttOutbound
      */
     @Bean
-    public MqttClient subscribe() {
-        if (client == null) init();
-        if (!client.isConnected()) {
-            try {
-                MqttConnectOptions options = new MqttConnectOptions();
-                options.setCleanSession(true);
-                options.setKeepAliveInterval(30);
-                options.setConnectionTimeout(10);
-                client.setCallback(this);
-                client.connect(options);
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-            }
-        }
-        try {
-            client.subscribe(topicDetail(), qos);
-        } catch (Exception e) {
-            logger.error("[Error] subscribe topics failure " + e.getMessage());
-        }
-        return client;
+    public MqttPahoClientFactory mqttClientFactory() {
+        String[] serverUrls = mqttProperties.getOutbound().getUrls().split(",");
+        DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
+        //factory.setUserName(username);
+        //factory.setPassword(password);
+        factory.setServerURIs(serverUrls);
+        factory.setCleanSession(true);
+        factory.setConnectionTimeout(10);
+        factory.setKeepAliveInterval(20);
+        return factory;
     }
 
-    public void messageArrived(String topic, MqttMessage message) throws MqttException {
-        CorePool.getHandlePool().execute(() -> {
-            if (message == null) {
-                logger.error("[Error] illegal message received.");
-                return;
-            }
-            JSONObject json = JSON.parseObject(new String(message.getPayload(), StandardCharsets.UTF_8));
-            //判断是否要丢弃报文
-            if (json.containsKey("time")) {
-                if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
-                    //同步时间
-                    String machineId = topic.split("/")[2];
-                    MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
-                    logger.info("send message to sync time for client: " + machineId);
-                    logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
-                    return;
-                }
-            }
-            if (message.isDuplicate())
-                return;
-            handle(topic, json);
-        });
+    @Bean
+    @ServiceActivator(inputChannel = "mqttOutboundChannel")
+    public MessageHandler mqttOutbound() {
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttProperties.getOutbound().getClientId(), mqttClientFactory());
+        messageHandler.setAsync(true);
+        //messageHandler.setDefaultTopic(mqttProperties.getOutbound().getTopic());
+        return messageHandler;
     }
 
-    public void connectionLost(Throwable cause) {
-        logger.error("[Error] Connection lost because: " + cause);
-        subscribe();
+    @Bean
+    public MessageChannel mqttOutboundChannel() {
+        return new DirectChannel();
     }
 
-    public void deliveryComplete(IMqttDeliveryToken token) {
+
+    /**
+     * 实现MqttInbound
+     */
+    @Bean
+    public MessageChannel mqttInputChannel() {
+        return new DirectChannel();
     }
-//    /**
-//     * 实现MqttOutbound
-//     */
-//    @Bean
-//    public MqttPahoClientFactory mqttClientFactory() {
-//        String[] serverUrls = mqttProperties.getOutbound().getUrls().split(",");
-//        DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
-//        //factory.setUserName(username);
-//        //factory.setPassword(password);
-//        factory.setServerURIs(serverUrls);
-//        factory.setCleanSession(true);
-//        factory.setConnectionTimeout(10);
-//        factory.setKeepAliveInterval(20);
-//        return factory;
-//    }
-//
-//    @Bean
-//    @ServiceActivator(inputChannel = "mqttOutboundChannel")
-//    public MessageHandler mqttOutbound() {
-//        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttProperties.getOutbound().getClientId(), mqttClientFactory());
-//        messageHandler.setAsync(true);
-//        //messageHandler.setDefaultTopic(mqttProperties.getOutbound().getTopic());
-//        return messageHandler;
-//    }
-//
-//    @Bean
-//    public MessageChannel mqttOutboundChannel() {
-//        return new DirectChannel();
-//    }
-//
-//
-//    /**
-//     * 实现MqttInbound
-//     */
-//    @Bean
-//    public MessageChannel mqttInputChannel() {
-//        return new DirectChannel();
-//    }
-//
-//    @Bean
-//    public MessageProducer inbound() {
-//        String[] inboundTopic = topicDetail();
-//        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopic);
-//        adapter.setCompletionTimeout(5000);
-//        adapter.setConverter(new DefaultPahoMessageConverter());
-//        adapter.setQos(1);
-//        adapter.setOutputChannel(mqttInputChannel());
-//        return adapter;
-//    }
-//
-//    @Bean
-//    @ServiceActivator(inputChannel = "mqttInputChannel")
-//    public MessageHandler handler() {
-//        return new MessageHandler() {
-//            @Override
-//            public void handleMessage(Message<?> message) {
-//                CorePool.getHandlePool().execute(() -> {
-//                    if (message == null) {
-//                        logger.error("[Error] illegal message received.");
-//                        return;
-//                    }
-//                    MessageHeaders headers = message.getHeaders();
-//                    if (headers == null) return;
-//                    //判断是否要丢弃报文
-//                    if (TimeUtil.exceed(headers.getTimestamp(), System.currentTimeMillis(), 300)) {
-//                        logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
-//                        return;
-//                    }
-//                    String payload = ((String) message.getPayload());
-//                    String topic = headers.get("mqtt_topic").toString();
-//                    //将payload转换为json数据格式，进行进一步处理
-//                    if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate") == true)
-//                        return;
-//                    handle(topic, JSON.parseObject(payload));
-//                });
-//            }
-//        };
-//    }
+
+    @Bean
+    public MessageProducer inbound() {
+        String[] inboundTopic = topicDetail();
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopic);
+        adapter.setCompletionTimeout(5000);
+        adapter.setConverter(new DefaultPahoMessageConverter());
+        adapter.setQos(1);
+        adapter.setOutputChannel(mqttInputChannel());
+        return adapter;
+    }
+
+    @Bean
+    @ServiceActivator(inputChannel = "mqttInputChannel")
+    public MessageHandler handler() {
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) {
+                CorePool.getHandlePool().execute(() -> {
+                    if (message == null) {
+                        logger.error("[Error] illegal message received.");
+                        return;
+                    }
+                    MessageHeaders headers = message.getHeaders();
+                    if (headers == null) return;
+                    //判断是否要丢弃报文
+                    if (TimeUtil.exceed(headers.getTimestamp(), System.currentTimeMillis(), 300)) {
+                        logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
+                        return;
+                    }
+                    String payload = ((String) message.getPayload());
+                    String topic = headers.get("mqtt_topic").toString();
+                    //将payload转换为json数据格式，进行进一步处理
+                    if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate") == true)
+                        return;
+                    handle(topic, JSON.parseObject(payload));
+                });
+            }
+        };
+    }
 
     /**
      * 获取当前需订阅的所有topic
