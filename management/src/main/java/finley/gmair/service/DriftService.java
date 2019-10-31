@@ -36,4 +36,7 @@ public interface DriftService {
                            @RequestParam("phone") String phone,@RequestParam("province") String province,
                            @RequestParam("city") String city,@RequestParam("district") String district,
                            @RequestParam("address") String address,@RequestParam("status") String status);
+
+    @PostMapping("/drift/order/changeStatus")
+    ResultData changeStatus(@RequestParam("orderId") String orderId,@RequestParam("machineOrderNo") String machineOrderNo,@RequestParam("expressNum") String expressNum,@RequestParam("company") String company,@RequestParam("description") String description);
 }
