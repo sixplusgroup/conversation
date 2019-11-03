@@ -22,7 +22,8 @@ public class ExcelUtil {
 
     public final static String[] HEADER = {"收货人", "联系方式", "收货地址", "数量", "发货内容", "备注", "订单来源"};
 
-    public final static String[] ORDERHEADER = {"订单编号",
+    public final static String[] ORDERHEADER = {
+            "订单编号",
             "活动名称",
             "设备名称",
             "消费者编号",
@@ -30,12 +31,16 @@ public class ExcelUtil {
             "联系方式",
             "地址",
             "试纸数量",
+            "试纸单价",
+            "试纸总价",
+            "试纸实际价格",
             "使用日期",
             "优惠码",
             "机器码",
-            "快递单号",
-            "快递公司",
-            "订单状态",
+            "寄出快递单号",
+            "寄出快递公司",
+            "寄回快递单号",
+            "寄回快递公司",
             "原价",
             "实际价格",
             "使用时长",
@@ -89,17 +94,21 @@ public class ExcelUtil {
             String phone = getCellValue(current.getCell(index[5]));
             String express_address = getCellValue(current.getCell(index[6]));
             String quantity = getCellValue(current.getCell(index[7]));
-            String expected_date = getCellValue(current.getCell(index[8]));
-            String excode = getCellValue(current.getCell(index[9]));
-            String machine_orderNo = getCellValue(current.getCell(index[10]));//修改字段
-            String express_num = getCellValue(current.getCell(index[11]));//修改字段
-            String company = getCellValue(current.getCell(index[12]));//修改字段
-            String express_status = getCellValue(current.getCell(index[13]));
-            String total_price = getCellValue(current.getCell(index[14]));
-            String real_pay = getCellValue(current.getCell(index[15]));
-            String interval_date = getCellValue(current.getCell(index[16]));
-            String description = getCellValue(current.getCell(index[17]));//修改字段
-            String create_time = getCellValue(current.getCell(index[18]));
+            String item_price = getCellValue(current.getCell(index[8]));
+            String item_total_price = getCellValue(current.getCell(index[9]));
+            String item_real_price = getCellValue(current.getCell(index[10]));
+            String expected_date = getCellValue(current.getCell(index[11]));
+            String excode = getCellValue(current.getCell(index[12]));
+            String machine_orderNo = getCellValue(current.getCell(index[13]));//修改字段
+            String express_out_num = getCellValue(current.getCell(index[14]));//修改字段
+            String express_out_company = getCellValue(current.getCell(index[15]));//修改字段
+            String express_back_num = getCellValue(current.getCell(index[16]));
+            String express_back_company = getCellValue(current.getCell(index[17]));
+            String total_price = getCellValue(current.getCell(index[18]));
+            String real_pay = getCellValue(current.getCell(index[19]));
+            String interval_date = getCellValue(current.getCell(index[20]));
+            String description = getCellValue(current.getCell(index[21]));//修改字段
+            String create_time = getCellValue(current.getCell(index[22]));
 
             JSONObject item = new JSONObject();
             item.put("orderId", order_id);
@@ -110,12 +119,16 @@ public class ExcelUtil {
             item.put("description", phone);
             item.put("expressAddress", express_address);
             item.put("quantity", quantity);
+            item.put("itemPrice", item_price);
+            item.put("itemTotalPrice", item_total_price);
+            item.put("itemRealPrice", item_real_price);
             item.put("expectedDate", expected_date);
             item.put("excode", excode);
             item.put("machineOrderNo", machine_orderNo);
-            item.put("expressNum", express_num);
-            item.put("company", company);
-            item.put("expressStatus", express_status);
+            item.put("expressOutNum", express_out_num);
+            item.put("expressOutCompany", express_out_company);
+            item.put("expressBackNum", express_back_num);
+            item.put("expressBackCompany", express_back_company);
             item.put("totalPrice", total_price);
             item.put("realPay", real_pay);
             item.put("intervalDate", interval_date);

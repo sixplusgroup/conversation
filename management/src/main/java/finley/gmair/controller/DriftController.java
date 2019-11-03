@@ -187,12 +187,16 @@ public class DriftController {
                     "联系方式",
                     "地址",
                     "试纸数量",
+                    "试纸单价",
+                    "试纸总价",
+                    "试纸实际价格",
                     "使用日期",
                     "优惠码",
                     "机器码",
-                    "快递单号",
-                    "快递公司",
-                    "订单状态",
+                    "寄出快递单号",
+                    "寄出快递公司",
+                    "寄回快递单号",
+                    "寄回快递公司",
                     "原价",
                     "实际价格",
                     "使用时长",
@@ -211,41 +215,61 @@ public class DriftController {
                 value[i + 1][5] = list.get(i).getPhone();
                 value[i + 1][6] = list.get(i).getExpressAddress();
                 value[i + 1][7] = list.get(i).getQuantity();
-                value[i + 1][8] = new SimpleDateFormat("yyyy-MM-dd").format(list.get(i).getExpectedDate());
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExcode())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getItemPrice())){
+                    value[i + 1][8] = "无";
+                }else {
+                    value[i + 1][8] = list.get(i).getItemPrice();
+                }
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getItemTotalPrice())){
                     value[i + 1][9] = "无";
                 }else {
-                    value[i + 1][9] = list.get(i).getExcode();
+                    value[i + 1][9] = list.get(i).getItemTotalPrice();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getMachineOrderNo())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getItemRealPrice())){
                     value[i + 1][10] = "无";
                 }else {
-                    value[i + 1][10] = list.get(i).getMachineOrderNo();
+                    value[i + 1][10] = list.get(i).getItemRealPrice();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressNum())){
-                    value[i + 1][11] = "无";
-                }else {
-                    value[i + 1][11] = list.get(i).getExpressNum();
-                }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getCompany())){
+                value[i + 1][11] = new SimpleDateFormat("yyyy-MM-dd").format(list.get(i).getExpectedDate());
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExcode())){
                     value[i + 1][12] = "无";
                 }else {
-                    value[i + 1][12] = list.get(i).getCompany();
+                    value[i + 1][12] = list.get(i).getExcode();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getStatus())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getMachineOrderNo())){
                     value[i + 1][13] = "无";
                 }else {
-                    value[i + 1][13] = DriftUtil.setStatus(list.get(i).getStatus().getValue());
+                    value[i + 1][13] = list.get(i).getMachineOrderNo();
                 }
-                value[i + 1][14] = list.get(i).getTotalPrice();
-                value[i + 1][15] = list.get(i).getRealPay();
-                value[i + 1][16] = list.get(i).getIntervalDate();
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutNum())){
+                    value[i + 1][14] = "无";
+                }else {
+                    value[i + 1][14] = list.get(i).getExpressOutNum();
+                }
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutCompany())){
+                    value[i + 1][15] = "无";
+                }else {
+                    value[i + 1][15] = list.get(i).getExpressOutCompany();
+                }
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackNum())){
+                    value[i + 1][16] = "无";
+                }else {
+                    value[i + 1][16] = list.get(i).getExpressBackNum();
+                }
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackCompany())){
                     value[i + 1][17] = "无";
                 }else {
-                    value[i + 1][17] = list.get(i).getDescription();
+                    value[i + 1][17] = list.get(i).getExpressBackCompany();
                 }
-                value[i + 1][18] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
+                value[i + 1][18] = list.get(i).getTotalPrice();
+                value[i + 1][19] = list.get(i).getRealPay();
+                value[i + 1][20] = list.get(i).getIntervalDate();
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())){
+                    value[i + 1][21] = "无";
+                }else {
+                    value[i + 1][21] = list.get(i).getDescription();
+                }
+                value[i + 1][22] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
             }
             HSSFRow row[]=new HSSFRow[list.size()+1];
             HSSFCell cell[]=new HSSFCell[n.length];

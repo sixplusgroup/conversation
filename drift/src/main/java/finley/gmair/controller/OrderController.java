@@ -695,18 +695,25 @@ public class OrderController {
             //删除对于订单状态的选择
 //            condition.remove("status");
             String fuzzysearch =  search.trim();
-            Pattern pattern = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
-            Pattern patternc =  Pattern.compile("[\\u4e00-\\u9fa5]");
-            Matcher m = pattern.matcher(search);
-            Matcher mc = patternc.matcher(search);
-            if (m.find()) {//如果搜索内容为手机号
+            Pattern phone = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
+            Pattern id =  Pattern.compile("^GMO");
+            Pattern machine = Pattern.compile("^GMZNSK-");
+            Matcher m1 = phone.matcher(search);
+            Matcher m2 = id.matcher(search);
+            Matcher m3 = machine.matcher(search);
+            if (m1.find()) {//如果搜索内容为手机号
                 condition.put("phone", fuzzysearch);
-            } else if(mc.find()){//如果搜索内容为汉字
-                condition.put("consignee", fuzzysearch);
-                System.out.println("汉字");
-            }else{
+                System.out.println("手机号");
+            } else if(m2.find()){//如果搜索内容为订单号
+                condition.put("orderId", fuzzysearch);
+                System.out.println("订单号");
+            }else if(m3.find()){//如果搜索内容为机器码
                 condition.put("machineOrderNo", fuzzysearch);
-                System.out.println("asfa");
+                System.out.println("机器码");
+            }
+            else{
+                condition.put("consignee", fuzzysearch);
+                System.out.println("名字");
             }
         }
         ResultData response = orderService.fetchDriftOrderPanel(condition);

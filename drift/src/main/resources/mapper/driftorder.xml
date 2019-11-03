@@ -27,9 +27,14 @@
     </resultMap>
 
     <resultMap id="orderDashboardVo" type="finley.gmair.model.drift.DriftOrderPanel">
-        <result property="company" column="company"></result>
-        <result property="expressNum" column="express_num"></result>
-        <result property="expressStatus" column="express_status"></result>
+        <result property="itemRealPrice" column="item_real_price"></result>
+        <result property="itemTotalPrice" column="item_total_price"></result>
+        <result property="itemPrice" column="item_price"></result>
+        <result property="expressBackCompany" column="express_back_company"></result>
+        <result property="expressBackNum" column="express_back_num"></result>
+        <result property="expressOutCompany" column="express_out_company"></result>
+        <result property="expressOutNum" column="express_out_num"></result>
+<!--        <result property="expressStatus" column="express_status"></result>-->
         <result property="activityName" column="activity_name"></result>
         <result property="equipName" column="equip_name"></result>
         <result property="expressAddress" column="express_address"></result>
@@ -131,9 +136,9 @@
     </select>
 
     <select id="querydashboard" parameterType="java.util.Map" resultMap="orderDashboardVo">
-        select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, order_status,consignee, phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,
-        expected_date, interval_date,excode, block_flag,create_time,express_num,express_status,company
-        from order_activity_equipment_item_view
+        select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, order_status,consignee, phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,item_price,item_total_price,item_real_price,
+        expected_date, interval_date,excode, block_flag,create_time,express_out_num,express_out_company,express_back_num,express_back_company
+        from order_activity_equipment_item_express_view
         where 1 = 1
         <if test="orderId != null">
             AND order_id = #{orderId}

@@ -315,14 +315,7 @@ DEFAULT CHARACTER SET = utf8;
 ALTER TABLE `gmair_drift`.`order_express`
 ADD COLUMN `express_num` VARCHAR(45) NOT NULL AFTER `block_flag`;
 
-#2019-10-18
-DROP VIEW if EXISTS order_activity_equipment_item_view;
 
-CREATE VIEW `gmair_drift`.`order_activity_equipment_item_view`
-AS SELECT drift_order.order_id as order_id,activity_name,drift_order.activity_id as activity_id,equip_name,drift_order.equip_id as equip_id,consumer_id,consignee,phone,province,address,city,district,concat(province,city,district,address) AS 'express_address',drift_order.total_price,real_pay,order_status,buy_machine,machine_orderNo,quantity,expected_date,interval_date,excode,drift_order.block_flag as block_flag,drift_order.create_time as create_time,express_num,company,express_status,description
-FROM drift_order left join order_express on drift_order.order_id = order_express.order_id ,drift_activity,drift_equipment,drift_order_item
-WHERE drift_order.activity_id = drift_activity.activity_id and drift_order.equip_id = drift_equipment.equip_id and drift_order.order_id = drift_order_item.order_id and item_name = '甲醛检测试纸'
-ORDER BY expected_date
 
 #2019-10-15
 ALTER TABLE `gmair_drift`.`drift_activity`
@@ -371,3 +364,21 @@ ALTER TABLE `gmair_drift`.`drift_order_item`
 ADD COLUMN `total_price` DOUBLE NULL AFTER `item_price`,
 ADD COLUMN `real_price` DOUBLE NULL AFTER `total_price`;
 
+
+
+#2019-11-3
+-- DROP VIEW if EXISTS order_activity_equipment_item_view;
+--
+-- CREATE VIEW `gmair_drift`.`order_activity_equipment_item_view`
+-- AS SELECT drift_order.order_id as order_id,activity_name,drift_order.activity_id as activity_id,equip_name,drift_order.equip_id as equip_id,consumer_id,consignee,phone,province,address,city,district,concat(province,city,district,address) AS 'express_address',drift_order.total_price,real_pay,order_status,buy_machine,machine_orderNo,quantity,expected_date,interval_date,excode,drift_order.block_flag as block_flag,drift_order.create_time as create_time,express_num,company,express_status,description
+-- FROM drift_order left join order_express on drift_order.order_id = order_express.order_id ,drift_activity,drift_equipment,drift_order_item
+-- WHERE drift_order.activity_id = drift_activity.activity_id and drift_order.equip_id = drift_equipment.equip_id and drift_order.order_id = drift_order_item.order_id and item_name = '甲醛检测试纸'
+-- ORDER BY expected_date
+
+DROP VIEW if EXISTS order_activity_equipment_item_view;
+
+CREATE VIEW `gmair_drift`.`order_activity_equipment_item_express_view`
+AS SELECT drift_order.order_id as order_id,activity_name,drift_order.activity_id as activity_id,equip_name,drift_order.equip_id as equip_id,consumer_id,consignee,phone,province,address,city,district,concat(province,city,district,address) AS 'express_address',drift_order.total_price,drift_order.real_pay,order_status,buy_machine,machine_orderNo,quantity,drift_order_item.item_price ,drift_order_item.total_price as item_total_price,drift_order_item.real_price as item_real_price,expected_date,interval_date,excode,drift_order.block_flag as block_flag,drift_order.create_time as create_time,ex0.express_num as express_out_num,ex0.company as express_out_company,ex1.express_num as express_back_num,ex1.company as express_back_company,description
+FROM ((drift_order left join (select * from order_express where order_express.express_status = 0) as ex0 on drift_order.order_id = ex0.order_id)left join (select * from order_express where order_express.express_status = 1) as ex1 on drift_order.order_id = ex1.order_id) left join drift_order_item on drift_order_item.order_id = drift_order.order_id ,drift_activity,drift_equipment
+WHERE drift_order.activity_id = drift_activity.activity_id and drift_order.equip_id = drift_equipment.equip_id and drift_order.order_id = drift_order_item.order_id and item_name = '甲醛检测试纸'
+ORDER BY expected_date

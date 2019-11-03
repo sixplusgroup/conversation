@@ -5,11 +5,21 @@ import java.util.List;
 
 public class DriftOrderPanel extends AbstractDriftOrder {
 
-    private String company;
+    private String itemRealPrice;
 
-    private String expressNum;
+    private String itemTotalPrice;
 
-    private String expressStatus;
+    private String itemPrice;
+
+    private String expressBackCompany;
+
+    private String expressBackNum;
+
+    private String expressOutCompany;
+
+    private String expressOutNum;
+
+//    private String expressStatus;
 
     private String equipName;
 
@@ -47,7 +57,7 @@ public class DriftOrderPanel extends AbstractDriftOrder {
     }
 
     public DriftOrderPanel(String equipName,String activityName,String expressAddress,int quantity, String consumerId, String equipId, String consignee, String phone, String address, String province,
-                      String city, String district, String description, String activityId, Date expectedDate, int intervalDate,String company) {
+                      String city, String district, String description, String activityId, Date expectedDate, int intervalDate,String expressOutCompany,String expressOutNum,String expressBackNum,String expressBackCompany,String itemRealPrice,String itemTotalPrice,String itemPrice) {
         super(consumerId, consignee, phone, address, expectedDate, intervalDate);
         this.equipName = equipName;
         this.activityName = activityName;
@@ -60,34 +70,80 @@ public class DriftOrderPanel extends AbstractDriftOrder {
         this.district = district;
         this.description = description;
         this.activityId = activityId;
-        this.company = company;
+        this.expressOutCompany = expressOutCompany;
+        this.expressBackCompany = expressBackCompany;
+        this.expressOutNum = expressOutNum;
+        this.expressBackNum = expressBackNum;
+        this.itemRealPrice = itemRealPrice;
+        this.itemTotalPrice = itemTotalPrice;
+        this.itemPrice = itemPrice;
         this.status = DriftOrderStatus.APPLIED;
 
     }
 
-    public String getCompany() {
-        return company;
+    public String getExpressBackCompany() {
+        return expressBackCompany;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
+    public void setExpressBackCompany(String expressBackCompany) {
+        this.expressBackCompany = expressBackCompany;
     }
 
-    public String getExpressNum() {
-        return expressNum;
+    public String getExpressBackNum() {
+        return expressBackNum;
     }
 
-    public void setExpressNum(String expressNum) {
-        this.expressNum = expressNum;
+    public void setExpressBackNum(String expressBackNum) {
+        this.expressBackNum = expressBackNum;
     }
 
-    public String getExpressStatus() {
-        return expressStatus;
+    public String getExpressOutCompany() {
+        return expressOutCompany;
     }
 
-    public void setExpressStatus(String expressStatus) {
-        this.expressStatus = expressStatus;
+    public void setExpressOutCompany(String expressOutCompany) {
+        this.expressOutCompany = expressOutCompany;
     }
+
+    public String getExpressOutNum() {
+        return expressOutNum;
+    }
+
+    public void setExpressOutNum(String expressOutNum) {
+        this.expressOutNum = expressOutNum;
+    }
+
+    public String getItemPrice() {
+        return itemPrice;
+    }
+
+    public void setItemPrice(String itemPrice) {
+        this.itemPrice = itemPrice;
+    }
+
+    public String getItemRealPrice() {
+        return itemRealPrice;
+    }
+
+    public void setItemRealPrice(String itemRealPrice) {
+        this.itemRealPrice = itemRealPrice;
+    }
+
+    public String getItemTotalPrice() {
+        return itemTotalPrice;
+    }
+
+    public void setItemTotalPrice(String itemTotalPrice) {
+        this.itemTotalPrice = itemTotalPrice;
+    }
+
+    //    public String getExpressStatus() {
+//        return expressStatus;
+//    }
+//
+//    public void setExpressStatus(String expressStatus) {
+//        this.expressStatus = expressStatus;
+//    }
 
     public int getQuantity() {
         return quantity;
