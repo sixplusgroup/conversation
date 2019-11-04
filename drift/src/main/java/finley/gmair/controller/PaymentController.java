@@ -70,11 +70,11 @@ public class PaymentController {
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
 
         //暂时关闭全款支付功能
-        if(StringUtils.isEmpty(order.getExcode())){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("不使用优惠码无法支付");
-            return result;
-        }
+//        if(StringUtils.isEmpty(order.getExcode())){
+//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//            result.setDescription("不使用优惠码无法支付");
+//            return result;
+//        }
 
         String ip = IPUtil.getIP(request);
         condition.clear();
