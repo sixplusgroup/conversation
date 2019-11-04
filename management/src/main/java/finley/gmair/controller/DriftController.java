@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ChangeOrderStatusForm;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.drift.DriftOrderPanel;
+import finley.gmair.model.drift.DriftOrderStatus;
 import finley.gmair.model.installation.AssignReport;
 import finley.gmair.service.DriftService;
 import finley.gmair.util.DriftUtil;
@@ -89,6 +90,13 @@ public class DriftController {
             result.setDescription("物流信息创建失败");
             return result;
         }
+        String message;
+        if(expressFlag==0){
+            message="管理员更新了寄出快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
+        }else {
+            message="管理员更新了寄回快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
+        }
+        driftService.createAction(orderId,message,"admin");
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
         result.setDescription(response.getDescription());
@@ -118,7 +126,7 @@ public class DriftController {
             result.setDescription("请提供订单编号");
             return result;
         }
-        result = driftService.cancelOrder(orderId);
+        result = driftService.cancelOrder(orderId,"admin");
         return result;
     }
 
@@ -154,6 +162,8 @@ public class DriftController {
             return result;
         }
         result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status);
+        String message = "管理员更新了订单：用户："+consignee+"、联系方式："+phone+"、地址为："+province+city+district+address+"、订单状态更新为："+ status;
+        driftService.createAction(orderId,message,"admin");
         return result;
     }
 
@@ -389,6 +399,25 @@ public class DriftController {
             description = null;
         }
         result = driftService.changeStatus(orderId,machineOrderNo,expressNum,company,description);
+        String message = "管理员通过上传excel更新了订单,快递单号："+expressNum+"、快递公司："+company+"、机器码："+machineOrderNo;
+        driftService.createAction(orderId,message,"admin");
+        return result;
+    }
+
+    /**
+     * 根据orderId查询订单操作日志
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/action/selectByOrderId")
+    ResultData actionSelect(String orderId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供orderId");
+            return result;
+        }
+        result = driftService.selectAction(orderId);
         return result;
     }
 }

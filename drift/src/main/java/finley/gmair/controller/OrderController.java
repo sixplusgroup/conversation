@@ -61,6 +61,9 @@ public class OrderController {
     @Autowired
     private DriftOrderCancelService driftOrderCancelService;
 
+    @Autowired
+    private DriftOrderActionService driftOrderActionService;
+
     private Object lock = new Object();
 
 
@@ -233,6 +236,9 @@ public class OrderController {
 //            }
             result.setData(response.getData());
         }
+        String orderId = driftOrder.getOrderId();
+        String message = consignee+"创建了该订单";
+        driftOrderActionService.create(new DriftOrderAction(orderId,message,consumerId));
         return result;
     }
 
@@ -272,6 +278,12 @@ public class OrderController {
         return false;
     }
 
+    /**
+     * 提交优惠码
+     * @param orderId
+     * @param code
+     * @return
+     */
     @PostMapping(value = "/pay/confirm")
     public ResultData confirm(String orderId, String code) {
         ResultData result = new ResultData();
@@ -376,6 +388,8 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
+        String message = order.getConsignee()+"使用了优惠码："+order.getExcode();
+        driftOrderActionService.create(new DriftOrderAction(orderId,message,order.getConsumerId()));
         return result;
     }
 
@@ -979,7 +993,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/cancel")
-    public ResultData orderCancel(@RequestParam("orderId") String orderId) {
+    public ResultData orderCancel(@RequestParam("orderId") String orderId,@RequestParam("member")String member) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1057,6 +1071,14 @@ public class OrderController {
             result.setDescription(new StringBuffer("Fail to cancel drift order with: ").append(order.toString()).toString());
             return result;
         }
+        String message = "";
+        if(StringUtils.isEmpty(member)){
+            message = order.getConsignee()+"取消了该订单";
+            member = order.getConsumerId();
+        }else {
+            message = member+"取消了该订单";
+        }
+        driftOrderActionService.create(new DriftOrderAction(order.getOrderId(),message,member));
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Drift order is already cancel");
         return result;
@@ -1273,6 +1295,61 @@ public class OrderController {
             result.setDescription(new StringBuffer("The express do not need to be update ").toString());
         }
 
+        return result;
+    }
+
+    /**
+     * 查询订单操作日志
+     * @param actionId
+     * @param orderId
+     * @param member
+     * @return
+     */
+    @GetMapping("/action/select")
+    ResultData actionSelect(String actionId,String orderId,String member){
+        ResultData result = new ResultData();
+        Map<String,Object> condition = new HashMap<>();
+        if(StringUtils.isEmpty(actionId)&&StringUtils.isEmpty(orderId)&&StringUtils.isEmpty(member)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供查询条件");
+            return result;
+        }
+        if(!StringUtils.isEmpty(actionId)){
+            condition.put("actionId",actionId);
+        }
+        if(!StringUtils.isEmpty(orderId)){
+            condition.put("orderId",orderId);
+        }
+        if(!StringUtils.isEmpty(member)){
+            condition.put("member",member);
+        }
+        condition.put("blockFlag",false);
+        ResultData response = driftOrderActionService.fetch(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("订单日志为空");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询出现错误");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        return result;
+    }
+
+    @PostMapping("/action/create")
+    ResultData createAction(String orderId,String message,String member){
+        ResultData result = new ResultData();
+        ResultData response = driftOrderActionService.create(new DriftOrderAction(orderId,message,member));
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("订单操作日志创建失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
         return result;
     }
 }

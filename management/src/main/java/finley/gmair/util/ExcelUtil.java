@@ -116,7 +116,7 @@ public class ExcelUtil {
             item.put("equipName", equip_name);
             item.put("consumerId", consumer_id);
             item.put("consignee", consignee);
-            item.put("description", phone);
+            item.put("phone", phone);
             item.put("expressAddress", express_address);
             item.put("quantity", quantity);
             item.put("itemPrice", item_price);
