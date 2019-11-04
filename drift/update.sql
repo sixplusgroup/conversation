@@ -382,3 +382,18 @@ AS SELECT drift_order.order_id as order_id,activity_name,drift_order.activity_id
 FROM ((drift_order left join (select * from order_express where order_express.express_status = 0) as ex0 on drift_order.order_id = ex0.order_id)left join (select * from order_express where order_express.express_status = 1) as ex1 on drift_order.order_id = ex1.order_id) left join drift_order_item on drift_order_item.order_id = drift_order.order_id ,drift_activity,drift_equipment
 WHERE drift_order.activity_id = drift_activity.activity_id and drift_order.equip_id = drift_equipment.equip_id and drift_order.order_id = drift_order_item.order_id and item_name = '甲醛检测试纸'
 ORDER BY expected_date
+
+#2019-11-04
+CREATE TABLE `gmair_drift`.`order_action` (
+  `action_id` VARCHAR(45) NOT NULL,
+  `order_id` VARCHAR(45) NOT NULL,
+  `message` VARCHAR(100) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`action_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin;
+
+ALTER TABLE `gmair_drift`.`order_action`
+ADD COLUMN `member` VARCHAR(45) NOT NULL AFTER `order_id`;
