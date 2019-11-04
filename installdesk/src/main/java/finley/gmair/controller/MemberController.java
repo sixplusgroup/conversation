@@ -269,8 +269,8 @@ public class MemberController {
      * 获取负责人列表
      * @return
      */
-    @GetMapping("/responsibility/list")
-    public ResultData responsibilityList(){
+    @GetMapping("/leader/list")
+    public ResultData leaderList(){
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("memberRole", 1);
