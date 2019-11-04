@@ -9,6 +9,21 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="memberTeamVo" type="finley.gmair.model.installation.MemberTeam">
+        <id property="memberId" column="member_id"/>
+        <association property="member" javaType="finley.gmair.model.installation.Member">
+            <result property="memberId" column="member_id"/>
+            <result property="teamId" column="team_id"/>
+            <result property="memberPhone" column="member_phone"/>
+            <result property="memberName" column="member_name"/>
+            <result property="wechatId" column="wechat_id"/>
+            <result property="memberRole" column="member_role"
+                    typeHandler="finley.gmair.mybatis.handler.MemberRoleHandler"/>
+            <result property="blockFlag" column="block_flag"/>
+            <result property="createAt" column="create_time"/>
+        </association>
+    </resultMap>
+
     <insert id="insert" parameterType="finley.gmair.model.installation.TeamWatch" useGeneratedKeys="false">
         INSERT INTO gmair_install.team_watch (watch_id, member_id, team_id, block_flag, create_time)
         VALUES (#{watchId}, #{memberId}, #{teamId}, #{blockFlag}, #{createAt})
@@ -42,4 +57,20 @@
         DELETE FROM gmair_install.team_record
         WHERE watch_id = #{watchId}
     </delete>
+    
+    <select id="queryMemberTeam" parameterType="java.util.Map" resultMap="memberTeamVo">
+        SELECT a.member_id, a.team_id, a.member_phone, a.wechat_id, a.member_name, a.member_role
+        FROM gmair_install.team_member a
+        LEFT JOIN gmair_install.team_watch b ON a.member_id = b.member_id
+        WHERE 1 = 1
+        <if test="watchId != null">
+            AND b.watch_id = #{watchId}
+        </if>
+        <if test="memberId != null">
+            AND b.member_id = #{memberId}
+        </if>
+        <if test="teamId != null">
+            AND b.team_id = #{teamId}
+        </if>
+    </select>
 </mapper>

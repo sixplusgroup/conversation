@@ -224,3 +224,17 @@ CHANGE COLUMN `consumer_consignee` `consumer_consignee` VARCHAR(45) NOT NULL ,
 CHANGE COLUMN `consumer_phone` `consumer_phone` VARCHAR(45) NOT NULL ,
 CHANGE COLUMN `consumer_address` `consumer_address` VARCHAR(255) NOT NULL ,
 CHANGE COLUMN `assign_date` `assign_date` DATE NULL DEFAULT NULL ;
+
+##2019-11-4
+CREATE OR REPLACE VIEW `gmair_install`.`team_member_view` AS
+select
+`tm`.`member_id` AS `member_id`,
+`tm`.`team_id` AS `team_id`,
+`tm`.`member_name` AS `member_name`,
+`tm`.`member_phone` AS `member_phone`,
+`tm`.`wechat_id` AS `wechat_id`,
+`tm`.`member_role` AS `member_role`,
+`it`.`team_name` AS `team_name`
+from (`team_member` `tm`
+left join `install_team` `it`
+on(((`tm`.`block_flag` = 0) and (`it`.`team_id` = `tm`.`team_id`))))

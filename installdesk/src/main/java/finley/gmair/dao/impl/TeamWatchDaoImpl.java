@@ -80,4 +80,21 @@ public class TeamWatchDaoImpl extends BaseDao implements TeamWatchDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData queryMemberTeam(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        try{
+            List list = sqlSession.selectList("gmair.install.team.watch.queryMemberTeam", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        }catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }
