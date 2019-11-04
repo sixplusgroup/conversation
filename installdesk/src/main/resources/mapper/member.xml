@@ -32,8 +32,14 @@
         <if test="memberPhone != null">
             AND member_phone = #{memberPhone}
         </if>
+        <if test="memberName != null">
+            AND member_name = #{memberName}
+        </if>
         <if test="wechatId != null">
             AND wechat_id = #{wechatId}
+        </if>
+        <if test="memberRole != null">
+            AND member_role = #{memberRole}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}

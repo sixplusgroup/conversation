@@ -265,4 +265,29 @@ public class MemberController {
         return result;
     }
 
+    /**
+     * 获取负责人列表
+     * @return
+     */
+    @GetMapping("/responsibility/list")
+    public ResultData responsibilityList(){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("memberRole", 1);
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("获取负责人信息失败，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到负责人信息");
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
 }
