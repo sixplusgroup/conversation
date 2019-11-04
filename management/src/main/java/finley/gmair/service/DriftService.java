@@ -26,7 +26,7 @@ public interface DriftService {
     ResultData getActivityDetail(@PathVariable("activityId") String activityId);
 
     @PostMapping("/drift/order/cancel")
-    ResultData cancelOrder(@RequestParam("orderId") String orderId);
+    ResultData cancelOrder(@RequestParam("orderId") String orderId,@RequestParam("member") String member);
 
     @GetMapping("/drift/order/express/list")
     ResultData getExpressDetail(@RequestParam("orderId") String orderId,@RequestParam("status") int status);
@@ -39,4 +39,10 @@ public interface DriftService {
 
     @PostMapping("/drift/order/changeStatus")
     ResultData changeStatus(@RequestParam("orderId") String orderId,@RequestParam("machineOrderNo") String machineOrderNo,@RequestParam("expressNum") String expressNum,@RequestParam("company") String company,@RequestParam("description") String description);
+
+    @PostMapping("/drift/order/action/create")
+    ResultData createAction(@RequestParam("orderId") String orderId,@RequestParam("message") String message,@RequestParam("member") String member);
+
+    @GetMapping("/drift/order/action/select")
+    ResultData selectAction(@RequestParam("orderId") String orderId);
 }
