@@ -993,7 +993,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/cancel")
-    public ResultData orderCancel(@RequestParam("orderId") String orderId,@RequestParam("member")String member) {
+    public ResultData orderCancel(@RequestParam("orderId") String orderId,String member) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
