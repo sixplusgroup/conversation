@@ -502,4 +502,67 @@ public class InstallController {
         }
         return "";
     }
+
+    /**
+     * 安装负责人查看自己负责的团队列表
+     * @param memberId
+     * @return
+     */
+    @GetMapping("/teamwatch/watch/teamList")
+    public ResultData queryWatchTeam(String memberId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供成员的信息");
+            return result;
+        }
+        result=installService.queryWatchTeam(memberId);
+        return result;
+    }
+
+    /**
+     * 通过memberId和teamId伪删除关注团队
+     * @param memberId
+     * @param teamId
+     * @return
+     */
+    @PostMapping("/teamwatch/block")
+    public ResultData blockWatchTeam(String memberId, String teamId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)||StringUtils.isEmpty(teamId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确认memberId和teamId均已提供");
+            return result;
+        }
+        result=installService.blockWatchTeam(memberId, teamId);
+        return result;
+    }
+
+    /**
+     * 根据团队id查看所有相关负责人
+     * @param teamId
+     * @return
+     */
+    @GetMapping("/teamwatch/list")
+    public ResultData getLeaderListByTeamid(String teamId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(teamId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装团队的信息");
+            return result;
+        }
+        result = installService.getLeaderListByTeamid(teamId);
+        return result;
+    }
+
+    /**
+     * 获取负责人列表
+     * @return
+     */
+    @GetMapping("/member/leader/list")
+    public ResultData getLeaderList(){
+        ResultData result = new ResultData();
+        result = installService.getLeaderList();
+        return result;
+    }
 }

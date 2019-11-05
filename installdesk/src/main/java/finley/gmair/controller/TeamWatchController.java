@@ -114,7 +114,7 @@ public class TeamWatchController {
     }
 
     /**
-     * get the leaderlist by the team
+     * 根据团队id查看所有相关负责人
      * @param teamId
      * @return
      */
