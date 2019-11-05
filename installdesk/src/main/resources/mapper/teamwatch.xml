@@ -47,10 +47,22 @@
         </if>
     </select>
 
-    <update id="block">
+    <update id="block" parameterType="java.util.Map">
         UPDATE gmair_install.team_watch
         SET block_flag = TRUE
-        WHERE watch_id = #{watchId}
+        WHERE 1 = 1
+        <if test="watchId != null">
+            AND watch_id = #{watchId}
+        </if>
+        <if test="memberId != null">
+            AND member_id = #{memberId}
+        </if>
+        <if test="teamId != null">
+            AND team_id = #{teamId}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
     </update>
 
     <delete id="remove">

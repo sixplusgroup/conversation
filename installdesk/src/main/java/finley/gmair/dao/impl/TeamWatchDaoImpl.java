@@ -56,10 +56,10 @@ public class TeamWatchDaoImpl extends BaseDao implements TeamWatchDao {
     }
 
     @Override
-    public ResultData block(String watchId) {
+    public ResultData block(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.install.team.watch.block", watchId);
+            sqlSession.update("gmair.install.team.watch.block", condition);
         } catch (Exception e) {
             logger.error("[Error] " + e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

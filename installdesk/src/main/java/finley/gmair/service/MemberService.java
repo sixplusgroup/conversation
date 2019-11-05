@@ -23,4 +23,6 @@ public interface MemberService {
     ResultData fetchTeams(Map<String, Object> condition);
 
     ResultData fetchMemberTeam(Map<String, Object> condition);
+
+    ResultData blockTeam(Map<String, Object> condition);
 }

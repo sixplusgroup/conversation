@@ -185,4 +185,18 @@ public class MemberServiceImpl implements MemberService {
         result.setData(response.getData());
         return result;
     }
+
+    @Override
+    public ResultData blockTeam(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = teamWatchDao.block(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
+    }
 }
