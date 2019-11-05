@@ -105,198 +105,229 @@ ALTER TABLE `gmair_machine`.`control_option_action`
 
 #2018-06-25
 ALTER TABLE `gmair_machine`.`pre_bind`
-  ADD COLUMN `board_version` INT NOT NULL DEFAULT 0 AFTER `code_value`;
+  ADD COLUMN `board_version` INT NOT NULL DEFAULT 0
+  AFTER `code_value`;
 
 ALTER TABLE `gmair_machine`.`pre_bind`
-DROP COLUMN `board_version`;
+  DROP COLUMN `board_version`;
 
 #2018-06-28
 ALTER TABLE `gmair_machine`.`control_option_action`
-ADD COLUMN `command_value` INT NOT NULL DEFAULT 0 AFTER `action_operator`;
-
+  ADD COLUMN `command_value` INT NOT NULL DEFAULT 0
+  AFTER `action_operator`;
 
 #2018-07-11 add table machine_default_location
 CREATE TABLE `gmair_machine`.`machine_default_location` (
-  `location_id` INT NOT NULL,
-  `city_id` VARCHAR(20) NOT NULL,
-  `code_value` VARCHAR(45) NOT NULL,
-  `block_flag` VARCHAR(45) NOT NULL,
+  `location_id` INT         NOT NULL,
+  `city_id`     VARCHAR(20) NOT NULL,
+  `code_value`  VARCHAR(45) NOT NULL,
+  `block_flag`  VARCHAR(45) NOT NULL,
   `create_time` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`location_id`));
+  PRIMARY KEY (`location_id`)
+);
 
 ALTER TABLE `gmair_machine`.`machine_default_location`
-CHANGE COLUMN `location_id` `location_id` VARCHAR(20) NOT NULL ;
+  CHANGE COLUMN `location_id` `location_id` VARCHAR(20) NOT NULL;
 
 ALTER TABLE `gmair_machine`.`machine_default_location`
-CHANGE COLUMN `block_flag` `block_flag` TINYINT(1) NOT NULL ,
-CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ;
+  CHANGE COLUMN `block_flag` `block_flag` TINYINT(1) NOT NULL,
+  CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL;
 
 #2018-07-25
 ALTER TABLE `gmair_machine`.`code_machine_bind`
-CHANGE COLUMN `bind_id` `bind_id` VARCHAR(20) NOT NULL ;
-
+  CHANGE COLUMN `bind_id` `bind_id` VARCHAR(20) NOT NULL;
 
 #2018-07-30 add table pm2_5_boundary
 CREATE TABLE `gmair_machine`.`pm2_5_boundary` (
   `boundary_id` VARCHAR(20) NOT NULL,
-  `model_id` VARCHAR(20) NULL,
-  `pm2_5` DOUBLE NULL,
-  `create_time` DATETIME NULL,
-  `block_flag` TINYINT(1) NULL,
-  PRIMARY KEY (`boundary_id`));
+  `model_id`    VARCHAR(20) NULL,
+  `pm2_5`       DOUBLE      NULL,
+  `create_time` DATETIME    NULL,
+  `block_flag`  TINYINT(1)  NULL,
+  PRIMARY KEY (`boundary_id`)
+);
 
 ALTER TABLE `gmair_machine`.`pm2_5_boundary`
-CHANGE COLUMN `model_id` `model_id` VARCHAR(20) NOT NULL ,
-CHANGE COLUMN `pm2_5` `pm2_5` DOUBLE NOT NULL ,
-CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL ,
-CHANGE COLUMN `block_flag` `block_flag` TINYINT(1) NOT NULL ;
+  CHANGE COLUMN `model_id` `model_id` VARCHAR(20) NOT NULL,
+  CHANGE COLUMN `pm2_5` `pm2_5` DOUBLE NOT NULL,
+  CHANGE COLUMN `create_time` `create_time` DATETIME NOT NULL,
+  CHANGE COLUMN `block_flag` `block_flag` TINYINT(1) NOT NULL;
 
 #2018-07-31 add table pm2_5_latest
 CREATE TABLE `gmair_machine`.`pm2_5_latest` (
-  `latest_id` VARCHAR(20) NOT NULL,
-  `machine_id` VARCHAR(20) NOT NULL,
-  `pm2_5` DOUBLE NOT NULL,
-  `create_time` DATETIME NOT NULL,
-  `block_flag` TINYINT(1) NOT NULL,
-  PRIMARY KEY (`latest_id`));
+  `latest_id`   VARCHAR(20) NOT NULL,
+  `machine_id`  VARCHAR(20) NOT NULL,
+  `pm2_5`       DOUBLE      NOT NULL,
+  `create_time` DATETIME    NOT NULL,
+  `block_flag`  TINYINT(1)  NOT NULL,
+  PRIMARY KEY (`latest_id`)
+);
 
 #2018-08-01
 ALTER TABLE `gmair_machine`.`pm2_5_latest`
-CHANGE COLUMN `pm2_5` `pm2_5` INT NOT NULL ;
+  CHANGE COLUMN `pm2_5` `pm2_5` INT NOT NULL;
 
 ALTER TABLE `gmair_machine`.`pm2_5_boundary`
-CHANGE COLUMN `pm2_5` `pm2_5_info` INT NOT NULL ,
-ADD COLUMN `pm2_5_warning` INT NOT NULL AFTER `pm2_5_info`;
+  CHANGE COLUMN `pm2_5` `pm2_5_info` INT NOT NULL,
+  ADD COLUMN `pm2_5_warning` INT NOT NULL
+  AFTER `pm2_5_info`;
 
 #2018-08-03 add table
 CREATE TABLE `gmair_machine`.`model_light_config` (
-  `config_id` VARCHAR(20) NOT NULL,
-  `model_id` VARCHAR(20) NOT NULL,
-  `min_light` INT(11) NOT NULL,
-  `max_light` INT(11) NOT NULL,
-  `block_flag` TINYINT(1) NOT NULL,
-  `create_time` DATETIME NOT NULL,
-  PRIMARY KEY (`config_id`));
-
+  `config_id`   VARCHAR(20) NOT NULL,
+  `model_id`    VARCHAR(20) NOT NULL,
+  `min_light`   INT(11)     NOT NULL,
+  `max_light`   INT(11)     NOT NULL,
+  `block_flag`  TINYINT(1)  NOT NULL,
+  `create_time` DATETIME    NOT NULL,
+  PRIMARY KEY (`config_id`)
+);
 
 #2018-10-23 add table
 CREATE TABLE `out_pm2_5_daily` (
-  `record_id` varchar(20) NOT NULL,
-  `machine_id` varchar(20) NOT NULL,
-  `average_pm25` double NOT NULL DEFAULT '0',
-  `over_count` tinyint(5) NOT NULL DEFAULT '0',
-  `block_flag` tinyint(5) NOT NULL,
-  `create_time` datetime NOT NULL,
+  `record_id`    VARCHAR(20) NOT NULL,
+  `machine_id`   VARCHAR(20) NOT NULL,
+  `average_pm25` DOUBLE      NOT NULL DEFAULT '0',
+  `over_count`   TINYINT(5)  NOT NULL DEFAULT '0',
+  `block_flag`   TINYINT(5)  NOT NULL,
+  `create_time`  DATETIME    NOT NULL,
   PRIMARY KEY (`record_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
 
 CREATE TABLE `filter_limit_config` (
-  `over_count_limit` int(11) NOT NULL,
-  `over_pm25_limit` int(11) NOT NULL,
+  `over_count_limit` INT(11) NOT NULL,
+  `over_pm25_limit`  INT(11) NOT NULL,
   PRIMARY KEY (`over_count_limit`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
 
 CREATE TABLE `gmair_machine`.`filter_light` (
-`machine_id` VARCHAR(20) NOT NULL,
-`light_status` TINYINT(5) NOT NULL,
-`block_flag` TINYINT(5) NOT NULL,
-`create_time` DATETIME NOT NULL,
-PRIMARY KEY (`machine_id`));
+  `machine_id`   VARCHAR(20) NOT NULL,
+  `light_status` TINYINT(5)  NOT NULL,
+  `block_flag`   TINYINT(5)  NOT NULL,
+  `create_time`  DATETIME    NOT NULL,
+  PRIMARY KEY (`machine_id`)
+);
 
 ALTER TABLE `gmair_machine`.`pm2_5_latest`
-RENAME TO  `gmair_machine`.`out_pm2_5_hourly` ;
+RENAME TO `gmair_machine`.`out_pm2_5_hourly`;
 
 ALTER TABLE `gmair_machine`.`out_pm2_5_hourly`
-ADD COLUMN `index` INT(11) NOT NULL AFTER `pm2_5`;
+  ADD COLUMN `index` INT(11) NOT NULL
+  AFTER `pm2_5`;
 
 ALTER TABLE `gmair_machine`.`out_pm2_5_hourly`
-CHANGE COLUMN `index` `index_hour` INT(11) NOT NULL ;
+  CHANGE COLUMN `index` `index_hour` INT(11) NOT NULL;
 
 ##2018-11-26
 CREATE TABLE `gmair_machine`.`machine_on_off` (
-  `config_id` VARCHAR(45) NOT NULL,
-  `uid` VARCHAR(45) NOT NULL,
-  `status` TINYINT(1) NOT NULL,
-  `start_time` TIME DEFAULT NULL,
-  `end_time` TIME DEFAULT NULL,
-  `block_flag` TINYINT(1) NOT NULL,
-  `create_time` DATETIME NOT NULL,
-  PRIMARY KEY (`config_id`));
-
+  `config_id`   VARCHAR(45) NOT NULL,
+  `uid`         VARCHAR(45) NOT NULL,
+  `status`      TINYINT(1)  NOT NULL,
+  `start_time`  TIME DEFAULT NULL,
+  `end_time`    TIME DEFAULT NULL,
+  `block_flag`  TINYINT(1)  NOT NULL,
+  `create_time` DATETIME    NOT NULL,
+  PRIMARY KEY (`config_id`)
+);
 
 #2018-01-02
 CREATE TABLE `machine_daily_power` (
-  `status_id` varchar(25) NOT NULL,
-  `machine_id` varchar(45) NOT NULL,
-  `power_usage` varchar(45) NOT NULL,
-  `block_flag` tinyint(1) NOT NULL,
-  `create_time` datetime NOT NULL,
+  `status_id`   VARCHAR(25) NOT NULL,
+  `machine_id`  VARCHAR(45) NOT NULL,
+  `power_usage` VARCHAR(45) NOT NULL,
+  `block_flag`  TINYINT(1)  NOT NULL,
+  `create_time` DATETIME    NOT NULL,
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
 
 #2018-01-14
 CREATE TABLE `machine_list_daily` (
-  `consumer_id` varchar(45) NOT NULL,
-  `bind_name` varchar(45) NOT NULL,
-  `code_value` varchar(45) NOT NULL,
-  `machine_id` varchar(45) NULL,
-  `consumer_name` varchar(45) NULL,
-  `consumer_phone` varchar(45) NULL,
-  `over_count` int(11) NOT NULL DEFAULT '0',
-  `offline` tinyint(1) NOT NULL DEFAULT '0',
-  `block_flag` tinyint(10) NOT NULL,
-  `create_time` datetime NOT NULL,
+  `consumer_id`    VARCHAR(45) NOT NULL,
+  `bind_name`      VARCHAR(45) NOT NULL,
+  `code_value`     VARCHAR(45) NOT NULL,
+  `machine_id`     VARCHAR(45) NULL,
+  `consumer_name`  VARCHAR(45) NULL,
+  `consumer_phone` VARCHAR(45) NULL,
+  `over_count`     INT(11)     NOT NULL DEFAULT '0',
+  `offline`        TINYINT(1)  NOT NULL DEFAULT '0',
+  `block_flag`     TINYINT(10) NOT NULL,
+  `create_time`    DATETIME    NOT NULL,
   PRIMARY KEY (`consumer_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
 
 #2018-01-14
 CREATE
-    ALGORITHM = UNDEFINED
-    DEFINER = `root`@`localhost`
-    SQL SECURITY DEFINER
+  ALGORITHM = UNDEFINED
+  DEFINER = `root`@`localhost`
+  SQL SECURITY DEFINER
 VIEW `gmair_machine`.`machine_list_view` AS
-    SELECT
-        `ccb`.`consumer_id` AS `consumer_id`,
-        `ccb`.`bind_name` AS `bind_name`,
-        `ccb`.`code_value` AS `code_value`,
-        `cmb`.`machine_id` AS `machine_id`,
-        `ci`.`consumer_name` AS `consumer_name`,
-        `cp`.`phone_number` AS `consumer_phone`,
-        `ccb`.`block_flag` AS `block_flag`,
-        `ccb`.`create_time` AS `create_time`
-    FROM
-        (((`gmair_machine`.`consumer_code_bind` `ccb`
-        LEFT JOIN `gmair_machine`.`code_machine_bind` `cmb` ON ((`ccb`.`code_value` = `cmb`.`code_value`)))
-        LEFT JOIN `gmair_userinfo`.`consumer_info` `ci` ON ((`ccb`.`consumer_id` = `ci`.`consumer_id`)))
-        LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ccb`.`consumer_id` = `cp`.`consumer_id`)))
-    WHERE
-        ((`ccb`.`ownership` = 0)
-            AND (`ccb`.`block_flag` = 0))
+  SELECT
+    `ccb`.`consumer_id`  AS `consumer_id`,
+    `ccb`.`bind_name`    AS `bind_name`,
+    `ccb`.`code_value`   AS `code_value`,
+    `cmb`.`machine_id`   AS `machine_id`,
+    `ci`.`consumer_name` AS `consumer_name`,
+    `cp`.`phone_number`  AS `consumer_phone`,
+    `ccb`.`block_flag`   AS `block_flag`,
+    `ccb`.`create_time`  AS `create_time`
+  FROM
+    (((`gmair_machine`.`consumer_code_bind` `ccb`
+      LEFT JOIN `gmair_machine`.`code_machine_bind` `cmb` ON ((`ccb`.`code_value` = `cmb`.`code_value`)))
+      LEFT JOIN `gmair_userinfo`.`consumer_info` `ci` ON ((`ccb`.`consumer_id` = `ci`.`consumer_id`)))
+      LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ccb`.`consumer_id` = `cp`.`consumer_id`)))
+  WHERE
+    ((`ccb`.`ownership` = 0)
+     AND (`ccb`.`block_flag` = 0))
 
 #2018-01-15
 CREATE
-    ALGORITHM = UNDEFINED
-    DEFINER = `root`@`localhost`
-    SQL SECURITY DEFINER
+  ALGORITHM = UNDEFINED
+  DEFINER = `root`@`localhost`
+  SQL SECURITY DEFINER
 VIEW `gmair_machine`.`machine_list_second_view` AS
-    SELECT
-        `ccb`.`consumer_id` AS `consumer_id`,
-        `ccb`.`bind_name` AS `bind_name`,
-        `ccb`.`code_value` AS `code_value`,
-        `cmb`.`machine_id` AS `machine_id`,
-        `ci`.`consumer_name` AS `consumer_name`,
-        `cp`.`phone_number` AS `consumer_phone`,
-        `opd`.`over_count` AS `over_count`,
-        `ccb`.`block_flag` AS `block_flag`,
-        `ccb`.`create_time` AS `create_time`,
-        `opd`.`create_time` AS `out_pm25_time`
-    FROM
-        ((((`gmair_machine`.`consumer_code_bind` `ccb`
-        LEFT JOIN `gmair_machine`.`code_machine_bind` `cmb` ON ((`ccb`.`code_value` = `cmb`.`code_value`)))
-        LEFT JOIN `gmair_userinfo`.`consumer_info` `ci` ON ((`ccb`.`consumer_id` = `ci`.`consumer_id`)))
-        LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ccb`.`consumer_id` = `cp`.`consumer_id`)))
-        LEFT JOIN `gmair_machine`.`out_pm2_5_daily` `opd` ON ((`opd`.`machine_id` = `cmb`.`machine_id`)))
-    WHERE
-        ((`ccb`.`ownership` = 0)
-            AND (`ccb`.`block_flag` = 0)
-            AND ((TO_DAYS(CURDATE()) - TO_DAYS(`opd`.`create_time`)) < 1))
+  SELECT
+    `ccb`.`consumer_id`  AS `consumer_id`,
+    `ccb`.`bind_name`    AS `bind_name`,
+    `ccb`.`code_value`   AS `code_value`,
+    `cmb`.`machine_id`   AS `machine_id`,
+    `ci`.`consumer_name` AS `consumer_name`,
+    `cp`.`phone_number`  AS `consumer_phone`,
+    `opd`.`over_count`   AS `over_count`,
+    `ccb`.`block_flag`   AS `block_flag`,
+    `ccb`.`create_time`  AS `create_time`,
+    `opd`.`create_time`  AS `out_pm25_time`
+  FROM
+    ((((`gmair_machine`.`consumer_code_bind` `ccb`
+      LEFT JOIN `gmair_machine`.`code_machine_bind` `cmb` ON ((`ccb`.`code_value` = `cmb`.`code_value`)))
+      LEFT JOIN `gmair_userinfo`.`consumer_info` `ci` ON ((`ccb`.`consumer_id` = `ci`.`consumer_id`)))
+      LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ccb`.`consumer_id` = `cp`.`consumer_id`)))
+      LEFT JOIN `gmair_machine`.`out_pm2_5_daily` `opd` ON ((`opd`.`machine_id` = `cmb`.`machine_id`)))
+  WHERE
+    ((`ccb`.`ownership` = 0)
+     AND (`ccb`.`block_flag` = 0)
+     AND ((TO_DAYS(CURDATE()) - TO_DAYS(`opd`.`create_time`)) < 1))
+
+#2019-11-04
+ALTER TABLE `gmair_machine`.`filter_limit_config`
+  ADD COLUMN `config_id` VARCHAR(20) NOT NULL
+  FIRST,
+  ADD COLUMN `model_id` VARCHAR(20) NOT NULL
+  AFTER `config_id`,
+  ADD COLUMN `duration` INT NOT NULL DEFAULT 1
+  AFTER `over_pm25_limit`,
+  ADD COLUMN `block_flag` TINYINT(1) NOT NULL DEFAULT 0
+  AFTER `duration`,
+  ADD COLUMN `create_time` DATETIME NOT NULL
+  AFTER `block_flag`;
+
+ALTER TABLE `gmair_machine`.`filter_limit_config`
+  DROP PRIMARY KEY,
+  ADD PRIMARY KEY (`config_id`);
