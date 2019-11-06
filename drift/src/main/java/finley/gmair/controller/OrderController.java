@@ -1339,6 +1339,14 @@ public class OrderController {
         return result;
     }
 
+    /**
+     *
+     * 创建订单操作日志
+     * @param orderId
+     * @param message
+     * @param member
+     * @return
+     */
     @PostMapping("/action/create")
     ResultData createAction(String orderId,String message,String member){
         ResultData result = new ResultData();
@@ -1349,6 +1357,78 @@ public class OrderController {
             return result;
         }
         result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 获取订单取消记录用于退款
+     * @param status
+     * @return
+     */
+    @GetMapping("/cancel/record/select")
+    ResultData selectCancelRecord(String status){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(status)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供查询条件");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        if(status.equals("0")){
+            condition.put("isFinish",false);
+        }else {
+            condition.put("isFinish",true);
+        }
+        condition.put("blockFlag",false);
+        ResultData response = driftOrderCancelService.fetchCancel(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询失败");
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("查询结果为空");
+        }else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    /**
+     * 根据orderId更新取消的订单为已完成
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/cancel/record/update")
+    ResultData updateCancelRecord(String orderId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供orderId");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("orderId",orderId);
+        condition.put("blockFlag",false);
+        ResultData response = driftOrderCancelService.fetchCancel(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未找到相关订单");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询出现错误");
+            return result;
+        }
+        DriftOrderCancel driftOrderCancel = ((List<DriftOrderCancel>)response.getData()).get(0);
+        driftOrderCancel.setFinish(true);
+        response = driftOrderCancelService.updateCancel(driftOrderCancel);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("更新失败");
+            return result;
+        }
         result.setData(response.getData());
         return result;
     }
