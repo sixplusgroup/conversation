@@ -264,13 +264,11 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.CityAirQualityDao;
 import finley.gmair.model.air.CityAirQuality;
 import finley.gmair.model.air.MojiRecord;
+import finley.gmair.model.air.MojiToken;
 import finley.gmair.model.district.City;
 import finley.gmair.model.district.District;
 import finley.gmair.model.district.Province;
-import finley.gmair.service.AirQualityCacheService;
-import finley.gmair.service.CityAQIService;
-import finley.gmair.service.ObscureCityService;
-import finley.gmair.service.ProvinceAirQualityService;
+import finley.gmair.service.*;
 import finley.gmair.service.feign.LocationFeign;
 import finley.gmair.util.*;
 import org.slf4j.Logger;
@@ -312,14 +310,14 @@ public class CityAQIServiceImpl implements CityAQIService {
     @Autowired
     private AirQualityCacheService airQualityCacheService;
 
-    @Value("${token}")
-    private String token;
-
-    @Value("${password}")
-    private String password;
-
-    @Value("${url}")
-    private String url;
+//    @Value("${token}")
+//    private String token;
+//
+//    @Value("${password}")
+//    private String password;
+//
+//    @Value("${url}")
+//    private String url;
 
     @Value("classpath:cities.xml")
     private Resource records;
@@ -329,6 +327,9 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     @Autowired
     private LocationFeign locationFeign;
+
+    @Autowired
+    private MojiTokenService mojiTokenService;
 
     private List<MojiRecord> list;
 
@@ -453,8 +454,9 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     //区使用该API进行获取
     private CityAirQuality fetch(String lid, int cityId) {
+        MojiToken mojiToken = ((List<MojiToken>)selectToken().getData()).get(0);
         String timestamp = "0";
-        StringBuffer sb = new StringBuffer(url).append("?timestamp=").append(timestamp).append("&cityId=").append(cityId).append("&token=").append(token).append("&key=").append(Encryption.md5(password + timestamp));
+        StringBuffer sb = new StringBuffer(mojiToken.getUrl()).append("?timestamp=").append(timestamp).append("&cityId=").append(cityId).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
         logger.info(sb.toString());
         String result = HttpDeal.getResponse(sb.toString());
         CityAirQuality quality = interpret(lid, result);
@@ -463,12 +465,20 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     //省份和城市使用该API进行获取
     private CityAirQuality fetch(String lid, double longitude, double latitude) {
+        MojiToken mojiToken = ((List<MojiToken>)selectToken().getData()).get(0);
         String timestamp = "0";
-        StringBuffer sb = new StringBuffer(url).append("?timestamp=").append(timestamp).append("&lat=").append(latitude).append("&lon=").append(longitude).append("&token=").append(token).append("&key=").append(Encryption.md5(password + timestamp));
+        StringBuffer sb = new StringBuffer().append("?timestamp=").append(timestamp).append("&lat=").append(latitude).append("&lon=").append(longitude).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
         logger.info(sb.toString());
         String result = HttpDeal.getResponse(sb.toString());
         CityAirQuality quality = interpret(lid, result);
         return quality;
+    }
+
+    //获取moji token
+    ResultData selectToken(){
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",0);
+        return mojiTokenService.fetch(condition);
     }
 
     public CityAirQuality interpret(String id, String result) {

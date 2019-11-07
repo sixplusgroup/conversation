@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mysql.cj.xdevapi.JsonArray;
+import finley.gmair.model.air.MojiToken;
 import finley.gmair.service.AirQualityStatisticService;
+import finley.gmair.service.MojiTokenService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.TimeUtil;
@@ -26,6 +28,9 @@ public class CityAirQualityController {
 
     @Autowired
     private AirQualityStatisticService airQualityStatisticService;
+
+    @Autowired
+    private MojiTokenService mojiTokenService;
 
     @CrossOrigin
     @GetMapping(value = "/latest")
@@ -303,5 +308,18 @@ public class CityAirQualityController {
         }
         JSONArray jsonArray = JSON.parseArray(JSON.toJSONString(response.getData()));
         return getFormatedData(cityId, jsonArray, lastNhour, 1);
+    }
+
+    @GetMapping("/token/select")
+    ResultData selectToken(){
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",0);
+        return mojiTokenService.fetch(condition);
+    }
+
+    @PostMapping("/token/create")
+    ResultData createToken(String token,String url,String password,String base){
+        MojiToken mojiToken = new MojiToken(token,password,url,base);
+        return mojiTokenService.create(mojiToken);
     }
 }
