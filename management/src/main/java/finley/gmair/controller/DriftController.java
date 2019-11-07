@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ChangeOrderStatusForm;
 import finley.gmair.form.installation.AssignForm;
+import finley.gmair.model.drift.DriftOrderCancel;
 import finley.gmair.model.drift.DriftOrderPanel;
 import finley.gmair.model.drift.DriftOrderStatus;
 import finley.gmair.model.installation.AssignReport;
@@ -39,7 +40,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -368,7 +371,7 @@ public class DriftController {
     }
 
     /**
-     * 根据上传excel表格更新数据库drift_order和eorder_xpress表
+     * 根据上传excel表格更新数据库drift_order和order_express表
      * @param form
      * @return
      */
@@ -418,6 +421,44 @@ public class DriftController {
             return result;
         }
         result = driftService.selectAction(orderId);
+        return result;
+    }
+
+    /**
+     * 获取订单取消记录用于退款
+     * @param status
+     * @return
+     */
+    @GetMapping("/cancel/record/select")
+    ResultData selectCancelRecord(String status){
+        ResultData result = new ResultData();
+        if(org.springframework.util.StringUtils.isEmpty(status)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供查询条件");
+            return result;
+        }
+        result = driftService.selectCancelRecord(status);
+        return result;
+    }
+
+    /**
+     * 根据orderId更新取消的订单为已完成
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/cancel/record/update")
+    ResultData updateCancelRecord(String orderId){
+        ResultData result = new ResultData();
+        if(org.springframework.util.StringUtils.isEmpty(orderId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供orderId");
+            return result;
+        }
+        result = driftService.updateCancelRecord(orderId);
+        if(result.getResponseCode()==ResponseCode.RESPONSE_OK){
+            String message = "管理员将退款订单标记为退款成功";
+            driftService.createAction(orderId,message,"admin");
+        }
         return result;
     }
 }

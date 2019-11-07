@@ -45,7 +45,7 @@
         update gmair_drift.drift_cancel_order
         <set>
             <if test="isFinish != null">
-                consignee = #{consignee},
+                is_finish = #{isFinish},
             </if>
             <if test="blockFlag != null">
                 block_flag = #{blockFlag}

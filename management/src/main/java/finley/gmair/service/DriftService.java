@@ -45,4 +45,10 @@ public interface DriftService {
 
     @GetMapping("/drift/order/action/select")
     ResultData selectAction(@RequestParam("orderId") String orderId);
+
+    @GetMapping("drift/order/cancel/record/select")
+    ResultData selectCancelRecord(@RequestParam("status") String status);
+
+    @PostMapping("/drift/order/cancel/record/update")
+    ResultData updateCancelRecord(@RequestParam("orderId")String orderId);
 }
