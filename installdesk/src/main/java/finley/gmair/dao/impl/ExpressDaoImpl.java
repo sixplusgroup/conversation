@@ -2,7 +2,8 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.ExpressDao;
-import finley.gmair.model.express.Express;
+import finley.gmair.model.installation.ExpressOrder;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -19,11 +20,9 @@ public class ExpressDaoImpl extends BaseDao implements ExpressDao {
     @Override
     public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        List<Express> list = new ArrayList<>();
+        List<ExpressOrder> list = new ArrayList<>();
         try {
-            if (condition.containsKey("expressNo") && condition.containsKey("company")) {
-                list = sqlSession.selectList("gmair.install.express.query", condition);
-            }
+            list = sqlSession.selectList("gmair.install.express.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
@@ -37,11 +36,12 @@ public class ExpressDaoImpl extends BaseDao implements ExpressDao {
     }
 
     @Override
-    public ResultData insert(Express express) {
+    public ResultData insert(ExpressOrder expressOrder) {
         ResultData result = new ResultData();
+        expressOrder.setExpressId(IDGenerator.generate("ACT"));
         try {
-            sqlSession.insert("gmair.install.express.insert", express);
-            result.setData(express);
+            sqlSession.insert("gmair.install.express.insert", expressOrder);
+            result.setData(expressOrder);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -51,10 +51,10 @@ public class ExpressDaoImpl extends BaseDao implements ExpressDao {
     }
 
     @Override
-    public ResultData update(Express express) {
+    public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.install.express.update", express);
+            sqlSession.update("gmair.install.express.update", condition);
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

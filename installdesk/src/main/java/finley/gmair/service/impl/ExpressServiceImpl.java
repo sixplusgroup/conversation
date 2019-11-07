@@ -1,21 +1,12 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ExpressDao;
-import finley.gmair.model.express.Express;
+import finley.gmair.model.installation.ExpressOrder;
 import finley.gmair.service.ExpressService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
 
 @Service
@@ -30,11 +21,11 @@ public class ExpressServiceImpl implements ExpressService {
         ResultData response = expressDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("No data found from database");
+            result.setDescription("No express message found from database");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("Fail to retrieve express from database");
+            result.setDescription("Fail to retrieve express");
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -44,9 +35,9 @@ public class ExpressServiceImpl implements ExpressService {
     }
 
     @Override
-    public ResultData update(Express express) {
+    public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        ResultData response = expressDao.update(express);
+        ResultData response = expressDao.update(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to update express ");
@@ -58,9 +49,9 @@ public class ExpressServiceImpl implements ExpressService {
     }
 
     @Override
-    public ResultData create(Express express) {
+    public ResultData create(ExpressOrder expressOrder) {
         ResultData result = new ResultData();
-        ResultData response = expressDao.insert(express);
+        ResultData response = expressDao.insert(expressOrder);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to insert express to database");
