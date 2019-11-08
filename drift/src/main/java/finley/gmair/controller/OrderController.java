@@ -1377,7 +1377,7 @@ public class OrderController {
         Map<String,Object> condition = new HashMap<>();
         if(status.equals("0")){
             condition.put("isFinish",false);
-        }else {
+        }else if(status.equals("1")){
             condition.put("isFinish",true);
         }
         condition.put("blockFlag",false);
