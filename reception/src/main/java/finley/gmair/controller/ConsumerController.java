@@ -56,7 +56,7 @@ public class ConsumerController {
         }
         //check this consumerId and the qrcode has been binded.
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+        logger.info("consumerId:" + consumerId);
         ResultData response = machineService.checkConsumerAccesstoQRcode(consumerId, qrcode);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);

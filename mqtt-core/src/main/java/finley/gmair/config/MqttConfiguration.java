@@ -17,8 +17,6 @@ import finley.gmair.service.MqttService;
 import finley.gmair.service.RedisService;
 import finley.gmair.service.TopicService;
 import finley.gmair.util.*;
-import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +36,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessageHeaders;
-import org.springframework.util.StringUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,84 +89,6 @@ public class MqttConfiguration {
 
     private Map<String, Integer> devices = new ConcurrentHashMap<>();
 
-//    public MqttConfiguration() {
-//        init();
-//    }
-//
-//    private void init() {
-//        logger.info("[Info] prepare a new client");
-//        try {
-//            //TODO @户胜浩 目前的client实例化需要使用依赖注入的配置项，但配置项是在实例化之后加载
-//            client = new MqttClient(mqttProperties.getOutbound().getUrls(), mqttProperties.getOutbound().getClientId(), new MemoryPersistence());
-//            MqttConnectOptions options = new MqttConnectOptions();
-//            options.setCleanSession(true);
-//            options.setKeepAliveInterval(30);
-//            options.setConnectionTimeout(10);
-//            client.setCallback(this);
-//            client.connect(options);
-//            logger.info("[Info] MQTT client initialize successfully");
-//        } catch (Exception e) {
-//            logger.error("[Error]" + e.getMessage());
-//        }
-//    }
-//
-//    /**
-//     * 订阅topic
-//     */
-//    @Bean
-//    public MqttClient subscribe() {
-//        if (client == null) init();
-//        if (!client.isConnected()) {
-//            try {
-//                MqttConnectOptions options = new MqttConnectOptions();
-//                options.setCleanSession(true);
-//                options.setKeepAliveInterval(30);
-//                options.setConnectionTimeout(10);
-//                client.setCallback(this);
-//                client.connect(options);
-//            } catch (Exception e) {
-//                logger.error(e.getMessage());
-//            }
-//        }
-//        try {
-//            client.subscribe(topicDetail(), qos);
-//        } catch (Exception e) {
-//            logger.error("[Error] subscribe topics failure " + e.getMessage());
-//        }
-//        return client;
-//    }
-//
-//    public void messageArrived(String topic, MqttMessage message) throws MqttException {
-//        CorePool.getHandlePool().execute(() -> {
-//            if (message == null) {
-//                logger.error("[Error] illegal message received.");
-//                return;
-//            }
-//            JSONObject json = JSON.parseObject(new String(message.getPayload(), StandardCharsets.UTF_8));
-//            //判断是否要丢弃报文
-//            if (json.containsKey("time")) {
-//                if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
-//                    //同步时间
-//                    String machineId = topic.split("/")[2];
-//                    MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
-//                    logger.info("send message to sync time for client: " + machineId);
-//                    logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
-//                    return;
-//                }
-//            }
-//            if (message.isDuplicate())
-//                return;
-//            handle(topic, json);
-//        });
-//    }
-//
-//    public void connectionLost(Throwable cause) {
-//        logger.error("[Error] Connection lost because: " + cause);
-//        subscribe();
-//    }
-//
-//    public void deliveryComplete(IMqttDeliveryToken token) {
-//    }
     /**
      * 实现MqttOutbound
      */
@@ -234,13 +152,18 @@ public class MqttConfiguration {
                     }
                     MessageHeaders headers = message.getHeaders();
                     if (headers == null) return;
+                    String topic = headers.get("mqtt_topic").toString();
                     //判断是否要丢弃报文
                     if (TimeUtil.exceed(headers.getTimestamp(), System.currentTimeMillis(), 300)) {
                         logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
+                        if (topic.startsWith("/")) topic = topic.substring(1);
+                        String[] array = topic.split("/");
+                        //根据定义的topic格式，获取message对应的machineId
+                        String machineId = array[2];
+                        MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
                         return;
                     }
                     String payload = ((String) message.getPayload());
-                    String topic = headers.get("mqtt_topic").toString();
                     //将payload转换为json数据格式，进行进一步处理
                     if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate") == true)
                         return;
@@ -273,37 +196,31 @@ public class MqttConfiguration {
      */
     private void handle(String topic, JSONObject json) {
         try {
-//        logger.info("topic: " + topic);
+            if (topic.startsWith("/")) topic = topic.substring(1);
             //将topic根据"/"切分为string数组，方便处理
             String[] array = topic.split("/");
             //根据定义的topic格式，获取message对应的machineId
             String machineId = array[2];
-            String base_action = array[5];
-            //对于长度为7的topic，只有上传单项传感器数据和警报处理
-            if (array.length == 7) {
-                //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
-                String detail_action = array[6];
-                switch (base_action) {
-                    case "sensor":
-                        int value = json.getIntValue("value");
-                        dealSingleSensor(detail_action, value);
-                        break;
-                    case "alert":
-                        AlertPayload payload = new AlertPayload(machineId, json);
-                        dealAlertMessage(detail_action, payload);
-                        break;
-                    default:
-                        logger.error("Message cannot be handled. Topic: " + topic + ", data: " + json);
-                        break;
-                }
-            } else {
-                //该类型的数据报文将存入内存缓存
-                if (base_action.equals("allrep")) {
-                    //不需要发送检查更新的报文
-//                    messageController.checkVersion(machineId);
-//                logger.info("uid: " + machineId + ", allrep: " + json);
+//            logger.info("machineId: " + machineId);
+            String baseAction = array[5];
+//            logger.info("base action: " + baseAction);
+            String furtherAction;
+            switch (baseAction.toUpperCase()) {
+                case "ACK":
+                    AckPayload payload = new AckPayload(machineId, json);
+                    if (payload.getCode() != 0) {
+                        payload.setError(json.getString("error"));
+                    }
+                    dealAckMessage(payload);
+                    break;
+                case "ALERT":
+                    furtherAction = array[6];
+                    AlertPayload alert = new AlertPayload(machineId, json);
+                    dealAlertMessage(furtherAction, alert);
+                    break;
+                case "ALLREP":
                     if (json.containsKey("power") && json.getIntValue("power") == 0) {
-                        json.replace("volume", 0);
+                        json.replace("speed", 0);
                     }
                     //写入内存缓存的数据使用common模块中的结构
                     finley.gmair.model.machine.v3.MachineStatusV3 status = new finley.gmair.model.machine.v3.MachineStatusV3(machineId, json);
@@ -323,40 +240,41 @@ public class MqttConfiguration {
                             repository.save(mongo);
                         }
                     });
-                }
-                //该类型的数据报文仅用于更新内存缓存中的数据状态，不存入数据库
-                if (base_action.equals("sys_status")) {
-                    MQTTUtil.partial(redisService, machineId, json);
-                }
-                if (base_action.equals("sys_surplus")) {
-                    SurplusPayload payload = new SurplusPayload(machineId, json);
-//                logger.info("sys_surplus: " + JSON.toJSONString(payload));
-                }
-                //传感器数据上传
-                if (base_action.equals("sensor")) {
-                    MQTTUtil.partial(redisService, machineId, json);
-                }
-                if (base_action.equals("ack")) {
-                    AckPayload payload = new AckPayload(machineId, json);
-                    if (payload.getCode() != 0) {
-                        payload.setError(json.getString("error"));
+                    break;
+                case "CHK_UPDATE":
+                    break;
+                case "SENSOR":
+                    if (array.length == 6) {
+                        //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
+                        furtherAction = array[6];
+                        int value = (json.containsKey("value")) ? json.getIntValue("value") : Integer.MIN_VALUE;
+                        dealSingleSensor(furtherAction, value);
+                    } else if (array.length == 7) {
+                        MQTTUtil.partial(redisService, machineId, json);
+                    } else {
+
                     }
-                    dealAckMessage(payload);
-//                logger.info("ack: " + JSON.toJSONString(payload));
-                }
-                //服务器端相应设备的同步时钟请求
-                if (base_action.equals("get_time")) {
+                    break;
+                case "GET_TIME":
+                    //获取服务器时间
                     MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
-                }
-                if (base_action.equals("chk_update")) {
-
-                }
-                if (base_action.equals("ver")) {
-
-                }
+                    break;
+                case "SYS_STATUS":
+                    //该类型的数据报文仅用于更新内存缓存中的数据状态，不存入数据库
+                    MQTTUtil.partial(redisService, machineId, json);
+                    break;
+                case "SYS_SURPLUS":
+                    //todo 滤网时间处理
+                    SurplusPayload surplus = new SurplusPayload(machineId, json);
+//                    logger.info("surplus: " + JSON.toJSONString(surplus));
+                    break;
+                case "VER":
+                    break;
+                default:
+                    logger.info("unrecognized action: " + baseAction);
             }
         } catch (Exception e) {
-            logger.error("[Error ] " + e.getMessage());
+//            logger.error("[Error ] " + e.getMessage());
         }
     }
 
@@ -401,13 +319,10 @@ public class MqttConfiguration {
      * 处理ack确认消息publish
      */
     private void dealAckMessage(AckPayload payload) {
-//        logger.info("ack: " + JSON.toJSONString(payload));
         if (payload.getCode() == 0) {
-//            new Thread(() -> {
-//                logService.createMqttAckLog(payload.getAckId(), payload.getMachineId(),
-//                        payload.getCode(), "Mqtt", ip, new StringBuffer("The machine: ")
-//                                .append(payload.getMachineId()).append("operate the command successfully").toString());
-//            }).start();
+            CorePool.getLogPool().execute(() -> logService.createMqttAckLog(payload.getAckId(), payload.getMachineId(),
+                    payload.getCode(), "mqtt", ip, new StringBuffer("The machine: ")
+                            .append(payload.getMachineId()).append("operate the command successfully").toString()));
         }
         if (payload.getCode() != 0) {
             CorePool.getLogPool().execute(() -> logService.createMqttAckLog(payload.getAckId(), payload.getMachineId(), payload.getCode(), "Mqtt", ip, payload.getError())

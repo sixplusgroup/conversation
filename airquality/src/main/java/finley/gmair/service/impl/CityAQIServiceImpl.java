@@ -294,7 +294,6 @@ import java.util.stream.Collectors;
  * @Date 2019/10/10 12:09 AM
  */
 @Service
-@PropertySource("classpath:moji.properties")
 public class CityAQIServiceImpl implements CityAQIService {
     private Logger logger = LoggerFactory.getLogger(CityAQIServiceImpl.class);
 
@@ -454,7 +453,7 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     //区使用该API进行获取
     private CityAirQuality fetch(String lid, int cityId) {
-        MojiToken mojiToken = ((List<MojiToken>)selectToken().getData()).get(0);
+        MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
         String timestamp = "0";
         StringBuffer sb = new StringBuffer(mojiToken.getUrl()).append("?timestamp=").append(timestamp).append("&cityId=").append(cityId).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
         logger.info(sb.toString());
@@ -465,9 +464,9 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     //省份和城市使用该API进行获取
     private CityAirQuality fetch(String lid, double longitude, double latitude) {
-        MojiToken mojiToken = ((List<MojiToken>)selectToken().getData()).get(0);
+        MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
         String timestamp = "0";
-        StringBuffer sb = new StringBuffer().append("?timestamp=").append(timestamp).append("&lat=").append(latitude).append("&lon=").append(longitude).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
+        StringBuffer sb = new StringBuffer(mojiToken.getUrl()).append("?timestamp=").append(timestamp).append("&lat=").append(latitude).append("&lon=").append(longitude).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
         logger.info(sb.toString());
         String result = HttpDeal.getResponse(sb.toString());
         CityAirQuality quality = interpret(lid, result);
@@ -475,9 +474,9 @@ public class CityAQIServiceImpl implements CityAQIService {
     }
 
     //获取moji token
-    ResultData selectToken(){
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("blockFlag",0);
+    ResultData selectToken() {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", 0);
         return mojiTokenService.fetch(condition);
     }
 
