@@ -413,9 +413,13 @@ public class AssignController {
                     Collections.reverse(resultList);
                 }
                 int totalPage = resultList.size();
-                if(totalPage>Integer.parseInt(page)*Integer.parseInt(pageLength)){
-                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),Integer.parseInt(page)*Integer.parseInt(pageLength));
+                if(totalPage>(Integer.parseInt(page)-1)*Integer.parseInt(pageLength)){
+                    int total = Integer.parseInt(page)*Integer.parseInt(pageLength)>totalPage?totalPage:Integer.parseInt(page)*Integer.parseInt(pageLength);
+                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),total);
                 }else {
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("查询为空");
+                    return result;
 //                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),totalPage-1);
                 }
                 JSONObject jsonObject = new JSONObject();
