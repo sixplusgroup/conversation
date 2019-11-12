@@ -36,6 +36,7 @@ public class ExcelUtil {
             "试纸实际价格",
             "使用日期",
             "优惠码",
+            "订单状态",
             "机器码",
             "寄出快递单号",
             "寄出快递公司",
@@ -99,16 +100,17 @@ public class ExcelUtil {
             String item_real_price = getCellValue(current.getCell(index[10]));
             String expected_date = getCellValue(current.getCell(index[11]));
             String excode = getCellValue(current.getCell(index[12]));
-            String machine_orderNo = getCellValue(current.getCell(index[13]));//修改字段
-            String express_out_num = getCellValue(current.getCell(index[14]));//修改字段
-            String express_out_company = getCellValue(current.getCell(index[15]));//修改字段
-            String express_back_num = getCellValue(current.getCell(index[16]));
-            String express_back_company = getCellValue(current.getCell(index[17]));
-            String total_price = getCellValue(current.getCell(index[18]));
-            String real_pay = getCellValue(current.getCell(index[19]));
-            String interval_date = getCellValue(current.getCell(index[20]));
-            String description = getCellValue(current.getCell(index[21]));//修改字段
-            String create_time = getCellValue(current.getCell(index[22]));
+            String status = getCellValue(current.getCell(index[13]));
+            String machine_orderNo = getCellValue(current.getCell(index[14]));//修改字段
+            String express_out_num = getCellValue(current.getCell(index[15]));//修改字段
+            String express_out_company = getCellValue(current.getCell(index[16]));//修改字段
+            String express_back_num = getCellValue(current.getCell(index[17]));
+            String express_back_company = getCellValue(current.getCell(index[18]));
+            String total_price = getCellValue(current.getCell(index[19]));
+            String real_pay = getCellValue(current.getCell(index[20]));
+            String interval_date = getCellValue(current.getCell(index[21]));
+            String description = getCellValue(current.getCell(index[22]));//修改字段
+            String create_time = getCellValue(current.getCell(index[23]));
 
             JSONObject item = new JSONObject();
             item.put("orderId", order_id);

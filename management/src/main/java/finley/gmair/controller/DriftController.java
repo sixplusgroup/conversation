@@ -192,6 +192,7 @@ public class DriftController {
                     "试纸实际价格",
                     "使用日期",
                     "优惠码",
+                    "订单状态",
                     "机器码",
                     "寄出快递单号",
                     "寄出快递公司",
@@ -236,40 +237,69 @@ public class DriftController {
                 }else {
                     value[i + 1][12] = list.get(i).getExcode();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getMachineOrderNo())){
-                    value[i + 1][13] = "无";
-                }else {
-                    value[i + 1][13] = list.get(i).getMachineOrderNo();
+                if (!org.springframework.util.StringUtils.isEmpty(list.get(i).getStatus())) {
+                    System.out.println(list.get(i).getStatus().toString());
+                    switch (list.get(i).getStatus().toString()) {
+                        case "APPLIED":
+                            value[i + 1][13] = "已申请";
+                            break;
+                        case "PAYED":
+                            value[i + 1][13] = "已支付";
+                            break;
+                        case "CONFIRMED":
+                            value[i + 1][13] = "已确认";
+                            break;
+                        case "DELIVERED":
+                            value[i + 1][13] = "已发货";
+                            break;
+                        case "BACK":
+                            value[i + 1][13] = "已寄回";
+                            break;
+                        case "FINISHED":
+                            value[i + 1][13] = "已完成";
+                            break;
+                        case "CLOSED":
+                            value[i + 1][13] = "已关闭";
+                            break;
+                        case "CANCELED":
+                            value[i + 1][13] = "已取消";
+                            break;
+                    }
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutNum())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getMachineOrderNo())){
                     value[i + 1][14] = "无";
                 }else {
-                    value[i + 1][14] = list.get(i).getExpressOutNum();
+                    value[i + 1][14] = list.get(i).getMachineOrderNo();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutCompany())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutNum())){
                     value[i + 1][15] = "无";
                 }else {
-                    value[i + 1][15] = list.get(i).getExpressOutCompany();
+                    value[i + 1][15] = list.get(i).getExpressOutNum();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackNum())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutCompany())){
                     value[i + 1][16] = "无";
                 }else {
-                    value[i + 1][16] = list.get(i).getExpressBackNum();
+                    value[i + 1][16] = list.get(i).getExpressOutCompany();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackCompany())){
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackNum())){
                     value[i + 1][17] = "无";
                 }else {
-                    value[i + 1][17] = list.get(i).getExpressBackCompany();
+                    value[i + 1][17] = list.get(i).getExpressBackNum();
                 }
-                value[i + 1][18] = list.get(i).getTotalPrice();
-                value[i + 1][19] = list.get(i).getRealPay();
-                value[i + 1][20] = list.get(i).getIntervalDate();
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())){
-                    value[i + 1][21] = "无";
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackCompany())){
+                    value[i + 1][18] = "无";
                 }else {
-                    value[i + 1][21] = list.get(i).getDescription();
+                    value[i + 1][18] = list.get(i).getExpressBackCompany();
                 }
-                value[i + 1][22] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
+                value[i + 1][19] = list.get(i).getTotalPrice();
+                value[i + 1][20] = list.get(i).getRealPay();
+                value[i + 1][21] = list.get(i).getIntervalDate();
+                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())){
+                    value[i + 1][22] = "无";
+                }else {
+                    value[i + 1][22] = list.get(i).getDescription();
+                }
+                value[i + 1][23] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
             }
             HSSFRow row[]=new HSSFRow[list.size()+1];
             HSSFCell cell[]=new HSSFCell[n.length];
