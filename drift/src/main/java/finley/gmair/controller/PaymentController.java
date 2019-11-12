@@ -2,8 +2,10 @@ package finley.gmair.controller;
 
 import finley.gmair.model.drift.Activity;
 import finley.gmair.model.drift.DriftOrder;
+import finley.gmair.model.drift.DriftOrderAction;
 import finley.gmair.model.drift.DriftOrderStatus;
 import finley.gmair.service.ActivityService;
+import finley.gmair.service.DriftOrderActionService;
 import finley.gmair.service.OrderService;
 import finley.gmair.service.PaymentService;
 import finley.gmair.util.IPUtil;
@@ -44,6 +46,9 @@ public class PaymentController {
     @Autowired
     private ActivityService activityService;
 
+    @Autowired
+    private DriftOrderActionService driftOrderActionService;
+
     @GetMapping("/{orderId}/info")
     public ResultData bill(@PathVariable("orderId") String orderId, HttpServletRequest request) {
         ResultData result = new ResultData();
@@ -65,11 +70,11 @@ public class PaymentController {
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
 
         //暂时关闭全款支付功能
-        if(StringUtils.isEmpty(order.getExcode())){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("不使用优惠码无法支付");
-            return result;
-        }
+//        if(StringUtils.isEmpty(order.getExcode())){
+//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//            result.setDescription("不使用优惠码无法支付");
+//            return result;
+//        }
 
         String ip = IPUtil.getIP(request);
         condition.clear();
@@ -90,6 +95,8 @@ public class PaymentController {
         double pay = (order.getRealPay() * 100) * 1.0;
         result = paymentService.createPay(orderId, order.getConsumerId(), (int) Math.ceil(pay), activityName, ip);
         if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            String message = order.getConsignee()+"发起了订单支付";
+            driftOrderActionService.create(new DriftOrderAction(orderId,message,order.getConsumerId()));
             return paymentService.getTrade(orderId);
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);

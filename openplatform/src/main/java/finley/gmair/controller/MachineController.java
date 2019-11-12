@@ -700,4 +700,36 @@ public class MachineController {
         result.setDescription("操作成功");
         return result;
     }
+
+    /**
+     * 查询滤网使用状态
+     */
+    @GetMapping("/filter")
+    public ResultData filter(String appid, String qrcode) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供正确的appid和qrcode");
+            return result;
+        }
+        if (!prerequisities(appid, qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保该appid有效，且已订阅该设备二维码");
+            return result;
+        }
+        //查询滤网使用情况
+        ResultData response = machineService.filter(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        JSONObject json = JSON.parseObject(JSON.toJSONString(response.getData()));
+        json.remove("machineId");
+        json.remove("blockFlag");
+        json.put("qrcode", qrcode);
+        result.setData(json);
+        return result;
+    }
 }

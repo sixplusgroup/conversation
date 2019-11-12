@@ -167,4 +167,15 @@ CREATE TABLE `gmair_airquality`.`moji_aqi_cities` (
   `create_time` DATETIME NOT NULL,
   PRIMARY KEY (`moji_id`));
 
+#2019-11-07
+CREATE TABLE `gmair_airquality`.`moji_token` (
+  `token_id` VARCHAR(45) NOT NULL,
+  `token` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  `url` VARCHAR(45) NOT NULL,
+  `base` VARCHAR(45) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`token_id`));
+
 

@@ -35,6 +35,12 @@ public interface MachineService {
     ResultData indoor(@RequestParam(value = "qrcode") String qrcode);
 
     /**
+     * 获取设备的滤网是否提示更换
+     */
+    @GetMapping("/machine/partial/status/filter")
+    ResultData filter(@RequestParam(value = "qrcode") String qrcode);
+
+    /**
      * 获取设备所处城市的cityId
      *
      * @param qrcode
@@ -125,5 +131,4 @@ public interface MachineService {
      */
     @PostMapping("/machine/control/option/operate")
     ResultData heat(@RequestParam("qrcode") String qrcode, @RequestParam("component") String component, @RequestParam("operation") String operation);
-
 }

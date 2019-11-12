@@ -249,120 +249,142 @@ public class MachineController {
     @PostMapping("/share")
     public ResultData share(String qrcode, HttpServletRequest request) {
         ResultData result = new ResultData();
-        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //获取机器的实时数据
-        int version, pm2_5, temperature = 0, humidity = 0, co2 = 0;
-        ResultData response = machineService.getMachineStatusByQRcode(qrcode);
-        //如果能够获取到实时数据，则绘制实时数据部分
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("当前无法获取室内的数值信息");
-            return result;
-        }
-        JSONObject machine = JSONObject.parseObject(JSON.toJSONString(response.getData()));
-        pm2_5 = machine.getInteger("pm2_5");
-        if (machine.containsKey("temp")) {
-            version = 1;
-            temperature = machine.getInteger("temp");
-            humidity = machine.getInteger("humid");
-            if (machine.containsKey("co2")) {
-                co2 = machine.getInteger("co2");
-            }
-        }
-        if (machine.containsKey("temperature")) {
-            version = 2;
-            temperature = machine.getInteger("temperature");
-            humidity = machine.getInteger("humidity");
-            co2 = machine.getInteger("co2");
-        }
-        //获取机器的室外地址
-        response = machineService.probeCityIdByQRcode(qrcode);
-        //如果能够获取到室外配置，则显示室外城市信息
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            BufferedImage bufferedImage = share(path, "果麦新风", null, pm2_5, temperature, humidity, co2,null);
-            savaAndUpload(bufferedImage);
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setDescription("当前无法获取室外的城市信息");
-            return result;
-        }
-        JSONObject location = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
-        String cityId = location.getString("cityId");
-        //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
-        response = airqualityService.getLatestCityAirQuality(cityId);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            //根据城市获取省份
-            response = locationService.probeProvinceIdByCityId(cityId);
+        try {
+            String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String name = "果麦新风";
+            ResultData response = machineService.findModel(qrcode);
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("当前无法获取最新的城市PM2.5信息");
+                result.setDescription("当前二维码: " + qrcode + "未能找到响应的型号");
                 return result;
             }
-            location = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
-            String provinceId = location.getString("provinceId");
-            response = airqualityService.getLatestCityAirQuality(provinceId);
+            JSONObject model = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+            if (model.containsKey("modelName")) name = name.concat(model.getString("modelName"));
+            //获取机器的实时数据
+            int pm2_5, temperature = 0, humidity = 0, co2 = 0;
+            response = machineService.getMachineStatusByQRcode(qrcode);
+            //如果能够获取到实时数据，则绘制实时数据部分
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                BufferedImage bufferedImage = share(path, "果麦新风", null, pm2_5, temperature, humidity, co2,null);
-                savaAndUpload(bufferedImage);
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("当前无法获取最新的城市PM2.5信息");
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("当前无法获取室内的数值信息");
                 return result;
             }
+            JSONObject machine = JSONObject.parseObject(JSON.toJSONString(response.getData()));
+            pm2_5 = machine.getInteger("pm2_5");
+            if (machine.containsKey("temp")) {
+                temperature = machine.getInteger("temp");
+                humidity = machine.getInteger("humid");
+                if (machine.containsKey("co2")) {
+                    co2 = machine.getInteger("co2");
+                }
+            }
+            if (machine.containsKey("temperature")) {
+                temperature = machine.getInteger("temperature");
+                humidity = machine.getInteger("humidity");
+                if (machine.containsKey("co2")) co2 = machine.getInteger("co2");
+            }
+            String city = "未选择";
+            //获取机器的室外地址
+            response = machineService.probeCityIdByQRcode(qrcode);
+            //如果能够获取到室外配置，则显示室外城市信息
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
+                savaAndUpload(bufferedImage);
+                result.setDescription("当前无法获取室外的城市信息");
+                return result;
+            }
+            JSONObject location = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+            String cityId = location.getString("cityId");
+            //获取城市名称
+            response = locationService.profile(cityId);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
+                savaAndUpload(bufferedImage);
+                result.setDescription("未找到行政区域编号为: " + cityId + "的城市");
+                return result;
+            }
+            JSONObject json = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+            if (json.containsKey("cityName")) city = json.getString("cityName");
+            //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
+            response = airqualityService.getLatestCityAirQuality(cityId);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                //根据城市获取省份
+                response = locationService.probeProvinceIdByCityId(cityId);
+                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
+                    savaAndUpload(bufferedImage);
+                    result.setDescription("当前无法获取最新的城市空气数据");
+                    return result;
+                }
+                location = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+                String provinceId = location.getString("provinceId");
+                response = airqualityService.getLatestCityAirQuality(provinceId);
+                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
+                    savaAndUpload(bufferedImage);
+                    result.setResponseCode(ResponseCode.RESPONSE_OK);
+                    result.setDescription("当前无法获取最新的城市PM2.5信息");
+                    return result;
+                }
+            }
+            JSONObject outdoor = JSONArray.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
+            int outdoorPM2_5 = outdoor.containsKey("pm2_5") ? outdoor.getInteger("pm2_5") : 0;
+            int aqi = outdoor.containsKey("aqi") ? outdoor.getInteger("aqi") : 0;
+            int pm10 = outdoor.containsKey("pm10") ? outdoor.getInteger("pm10") : 0;
+            String primary = outdoor.containsKey("primePollution") ? outdoor.getString("primePollution") : "无";
+            double co = outdoor.containsKey("co") ? outdoor.getDouble("co") : 0;
+            double no2 = outdoor.containsKey("no2") ? outdoor.getDouble("no2") : 0;
+            double o3 = outdoor.containsKey("o3") ? outdoor.getDouble("o3") : 0;
+            double so2 = outdoor.containsKey("so2") ? outdoor.getDouble("so2") : 0;
+            BufferedImage bufferedImage = share(path, "果麦新风", city, pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+            ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "share", new StringBuffer("User:").append(consumerId).append(" share machine image with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "image")));
+            savaAndUpload(bufferedImage);
+            //获取设备的连续7天的空气数据
+            //response = machineService.fetchMachineDailyPm2_5(qrcode);
+        } catch (Exception e) {
+            logger.error("[Error] Share image error: " + e.getMessage());
         }
-        int outdoorPM2_5, aqi, pm10;
-        double co, no2, o3, so2;
-        JSONObject outdoor = JSONArray.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
-        outdoorPM2_5 = outdoor.getInteger("pm2_5");
-        aqi = outdoor.getInteger("aqi");
-        pm10 = outdoor.getInteger("pm10");
-        String primary = outdoor.getString("primePollution");
-        co = outdoor.getDouble("co");
-        no2 = outdoor.getDouble("no2");
-        o3 = outdoor.getDouble("o3");
-        so2 = outdoor.getDouble("so2");
-        BufferedImage bufferedImage = share(path, "果麦新风", null, pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2,null);
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserMachineOperationLog(consumerId, qrcode, "share", new StringBuffer("User:").append(consumerId).append(" share machine image with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "image");
-        }));
-        savaAndUpload(bufferedImage);
-        //获取室外的连续7天的空气数据
-        //response = machineService.fetchMachineDailyPm2_5(qrcode);
-        //获取室内的连续7天的空气数据
-        //airqualityService.getDailyCityAqi(cityId);
         return result;
     }
 
-    private BufferedImage share(String path, String name, String city, int pm2_5, int temperature, int humidity, int co2, int[] pastlist) {
-        return ImageShareUtil.share(path, name, city, pm2_5, temperature, humidity, co2,pastlist);
+    private BufferedImage share(String path, String name, String city, int pm2_5, int temperature, int humidity, int co2) {
+        return ImageShareUtil.share(path, name, city, pm2_5, temperature, humidity, co2);
     }
 
-    private BufferedImage share(String path, String name, String city, int pm2_5, int temperature, int humidity, int co2, int outPM2_5, int aqi, String primary, int pm10, double co, double no2, double o3, double so2,int[] pastlist) {
+    private BufferedImage share(String path, String name, String city, int pm2_5, int temperature, int humidity, int co2, int[] pastlist) {
+        return ImageShareUtil.share(path, name, city, pm2_5, temperature, humidity, co2, pastlist);
+    }
+
+    private BufferedImage share(String path, String name, String city, int pm2_5, int temperature, int humidity, int co2, int outPM2_5, int aqi, String primary, int pm10, double co, double no2, double o3, double so2) {
+        return ImageShareUtil.share(path, name, city, pm2_5, temperature, humidity, co2, outPM2_5, aqi, primary, pm10, co, no2, o3, so2);
+    }
+
+    private BufferedImage share(String path, String name, String city, int pm2_5, int temperature, int humidity, int co2, int outPM2_5, int aqi, String primary, int pm10, double co, double no2, double o3, double so2, int[] pastlist) {
         return ImageShareUtil.share(path, name, city, pm2_5, temperature, humidity, co2, outPM2_5, aqi, primary, pm10, co, no2, o3, so2, pastlist);
     }
 
     private void savaAndUpload(BufferedImage bufferedImage) {
         //把处理完的图片上传到服务器
         String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
-        try {
-            File file = new File(fileName);
-            ImageIO.write(bufferedImage, "jpg", file);
-            FileInputStream fileInputStream = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
-            String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            ResultData result = authConsumerService.profile(consumerId);
-            if (result.getResponseCode() != ResponseCode.RESPONSE_OK)
-                return;
-            String openId = (String) ((LinkedHashMap) result.getData()).get("wechat");
-            if (StringUtils.isEmpty(openId))
-                return;
-            new Thread(() -> {
-                try {
-                    wechatFormService.uploadAndReply(openId, multipartFile);
-                } catch (Exception e) {
-                }
-            }).start();
-            file.delete();
-        } catch (Exception e) {
-
-        }
+        ReceptionPool.getPicExecutor().execute(() -> {
+            try {
+                File file = new File(fileName);
+                ImageIO.write(bufferedImage, "jpg", file);
+                FileInputStream fileInputStream = new FileInputStream(file);
+                MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
+                String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                ResultData result = authConsumerService.profile(consumerId);
+                if (result.getResponseCode() != ResponseCode.RESPONSE_OK)
+                    return;
+                String openId = (String) ((LinkedHashMap) result.getData()).get("wechat");
+                if (StringUtils.isEmpty(openId))
+                    return;
+                wechatFormService.uploadAndReply(openId, multipartFile);
+                file.delete();
+            } catch (Exception e) {
+                e.getMessage();
+            }
+        });
     }
 }

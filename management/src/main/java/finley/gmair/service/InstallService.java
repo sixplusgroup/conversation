@@ -2,10 +2,7 @@ package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "install-agent")
 public interface InstallService {
@@ -109,4 +106,16 @@ public interface InstallService {
 
     @PostMapping("/install/assign/init")
     ResultData initAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/install/teamwatch/watch/teamList")
+    ResultData queryWatchTeam(@RequestParam("memberId") String memberId);
+
+    @PostMapping("/install/teamwatch/block")
+    ResultData blockWatchTeam(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamId);
+
+    @GetMapping("/install/teamwatch/list")
+    ResultData getLeaderListByTeamid(@RequestParam("teamId") String teamId);
+
+    @GetMapping("/install/member/leader/list")
+    ResultData getLeaderList();
 }

@@ -21,5 +21,6 @@
         <mapper resource="mapper/address.xml"></mapper>
         <mapper resource="mapper/user.xml"></mapper>
         <mapper resource="mapper/driftordercancel.xml"></mapper>
+        <mapper resource="mapper/orderaction.xml"></mapper>
     </mappers>
 </configuration>

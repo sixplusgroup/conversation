@@ -16,7 +16,7 @@ public class FilterLightServiceImpl implements FilterLightService {
     private FilterLightDao filterLightDao;
 
     @Override
-    public ResultData create(FilterLight filterLight){
+    public ResultData create(FilterLight filterLight) {
         ResultData result = new ResultData();
         ResultData response = filterLightDao.insert(filterLight);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -29,15 +29,14 @@ public class FilterLightServiceImpl implements FilterLightService {
     }
 
     @Override
-    public ResultData fetch(Map<String, Object> condition){
+    public ResultData fetch(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = filterLightDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to fetch out filter light from database.");
             return result;
-        }
-        else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No filter light found.");
             return result;
@@ -48,10 +47,10 @@ public class FilterLightServiceImpl implements FilterLightService {
     }
 
     @Override
-    public ResultData update(Map<String, Object> condition){
+    public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = filterLightDao.update(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to update");
             return result;

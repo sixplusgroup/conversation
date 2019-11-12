@@ -16,7 +16,9 @@ public interface TeamWatchDao {
 
     ResultData query(Map<String, Object> condition);
 
-    ResultData block(String watchId);
+    ResultData block(Map<String, Object> condition);
 
     ResultData remove(String watchId);
+
+    ResultData queryMemberTeam(Map<String, Object> condition);
 }

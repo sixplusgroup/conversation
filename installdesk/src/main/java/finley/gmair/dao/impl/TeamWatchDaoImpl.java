@@ -56,10 +56,10 @@ public class TeamWatchDaoImpl extends BaseDao implements TeamWatchDao {
     }
 
     @Override
-    public ResultData block(String watchId) {
+    public ResultData block(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.install.team.watch.block", watchId);
+            sqlSession.update("gmair.install.team.watch.block", condition);
         } catch (Exception e) {
             logger.error("[Error] " + e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -75,6 +75,23 @@ public class TeamWatchDaoImpl extends BaseDao implements TeamWatchDao {
             sqlSession.delete("gmair.install.team.watch.remove", watchId);
         } catch (Exception e) {
             logger.error("[Error] " + e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryMemberTeam(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        try{
+            List list = sqlSession.selectList("gmair.install.team.watch.queryMemberTeam", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        }catch (Exception e) {
+            logger.error(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }

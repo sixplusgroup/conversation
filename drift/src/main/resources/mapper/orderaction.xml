@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.drift.orderaction">
+    <resultMap id="actionVo" type="finley.gmair.model.drift.DriftOrderAction">
+        <result property="actionId" column="action_id"></result>
+        <result property="orderId" column="order_id"></result>
+        <result property="message" column="message"></result>
+        <result property="member" column="member"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrderAction">
+        INSERT INTO gmair_drift.order_action (action_id, order_id, message,member, block_flag, create_time)
+        VALUES (#{actionId}, #{orderId}, #{message},#{member},#{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="actionVo">
+        SELECT action_id, order_id, message,member,block_flag, create_time
+        FROM gmair_drift.order_action
+        WHERE 1 = 1
+        <if test="actionId != null">
+            AND action_id = #{actionId}
+        </if>
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="member != null">
+            AND member = #{member}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time ASC
+    </select>
+</mapper>
