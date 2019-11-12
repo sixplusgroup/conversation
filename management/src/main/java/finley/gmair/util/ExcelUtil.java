@@ -126,6 +126,7 @@ public class ExcelUtil {
             item.put("itemRealPrice", item_real_price);
             item.put("expectedDate", expected_date);
             item.put("excode", excode);
+            item.put("status", status);
             item.put("machineOrderNo", machine_orderNo);
             item.put("expressOutNum", express_out_num);
             item.put("expressOutCompany", express_out_company);
