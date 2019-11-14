@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.model.openplatform.MachineSubscription;
-import finley.gmair.service.AirQualityService;
-import finley.gmair.service.CorpMachineSubsService;
-import finley.gmair.service.CorpProfileService;
-import finley.gmair.service.MachineService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -16,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.ResponseErrorHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +41,9 @@ public class MachineController {
 
     @Autowired
     private CorpMachineSubsService corpMachineSubsService;
+
+    @Autowired
+    private MachineNotifyService machineNotifyService;
 
 
     /**
@@ -704,6 +705,32 @@ public class MachineController {
     /**
      * 查询滤网使用状态
      */
+    private ResultData filter(String qrcode) {
+        ResultData result = new ResultData();
+        //check empty
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供正确的appid和qrcode");
+            return result;
+        }
+        //查询滤网使用情况
+        ResultData response = machineService.filter(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        JSONObject json = JSON.parseObject(JSON.toJSONString(response.getData()));
+        json.remove("machineId");
+        json.remove("blockFlag");
+        json.put("qrcode", qrcode);
+        result.setData(json);
+        return result;
+    }
+
+    /**
+     * 查询滤网使用状态
+     */
     @GetMapping("/filter")
     public ResultData filter(String appid, String qrcode) {
         ResultData result = new ResultData();
@@ -713,6 +740,7 @@ public class MachineController {
             result.setDescription("请提供正确的appid和qrcode");
             return result;
         }
+        //检查appid和qrcode是否存在订阅关系
         if (!prerequisities(appid, qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确保该appid有效，且已订阅该设备二维码");
@@ -730,6 +758,45 @@ public class MachineController {
         json.remove("blockFlag");
         json.put("qrcode", qrcode);
         result.setData(json);
+        return result;
+    }
+
+    /**
+     * 批量查询滤网使用状态
+     *
+     * @return
+     */
+    @PostMapping("/filter")
+    public ResultData filter() {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = corpMachineSubsService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            logger.error("[Error] Fail to find corp machine subscriptions");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            logger.info("[Info] No corp machine subscriptions at the moment");
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }
+        List<MachineSubscription> list = (List<MachineSubscription>) response.getData();
+        logger.info("subscriptions: " + JSON.toJSONString(list));
+        for (MachineSubscription subscription : list) {
+            String appid = subscription.getCorpId();
+            String qrcode = subscription.getQrcode();
+            logger.info("appid: " + appid + ", qrcode: " + qrcode);
+            response = filter(qrcode);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                JSONObject data = JSON.parseObject(JSON.toJSONString(response.getData()));
+                if (data.containsKey("lightStatus") && data.getBoolean("lightStatus") == true) {
+                    logger.info("notify appid: " + appid + ", qrcode: " + qrcode);
+                    machineNotifyService.notify(appid, qrcode);
+                }
+            }
+        }
         return result;
     }
 }
