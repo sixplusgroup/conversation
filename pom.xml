@@ -51,6 +51,7 @@
         <module>mqtt-core</module>
         <module>payment</module>
         <module>verify</module>
+        <module>fancore</module>
     </modules>
 
     <parent>
