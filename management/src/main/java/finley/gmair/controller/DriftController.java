@@ -57,8 +57,8 @@ public class DriftController {
     private String baseDir;
 
     @GetMapping("/order/list")
-    ResultData driftOrderList(String startTime,String endTime,String status,String search){
-        return driftService.driftOrderList(startTime,endTime,status,search);
+    ResultData driftOrderList(String startTime,String endTime,String status,String search,String type){
+        return driftService.driftOrderList(startTime,endTime,status,search,type);
     }
 
     @GetMapping("/order/{orderId}")
@@ -177,12 +177,13 @@ public class DriftController {
      * @param status
      * @param search
      * @param response
+     * @param type
      * @return
      */
     @GetMapping("/order/download")
-    String order_download(String startTime,String endTime,String status,String search,HttpServletResponse response){
+    String order_download(String startTime,String endTime,String status,String search,HttpServletResponse response,String type){
         ResultData result=new ResultData();
-        result = driftService.driftOrderList(startTime,endTime,status,search);
+        result = driftService.driftOrderList(startTime,endTime,status,search,type);
         String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".xls";
         try {
             //查询数据库中所有的数据
@@ -251,7 +252,6 @@ public class DriftController {
                     value[i + 1][12] = list.get(i).getExcode();
                 }
                 if (!org.springframework.util.StringUtils.isEmpty(list.get(i).getStatus())) {
-                    System.out.println(list.get(i).getStatus().toString());
                     switch (list.get(i).getStatus().toString()) {
                         case "APPLIED":
                             value[i + 1][13] = "已申请";

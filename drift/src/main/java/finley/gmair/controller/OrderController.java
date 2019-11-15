@@ -661,7 +661,7 @@ public class OrderController {
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultData orderList(String startTime, String endTime,String status,String search) {
+    public ResultData orderList(String startTime, String endTime,String status,String search,String type) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
@@ -709,26 +709,38 @@ public class OrderController {
             //删除对于订单状态的选择
 //            condition.remove("status");
             String fuzzysearch =  search.trim();
-            Pattern phone = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
-            Pattern id =  Pattern.compile("^GMO");
-            Pattern machine = Pattern.compile("^GMZNSK-");
-            Matcher m1 = phone.matcher(search);
-            Matcher m2 = id.matcher(search);
-            Matcher m3 = machine.matcher(search);
-            if (m1.find()) {//如果搜索内容为手机号
-                condition.put("phone", fuzzysearch);
-                System.out.println("手机号");
-            } else if(m2.find()){//如果搜索内容为订单号
-                condition.put("orderId", fuzzysearch);
-                System.out.println("订单号");
-            }else if(m3.find()){//如果搜索内容为机器码
-                condition.put("machineOrderNo", fuzzysearch);
-                System.out.println("机器码");
-            }
-            else{
+            if(type.equals("consignee")){//如果内容为姓名
                 condition.put("consignee", fuzzysearch);
-                System.out.println("名字");
+            }else if(type.equals("orderId")){//如果搜索内容为订单号
+                condition.put("orderId", fuzzysearch);
+            }else if(type.equals("machineOrderNo")){//如果搜索内容为机器码
+                condition.put("machineOrderNo", fuzzysearch);
             }
+            else{//如果内容为手机号
+                condition.put("phone", fuzzysearch);
+            }
+
+//            Pattern phone = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
+//            Pattern id =  Pattern.compile("^GMO");
+//            Pattern machine = Pattern.compile("^GMZNSK-");
+//            Matcher m1 = phone.matcher(search);
+//            Matcher m2 = id.matcher(search);
+//            Matcher m3 = machine.matcher(search);
+//            if (m1.find()) {//如果搜索内容为手机号
+//                condition.put("phone", fuzzysearch);
+//                System.out.println("手机号");
+//            }
+//            else if(m2.find()){//如果搜索内容为订单号
+//                condition.put("orderId", fuzzysearch);
+//                System.out.println("订单号");
+//            }else if(m3.find()){//如果搜索内容为机器码
+//                condition.put("machineOrderNo", fuzzysearch);
+//                System.out.println("机器码");
+//            }
+//            else{
+//                condition.put("consignee", fuzzysearch);
+//                System.out.println("名字");
+//            }
         }
         ResultData response = orderService.fetchDriftOrderPanel(condition);
         switch (response.getResponseCode()) {
