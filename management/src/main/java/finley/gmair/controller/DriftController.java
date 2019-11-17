@@ -252,6 +252,7 @@ public class DriftController {
                     value[i + 1][12] = list.get(i).getExcode();
                 }
                 if (!org.springframework.util.StringUtils.isEmpty(list.get(i).getStatus())) {
+
                     switch (list.get(i).getStatus().toString()) {
                         case "APPLIED":
                             value[i + 1][13] = "已申请";
