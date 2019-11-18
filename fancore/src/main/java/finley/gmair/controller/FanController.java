@@ -93,7 +93,7 @@ public class FanController {
     public ResultData upgrade(String model, String mac, String firmware, String source) {
         ResultData result = new ResultData();
         String topic = "/GM/FAN/".concat(model).concat("/").concat(mac).concat("/UPGRADE");
-        JSONObject json = new JSONObject();
+        JSONObject json = init(mac, true);
         json.put("firmware", firmware);
         json.put("source", source);
         mqttService.publish(topic, json);
