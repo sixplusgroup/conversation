@@ -1353,7 +1353,6 @@ public class OrderController {
 
     @PostMapping("/changeStatus")
     public ResultData changeStatus(String orderId,String machineOrderNo,String expressNum,String company,String description){
-        System.out.println(machineOrderNo+" "+expressNum+" "+company+" "+description);
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1529,10 +1528,12 @@ public class OrderController {
         if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("订单操作日志创建失败");
+            System.out.println("失败");
             return result;
         }
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
+        System.out.println(result.getDescription());
         return result;
     }
 

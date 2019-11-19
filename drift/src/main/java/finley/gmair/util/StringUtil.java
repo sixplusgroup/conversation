@@ -22,13 +22,13 @@ public class StringUtil {
             message += "快递单号："+expressNum+"、";
         }
         if(modify[3]!=null&&!modify[3].equals("")){
-            message += "、快递公司："+company+"、";
+            message += "快递公司："+company+"、";
         }
         if(modify[0]!=null&&!modify[0].equals("")){
-            message += "、机器码："+machineOrderNo+"、";
+            message += "机器码："+machineOrderNo+"、";
         }
         if(modify[1]!=null&&!modify[1].equals("")){
-            message += "、备注："+description+"、";
+            message += "备注："+description+"、";
         }
         return message;
     }
