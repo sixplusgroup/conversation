@@ -178,10 +178,14 @@ public class MqttConfiguration {
                 MQTTUtil.publishTimeSyncTopic(mqttService, model, json.getString("mac"));
                 return;
             }
+            String mac = "";
             switch (action.toUpperCase()) {
+                case "INFO":
+                    mac = json.containsKey("mac") ? json.getString("mac") : mac;
+                    break;
                 case "TIMING":
                     if (json.containsKey("mac")) {
-                        String mac = json.getString("mac");
+                        mac = json.getString("mac");
                         MQTTUtil.publishTimeSyncTopic(mqttService, model, mac);
                     }
                     break;
