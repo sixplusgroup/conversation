@@ -761,6 +761,128 @@ public class OrderController {
     }
 
     /**
+     * The method is called to get order information by useful conditions by page
+     * contains time, province, city and so on
+     *
+     * @return
+     */
+    @GetMapping(value = "/listByPage")
+    public ResultData orderListByPage(int curPage , int pageSize , String startTime, String endTime,String status,String search,String type) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        if (!StringUtils.isEmpty(startTime)) {
+            condition.put("startTime", startTime);
+        }
+        if (!StringUtils.isEmpty(endTime)) {
+            condition.put("endTime", endTime);
+        }
+        if (!StringUtils.isEmpty(status)) {
+            switch (status) {
+                case "APPLIED":
+                    condition.put("status", 0);
+                    break;
+                case "PAYED":
+                    condition.put("status", 1);
+                    break;
+                case "CONFIRMED":
+                    condition.put("status", 2);
+                    break;
+                case "DELIVERED":
+                    condition.put("status", 3);
+                    break;
+                case "BACK":
+                    condition.put("status", 4);
+                    break;
+                case "FINISHED":
+                    condition.put("status", 5);
+                    break;
+                case "CLOSED":
+                    condition.put("status", 6);
+                    break;
+                case "CANCELED":
+                    condition.put("status", 7);
+                    break;
+            }
+        }
+        if (!StringUtils.isEmpty(search)) {
+            //删除对于订单状态的选择
+//            condition.remove("status");
+            String fuzzysearch =  search.trim();
+            if(type.equals("consignee")){//如果内容为姓名
+                condition.put("consignee", fuzzysearch);
+            }else if(type.equals("orderId")){//如果搜索内容为订单号
+                condition.put("orderId", fuzzysearch);
+            }else if(type.equals("machineOrderNo")){//如果搜索内容为机器码
+                condition.put("machineOrderNo", fuzzysearch);
+            }
+            else{//如果内容为手机号
+                condition.put("phone", fuzzysearch);
+            }
+
+//            Pattern phone = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
+//            Pattern id =  Pattern.compile("^GMO");
+//            Pattern machine = Pattern.compile("^GMZNSK-");
+//            Matcher m1 = phone.matcher(search);
+//            Matcher m2 = id.matcher(search);
+//            Matcher m3 = machine.matcher(search);
+//            if (m1.find()) {//如果搜索内容为手机号
+//                condition.put("phone", fuzzysearch);
+//                System.out.println("手机号");
+//            }
+//            else if(m2.find()){//如果搜索内容为订单号
+//                condition.put("orderId", fuzzysearch);
+//                System.out.println("订单号");
+//            }else if(m3.find()){//如果搜索内容为机器码
+//                condition.put("machineOrderNo", fuzzysearch);
+//                System.out.println("机器码");
+//            }
+//            else{
+//                condition.put("consignee", fuzzysearch);
+//                System.out.println("名字");
+//            }
+        }
+        ResultData response = orderService.fetchDriftOrderPanel(condition);
+//        switch (response.getResponseCode()) {
+//            case RESPONSE_NULL:
+//                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+//                result.setDescription("No drift order");
+//                break;
+//            case RESPONSE_ERROR:
+//                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                result.setDescription("Query error, please try again later");
+//                break;
+//            case RESPONSE_OK:
+//                result.setResponseCode(ResponseCode.RESPONSE_OK);
+//                result.setData(response.getData());
+//                break;
+//        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to fetch");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find any data according to your condition");
+            return result;
+        }
+        List<DriftOrderPanel> resultList = (List<DriftOrderPanel>) response.getData();
+        int totalPage = resultList.size() / pageSize + 1;
+        if (curPage < 1 || curPage > totalPage) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to got that page because that page not exist");
+            return result;
+        }
+        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("totalPage", totalPage);
+        jsonObject.put("orderList", resultList);
+        result.setData(jsonObject);
+        result.setDescription("success to fetch data");
+        return result;
+    }
+
+    /**
      * 根据活动ID查询当前活动的概述，包括活动当前报名人数
      * todo
      *
@@ -1231,6 +1353,7 @@ public class OrderController {
 
     @PostMapping("/changeStatus")
     public ResultData changeStatus(String orderId,String machineOrderNo,String expressNum,String company,String description){
+        System.out.println(machineOrderNo+" "+expressNum+" "+company+" "+description);
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1249,6 +1372,11 @@ public class OrderController {
         }
 
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
+        //用于记录修改状态
+        String[] modify = new String[4];
+        for(int s=0 ; s<4 ; s++){
+            modify[s] = "";
+        }
 
         if(order.getStatus().getValue() != 2){//只有订单状态为已确认才可修改order和express
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1256,16 +1384,37 @@ public class OrderController {
             return result;
         }
 
-        if(!order.getDescription().equals(description) || !order.getMachineOrderNo().equals(machineOrderNo)){//判断order是否需要改动
+        //判断order机器码字段是否需要改动
+        if(order.getMachineOrderNo()==null){
+            if(!machineOrderNo.equals("")){
+                order.setMachineOrderNo(machineOrderNo);
+                modify[0] = machineOrderNo;
+            }
+        }else if(!order.getMachineOrderNo().equals(machineOrderNo)){
             order.setMachineOrderNo(machineOrderNo);
-            order.setDescription(description);
-
-            response = orderService.updateDriftOrder(order);
+            modify[0] = machineOrderNo;
         }
+
+        //判断order备注字段是否需要改动
+        if(order.getDescription()==null){
+            if(!description.equals("")){
+                order.setDescription(description);
+                modify[1] = description;
+            }
+
+        }else if(!order.getDescription().equals(description)){
+            order.setDescription(description);
+            modify[1] = description;
+        }
+
+        response = orderService.updateDriftOrder(order);
+
+
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
-
+            if(!modify[0].equals("")||!modify[1].equals(""))
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
             return result;
         }
 
@@ -1278,16 +1427,23 @@ public class OrderController {
         if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to retrieve express with orderId: ").append(orderId).toString());
+            if(!modify[0].equals("")||!modify[1].equals(""))
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
             return result;
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_NULL) {//判断该订单对应的快递单是否存在，不存在则创建
             if(company == null && expressNum == null){
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription(new StringBuffer("The express do not need to change （null）").toString());
+                if(!modify[0].equals("")||!modify[1].equals(""))
+                    createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
                 return result;
             }
             else{
                 createOrderExpress( orderId,  expressNum,0, company);
+                modify[2] = expressNum;
+                modify[3] = company;
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription(new StringBuffer("The express is created ").toString());
                 return result;
@@ -1299,15 +1455,22 @@ public class OrderController {
 
         if(!express.getExpressNum().equals(expressNum)||!express.getCompany().equals(company)){//express存在时，判断express是否需要更改
             createOrderExpress( orderId,  expressNum,0, company);
+            modify[2] = expressNum;
+            modify[3] = company;
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("The express is updated ").toString());
+
+            createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
+            return result;
         }
         else{
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("The express do not need to be update ").toString());
+            if(!modify[0].equals("")||!modify[1].equals(""))
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
+            return result;
         }
 
-        return result;
     }
 
     /**

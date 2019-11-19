@@ -15,4 +15,21 @@ public class StringUtil {
         }
         return false;
     }
+
+    public static String toMessage(String[] modify,String expressNum,String company,String machineOrderNo,String description){
+        String message = "管理员通过上传excel更新了订单:";
+        if(modify[2]!=null&&!modify[2].equals("")){
+            message += "快递单号："+expressNum+"、";
+        }
+        if(modify[3]!=null&&!modify[3].equals("")){
+            message += "、快递公司："+company+"、";
+        }
+        if(modify[0]!=null&&!modify[0].equals("")){
+            message += "、机器码："+machineOrderNo+"、";
+        }
+        if(modify[1]!=null&&!modify[1].equals("")){
+            message += "、备注："+description+"、";
+        }
+        return message;
+    }
 }

@@ -13,6 +13,9 @@ public interface DriftService {
     @GetMapping("/drift/order/list")
     ResultData driftOrderList(@RequestParam("startTime") String startTime,@RequestParam("endTime") String endTime,@RequestParam("status") String status,@RequestParam("search") String search,@RequestParam("type") String type);
 
+    @GetMapping("/drift/order/listByPage")
+    ResultData driftOrderListByPage(@RequestParam("curPage") int curPage,@RequestParam("pageSize") int pageSize,@RequestParam("startTime") String startTime,@RequestParam("endTime") String endTime,@RequestParam("status") String status,@RequestParam("search") String search,@RequestParam("type") String type);
+
     @GetMapping("/drift/order/{orderId}")
     ResultData selectByOrderId(@PathVariable("orderId") String orderId);
 
