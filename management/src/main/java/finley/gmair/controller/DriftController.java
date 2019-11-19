@@ -61,6 +61,11 @@ public class DriftController {
         return driftService.driftOrderList(startTime,endTime,status,search,type);
     }
 
+    @GetMapping("/order/listByPage")
+    ResultData driftOrderListByPage(int curPage , int pageSize , String startTime,String endTime,String status,String search,String type){
+        return driftService.driftOrderListByPage(curPage,pageSize,startTime,endTime,status,search,type);
+    }
+
     @GetMapping("/order/{orderId}")
     ResultData selectByOrderId(@PathVariable("orderId") String orderId){
         ResultData result = new ResultData();
@@ -424,17 +429,17 @@ public class DriftController {
             expressNum = null;
         }
         if(machineOrderNo.equals("无")){
-            machineOrderNo = null;
+            machineOrderNo = "";
         }
         if(company.equals("无")){
             company = null;
         }
         if(description.equals("无")){
-            description = null;
+            description = "";
         }
         result = driftService.changeStatus(orderId,machineOrderNo,expressNum,company,description);
-        String message = "管理员通过上传excel更新了订单,快递单号："+expressNum+"、快递公司："+company+"、机器码："+machineOrderNo;
-        driftService.createAction(orderId,message,"admin");
+//        String message = "管理员通过上传excel更新了订单,快递单号："+expressNum+"、快递公司："+company+"、机器码："+machineOrderNo;
+//        driftService.createAction(orderId,message,"admin");
         return result;
     }
 

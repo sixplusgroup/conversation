@@ -11,7 +11,7 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrderAction">
-        INSERT INTO gmair_drift.order_action (action_id, order_id, message,member, block_flag, create_time)
+        INSERT INTO gmair_drift.order_action (action_id, order_id, message, `member`, block_flag, create_time)
         VALUES (#{actionId}, #{orderId}, #{message},#{member},#{blockFlag}, #{createAt})
     </insert>
 
