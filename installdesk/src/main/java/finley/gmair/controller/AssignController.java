@@ -751,4 +751,36 @@ public class AssignController {
         result.setData(response.getData());
         return result;
     }
+
+    /**
+     * 将安装任务状态改为已签收（待安装）等待安装人员安装
+     * @param assignId
+     * @return
+     */
+    @PostMapping("/receive")
+    public ResultData receive(String assignId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", 7);
+        ResultData response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询该安装任务信息时出错，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("暂无该安装任务信息");
+            return result;
+        }
+        result.setData(response.getData());
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        return result;
+    }
 }

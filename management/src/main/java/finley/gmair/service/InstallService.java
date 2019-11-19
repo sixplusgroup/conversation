@@ -118,4 +118,7 @@ public interface InstallService {
 
     @GetMapping("/install/member/leader/list")
     ResultData getLeaderList();
+
+    @PostMapping("/install/assign/receive")
+    ResultData receive(@RequestParam("assignId")String assignId);
 }

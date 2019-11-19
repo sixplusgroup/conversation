@@ -214,4 +214,21 @@ public class AssignController {
         result = assignService.evalAssign(assignId, code);
         return result;
     }
+
+    /**
+     * 将安装任务状态改为已签收（待安装）等待安装人员安装
+     * @param assignId
+     * @return
+     */
+    @PostMapping("/receive")
+    public ResultData receive(String assignId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息");
+            return result;
+        }
+        result = assignService.receive(assignId);
+        return result;
+    }
 }
