@@ -51,4 +51,7 @@ public interface AssignService {
 
     @PostMapping("/install/assign/eval")
     ResultData evalAssign(@RequestParam("assignId") String assignId, @RequestParam("code") String code);
+
+    @PostMapping("/install/assign/receive")
+    ResultData receive(@RequestParam("assignId")String assignId);
 }
