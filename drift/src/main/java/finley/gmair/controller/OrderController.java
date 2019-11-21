@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
+import finley.gmair.model.admin.Admin;
 import finley.gmair.model.drift.*;
 import finley.gmair.model.drift.DriftExpress;
 import finley.gmair.model.express.Express;
@@ -57,6 +58,9 @@ public class OrderController {
 
     @Autowired
     private QrExCodeService qrExCodeService;
+
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private DriftOrderCancelService driftOrderCancelService;
@@ -1127,7 +1131,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/cancel")
-    public ResultData orderCancel(@RequestParam("orderId") String orderId,String member) {
+    public ResultData orderCancel(@RequestParam("orderId") String orderId,String account) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1206,11 +1210,14 @@ public class OrderController {
             return result;
         }
         String message = "";
-        if(StringUtils.isEmpty(member)){
+        String member="";
+        if(StringUtils.isEmpty(account)){
             message = order.getConsignee()+"取消了该订单";
             member = order.getConsumerId();
         }else {
-            message = member+"取消了该订单";
+            Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+            member = admin.getAdminId();
+            message = admin.getUsername()+"取消了该订单";
         }
         driftOrderActionService.create(new DriftOrderAction(order.getOrderId(),message,member));
         result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -1352,7 +1359,7 @@ public class OrderController {
      */
 
     @PostMapping("/changeStatus")
-    public ResultData changeStatus(String orderId,String machineOrderNo,String expressNum,String company,String description){
+    public ResultData changeStatus(String orderId,String machineOrderNo,String expressNum,String company,String description,String account){
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1407,13 +1414,13 @@ public class OrderController {
         }
 
         response = orderService.updateDriftOrder(order);
-
+        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
 
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
             if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
             return result;
         }
 
@@ -1427,7 +1434,7 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to retrieve express with orderId: ").append(orderId).toString());
             if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
             return result;
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_NULL) {//判断该订单对应的快递单是否存在，不存在则创建
@@ -1435,14 +1442,14 @@ public class OrderController {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription(new StringBuffer("The express do not need to change （null）").toString());
                 if(!modify[0].equals("")||!modify[1].equals(""))
-                    createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
+                    createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
                 return result;
             }
             else{
                 createOrderExpress( orderId,  expressNum,0, company);
                 modify[2] = expressNum;
                 modify[3] = company;
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription(new StringBuffer("The express is created ").toString());
                 return result;
@@ -1459,14 +1466,14 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("The express is updated ").toString());
 
-            createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
+            createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
             return result;
         }
         else{
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("The express do not need to be update ").toString());
             if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
             return result;
         }
 
