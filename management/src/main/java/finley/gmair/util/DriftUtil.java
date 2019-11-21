@@ -1,5 +1,8 @@
 package finley.gmair.util;
 
+import finley.gmair.model.drift.DriftOrderStatus;
+import org.springframework.util.StringUtils;
+
 public class DriftUtil {
 
     public static String setStatus(int status){
@@ -29,6 +32,23 @@ public class DriftUtil {
             case 7:
                 result = "已取消";
                 break;
+        }
+        return result;
+    }
+
+    public static String updateMessage(String consignee,String phone,String province,String city,String district,String address,String status){
+        String result = "";
+        if(!StringUtils.isEmpty(consignee)){
+            result+="用户为"+consignee+"、";
+        }
+        if(!StringUtils.isEmpty(phone)){
+            result+="联系方式为"+phone+"、";
+        }
+        if(!StringUtils.isEmpty(province)){
+            result+="地址为"+province+city+district+address+"、";
+        }
+        if(!StringUtils.isEmpty(status)){
+            result+="订单状态为"+ status +"。";
         }
         return result;
     }
