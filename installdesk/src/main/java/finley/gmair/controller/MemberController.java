@@ -116,7 +116,7 @@ public class MemberController {
         if (!StringUtils.isEmpty(memberId)) {
             condition.put("memberId", memberId);
         }
-        condition.put("blockFlag", false);
+//        condition.put("blockFlag", false);
         ResultData response = memberService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

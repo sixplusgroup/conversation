@@ -83,7 +83,7 @@ public class TeamController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("teamId", teamId);
-        condition.put("blockFlag", false);
+//        condition.put("blockFlag", false);
         ResultData response = teamService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
