@@ -12,6 +12,7 @@ import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -846,21 +847,14 @@ public class OrderController {
 //                System.out.println("名字");
 //            }
         }
-        ResultData response = orderService.fetchDriftOrderPanel(condition);
-//        switch (response.getResponseCode()) {
-//            case RESPONSE_NULL:
-//                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-//                result.setDescription("No drift order");
-//                break;
-//            case RESPONSE_ERROR:
-//                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-//                result.setDescription("Query error, please try again later");
-//                break;
-//            case RESPONSE_OK:
-//                result.setResponseCode(ResponseCode.RESPONSE_OK);
-//                result.setData(response.getData());
-//                break;
-//        }
+        int size = (int)orderService.fetchDriftOrderSize(condition).getData();
+        if(size==0){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("can not find order");
+            return result;
+        }
+        RowBounds rowBounds = new RowBounds((curPage-1)*pageSize, pageSize);
+        ResultData response = orderService.fetchDriftOrderByPage(condition,rowBounds);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch");
@@ -869,21 +863,28 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find any data according to your condition");
             return result;
-        }
-        List<DriftOrderPanel> resultList = (List<DriftOrderPanel>) response.getData();
-        int totalPage = resultList.size() / pageSize + 1;
-        if (curPage < 1 || curPage > totalPage) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to got that page because that page not exist");
+        }else {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("orderList", response.getData());
+            int totalPage = size / pageSize + 1;
+            jsonObject.put("totalPage", totalPage);
+            result.setData(jsonObject);
             return result;
         }
-        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("totalPage", totalPage);
-        jsonObject.put("orderList", resultList);
-        result.setData(jsonObject);
-        result.setDescription("success to fetch data");
-        return result;
+//        List<DriftOrderPanel> resultList = (List<DriftOrderPanel>) response.getData();
+//        int totalPage = resultList.size() / pageSize + 1;
+//        if (curPage < 1 || curPage > totalPage) {
+//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//            result.setDescription("fail to got that page because that page not exist");
+//            return result;
+//        }
+//        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("totalPage", totalPage);
+//        jsonObject.put("orderList", resultList);
+//        result.setData(jsonObject);
+//        result.setDescription("success to fetch data");
+//        return result;
     }
 
     /**
