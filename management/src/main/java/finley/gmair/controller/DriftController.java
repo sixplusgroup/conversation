@@ -104,7 +104,8 @@ public class DriftController {
             return result;
         }
         String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+//        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
         String message = admin.getUsername();
         if(expressFlag==0){
             message+="更新了寄出快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
@@ -179,7 +180,8 @@ public class DriftController {
         }
         result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status);
         String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+//        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
         String message = admin.getUsername()+"更新了订单："+DriftUtil.updateMessage(consignee,phone,province,city,district,address,status);
         driftService.createAction(orderId,message,admin.getAdminId());
         return result;
@@ -504,7 +506,8 @@ public class DriftController {
         result = driftService.updateCancelRecord(orderId);
         if(result.getResponseCode()==ResponseCode.RESPONSE_OK){
             String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+//            Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
             String message = admin.getUsername()+"将退款订单标记为退款成功";
             driftService.createAction(orderId,message,admin.getAdminId());
         }

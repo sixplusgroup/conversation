@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.admin.Admin;
@@ -1216,7 +1217,7 @@ public class OrderController {
             message = order.getConsignee()+"取消了该订单";
             member = order.getConsumerId();
         }else {
-            Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
             member = admin.getAdminId();
             message = admin.getUsername()+"取消了该订单";
         }
@@ -1415,8 +1416,8 @@ public class OrderController {
         }
 
         response = orderService.updateDriftOrder(order);
-        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
-
+//        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
