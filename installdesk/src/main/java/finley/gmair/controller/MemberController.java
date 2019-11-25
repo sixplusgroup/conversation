@@ -109,9 +109,11 @@ public class MemberController {
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(openid)) {
             condition.put("wechatId", openid);
+            condition.put("blockFlag",false);
         }
         if (!StringUtils.isEmpty(phone)) {
             condition.put("memberPhone", phone);
+            condition.put("blockFlag",false);
         }
         if (!StringUtils.isEmpty(memberId)) {
             condition.put("memberId", memberId);
