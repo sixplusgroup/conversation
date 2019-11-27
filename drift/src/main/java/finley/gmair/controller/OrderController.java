@@ -909,7 +909,7 @@ public class OrderController {
             json.put("size", 0);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            json.put("size", ((List) response.getData()).size() + 90);
+            json.put("size", ((List) response.getData()).size() + 1000);
         }
         result.setData(json);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
