@@ -36,7 +36,7 @@ public class DriftUtil {
         return result;
     }
 
-    public static String updateMessage(String consignee,String phone,String province,String city,String district,String address,String status){
+    public static String updateMessage(String consignee,String phone,String province,String city,String district,String address,String status,String expectedDate){
         String result = "";
         if(!StringUtils.isEmpty(consignee)){
             result+="用户为"+consignee+"、";
@@ -46,6 +46,9 @@ public class DriftUtil {
         }
         if(!StringUtils.isEmpty(province)){
             result+="地址为"+province+city+district+address+"、";
+        }
+        if(!StringUtils.isEmpty(expectedDate)){
+            result+="使用日期为"+expectedDate+"、";
         }
         if(!StringUtils.isEmpty(status)){
             result+="订单状态为"+ status +"。";

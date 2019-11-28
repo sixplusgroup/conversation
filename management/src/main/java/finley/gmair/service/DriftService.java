@@ -38,7 +38,8 @@ public interface DriftService {
     ResultData updateOrder(@RequestParam("orderId") String orderId,@RequestParam("consignee") String consignee,
                            @RequestParam("phone") String phone,@RequestParam("province") String province,
                            @RequestParam("city") String city,@RequestParam("district") String district,
-                           @RequestParam("address") String address,@RequestParam("status") String status);
+                           @RequestParam("address") String address,@RequestParam("status") String status,
+                           @RequestParam("expectedDate") String expectedDate);
 
     @PostMapping("/drift/order/changeStatus")
     ResultData changeStatus(@RequestParam("orderId") String orderId,@RequestParam("machineOrderNo") String machineOrderNo,@RequestParam("expressNum") String expressNum,@RequestParam("company") String company,@RequestParam("description") String description,@RequestParam("account") String account);
@@ -54,4 +55,7 @@ public interface DriftService {
 
     @PostMapping("/drift/order/cancel/record/update")
     ResultData updateCancelRecord(@RequestParam("orderId")String orderId);
+
+    @GetMapping("/drift/activity/{activityId}/available")
+    ResultData getActivityAvailable(@PathVariable("activityId") String activityId);
 }

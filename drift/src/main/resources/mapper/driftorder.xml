@@ -265,6 +265,9 @@
             <if test="district != null">
                 district = #{district},
             </if>
+            <if test="expectedDate != null">
+                expected_date = #{expectedDate},
+            </if>
             <if test="machineOrderNo != null">
                 machine_orderNo = #{machineOrderNo},
             </if>

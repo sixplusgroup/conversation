@@ -171,19 +171,20 @@ public class DriftController {
      * @return
      */
     @PostMapping("/order/update")
-    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status){
+    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status,String expectedDate){
         ResultData result = new ResultData();
         if(StringUtils.isEmpty(orderId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供orderId");
             return result;
         }
-        result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status);
-        String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
-        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
-        String message = admin.getUsername()+"更新了订单："+DriftUtil.updateMessage(consignee,phone,province,city,district,address,status);
-        driftService.createAction(orderId,message,admin.getAdminId());
+        result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status,expectedDate);
+        if(result.getResponseCode()==ResponseCode.RESPONSE_OK){
+            String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
+            String message = admin.getUsername()+"更新了订单："+DriftUtil.updateMessage(consignee,phone,province,city,district,address,status,expectedDate);
+            driftService.createAction(orderId,message,admin.getAdminId());
+        }
         return result;
     }
 
@@ -511,6 +512,18 @@ public class DriftController {
             String message = admin.getUsername()+"将退款订单标记为退款成功";
             driftService.createAction(orderId,message,admin.getAdminId());
         }
+        return result;
+    }
+
+    @GetMapping("/{activityId}/available")
+    public ResultData available(@PathVariable("activityId") String activityId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(activityId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供activityId");
+            return result;
+        }
+        result = driftService.getActivityAvailable(activityId);
         return result;
     }
 }

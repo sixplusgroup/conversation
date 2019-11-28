@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -243,7 +244,7 @@ public class OrderController {
             result.setData(response.getData());
         }
         String orderId = driftOrder.getOrderId();
-        String message = consignee+"创建了该订单";
+        String message = consignee+"创建了该订单,期望使用日期为："+new SimpleDateFormat("yyyy-MM-dd").format(driftOrder.getExpectedDate());
         driftOrderActionService.create(new DriftOrderAction(orderId,message,consumerId));
         return result;
     }
@@ -1299,7 +1300,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/update")
-    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status){
+    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status,String expectedDate){
         ResultData result = new ResultData();
         if(StringUtils.isEmpty(orderId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1338,6 +1339,23 @@ public class OrderController {
         }
         if(!StringUtils.isEmpty(status)){
             driftOrder.setStatus(DriftOrderStatus.valueOf(status));
+        }
+        if(!StringUtils.isEmpty(expectedDate)){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date expected = null;
+            try {
+                expected = sdf.parse(expectedDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            //检查当天是否可以继续借出设备
+            if(!available(driftOrder.getActivityId(), expected)){
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("该日期仪器无法预约使用，请重新选择日期");
+                return result;
+            }else {
+                driftOrder.setExpectedDate(expected);
+            }
         }
         response = orderService.updateDriftOrder(driftOrder);
         if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
