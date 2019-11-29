@@ -75,7 +75,8 @@ public interface InstallService {
     ResultData createTeamMember(@RequestParam("teamId") String teamId, @RequestParam("memberPhone") String memberPhone, @RequestParam("memberName") String memberName, @RequestParam("memberRole") int memberRole);
 
     @PostMapping("/install/member/update")
-    ResultData updatePhone(@RequestParam("memberPhone") String memberPhone, @RequestParam("memberId") String memberId);
+    ResultData updatePhone(@RequestParam("memberPhone") String memberPhone, @RequestParam("memberId") String memberId,
+                           @RequestParam("teamId") String teamId,@RequestParam("memberName") String memberName);
 
     @GetMapping("/install/member/block")
     ResultData deleteMember(@RequestParam("memberId") String memberId);
