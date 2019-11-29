@@ -122,4 +122,7 @@ public interface InstallService {
 
     @PostMapping("/install/assign/receive")
     ResultData receive(@RequestParam("assignId")String assignId);
+
+    @GetMapping("/install/member/profile")
+    ResultData profile(@RequestParam("memberId") String memberId);
 }

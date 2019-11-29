@@ -587,4 +587,16 @@ public class InstallController {
         result = installService.receive(assignId);
         return result;
     }
+
+    @GetMapping("/member/profile")
+    ResultData getMember(String memberId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(memberId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供memberId");
+            return result;
+        }
+        result = installService.profile(memberId);
+        return result;
+    }
 }
