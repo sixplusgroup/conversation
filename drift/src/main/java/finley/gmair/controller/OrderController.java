@@ -13,6 +13,7 @@ import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -1348,13 +1349,15 @@ public class OrderController {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            //检查当天是否可以继续借出设备
-            if(!available(driftOrder.getActivityId(), expected)){
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("该日期仪器无法预约使用，请重新选择日期");
-                return result;
-            }else {
-                driftOrder.setExpectedDate(expected);
+            if(!DateUtils.isSameDay(expected,driftOrder.getExpectedDate())){
+                //检查当天是否可以继续借出设备
+                if(!available(driftOrder.getActivityId(), expected)){
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("该日期仪器无法预约使用，请重新选择日期");
+                    return result;
+                }else {
+                    driftOrder.setExpectedDate(expected);
+                }
             }
         }
         response = orderService.updateDriftOrder(driftOrder);
