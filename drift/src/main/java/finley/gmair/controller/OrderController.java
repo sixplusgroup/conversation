@@ -1340,7 +1340,7 @@ public class OrderController {
         if(!StringUtils.isEmpty(status)){
             driftOrder.setStatus(DriftOrderStatus.valueOf(status));
         }
-        if(!StringUtils.isEmpty(expectedDate)){
+        if(!StringUtils.isEmpty(expectedDate)&&!expectedDate.equals("undefined")){
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date expected = null;
             try {
