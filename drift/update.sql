@@ -413,3 +413,10 @@ COLLATE = utf8_bin;
 ALTER TABLE `gmair_drift`.`order_action`
 ADD COLUMN `member` VARCHAR(45) NOT NULL AFTER `order_id`;
 
+#2019-12-03
+ALTER TABLE `gmair_drift`.`drift_activity`
+ADD COLUMN `back_address` VARCHAR(45) NULL AFTER `reservation_text`,
+ADD COLUMN `back_phone` VARCHAR(45) NULL AFTER `back_address`,
+ADD COLUMN `back_name` VARCHAR(45) NULL AFTER `back_phone`;
+
+
