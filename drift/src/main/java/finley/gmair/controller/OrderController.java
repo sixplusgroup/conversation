@@ -378,6 +378,11 @@ public class OrderController {
                 }
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);
                 //实现优惠码价格抵消
+                if(order.getTotalPrice() - exCode.getPrice()<=0){
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("当前优惠券金额大于订单总价，无法使用");
+                    return result;
+                }
                 order.setExcode(code);
                 order.setRealPay(Math.round(order.getTotalPrice() * 100 - exCode.getPrice() * 100) / 100.0);
                 new Thread(() -> {
