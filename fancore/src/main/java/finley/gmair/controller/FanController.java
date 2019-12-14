@@ -3,14 +3,17 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.MqttService;
 import finley.gmair.util.IDGenerator;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @ClassName: FanController
@@ -19,12 +22,24 @@ import org.springframework.web.bind.annotation.RestController;
  * @Date 2019/11/14 10:03 PM
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/core/com")
 public class FanController {
     private Logger logger = LoggerFactory.getLogger(FanController.class);
 
     @Autowired
     private MqttService mqttService;
+
+    @GetMapping("/profile")
+    public ResultData profile(String mac) {
+        ResultData result = new ResultData();
+        JSONObject data = mqttService.obtain(mac);
+        result.setData(data);
+        if (data == null) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        return result;
+    }
 
     @PostMapping("/setting/query")
     public ResultData setting(String model, String mac) {
@@ -86,6 +101,7 @@ public class FanController {
             json.put("targettemp", targettemp);
         }
         mqttService.publish(topic, json);
+        logger.info("[action] topic: " + topic + ", payload: " + json);
         return result;
     }
 

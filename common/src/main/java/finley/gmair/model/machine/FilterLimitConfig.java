@@ -2,6 +2,8 @@ package finley.gmair.model.machine;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
+
 public class FilterLimitConfig extends Entity {
 
     private String configId;
@@ -14,7 +16,20 @@ public class FilterLimitConfig extends Entity {
 
     private int duration;
 
+    public FilterLimitConfig() {
+        super();
+    }
+
     public FilterLimitConfig(int overCountLimit, int overPm25Limit, int duration) {
+        this();
+        this.overCountLimit = overCountLimit;
+        this.overPm25Limit = overPm25Limit;
+        this.duration = duration;
+    }
+
+    public FilterLimitConfig(String modelId, int overCountLimit, int overPm25Limit, int duration) {
+        this();
+        this.modelId = modelId;
         this.overCountLimit = overCountLimit;
         this.overPm25Limit = overPm25Limit;
         this.duration = duration;

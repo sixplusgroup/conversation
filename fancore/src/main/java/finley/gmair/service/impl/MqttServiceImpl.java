@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.MqttService;
 import finley.gmair.util.MqttProperties;
@@ -13,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @ClassName: MqttServiceImpl
@@ -29,8 +33,20 @@ public class MqttServiceImpl implements MqttService {
 
     private MqttClient client;
 
+    private Map<String, JSONObject> status = new ConcurrentHashMap<>();
+
     public MqttServiceImpl() {
         init();
+    }
+
+    public void refresh(String mac, JSONObject o) {
+        status.put(mac, o);
+        logger.info("Current stored information device: " + status.size());
+    }
+
+    @Override
+    public JSONObject obtain(String mac) {
+        return status.get(mac);
     }
 
     @Override
@@ -80,7 +96,7 @@ public class MqttServiceImpl implements MqttService {
      */
     private MqttMessage getMessage(JSONObject object) {
         MqttMessage message = new MqttMessage();
-        message.setQos(2);
+        message.setQos(0);
         message.setRetained(false);
         message.setPayload(object.toString().getBytes());
         return message;

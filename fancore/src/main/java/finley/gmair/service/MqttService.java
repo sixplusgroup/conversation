@@ -14,4 +14,14 @@ import org.springframework.stereotype.Service;
 public interface MqttService {
 
     ResultData publish(String topic, JSONObject object);
+
+    /**
+     * temp method
+     *
+     * @param mac
+     * @param o
+     */
+    void refresh(String mac, JSONObject o);
+
+    JSONObject obtain(String mac);
 }
