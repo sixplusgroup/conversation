@@ -464,12 +464,14 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     private CityAirQuality fetch(String lid, int cityId){
         MojiToken mojiToken = (((List<MojiToken>) selectToken().getData()).get(0));
-        StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("&cityId=").append(cityId);
+        StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?cityId=").append(cityId);
         String url = stringBuffer.toString();
         logger.info(stringBuffer.toString());
         Map<String, String> map = new HashMap<>();
         map.put("token",mojiToken.getToken());
         map.put("password", mojiToken.getPassword());
+        String subUrl = url.substring("https://api.mojicb.com".length(),url.indexOf("?"));
+        map.put("subUrl", subUrl);
         String result = HttpDeal.getResponse(url, map);
         CityAirQuality quality = interpret(lid, result);
         return quality;
@@ -488,12 +490,14 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     private CityAirQuality fetch(String lid, double longitude, double latitude){
         MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
-        StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("&lat=").append(latitude).append("&lon=").append(longitude);
+        StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?lat=").append(latitude).append("&lon=").append(longitude);
         String url = stringBuffer.toString();
         logger.info(stringBuffer.toString());
         Map<String, String> map = new HashMap<>();
         map.put("token",mojiToken.getToken());
         map.put("password", mojiToken.getPassword());
+        String subUrl = url.substring("https://api.mojicb.com".length(),url.indexOf("?"));
+        map.put("subUrl", subUrl);
         String result = HttpDeal.getResponse(url, map);
         CityAirQuality quality = interpret(lid, result);
         return quality;
