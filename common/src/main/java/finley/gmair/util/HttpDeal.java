@@ -20,11 +20,24 @@ import java.net.URI;
 import java.util.Map;
 
 public class HttpDeal {
+    public static String getResponse(String url) {
+        try {
+            HttpClient httpClient = HttpClients.createDefault();
+            HttpGet get = new HttpGet(new URI(url));
+            HttpResponse response = httpClient.execute(get);
+            String userJson = EntityUtils.toString(response.getEntity());
+            return userJson;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static String getResponse(String url, Map<String, String> header) {
         try {
             HttpClient httpClient = HttpClients.createDefault();
             HttpGet get = new HttpGet(new URI(url));
-            if(header.size() > 0){
+            if (header.size() > 0) {
                 for (String key : header.keySet()) {
                     get.setHeader(key, header.get(key));
                 }
