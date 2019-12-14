@@ -309,14 +309,14 @@ public class CityAQIServiceImpl implements CityAQIService {
     @Autowired
     private AirQualityCacheService airQualityCacheService;
 
-//    @Value("${token}")
-//    private String token;
-//
-//    @Value("${password}")
-//    private String password;
-//
-//    @Value("${url}")
-//    private String url;
+    @Value("$ab4705b2493aabfe4929ff43d608f7af")
+    private String token;
+
+    @Value("$8a138deecd05d7c3e849a5b7b5a74f3b")
+    private String password;
+
+    @Value("$https://api.mojicb.com/webapi/json/weather/aqi?")
+    private String url;
 
     @Value("classpath:cities.xml")
     private Resource records;
