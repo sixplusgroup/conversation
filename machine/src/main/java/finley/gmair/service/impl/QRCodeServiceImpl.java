@@ -4,6 +4,7 @@ import finley.gmair.dao.GoodsModelDao;
 import finley.gmair.dao.QRCodeDao;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.model.machine.QRCodeStatus;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.service.QRCodeService;
 import finley.gmair.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,17 +88,43 @@ public class QRCodeServiceImpl implements QRCodeService {
     }
 
     @Override
-    public ResultData modifyByQRcode(Map<String, Object> condition){
+    public ResultData modifyByQRcode(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = qrCodeDao.updateByQRcode(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to modify qrcode from database");
-        }
-        else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("Success to modify qrcode from database");
         }
+        return result;
+    }
+
+    @Override
+    public ResultData profile(String qrcode) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        ResultData response = fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到该二维码对应的设备信息");
+            return result;
+        }
+        QRCode code = ((List<QRCode>) response.getData()).get(0);
+        String modelId = code.getModelId();
+        //根据型号ID查询商品及型号的详细信息，包括商品名称等
+        condition.clear();
+        condition.put("modelID", modelId);
+        response = goodsModelDao.detail(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到该二维码对应的商品及型号信息");
+            return result;
+        }
+        GoodsModelDetailVo vo = ((List<GoodsModelDetailVo>) response.getData()).get(0);
+        result.setData(vo);
         return result;
     }
 }

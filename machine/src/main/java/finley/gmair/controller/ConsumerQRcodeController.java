@@ -1,15 +1,16 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.MachineListDaily;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.model.machine.QRCodeStatus;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.machine.MachineInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/machine/consumer")
@@ -294,6 +292,10 @@ public class ConsumerQRcodeController {
         return result;
     }
 
+    /**
+     * @param consumerId
+     * @return
+     */
     @RequestMapping(value = "/machinelist", method = RequestMethod.GET)
     public ResultData getMachineListByConsumerId(String consumerId) {
         ResultData result = new ResultData();
@@ -303,7 +305,6 @@ public class ConsumerQRcodeController {
             result.setDescription("please provide the consumerId");
             return result;
         }
-
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", consumerId);
         condition.put("blockFlag", false);
@@ -321,6 +322,57 @@ public class ConsumerQRcodeController {
             result.setData(response.getData());
             result.setDescription("success to fetch device list by consumerid");
         }
+        return result;
+    }
+
+    @GetMapping("/machine/list")
+    public ResultData list(String consumerId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(consumerId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供用户的身份信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        //查询用户的绑定信息
+        condition.put("consumerId", consumerId);
+        condition.put("blockFlag", false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find device list by consumerid");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find device list by consumerid");
+            return result;
+        }
+        JSONArray json = new JSONArray();
+        List<ConsumerQRcodeBind> list = (List<ConsumerQRcodeBind>) response.getData();
+        for (ConsumerQRcodeBind bind : list) {
+            JSONObject o = new JSONObject();
+            String qrcode = bind.getCodeValue();
+            response = qrCodeService.profile(qrcode);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                continue;
+            }
+            GoodsModelDetailVo vo = (GoodsModelDetailVo) response.getData();
+            o.put("bindId", bind.getBindId());
+            o.put("bindName", bind.getBindName());
+            o.put("codeValue", bind.getCodeValue());
+            o.put("ownership", bind.getOwnership());
+            o.put("goodsId", vo.getGoodsId());
+            o.put("goodsName", vo.getGoodsName());
+            o.put("modelId", vo.getModelId());
+            o.put("modelCode", vo.getModelCode());
+            o.put("modelName", vo.getModelName());
+            o.put("modelThumbnail", vo.getModelThumbnail());
+            json.add(o);
+        }
+        if (json.size() == 0) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        result.setData(json);
         return result;
     }
 

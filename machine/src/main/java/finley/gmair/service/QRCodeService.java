@@ -16,4 +16,6 @@ public interface QRCodeService {
     ResultData fetchBatch(Map<String, Object> condition);
 
     ResultData modifyByQRcode(Map<String, Object> condition);
+
+    ResultData profile(String qrcode);
 }
