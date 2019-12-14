@@ -2,6 +2,7 @@ package finley.gmair.config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.fan.FanStatus;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.LogService;
 import finley.gmair.service.MqttService;
@@ -50,6 +51,9 @@ public class MqttConfiguration {
     @Autowired
     private MqttService mqttService;
 
+    @Autowired
+    private RedisService redisService;
+
     @Value("${inbound_url}")
     private String ip;
 
@@ -61,9 +65,6 @@ public class MqttConfiguration {
 
     @Value("${replica}")
     private boolean isReplica;
-
-    @Autowired
-    private RedisService redisService;
 
     private Map<String, Integer> devices = new ConcurrentHashMap<>();
 
@@ -190,7 +191,11 @@ public class MqttConfiguration {
                     }
                     break;
                 case "STATUS":
-                    logger.info("Status info: " + JSON.toJSONString(json));
+                    if (json.containsKey("mac")) mac = json.getString("mac");
+                    FanStatus status = MQTTUtil.interpret(json);
+                    //put the current status into redis
+                    final String uid = mac;
+                    CorePool.getHandlePool().execute(() -> redisService.set(uid, status));
                     break;
                 case "WARN":
                     logger.info("Warn info: " + JSON.toJSONString(json));
@@ -201,7 +206,7 @@ public class MqttConfiguration {
                     logger.info("Unrecognized action: " + action);
             }
         } catch (Exception e) {
-//            logger.error("[Error ] " + e.getMessage());
+
         }
     }
 }

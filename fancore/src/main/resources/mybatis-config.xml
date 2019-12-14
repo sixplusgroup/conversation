@@ -4,8 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <mappers>
-        <!--<mapper resource="mapper/topic.xml"></mapper>-->
-        <!--<mapper resource="mapper/firmware.xml"></mapper>-->
-        <!--<mapper resource="mapper/machinealert.xml"></mapper>-->
+
     </mappers>
 </configuration>
