@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.dao.GoodsModelDao;
 import finley.gmair.dao.QRCodeDao;
 import finley.gmair.model.machine.QRCode;
@@ -7,6 +8,8 @@ import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.service.QRCodeService;
 import finley.gmair.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,8 @@ import java.util.Map;
  */
 @Service
 public class QRCodeServiceImpl implements QRCodeService {
+    private Logger logger = LoggerFactory.getLogger(QRCodeServiceImpl.class);
+
     @Autowired
     private QRCodeDao qrCodeDao;
 
@@ -116,7 +121,7 @@ public class QRCodeServiceImpl implements QRCodeService {
         String modelId = code.getModelId();
         //根据型号ID查询商品及型号的详细信息，包括商品名称等
         condition.clear();
-        condition.put("modelID", modelId);
+        condition.put("modelId", modelId);
         response = goodsModelDao.detail(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);

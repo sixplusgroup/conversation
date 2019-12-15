@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.model.machine.*;
@@ -11,6 +12,7 @@ import finley.gmair.util.MachineConstant;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.ControlOptionActionVo;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,9 @@ public class ControlOptionController {
 
     @Autowired
     private CoreV3Service coreV3Service;
+
+    @Autowired
+    private FanCoreService fanCoreService;
 
     @Autowired
     private QRCodeService qrCodeService;
@@ -135,7 +140,14 @@ public class ControlOptionController {
         return result;
     }
 
-    //用户操作机器
+    /**
+     * 用户控制设备
+     *
+     * @param qrcode
+     * @param component
+     * @param operation
+     * @return
+     */
     @PostMapping("/operate")
     public ResultData chooseComponent(String qrcode, String component, String operation) {
         ResultData result = new ResultData();
@@ -145,7 +157,6 @@ public class ControlOptionController {
             result.setDescription("provide all the information");
             return result;
         }
-
         //根据qrcode 查 code_machine_bind表,取出machineId
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
@@ -157,16 +168,14 @@ public class ControlOptionController {
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
-
-        //根据qrcode 查 qrcode表, 取出机器型号modelId
-        response = qrCodeService.fetch(condition);
+        //根据qrcode 查设备商品及型号详情
+        response = qrCodeService.profile(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the qrcode or server is busy");
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前未能查询到设备二维码对应的详细信息");
             return result;
         }
-        String modelId = ((List<QRCode>) response.getData()).get(0).getModelId();
-
+        GoodsModelDetailVo vo = (GoodsModelDetailVo) response.getData();
         //根据component查control_option表, 取出component对应的controlId
         condition.clear();
         condition.put("optionComponent", component);
@@ -178,11 +187,10 @@ public class ControlOptionController {
             return result;
         }
         String controlId = ((List<ControlOption>) response.getData()).get(0).getControlId();
-
         //根据controlId,modelId and operation查control_action表, 取出应传给core模块的值commandValue
         condition.clear();
         condition.put("controlId", controlId);
-        condition.put("modelId", modelId);
+        condition.put("modelId", vo.getModelId());
         condition.put("actionOperator", operation);
         condition.put("blockFlag", false);
         response = controlOptionService.fetchControlOptionAction(condition);
@@ -219,6 +227,9 @@ public class ControlOptionController {
                     break;
                 case 3:
                     response = coreV3Service.configPower(machineId, commandValue);
+                    break;
+                case 4:
+                    response = fanCoreService.config(vo.getModelName(), machineId, commandValue, null, null, null, null, null, null);
                     break;
                 default:
                     logger.error("Unrecognized board version in power");

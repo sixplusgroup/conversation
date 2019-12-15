@@ -10,7 +10,6 @@ public interface MachineService {
     @GetMapping("/machine/qrcode/model")
     ResultData findModel(@RequestParam("codeValue") String codeValue);
 
-
     //ControlOptionController
     @GetMapping("/machine/control/option/create")
     ResultData setControlOption(@RequestParam("optionName") String optionName,
@@ -77,15 +76,25 @@ public interface MachineService {
     @GetMapping("/machine/consumer/machinelist")
     ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
 
+    @GetMapping("/machine/consumer/machine/list")
+    ResultData obtainMachineList(@RequestParam("consumerId") String consumerId);
+
     @PostMapping("/machine/consumer/modify/bind/name")
     ResultData modifyBindName(@RequestParam("qrcode") String qrcode, @RequestParam("bindName") String bindName, @RequestParam("consumerId") String consumerId);
 
     @GetMapping("/machine/consumer/probe/by/qrcode")
     ResultData probeBindByQRcode(@RequestParam("qrcode") String qrcode, @RequestParam("consumerId") String consumerId);
 
-    //MachineAirQualityController
+    /**
+     * 获取设备的运行状态信息
+     * @param qrcode
+     * @return
+     */
     @GetMapping("/machine/status/byqrcode")
     ResultData getMachineStatusByQRcode(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/{qrcode}/status")
+    ResultData runningStatus(@PathVariable("qrcode") String qrcode);
 
     //MachineDefaultLocationController
     @GetMapping("/machine/default/location/probe/cityid")
