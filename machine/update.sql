@@ -331,3 +331,17 @@ ALTER TABLE `gmair_machine`.`filter_limit_config`
 ALTER TABLE `gmair_machine`.`filter_limit_config`
   DROP PRIMARY KEY,
   ADD PRIMARY KEY (`config_id`);
+
+#2019-12-14
+CREATE OR REPLACE VIEW `goods_model_view` AS
+  SELECT
+    `g`.`goods_id`          AS `goods_id`,
+    `g`.`goods_name`        AS `goods_name`,
+    `g`.`goods_description` AS `goods_description`,
+    `gm`.`model_id`         AS `model_id`,
+    `gm`.`model_code`       AS `model_code`,
+    `gm`.`model_name`       AS `model_name`,
+    `gm`.`model_snapshot`   AS `snapshot`
+  FROM
+    (`goods_model` `gm`
+      LEFT JOIN `goods` `g` ON ((`gm`.`goods_id` = `g`.`goods_id`)))

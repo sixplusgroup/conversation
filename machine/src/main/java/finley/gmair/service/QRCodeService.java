@@ -17,5 +17,11 @@ public interface QRCodeService {
 
     ResultData modifyByQRcode(Map<String, Object> condition);
 
+    /**
+     * 查询二维码对应的商品及其型号信息
+     *
+     * @param qrcode
+     * @return
+     */
     ResultData profile(String qrcode);
 }
