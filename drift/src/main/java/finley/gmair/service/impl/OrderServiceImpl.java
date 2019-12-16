@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.OrderDao;
 import finley.gmair.dao.OrderItemDao;
 import finley.gmair.model.drift.DriftOrder;
@@ -7,6 +8,7 @@ import finley.gmair.model.drift.DriftOrderItem;
 import finley.gmair.service.OrderService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -46,6 +48,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public ResultData fetchDriftOrderSize(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = orderDao.queryOrderSize(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("query order size error");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("order size is zero");
+            return result;
+        }else {
+            result.setData(response.getData());
+            return result;
+        }
+    }
+
+    @Override
     public ResultData fetchDriftOrderPanel(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = orderDao.queryOrderPanel(condition);
@@ -64,6 +84,24 @@ public class OrderServiceImpl implements OrderService {
                 break;
         }
         return result;
+    }
+
+    @Override
+    public ResultData fetchDriftOrderByPage(Map<String, Object> condition, RowBounds rowBounds) {
+        ResultData result = new ResultData();
+        ResultData response = orderDao.queryOrderByPage(condition,rowBounds);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("query order error");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("order is null");
+            return result;
+        }else {
+            result.setData(response.getData());
+            return result;
+        }
     }
 
     /**

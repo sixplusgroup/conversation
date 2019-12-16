@@ -16,8 +16,8 @@ public class StringUtil {
         return false;
     }
 
-    public static String toMessage(String[] modify,String expressNum,String company,String machineOrderNo,String description){
-        String message = "管理员通过上传excel更新了订单:";
+    public static String toMessage(String[] modify,String expressNum,String company,String machineOrderNo,String description,String username){
+        String message = username+"通过上传excel更新了订单:";
         if(modify[2]!=null&&!modify[2].equals("")){
             message += "快递单号："+expressNum+"、";
         }

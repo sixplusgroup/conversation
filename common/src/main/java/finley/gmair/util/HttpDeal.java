@@ -33,6 +33,25 @@ public class HttpDeal {
         return null;
     }
 
+    public static String getResponse(String url, Map<String, String> header) {
+        try {
+            HttpClient httpClient = HttpClients.createDefault();
+            HttpGet get = new HttpGet(new URI(url));
+            if (header.size() > 0) {
+                for (String key : header.keySet()) {
+                    get.setHeader(key, header.get(key));
+                }
+            }
+            HttpResponse response = httpClient.execute(get);
+            String userJson = EntityUtils.toString(response.getEntity());
+            return userJson;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     public static String postJSONResponse(String url, JSONObject param, Map<String, String> header) {
         try {
 

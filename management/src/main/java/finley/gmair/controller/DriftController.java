@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ChangeOrderStatusForm;
 import finley.gmair.form.installation.AssignForm;
+import finley.gmair.model.admin.Admin;
 import finley.gmair.model.drift.DriftOrderCancel;
 import finley.gmair.model.drift.DriftOrderPanel;
 import finley.gmair.model.drift.DriftOrderStatus;
 import finley.gmair.model.installation.AssignReport;
+import finley.gmair.service.AuthService;
 import finley.gmair.service.DriftService;
 import finley.gmair.util.DriftUtil;
 import finley.gmair.util.ExcelUtil;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -40,7 +43,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +54,9 @@ public class DriftController {
 
     @Autowired
     private DriftService driftService;
+
+    @Autowired
+    private AuthService authService;
 
     @Value("${temp_path}")
     private String baseDir;
@@ -98,13 +103,16 @@ public class DriftController {
             result.setDescription("物流信息创建失败");
             return result;
         }
-        String message;
+        String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
+        String message = admin.getUsername();
         if(expressFlag==0){
-            message="管理员更新了寄出快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
+            message+="更新了寄出快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
         }else {
-            message="管理员更新了寄回快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
+            message+="更新了寄回快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
         }
-        driftService.createAction(orderId,message,"admin");
+        driftService.createAction(orderId,message,admin.getAdminId());
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
         result.setDescription(response.getDescription());
@@ -134,7 +142,8 @@ public class DriftController {
             result.setDescription("请提供订单编号");
             return result;
         }
-        result = driftService.cancelOrder(orderId,"admin");
+        String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        result = driftService.cancelOrder(orderId,account);
         return result;
     }
 
@@ -162,16 +171,20 @@ public class DriftController {
      * @return
      */
     @PostMapping("/order/update")
-    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status){
+    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status,String expectedDate){
         ResultData result = new ResultData();
         if(StringUtils.isEmpty(orderId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供orderId");
             return result;
         }
-        result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status);
-        String message = "管理员更新了订单：用户："+consignee+"、联系方式："+phone+"、地址为："+province+city+district+address+"、订单状态更新为："+ status;
-        driftService.createAction(orderId,message,"admin");
+        result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status,expectedDate);
+        if(result.getResponseCode()==ResponseCode.RESPONSE_OK){
+            String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
+            String message = admin.getUsername()+"更新了订单："+DriftUtil.updateMessage(consignee,phone,province,city,district,address,status,expectedDate);
+            driftService.createAction(orderId,message,admin.getAdminId());
+        }
         return result;
     }
 
@@ -437,7 +450,8 @@ public class DriftController {
         if(description.equals("无")){
             description = "";
         }
-        result = driftService.changeStatus(orderId,machineOrderNo,expressNum,company,description);
+        String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        result = driftService.changeStatus(orderId,machineOrderNo,expressNum,company,description,account);
 //        String message = "管理员通过上传excel更新了订单,快递单号："+expressNum+"、快递公司："+company+"、机器码："+machineOrderNo;
 //        driftService.createAction(orderId,message,"admin");
         return result;
@@ -492,9 +506,24 @@ public class DriftController {
         }
         result = driftService.updateCancelRecord(orderId);
         if(result.getResponseCode()==ResponseCode.RESPONSE_OK){
-            String message = "管理员将退款订单标记为退款成功";
-            driftService.createAction(orderId,message,"admin");
+            String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
+            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
+            String message = admin.getUsername()+"将退款订单标记为退款成功";
+            driftService.createAction(orderId,message,admin.getAdminId());
         }
+        return result;
+    }
+
+    @GetMapping("/{activityId}/available")
+    public ResultData available(@PathVariable("activityId") String activityId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(activityId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供activityId");
+            return result;
+        }
+        result = driftService.getActivityAvailable(activityId);
         return result;
     }
 }

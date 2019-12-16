@@ -324,7 +324,7 @@ public class ActivityController extends BaseController {
         return result;
     }
 
-    @PostMapping(value = "/excode/one/create")
+    @GetMapping(value = "/excode/one/create")
     public ResultData createOneEXCode(String activityId,String codeValue,double price,int status) {
         ResultData result = new ResultData();
         EXCode code = new EXCode(activityId, codeValue, price);

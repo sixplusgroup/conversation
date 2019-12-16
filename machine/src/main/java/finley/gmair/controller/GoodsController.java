@@ -6,8 +6,11 @@ import finley.gmair.model.goods.Goods;
 import finley.gmair.model.goods.GoodsModel;
 import finley.gmair.service.GoodsService;
 import finley.gmair.service.ModelVolumeService;
+import finley.gmair.util.ParamUtils;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,15 +25,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/machine/goods")
 public class GoodsController {
+    private Logger logger = LoggerFactory.getLogger(GoodsController.class);
+
     @Autowired
     private GoodsService goodsService;
 
-    @Autowired
-    private ModelVolumeService modelVolumeService;
-
     //列出Goods
     @GetMapping(value = "/list")
-    public ResultData queryGoods() {
+    public ResultData queryGoods(Integer start, Integer length) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
@@ -54,8 +56,9 @@ public class GoodsController {
     @PostMapping(value = "/create")
     public ResultData createGoods(GoodsForm goodsForm) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(goodsForm.getGoodsName()) || StringUtils.isEmpty(goodsForm.getGoodsDescription())
-                || StringUtils.isEmpty(goodsForm.getGoodsPrice())) {
+//        if (StringUtils.isEmpty(goodsForm.getGoodsName()) || StringUtils.isEmpty(goodsForm.getGoodsDescription())
+//                || StringUtils.isEmpty(goodsForm.getGoodsPrice()))
+        if (ParamUtils.containEmpty(goodsForm.getGoodsName(), goodsForm.getGoodsDescription(), goodsForm.getGoodsPrice())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -95,27 +98,27 @@ public class GoodsController {
     }
 
     @GetMapping("/model/query/by/modelid")
-    public ResultData queryModelByModelId(String modelId){
+    public ResultData queryModelByModelId(String modelId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(modelId)){
+        if (StringUtils.isEmpty(modelId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide the modelId");
             return result;
         }
 
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("modelId",modelId);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("modelId", modelId);
+        condition.put("blockFlag", false);
         ResultData response = goodsService.fetchModel(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch the model by modelId");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find the model by modelId");
             return result;
-        }else {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             result.setDescription("success to find the model");

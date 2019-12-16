@@ -33,6 +33,12 @@ public class Activity extends Entity {
 
     private String reservationText;
 
+    private String backAddress;
+
+    private String backPhone;
+
+    private String backName;
+
     public Activity() {
         super();
     }
@@ -162,5 +168,29 @@ public class Activity extends Entity {
 
     public void setReservationText(String reservationText) {
         this.reservationText = reservationText;
+    }
+
+    public String getBackAddress() {
+        return backAddress;
+    }
+
+    public void setBackAddress(String backAddress) {
+        this.backAddress = backAddress;
+    }
+
+    public String getBackPhone() {
+        return backPhone;
+    }
+
+    public void setBackPhone(String backPhone) {
+        this.backPhone = backPhone;
+    }
+
+    public String getBackName() {
+        return backName;
+    }
+
+    public void setBackName(String backName) {
+        this.backName = backName;
     }
 }

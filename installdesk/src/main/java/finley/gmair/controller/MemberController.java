@@ -109,14 +109,16 @@ public class MemberController {
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(openid)) {
             condition.put("wechatId", openid);
+            condition.put("blockFlag",false);
         }
         if (!StringUtils.isEmpty(phone)) {
             condition.put("memberPhone", phone);
+            condition.put("blockFlag",false);
         }
         if (!StringUtils.isEmpty(memberId)) {
             condition.put("memberId", memberId);
         }
-        condition.put("blockFlag", false);
+//        condition.put("blockFlag", false);
         ResultData response = memberService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -213,21 +215,34 @@ public class MemberController {
     }
 
     /**
-     * 修改成员联系方式
+     * 修改成员信息
      * @param memberPhone
      * @return
      */
     @PostMapping("/update")
-    public ResultData update(String memberPhone,String memberId){
+    public ResultData update(String memberPhone,String memberId,String memberName,String teamId){
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(memberPhone)||StringUtils.isEmpty(memberId)) {
+        if (StringUtils.isEmpty(memberPhone)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请确认memberId和memberPhone均已提供");
+            result.setDescription("请确认memberId已提供");
+            return result;
+        }
+        if(StringUtils.isEmpty(memberName)&&StringUtils.isEmpty(memberPhone)&&StringUtils.isEmpty(teamId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供更新的信息");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("memberId", memberId);
-        condition.put("memberPhone", memberPhone);
+        if(!StringUtils.isEmpty(memberPhone)){
+            condition.put("memberPhone", memberPhone);
+        }
+        if(!StringUtils.isEmpty(teamId)){
+            condition.put("teamId", teamId);
+        }
+        if(!StringUtils.isEmpty(memberName)){
+            condition.put("memberName", memberName);
+        }
         condition.put("blockFlag", false);
         ResultData response = memberService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

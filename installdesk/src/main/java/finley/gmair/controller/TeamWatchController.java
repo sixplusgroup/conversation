@@ -100,7 +100,7 @@ public class TeamWatchController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("memberId", memberId);
-        condition.put("memberPhone", teamId);
+        condition.put("teamId", teamId);
         condition.put("blockFlag", false);
         ResultData response = memberService.blockTeam(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

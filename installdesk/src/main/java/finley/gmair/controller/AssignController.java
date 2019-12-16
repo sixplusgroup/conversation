@@ -767,7 +767,7 @@ public class AssignController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignId", assignId);
-        condition.put("assignStatus", 7);
+        condition.put("assignStatus", 6);
         ResultData response = assignService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

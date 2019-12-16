@@ -296,21 +296,26 @@ public class InstallController {
     }
 
     /**
-     * 修改联系方式
+     * 修改成员信息
      * @param memberPhone
      * @param memberId
      * @return
      */
 
     @PostMapping("/member/update")
-    public ResultData updatePhone(String memberPhone,String memberId){
+    public ResultData updatePhone(String memberPhone,String memberId,String memberName,String teamId){
         ResultData result=new ResultData();
-        if(StringUtils.isEmpty(memberId)||StringUtils.isEmpty(memberPhone)){
+        if(StringUtils.isEmpty(memberId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请确保输入了正确的memberId和需要更新的联系方式");
+            result.setDescription("请确保输入了正确的memberId");
             return result;
         }
-        result=installService.updatePhone(memberPhone,memberId);
+        if(StringUtils.isEmpty(memberName)&&StringUtils.isEmpty(memberPhone)&&StringUtils.isEmpty(teamId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供更新的信息");
+            return result;
+        }
+        result=installService.updatePhone(memberPhone,memberId,teamId,memberName);
         return result;
     }
 
@@ -580,6 +585,18 @@ public class InstallController {
             return result;
         }
         result = installService.receive(assignId);
+        return result;
+    }
+
+    @GetMapping("/member/profile")
+    ResultData getMember(String memberId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(memberId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供memberId");
+            return result;
+        }
+        result = installService.profile(memberId);
         return result;
     }
 }

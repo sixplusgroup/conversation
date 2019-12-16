@@ -147,5 +147,34 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin;
 
+#2019-11-14
+CREATE
+    ALGORITHM = UNDEFINED
+    DEFINER = `root`@`%`
+    SQL SECURITY DEFINER
+VIEW `gmair_install`.`assign_member_view` AS
+    SELECT
+        `gmair_install`.`install_assign`.`assign_id` AS `assign_id`,
+        `gmair_install`.`install_assign`.`code_value` AS `code_value`,
+        `gmair_install`.`install_assign`.`assign_detail` AS `assign_detail`,
+        `gmair_install`.`install_team`.`team_id` AS `team_id`,
+        `gmair_install`.`install_team`.`team_name` AS `team_name`,
+        `gmair_install`.`team_member`.`member_id` AS `member_id`,
+        `gmair_install`.`team_member`.`member_name` AS `member_name`,
+        `gmair_install`.`install_assign`.`assign_status` AS `assign_status`,
+        `gmair_install`.`install_assign`.`assign_date` AS `assign_date`,
+        `gmair_install`.`install_assign`.`block_flag` AS `block_flag`,
+        `gmair_install`.`install_assign`.`create_time` AS `create_time`,
+        `gmair_install`.`install_assign`.`consumer_consignee` AS `consumer_consignee`,
+        `gmair_install`.`install_assign`.`consumer_phone` AS `consumer_phone`,
+        `gmair_install`.`install_assign`.`consumer_address` AS `consumer_address`,
+        `gmair_install`.`install_assign`.`assign_source` AS `assign_source`
+    FROM
+        ((`gmair_install`.`install_assign`
+        LEFT JOIN `gmair_install`.`install_team` ON ((`gmair_install`.`install_assign`.`team_id` = `gmair_install`.`install_team`.`team_id`)))
+        LEFT JOIN `gmair_install`.`team_member` ON ((`gmair_install`.`install_assign`.`member_id` = `gmair_install`.`team_member`.`member_id`)))
+    WHERE
+        (`gmair_install`.`install_assign`.`block_flag` = 0)
+
 
 

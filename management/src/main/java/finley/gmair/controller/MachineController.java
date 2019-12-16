@@ -79,4 +79,19 @@ public class MachineController {
     public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount, String overCountGTE, String overCountLTE) {
         return machineService.getOwnerMachineList(curPage, pageSize, qrcode, phone, createTimeGTE, createTimeLTE, online,overCount, overCountGTE, overCountLTE);
     }
+
+    @PostMapping("/qrcode/status")
+    public ResultData findStatusByQRcode(String qrcode) {
+        return machineService.checkQRcodeExist(qrcode);
+    }
+
+    @RequestMapping(value = "/model/component/probe", method = RequestMethod.GET)
+    public ResultData fetchModelEnabledComponent(String modelId, String componentName) {
+        return machineService.fetchModelEnabledComponent(modelId, componentName);
+    }
+
+    @PostMapping("/config/screen")
+    public ResultData configScreen(String qrcode,int screen) {
+        return machineService.configScreen(qrcode,screen);
+    }
 }
