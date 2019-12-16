@@ -820,43 +820,15 @@ public class OrderController {
                 condition.put("phone", fuzzysearch);
             }
 
-//            Pattern phone = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
-//            Pattern id =  Pattern.compile("^GMO");
-//            Pattern machine = Pattern.compile("^GMZNSK-");
-//            Matcher m1 = phone.matcher(search);
-//            Matcher m2 = id.matcher(search);
-//            Matcher m3 = machine.matcher(search);
-//            if (m1.find()) {//如果搜索内容为手机号
-//                condition.put("phone", fuzzysearch);
-//                System.out.println("手机号");
-//            }
-//            else if(m2.find()){//如果搜索内容为订单号
-//                condition.put("orderId", fuzzysearch);
-//                System.out.println("订单号");
-//            }else if(m3.find()){//如果搜索内容为机器码
-//                condition.put("machineOrderNo", fuzzysearch);
-//                System.out.println("机器码");
-//            }
-//            else{
-//                condition.put("consignee", fuzzysearch);
-//                System.out.println("名字");
-//            }
+
         }
+        if (!StringUtils.isEmpty(pageSize)&&!StringUtils.isEmpty(curPage)) {
+            condition.put("start", (curPage - 1) * pageSize);
+            condition.put("pageSize", pageSize);
+        }
+
         ResultData response = orderService.fetchDriftOrderPanel(condition);
-//        switch (response.getResponseCode()) {
-//            case RESPONSE_NULL:
-//                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-//                result.setDescription("No drift order");
-//                break;
-//            case RESPONSE_ERROR:
-//                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-//                result.setDescription("Query error, please try again later");
-//                break;
-//            case RESPONSE_OK:
-//                result.setResponseCode(ResponseCode.RESPONSE_OK);
-//                result.setData(response.getData());
-//                break;
-//        }
+
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch");
@@ -1400,7 +1372,6 @@ public class OrderController {
                 order.setDescription(description);
                 modify[1] = description;
             }
-
         }else if(!order.getDescription().equals(description)){
             order.setDescription(description);
             modify[1] = description;
