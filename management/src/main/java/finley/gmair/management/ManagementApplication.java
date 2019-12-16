@@ -17,12 +17,12 @@ public class ManagementApplication {
         SpringApplication.run(ManagementApplication.class, args);
     }
 
-//    @Bean
-//    MultipartConfigElement multipartConfigElement() {//修改环境默认路径
-//        MultipartConfigFactory factory = new MultipartConfigFactory();
-//        factory.setLocation("d:/Test");
-//        return factory.createMultipartConfig();
-//    }
+    @Bean
+    MultipartConfigElement multipartConfigElement() {//修改环境默认路径
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setLocation("d:/Test");
+        return factory.createMultipartConfig();
+    }
 }
 
 
