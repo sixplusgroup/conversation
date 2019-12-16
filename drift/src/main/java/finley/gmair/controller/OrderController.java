@@ -1,9 +1,7 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
-import finley.gmair.model.admin.Admin;
 import finley.gmair.model.drift.*;
 import finley.gmair.model.drift.DriftExpress;
 import finley.gmair.model.express.Express;
@@ -13,8 +11,6 @@ import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -62,9 +57,6 @@ public class OrderController {
 
     @Autowired
     private QrExCodeService qrExCodeService;
-
-    @Autowired
-    private AuthService authService;
 
     @Autowired
     private DriftOrderCancelService driftOrderCancelService;
@@ -245,7 +237,7 @@ public class OrderController {
             result.setData(response.getData());
         }
         String orderId = driftOrder.getOrderId();
-        String message = consignee+"创建了该订单,期望使用日期为："+new SimpleDateFormat("yyyy-MM-dd").format(driftOrder.getExpectedDate());
+        String message = consignee+"创建了该订单";
         driftOrderActionService.create(new DriftOrderAction(orderId,message,consumerId));
         return result;
     }
@@ -378,11 +370,6 @@ public class OrderController {
                 }
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);
                 //实现优惠码价格抵消
-                if(order.getTotalPrice() - exCode.getPrice()<=0){
-                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    result.setDescription("当前优惠券金额大于订单总价，无法使用");
-                    return result;
-                }
                 order.setExcode(code);
                 order.setRealPay(Math.round(order.getTotalPrice() * 100 - exCode.getPrice() * 100) / 100.0);
                 new Thread(() -> {
@@ -840,18 +827,7 @@ public class OrderController {
             condition.put("pageSize", pageSize);
         }
 
-
         ResultData response = orderService.fetchDriftOrderPanel(condition);
-
-
-        int size = (int)orderService.fetchDriftOrderSize(condition).getData();
-        if(size==0){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find order");
-            return result;
-        }
-        RowBounds rowBounds = new RowBounds((curPage-1)*pageSize, pageSize);
-        ResultData response = orderService.fetchDriftOrderByPage(condition,rowBounds);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -861,28 +837,21 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find any data according to your condition");
             return result;
-        }else {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("orderList", response.getData());
-            int totalPage = size / pageSize + 1;
-            jsonObject.put("totalPage", totalPage);
-            result.setData(jsonObject);
+        }
+        List<DriftOrderPanel> resultList = (List<DriftOrderPanel>) response.getData();
+        int totalPage = resultList.size() / pageSize + 1;
+        if (curPage < 1 || curPage > totalPage) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to got that page because that page not exist");
             return result;
         }
-//        List<DriftOrderPanel> resultList = (List<DriftOrderPanel>) response.getData();
-//        int totalPage = resultList.size() / pageSize + 1;
-//        if (curPage < 1 || curPage > totalPage) {
-//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-//            result.setDescription("fail to got that page because that page not exist");
-//            return result;
-//        }
-//        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("totalPage", totalPage);
-//        jsonObject.put("orderList", resultList);
-//        result.setData(jsonObject);
-//        result.setDescription("success to fetch data");
-//        return result;
+        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("totalPage", totalPage);
+        jsonObject.put("orderList", resultList);
+        result.setData(jsonObject);
+        result.setDescription("success to fetch data");
+        return result;
     }
 
     /**
@@ -906,7 +875,7 @@ public class OrderController {
             json.put("size", 0);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            json.put("size", ((List) response.getData()).size() + 1000);
+            json.put("size", ((List) response.getData()).size() + 90);
         }
         result.setData(json);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -1130,7 +1099,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/cancel")
-    public ResultData orderCancel(@RequestParam("orderId") String orderId,String account) {
+    public ResultData orderCancel(@RequestParam("orderId") String orderId,String member) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1209,14 +1178,11 @@ public class OrderController {
             return result;
         }
         String message = "";
-        String member="";
-        if(StringUtils.isEmpty(account)){
+        if(StringUtils.isEmpty(member)){
             message = order.getConsignee()+"取消了该订单";
             member = order.getConsumerId();
         }else {
-            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
-            member = admin.getAdminId();
-            message = admin.getUsername()+"取消了该订单";
+            message = member+"取消了该订单";
         }
         driftOrderActionService.create(new DriftOrderAction(order.getOrderId(),message,member));
         result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -1296,7 +1262,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/update")
-    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status,String expectedDate){
+    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status){
         ResultData result = new ResultData();
         if(StringUtils.isEmpty(orderId)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1336,25 +1302,6 @@ public class OrderController {
         if(!StringUtils.isEmpty(status)){
             driftOrder.setStatus(DriftOrderStatus.valueOf(status));
         }
-        if(!StringUtils.isEmpty(expectedDate)&&!expectedDate.equals("undefined")){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date expected = null;
-            try {
-                expected = sdf.parse(expectedDate);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if(!DateUtils.isSameDay(expected,driftOrder.getExpectedDate())){
-                //检查当天是否可以继续借出设备
-                if(!available(driftOrder.getActivityId(), expected)){
-                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    result.setDescription("该日期仪器无法预约使用，请重新选择日期");
-                    return result;
-                }else {
-                    driftOrder.setExpectedDate(expected);
-                }
-            }
-        }
         response = orderService.updateDriftOrder(driftOrder);
         if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1377,7 +1324,7 @@ public class OrderController {
      */
 
     @PostMapping("/changeStatus")
-    public ResultData changeStatus(String orderId,String machineOrderNo,String expressNum,String company,String description,String account){
+    public ResultData changeStatus(String orderId,String machineOrderNo,String expressNum,String company,String description){
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1431,13 +1378,13 @@ public class OrderController {
         }
 
         response = orderService.updateDriftOrder(order);
-//        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
-        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
+
+
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
             if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
             return result;
         }
 
@@ -1451,7 +1398,7 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to retrieve express with orderId: ").append(orderId).toString());
             if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
             return result;
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_NULL) {//判断该订单对应的快递单是否存在，不存在则创建
@@ -1459,14 +1406,14 @@ public class OrderController {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription(new StringBuffer("The express do not need to change （null）").toString());
                 if(!modify[0].equals("")||!modify[1].equals(""))
-                    createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+                    createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
                 return result;
             }
             else{
                 createOrderExpress( orderId,  expressNum,0, company);
                 modify[2] = expressNum;
                 modify[3] = company;
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription(new StringBuffer("The express is created ").toString());
                 return result;
@@ -1483,14 +1430,14 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("The express is updated ").toString());
 
-            createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+            createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
             return result;
         }
         else{
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("The express do not need to be update ").toString());
             if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description),"admin");
             return result;
         }
 
