@@ -181,8 +181,6 @@ public class ConsumerQRcodeController {
                 condition.put("blockFlag", true);
                 machineQrcodeBindService.modifyByQRcode(condition);
             }).start();
-
-
             condition.clear();
             condition.put("codeValue", qrcode);
             condition.put("blockFlag", false);

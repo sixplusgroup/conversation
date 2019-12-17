@@ -246,6 +246,29 @@ public class MachineController {
         return machineService.configLight(qrcode, light);
     }
 
+    /**
+     * 用户控制设备的目标运行温度
+     *
+     * @param qrcode
+     * @param temp
+     * @param request
+     * @return
+     */
+    @PostMapping("/config/temp")
+    public ResultData configTemp(String qrcode, int temp, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "temp", new StringBuffer("User ").append(consumerId).append(" operate ").append("temp").append(" set to ").append(temp).toString(), IPUtil.getIP(request), String.valueOf(temp))));
+        return machineService.configTemp(qrcode, temp);
+    }
+
+
+    @PostMapping("/config/timing")
+    public ResultData configTiming(String qrcode, int timing, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "timing", new StringBuffer("User ").append(consumerId).append(" operate ").append("timing").append(" set to ").append(timing).toString(), IPUtil.getIP(request), String.valueOf(timing))));
+        return machineService.configTiming(qrcode, timing);
+    }
+
     //设置配置项
     @PostMapping("/control/option/create")
     public ResultData setControlOption(String optionName, String optionComponent, String modelId, String actionName, String actionOperator) {

@@ -4,6 +4,8 @@ import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.Result;
+
 @FeignClient("machine-agent")
 public interface MachineService {
 
@@ -31,6 +33,12 @@ public interface MachineService {
 
     @PostMapping("/machine/control/option/config/light")
     ResultData configLight(@RequestParam("qrcode") String qrcode, @RequestParam("light") int light);
+
+    @PostMapping("/machine/control/option/config/temp")
+    ResultData configTemp(@RequestParam("qrcode") String qrcode, @RequestParam("temp") int temp);
+
+    @PostMapping("/machine/control/option/config/timing")
+    ResultData configTiming(@RequestParam("qrcode") String qrcode, @RequestParam("countdown") int countdown);
 
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")
@@ -87,6 +95,7 @@ public interface MachineService {
 
     /**
      * 获取设备的运行状态信息
+     *
      * @param qrcode
      * @return
      */
