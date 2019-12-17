@@ -6,11 +6,15 @@ import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.MachineListDaily;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.model.machine.QRCodeStatus;
+import finley.gmair.pool.MachinePool;
+import finley.gmair.util.ParamUtils;
 import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +28,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/machine/consumer")
 public class ConsumerQRcodeController {
+    private Logger logger = LoggerFactory.getLogger(ConsumerQRcodeController.class);
+
     @Autowired
     private ConsumerQRcodeBindService consumerQRcodeBindService;
 
@@ -79,15 +85,14 @@ public class ConsumerQRcodeController {
     }
 
     @RequestMapping(value = "/qrcode/bind", method = RequestMethod.POST)
-    public ResultData bindConsumerWithQRcode(String consumerId, String bindName, String qrcode, int ownership) {
+    public ResultData bindConsumerWithQRcode(String consumerId, String bindName, String qrcode, Integer ownership) {
         ResultData result = new ResultData();
         //check empty
-        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(bindName) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(Ownership.fromValue(ownership))) {
+        if (ParamUtils.containEmpty(consumerId, bindName, qrcode, Ownership.fromValue(ownership))) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all the information");
             return result;
         }
-
         //check whether the bind exist
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", consumerId);
@@ -101,7 +106,6 @@ public class ConsumerQRcodeController {
             result.setDescription("exist bind,don't have to bind again");
             return result;
         }
-
         //save to consumer_qrcode_bind table
         ConsumerQRcodeBind consumerQRcodeBind = new ConsumerQRcodeBind();
         consumerQRcodeBind.setConsumerId(consumerId);
@@ -129,13 +133,13 @@ public class ConsumerQRcodeController {
          * if ownership = 1, is sharer, no need to update
          */
         if (ownership == 0) {
-            new Thread(() -> {
+            MachinePool.getMachinePool().execute(() -> {
                 condition.clear();
                 condition.put("codeValue", qrcode);
                 condition.put("status", QRCodeStatus.OCCUPIED.getValue());
                 condition.put("blockFlag", false);
                 qrCodeService.modifyByQRcode(condition);
-            }).start();
+            });
         }
         return result;
     }
@@ -143,13 +147,13 @@ public class ConsumerQRcodeController {
     @RequestMapping(value = "/qrcode/unbind", method = RequestMethod.POST)
     public ResultData unbindConsumerWithQRcode(String consumerId, String qrcode) {
         ResultData result = new ResultData();
+        logger.info("consumerId: " + consumerId + ", qrcode: " + qrcode);
         //check empty
-        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(qrcode)) {
+        if (ParamUtils.containEmpty(consumerId, qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all information");
             return result;
         }
-
         //find the consumerId-codeValue correspond record in consumer_qrcode_bind table
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", consumerId);
@@ -166,7 +170,6 @@ public class ConsumerQRcodeController {
             return result;
         }
         ConsumerQRcodeBind consumerQRcodeBind = ((List<ConsumerQRcodeBind>) response.getData()).get(0);
-
         //according to the onwership,update the  consumer_qrcode_bind and qrcode table and code_machine_bind table
         if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
             new Thread(() -> {

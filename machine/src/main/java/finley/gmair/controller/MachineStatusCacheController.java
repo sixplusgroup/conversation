@@ -11,6 +11,8 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/machine")
 public class MachineStatusCacheController {
+    private Logger logger = LoggerFactory.getLogger(MachineStatusCacheController.class);
 
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
@@ -31,6 +34,34 @@ public class MachineStatusCacheController {
 
     @Autowired
     private RedisService redisService;
+
+    @GetMapping("/{qrcode}/isonline")
+    public ResultData isOnline(@PathVariable("qrcode") String qrcode) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供设备的二维码信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能根据设备二维码查询到相关的绑定信息");
+            return result;
+        }
+        MachineQrcodeBindVo vo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
+        String uid = vo.getMachineId();
+        logger.info("uid: " + uid);
+        if (redisService.exists(uid)) {
+            response.setResponseCode(ResponseCode.RESPONSE_OK);
+        } else {
+            response.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        return result;
+    }
 
     //通过uid获取缓存中v1或v2或v3的机器状态
     @RequestMapping(value = "/status/byuid", method = RequestMethod.GET)

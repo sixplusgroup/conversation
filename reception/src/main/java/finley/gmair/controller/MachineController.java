@@ -196,6 +196,7 @@ public class MachineController {
     @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
     public ResultData unbindConsumerWithQRcode(String qrcode, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        logger.info("Consumer ID: " + consumerId);
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
             logService.createUserMachineOperationLog(consumerId, qrcode, "unbind",
                     new StringBuffer("User:").append(consumerId).append(" unbind device with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "unbind");
