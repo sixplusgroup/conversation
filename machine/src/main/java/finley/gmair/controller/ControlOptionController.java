@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.form.machine.ControlOptionForm;
 import finley.gmair.model.machine.*;
@@ -11,6 +12,7 @@ import finley.gmair.util.MachineConstant;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.ControlOptionActionVo;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,9 @@ public class ControlOptionController {
 
     @Autowired
     private CoreV3Service coreV3Service;
+
+    @Autowired
+    private FanCoreService fanCoreService;
 
     @Autowired
     private QRCodeService qrCodeService;
@@ -135,7 +140,14 @@ public class ControlOptionController {
         return result;
     }
 
-    //用户操作机器
+    /**
+     * 用户控制设备
+     *
+     * @param qrcode
+     * @param component
+     * @param operation
+     * @return
+     */
     @PostMapping("/operate")
     public ResultData chooseComponent(String qrcode, String component, String operation) {
         ResultData result = new ResultData();
@@ -145,7 +157,6 @@ public class ControlOptionController {
             result.setDescription("provide all the information");
             return result;
         }
-
         //根据qrcode 查 code_machine_bind表,取出machineId
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
@@ -157,16 +168,14 @@ public class ControlOptionController {
             return result;
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
-
-        //根据qrcode 查 qrcode表, 取出机器型号modelId
-        response = qrCodeService.fetch(condition);
+        //根据qrcode 查设备商品及型号详情
+        response = qrCodeService.profile(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the qrcode or server is busy");
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前未能查询到设备二维码对应的详细信息");
             return result;
         }
-        String modelId = ((List<QRCode>) response.getData()).get(0).getModelId();
-
+        GoodsModelDetailVo vo = (GoodsModelDetailVo) response.getData();
         //根据component查control_option表, 取出component对应的controlId
         condition.clear();
         condition.put("optionComponent", component);
@@ -178,11 +187,10 @@ public class ControlOptionController {
             return result;
         }
         String controlId = ((List<ControlOption>) response.getData()).get(0).getControlId();
-
         //根据controlId,modelId and operation查control_action表, 取出应传给core模块的值commandValue
         condition.clear();
         condition.put("controlId", controlId);
-        condition.put("modelId", modelId);
+        condition.put("modelId", vo.getModelId());
         condition.put("actionOperator", operation);
         condition.put("blockFlag", false);
         response = controlOptionService.fetchControlOptionAction(condition);
@@ -220,6 +228,9 @@ public class ControlOptionController {
                 case 3:
                     response = coreV3Service.configPower(machineId, commandValue);
                     break;
+                case 4:
+                    response = fanCoreService.config(vo.getModelName(), machineId, commandValue, null, null, null, null, null, null);
+                    break;
                 default:
                     logger.error("Unrecognized board version in power");
 
@@ -250,6 +261,9 @@ public class ControlOptionController {
                 case 3:
                     response = coreV3Service.configHeat(machineId, commandValue);
                     break;
+                case 4:
+                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, commandValue, null, null);
+                    break;
                 default:
                     logger.error("Unrecognized board version in heat");
 
@@ -265,9 +279,20 @@ public class ControlOptionController {
                 case 3:
                     response = coreV3Service.configMode(machineId, commandValue);
                     break;
+                case 4:
+                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, commandValue, null, null, null, null);
+                    break;
                 default:
                     logger.error("Unrecognized board version in heat");
 
+            }
+        } else if (component.equals("sweep")) {
+            switch (version) {
+                case 4:
+                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, commandValue, null, null, null);
+                    break;
+                default:
+                    logger.error("当前设备".concat(qrcode).concat("不支持扫风调节"));
             }
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -287,7 +312,13 @@ public class ControlOptionController {
     }
 
 
-    //用户操作风量
+    /**
+     * 调节设备风量
+     *
+     * @param qrcode
+     * @param speed
+     * @return
+     */
     @RequestMapping(value = "/config/speed", method = RequestMethod.POST)
     public ResultData configSpeed(String qrcode, int speed) {
         ResultData result = new ResultData();
@@ -301,17 +332,14 @@ public class ControlOptionController {
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
-        ResultData response = qrCodeService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the qrcode");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find the model_id by qrcode");
+        ResultData response = qrCodeService.profile(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能找到二维码对应的商品及型号信息");
             return result;
         }
-        String modelId = ((List<QRCode>) response.getData()).get(0).getModelId();
+        GoodsModelDetailVo vo = (GoodsModelDetailVo) response.getData();
+        String modelId = vo.getModelId();
         //根据modelId查 model_volume_config表，取风量范围
         condition.clear();
         condition.put("modelId", modelId);
@@ -326,8 +354,14 @@ public class ControlOptionController {
             result.setDescription("fail to find the volume config");
             return result;
         }
-        int minVolume = ((List<ModelVolume>) response.getData()).get(0).getMinVolume();
-        int maxVolume = ((List<ModelVolume>) response.getData()).get(0).getMaxVolume();
+        List<ModelVolume> list = (List<ModelVolume>) response.getData();
+        int minVolume = list.get(0).getMinVolume(), maxVolume = list.get(0).getMaxVolume();
+        if (list.size() > 1) {
+            for (ModelVolume config : list) {
+                minVolume = minVolume < config.getMinVolume() ? minVolume : config.getMinVolume();
+                maxVolume = maxVolume > config.getMaxVolume() ? maxVolume : config.getMaxVolume();
+            }
+        }
         //根据风量范围判断是否可运行
         if (speed < minVolume) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -385,6 +419,9 @@ public class ControlOptionController {
             case 3:
                 coreV3Service.configMode(machineId, MachineConstant.MACHINE_V3_MANUAL);
                 response = coreV3Service.configSpeed(machineId, speed);
+                break;
+            case 4:
+                response = fanCoreService.config(vo.getModelName(), machineId, null, speed, null, null, null, null, null);
                 break;
             default:
                 logger.error("Unrecognized board version in heat");
@@ -494,6 +531,95 @@ public class ControlOptionController {
         return response;
     }
 
+    @PostMapping("/config/temp")
+    public ResultData configTemp(String qrcode, int temp) {
+        ResultData result = new ResultData();
+        //根据qrcode 查 code_machine_bind表,取出machineId
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到设备的绑定信息");
+            return result;
+        }
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+        //根据二维码查询设备的商品及型号信息
+        response = qrCodeService.profile(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能找到二维码对应的商品及型号信息");
+            return result;
+        }
+        GoodsModelDetailVo vo = (GoodsModelDetailVo) response.getData();
+        //根据machineId查board_version表,获取version
+        condition.clear();
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
+        response = boardVersionService.fetchBoardVersion(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能够查询到二维码" + qrcode + "对应的控制板版本信息");
+            return result;
+        }
+        int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+        switch (version) {
+            case 4:
+                result = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, null, temp);
+                break;
+            default:
+                response.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("当前控制板不支持设置目标温度");
+                logger.error("当前控制板不支持设置目标温度");
+        }
+        return result;
+    }
+
+    @PostMapping("/config/timing")
+    public ResultData configTiming(String qrcode, int countdown) {
+        ResultData result = new ResultData();
+        //根据qrcode 查 code_machine_bind表,取出machineId
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到设备的绑定信息");
+            return result;
+        }
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+        //根据二维码查询设备的商品及型号信息
+        response = qrCodeService.profile(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能找到二维码对应的商品及型号信息");
+            return result;
+        }
+        GoodsModelDetailVo vo = (GoodsModelDetailVo) response.getData();
+        //根据machineId查board_version表,获取version
+        condition.clear();
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
+        response = boardVersionService.fetchBoardVersion(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能够查询到二维码" + qrcode + "对应的控制板版本信息");
+            return result;
+        }
+        int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+        switch (version) {
+            case 4:
+                result = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, countdown, null);
+                break;
+            default:
+                response.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("当前控制板不支持定时");
+                logger.error("当前控制板不支持定时");
+        }
+        return result;
+    }
 
     /**
      * 根据设备二维码及设备组件查询

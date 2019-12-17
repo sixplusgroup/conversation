@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.LinkedHashMap;
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/reception/machine")
 @PropertySource(value = "classpath:/resource.properties")
@@ -58,19 +58,49 @@ public class MachineController {
     @Value("${image_save_path}")
     private String fileSavePath;
 
-    @GetMapping("/check/device/name/binded")
-    public ResultData checkDeviceNameExist(String deviceName) {
-        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return machineService.checkDeviceNameExist(consumerId, deviceName);
+    /**
+     * 用该接口校验二维码是否存在，该请求是用户在扫码绑定阶段第一个需要请求的接口
+     *
+     * @param qrcode
+     * @return
+     */
+    @PostMapping("/qrcode/status")
+    public ResultData findStatusByQRcode(String qrcode) {
+        return machineService.checkQRcodeExist(qrcode);
     }
 
+    /**
+     * 检查当前二维码是否已被绑定
+     *
+     * @param qrcode
+     * @return
+     */
     @GetMapping("/check/device/binded")
     public ResultData checkDeviceBinded(String qrcode) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return machineService.checkDeviceBinded(consumerId, qrcode);
     }
 
-    //设备初始化时 将qrcode和consumerId绑定
+    /**
+     * 检查待使用的设备别名是否已经存在，同一用户不能够有相同别名的多台设备
+     *
+     * @param deviceName
+     * @return
+     */
+    @GetMapping("/check/device/name/binded")
+    public ResultData checkDeviceNameExist(String deviceName) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return machineService.checkDeviceNameExist(consumerId, deviceName);
+    }
+
+    /**
+     * 设备初始化，将设备与主控用户进行绑定
+     *
+     * @param qrcode
+     * @param deviceName
+     * @param request
+     * @return
+     */
     @PostMapping("/deviceinit")
     public ResultData deviceInit(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -80,9 +110,93 @@ public class MachineController {
         return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
     }
 
+    /**
+     * 获取用户的设备绑定列表（旧）
+     * 后续将会逐步用下面的接口完全替换掉
+     *
+     * @return
+     */
+    @RequestMapping(value = "/devicelist", method = RequestMethod.GET)
+    public ResultData getUserDeviceList() {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(SecurityContextHolder.getContext().getAuthentication().getPrincipal())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("当前用户登录状态信息失效，请重新登录");
+            return result;
+        }
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return machineService.getMachineListByConsumerId(consumerId);
+    }
+
+    /**
+     * 获取用户的设备绑定列表(新)
+     *
+     * @return
+     */
+    @GetMapping("/list")
+    public ResultData machineList() {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(SecurityContextHolder.getContext().getAuthentication().getPrincipal())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("当前用户登录状态信息失效，请重新登录");
+            return result;
+        }
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        result = machineService.obtainMachineList(consumerId);
+        return result;
+    }
+
+    /**
+     * 根据qrcode查询当前设备的运行状态信息（旧）
+     *
+     * @param qrcode
+     * @return
+     */
+    @RequestMapping(value = "/info/probe", method = RequestMethod.GET)
+    public ResultData getMachineInfo(String qrcode) {
+        return machineService.getMachineStatusByQRcode(qrcode);
+    }
+
+
+    /**
+     * 根据qrcode获取设备的运行状态信息(新)
+     *
+     * @param qrcode
+     * @return
+     */
+    @GetMapping("/running/status")
+    public ResultData status(String qrcode) {
+        ResultData result = machineService.runningStatus(qrcode);
+        return result;
+    }
+
+    /**
+     * 用户控制设备
+     *
+     * @param component
+     * @param operation
+     * @param qrcode
+     * @param request
+     * @return
+     */
+    @PostMapping("/operate/{component}/{operation}")
+    public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, component, new StringBuffer("User ").append(consumerId).append(" operate ").append(component).append(" set to ").append(operation).toString(), IPUtil.getIP(request), operation)));
+        return machineService.chooseComponent(qrcode, component, operation);
+    }
+
+    /**
+     * 设备解绑
+     *
+     * @param qrcode
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
     public ResultData unbindConsumerWithQRcode(String qrcode, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        logger.info("Consumer ID: " + consumerId);
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
             logService.createUserMachineOperationLog(consumerId, qrcode, "unbind",
                     new StringBuffer("User:").append(consumerId).append(" unbind device with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "unbind");
@@ -90,6 +204,14 @@ public class MachineController {
         return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
     }
 
+    /**
+     * 设备分享
+     *
+     * @param qrcode
+     * @param deviceName
+     * @param request
+     * @return
+     */
     @PostMapping("/device/bind/share")
     public ResultData acquireControlOn(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -110,19 +232,6 @@ public class MachineController {
         return machineService.checkOnline(qrcode);
     }
 
-    @PostMapping("/qrcode/status")
-    public ResultData findStatusByQRcode(String qrcode) {
-        return machineService.checkQRcodeExist(qrcode);
-    }
-
-    //发送遥控信息
-    @PostMapping("/operate/{component}/{operation}")
-    public ResultData configComponentStatus(@PathVariable("component") String component, @PathVariable("operation") String operation, String qrcode, HttpServletRequest request) {
-        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, component, new StringBuffer("User ").append(consumerId).append(" operate ").append(component).append(" set to ").append(operation).toString(), IPUtil.getIP(request), operation)));
-        return machineService.chooseComponent(qrcode, component, operation);
-    }
-
     //配置风量
     @PostMapping("/config/speed")
     public ResultData configSpeed(String qrcode, int speed, HttpServletRequest request) {
@@ -138,6 +247,29 @@ public class MachineController {
         return machineService.configLight(qrcode, light);
     }
 
+    /**
+     * 用户控制设备的目标运行温度
+     *
+     * @param qrcode
+     * @param temp
+     * @param request
+     * @return
+     */
+    @PostMapping("/config/temp")
+    public ResultData configTemp(String qrcode, int temp, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "temp", new StringBuffer("User ").append(consumerId).append(" operate ").append("temp").append(" set to ").append(temp).toString(), IPUtil.getIP(request), String.valueOf(temp))));
+        return machineService.configTemp(qrcode, temp);
+    }
+
+
+    @PostMapping("/config/timing")
+    public ResultData configTiming(String qrcode, int timing, HttpServletRequest request) {
+        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "timing", new StringBuffer("User ").append(consumerId).append(" operate ").append("timing").append(" set to ").append(timing).toString(), IPUtil.getIP(request), String.valueOf(timing))));
+        return machineService.configTiming(qrcode, timing);
+    }
+
     //设置配置项
     @PostMapping("/control/option/create")
     public ResultData setControlOption(String optionName, String optionComponent, String modelId, String actionName, String actionOperator) {
@@ -149,20 +281,6 @@ public class MachineController {
     public ResultData probeControlOption(String modelId) {
         return machineService.probeControlOptionByModelId(modelId);
     }
-
-    //根据当前的qrcode查询这台机器的各种值(co2,pm2.5等)
-    @RequestMapping(value = "/info/probe", method = RequestMethod.GET)
-    public ResultData getMachineInfo(String qrcode) {
-        return machineService.getMachineStatusByQRcode(qrcode);
-    }
-
-    //根据consumerId获取用户的machine list
-    @RequestMapping(value = "/devicelist", method = RequestMethod.GET)
-    public ResultData getUserDeviceList() {
-        String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return machineService.getMachineListByConsumerId(consumerId);
-    }
-
 
     @RequestMapping(value = "/probe/qrcode/byurl", method = RequestMethod.POST)
     public ResultData probeQRcodeByUrl(String codeUrl) {

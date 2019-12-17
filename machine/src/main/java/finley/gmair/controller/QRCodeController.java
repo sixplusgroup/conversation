@@ -587,6 +587,12 @@ public class QRCodeController {
 
     }
 
+    /**
+     * 获取设备的在线状态(旧)
+     *
+     * @param qrcode
+     * @return
+     */
     //check online
     @GetMapping("/checkonline")
     public ResultData checkOnline(String qrcode) {
