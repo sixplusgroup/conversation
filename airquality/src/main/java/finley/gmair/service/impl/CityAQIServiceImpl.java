@@ -282,9 +282,12 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -309,14 +312,14 @@ public class CityAQIServiceImpl implements CityAQIService {
     @Autowired
     private AirQualityCacheService airQualityCacheService;
 
-    @Value("$ab4705b2493aabfe4929ff43d608f7af")
-    private String token;
-
-    @Value("$8a138deecd05d7c3e849a5b7b5a74f3b")
-    private String password;
-
-    @Value("$https://api.mojicb.com/webapi/json/weather/aqi?")
-    private String url;
+//    @Value("${token}")
+//    private String token;
+//
+//    @Value("${password}")
+//    private String password;
+//
+//    @Value("${url}")
+//    private String url;
 
     @Value("classpath:cities.xml")
     private Resource records;
@@ -452,23 +455,63 @@ public class CityAQIServiceImpl implements CityAQIService {
     }
 
     //区使用该API进行获取
-    private CityAirQuality fetch(String lid, int cityId) {
-        MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
-        String timestamp = "0";
-        StringBuffer sb = new StringBuffer(mojiToken.getUrl()).append("?timestamp=").append(timestamp).append("&cityId=").append(cityId).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
-        logger.info(sb.toString());
-        String result = HttpDeal.getResponse(sb.toString());
+//    private CityAirQuality fetch(String lid, int cityId) {
+//        MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
+//        String timestamp = "0";
+//        StringBuffer sb = new StringBuffer(mojiToken.getUrl()).append("?timestamp=").append(timestamp).append("&cityId=").append(cityId).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
+//        logger.info(sb.toString());
+//        String result = HttpDeal.getResponse(sb.toString());
+//        CityAirQuality quality = interpret(lid, result);
+//        return quality;
+//    }
+
+    private CityAirQuality fetch(String lid, int cityId){
+        MojiToken mojiToken = (((List<MojiToken>) selectToken().getData()).get(0));
+        StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?cityId=").append(cityId);
+        String url = stringBuffer.toString();
+        String subUrl = url.substring("https://api.mojicb.com".length(),url.indexOf("?"));
+        logger.info(url);
+        Long timeValue = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        String timeStamp = timeValue.toString();
+        String nonce = UUID.randomUUID().toString();
+        String signature = Encryption.md5(mojiToken.getPassword() + "\n" + timeStamp + "\n" +  nonce+ "\n" + subUrl);
+        Map<String, String> map = new HashMap<>();
+        map.put("X-AC-Token",mojiToken.getToken());
+        map.put("X-Date", timeStamp);
+        map.put("X-AC-Nonce", nonce);
+        map.put("X-AC-Signature", signature);
+        String result = HttpDeal.getResponse(url, map);
         CityAirQuality quality = interpret(lid, result);
         return quality;
     }
 
     //省份和城市使用该API进行获取
-    private CityAirQuality fetch(String lid, double longitude, double latitude) {
+//    private CityAirQuality fetch(String lid, double longitude, double latitude) {
+//        MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
+//        String timestamp = "0";
+//        StringBuffer sb = new StringBuffer(mojiToken.getUrl()).append("?timestamp=").append(timestamp).append("&lat=").append(latitude).append("&lon=").append(longitude).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
+//        logger.info(sb.toString());
+//        String result = HttpDeal.getResponse(sb.toString());
+//        CityAirQuality quality = interpret(lid, result);
+//        return quality;
+//    }
+
+    private CityAirQuality fetch(String lid, double longitude, double latitude){
         MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
-        String timestamp = "0";
-        StringBuffer sb = new StringBuffer(mojiToken.getUrl()).append("?timestamp=").append(timestamp).append("&lat=").append(latitude).append("&lon=").append(longitude).append("&token=").append(mojiToken.getToken()).append("&key=").append(Encryption.md5(mojiToken.getPassword() + timestamp));
-        logger.info(sb.toString());
-        String result = HttpDeal.getResponse(sb.toString());
+        StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?lat=").append(latitude).append("&lon=").append(longitude);
+        String url = stringBuffer.toString();
+        String subUrl = url.substring("https://api.mojicb.com".length(),url.indexOf("?"));
+        logger.info(url);
+        Long timeValue = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        String timeStamp = timeValue.toString();
+        String nonce = UUID.randomUUID().toString();
+        String signature = Encryption.md5(mojiToken.getPassword() + "\n" + timeStamp + "\n" +  nonce+ "\n" + subUrl);
+        Map<String, String> map = new HashMap<>();
+        map.put("X-AC-Token",mojiToken.getToken());
+        map.put("X-Date", timeStamp);
+        map.put("X-AC-Nonce", nonce);
+        map.put("X-AC-Signature", signature);
+        String result = HttpDeal.getResponse(url, map);
         CityAirQuality quality = interpret(lid, result);
         return quality;
     }
