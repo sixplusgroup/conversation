@@ -27,6 +27,7 @@ public class MachineStatusRedisDaoImpl implements MachineStatusRedisDao {
         List<MachinePm2_5> resultList = new ArrayList<>();
         for (String key : keys) {
             Object queue = redisTemplate.opsForValue().get(key);
+            if (queue == null) continue;
             //若这个queue存了v1的status
             if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatus) {
 

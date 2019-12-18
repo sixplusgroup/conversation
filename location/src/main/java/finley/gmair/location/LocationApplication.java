@@ -264,6 +264,7 @@ public class LocationApplication {
         return result;
     }
 
+    @CrossOrigin
     @GetMapping("/overview")
     public ResultData overview() {
         ResultData result = new ResultData();
@@ -277,24 +278,24 @@ public class LocationApplication {
         List<Province> provinces = (List<Province>) response.getData();
         for (Province pvo : provinces) {
             JSONObject pitem = new JSONObject();
-            pitem.put("label", pvo.getProvinceId());
-            pitem.put("value", pvo.getProvinceName());
+            pitem.put("value", pvo.getProvinceId());
+            pitem.put("label", pvo.getProvinceName());
             response = city(pvo.getProvinceId());
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 JSONArray cdata = new JSONArray();
                 List<City> cities = (List<City>) response.getData();
                 for (City cvo : cities) {
                     JSONObject citem = new JSONObject();
-                    citem.put("label", cvo.getCityId());
-                    citem.put("value", cvo.getCityName());
+                    citem.put("value", cvo.getCityId());
+                    citem.put("label", cvo.getCityName());
                     response = district(cvo.getCityId());
                     if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                         JSONArray ddata = new JSONArray();
                         List<District> districts = (List<District>) response.getData();
                         for (District dvo : districts) {
                             JSONObject ditem = new JSONObject();
-                            ditem.put("label", dvo.getDistrictId());
-                            ditem.put("value", dvo.getDistrictName());
+                            ditem.put("value", dvo.getDistrictId());
+                            ditem.put("label", dvo.getDistrictName());
                             ddata.add(ditem);
                         }
                         citem.put("children", ddata);
