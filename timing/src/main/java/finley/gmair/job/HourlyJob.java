@@ -55,22 +55,22 @@ public class HourlyJob implements Job {
             airQualityFeignService.scheduleHourly();
 //            }
         }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20181130ezixio31");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-            expressFeignService.updateOrderStatus();
+//            expressFeignService.updateOrderStatus();
 //            }
-        }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//        }));
+//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI2018113099ioov80");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-            expressFeignService.updateParcelStatus();
+//            expressFeignService.updateParcelStatus();
 //            }
-        }));
+//        }));
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20181130222xa623");
@@ -79,22 +79,22 @@ public class HourlyJob implements Job {
             machineFeignService.handleMachineStatusHourly();
 //            }
         }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI201811309xagf377");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-            machineFeignService.probePartialPM2_5Hourly();
+//            machineFeignService.probePartialPM2_5Hourly();
 //            }
-        }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//        }));
+//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20181130yo7yi341");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-            machineModeFeignService.handleHourlyPowerSaving();
+//            machineModeFeignService.handleHourlyPowerSaving();
 //            }
-        }));
+//        }));
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20181130oeo6l479");
@@ -103,13 +103,13 @@ public class HourlyJob implements Job {
             machineFeignService.turnOffScreenHourly();
 //            }
         }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20190109522w8i1");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-            dataAnalysisService.statisticalDataHourly();
+//            dataAnalysisService.statisticalDataHourly();
 //            }
-        }));
+//        }));
     }
 }

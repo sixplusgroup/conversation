@@ -15,6 +15,7 @@ import finley.gmair.vo.air.CityAirQualityStatisticVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -24,6 +25,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(value = "/airquality")
+@PropertySource("classpath:moji.properties")
 public class CityAirQualityController {
 
     @Autowired
@@ -32,13 +34,11 @@ public class CityAirQualityController {
     @Autowired
     private MojiTokenService mojiTokenService;
 
-    @CrossOrigin
     @GetMapping(value = "/latest")
     public ResultData getLatestCityAirQuality() {
         return airQualityStatisticService.fetchLatestAirQuality(new HashMap<>());
     }
 
-    @CrossOrigin
     @GetMapping(value = "/latest/{cityId}")
     public ResultData getLatestCityAirQuality(@PathVariable String cityId) {
         Map<String, Object> condition = new HashMap<>();
@@ -51,7 +51,6 @@ public class CityAirQualityController {
         return airQualityStatisticService.handleAirQualityHourlyStatistic();
     }
 
-    @CrossOrigin
     @GetMapping(value = "/hourly/cityAqi")
     public ResultData getHourlyCityAqi() {
 
@@ -311,15 +310,15 @@ public class CityAirQualityController {
     }
 
     @GetMapping("/token/select")
-    ResultData selectToken(){
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("blockFlag",0);
+    ResultData selectToken() {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", 0);
         return mojiTokenService.fetch(condition);
     }
 
     @PostMapping("/token/create")
-    ResultData createToken(String token,String url,String password,String base){
-        MojiToken mojiToken = new MojiToken(token,password,url,base);
+    ResultData createToken(String token, String url, String password, String base) {
+        MojiToken mojiToken = new MojiToken(token, password, url, base);
         return mojiTokenService.create(mojiToken);
     }
 }

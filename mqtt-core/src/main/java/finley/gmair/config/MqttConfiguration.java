@@ -202,6 +202,16 @@ public class MqttConfiguration {
             //根据定义的topic格式，获取message对应的machineId
             String machineId = array[2];
 //            logger.info("machineId: " + machineId);
+            //判断是否要丢弃报文
+            if (json.containsKey("time")) {
+                if (TimeUtil.exceed(json.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
+                    //同步时间
+                    MQTTUtil.publishTimeSyncTopic(mqttService, machineId);
+                    logger.info("send message to sync time for client: " + machineId);
+                    logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
+                    return;
+                }
+            }
             String baseAction = array[5];
 //            logger.info("base action: " + baseAction);
             String furtherAction;

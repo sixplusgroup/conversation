@@ -14,6 +14,8 @@ import java.sql.Timestamp;
  * @Date 2019/5/11 7:53 PM
  */
 public class MachineStatusV3 extends Entity implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String uid;
 
     private int pm2_5a;

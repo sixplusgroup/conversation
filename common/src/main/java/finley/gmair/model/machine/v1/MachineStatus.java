@@ -5,28 +5,42 @@ import finley.gmair.model.Entity;
 import java.io.Serializable;
 
 public class MachineStatus extends Entity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private String uid;
+
     /*length = 2*/
     private int pm2_5;
+
     /*length = 1*/
     private int temp;
+
     /*length = 1*/
     private int humid;
+
     /*length = 2*/
     private int co2;
+
     /*length = 2*/
     private int volume;
+
     /*length = 1*/
     private int power;
+
     /*length = 1*/
     private int mode;
+
     /*length = 1*/
     private int heat;
+
     /*light = 1*/
     private int light;
-    public MachineStatus(){
+
+    public MachineStatus() {
         super();
     }
+
     public MachineStatus(String uid, int pm2_5, int temp, int humid, int co2, int volume, int power, int mode, int heat, int light) {
         super();
         this.uid = uid;
