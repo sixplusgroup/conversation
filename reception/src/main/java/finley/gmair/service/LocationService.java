@@ -26,4 +26,7 @@ public interface LocationService {
 
     @GetMapping("/location/city/profile")
     ResultData profile(@RequestParam("cityId") String cityId);
+
+    @GetMapping("/location/district/profile")
+    ResultData getDistrict(@RequestParam("districtId") String districtId);
 }

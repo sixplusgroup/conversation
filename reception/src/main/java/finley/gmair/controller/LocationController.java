@@ -65,4 +65,9 @@ public class LocationController {
     public ResultData probeCityId(String code) {
         return locationService.probeCityId(code);
     }
+
+    @GetMapping("/probe/district")
+    public ResultData getDistrict(String districtId){
+        return locationService.getDistrict(districtId);
+    }
 }

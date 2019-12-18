@@ -309,4 +309,25 @@ public class LocationApplication {
         result.setData(pdata);
         return result;
     }
+
+    //根据districtId获取区详情
+    @GetMapping("/district/profile")
+    public ResultData districtProfile(String districtId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("districtId", districtId);
+        ResultData response = locationService.fetchDistrictWithCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No city information found for district id: ").append(districtId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
 }
