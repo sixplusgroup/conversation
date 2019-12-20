@@ -13,9 +13,6 @@ import java.net.URL;
 
 public class MenuConfig {
 
-    //private final static String wechat_appid = "wxc23d6a94677bb85f";
-
-    //private final static String wechat_secret = "991f23ba9d364748fe35acbb52d1f68a";
     public static String createMenu(String token) {
 
         //关于果麦
