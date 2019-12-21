@@ -407,7 +407,7 @@ public class MachineController {
             //如果能够获取到室外配置，则显示室外城市信息
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
-                savaAndUpload(bufferedImage);
+                savaAndUpload(consumerId, bufferedImage);
                 result.setDescription("当前无法获取室外的城市信息");
                 return result;
             }
@@ -417,7 +417,7 @@ public class MachineController {
             response = locationService.profile(cityId);
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
-                savaAndUpload(bufferedImage);
+                savaAndUpload(consumerId, bufferedImage);
                 result.setDescription("未找到行政区域编号为: " + cityId + "的城市");
                 return result;
             }
@@ -431,7 +431,8 @@ public class MachineController {
                 if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
-                    savaAndUpload(bufferedImage);
+                    logger.info("[Info: ] consumerId: " + consumerId);
+                    savaAndUpload(consumerId, bufferedImage);
                     result.setDescription("当前无法获取最新的城市空气数据");
                     return result;
                 }
@@ -439,8 +440,10 @@ public class MachineController {
                 String provinceId = location.getString("provinceId");
                 response = airqualityService.getLatestCityAirQuality(provinceId);
                 if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("[Error: ] cannot get latest city airquality, " + JSON.toJSONString(response));
                     BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
-                    savaAndUpload(bufferedImage);
+                    logger.info("[Info: ] consumerId: " + consumerId);
+                    savaAndUpload(consumerId, bufferedImage);
                     result.setResponseCode(ResponseCode.RESPONSE_OK);
                     result.setDescription("当前无法获取最新的城市PM2.5信息");
                     return result;
@@ -455,9 +458,11 @@ public class MachineController {
             double no2 = outdoor.containsKey("no2") ? outdoor.getDouble("no2") : 0;
             double o3 = outdoor.containsKey("o3") ? outdoor.getDouble("o3") : 0;
             double so2 = outdoor.containsKey("so2") ? outdoor.getDouble("so2") : 0;
+            logger.info("outdoor: " + JSON.toJSONString(outdoor));
             BufferedImage bufferedImage = share(path, "果麦新风", city, pm2_5, temperature, humidity, co2, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
             ReceptionPool.getLogExecutor().execute(new Thread(() -> logService.createUserMachineOperationLog(consumerId, qrcode, "share", new StringBuffer("User:").append(consumerId).append(" share machine image with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "image")));
-            savaAndUpload(bufferedImage);
+            logger.info("[Info: ] consumerId: " + consumerId);
+            savaAndUpload(consumerId, bufferedImage);
             //获取设备的连续7天的空气数据
             //response = machineService.fetchMachineDailyPm2_5(qrcode);
         } catch (Exception e) {
@@ -482,7 +487,7 @@ public class MachineController {
         return ImageShareUtil.share(path, name, city, pm2_5, temperature, humidity, co2, outPM2_5, aqi, primary, pm10, co, no2, o3, so2, pastlist);
     }
 
-    private void savaAndUpload(BufferedImage bufferedImage) {
+    private void savaAndUpload(String consumerId, BufferedImage bufferedImage) {
         //把处理完的图片上传到服务器
         String fileName = String.format("%s/%s.jpg", fileSavePath, IDGenerator.generate("pic"));
         ReceptionPool.getPicExecutor().execute(() -> {
@@ -491,17 +496,18 @@ public class MachineController {
                 ImageIO.write(bufferedImage, "jpg", file);
                 FileInputStream fileInputStream = new FileInputStream(file);
                 MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
-                String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 ResultData result = authConsumerService.profile(consumerId);
                 if (result.getResponseCode() != ResponseCode.RESPONSE_OK)
                     return;
                 String openId = (String) ((LinkedHashMap) result.getData()).get("wechat");
                 if (StringUtils.isEmpty(openId))
                     return;
-                wechatFormService.uploadAndReply(openId, multipartFile);
+                String response = wechatFormService.uploadAndReply(openId, multipartFile);
+                logger.info("upload response: " + response);
                 file.delete();
             } catch (Exception e) {
-                e.getMessage();
+                e.printStackTrace();
+                logger.error("[Error: ] upload image error, " + e.getMessage());
             }
         });
     }

@@ -75,7 +75,7 @@ public class FanController {
     }
 
     @PostMapping("/status/config")
-    public ResultData infoconfig(String model, String mac, Integer power, Integer speed, Integer mode, Integer sweep, Integer heat, Integer countdown, Integer targettemp) {
+    public ResultData infoconfig(String model, String mac, Integer power, Integer speed, Integer mode, Integer sweep, Integer heat, Integer countdown, Integer targettemp, Integer mutemode) {
         ResultData result = new ResultData();
         String topic = "/GM/FAN/".concat(model).concat("/").concat(mac).concat("/STATUS/CONFIG");
         JSONObject json = init(mac, true);
@@ -99,6 +99,9 @@ public class FanController {
         }
         if (!StringUtils.isEmpty(targettemp)) {
             json.put("targettemp", targettemp);
+        }
+        if (!StringUtils.isEmpty(mutemode)) {
+            json.put("mutemode", mutemode);
         }
         mqttService.publish(topic, json);
         logger.info("[action] topic: " + topic + ", payload: " + json);
