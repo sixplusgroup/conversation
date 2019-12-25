@@ -38,6 +38,7 @@ public class MachineUtil {
         json.put("countdown", status.getCountdown());
         json.put("target_temperature", status.getTargettemp());
         json.put("temperature", status.getTemp());
+        json.put("buzz", status.getMutemode());
         return json;
     }
 
