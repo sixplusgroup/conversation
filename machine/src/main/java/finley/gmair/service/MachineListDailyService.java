@@ -11,5 +11,7 @@ public interface MachineListDailyService {
 
     ResultData queryMachineListDaily(Map<String, Object> condition);
 
+    ResultData queryMachineListDaily(Map<String, Object> condition,int curPage,int pageSize);
+
     ResultData deleteMachineListDaily(String codeValue);
 }

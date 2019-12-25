@@ -874,7 +874,7 @@ public class OrderController {
         }else {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("orderList", response.getData());
-            int totalPage = size / pageSize + 1;
+            int totalPage = (size-1) / pageSize + 1;
             jsonObject.put("totalPage", totalPage);
             result.setData(jsonObject);
             return result;

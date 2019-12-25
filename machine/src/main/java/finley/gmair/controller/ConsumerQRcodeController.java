@@ -451,7 +451,7 @@ public class ConsumerQRcodeController {
     }
 
     @GetMapping("/owner/machine/list")
-    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount, String overCountGTE, String overCountLTE) {
+    public ResultData getOwnerMachineList(Integer curPage, Integer pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount, String overCountGTE, String overCountLTE) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(phone)) {
@@ -478,9 +478,12 @@ public class ConsumerQRcodeController {
             int ovcLTE = Integer.parseInt(overCountLTE);
             condition.put("overCountLTE", ovcLTE);
         }
-        condition.put("start", (curPage - 1) * pageSize);
-        condition.put("pageSize", pageSize);
-        ResultData response = machineListDailyService.queryMachineListDaily(condition);
+        ResultData response;
+        if(curPage==null||pageSize==null){
+            response = machineListDailyService.queryMachineListDaily(condition);
+        }else {
+            response = machineListDailyService.queryMachineListDaily(condition,curPage,pageSize);
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch");
@@ -491,18 +494,18 @@ public class ConsumerQRcodeController {
             return result;
         }
 
-        List<MachineListDaily> resultList = (List<MachineListDaily>) response.getData();
-        int totalPage = resultList.size() / pageSize + 1;
-        if (curPage < 1 || curPage > totalPage) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to got that page because that page not exist");
-            return result;
-        }
-        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("totalPage", totalPage);
-        jsonObject.put("machineList", resultList);
-        result.setData(jsonObject);
+//        List<MachineListDaily> resultList = (List<MachineListDaily>) response.getData();
+//        int totalPage = resultList.size() / pageSize + 1;
+//        if (curPage < 1 || curPage > totalPage) {
+//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//            result.setDescription("fail to got that page because that page not exist");
+//            return result;
+//        }
+//        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("totalPage", totalPage);
+//        jsonObject.put("machineList", resultList);
+        result.setData(response.getData());
         result.setDescription("success to fetch data");
         return result;
     }

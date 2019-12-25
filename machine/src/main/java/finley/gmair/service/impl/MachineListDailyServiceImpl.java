@@ -28,6 +28,11 @@ public class MachineListDailyServiceImpl implements MachineListDailyService {
     }
 
     @Override
+    public ResultData queryMachineListDaily(Map<String, Object> condition, int curPage, int pageSize) {
+        return machineListDailyDao.queryMachineListView(condition,curPage,pageSize);
+    }
+
+    @Override
     public ResultData deleteMachineListDaily(String codeValue) {
         return machineListDailyDao.deleteMachineListDailyByCodeValue(codeValue);
     }
