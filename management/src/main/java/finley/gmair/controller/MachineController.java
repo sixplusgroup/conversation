@@ -7,7 +7,10 @@ import finley.gmair.service.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * This method is responsible to fetch response from machine-agent
@@ -93,5 +96,26 @@ public class MachineController {
     @PostMapping("/config/screen")
     public ResultData configScreen(String qrcode,int screen) {
         return machineService.configScreen(qrcode,screen);
+    }
+
+    /**
+     * 根据qrcode查绑定列表
+     * @param qrcode
+     * @return
+     */
+    @GetMapping("/qrcode/bind/list")
+    public ResultData bindList(String qrcode){
+        return machineService.qrcodeBindList(qrcode);
+    }
+
+    /**
+     * 设备解绑
+     * @param qrcode
+     * @param consumerId
+     * @return
+     */
+    @RequestMapping(value = "/qrcode/unbind", method = RequestMethod.POST)
+    public ResultData unbindConsumerWithQRcode(String qrcode,String consumerId) {
+        return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
     }
 }
