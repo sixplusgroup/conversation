@@ -82,4 +82,11 @@
         </set>
         WHERE bind_id = #{bindId}
     </update>
+
+    <!-- 该方法用于从应用中删除用户、设备绑定表的数据 -->
+    <update id="remove">
+        UPDATE gmair_machine.consumer_code_bind
+        SET block_flag = 1
+        WHERE bind_id = #{bindId}
+    </update>
 </mapper>

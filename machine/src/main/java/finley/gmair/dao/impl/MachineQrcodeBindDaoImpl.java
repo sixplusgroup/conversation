@@ -37,7 +37,7 @@ public class MachineQrcodeBindDaoImpl extends BaseDao implements MachineQrcodeBi
     public ResultData select(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<MachineQrcodeBindVo> list = sqlSession.selectList("gmair.machineqrcodebind.select", condition);
+            List list = sqlSession.selectList("gmair.machineqrcodebind.select", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             } else {
@@ -55,9 +55,8 @@ public class MachineQrcodeBindDaoImpl extends BaseDao implements MachineQrcodeBi
     public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.machineqrcodebind.update",condition);
-
-        }catch (Exception e){
+            sqlSession.update("gmair.machineqrcodebind.update", condition);
+        } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
@@ -66,11 +65,11 @@ public class MachineQrcodeBindDaoImpl extends BaseDao implements MachineQrcodeBi
     }
 
     @Override
-    public ResultData delete(String bindId){
+    public ResultData delete(String bindId) {
         ResultData result = new ResultData();
-        try{
-            sqlSession.delete("gmair.machineqrcodebind.delete",bindId);
-        }catch (Exception e){
+        try {
+            sqlSession.delete("gmair.machineqrcodebind.delete", bindId);
+        } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());

@@ -1,19 +1,24 @@
 package finley.gmair.location;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.district.City;
+import finley.gmair.model.district.District;
+import finley.gmair.model.district.Province;
 import finley.gmair.service.LocationService;
 import finley.gmair.util.HttpDeal;
 import finley.gmair.util.LocationProperties;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.districtdivision.CityVo;
+import finley.gmair.vo.districtdivision.DistrictVo;
+import finley.gmair.vo.districtdivision.ProvinceVo;
 import finley.gmair.vo.location.DistrictCityVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.jca.cci.CciOperationNotSupportedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -256,6 +261,73 @@ public class LocationApplication {
             City city = ((List<City>) response.getData()).get(0);
             result.setData(city.getCityId());
         }
+        return result;
+    }
+
+    @CrossOrigin
+    @GetMapping("/overview")
+    public ResultData overview() {
+        ResultData result = new ResultData();
+        JSONArray pdata = new JSONArray();
+        ResultData response = province();
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能够获取到省份的信息");
+            return result;
+        }
+        List<Province> provinces = (List<Province>) response.getData();
+        for (Province pvo : provinces) {
+            JSONObject pitem = new JSONObject();
+            pitem.put("value", pvo.getProvinceId());
+            pitem.put("label", pvo.getProvinceName());
+            response = city(pvo.getProvinceId());
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                JSONArray cdata = new JSONArray();
+                List<City> cities = (List<City>) response.getData();
+                for (City cvo : cities) {
+                    JSONObject citem = new JSONObject();
+                    citem.put("value", cvo.getCityId());
+                    citem.put("label", cvo.getCityName());
+                    response = district(cvo.getCityId());
+                    if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        JSONArray ddata = new JSONArray();
+                        List<District> districts = (List<District>) response.getData();
+                        for (District dvo : districts) {
+                            JSONObject ditem = new JSONObject();
+                            ditem.put("value", dvo.getDistrictId());
+                            ditem.put("label", dvo.getDistrictName());
+                            ddata.add(ditem);
+                        }
+                        citem.put("children", ddata);
+                    }
+                    cdata.add(citem);
+                }
+                pitem.put("children", cdata);
+            }
+            pdata.add(pitem);
+        }
+        result.setData(pdata);
+        return result;
+    }
+
+    //根据districtId获取区详情
+    @GetMapping("/district/profile")
+    public ResultData districtProfile(String districtId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("districtId", districtId);
+        ResultData response = locationService.fetchDistrictWithCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No city information found for district id: ").append(districtId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
         return result;
     }
 }

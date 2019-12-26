@@ -3,11 +3,20 @@ package finley.gmair.model.machine;
 import finley.gmair.model.Entity;
 
 public class ModelVolume extends Entity {
+
     private String configId;
+
     private String modelId;
+
     private int minVolume;
+
     private int maxVolume;
-    public ModelVolume(){
+
+    private String configMode;
+
+    private String configUnit;
+
+    public ModelVolume() {
         super();
     }
 
@@ -53,5 +62,21 @@ public class ModelVolume extends Entity {
 
     public void setMaxVolume(int maxVolume) {
         this.maxVolume = maxVolume;
+    }
+
+    public String getConfigMode() {
+        return configMode;
+    }
+
+    public void setConfigMode(String configMode) {
+        this.configMode = configMode;
+    }
+
+    public String getConfigUnit() {
+        return configUnit;
+    }
+
+    public void setConfigUnit(String configUnit) {
+        this.configUnit = configUnit;
     }
 }

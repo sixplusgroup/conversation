@@ -24,11 +24,11 @@ public class ImageShareUtil {
 
     private static BufferedImage brand = null;
 
-    {
+    static {
         try {
             brand = ImageIO.read(new File(base + "/brand_04.jpg"));
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("[Error: ] + brand image load error, " + e.getMessage());
         }
     }
 
@@ -94,15 +94,18 @@ public class ImageShareUtil {
 
     public static BufferedImage share(String base, String name, String city, int indoorPM2_5, int temperature, int humidity, int carbon, int outdoorPM2_5, int aqi, String primary, int pm10, double co, double no2, double o3, double so2) {
         BufferedImage indoor, outdoor, result = null;
+        logger.info("[Info: ] value - base");
         int width = 0, height = 0;
         Graphics2D g = null;
         try {
-            if (carbon <= 0) indoor = ImageShareUtil.indoor(base, name, city, indoorPM2_5, temperature, humidity);
+            if (carbon <= 0 || carbon == 2000)
+                indoor = ImageShareUtil.indoor(base, name, city, indoorPM2_5, temperature, humidity);
             else indoor = ImageShareUtil.indoor(base, name, city, indoorPM2_5, temperature, humidity, carbon);
             outdoor = ImageShareUtil.outdoor(base, outdoorPM2_5, aqi, primary, pm10, co, no2, o3, so2);
-
+            logger.info("indoor : " + indoor + ", outdoor: " + outdoor + ", brand: " + brand);
             BufferedImage[] image = new BufferedImage[]{indoor, outdoor, brand};
             for (BufferedImage item : image) {
+                if (item == null) continue;
                 width = Math.max(width, item.getWidth());
                 height += item.getHeight();
             }
@@ -115,7 +118,8 @@ public class ImageShareUtil {
             }
             g.dispose();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("[Error]: indoor & outdoor share image failure, " + e.getMessage());
+            e.printStackTrace();
             if (g != null) {
                 g.dispose();
             }
@@ -199,6 +203,7 @@ public class ImageShareUtil {
     }
 
     public static BufferedImage indoor(String base, String name, String city, int current, int temp, int humid) {
+        logger.info("proceed in indoor method");
         BufferedImage indoor, lump, result = null;
         Color color;
         Graphics2D g = null;
@@ -232,6 +237,7 @@ public class ImageShareUtil {
             g.dispose();
         } catch (Exception e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
             if (g != null) {
                 g.dispose();
             }
@@ -240,6 +246,7 @@ public class ImageShareUtil {
     }
 
     public static BufferedImage outdoor(String base, int current, int aqi, String primary, int pm10, double co, double no2, double o3, double so2) {
+        logger.info("proceed in outdoor method");
         BufferedImage outdoor, lump, result = null;
         Color color;
         Graphics2D g = null;
@@ -278,6 +285,7 @@ public class ImageShareUtil {
             g.dispose();
         } catch (Exception e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
             if (g != null) {
                 g.dispose();
             }

@@ -2,6 +2,7 @@ package finley.gmair.config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.fan.FanStatus;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.LogService;
@@ -195,7 +196,23 @@ public class MqttConfiguration {
                     FanStatus status = MQTTUtil.interpret(json);
                     //put the current status into redis
                     final String uid = mac;
-                    CorePool.getHandlePool().execute(() -> redisService.set(uid, status));
+                    CorePool.getHandlePool().execute(() -> {
+                                LimitQueue queue;
+                                if (redisService.exists(uid)) {
+                                    queue = (LimitQueue) redisService.get(uid);
+                                    FanStatus latest = (FanStatus) queue.getLast();
+                                    if (!TimeUtil.exceed(latest.getCreateAt().getTime(), System.currentTimeMillis(), 30)) {
+                                        queue.replaceLast(status);
+                                    } else {
+                                        queue.offer(status);
+                                    }
+                                } else {
+                                    queue = new LimitQueue(120);
+                                    queue.offer(status);
+                                }
+                                redisService.set(uid, queue, (long) 120);
+                            }
+                    );
                     break;
                 case "WARN":
                     logger.info("Warn info: " + JSON.toJSONString(json));

@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @Date 2019/11/13 7:42 PM
  */
 public class FanStatus extends Entity implements Serializable {
-    
+  
     private static final long serialVersionUID = 1L;
 
     private String mac;
@@ -34,11 +34,14 @@ public class FanStatus extends Entity implements Serializable {
 
     private int temp;
 
+    private int mutemode;
+
     public FanStatus() {
         super();
     }
 
-    public FanStatus(String mac, int power, int speed, int mode, int sweep, int heat, int runtime, int countdown, int targettemp, int temp) {
+    public FanStatus(String mac, int power, int speed, int mode, int sweep, int heat, int runtime, int countdown, int targettemp, int temp,int mutemode) {
+        this();
         this.mac = mac;
         this.power = power;
         this.speed = speed;
@@ -49,6 +52,7 @@ public class FanStatus extends Entity implements Serializable {
         this.countdown = countdown;
         this.targettemp = targettemp;
         this.temp = temp;
+        this.mutemode = mutemode;
     }
 
     public String getMac() {
@@ -129,5 +133,13 @@ public class FanStatus extends Entity implements Serializable {
 
     public void setTemp(int temp) {
         this.temp = temp;
+    }
+
+    public int getMutemode() {
+        return mutemode;
+    }
+
+    public void setMutemode(int mutemode) {
+        this.mutemode = mutemode;
     }
 }

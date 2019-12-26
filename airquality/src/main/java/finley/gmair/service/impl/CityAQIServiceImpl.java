@@ -297,6 +297,7 @@ import java.util.stream.Collectors;
  * @Date 2019/10/10 12:09 AM
  */
 @Service
+@PropertySource("classpath:moji.properties")
 public class CityAQIServiceImpl implements CityAQIService {
     private Logger logger = LoggerFactory.getLogger(CityAQIServiceImpl.class);
 
@@ -320,10 +321,7 @@ public class CityAQIServiceImpl implements CityAQIService {
 //
 //    @Value("${url}")
 //    private String url;
-
-    @Value("classpath:cities.xml")
-    private Resource records;
-
+    
     @Value("${base}")
     private String base;
 
@@ -465,18 +463,18 @@ public class CityAQIServiceImpl implements CityAQIService {
 //        return quality;
 //    }
 
-    private CityAirQuality fetch(String lid, int cityId){
+    private CityAirQuality fetch(String lid, int cityId) {
         MojiToken mojiToken = (((List<MojiToken>) selectToken().getData()).get(0));
         StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?cityId=").append(cityId);
         String url = stringBuffer.toString();
-        String subUrl = url.substring("https://api.mojicb.com".length(),url.indexOf("?"));
+        String subUrl = url.substring("https://api.mojicb.com".length(), url.indexOf("?"));
         logger.info(url);
         Long timeValue = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         String timeStamp = timeValue.toString();
         String nonce = UUID.randomUUID().toString();
-        String signature = Encryption.md5(mojiToken.getPassword() + "\n" + timeStamp + "\n" +  nonce+ "\n" + subUrl);
+        String signature = Encryption.md5(mojiToken.getPassword() + "\n" + timeStamp + "\n" + nonce + "\n" + subUrl);
         Map<String, String> map = new HashMap<>();
-        map.put("X-AC-Token",mojiToken.getToken());
+        map.put("X-AC-Token", mojiToken.getToken());
         map.put("X-Date", timeStamp);
         map.put("X-AC-Nonce", nonce);
         map.put("X-AC-Signature", signature);
@@ -496,18 +494,18 @@ public class CityAQIServiceImpl implements CityAQIService {
 //        return quality;
 //    }
 
-    private CityAirQuality fetch(String lid, double longitude, double latitude){
+    private CityAirQuality fetch(String lid, double longitude, double latitude) {
         MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
         StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?lat=").append(latitude).append("&lon=").append(longitude);
         String url = stringBuffer.toString();
-        String subUrl = url.substring("https://api.mojicb.com".length(),url.indexOf("?"));
+        String subUrl = url.substring("https://api.mojicb.com".length(), url.indexOf("?"));
         logger.info(url);
         Long timeValue = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         String timeStamp = timeValue.toString();
         String nonce = UUID.randomUUID().toString();
-        String signature = Encryption.md5(mojiToken.getPassword() + "\n" + timeStamp + "\n" +  nonce+ "\n" + subUrl);
+        String signature = Encryption.md5(mojiToken.getPassword() + "\n" + timeStamp + "\n" + nonce + "\n" + subUrl);
         Map<String, String> map = new HashMap<>();
-        map.put("X-AC-Token",mojiToken.getToken());
+        map.put("X-AC-Token", mojiToken.getToken());
         map.put("X-Date", timeStamp);
         map.put("X-AC-Nonce", nonce);
         map.put("X-AC-Signature", signature);
@@ -526,7 +524,8 @@ public class CityAQIServiceImpl implements CityAQIService {
     public CityAirQuality interpret(String id, String result) {
         JSONObject json = JSON.parseObject(result);
         int code = json.getInteger("code");
-        if (code != 0) {
+        // 先解析相应数据的响应代码，目前正确返回的数据code为200
+        if (code != 200) {
             logger.error(json.toJSONString());
             return null;
         }

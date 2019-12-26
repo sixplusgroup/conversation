@@ -29,7 +29,7 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     private int co2;
 
-    private int status;
+    private int power;
 
     private int mode;
 
@@ -49,13 +49,13 @@ public class MachineStatusV3 extends Entity implements Serializable {
         this();
         this.uid = uid;
         if (json.containsKey(PacketV3Info.POWER)) {
-            this.heat = json.getInteger(PacketV3Info.POWER);
+            this.power = json.getInteger(PacketV3Info.POWER);
         }
         if (json.containsKey(PacketV3Info.MODE)) {
             this.mode = json.getInteger(PacketV3Info.MODE);
         }
         if (json.containsKey(PacketV3Info.PM2_5A)) {
-            this.pm2_5a = json.getInteger(PacketV3Info.HEAT);
+            this.pm2_5a = json.getInteger(PacketV3Info.PM2_5A);
         }
         if (json.containsKey(PacketV3Info.PM2_5B)) {
             this.pm2_5b = json.getInteger(PacketV3Info.PM2_5B);
@@ -101,6 +101,14 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public int getPower() {
+        return power;
+    }
+
+    public void setPower(int power) {
+        this.power = power;
     }
 
     public int getPm2_5a() {
@@ -149,14 +157,6 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     public void setCo2(int co2) {
         this.co2 = co2;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public int getMode() {
