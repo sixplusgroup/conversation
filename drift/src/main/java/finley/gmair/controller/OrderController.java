@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -71,6 +72,12 @@ public class OrderController {
 
     @Autowired
     private DriftOrderActionService driftOrderActionService;
+
+    @Autowired
+    private WechatService wechatService;
+
+    @Autowired
+    private AuthConsumerService authConsumerService;
 
     private Object lock = new Object();
 
@@ -773,6 +780,30 @@ public class OrderController {
         return result;
     }
 
+    @GetMapping(value = "/orderById")
+    public ResultData orderById(String orderId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("orderId",orderId);
+        ResultData response = orderService.fetchDriftOrderPanel(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No drift order");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Query error, please try again later");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
+        return result;
+    }
+
     /**
      * The method is called to get order information by useful conditions by page
      * contains time, province, city and so on
@@ -931,7 +962,7 @@ public class OrderController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
-        condition.put("blockFlag", false);
+        condition.put("blockFlag", true);
         ResultData response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1371,6 +1402,17 @@ public class OrderController {
             result.setDescription("更新失败");
             return result;
         }
+        switch (status) {
+            case "2":
+                confirmedMessage(orderId);
+                break;
+            case "3":
+                deliveredMessage(orderId);
+                break;
+            case "4":
+                backedMessage(orderId);
+                break;
+        }
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
         return result;
@@ -1642,5 +1684,122 @@ public class OrderController {
         }
         result.setData(response.getData());
         return result;
+    }
+
+    /**
+     * 订单状态变为已确认时向用户推送消息
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/confirmedMessage")
+    public ResultData confirmedMessage(String orderId){
+        ResultData resultData = new ResultData();
+        //根据orderId获取手机号
+        ResultData re = orderById(orderId);
+
+        String phone = ((List<DriftOrderPanel>)re.getData()).get(0).getPhone();
+        System.out.println(phone);
+        //根据手机号获取wechat
+        ResultData res = authConsumerService.probeWechatByPhone(phone);
+        if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("查询wechat失败");
+            return resultData;
+        }
+        else if(res.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            resultData.setDescription("该用户未注册或未绑定wechat");
+            return resultData;
+        }
+        String wechat = res.getData().toString();
+        resultData.setData(wechat);
+
+        //调用wechat消息推送方法
+        ResultData result =  wechatService.confirmMessage("12312");
+        return resultData;
+    }
+
+    /**
+     * 订单状态变为已发货时向用户推送消息
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/deliveredMessage")
+    public ResultData deliveredMessage(String orderId){
+        ResultData resultData = new ResultData();
+
+        return resultData;
+    }
+
+    /**
+     * 订单状态变为已寄回时向用户推送消息
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/backedMessage")
+    public ResultData backedMessage(String orderId){
+        ResultData resultData = new ResultData();
+
+        return resultData;
+    }
+
+    /**
+     * 提醒用户归还设备
+     * @param
+     * @return
+     */
+    @GetMapping("/returnMessage")
+    public ResultData returnMessage() throws ParseException {
+        ResultData resultData = new ResultData();
+        //获取当前日期
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+        String dd = formatter.format(date);
+        System.out.println(dd);
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("today",dd);
+        condition.put("status",DriftOrderStatus.DELIVERED.getValue());
+        ResultData response = orderService.fetchDriftOrderPanel(condition);
+
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            resultData.setDescription("今日没有需要推送消息");
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return resultData;
+        }
+
+        Date date2 = ((List<DriftOrderPanel>)response.getData()).get(0).getExpectedDate();
+        System.out.println(date2);
+
+        //向列表中所有用户推送消息
+        for(DriftOrderPanel p : ((List<DriftOrderPanel>)response.getData())){
+            //根据当前日期查找今日过期设备，并获取手机号
+            String phone = p.getPhone();
+            //根据手机号查找用户wechat
+            ResultData res = authConsumerService.probeWechatByPhone(phone);
+            if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+//                resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                resultData.setDescription("查询wechat失败");
+//                return resultData;
+                continue;
+            }
+            else if(res.getResponseCode() == ResponseCode.RESPONSE_NULL){
+//                resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+//                resultData.setDescription("该用户未注册或未绑定wechat");
+//                return resultData;
+                continue;
+            }
+            String wechat = res.getData().toString();
+            System.out.println(wechat);
+//            resultData.setData(wechat);
+
+            //公众号推送消息
+            wechatService.returnMessage(p.getOrderId(),wechat,p.getActivityName(),formatter.format(p.getExpectedDate()));
+        }
+
+
+        return response;
     }
 }

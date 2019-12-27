@@ -202,6 +202,9 @@
         <if test="startTime != null">
             AND expected_date >= #{startTime}
         </if>
+        <if test="today !=null">
+            AND date_add(expected_date, interval interval_date day) = #{today}
+        </if>
         <if test="endTime != null">
             <![CDATA[
                 AND expected_date <= #{endTime}
@@ -212,6 +215,9 @@
         </if>
         ORDER BY expected_date ASC
     </select>
+
+
+
 
     <select id="queryDriftItem" parameterType="java.lang.String" resultMap="orderItemVo">
         SELECT
