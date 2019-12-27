@@ -1,5 +1,11 @@
-##wechat config
 wechat_token=
-wechat_appid=
+wechat_appid=wxe8ca0dc55e5f81fd
 wechat_secret=
-wechat_openId=
+
+wechat_tiaozhuan_appid=wx61f6301fde5d4f57
+wechat_tiaozhuan_pagepath=pages/order_detail/order_detail?orderId=
+
+wechat_model1=
+wechat_model2=
+wechat_model3=
+wechat_model4=7FI-PDOYE6NVoZr9ShM6WS7-8qBA8pts7ZYbprKo5ng
