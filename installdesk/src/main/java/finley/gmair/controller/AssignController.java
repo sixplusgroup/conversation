@@ -829,6 +829,6 @@ public class AssignController {
         assignActionService.create(action);
         result.setData(response.getData());
         result.setDescription("恢复任务成功");
-        return null;
+        return result;
     }
 }
