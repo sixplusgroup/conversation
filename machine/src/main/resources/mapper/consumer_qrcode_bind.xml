@@ -33,7 +33,7 @@
             AND bind_name = #{bindName}
         </if>
         <if test="codeValue != null">
-            AND code_value like "%"#{codeValue}"%"
+            AND code_value = #{codeValue}
         </if>
         <if test="ownership != null">
             AND ownership = #{ownership}
