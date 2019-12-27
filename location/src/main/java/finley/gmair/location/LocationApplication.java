@@ -331,63 +331,64 @@ public class LocationApplication {
 
     /**
      * 根据id查相关省市区名字
+     *
      * @param id
      * @return
      */
     @GetMapping("/id/profile")
-    public ResultData idProfile(String id){
+    public ResultData idProfile(String id) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(id)){
+        if (StringUtils.isEmpty(id)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供id");
             return result;
         }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id",id);
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("districtId",id);
+        jsonObject.put("id", id);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("districtId", id);
         ResultData response = locationService.fetchDistrictWithCity(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            DistrictCityVo districtCityVo = ((List<DistrictCityVo>)response.getData()).get(0);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            DistrictCityVo districtCityVo = ((List<DistrictCityVo>) response.getData()).get(0);
             String cityId = districtCityVo.getCityId();
             String districtName = districtCityVo.getDistrictName();
             condition.clear();
-            condition.put("cityId",cityId);
+            condition.put("cityId", cityId);
             response = locationService.fetchProvinceIdByCityId(condition);
-            CityProvinceVo cityVo = ((List<CityProvinceVo>)response.getData()).get(0);
+            CityProvinceVo cityVo = ((List<CityProvinceVo>) response.getData()).get(0);
             String provinceId = cityVo.getProvinceId();
             String cityName = cityVo.getCityName();
             condition.clear();
-            condition.put("province",provinceId);
+            condition.put("provinceId", provinceId);
             response = locationService.fetchProvince(condition);
-            Province provinceVo = ((List<Province>)response.getData()).get(0);
+            Province provinceVo = ((List<Province>) response.getData()).get(0);
             String provinceName = provinceVo.getProvinceName();
-            jsonObject.put("name",provinceName+cityName+districtName);
+            jsonObject.put("name", provinceName + cityName + districtName);
             result.setData(jsonObject);
             return result;
         }
         condition.clear();
-        condition.put("cityId",id);
+        condition.put("cityId", id);
         response = locationService.fetchProvinceIdByCityId(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            CityProvinceVo cityVo = ((List<CityProvinceVo>)response.getData()).get(0);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            CityProvinceVo cityVo = ((List<CityProvinceVo>) response.getData()).get(0);
             String provinceId = cityVo.getProvinceId();
             String cityName = cityVo.getCityName();
             condition.clear();
-            condition.put("provinceId",provinceId);
+            condition.put("provinceId", provinceId);
             response = locationService.fetchProvince(condition);
-            Province provinceVo = ((List<Province>)response.getData()).get(0);
+            Province provinceVo = ((List<Province>) response.getData()).get(0);
             String provinceName = provinceVo.getProvinceName();
-            jsonObject.put("name",provinceName+cityName);
+            jsonObject.put("name", provinceName + cityName);
             result.setData(jsonObject);
             return result;
         }
         condition.clear();
-        condition.put("provinceId",id);
+        condition.put("provinceId", id);
         response = locationService.fetchProvince(condition);
-        Province provinceVo = ((List<Province>)response.getData()).get(0);
+        Province provinceVo = ((List<Province>) response.getData()).get(0);
         String provinceName = provinceVo.getProvinceName();
-        jsonObject.put("name",provinceName);
+        jsonObject.put("name", provinceName);
         result.setData(jsonObject);
         return result;
     }
