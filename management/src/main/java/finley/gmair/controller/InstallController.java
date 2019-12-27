@@ -599,4 +599,16 @@ public class InstallController {
         result = installService.profile(memberId);
         return result;
     }
+
+    @PostMapping("/assign/restore")
+    ResultData restore(String assignId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(assignId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供assignId");
+            return result;
+        }
+        result = installService.restore(assignId);
+        return result;
+    }
 }

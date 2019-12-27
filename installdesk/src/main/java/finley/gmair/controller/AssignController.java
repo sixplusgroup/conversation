@@ -767,7 +767,7 @@ public class AssignController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignId", assignId);
-        condition.put("assignStatus", 6);
+        condition.put("assignStatus", AssignStatus.RECEIVED.getValue());
         ResultData response = assignService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -781,6 +781,54 @@ public class AssignController {
         }
         result.setData(response.getData());
         result.setResponseCode(ResponseCode.RESPONSE_OK);
+        return result;
+    }
+
+    /**
+     * 根据assignId恢复订单状态为进行中
+     * @param assignId
+     * @return
+     */
+    @PostMapping("/restore")
+    public ResultData restore(String assignId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(assignId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供assignId");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        //删除snapshot
+        condition.put("blockFlag",false);
+        condition.put("assignId",assignId);
+        ResultData response = assignSnapshotService.fetch(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        Snapshot snapshot = ((List<Snapshot>)response.getData()).get(0);
+        String snapshotId = snapshot.getSnapshotId();
+        response = assignSnapshotService.block(snapshotId);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("删除快照失败");
+            return result;
+        }
+        //恢复任务为进行中
+        condition.clear();
+        condition.put("assignId",assignId);
+        condition.put("assignStatus",AssignStatus.PROCESSING.getValue());
+        response = assignService.update(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("恢复任务失败");
+            return result;
+        }
+        AssignAction action = new AssignAction(assignId, "安装任务恢复为进行中");
+        assignActionService.create(action);
+        result.setData(response.getData());
+        result.setDescription("恢复任务成功");
         return result;
     }
 }

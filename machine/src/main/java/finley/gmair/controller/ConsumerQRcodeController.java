@@ -84,6 +84,34 @@ public class ConsumerQRcodeController {
         return result;
     }
 
+    @GetMapping("/qrcode/bind/list")
+    public ResultData qrcodeBindList(String qrcode){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供qrcode");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("codeValue",qrcode);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("查找失败");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setData(response.getData());
+            result.setDescription("查找过程出现错误");
+            return result;
+        }else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+    }
+
     @RequestMapping(value = "/qrcode/bind", method = RequestMethod.POST)
     public ResultData bindConsumerWithQRcode(String consumerId, String bindName, String qrcode, Integer ownership) {
         ResultData result = new ResultData();

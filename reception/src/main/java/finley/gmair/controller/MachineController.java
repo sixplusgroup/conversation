@@ -414,15 +414,16 @@ public class MachineController {
             JSONObject location = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
             String cityId = location.getString("cityId");
             //获取城市名称
-            response = locationService.profile(cityId);
+            response = locationService.nameProfile(cityId);
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 BufferedImage bufferedImage = share(path, name, city, pm2_5, temperature, humidity, co2);
                 savaAndUpload(consumerId, bufferedImage);
                 result.setDescription("未找到行政区域编号为: " + cityId + "的城市");
                 return result;
             }
-            JSONObject json = JSON.parseArray(JSON.toJSONString(response.getData())).getJSONObject(0);
-            if (json.containsKey("cityName")) city = json.getString("cityName");
+            logger.info("[Info]: location profile " + JSON.toJSONString(response));
+            JSONObject json = JSON.parseObject(JSON.toJSONString(response.getData()));
+            if (json.containsKey("name")) city = json.getString("name");
             //获取当前室外的空气信息，包括AQI指数，主要污染物，PM2.5, PM10, 一氧化碳，二氧化氮，臭氧，二氧化硫
             response = airqualityService.getLatestCityAirQuality(cityId);
             if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {

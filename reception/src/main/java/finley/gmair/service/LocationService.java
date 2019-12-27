@@ -29,4 +29,7 @@ public interface LocationService {
 
     @GetMapping("/location/district/profile")
     ResultData getDistrict(@RequestParam("districtId") String districtId);
+
+    @GetMapping("/location/id/profile")
+    ResultData nameProfile(@RequestParam("id") String id);
 }

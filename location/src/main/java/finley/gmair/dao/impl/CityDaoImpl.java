@@ -53,7 +53,7 @@ public class CityDaoImpl extends BaseDao implements CityDao {
     }
 
     @Override
-    public ResultData queryProvinceIdByCityId(Map<String, Object> condition){
+    public ResultData queryProvinceIdByCityId(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
             List<CityProvinceVo> list = sqlSession.selectList("gmair.location.city.queryProvinceId", condition);
