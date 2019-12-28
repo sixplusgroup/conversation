@@ -41,6 +41,9 @@ public class MessageController {
     @Value("${wechat_token}")
     private String wechatToken;
 
+    @Value("${wechat_model2}")
+    private String wechatmodel2;
+
     @Value("${wechat_model4}")
     private String wechatmodel4;
 
@@ -49,7 +52,6 @@ public class MessageController {
 
     @Value("${wechat_tiaozhuan_pagepath}")
     private String wechattiaozhuanpagepath;
-
 
 
     @GetMapping(value = "/confirmedMessage")
@@ -170,6 +172,83 @@ public class MessageController {
         data.put("keyword1",keyword1);
         data.put("keyword2",keyword2);
         data.put("keyword3",keyword3);
+        data.put("remark",remark);
+
+        jsonObject.put("data", data);
+
+        String string = HttpClientUtils.sendPostJsonStr(url, jsonObject.toJSONString());
+        System.out.println(string);
+        JSONObject result = JSON.parseObject(string);
+        int errcode = result.getIntValue("errcode");
+        if(errcode == 0){
+            // 发送成功
+            System.out.println("发送成功");
+        } else {
+            // 发送失败
+            System.out.println("发送失败");
+        }
+
+        if (errcode == 0){
+            vo.setResponseCode(ResponseCode.RESPONSE_OK);
+            vo.setDescription("成功");
+        }else{
+            vo.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            vo.setDescription("失败");
+        }
+        return vo;
+
+    }
+
+    @GetMapping(value = "/deliverMessage")
+    public ResultData deliverMessage(String orderId,String wechat,String expressOutNum,String expressOutCompany) throws IOException {
+        //获得令牌
+        ResultData re = accessTokenController.getToken(wechatAppId);
+
+        String TemplateMessage_Url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
+
+        String token = ((AccessToken)re.getData()).getAccessToken();
+
+        //创建返回实体对象
+        ResultData vo = new ResultData();
+        //获得新的token
+        String url=TemplateMessage_Url.replace("ACCESS_TOKEN", token);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("touser", wechat);   // openid
+        jsonObject.put("template_id",wechatmodel2);
+//        jsonObject.put("url", "http://www.baidu.com");
+
+        JSONObject miniprogram = new JSONObject();
+        miniprogram.put("appid",wechattiaozhuanappid);
+        miniprogram.put("pagepath",wechattiaozhuanpagepath+orderId);
+
+        jsonObject.put("miniprogram",miniprogram);
+        //今天日期
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String dd = formatter.format(date);
+
+        JSONObject data = new JSONObject();
+        JSONObject first = new JSONObject();
+        first.put("value", "您好，您租赁的甲醛检测设备已发货。请注意查收");
+        first.put("color", "#173177");
+        JSONObject keyword1 = new JSONObject();
+        keyword1.put("value", expressOutNum);
+        keyword1.put("color", "#173177");
+        JSONObject keyword2 = new JSONObject();
+        keyword2.put("value", expressOutCompany);
+        keyword2.put("color", "#173177");
+//        JSONObject keyword3 = new JSONObject();
+//        keyword3.put("value", dd);
+//        keyword3.put("color", "#173177");
+        JSONObject remark = new JSONObject();
+        remark.put("value", "详情请查看果麦检测小程序");
+        remark.put("color", "#173177");
+
+        data.put("first",first);
+        data.put("keyword1",keyword1);
+        data.put("keyword2",keyword2);
+//        data.put("keyword3",keyword3);
         data.put("remark",remark);
 
         jsonObject.put("data", data);

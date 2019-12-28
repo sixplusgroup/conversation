@@ -1049,11 +1049,18 @@ public class OrderController {
             else if (driftExpress.getStatus() == DriftExpressStatus.BACk)
                 order.setStatus(DriftOrderStatus.BACK);
             response1 = orderService.updateDriftOrder(order);
+
             if (response1.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
                 return result;
             }
+            //根据寄出还是寄回推送公众号消息
+            if (driftExpress.getStatus() == DriftExpressStatus.DELIVERED){
+                deliveredMessage(orderId);
+            }
+            else if (driftExpress.getStatus() == DriftExpressStatus.BACk)
+                backedMessage(orderId);
         }
 
         //create driftExpress
@@ -1376,6 +1383,7 @@ public class OrderController {
         }
         if(!StringUtils.isEmpty(status)){
             driftOrder.setStatus(DriftOrderStatus.valueOf(status));
+            System.out.println(status);
         }
         if(!StringUtils.isEmpty(expectedDate)&&!expectedDate.equals("undefined")){
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -1402,17 +1410,17 @@ public class OrderController {
             result.setDescription("更新失败");
             return result;
         }
-        switch (status) {
-            case "2":
-                confirmedMessage(orderId);
-                break;
-            case "3":
-                deliveredMessage(orderId);
-                break;
-            case "4":
-                backedMessage(orderId);
-                break;
-        }
+//        switch (status) {
+//            case "2":
+//                confirmedMessage(orderId);
+//                break;
+//            case "3":
+//                deliveredMessage(orderId);
+//                break;
+//            case "4":
+//                backedMessage(orderId);
+//                break;
+//        }
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
         return result;
@@ -1727,7 +1735,34 @@ public class OrderController {
     @GetMapping("/deliveredMessage")
     public ResultData deliveredMessage(String orderId){
         ResultData resultData = new ResultData();
+        //根据orderId获取手机号
+        ResultData re = orderById(orderId);
+        String expressOutCompany = ((List<DriftOrderPanel>)re.getData()).get(0).getExpressOutCompany();
+        if(expressOutCompany.equals("shunfeng")){
+            expressOutCompany = "顺丰快递";
+        }else if(expressOutCompany.equals("yuantong")){
+            expressOutCompany = "圆通快递";
+        }
+        String expressOutNum = ((List<DriftOrderPanel>)re.getData()).get(0).getExpressOutNum();
+        String phone = ((List<DriftOrderPanel>)re.getData()).get(0).getPhone();
+        System.out.println(phone);
+        //根据手机号获取wechat
+        ResultData res = authConsumerService.probeWechatByPhone(phone);
+        if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("查询wechat失败");
+            return resultData;
+        }
+        else if(res.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            resultData.setDescription("该用户未注册或未绑定wechat");
+            return resultData;
+        }
+        String wechat = res.getData().toString();
+        resultData.setData(wechat);
 
+        //调用wechat消息推送方法
+        ResultData result =  wechatService.deliverMessage(orderId,wechat,expressOutNum,expressOutCompany);
         return resultData;
     }
 
@@ -1780,20 +1815,15 @@ public class OrderController {
             //根据手机号查找用户wechat
             ResultData res = authConsumerService.probeWechatByPhone(phone);
             if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
-//                resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
-//                resultData.setDescription("查询wechat失败");
-//                return resultData;
+
                 continue;
             }
             else if(res.getResponseCode() == ResponseCode.RESPONSE_NULL){
-//                resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
-//                resultData.setDescription("该用户未注册或未绑定wechat");
-//                return resultData;
+
                 continue;
             }
             String wechat = res.getData().toString();
             System.out.println(wechat);
-//            resultData.setData(wechat);
 
             //公众号推送消息
             wechatService.returnMessage(p.getOrderId(),wechat,p.getActivityName(),formatter.format(p.getExpectedDate()));

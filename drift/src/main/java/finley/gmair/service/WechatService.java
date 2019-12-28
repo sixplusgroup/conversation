@@ -12,6 +12,9 @@ public interface WechatService {
     @GetMapping("/wechat/message/confirmedMessage")
     ResultData confirmMessage(@RequestParam("orderId")String orderId);
 
+    @GetMapping("/wechat/message/deliverMessage")
+    ResultData deliverMessage(@RequestParam("orderId")String orderId,@RequestParam("wechat")String wechat,@RequestParam("expressOutNum")String expressOutNum,@RequestParam("expressOutCompany")String expressOutCompany);
+
     @GetMapping("/wechat/message/returnMessage")
     ResultData returnMessage(@RequestParam("orderId")String orderId,@RequestParam("wechat")String wechat,@RequestParam("activityName")String activityName,@RequestParam("expectDate")String expectDate);
 }
