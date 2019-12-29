@@ -15,6 +15,8 @@ import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.ibatis.session.RowBounds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/drift/order")
 public class OrderController {
+    private Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     @Autowired
     private OrderService orderService;
@@ -162,7 +165,7 @@ public class OrderController {
         Date expected = sdf.parse(expectedDate);
         Equipment equipment = ((List<Equipment>) response.getData()).get(0);
         //检查当天是否可以继续借出设备
-        if(!available(activityId, expected)){
+        if (!available(activityId, expected)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("该日期仪器已被预定完，请重新选择日期");
             return result;
@@ -178,9 +181,9 @@ public class OrderController {
         equipItem.setItemPrice(equipment.getEquipPrice());
         equipItem.setSingleNum(1);
         equipItem.setQuantity(1);
-        equipItem.setTotalPrice(equipment.getEquipPrice()*1);
+        equipItem.setTotalPrice(equipment.getEquipPrice() * 1);
         equipItem.setExQuantity(1);
-        equipItem.setRealPrice(equipment.getEquipPrice()*1);
+        equipItem.setRealPrice(equipment.getEquipPrice() * 1);
         list.add(equipItem);
         //处理订单中的试纸子项
         JSONObject attachItems = JSONObject.parseObject(form.getAttachItem());
@@ -196,10 +199,10 @@ public class OrderController {
                 attachItem.setItemPrice(attachment.getAttachPrice());
                 attachItem.setSingleNum(attachment.getAttachSingle());
                 int num = ((Integer) e.getValue()).intValue();
-                attachItem.setRealPrice(attachment.getAttachPrice()*num);
+                attachItem.setRealPrice(attachment.getAttachPrice() * num);
                 attachItem.setExQuantity(num);
-                num = num + num/5;
-                attachItem.setTotalPrice(attachment.getAttachPrice()*num);
+                num = num + num / 5;
+                attachItem.setTotalPrice(attachment.getAttachPrice() * num);
 
                 attachItem.setQuantity(num);
                 list.add(attachItem);
@@ -210,21 +213,21 @@ public class OrderController {
         // 计算该订单的总价格
         for (DriftOrderItem orderItem : list) {
             int quantity = orderItem.getQuantity();
-            quantity = quantity - (quantity-1)/5;
+            quantity = quantity - (quantity - 1) / 5;
             price += (orderItem.getItemPrice()) * quantity;
         }
         //查询同一消费者的订单，检查预计使用日期在15天内添加提示
         condition.clear();
-        int[] statusList = new int[]{DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(),DriftOrderStatus.BACK.getValue(),DriftOrderStatus.FINISHED.getValue()};
-        condition.put("consumerId",consumerId);
-        condition.put("blockFlag",false);
-        condition.put("statusList",statusList);
+        int[] statusList = new int[]{DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(), DriftOrderStatus.BACK.getValue(), DriftOrderStatus.FINISHED.getValue()};
+        condition.put("consumerId", consumerId);
+        condition.put("blockFlag", false);
+        condition.put("statusList", statusList);
         response = orderService.fetchDriftOrder(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            for(int i=0;i<((List<DriftOrder>) response.getData()).size();i++){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            for (int i = 0; i < ((List<DriftOrder>) response.getData()).size(); i++) {
                 long day1 = expected.getTime();
                 long day2 = ((List<DriftOrder>) response.getData()).get(i).getExpectedDate().getTime();
-                if(-1296000000<day1-day2&&day1-day2<1296000000){
+                if (-1296000000 < day1 - day2 && day1 - day2 < 1296000000) {
                     description = "该用户15天内已预约使用";
                     break;
                 }
@@ -252,8 +255,8 @@ public class OrderController {
             result.setData(response.getData());
         }
         String orderId = driftOrder.getOrderId();
-        String message = consignee+"创建了该订单,期望使用日期为："+new SimpleDateFormat("yyyy-MM-dd").format(driftOrder.getExpectedDate());
-        driftOrderActionService.create(new DriftOrderAction(orderId,message,consumerId));
+        String message = consignee + "创建了该订单,期望使用日期为：" + new SimpleDateFormat("yyyy-MM-dd").format(driftOrder.getExpectedDate());
+        driftOrderActionService.create(new DriftOrderAction(orderId, message, consumerId));
         return result;
     }
 
@@ -283,7 +286,7 @@ public class OrderController {
         statusList.add(DriftOrderStatus.FINISHED.getValue());
         condition.put("statusList", statusList);
         condition.put("createDate", date);
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) return true;
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -295,6 +298,7 @@ public class OrderController {
 
     /**
      * 提交优惠码
+     *
      * @param orderId
      * @param code
      * @return
@@ -385,7 +389,7 @@ public class OrderController {
                 }
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);
                 //实现优惠码价格抵消
-                if(order.getTotalPrice() - exCode.getPrice()<=0){
+                if (order.getTotalPrice() - exCode.getPrice() <= 0) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("当前优惠券金额大于订单总价，无法使用");
                     return result;
@@ -408,8 +412,8 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
-        String message = order.getConsignee()+"使用了优惠码："+order.getExcode();
-        driftOrderActionService.create(new DriftOrderAction(orderId,message,order.getConsumerId()));
+        String message = order.getConsignee() + "使用了优惠码：" + order.getExcode();
+        driftOrderActionService.create(new DriftOrderAction(orderId, message, order.getConsumerId()));
         return result;
     }
 
@@ -681,7 +685,7 @@ public class OrderController {
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultData orderList(String startTime, String endTime,String status,String search,String type) {
+    public ResultData orderList(String startTime, String endTime, String status, String search, String type) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
@@ -728,15 +732,14 @@ public class OrderController {
         if (!StringUtils.isEmpty(search)) {
             //删除对于订单状态的选择
 //            condition.remove("status");
-            String fuzzysearch =  search.trim();
-            if(type.equals("consignee")){//如果内容为姓名
+            String fuzzysearch = search.trim();
+            if (type.equals("consignee")) {//如果内容为姓名
                 condition.put("consignee", fuzzysearch);
-            }else if(type.equals("orderId")){//如果搜索内容为订单号
+            } else if (type.equals("orderId")) {//如果搜索内容为订单号
                 condition.put("orderId", fuzzysearch);
-            }else if(type.equals("machineOrderNo")){//如果搜索内容为机器码
+            } else if (type.equals("machineOrderNo")) {//如果搜索内容为机器码
                 condition.put("machineOrderNo", fuzzysearch);
-            }
-            else{//如果内容为手机号
+            } else {//如果内容为手机号
                 condition.put("phone", fuzzysearch);
             }
 
@@ -785,7 +788,7 @@ public class OrderController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        condition.put("orderId",orderId);
+        condition.put("orderId", orderId);
         ResultData response = orderService.fetchDriftOrderPanel(condition);
         switch (response.getResponseCode()) {
             case RESPONSE_NULL:
@@ -811,7 +814,7 @@ public class OrderController {
      * @return
      */
     @GetMapping(value = "/listByPage")
-    public ResultData orderListByPage(int curPage , int pageSize , String startTime, String endTime,String status,String search,String type) {
+    public ResultData orderListByPage(int curPage, int pageSize, String startTime, String endTime, String status, String search, String type) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
@@ -852,15 +855,14 @@ public class OrderController {
         if (!StringUtils.isEmpty(search)) {
             //删除对于订单状态的选择
 //            condition.remove("status");
-            String fuzzysearch =  search.trim();
-            if(type.equals("consignee")){//如果内容为姓名
+            String fuzzysearch = search.trim();
+            if (type.equals("consignee")) {//如果内容为姓名
                 condition.put("consignee", fuzzysearch);
-            }else if(type.equals("orderId")){//如果搜索内容为订单号
+            } else if (type.equals("orderId")) {//如果搜索内容为订单号
                 condition.put("orderId", fuzzysearch);
-            }else if(type.equals("machineOrderNo")){//如果搜索内容为机器码
+            } else if (type.equals("machineOrderNo")) {//如果搜索内容为机器码
                 condition.put("machineOrderNo", fuzzysearch);
-            }
-            else{//如果内容为手机号
+            } else {//如果内容为手机号
                 condition.put("phone", fuzzysearch);
             }
 
@@ -886,14 +888,14 @@ public class OrderController {
 //                System.out.println("名字");
 //            }
         }
-        int size = (int)orderService.fetchDriftOrderSize(condition).getData();
-        if(size==0){
+        int size = (int) orderService.fetchDriftOrderSize(condition).getData();
+        if (size == 0) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("can not find order");
             return result;
         }
-        RowBounds rowBounds = new RowBounds((curPage-1)*pageSize, pageSize);
-        ResultData response = orderService.fetchDriftOrderByPage(condition,rowBounds);
+        RowBounds rowBounds = new RowBounds((curPage - 1) * pageSize, pageSize);
+        ResultData response = orderService.fetchDriftOrderByPage(condition, rowBounds);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch");
@@ -902,10 +904,10 @@ public class OrderController {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find any data according to your condition");
             return result;
-        }else {
+        } else {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("orderList", response.getData());
-            int totalPage = (size-1) / pageSize + 1;
+            int totalPage = (size - 1) / pageSize + 1;
             jsonObject.put("totalPage", totalPage);
             result.setData(jsonObject);
             return result;
@@ -937,7 +939,7 @@ public class OrderController {
     public ResultData summary(String activityId) {
         ResultData result = new ResultData();
         JSONObject json = new JSONObject();
-        int[] statusList = new int[]{DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(),DriftOrderStatus.BACK.getValue(),DriftOrderStatus.FINISHED.getValue()};
+        int[] statusList = new int[]{DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(), DriftOrderStatus.BACK.getValue(), DriftOrderStatus.FINISHED.getValue()};
         Map<String, Object> condition = new HashMap<>();
         condition.put("activityId", activityId);
         condition.put("blockFlag", false);
@@ -988,7 +990,7 @@ public class OrderController {
             result.setDescription("请提供所需要获取订单的用户的信息");
             return result;
         }
-        int[] statusList = new int[]{DriftOrderStatus.APPLIED.getValue(), DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(),DriftOrderStatus.BACK.getValue(),DriftOrderStatus.FINISHED.getValue()};
+        int[] statusList = new int[]{DriftOrderStatus.APPLIED.getValue(), DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(), DriftOrderStatus.DELIVERED.getValue(), DriftOrderStatus.BACK.getValue(), DriftOrderStatus.FINISHED.getValue()};
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", openid);
         condition.put("blockFlag", false);
@@ -1056,32 +1058,31 @@ public class OrderController {
                 return result;
             }
             //根据寄出还是寄回推送公众号消息
-            if (driftExpress.getStatus() == DriftExpressStatus.DELIVERED){
+            if (driftExpress.getStatus() == DriftExpressStatus.DELIVERED) {
                 deliveredMessage(orderId);
-            }
-            else if (driftExpress.getStatus() == DriftExpressStatus.BACk)
+            } else if (driftExpress.getStatus() == DriftExpressStatus.BACk)
                 backedMessage(orderId);
         }
 
         //create driftExpress
         condition.clear();
-        condition.put("blockFlag",false);
-        condition.put("orderId",orderId);
-        condition.put("status",expressFlag);
+        condition.put("blockFlag", false);
+        condition.put("orderId", orderId);
+        condition.put("status", expressFlag);
         ResultData response2 = expressService.fetchExpress(condition);
         System.out.println(response2.getData());
-        if(response2.getResponseCode()==ResponseCode.RESPONSE_OK){//express已存在则进行修改
+        if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {//express已存在则进行修改
             condition.clear();
-            condition.put("expressId",((List<DriftExpress>)response2.getData()).get(0).getExpressId());
-            condition.put("expressNum",expressNo);
-            condition.put("company",company);
+            condition.put("expressId", ((List<DriftExpress>) response2.getData()).get(0).getExpressId());
+            condition.put("expressNum", expressNo);
+            condition.put("company", company);
             response2 = expressService.updateExpress(condition);
-            if(response2.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            if (response2.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(response2.getResponseCode());
                 result.setDescription(response2.getDescription());
                 return result;
             }
-        }else {//express不存在则创建
+        } else {//express不存在则创建
             response2 = expressService.createExpress(driftExpress);
             if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1121,22 +1122,22 @@ public class OrderController {
             condition.put("status", status);
         }
         ResultData response = expressService.fetchExpress(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("查询成功");
-            String expressNo = ((List<DriftExpress>)response.getData()).get(0).getExpressNum();
-            String expressCompany = ((List<DriftExpress>)response.getData()).get(0).getCompany();
-            DriftExpress express = ((List<DriftExpress>)response.getData()).get(0);
+            String expressNo = ((List<DriftExpress>) response.getData()).get(0).getExpressNum();
+            String expressCompany = ((List<DriftExpress>) response.getData()).get(0).getCompany();
+            DriftExpress express = ((List<DriftExpress>) response.getData()).get(0);
             response = expressAgentService.getExpress(expressNo, expressCompany);
-            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("查询物流信息失败");
             }
             JSONObject json = new JSONObject();
-            json.put("data",response.getData());
-            json.put("express",express);
+            json.put("data", response.getData());
+            json.put("express", express);
             result.setData(json);
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("未找到相关记录");
         } else {
@@ -1178,7 +1179,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/cancel")
-    public ResultData orderCancel(@RequestParam("orderId") String orderId,String account) {
+    public ResultData orderCancel(@RequestParam("orderId") String orderId, String account) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1198,52 +1199,52 @@ public class OrderController {
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
 
         //取消订单表记录
-        if(order.getStatus()==DriftOrderStatus.PAYED||order.getStatus()==DriftOrderStatus.CONFIRMED){
+        if (order.getStatus() == DriftOrderStatus.PAYED || order.getStatus() == DriftOrderStatus.CONFIRMED) {
             String openId = order.getConsumerId();
             double price = order.getRealPay();
-            DriftOrderCancel driftOrderCancel = new DriftOrderCancel(orderId,openId,price);
+            DriftOrderCancel driftOrderCancel = new DriftOrderCancel(orderId, openId, price);
             response = driftOrderCancelService.createCancel(driftOrderCancel);
-            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("取消订单表记录失败");
                 return result;
             }
         }
         //取消优惠码使用
-        if(order.getStatus()==DriftOrderStatus.APPLIED){
+        if (order.getStatus() == DriftOrderStatus.APPLIED) {
             String excode = order.getExcode();
             condition.clear();
-            condition.put("excode",excode);
-            condition.put("blockFlag",false);
+            condition.put("excode", excode);
+            condition.put("blockFlag", false);
             response = qrExCodeService.fetchQrExCode(condition);
-            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 condition.clear();
-                condition.put("excode",excode);
-                condition.put("blockFlag",true);
+                condition.put("excode", excode);
+                condition.put("blockFlag", true);
                 response = qrExCodeService.updateQrExCode(condition);
-                if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("恢复优惠券失败");
                     return result;
                 }
-            }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                 condition.clear();
-                condition.put("codeValue",excode);
-                condition.put("blockFlag",false);
+                condition.put("codeValue", excode);
+                condition.put("blockFlag", false);
                 response = exCodeService.fetchEXCode(condition);
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);
                 String codeId = exCode.getCodeId();
                 condition.clear();
-                condition.put("codeId",codeId);
-                condition.put("status",EXCodeStatus.EXCHANGED.getValue());
+                condition.put("codeId", codeId);
+                condition.put("status", EXCodeStatus.EXCHANGED.getValue());
                 response = exCodeService.modifyEXCode(condition);
-                if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("恢复优惠券失败");
                     return result;
                 }
-            }else {
+            } else {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("服务器错误");
                 return result;
@@ -1257,16 +1258,16 @@ public class OrderController {
             return result;
         }
         String message = "";
-        String member="";
-        if(StringUtils.isEmpty(account)){
-            message = order.getConsignee()+"取消了该订单";
+        String member = "";
+        if (StringUtils.isEmpty(account)) {
+            message = order.getConsignee() + "取消了该订单";
             member = order.getConsumerId();
-        }else {
-            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
+        } else {
+            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()), Admin.class).get(0);
             member = admin.getAdminId();
-            message = admin.getUsername()+"取消了该订单";
+            message = admin.getUsername() + "取消了该订单";
         }
-        driftOrderActionService.create(new DriftOrderAction(order.getOrderId(),message,member));
+        driftOrderActionService.create(new DriftOrderAction(order.getOrderId(), message, member));
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("Drift order is already cancel");
         return result;
@@ -1274,28 +1275,28 @@ public class OrderController {
 
     //将订单绑定机器码
     @PostMapping("/machinecode/submit")
-    ResultData submitMachineCode(String orderId,String machineCode){
+    ResultData submitMachineCode(String orderId, String machineCode) {
         ResultData result = new ResultData();
-        if(org.apache.commons.lang.StringUtils.isEmpty(orderId)|| org.apache.commons.lang.StringUtils.isEmpty(machineCode)){
+        if (org.apache.commons.lang.StringUtils.isEmpty(orderId) || org.apache.commons.lang.StringUtils.isEmpty(machineCode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供正确的参数");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("orderId",orderId);
-        condition.put("blockFlag",false);
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
         ResultData response = orderService.fetchDriftOrder(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("订单查找失败");
             return result;
         }
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
-        DriftOrder order = ((List<DriftOrder>)response.getData()).get(0);
+        DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
         order.setMachineOrderNo(machineCode);
         response = orderService.updateDriftOrder(order);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("更新失败");
             return result;
@@ -1333,6 +1334,7 @@ public class OrderController {
 
     /**
      * 更新订单信息
+     *
      * @param orderId
      * @param consignee
      * @param phone
@@ -1344,48 +1346,48 @@ public class OrderController {
      * @return
      */
     @PostMapping("/update")
-    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status,String expectedDate){
+    ResultData updateOrder(String orderId, String consignee, String phone, String province, String city, String district, String address, String status, String expectedDate) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)){
+        if (StringUtils.isEmpty(orderId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供orderId");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("orderId",orderId);
-        condition.put("blockFlag",false);
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
         ResultData response = orderService.fetchDriftOrder(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("订单查找失败");
             return result;
         }
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
-        DriftOrder driftOrder = ((List<DriftOrder>)response.getData()).get(0);
-        if(!StringUtils.isEmpty(consignee)){
+        DriftOrder driftOrder = ((List<DriftOrder>) response.getData()).get(0);
+        if (!StringUtils.isEmpty(consignee)) {
             driftOrder.setConsignee(consignee);
         }
-        if(!StringUtils.isEmpty(phone)){
+        if (!StringUtils.isEmpty(phone)) {
             driftOrder.setPhone(phone);
         }
-        if(!StringUtils.isEmpty(province)){
+        if (!StringUtils.isEmpty(province)) {
             driftOrder.setProvince(province);
         }
-        if(!StringUtils.isEmpty(city)){
+        if (!StringUtils.isEmpty(city)) {
             driftOrder.setCity(city);
         }
-        if(!StringUtils.isEmpty(district)){
+        if (!StringUtils.isEmpty(district)) {
             driftOrder.setDistrict(district);
         }
-        if(!StringUtils.isEmpty(address)){
+        if (!StringUtils.isEmpty(address)) {
             driftOrder.setAddress(address);
         }
-        if(!StringUtils.isEmpty(status)){
+        if (!StringUtils.isEmpty(status)) {
             driftOrder.setStatus(DriftOrderStatus.valueOf(status));
             System.out.println(status);
         }
-        if(!StringUtils.isEmpty(expectedDate)&&!expectedDate.equals("undefined")){
+        if (!StringUtils.isEmpty(expectedDate) && !expectedDate.equals("undefined")) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date expected = null;
             try {
@@ -1393,19 +1395,19 @@ public class OrderController {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if(!DateUtils.isSameDay(expected,driftOrder.getExpectedDate())){
+            if (!DateUtils.isSameDay(expected, driftOrder.getExpectedDate())) {
                 //检查当天是否可以继续借出设备
-                if(!available(driftOrder.getActivityId(), expected)){
+                if (!available(driftOrder.getActivityId(), expected)) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("该日期仪器无法预约使用，请重新选择日期");
                     return result;
-                }else {
+                } else {
                     driftOrder.setExpectedDate(expected);
                 }
             }
         }
         response = orderService.updateDriftOrder(driftOrder);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("更新失败");
             return result;
@@ -1428,6 +1430,7 @@ public class OrderController {
 
     /**
      * 根据上传excel表格更新对应order和express
+     *
      * @param orderId
      * @param machineOrderNo
      * @param expressNum
@@ -1437,7 +1440,7 @@ public class OrderController {
      */
 
     @PostMapping("/changeStatus")
-    public ResultData changeStatus(String orderId,String machineOrderNo,String expressNum,String company,String description,String account){
+    public ResultData changeStatus(String orderId, String machineOrderNo, String expressNum, String company, String description, String account) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
@@ -1458,76 +1461,75 @@ public class OrderController {
         DriftOrder order = ((List<DriftOrder>) response.getData()).get(0);
         //用于记录修改状态
         String[] modify = new String[4];
-        for(int s=0 ; s<4 ; s++){
+        for (int s = 0; s < 4; s++) {
             modify[s] = "";
         }
 
-        if(order.getStatus().getValue() != 2){//只有订单状态为已确认才可修改order和express
+        if (order.getStatus().getValue() != 2) {//只有订单状态为已确认才可修改order和express
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Can not update order without status 'CONFIRMED' ").append(orderId).toString());
             return result;
         }
 
         //判断order机器码字段是否需要改动
-        if(order.getMachineOrderNo()==null){
-            if(!machineOrderNo.equals("")){
+        if (order.getMachineOrderNo() == null) {
+            if (!machineOrderNo.equals("")) {
                 order.setMachineOrderNo(machineOrderNo);
                 modify[0] = machineOrderNo;
             }
-        }else if(!order.getMachineOrderNo().equals(machineOrderNo)){
+        } else if (!order.getMachineOrderNo().equals(machineOrderNo)) {
             order.setMachineOrderNo(machineOrderNo);
             modify[0] = machineOrderNo;
         }
 
         //判断order备注字段是否需要改动
-        if(order.getDescription()==null){
-            if(!description.equals("")){
+        if (order.getDescription() == null) {
+            if (!description.equals("")) {
                 order.setDescription(description);
                 modify[1] = description;
             }
 
-        }else if(!order.getDescription().equals(description)){
+        } else if (!order.getDescription().equals(description)) {
             order.setDescription(description);
             modify[1] = description;
         }
 
         response = orderService.updateDriftOrder(order);
 //        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
-        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
+        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()), Admin.class).get(0);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to update drift order with: ").append(order.toString()).toString());
-            if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+            if (!modify[0].equals("") || !modify[1].equals(""))
+                createAction(orderId, StringUtil.toMessage(modify, expressNum, company, machineOrderNo, description, admin.getUsername()), admin.getAdminId());
             return result;
         }
 
         Map<String, Object> condition1 = new HashMap<>();
 
-        condition1.put("blockFlag",false);
-        condition1.put("orderId",orderId);
+        condition1.put("blockFlag", false);
+        condition1.put("orderId", orderId);
         ResultData response2 = expressService.fetchExpress(condition);
 
         if (response2.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to retrieve express with orderId: ").append(orderId).toString());
-            if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+            if (!modify[0].equals("") || !modify[1].equals(""))
+                createAction(orderId, StringUtil.toMessage(modify, expressNum, company, machineOrderNo, description, admin.getUsername()), admin.getAdminId());
             return result;
         }
         if (response2.getResponseCode() == ResponseCode.RESPONSE_NULL) {//判断该订单对应的快递单是否存在，不存在则创建
-            if(company == null && expressNum == null){
+            if (company == null && expressNum == null) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription(new StringBuffer("The express do not need to change （null）").toString());
-                if(!modify[0].equals("")||!modify[1].equals(""))
-                    createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+                if (!modify[0].equals("") || !modify[1].equals(""))
+                    createAction(orderId, StringUtil.toMessage(modify, expressNum, company, machineOrderNo, description, admin.getUsername()), admin.getAdminId());
                 return result;
-            }
-            else{
-                createOrderExpress( orderId,  expressNum,0, company);
+            } else {
+                createOrderExpress(orderId, expressNum, 0, company);
                 modify[2] = expressNum;
                 modify[3] = company;
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+                createAction(orderId, StringUtil.toMessage(modify, expressNum, company, machineOrderNo, description, admin.getUsername()), admin.getAdminId());
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
                 result.setDescription(new StringBuffer("The express is created ").toString());
                 return result;
@@ -1537,21 +1539,20 @@ public class OrderController {
 
         DriftExpress express = ((List<DriftExpress>) response2.getData()).get(0);
 
-        if(!express.getExpressNum().equals(expressNum)||!express.getCompany().equals(company)){//express存在时，判断express是否需要更改
-            createOrderExpress( orderId,  expressNum,0, company);
+        if (!express.getExpressNum().equals(expressNum) || !express.getCompany().equals(company)) {//express存在时，判断express是否需要更改
+            createOrderExpress(orderId, expressNum, 0, company);
             modify[2] = expressNum;
             modify[3] = company;
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("The express is updated ").toString());
 
-            createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+            createAction(orderId, StringUtil.toMessage(modify, expressNum, company, machineOrderNo, description, admin.getUsername()), admin.getAdminId());
             return result;
-        }
-        else{
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription(new StringBuffer("The express do not need to be update ").toString());
-            if(!modify[0].equals("")||!modify[1].equals(""))
-                createAction(orderId,StringUtil.toMessage(modify,expressNum,company,machineOrderNo,description,admin.getUsername()),admin.getAdminId());
+            if (!modify[0].equals("") || !modify[1].equals(""))
+                createAction(orderId, StringUtil.toMessage(modify, expressNum, company, machineOrderNo, description, admin.getUsername()), admin.getAdminId());
             return result;
         }
 
@@ -1559,36 +1560,37 @@ public class OrderController {
 
     /**
      * 查询订单操作日志
+     *
      * @param actionId
      * @param orderId
      * @param member
      * @return
      */
     @GetMapping("/action/select")
-    ResultData actionSelect(String actionId,String orderId,String member){
+    ResultData actionSelect(String actionId, String orderId, String member) {
         ResultData result = new ResultData();
-        Map<String,Object> condition = new HashMap<>();
-        if(StringUtils.isEmpty(actionId)&&StringUtils.isEmpty(orderId)&&StringUtils.isEmpty(member)){
+        Map<String, Object> condition = new HashMap<>();
+        if (StringUtils.isEmpty(actionId) && StringUtils.isEmpty(orderId) && StringUtils.isEmpty(member)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供查询条件");
             return result;
         }
-        if(!StringUtils.isEmpty(actionId)){
-            condition.put("actionId",actionId);
+        if (!StringUtils.isEmpty(actionId)) {
+            condition.put("actionId", actionId);
         }
-        if(!StringUtils.isEmpty(orderId)){
-            condition.put("orderId",orderId);
+        if (!StringUtils.isEmpty(orderId)) {
+            condition.put("orderId", orderId);
         }
-        if(!StringUtils.isEmpty(member)){
-            condition.put("member",member);
+        if (!StringUtils.isEmpty(member)) {
+            condition.put("member", member);
         }
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         ResultData response = driftOrderActionService.fetch(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("订单日志为空");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询出现错误");
             return result;
@@ -1599,18 +1601,18 @@ public class OrderController {
     }
 
     /**
-     *
      * 创建订单操作日志
+     *
      * @param orderId
      * @param message
      * @param member
      * @return
      */
     @PostMapping("/action/create")
-    ResultData createAction(String orderId,String message,String member){
+    ResultData createAction(String orderId, String message, String member) {
         ResultData result = new ResultData();
-        ResultData response = driftOrderActionService.create(new DriftOrderAction(orderId,message,member));
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        ResultData response = driftOrderActionService.create(new DriftOrderAction(orderId, message, member));
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("订单操作日志创建失败");
             System.out.println("失败");
@@ -1624,32 +1626,33 @@ public class OrderController {
 
     /**
      * 获取订单取消记录用于退款
+     *
      * @param status
      * @return
      */
     @GetMapping("/cancel/record/select")
-    ResultData selectCancelRecord(String status){
+    ResultData selectCancelRecord(String status) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(status)){
+        if (StringUtils.isEmpty(status)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供查询条件");
             return result;
         }
-        Map<String,Object> condition = new HashMap<>();
-        if(status.equals("0")){
-            condition.put("isFinish",false);
-        }else if(status.equals("1")){
-            condition.put("isFinish",true);
+        Map<String, Object> condition = new HashMap<>();
+        if (status.equals("0")) {
+            condition.put("isFinish", false);
+        } else if (status.equals("1")) {
+            condition.put("isFinish", true);
         }
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         ResultData response = driftOrderCancelService.fetchCancel(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询失败");
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("查询结果为空");
-        }else {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
@@ -1658,34 +1661,35 @@ public class OrderController {
 
     /**
      * 根据orderId更新取消的订单为已完成
+     *
      * @param orderId
      * @return
      */
     @PostMapping("/cancel/record/update")
-    ResultData updateCancelRecord(String orderId){
+    ResultData updateCancelRecord(String orderId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)){
+        if (StringUtils.isEmpty(orderId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供orderId");
             return result;
         }
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("orderId",orderId);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
         ResultData response = driftOrderCancelService.fetchCancel(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("未找到相关订单");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询出现错误");
             return result;
         }
-        DriftOrderCancel driftOrderCancel = ((List<DriftOrderCancel>)response.getData()).get(0);
+        DriftOrderCancel driftOrderCancel = ((List<DriftOrderCancel>) response.getData()).get(0);
         driftOrderCancel.setFinish(true);
         response = driftOrderCancelService.updateCancel(driftOrderCancel);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("更新失败");
             return result;
@@ -1696,25 +1700,25 @@ public class OrderController {
 
     /**
      * 订单状态变为已确认时向用户推送消息
+     *
      * @param orderId
      * @return
      */
     @GetMapping("/confirmedMessage")
-    public ResultData confirmedMessage(String orderId){
+    public ResultData confirmedMessage(String orderId) {
         ResultData resultData = new ResultData();
         //根据orderId获取手机号
         ResultData re = orderById(orderId);
 
-        String phone = ((List<DriftOrderPanel>)re.getData()).get(0).getPhone();
+        String phone = ((List<DriftOrderPanel>) re.getData()).get(0).getPhone();
         System.out.println(phone);
         //根据手机号获取wechat
         ResultData res = authConsumerService.probeWechatByPhone(phone);
-        if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
             resultData.setDescription("查询wechat失败");
             return resultData;
-        }
-        else if(res.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (res.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
             resultData.setDescription("该用户未注册或未绑定wechat");
             return resultData;
@@ -1723,37 +1727,38 @@ public class OrderController {
         resultData.setData(wechat);
 
         //调用wechat消息推送方法
-        ResultData result =  wechatService.confirmMessage("12312");
+        ResultData result = wechatService.confirmMessage("12312");
         return resultData;
     }
 
     /**
      * 订单状态变为已发货时向用户推送消息
+     *
      * @param orderId
      * @return
      */
-    @GetMapping("/deliveredMessage")
-    public ResultData deliveredMessage(String orderId){
+    @GetMapping("/notify/delivered")
+    public ResultData deliveredMessage(String orderId) {
         ResultData resultData = new ResultData();
         //根据orderId获取手机号
         ResultData re = orderById(orderId);
-        String expressOutCompany = ((List<DriftOrderPanel>)re.getData()).get(0).getExpressOutCompany();
-        if(expressOutCompany.equals("shunfeng")){
+        String expressOutCompany = ((List<DriftOrderPanel>) re.getData()).get(0).getExpressOutCompany();
+        //todo 快递公司信息数据库存储
+        if (expressOutCompany.equals("shunfeng")) {
             expressOutCompany = "顺丰快递";
-        }else if(expressOutCompany.equals("yuantong")){
+        } else if (expressOutCompany.equals("yuantong")) {
             expressOutCompany = "圆通快递";
         }
-        String expressOutNum = ((List<DriftOrderPanel>)re.getData()).get(0).getExpressOutNum();
-        String phone = ((List<DriftOrderPanel>)re.getData()).get(0).getPhone();
+        String expressOutNum = ((List<DriftOrderPanel>) re.getData()).get(0).getExpressOutNum();
+        String phone = ((List<DriftOrderPanel>) re.getData()).get(0).getPhone();
         System.out.println(phone);
         //根据手机号获取wechat
         ResultData res = authConsumerService.probeWechatByPhone(phone);
-        if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
             resultData.setDescription("查询wechat失败");
             return resultData;
-        }
-        else if(res.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (res.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
             resultData.setDescription("该用户未注册或未绑定wechat");
             return resultData;
@@ -1762,17 +1767,18 @@ public class OrderController {
         resultData.setData(wechat);
 
         //调用wechat消息推送方法
-        ResultData result =  wechatService.deliverMessage(orderId,wechat,expressOutNum,expressOutCompany);
+        ResultData result = wechatService.deliverMessage(orderId, wechat, expressOutNum, expressOutCompany);
         return resultData;
     }
 
     /**
      * 订单状态变为已寄回时向用户推送消息
+     *
      * @param orderId
      * @return
      */
-    @GetMapping("/backedMessage")
-    public ResultData backedMessage(String orderId){
+    @GetMapping("/notify/sendback")
+    public ResultData backedMessage(String orderId) {
         ResultData resultData = new ResultData();
 
         return resultData;
@@ -1780,55 +1786,47 @@ public class OrderController {
 
     /**
      * 提醒用户归还设备
+     *
      * @param
      * @return
      */
-    @GetMapping("/returnMessage")
-    public ResultData returnMessage() throws ParseException {
-        ResultData resultData = new ResultData();
+    @GetMapping("/notify/return")
+    public ResultData returnMessage() {
+        logger.info("[Info]: processing notifications to be sent to those who are expected to return the equipment they reserved");
+        ResultData result = new ResultData();
         //获取当前日期
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-        String dd = formatter.format(date);
-        System.out.println(dd);
-
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        condition.put("today",dd);
-        condition.put("status",DriftOrderStatus.DELIVERED.getValue());
+        condition.put("today", formatter.format(date));
+        condition.put("status", DriftOrderStatus.DELIVERED.getValue());
         ResultData response = orderService.fetchDriftOrderPanel(condition);
-
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
-            resultData.setDescription("今日没有需要推送消息");
-            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
-            return resultData;
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setDescription("今日没有需要推送消息");
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
         }
 
-        Date date2 = ((List<DriftOrderPanel>)response.getData()).get(0).getExpectedDate();
-        System.out.println(date2);
-
         //向列表中所有用户推送消息
-        for(DriftOrderPanel p : ((List<DriftOrderPanel>)response.getData())){
+        for (DriftOrderPanel p : ((List<DriftOrderPanel>) response.getData())) {
             //根据当前日期查找今日过期设备，并获取手机号
             String phone = p.getPhone();
             //根据手机号查找用户wechat
-            ResultData res = authConsumerService.probeWechatByPhone(phone);
-            if(res.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+            response = authConsumerService.probeWechatByPhone(phone);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+
+                continue;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
 
                 continue;
             }
-            else if(res.getResponseCode() == ResponseCode.RESPONSE_NULL){
-
-                continue;
-            }
-            String wechat = res.getData().toString();
+            String wechat = response.getData().toString();
             System.out.println(wechat);
 
             //公众号推送消息
-            wechatService.returnMessage(p.getOrderId(),wechat,p.getActivityName(),formatter.format(p.getExpectedDate()));
+            wechatService.returnMessage(p.getOrderId(), wechat, p.getActivityName(), formatter.format(p.getExpectedDate()));
         }
-
 
         return response;
     }

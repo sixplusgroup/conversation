@@ -1,5 +1,29 @@
 # Drift Module
 
+## 更新信息
+
+### 1.10.1
+
++ 更新内容
+    
+    订单物流排序
+    
++ 更新时间
+
+    2019年10月21日
+    
+### 1.12.1
+
++ 更新内容
+    
+    订单发出及订单待寄回提醒公众号推送
+    
++ 更新时间
+
+    2019年12月29日
+
+
+
 ## Introduction
 * This module aims to provide core drift background implementation
 * It is a component to:

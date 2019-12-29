@@ -37,12 +37,10 @@ public class DailyNoonJob implements Job {
 //            condition.put("taskId", "GTI20181130ex72fi16");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-                machineFeignService.turnOnScreenDaily();
+            machineFeignService.turnOnScreenDaily();
 //            }
         }));
 
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            driftFeignService.orderReturnMessage();
-        }));
+        TimingPool.getTimingExecutor().execute(() -> driftFeignService.orderReturnMessage());
     }
 }
