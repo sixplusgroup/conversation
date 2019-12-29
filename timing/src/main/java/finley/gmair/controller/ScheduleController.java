@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.service.DriftFeignService;
 import finley.gmair.service.MachineFeignService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScheduleController {
     @Autowired
     private MachineFeignService machineFeignService;
+
+    @Autowired
+    private DriftFeignService driftFeignService;
 
     @RequestMapping("/probe/filter")
     public ResultData probeFilter() {
@@ -26,6 +30,15 @@ public class ScheduleController {
         ResultData result = new ResultData();
         new Thread(() -> {
             machineFeignService.savePartialPm25Daily();
+        }).start();
+        return result;
+    }
+
+    @RequestMapping("/drift/order/returnMessage")
+    public ResultData orderReturnMessage(){
+        ResultData result = new ResultData();
+        new Thread(() -> {
+            driftFeignService.orderReturnMessage();
         }).start();
         return result;
     }
