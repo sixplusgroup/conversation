@@ -1059,7 +1059,7 @@ public class OrderController {
             }
             //根据寄出还是寄回推送公众号消息
             if (driftExpress.getStatus() == DriftExpressStatus.DELIVERED) {
-                deliveredMessage(orderId);
+                deliveredMessage(orderId,expressNo,company);
             } else if (driftExpress.getStatus() == DriftExpressStatus.BACk)
                 backedMessage(orderId);
         }
@@ -1738,18 +1738,18 @@ public class OrderController {
      * @return
      */
     @GetMapping("/notify/delivered")
-    public ResultData deliveredMessage(String orderId) {
+    public ResultData deliveredMessage(String orderId,String expressOutNum,String expressOutCompany) {
         ResultData resultData = new ResultData();
         //根据orderId获取手机号
         ResultData re = orderById(orderId);
-        String expressOutCompany = ((List<DriftOrderPanel>) re.getData()).get(0).getExpressOutCompany();
+//        String expressOutCompany = ((List<DriftOrderPanel>) re.getData()).get(0).getExpressOutCompany();
         //todo 快递公司信息数据库存储
         if (expressOutCompany.equals("shunfeng")) {
             expressOutCompany = "顺丰快递";
         } else if (expressOutCompany.equals("yuantong")) {
             expressOutCompany = "圆通快递";
         }
-        String expressOutNum = ((List<DriftOrderPanel>) re.getData()).get(0).getExpressOutNum();
+//        String expressOutNum = ((List<DriftOrderPanel>) re.getData()).get(0).getExpressOutNum();
         String phone = ((List<DriftOrderPanel>) re.getData()).get(0).getPhone();
         System.out.println(phone);
         //根据手机号获取wechat
