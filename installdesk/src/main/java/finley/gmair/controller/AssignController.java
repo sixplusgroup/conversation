@@ -259,7 +259,7 @@ public class AssignController {
                 json = json.getJSONArray("data").getJSONObject(0);
                 String template = json.getString("message");
                 String candidate = template.replaceAll("###", "%s");
-                candidate = String.format(candidate, assign.getDetail(), member.getMemberName(), member.getMemberPhone());
+                candidate = String.format(candidate, "果麦新风机", member.getMemberName(), member.getMemberPhone());
                 logger.info("message content: " + candidate);
                 //发送短信
                 messageService.send(assign.getConsumerPhone(), candidate);
