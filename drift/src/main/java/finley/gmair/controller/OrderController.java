@@ -964,7 +964,7 @@ public class OrderController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
-        condition.put("blockFlag", true);
+        condition.put("blockFlag", false);
         ResultData response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
