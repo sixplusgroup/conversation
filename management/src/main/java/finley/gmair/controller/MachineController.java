@@ -100,12 +100,12 @@ public class MachineController {
 
     /**
      * 根据qrcode查绑定列表
-     * @param qrcode
+     * @param search
      * @return
      */
     @GetMapping("/qrcode/bind/list")
-    public ResultData bindList(String qrcode){
-        return machineService.qrcodeBindList(qrcode);
+    public ResultData bindList(String search){
+        return machineService.qrcodeBindList(search);
     }
 
     /**
