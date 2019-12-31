@@ -30,4 +30,8 @@ public interface LogService {
     ResultData createMqttAckLog(MqttAckLog mqttAckLog);
 
     ResultData fetchMqttAckLog(Map<String, Object> condition);
+
+    ResultData createAdminLog(AdminAccountOperationLog adminAccountOperationLog);
+
+    ResultData fetchAdminLog(Map<String, Object> condition);
 }
