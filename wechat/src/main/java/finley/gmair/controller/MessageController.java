@@ -53,7 +53,12 @@ public class MessageController {
     @Value("${wechat_tiaozhuan_pagepath}")
     private String wechattiaozhuanpagepath;
 
-
+    /**
+     * 订单信息确认，通过推送模板拼接推送信息并获取推送的返回信息
+     * @param orderId
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/confirmedMessage")
     public ResultData confirmMessage(String orderId) throws IOException {
 //        //获得令牌
@@ -122,6 +127,15 @@ public class MessageController {
 
     }
 
+    /**
+     * 提醒返还设备，通过推送模板拼接推送信息并获取推送的返回信息
+     * @param orderId
+     * @param wechat
+     * @param activityName
+     * @param expectDate
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/returnMessage")
     public ResultData returnMessage(String orderId,String wechat,String activityName,String expectDate) throws IOException {
         //获得令牌
@@ -199,6 +213,15 @@ public class MessageController {
 
     }
 
+    /**
+     * 提醒订单发货，通过推送模板拼接推送信息并获取推送的返回信息
+     * @param orderId
+     * @param wechat
+     * @param expressOutNum
+     * @param expressOutCompany
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/deliverMessage")
     public ResultData deliverMessage(String orderId,String wechat,String expressOutNum,String expressOutCompany) throws IOException {
         //获得令牌
@@ -276,6 +299,12 @@ public class MessageController {
 
     }
 
+    
+    /**
+     * remain to be completed
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/modelList")
     public ResultData modelList() throws IOException {
         ResultData re = accessTokenController.getToken(wechatAppId);
@@ -296,6 +325,11 @@ public class MessageController {
         return res;
     }
 
+    /**
+     * remain to be completed
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/modelId")
     public ResultData modelId() throws IOException {
 //        ResultData re = accessTokenController.getToken(wechatAppId);
@@ -316,6 +350,11 @@ public class MessageController {
         return res;
     }
 
+    /**
+     * have been completed in another model
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/token")
     public ResultData token() throws IOException {
 
