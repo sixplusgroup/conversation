@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
+import finley.gmair.form.installation.CompanyForm;
 import finley.gmair.model.installation.*;
 import finley.gmair.model.resource.FileMap;
 import finley.gmair.pool.InstallPool;
@@ -58,6 +59,9 @@ public class AssignController {
 
     @Autowired
     private ResourcesService resourcesService;
+
+    @Autowired
+    private CompanyService companyService;
 
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
@@ -829,6 +833,65 @@ public class AssignController {
         assignActionService.create(action);
         result.setData(response.getData());
         result.setDescription("恢复任务成功");
+        return result;
+    }
+
+    /**
+     * 创建服务公司
+     * @param form
+     * @return
+     */
+    @PostMapping("/company/create")
+    ResultData createCompany(CompanyForm form){
+        ResultData result = new ResultData();
+        Company company = new Company(form.getCompanyName(),form.getMessageTitle(),form.getCompanyDetail());
+        ResultData response = companyService.create(company);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription("创建失败");
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 获取公司列表
+     * @return
+     */
+    @GetMapping("/company/list")
+    ResultData getCompanyList(){
+        ResultData result = new ResultData();
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        ResultData response = companyService.fetch(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 根据companyId查询公司详情
+     * @param companyId
+     * @return
+     */
+    @GetMapping("/company/query")
+    ResultData getCompanyById(String companyId){
+        ResultData result = new ResultData();
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("companyId",companyId);
+        condition.put("blockFlag",false);
+        ResultData response = companyService.fetch(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        result.setData(response.getData());
         return result;
     }
 }
