@@ -76,7 +76,7 @@
             AND block_flag = #{blockFlag}
         </if>
         ORDER BY create_time ASC
-        LIMIT 0,800
+--         LIMIT 0,800
         <!--<if test="page != null and pageLength!= null">-->
             <!--LIMIT page,pageLength-->
         <!--</if>-->
