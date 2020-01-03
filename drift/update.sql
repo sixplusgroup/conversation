@@ -419,4 +419,8 @@ ADD COLUMN `back_address` VARCHAR(45) NULL AFTER `reservation_text`,
 ADD COLUMN `back_phone` VARCHAR(45) NULL AFTER `back_address`,
 ADD COLUMN `back_name` VARCHAR(45) NULL AFTER `back_phone`;
 
+#2020-01-01
+ALTER TABLE `gmair_drift`.`drift_excode`
+ADD COLUMN `label` VARCHAR(45) NULL DEFAULT '果麦检测' AFTER `price`;
+
 
