@@ -1,6 +1,7 @@
 package finley.gmair.util;
 
 import finley.gmair.model.drift.DriftOrderStatus;
+import finley.gmair.model.drift.EXCodeStatus;
 import org.springframework.util.StringUtils;
 
 public class DriftUtil {
@@ -31,6 +32,22 @@ public class DriftUtil {
                 break;
             case 7:
                 result = "已取消";
+                break;
+        }
+        return result;
+    }
+
+    public static String setExcodeStatus(String status){
+        String result = "";
+        switch (status) {
+            case "CREATED":
+                result = "已创建";
+                break;
+            case "EXCHANGED":
+                result = "可兑换";
+                break;
+            case "OCCUPIED":
+                result = "已使用";
                 break;
         }
         return result;

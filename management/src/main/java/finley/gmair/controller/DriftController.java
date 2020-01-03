@@ -4,14 +4,15 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ChangeOrderStatusForm;
+import finley.gmair.form.drift.EXCodeCreateForm;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.admin.Admin;
-import finley.gmair.model.drift.DriftOrderCancel;
-import finley.gmair.model.drift.DriftOrderPanel;
-import finley.gmair.model.drift.DriftOrderStatus;
+import finley.gmair.model.drift.*;
 import finley.gmair.model.installation.AssignReport;
+import finley.gmair.util.IPUtil;
 import finley.gmair.service.AuthService;
 import finley.gmair.service.DriftService;
+import finley.gmair.service.LogService;
 import finley.gmair.util.DriftUtil;
 import finley.gmair.util.ExcelUtil;
 import finley.gmair.util.ResponseCode;
@@ -36,6 +37,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.print.DocFlavor;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,6 +59,9 @@ public class DriftController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private LogService logService;
 
     @Value("${temp_path}")
     private String baseDir;
@@ -525,5 +530,144 @@ public class DriftController {
         }
         result = driftService.getActivityAvailable(activityId);
         return result;
+    }
+
+    /**
+     * 获取活动列表
+     * @return
+     */
+    @GetMapping("/activity/list")
+    public ResultData getActivityList(){
+        return driftService.getActivityList();
+    }
+
+    /**
+     * 批量创建优惠码
+     * @param form
+     * @param request
+     * @return
+     */
+    @PostMapping("/excode/create")
+    public ResultData createExcode(EXCodeCreateForm form, HttpServletRequest request){
+        String adminId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        logService.createAdminAccountOperationLog(adminId, "drift", new StringBuffer("User:").append(adminId).append(" create ").append(form.getNum()).append(" excode with price: ").append(form.getPrice()).toString(), IPUtil.getIP(request));
+        return driftService.createExcode(form.getActivityId(),form.getNum(),form.getPrice(),form.getStatus(),form.getLabel());
+    }
+
+    /**
+     * 创建单个优惠码
+     * @param activityId
+     * @param codeValue
+     * @param price
+     * @param status
+     * @param label
+     * @return
+     */
+    @GetMapping("/excode/one/create")
+    public ResultData createOneExcode(String activityId,String codeValue,double price,int status,String label,HttpServletRequest request){
+        String adminId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        logService.createAdminAccountOperationLog(adminId, "drift", new StringBuffer("User:").append(adminId).append(" create one excode with price: ").append(price).append(" code: ").append(codeValue).toString(), IPUtil.getIP(request));
+        return driftService.createOneExcode(activityId,codeValue,price,status,label);
+    }
+
+    /**
+     * 根据label查询优惠码
+     * @param label
+     * @param request
+     * @return
+     */
+    @GetMapping("/excode/search")
+    public ResultData getExcodeByLabel(String activityId,String label,HttpServletRequest request){
+        String adminId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        logService.createAdminAccountOperationLog(adminId, "drift", new StringBuffer("User:").append(adminId).append(" query excode with label: ").append(label).append(" for ").append(activityId).toString(), IPUtil.getIP(request));
+        return driftService.getExcodeByLabel(activityId,label);
+    }
+
+    /**
+     * 根据活动ID获取标签列表
+     * @param activityId
+     * @return
+     */
+    @GetMapping("/excode/query/label")
+    public ResultData getExcodeLabels(String activityId){
+        return driftService.getExcodeLabels(activityId);
+    }
+
+    @GetMapping("/excode/download")
+    String excodeDownload(String activityId,String label,HttpServletResponse response,HttpServletRequest request){
+        ResultData result=new ResultData();
+        if(StringUtils.isEmpty(label)||StringUtils.isEmpty(activityId)){
+            return "请提供相应条件查询";
+        }
+        result = driftService.getExcodeByLabel(activityId,label);
+        if(result.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            return "查询失败";
+        }
+        String activityName = JSONObject.parseObject(JSONObject.toJSONString(driftService.getActivityDetail(activityId).getData()), Activity.class).getActivityName();
+        String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"-excode.xls";
+        try {
+            //查询数据库中所有的数据
+            String data= JSONObject.toJSONString(result.getData());
+            List<EXCode> list= JSONArray.parseArray(data,EXCode.class);
+            String adminId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            logService.createAdminAccountOperationLog(adminId, "drift", new StringBuffer("User:").append(adminId).append(" download ").append(list.size()).append(" excode with label: ").append(label).append(" for ").append(activityId).toString(), IPUtil.getIP(request));
+            HSSFWorkbook wb = new HSSFWorkbook();
+            HSSFSheet sheet = wb.createSheet("sheet1");
+            String[] n = {
+                    "活动名称",
+                    "标签",
+                    "优惠码",
+                    "优惠码价值",
+                    "优惠码状态",
+                    "创建时间"};
+            Object[][] value = new Object[list.size() + 1][n.length];
+            for (int m = 0; m < n.length; m++) {
+                value[0][m] = n[m];
+            }
+            for (int i = 0; i < list.size(); i++) {
+                value[i + 1][0] = activityName;
+                value[i + 1][1] = list.get(i).getLabel();
+                value[i + 1][2] = list.get(i).getCodeValue();
+                value[i + 1][3] = list.get(i).getPrice();
+                value[i + 1][4] = DriftUtil.setExcodeStatus(list.get(i).getStatus().toString());
+                value[i + 1][5] = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(list.get(i).getCreateAt());
+            }
+            HSSFRow row[]=new HSSFRow[list.size()+1];
+            HSSFCell cell[]=new HSSFCell[n.length];
+            for(int i=0;i<row.length;i++){
+                row[i]=sheet.createRow(i);
+                for(int j=0;j<cell.length;j++){
+                    cell[j]=row[i].createCell(j);
+                    cell[j].setCellValue(value[i][j].toString());
+                }
+            }
+            OutputStream os = response.getOutputStream();
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            wb.write(os);
+            os.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+        File file = new File(baseDir);
+        if (!file.exists()) {
+            logger.error("未能找到文件: " + baseDir);
+        }
+        try {
+            Workbook book = WorkbookFactory.create(file);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            book.write(byteArrayOutputStream);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.setContentLength(byteArrayOutputStream.size());
+            ServletOutputStream outputstream = response.getOutputStream();
+            byteArrayOutputStream.writeTo(outputstream);
+            byteArrayOutputStream.close();
+            outputstream.flush();
+            outputstream.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return "";
     }
 }
