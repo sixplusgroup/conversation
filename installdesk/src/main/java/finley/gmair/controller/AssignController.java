@@ -377,6 +377,12 @@ public class AssignController {
         condition.clear();
         condition.put("teams", teams);
         condition.put("blockFlag", false);
+        if(reverse.equals("true")){
+            reverse = "desc";
+        }else {
+            reverse = "asc";
+        }
+        condition.put("reverse",reverse);
         if (status != null) {
             condition.put("assignStatus", status);
         }
@@ -388,19 +394,11 @@ public class AssignController {
             } else {
                 condition.put("consumer", fuzzysearch);
             }
-            response = assignService.principal(condition);
-            List<Assign> resultList = (List<Assign>) response.getData();
-            if(!StringUtils.isEmpty(reverse)&&reverse.equals("true")){
-                Collections.reverse(resultList);
-            }
-            int totalPage = resultList.size();
+            response = assignService.principal(condition,(Integer.parseInt(page)-1) * Integer.parseInt(pageLength), Integer.parseInt(pageLength));
             result.setResponseCode(response.getResponseCode());
-            JSONObject json = new JSONObject();
-            json.put("totalPage", totalPage);
-            json.put("list", resultList);
-            result.setData(json);
+            result.setData(response.getData());
         } else {
-            response = assignService.fetch(condition);
+            response = assignService.principal(condition,(Integer.parseInt(page)-1) * Integer.parseInt(pageLength), Integer.parseInt(pageLength));
             if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("查询安装负责人所负责的安装任务失败，请稍后尝试");
@@ -411,30 +409,7 @@ public class AssignController {
                 result.setDescription("未查询到相关的安装任务");
                 return result;
             }
-            if(!StringUtils.isEmpty(page)&&!StringUtils.isEmpty(pageLength)){
-                List<Assign> resultList = (List<Assign>) response.getData();
-                if(!StringUtils.isEmpty(reverse)&&reverse.equals("true")){
-                    Collections.reverse(resultList);
-                }
-                int totalPage = resultList.size();
-                if(totalPage>(Integer.parseInt(page)-1)*Integer.parseInt(pageLength)){
-                    int total = Integer.parseInt(page)*Integer.parseInt(pageLength)>totalPage?totalPage:Integer.parseInt(page)*Integer.parseInt(pageLength);
-                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),total);
-                }else {
-                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    result.setDescription("查询为空");
-                    return result;
-//                    resultList = resultList.subList((Integer.parseInt(page)-1)*Integer.parseInt(pageLength),totalPage-1);
-                }
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("totalPage", totalPage);
-                jsonObject.put("list", resultList);
-                result.setData(jsonObject);
-//                result.setData(resultList);
-            }else {
-                result.setData(response.getData());
-            }
-
+            result.setData(response.getData());
         }
         return result;
     }
