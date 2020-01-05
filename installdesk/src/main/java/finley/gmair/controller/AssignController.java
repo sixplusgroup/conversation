@@ -227,9 +227,28 @@ public class AssignController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        ResultData response = assignService.fetch(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        //获取signature信息
+        String companyId = ((List<Assign>)response.getData()).get(0).getCompanyId();
+        response = getCompanyById(companyId);
+        String signature;
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            signature = "";
+        }else {
+            signature = ((List<Company>)response.getData()).get(0).getMessageTitle();
+        }
+
+        condition.clear();
+        condition.put("assignId", assignId);
         condition.put("memberId", memberId);
         condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
-        ResultData response = assignService.update(condition);
+        response = assignService.update(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             //记录安装任务操作日志
@@ -266,7 +285,11 @@ public class AssignController {
                 candidate = String.format(candidate, assign.getDetail(), member.getMemberName(), member.getMemberPhone());
                 logger.info("message content: " + candidate);
                 //发送短信
-                messageService.send(assign.getConsumerPhone(), candidate);
+                if(signature.equals("")){
+                    messageService.send(assign.getConsumerPhone(), candidate);
+                }else {
+                    messageService.send(assign.getConsumerPhone(), candidate,signature);
+                }
             });
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

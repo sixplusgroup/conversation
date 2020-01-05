@@ -6,6 +6,7 @@
         <result property="codeValue" column="code_value"></result>
         <result property="teamId" column="team_id"></result>
         <result property="memberId" column="member_id"></result>
+        <result property="companyId" column="company_id"></result>
         <result property="assignStatus" column="assign_status"
                 typeHandler="finley.gmair.mybatis.handler.AssignStatusHandler"></result>
         <result property="consumerConsignee" column="consumer_consignee"></result>
@@ -47,6 +48,7 @@
         code_value,
         team_id,
         member_id,
+        company_id,
         assign_status,
         consumer_consignee,
         consumer_phone,
@@ -68,6 +70,9 @@
         </if>
         <if test="teamId != null">
             AND team_id = #{teamId}
+        </if>
+        <if test="companyId != null">
+            AND company_id = #{companyId}
         </if>
         <if test="teams != null">
             AND team_id IN

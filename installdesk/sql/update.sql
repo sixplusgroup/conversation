@@ -189,6 +189,11 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin;
 
+#2019-01-04
+ALTER TABLE `gmair_install`.`install_assign`
+ADD COLUMN `company_id` VARCHAR(45) NULL AFTER `member_id`;
+
+
 
 
 
