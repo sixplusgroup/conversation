@@ -11,6 +11,7 @@ import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
+import org.bouncycastle.math.ec.ScaleYPointMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,7 @@ public class AssignController {
     @PostMapping("/create")
     public ResultData create(AssignForm form) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone()) || StringUtils.isEmpty(form.getConsumerAddress()) || StringUtils.isEmpty(form.getModel()) || StringUtils.isEmpty(form.getSource())) {
+        if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone()) || StringUtils.isEmpty(form.getConsumerAddress()) || StringUtils.isEmpty(form.getModel())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确保安装客户的信息录入完整");
             return result;
@@ -83,12 +84,8 @@ public class AssignController {
         String address = form.getConsumerAddress().trim();
         String detail = form.getModel().trim();
         String source = form.getSource().trim();
-        Assign assign;
-        if (StringUtils.isEmpty(form.getDescription())) {
-            assign = new Assign(consignee, phone, address, detail, source);
-        } else {
-            assign = new Assign(consignee, phone, address, detail, source, form.getDescription());
-        }
+        Assign assign = new Assign(consignee, phone, address, detail, source, form.getDescription(),form.getCompany().trim());
+
         //若上传了二维码，则安装必须为该指定设备
         String qrcode = form.getQrcode();
         if (StringUtils.isEmpty(qrcode)) {
@@ -119,7 +116,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/list")
-    public ResultData list(String status, String teamId, Integer start, Integer length, String search) {
+    public ResultData list(String status, String teamId, Integer curPage, Integer length, String search) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(status)) {
@@ -130,22 +127,23 @@ public class AssignController {
         }
         condition.put("blockFlag", false);
         ResultData response;
-        if (start == null || length == null) {
-            if (!StringUtils.isEmpty(search)) {
-                //删除对于订单状态的选择
-                condition.remove("assignStatus");
-                String fuzzysearch = "%" + search + "%";
-                Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-                //如果搜索内容为数字
-                if (pattern.matcher(search).matches()) {
-                    condition.put("phone", fuzzysearch);
-                } else {
-                    condition.put("consumer", fuzzysearch);
-                }
-                response = assignService.principal(condition);
-            } else response = assignService.fetch(condition);
+        if (!StringUtils.isEmpty(search)) {
+            //删除对于订单状态的选择
+            condition.remove("assignStatus");
+            String fuzzysearch = "%" + search + "%";
+            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+            //如果搜索内容为数字
+            if (pattern.matcher(search).matches()) {
+                condition.put("phone", fuzzysearch);
+            } else {
+                condition.put("consumer", fuzzysearch);
+            }
+        }
+        if (curPage == null || length == null) {
+            response = assignService.principal(condition);
         } else {
-            response = assignService.fetch(condition, start, length);
+            int start = (curPage-1)*length;
+            response = assignService.principal(condition, start, length);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
