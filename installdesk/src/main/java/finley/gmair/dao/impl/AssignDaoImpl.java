@@ -151,14 +151,13 @@ public class AssignDaoImpl extends BaseDao implements AssignDao {
         ResultData result = new ResultData();
         JSONObject data = new JSONObject();
         try {
-            List list = sqlSession.selectList("gmair.install.assign.principal", condition);
-            if (list.isEmpty()) {
+            int size = sqlSession.selectOne("gmair.install.assign.principalLength", condition);
+            if (size==0) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
-            int size = list.size();
             data.put("size", size);
             data.put("totalPage", (size-1) / length + 1);
-            list = sqlSession.selectList("gmair.install.assign.principal", condition, new RowBounds(start, length));
+            List list = sqlSession.selectList("gmair.install.assign.principal", condition, new RowBounds(start, length));
             data.put("list", list);
             result.setData(data);
         } catch (Exception e) {
