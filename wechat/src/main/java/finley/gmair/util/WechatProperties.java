@@ -1,11 +1,15 @@
 package finley.gmair.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.InputStream;
 import java.util.Properties;
 
 public class WechatProperties {
+    private static Logger logger = LoggerFactory.getLogger(WechatProperties.class);
+
     private static String accessToken;
 
     private static String jsapiTicket;
@@ -27,8 +31,7 @@ public class WechatProperties {
 
     public static String getAccessToken() {
         if (StringUtils.isEmpty(accessToken)) {
-            accessToken = WechatUtil.queryAccessToken(WechatProperties.getValue("wechat_appid"),
-                    WechatProperties.getValue("wechat_secret"));
+            accessToken = WechatUtil.queryAccessToken(WechatProperties.getValue("wechat_appid"), WechatProperties.getValue("wechat_secret"));
         }
         return accessToken;
     }

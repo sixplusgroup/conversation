@@ -71,7 +71,10 @@ public class WechatScheduler {
     }
 
     private void ticket(String accessToken) {
+        logger.info("access token: " + accessToken);
         WechatProperties.setAccessToken(accessToken);
-        WechatProperties.setJsapiTicket(WechatUtil.queryJsApiTicket(accessToken));
+        String ticket = WechatUtil.queryJsApiTicket(accessToken);
+        logger.info("ticket: " + ticket);
+        WechatProperties.setJsapiTicket(ticket);
     }
 }
