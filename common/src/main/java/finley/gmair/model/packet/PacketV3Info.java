@@ -34,4 +34,7 @@ public class PacketV3Info {
     public static final String CREATE_AT = "time";
 
     public static final String POWER = "power";
+
+    //420S新增RFID_ENABLED字段来记录设备的RFID是否启用 0-未启用 1-启用
+    public static final String RFID_ENABLED = "rfid_enabled";
 }

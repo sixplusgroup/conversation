@@ -41,6 +41,8 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     private int childlock;
 
+    private int rfidEnabled;
+
     public MachineStatusV3() {
         super();
     }
@@ -89,6 +91,9 @@ public class MachineStatusV3 extends Entity implements Serializable {
         }
         if (json.containsKey(PacketV3Info.HUMIDITY)) {
             this.humidity = json.getInteger(PacketV3Info.HUMIDITY);
+        }
+        if (json.containsKey(PacketV3Info.RFID_ENABLED)) {
+            this.rfidEnabled = json.getInteger(PacketV3Info.RFID_ENABLED);
         }
         if (json.containsKey(PacketV3Info.CREATE_AT)) {
             this.createAt = json.getLongValue(PacketV3Info.CREATE_AT) * 1000;
@@ -197,5 +202,13 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     public void setChildlock(int childlock) {
         this.childlock = childlock;
+    }
+
+    public int getRfidEnabled() {
+        return rfidEnabled;
+    }
+
+    public void setRfidEnabled(int rfidEnabled) {
+        this.rfidEnabled = rfidEnabled;
     }
 }
