@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
 import finley.gmair.model.wechat.Article;
-import finley.gmair.scheduler.wechat.WechatScheduler;
+//import finley.gmair.scheduler.wechat.WechatScheduler;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.wechat.ArticleReplyVo;
@@ -52,17 +52,17 @@ public class WechatApplication {
     @Autowired
     private MachineService machineService;
 
-    @Autowired
-    private WechatScheduler wechatScheduler;
+//    @Autowired
+//    private WechatScheduler wechatScheduler;
 
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
     }
 
-    @PostConstruct
-    public void init() {
-        wechatScheduler.renewal();
-    }
+//    @PostConstruct
+//    public void init() {
+//        wechatScheduler.renewal();
+//    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/wechat")
     public String check(HttpServletRequest request) {
