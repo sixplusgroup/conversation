@@ -84,7 +84,6 @@ public class LoggerClient {
                     loggerRecord.setPayloadContext(payload);
                     loggerRecord.setTopicContext(topic);
                     loggerRecord.setCreateAt(new Timestamp(timestamp));
-                    loggerRecord.setRecordId(IDGenerator.generate("1"));
                     loggerRecord.setMachineId(machineId);
                     //loggerRecord.setBlockFlag(false);
                     try{

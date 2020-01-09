@@ -7,4 +7,6 @@ import finley.gmair.util.ResultData;
 public interface LoggerRecordDao {
 
     ResultData insert(LoggerRecord loggerRecord);
+
+    ResultData selectOne(String recordId);
 }

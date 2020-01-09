@@ -6,4 +6,13 @@
         insert into gmair_mqtt.mqtt_logger_record(record_id, topic_context, payload_context,block_flag, create_time, machine_id)
         values(#{recordId}, #{topicContext}, #{payloadContext}, #{blockFlag}, #{createAt}, #{machineId})
     </insert>
+
+    <select id="selectOne" parameterType="java.lang.String" resultType="finley.gmair.model.mqtt.LoggerRecord">
+        select * from gmair_mqtt.mqtt_logger_record
+        where 1=1
+        <if test="recordId != null">
+            and record_id = #{recordId}
+        </if>
+        order by create_time desc
+    </select>
 </mapper>

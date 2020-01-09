@@ -7,4 +7,6 @@ import finley.gmair.util.ResultData;
 public interface LoggerRecordService {
 
     ResultData create(LoggerRecord loggerRecord);
+
+    ResultData getById(String recordId);
 }

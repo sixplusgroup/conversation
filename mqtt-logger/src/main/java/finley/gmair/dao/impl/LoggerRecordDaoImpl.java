@@ -25,4 +25,17 @@ public class LoggerRecordDaoImpl extends BaseDao implements LoggerRecordDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData selectOne(String recordId) {
+        ResultData resultData = new ResultData();
+        try{
+            LoggerRecord loggerRecord = sqlSession.selectOne("gmair.mqtt.logger_record.selectOne", recordId);
+            resultData.setData(loggerRecord);
+        }catch (Exception e){
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription(e.getMessage());
+        }
+        return resultData;
+    }
 }

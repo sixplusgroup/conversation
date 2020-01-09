@@ -16,8 +16,6 @@ public class LoggerRecordServiceImpl implements LoggerRecordService {
     @Resource
     private LoggerRecordDao loggerRecordDao;
 
-//    @Resource
-//    private LoggerRecordMapper loggerRecordMapper;
 
     @Override
     public ResultData create(LoggerRecord loggerRecord) {
@@ -33,16 +31,19 @@ public class LoggerRecordServiceImpl implements LoggerRecordService {
         return result;
     }
 
-//    @Override
-//    public ResultData create(LoggerRecord loggerRecord) {
-//        ResultData result = new ResultData();
-//        try{
-//            loggerRecordMapper.insertOne(loggerRecord);
-//            result.setData(loggerRecord);
-//        }catch (Exception e){
-//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-//            result.setDescription(e.getMessage());
-//        }
-//        return result;
-//    }
+    @Override
+    public ResultData getById(String recordId) {
+        ResultData result = new ResultData();
+        ResultData response = loggerRecordDao.selectOne(recordId);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get result from database");
+            return result;
+        }
+        result.setData(response);
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        return result;
+    }
+
+
 }
