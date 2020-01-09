@@ -13,6 +13,15 @@ public class LoggerRecord extends Entity {
 
     private String payloadContext;
 
+    private String machineId;
+
+    public String getMachineId() {
+        return machineId;
+    }
+
+    public void setMachineId(String machineId) {
+        this.machineId = machineId;
+    }
 
     public String getRecordId() {
         return recordId;

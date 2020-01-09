@@ -3,6 +3,7 @@ package finley.gmair.client;
 import finley.gmair.model.mqtt.LoggerRecord;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.LoggerRecordService;
+import finley.gmair.util.IDGenerator;
 import finley.gmair.util.MqttProperties;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -25,9 +26,9 @@ import java.sql.Timestamp;
 public class LoggerClient {
     private Logger logger = LoggerFactory.getLogger(LoggerClient.class);
 
-    private String[] inboundTopic = {"/client/FA/update"};
-    private String inboundUrl = "tcp://192.168.1.105:1883";
-    private String clientId = "logger-client";
+//    private String[] inboundTopic = {"/client/FA/update"};
+//    private String inboundUrl = "tcp://192.168.1.105:1883";
+//    private String clientId = "logger-client";
 
     @Autowired
     private MqttProperties mqttProperties;
@@ -42,10 +43,10 @@ public class LoggerClient {
 
     @Bean
     public MessageProducer inbound(){
-        //String[] inboundTopic = mqttProperties.getInbound().getTopics().split(",");
-//        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getUrl(), mqttProperties.getInbound().getClientId()
-//        , inboundTopic);
-        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(inboundUrl, clientId, inboundTopic);
+        String[] inboundTopic = mqttProperties.getInbound().getTopics().split(",");
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getUrl(), mqttProperties.getInbound().getClientId()
+        , inboundTopic);
+        //MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(inboundUrl, clientId, inboundTopic);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
@@ -62,6 +63,7 @@ public class LoggerClient {
             public void handleMessage(Message<?> message) throws MessagingException {
                 System.out.println(message.toString());
                 CorePool.getHandlePool().execute(() ->{
+                    System.out.println("corepool");
                     if (message == null) {
                         logger.error("[Error] illegal message received.");
                         return;
@@ -69,6 +71,10 @@ public class LoggerClient {
                     MessageHeaders headers = message.getHeaders();
                     if (headers == null) return;
                     String topic = headers.get("mqtt_topic").toString();
+                    if (topic.startsWith("/")) topic = topic.substring(1);
+                    String[] array = topic.split("/");
+                    //根据定义的topic格式，获取message对应的machineId
+                    String machineId = array[2];
                     Long timestamp = headers.getTimestamp();
                     String payload = ((String) message.getPayload());
                     if(StringUtils.isBlank(payload)){
@@ -78,9 +84,12 @@ public class LoggerClient {
                     loggerRecord.setPayloadContext(payload);
                     loggerRecord.setTopicContext(topic);
                     loggerRecord.setCreateAt(new Timestamp(timestamp));
+                    loggerRecord.setRecordId(IDGenerator.generate("1"));
+                    loggerRecord.setMachineId(machineId);
                     //loggerRecord.setBlockFlag(false);
                     try{
                         loggerRecordService.create(loggerRecord);
+                        System.out.println("insert");
                     }catch (Exception e){
                         e.printStackTrace();
                     }

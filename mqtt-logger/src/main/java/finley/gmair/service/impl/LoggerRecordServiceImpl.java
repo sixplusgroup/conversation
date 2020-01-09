@@ -16,6 +16,9 @@ public class LoggerRecordServiceImpl implements LoggerRecordService {
     @Resource
     private LoggerRecordDao loggerRecordDao;
 
+//    @Resource
+//    private LoggerRecordMapper loggerRecordMapper;
+
     @Override
     public ResultData create(LoggerRecord loggerRecord) {
         ResultData result = new ResultData();
@@ -29,4 +32,17 @@ public class LoggerRecordServiceImpl implements LoggerRecordService {
         result.setData(response.getData());
         return result;
     }
+
+//    @Override
+//    public ResultData create(LoggerRecord loggerRecord) {
+//        ResultData result = new ResultData();
+//        try{
+//            loggerRecordMapper.insertOne(loggerRecord);
+//            result.setData(loggerRecord);
+//        }catch (Exception e){
+//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//            result.setDescription(e.getMessage());
+//        }
+//        return result;
+//    }
 }

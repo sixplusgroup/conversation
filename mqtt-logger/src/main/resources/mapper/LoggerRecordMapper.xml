@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="finley.gmair.mapper.LoggerRecordMapper">
+<mapper namespace="gmair.mqtt.logger_record">
 
-    <insert id="insert" parameterType="finley.gmair.model.mqtt.LoggerRecord" useGeneratedKeys="false">
-        insert into gmair_mqtt.mqtt_logger_record(record_id, topic_context, payload_context,block_flag, create_time)
-        values(#{record_id}, #{topic_context}, #{payload_context}, #{blockFlag}, #{createAt})
+    <insert id="insert" parameterType="finley.gmair.model.mqtt.LoggerRecord" useGeneratedKeys="false" >
+        insert into gmair_mqtt.mqtt_logger_record(record_id, topic_context, payload_context,block_flag, create_time, machine_id)
+        values(#{recordId}, #{topicContext}, #{payloadContext}, #{blockFlag}, #{createAt}, #{machineId})
     </insert>
 </mapper>

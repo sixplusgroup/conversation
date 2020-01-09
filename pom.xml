@@ -52,6 +52,7 @@
         <module>payment</module>
         <module>verify</module>
         <module>fancore</module>
+        <module>mqtt-logger</module>
     </modules>
 
     <parent>
