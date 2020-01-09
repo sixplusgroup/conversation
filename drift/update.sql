@@ -423,4 +423,71 @@ ADD COLUMN `back_name` VARCHAR(45) NULL AFTER `back_phone`;
 ALTER TABLE `gmair_drift`.`drift_excode`
 ADD COLUMN `label` VARCHAR(45) NULL DEFAULT '果麦检测' AFTER `price`;
 
+#2020-01-06
+CREATE TABLE `gmair_drift`.`drift_report` (
+  `report_id` VARCHAR(45) NOT NULL COMMENT '主键',
+  `consumer_name` VARCHAR(45) NOT NULL COMMENT '客户姓名',
+  `consumer_phone` VARCHAR(45) NOT NULL COMMENT '客户电话',
+  `consumer_address` VARCHAR(45) NOT NULL COMMENT '客户地址',
+  `detect_date` DATE NOT NULL COMMENT '检测日期',
+  `live_date` DATE NOT NULL COMMENT '入住时间',
+  `decorate_date` DATE NOT NULL COMMENT '装修完成时间',
+  `is_closed` TINYINT(1) NOT NULL COMMENT '是否封闭',
+  `temperature` VARCHAR(45) NOT NULL COMMENT '室内温度',
+  `report_template_id` VARCHAR(45) NOT NULL COMMENT '报告模板',
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`report_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin
+COMMENT = '甲醛检测报告';
+
+CREATE TABLE `gmair_drift`.`report_template` (
+  `report_template_id` VARCHAR(45) NOT NULL COMMENT '主键',
+  `detect_name` VARCHAR(45) NOT NULL COMMENT '项目名称',
+  `evaluate_basis` VARCHAR(45) NOT NULL COMMENT '评价依据',
+  `knowledge` VARCHAR(1000) NOT NULL COMMENT '知识科普',
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`report_template_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin
+COMMENT = '项目报告模板';
+
+CREATE TABLE `gmair_drift`.`data_item` (
+  `item_id` VARCHAR(45) NOT NULL COMMENT '主键',
+  `report_id` VARCHAR(45) NOT NULL COMMENT '关联的报告',
+  `position` VARCHAR(45) NOT NULL COMMENT '检测位置',
+  `area` DOUBLE NOT NULL COMMENT '检测面积',
+  `data` DOUBLE NOT NULL COMMENT '检测数值',
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`item_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin
+COMMENT = '检测数据';
+
+#2020-01-09
+ALTER TABLE `gmair_drift`.`data_item`
+CHANGE COLUMN `position` `detect_position` VARCHAR(45) NOT NULL COMMENT '检测位置' ,
+CHANGE COLUMN `area` `detect_area` DOUBLE NOT NULL COMMENT '检测面积' ,
+CHANGE COLUMN `data` `detect_data` DOUBLE NOT NULL COMMENT '检测数值' ;
+
+ALTER TABLE `gmair_drift`.`drift_report`
+CHANGE COLUMN `live_date` `live_date` DATE NULL COMMENT '入住时间' ,
+CHANGE COLUMN `decorate_date` `decorate_date` DATE NULL COMMENT '装修完成时间' ,
+CHANGE COLUMN `temperature` `temperature` VARCHAR(45) NULL COMMENT '室内温度' ;
+
+ALTER TABLE `gmair_drift`.`drift_report`
+ADD COLUMN `order_id` VARCHAR(45) NOT NULL AFTER `report_id`;
+
+ALTER TABLE `gmair_drift`.`drift_report`
+ADD COLUMN `consumer_id` VARCHAR(45) NOT NULL AFTER `report_id`;
+
+
+
+
 

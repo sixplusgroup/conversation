@@ -22,5 +22,8 @@
         <mapper resource="mapper/user.xml"></mapper>
         <mapper resource="mapper/driftordercancel.xml"></mapper>
         <mapper resource="mapper/orderaction.xml"></mapper>
+        <mapper resource="mapper/reporttemplate.xml"></mapper>
+        <mapper resource="mapper/driftreport.xml"></mapper>
+        <mapper resource="mapper/dataitem.xml"></mapper>
     </mappers>
 </configuration>
