@@ -57,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
             return result;
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setData(response.getData());
             result.setDescription("order size is zero");
             return result;
         }else {
