@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.mqtt.logger_record">
+
+    <resultMap id="LoggerRecordVo" type="finley.gmair.model.mqtt.LoggerRecord">
+        <result property="recordId" column="record_id"></result>
+        <result property="topicContext" column="topic_context"></result>
+        <result property="payloadContext" column="payload_context"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.mqtt.LoggerRecord" useGeneratedKeys="false" >
+        insert into gmair_mqtt.mqtt_logger_record(record_id, topic_context, payload_context,block_flag, create_time, machine_id)
+        values(#{recordId}, #{topicContext}, #{payloadContext}, #{blockFlag}, #{createAt}, #{machineId})
+    </insert>
+
+    <select id="selectOne" parameterType="java.util.Map" resultMap="LoggerRecordVo">
+        select * from gmair_mqtt.mqtt_logger_record
+        where 1=1
+        <if test="recordId != null">
+            and record_id = #{recordId}
+        </if>
+    </select>
+
+    <select id="list" parameterType="java.util.Map" resultMap="LoggerRecordVo">
+        select * from gmair_mqtt.mqtt_logger_record
+        where 1=1
+        <if test="machineId != null">
+            and machine_id = #{machineId}
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="count" parameterType="java.util.Map" resultType="java.lang.Long">
+        select count(1) from gmair_mqtt.mqtt_logger_record
+        where 1=1
+        <if test="machineId != null">
+           and machine_id = #{machineId}
+        </if>
+    </select>
+</mapper>
