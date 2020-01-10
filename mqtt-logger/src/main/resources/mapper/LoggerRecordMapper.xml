@@ -27,7 +27,7 @@
         select * from gmair_mqtt.mqtt_logger_record
         where 1=1
         <if test="machineId != null">
-            machine_id = #{machineId}
+            and machine_id = #{machineId}
         </if>
         order by create_time desc
     </select>
@@ -36,7 +36,7 @@
         select count(1) from gmair_mqtt.mqtt_logger_record
         where 1=1
         <if test="machineId != null">
-            machine_id = #{machineId}
+           and machine_id = #{machineId}
         </if>
     </select>
 </mapper>

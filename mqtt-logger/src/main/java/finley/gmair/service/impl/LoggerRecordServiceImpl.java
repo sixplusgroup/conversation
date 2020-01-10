@@ -63,7 +63,7 @@ public class LoggerRecordServiceImpl implements LoggerRecordService {
     @Override
     public ResultData count(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        ResultData response = loggerRecordDao.selectOne(condition);
+        ResultData response = loggerRecordDao.count(condition);
         if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to get result from database");
