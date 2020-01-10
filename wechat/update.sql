@@ -61,5 +61,17 @@ CREATE TABLE `gmair_wechat`.`wechat_resource` (
   `block_flag` TINYINT(1) NOT NULL,
   `create_time` DATETIME NOT NULL);
 
+
+#2020.01.09 create table to store message template
+
+create table message_template
+(
+template_id  varchar(100),
+message_type int(3),
+message_content longtext,
+block_flag tinyint(1),
+create_time datetime
+)
+
 #====================================
 
