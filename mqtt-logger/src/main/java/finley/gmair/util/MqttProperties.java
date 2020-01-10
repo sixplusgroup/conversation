@@ -5,8 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.mqtt")
 public class MqttProperties {
     private MqttInbound inbound;
-    
-    private MqttOutbound outbound;
 
     public MqttInbound getInbound() {
         return inbound;
@@ -16,11 +14,4 @@ public class MqttProperties {
         this.inbound = inbound;
     }
 
-    public MqttOutbound getOutbound() {
-        return outbound;
-    }
-
-    public void setOutbound(MqttOutbound outbound) {
-        this.outbound = outbound;
-    }
 }

@@ -21,14 +21,9 @@ import org.springframework.messaging.*;
 import javax.annotation.Resource;
 import java.sql.Timestamp;
 
-//@PropertySource({"classpath:auth.properties", "classpath:mqtt.properties"})
 @Configuration
 public class LoggerClient {
     private Logger logger = LoggerFactory.getLogger(LoggerClient.class);
-
-//    private String[] inboundTopic = {"/client/FA/update"};
-//    private String inboundUrl = "tcp://192.168.1.105:1883";
-//    private String clientId = "logger-client";
 
     @Autowired
     private MqttProperties mqttProperties;
@@ -37,16 +32,15 @@ public class LoggerClient {
     private LoggerRecordService loggerRecordService;
 
     @Bean
-    public MessageChannel mqttInputChannel(){
+    public MessageChannel mqttInputChannel() {
         return new DirectChannel();
     }
 
     @Bean
-    public MessageProducer inbound(){
+    public MessageProducer inbound() {
         String[] inboundTopic = mqttProperties.getInbound().getTopics().split(",");
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getUrl(), mqttProperties.getInbound().getClientId()
-        , inboundTopic);
-        //MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(inboundUrl, clientId, inboundTopic);
+                , inboundTopic);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
@@ -56,14 +50,13 @@ public class LoggerClient {
 
     @Bean
     @ServiceActivator(inputChannel = "mqttInputChannel")
-    public MessageHandler handler(){
+    public MessageHandler handler() {
         return new MessageHandler() {
-
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
                 System.out.println(message.toString());
-                CorePool.getHandlePool().execute(() ->{
-                    System.out.println("corepool");
+                CorePool.getHandlePool().execute(() -> {
+                    logger.info("[Info]: execution of core pool");
                     if (message == null) {
                         logger.error("[Error] illegal message received.");
                         return;
@@ -77,7 +70,7 @@ public class LoggerClient {
                     String machineId = array[2];
                     Long timestamp = headers.getTimestamp();
                     String payload = ((String) message.getPayload());
-                    if(StringUtils.isBlank(payload)){
+                    if (StringUtils.isBlank(payload)) {
                         payload = "no message";
                     }
                     LoggerRecord loggerRecord = new LoggerRecord();
@@ -86,13 +79,12 @@ public class LoggerClient {
                     loggerRecord.setCreateAt(new Timestamp(timestamp));
                     loggerRecord.setMachineId(machineId);
                     //loggerRecord.setBlockFlag(false);
-                    try{
+                    try {
                         loggerRecordService.create(loggerRecord);
-                        System.out.println("insert");
-                    }catch (Exception e){
+                        logger.info("[Info] insert");
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                 });
 
             }

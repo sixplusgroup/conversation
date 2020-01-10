@@ -1,6 +1,8 @@
 package finley.gmair;
 
 import finley.gmair.util.MqttProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -18,11 +20,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Configuration
 @EnableConfigurationProperties(MqttProperties.class)
-//@EnableMongoRepositories(basePackages = "finley.gmair.repo")
-//@EnableFeignClients({"finley.gmair.LoggerRecordService"})
 @EnableEurekaClient
 public class MqttLoggerApplication {
+    private final static Logger logger = LoggerFactory.getLogger(MqttLoggerApplication.class);
+
     public static void main(String[] args) {
+        logger.info("[Info] boot mqtt logger node...");
         SpringApplication.run(MqttLoggerApplication.class, args);
+        logger.info("[Info] mqtt logger has been started successfully");
     }
 }
