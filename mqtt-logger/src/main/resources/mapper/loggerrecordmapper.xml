@@ -10,13 +10,13 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <insert id="insert" parameterType="finley.gmair.model.mqtt.LoggerRecord" useGeneratedKeys="false" >
-        insert into gmair_mqtt.mqtt_logger_record(record_id, topic_context, payload_context,block_flag, create_time, machine_id)
-        values(#{recordId}, #{topicContext}, #{payloadContext}, #{blockFlag}, #{createAt}, #{machineId})
+    <insert id="insert" parameterType="finley.gmair.model.mqtt.LoggerRecord" useGeneratedKeys="false">
+        INSERT INTO mqtt_monitor.mqtt_logger_record (record_id, topic_context, payload_context, block_flag, create_time, machine_id)
+        VALUES (#{recordId}, #{topicContext}, #{payloadContext}, #{blockFlag}, #{createAt}, #{machineId})
     </insert>
 
     <select id="selectOne" parameterType="java.util.Map" resultMap="LoggerRecordVo">
-        select * from gmair_mqtt.mqtt_logger_record
+        select * from mqtt_monitor.mqtt_logger_record
         where 1=1
         <if test="recordId != null">
             and record_id = #{recordId}
@@ -24,7 +24,7 @@
     </select>
 
     <select id="list" parameterType="java.util.Map" resultMap="LoggerRecordVo">
-        select * from gmair_mqtt.mqtt_logger_record
+        select * from mqtt_monitor.mqtt_logger_record
         where 1=1
         <if test="machineId != null">
             and machine_id = #{machineId}
@@ -33,10 +33,10 @@
     </select>
 
     <select id="count" parameterType="java.util.Map" resultType="java.lang.Long">
-        select count(1) from gmair_mqtt.mqtt_logger_record
+        select count(1) from mqtt_monitor.mqtt_logger_record
         where 1=1
         <if test="machineId != null">
-           and machine_id = #{machineId}
+            and machine_id = #{machineId}
         </if>
     </select>
 </mapper>

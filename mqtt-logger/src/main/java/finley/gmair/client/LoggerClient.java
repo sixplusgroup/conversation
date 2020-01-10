@@ -3,7 +3,6 @@ package finley.gmair.client;
 import finley.gmair.model.mqtt.LoggerRecord;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.LoggerRecordService;
-import finley.gmair.util.IDGenerator;
 import finley.gmair.util.MqttProperties;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
