@@ -9,7 +9,6 @@ import finley.gmair.model.drift.DriftExpress;
 import finley.gmair.model.express.Express;
 import finley.gmair.model.order.OrderStatus;
 import finley.gmair.model.wechat.OfficialAccountMessage;
-import finley.gmair.model.wechat.OfficialAccountMessageTemplate;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
