@@ -16,6 +16,8 @@ public class ReportForm {
 
     private String reportTemplateId;
 
+    private String dataItem;
+
     public String getOrderId() {
         return orderId;
     }
@@ -70,5 +72,13 @@ public class ReportForm {
 
     public void setReportTemplateId(String reportTemplateId) {
         this.reportTemplateId = reportTemplateId;
+    }
+
+    public String getDataItem() {
+        return dataItem;
+    }
+
+    public void setDataItem(String dataItem) {
+        this.dataItem = dataItem;
     }
 }

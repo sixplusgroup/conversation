@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DataItemForm;
 import finley.gmair.form.drift.ReportForm;
@@ -118,6 +119,26 @@ public class ReportController {
             return result;
         }
         result.setData(response.getData());
+        String reportId = ((DriftReport) response.getData()).getReportId();
+
+        //处理数据项
+        if(!StringUtils.isEmpty(form.getDataItem())){
+            JSONArray dataItems = JSONArray.parseArray(form.getDataItem());
+            for (Object e : dataItems) {
+                DataItemForm dataItemForm = new DataItemForm();
+                dataItemForm.setReportId(reportId);
+                JSONObject jsonObject = JSONObject.parseObject(e.toString());
+                dataItemForm.setArea(jsonObject.getDouble("area"));
+                dataItemForm.setPosition(jsonObject.getString("position"));
+                dataItemForm.setData(jsonObject.getDouble("data"));
+                response = createReportData(dataItemForm);
+                if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+                    result.setResponseCode(response.getResponseCode());
+                    result.setDescription(response.getDescription());
+                    return result;
+                }
+            }
+        }
         return result;
     }
 
@@ -138,6 +159,27 @@ public class ReportController {
         condition.put("orderId",orderId);
         condition.put("blockFlag",false);
         ResultData response = driftReportService.fetchDriftReport(condition);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 根据reportTemplateId获取报告模板信息
+     * @param reportTemplateId
+     * @return
+     */
+    @GetMapping("/template/query")
+    ResultData getTemplate(String reportTemplateId){
+        ResultData result = new ResultData();
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("reportTemplateId",reportTemplateId);
+        ResultData response = driftReportService.fetchReportTemplate(condition);
         if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
