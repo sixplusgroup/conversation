@@ -176,25 +176,5 @@ VIEW `gmair_install`.`assign_member_view` AS
     WHERE
         (`gmair_install`.`install_assign`.`block_flag` = 0)
 
-#2019-01-03
-CREATE TABLE `gmair_install`.`company` (
-  `company_id` VARCHAR(45) NOT NULL,
-  `company_name` VARCHAR(45) NOT NULL,
-  `message_title` VARCHAR(45) NOT NULL,
-  `company_detail` VARCHAR(45) NOT NULL,
-  `block_flag` TINYINT(1) NOT NULL,
-  `create_time` DATETIME NOT NULL,
-  PRIMARY KEY (`company_id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_bin;
-
-#2019-01-04
-ALTER TABLE `gmair_install`.`install_assign`
-ADD COLUMN `company_id` VARCHAR(45) NULL AFTER `member_id`;
-
-
-
-
 
 

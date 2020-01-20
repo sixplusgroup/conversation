@@ -345,28 +345,3 @@ CREATE OR REPLACE VIEW `goods_model_view` AS
   FROM
     (`goods_model` `gm`
       LEFT JOIN `goods` `g` ON ((`gm`.`goods_id` = `g`.`goods_id`)))
-
-#2019-12-31
-CREATE
-    ALGORITHM = UNDEFINED
-    DEFINER = `root`@`localhost`
-    SQL SECURITY DEFINER
-VIEW `consumer_machine_bind_view` AS
-    SELECT
-        `gmair_machine`.`consumer_code_bind`.`bind_id` AS `bind_id`,
-        `gmair_machine`.`consumer_code_bind`.`consumer_id` AS `consumer_id`,
-        `gmair_machine`.`consumer_code_bind`.`bind_name` AS `bind_name`,
-        `gmair_machine`.`consumer_code_bind`.`code_value` AS `code_value`,
-        `gmair_machine`.`consumer_code_bind`.`ownership` AS `ownership`,
-        `gmair_machine`.`consumer_code_bind`.`block_flag` AS `block_flag`,
-        `gmair_machine`.`consumer_code_bind`.`create_time` AS `create_time`,
-        `gmair_userinfo`.`consumer_info`.`consumer_name` AS `consumer_name`,
-        `gmair_userinfo`.`consumer_phone`.`phone_number` AS `phone`
-    FROM
-        ((`gmair_machine`.`consumer_code_bind`
-        JOIN `gmair_userinfo`.`consumer_info`)
-        JOIN `gmair_userinfo`.`consumer_phone`)
-    WHERE
-        ((`gmair_machine`.`consumer_code_bind`.`block_flag` = 0)
-            AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_info`.`consumer_id`)
-            AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_phone`.`consumer_id`))

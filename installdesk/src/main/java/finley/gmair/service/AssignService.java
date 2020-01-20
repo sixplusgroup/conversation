@@ -22,8 +22,6 @@ public interface AssignService {
 
     ResultData principal(Map<String, Object> condition);
 
-    ResultData principal(Map<String, Object> condition,int start,int length);
-
     ResultData worker(Map<String, Object> condition);
 
 }

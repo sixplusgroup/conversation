@@ -1,7 +1,6 @@
 package finley.gmair.job;
 
 import finley.gmair.pool.TimingPool;
-import finley.gmair.service.DriftFeignService;
 import finley.gmair.service.MachineFeignService;
 import finley.gmair.service.TaskService;
 import org.quartz.Job;
@@ -23,9 +22,6 @@ public class DailyNoonJob implements Job {
     @Autowired
     private MachineFeignService machineFeignService;
 
-    @Autowired
-    private DriftFeignService driftFeignService;
-
 //    @Autowired
 //    private TaskService taskService;
 
@@ -37,10 +33,8 @@ public class DailyNoonJob implements Job {
 //            condition.put("taskId", "GTI20181130ex72fi16");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-            machineFeignService.turnOnScreenDaily();
+                machineFeignService.turnOnScreenDaily();
 //            }
         }));
-
-        TimingPool.getTimingExecutor().execute(() -> driftFeignService.orderReturnMessage());
     }
 }

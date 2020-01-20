@@ -487,7 +487,3 @@ ADD COLUMN `order_id` VARCHAR(45) NOT NULL AFTER `report_id`;
 ALTER TABLE `gmair_drift`.`drift_report`
 ADD COLUMN `consumer_id` VARCHAR(45) NOT NULL AFTER `report_id`;
 
-
-
-
-

@@ -58,19 +58,4 @@ public interface DriftService {
 
     @GetMapping("/drift/activity/{activityId}/available")
     ResultData getActivityAvailable(@PathVariable("activityId") String activityId);
-
-    @GetMapping("/drift/activity/list")
-    ResultData getActivityList();
-
-    @PostMapping("/drift/activity/excode/create")
-    ResultData createExcode(@RequestParam("activityId") String activityId,@RequestParam("num") int num,@RequestParam("price") double price,@RequestParam("status") int status,@RequestParam("label") String label);
-
-    @GetMapping("drift/activity/excode/one/create")
-    ResultData createOneExcode(@RequestParam("activityId") String activityId,@RequestParam("codeValue") String codeValue,@RequestParam("price") double price,@RequestParam("status") int status,@RequestParam("label") String label);
-
-    @GetMapping("/drift/activity/excode/search")
-    ResultData getExcodeByLabel(@RequestParam("activityId") String activityId,@RequestParam("label") String label);
-
-    @GetMapping("/drift/activity/excode/query/label")
-    ResultData getExcodeLabels(@RequestParam("activityId") String activityId);
 }

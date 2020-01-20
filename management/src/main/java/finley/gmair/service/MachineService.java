@@ -83,7 +83,7 @@ public interface MachineService {
     ResultData configScreen(@RequestParam("qrcode") String qrcode, @RequestParam("screen") int screen);
 
     @GetMapping("/machine/consumer/qrcode/bind/list")
-    ResultData qrcodeBindList(@RequestParam("search") String search);
+    ResultData qrcodeBindList(@RequestParam("qrcode") String qrcode);
 
     @PostMapping("/machine/consumer/qrcode/unbind")
     ResultData unbindConsumerWithQRcode(@RequestParam("consumerId") String consumerId,

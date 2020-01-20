@@ -1,13 +1,8 @@
 ##wechat config
-wechat_token=token
+wechat_token=
 wechat_appid=wxe8ca0dc55e5f81fd
-wechat_secret=f059ce8503d18423654d6c1d7a8129e2
+wechat_secret=
 
-##mini config, install wechat mini program
-mini_appid=wx95ce2e722268919b
-mini_secret=f9bad65006c9a20bd43537748a0aa3db
-
-file_save_path=/root/Material/tmp
 wechat_tiaozhuan_appid=wx61f6301fde5d4f57
 wechat_tiaozhuan_pagepath=pages/order_detail/order_detail?orderId=
 

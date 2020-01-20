@@ -13,8 +13,6 @@ public interface ConsumerQRcodeBindDao {
 
     ResultData query(Map<String, Object> condition);
 
-    ResultData query_view(Map<String, Object> condition);
-
     @Transactional
     ResultData update(Map<String, Object> condition);
 

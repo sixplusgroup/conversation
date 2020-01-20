@@ -54,23 +54,6 @@ public class ConsumerQRcodeBindDaoImpl extends BaseDao implements ConsumerQRcode
     }
 
     @Override
-    public ResultData query_view(Map<String, Object> condition) {
-        ResultData result = new ResultData();
-        try {
-            List<ConsumerQRcodeBind> list = sqlSession.selectList("gmair.machine.consumer_qrcode_bind.query_view", condition);
-            if (list.isEmpty()) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            }
-            result.setData(list);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(e.getMessage());
-        }
-        return result;
-    }
-
-    @Override
     public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {

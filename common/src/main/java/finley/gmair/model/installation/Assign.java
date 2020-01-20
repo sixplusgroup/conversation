@@ -14,8 +14,6 @@ public class Assign extends Entity {
 
     private String memberId;
 
-    private String companyId;
-
     private AssignStatus assignStatus;
 
     private String consumerConsignee;
@@ -51,12 +49,6 @@ public class Assign extends Entity {
     public Assign(String consumerConsignee, String consumerPhone, String consumerAddress, String detail, String source, String description) {
         this(consumerConsignee, consumerPhone, consumerAddress, detail, source);
         this.description = description;
-
-    }
-
-    public Assign(String consumerConsignee, String consumerPhone, String consumerAddress, String detail, String source, String description,String companyId) {
-        this(consumerConsignee, consumerPhone, consumerAddress, detail, source,description);
-        this.companyId = companyId;
 
     }
 
@@ -162,14 +154,6 @@ public class Assign extends Entity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
     }
 }
 

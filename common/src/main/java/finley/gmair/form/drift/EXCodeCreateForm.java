@@ -10,8 +10,6 @@ public class EXCodeCreateForm {
 
     private int status;
 
-    private String label;
-
     public String getActivityId() {
         return activityId;
     }
@@ -42,13 +40,5 @@ public class EXCodeCreateForm {
 
     public void setStatus(int status) {
         this.status = status;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 }

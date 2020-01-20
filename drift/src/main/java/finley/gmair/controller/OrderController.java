@@ -8,6 +8,7 @@ import finley.gmair.model.drift.*;
 import finley.gmair.model.drift.DriftExpress;
 import finley.gmair.model.express.Express;
 import finley.gmair.model.order.OrderStatus;
+import finley.gmair.model.wechat.OfficialAccountMessage;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
@@ -1734,7 +1735,7 @@ public class OrderController {
         resultData.setData(wechat);
 
         //调用wechat消息推送方法
-        ResultData result = wechatService.confirmMessage("12312");
+//        ResultData result = wechatService.confirmMessage("12312");
         return resultData;
     }
 
@@ -1749,16 +1750,14 @@ public class OrderController {
         ResultData resultData = new ResultData();
         //根据orderId获取手机号
         ResultData re = orderById(orderId);
-//        String expressOutCompany = ((List<DriftOrderPanel>) re.getData()).get(0).getExpressOutCompany();
         //todo 快递公司信息数据库存储
         if (expressOutCompany.equals("shunfeng")) {
             expressOutCompany = "顺丰快递";
         } else if (expressOutCompany.equals("yuantong")) {
             expressOutCompany = "圆通快递";
         }
-//        String expressOutNum = ((List<DriftOrderPanel>) re.getData()).get(0).getExpressOutNum();
         String phone = ((List<DriftOrderPanel>) re.getData()).get(0).getPhone();
-        System.out.println(phone);
+
         //根据手机号获取wechat
         ResultData res = authConsumerService.probeWechatByPhone(phone);
         if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -1773,8 +1772,35 @@ public class OrderController {
         String wechat = res.getData().toString();
         resultData.setData(wechat);
 
+        //设置推送JSON参数
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("touser", wechat);   // openid
+
+        JSONObject data = new JSONObject();
+        JSONObject first = new JSONObject();
+        first.put("value", "您好，您租赁的甲醛检测设备已发货。请注意查收");
+        first.put("color", "#173177");
+        JSONObject keyword1 = new JSONObject();
+        keyword1.put("value", expressOutNum);
+        keyword1.put("color", "#173177");
+        JSONObject keyword2 = new JSONObject();
+        keyword2.put("value", expressOutCompany);
+        keyword2.put("color", "#173177");
+        JSONObject remark = new JSONObject();
+        remark.put("value", "详情请查看果麦检测小程序");
+        remark.put("color", "#173177");
+
+        data.put("first",first);
+        data.put("keyword1",keyword1);
+        data.put("keyword2",keyword2);
+        data.put("remark",remark);
+
+        jsonObject.put("data", data);
+
+        String json = jsonObject.toString();
+
         //调用wechat消息推送方法
-        ResultData result = wechatService.deliverMessage(orderId, wechat, expressOutNum, expressOutCompany);
+        ResultData result = wechatService.sendMessage(OfficialAccountMessage.DELIVERED.getValue(), json, orderId);
         return resultData;
     }
 
@@ -1801,9 +1827,10 @@ public class OrderController {
     public ResultData returnMessage() {
         logger.info("[Info]: processing notifications to be sent to those who are expected to return the equipment they reserved");
         ResultData result = new ResultData();
-        //获取当前日期
+        //获取今天日期
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String dd = formatter.format(date);
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
         condition.put("today", formatter.format(date));
@@ -1829,12 +1856,40 @@ public class OrderController {
                 continue;
             }
             String wechat = response.getData().toString();
-            System.out.println(wechat);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("touser", wechat);   // openid
+
+            JSONObject data = new JSONObject();
+            JSONObject first = new JSONObject();
+            first.put("value", "您好，您租赁的甲醛检测设备将于今日到期。请按时寄回，感谢您的使用");
+            first.put("color", "#173177");
+            JSONObject keyword1 = new JSONObject();
+            keyword1.put("value", p.getActivityName());
+            keyword1.put("color", "#173177");
+            JSONObject keyword2 = new JSONObject();
+            keyword2.put("value", formatter.format(p.getExpectedDate()) + "至" + dd);
+            keyword2.put("color", "#173177");
+            JSONObject keyword3 = new JSONObject();
+            keyword3.put("value", dd);
+            keyword3.put("color", "#173177");
+            JSONObject remark = new JSONObject();
+            remark.put("value", "详情请查看果麦检测小程序");
+            remark.put("color", "#173177");
+
+            data.put("first",first);
+            data.put("keyword1",keyword1);
+            data.put("keyword2",keyword2);
+            data.put("keyword3",keyword3);
+            data.put("remark",remark);
+
+            jsonObject.put("data", data);
+
+            String json = jsonObject.toString();
 
             //公众号推送消息
-            wechatService.returnMessage(p.getOrderId(), wechat, p.getActivityName(), formatter.format(p.getExpectedDate()));
+            wechatService.sendMessage(OfficialAccountMessage.RETURN.getValue(), json, p.getOrderId());
         }
-
         return response;
     }
 }

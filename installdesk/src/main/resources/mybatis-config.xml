@@ -18,6 +18,5 @@
         <mapper resource="mapper/assign_report_view.xml"/>
         <mapper resource="mapper/picture_md5.xml"/>
         <mapper resource="mapper/express.xml"/>
-        <mapper resource="mapper/company.xml"/>
     </mappers>
 </configuration>

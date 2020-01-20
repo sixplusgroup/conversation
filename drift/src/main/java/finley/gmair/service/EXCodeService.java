@@ -7,13 +7,11 @@ import java.util.Map;
 
 public interface EXCodeService {
 
-    ResultData createEXCode(String activityId, int status, int num, double price,String label);
+    ResultData createEXCode(String activityId, int status, int num, double price);
 
     ResultData createOneExcode(EXCode excode);
 
     ResultData fetchEXCode(Map<String, Object> condition);
-
-    ResultData fetchEXCodeLabel(Map<String, Object> condition);
 
     ResultData modifyEXCode(Map<String, Object> condition);
 }

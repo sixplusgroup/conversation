@@ -15,7 +15,4 @@ public interface MessageService {
 
     @PostMapping("/message/send/single")
     ResultData send(@RequestParam("phone") String phone, @RequestParam("text") String text);
-
-    @PostMapping("/message/send/single")
-    ResultData send(@RequestParam("phone") String phone, @RequestParam("text") String text,@RequestParam("signature") String signature);
 }

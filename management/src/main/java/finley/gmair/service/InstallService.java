@@ -18,7 +18,6 @@ public interface InstallService {
     @PostMapping("/install/assign/create")
     ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source);
 
-
     /**
      * 调度人员创建安装任务，带备注
      *
@@ -32,10 +31,6 @@ public interface InstallService {
     @PostMapping("/install/assign/create")
     ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source, @RequestParam(value = "description", required = false) String description);
 
-
-    @PostMapping("/install/assign/create")
-    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source, @RequestParam(value = "description", required = false) String description,@RequestParam(value = "company", required = false) String company);
-
     //调度人员查看已有的安装任务
     @GetMapping("/install/assign/{assignId}/info")
     ResultData fetchAssign(@PathVariable("assignId") String assignId);
@@ -44,7 +39,7 @@ public interface InstallService {
     ResultData fetchAssign(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId,@RequestParam(value = "search", required = false) String search);
 
     @GetMapping("/install/assign/list")
-    ResultData fetchAssignByPage(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId, @RequestParam(value = "curPage", required = false) int curPage, @RequestParam(value = "length", required = false) int length,@RequestParam("search") String search);
+    ResultData fetchAssignByPage(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId, @RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
 
     //调度人员撤销安装任务
     @PostMapping("/install/assign/cancel")
@@ -133,7 +128,4 @@ public interface InstallService {
 
     @PostMapping("/install/assign/restore")
     ResultData restore(@RequestParam("assignId") String assignId);
-
-    @GetMapping("/install/assign/company/list")
-    ResultData getCompanyList();
 }
