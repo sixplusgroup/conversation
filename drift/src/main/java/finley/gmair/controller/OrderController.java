@@ -380,12 +380,19 @@ public class OrderController {
             } else {
                 condition.remove("orderId");
                 condition.put("activityId", activityId);
-                condition.put("status", EXCodeStatus.EXCHANGED.getValue());
+//                condition.put("status", EXCodeStatus.EXCHANGED.getValue());
                 condition.put("codeValue", code);
                 response = exCodeService.fetchEXCode(condition);
                 if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("输入的兑换码有误，请确认后重试");
+                    return result;
+                }
+                condition.put("status", EXCodeStatus.EXCHANGED.getValue());
+                response = exCodeService.fetchEXCode(condition);
+                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("该优惠码已使用过，取消之前的订单方可继续使用该优惠码");
                     return result;
                 }
                 EXCode exCode = ((List<EXCode>) response.getData()).get(0);

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.drift.driftreport">
+    <resultMap id="reportVo" type="finley.gmair.model.drift.DriftReport">
+        <result property="reportId" column="report_id"></result>
+        <result property="consumerId" column="consumer_id"></result>
+        <result property="orderId" column="order_id"></result>
+        <result property="reportTemplateId" column="report_template_id"></result>
+        <result property="consumerName" column="consumer_name"></result>
+        <result property="consumerPhone" column="consumer_phone"></result>
+        <result property="consumerAddress" column="consumer_address"></result>
+        <result property="detectDate" column="detect_date"></result>
+        <result property="liveDate" column="live_date"></result>
+        <result property="decorateDate" column="decorate_date"></result>
+        <result property="isClosed" column="is_closed"></result>
+        <result property="temperature" column="temperature"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+        <collection property="list" select="queryDataItem" column="report_id"></collection>
+    </resultMap>
+
+    <resultMap id="dataVo" type="finley.gmair.model.drift.DataItem">
+        <result property="itemId" column="item_id"></result>
+        <result property="reportId" column="report_id"></result>
+        <result property="position" column="detect_position"></result>
+        <result property="area" column="detect_area"></result>
+        <result property="data" column="detect_data"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="reportVo">
+        select report_id, consumer_id,order_id,report_template_id, consumer_name, consumer_phone, consumer_address,detect_date,live_date,
+        decorate_date,is_closed, temperature,block_flag, create_time
+        from gmair_drift.drift_report
+        where 1 = 1
+        <if test="reportId != null">
+            AND report_id = #{reportId}
+        </if>
+        <if test="consumerId != null">
+            AND consumer_id = #{consumerId}
+        </if>
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="reportTemplateId != null">
+            AND report_template_id = #{reportTemplateId}
+        </if>
+        <if test="consumerName != null">
+            AND consumer_name = #{consumerName}
+        </if>
+        <if test="consumerPhone != null">
+            AND consumer_phone = #{consumerPhone}
+        </if>
+        <if test="consumerAddress != null">
+            AND consumer_address = #{consumerAddress}
+        </if>
+        <if test="detectDate != null">
+            AND detect_date = #{detectDate}
+        </if>
+        <if test="liveDate != null">
+            AND live_date = #{liveDate}
+        </if>
+        <if test="decorateDate != null">
+            AND decorate_date = #{decorateDate}
+        </if>
+        <if test="isClosed != null">
+            AND is_closed = #{isClosed}
+        </if>
+        <if test="temperature != null">
+            AND temperature = #{temperature}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time desc
+    </select>
+
+    <select id="queryDataItem" parameterType="java.lang.String" resultMap="dataVo">
+        select item_id, report_id, detect_position, detect_area, detect_data,block_flag, create_time
+        from gmair_drift.data_item
+        where data_item.report_id = #{reportId}
+        ORDER BY create_time asc
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.DriftReport" useGeneratedKeys="false">
+        insert into gmair_drift.drift_report (report_id,consumer_id,order_id, report_template_id, consumer_name, consumer_phone, consumer_address,detect_date,live_date,
+        decorate_date,is_closed, temperature,block_flag, create_time)
+        VALUES (#{reportId},#{consumerId},#{orderId},#{reportTemplateId},#{consumerName},#{consumerPhone},#{consumerAddress},#{detectDate},#{liveDate},#{decorateDate},
+        #{isClosed},#{temperature},#{blockFlag},#{createAt})
+    </insert>
+</mapper>

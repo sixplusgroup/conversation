@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.drift.dataitem">
+    <resultMap id="dataVo" type="finley.gmair.model.drift.DataItem">
+        <result property="itemId" column="item_id"></result>
+        <result property="reportId" column="report_id"></result>
+        <result property="position" column="detect_position"></result>
+        <result property="area" column="detect_area"></result>
+        <result property="data" column="detect_data"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="dataVo">
+        select item_id, report_id, detect_position, detect_area, detect_data,block_flag, create_time
+        from gmair_drift.data_item
+        where 1 = 1
+        <if test="itemId != null">
+            AND item_id = #{itemId}
+        </if>
+        <if test="reportId != null">
+            AND report_id = #{reportId}
+        </if>
+        <if test="position != null">
+            AND detect_position = #{position}
+        </if>
+        <if test="area != null">
+            AND detect_area = #{area}
+        </if>
+        <if test="data != null">
+            AND detect_data = #{data}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        ORDER BY create_time desc
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.DataItem" useGeneratedKeys="false">
+        insert into gmair_drift.data_item (item_id, report_id, detect_position, detect_area, detect_data,block_flag, create_time)
+        VALUES (#{itemId},#{reportId},#{position},#{area},#{data},#{blockFlag},#{createAt})
+    </insert>
+</mapper>

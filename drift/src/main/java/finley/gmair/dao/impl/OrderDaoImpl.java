@@ -9,6 +9,8 @@ import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.ibatis.session.RowBounds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.Map;
 
 @Repository
 public class OrderDaoImpl extends BaseDao implements OrderDao {
+
+    private Logger logger = LoggerFactory.getLogger(OrderDaoImpl.class);
 
     @Override
     public ResultData insertOrder(DriftOrder order) {
@@ -92,6 +96,7 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(size);
+            logger.info(JSONObject.toJSONString(result));
         } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
