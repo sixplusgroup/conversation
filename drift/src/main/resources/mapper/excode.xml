@@ -8,12 +8,13 @@
         <result property="status" column="code_status"
                 typeHandler="finley.gmair.mybatis.handler.EXCodeStatusHandler"></result>
         <result property="price" column="price"></result>
+        <result property="label" column="label"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="excodeVo">
-        select code_id, activity_id, code_value, code_status, price, block_flag, create_time
+        select code_id, activity_id, code_value, code_status, price,label, block_flag, create_time
         from gmair_drift.drift_excode
         where 1 = 1
         <if test="codeId != null">
@@ -31,6 +32,9 @@
         <if test="price != null">
             and price = #{price}
         </if>
+        <if test="label != null">
+            and label like "%"#{label}"%"
+        </if>
         <if test="blockFlag != null">
             and block_flag = #{blockFlag}
         </if>
@@ -40,9 +44,29 @@
         ORDER BY create_time desc
     </select>
 
+    <select id="queryLabel" parameterType="java.util.Map" resultMap="excodeVo">
+        select code_id, activity_id, code_value, code_status, price,label, block_flag, create_time
+        from gmair_drift.drift_excode
+        where 1 = 1
+        <if test="activityId != null">
+            and activity_id = #{activityId}
+        </if>
+        <if test="status != null">
+            and code_status = #{status}
+        </if>
+        <if test="price != null">
+            and price = #{price}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        GROUP BY label
+        ORDER BY create_time desc
+    </select>
+
     <insert id="insert" parameterType="finley.gmair.model.drift.EXCode" useGeneratedKeys="false">
-        insert into gmair_drift.drift_excode(code_id, activity_id, code_value, code_status, price, block_flag, create_time)
-        values(#{codeId}, #{activityId}, #{codeValue}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{price}, #{blockFlag}, #{createAt})
+        insert into gmair_drift.drift_excode(code_id, activity_id, code_value, code_status, price,label, block_flag, create_time)
+        values(#{codeId}, #{activityId}, #{codeValue}, #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{price},#{label}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">
