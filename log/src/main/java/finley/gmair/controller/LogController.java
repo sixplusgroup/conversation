@@ -336,4 +336,47 @@ public class LogController {
         }
         return result;
     }
+
+    @PostMapping(value = "/adminlog/create")
+    public ResultData createAdminLog(UserLogForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getUserId()) || StringUtils.isEmpty(form.getComponent())
+                || StringUtils.isEmpty(form.getLogDetail()) || StringUtils.isEmpty(form.getIp())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required");
+            return result;
+        }
+        String userId = form.getUserId().trim();
+        String component = form.getComponent().trim();
+        String logDetail = form.getLogDetail().trim();
+        String ip = form.getIp().trim();
+        AdminAccountOperationLog log = new AdminAccountOperationLog(logDetail, ip, userId, component);
+        ResultData response = logService.createAdminLog(log);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store admin log");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @PostMapping("/adminlog/query")
+    public ResultData getAdminLog(String userId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(userId)) {
+            condition.put("userId", userId);
+        }
+        ResultData response = logService.fetchAdminLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query admin log");
+        }
+        return result;
+    }
 }

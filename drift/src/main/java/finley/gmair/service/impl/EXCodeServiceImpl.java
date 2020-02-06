@@ -11,6 +11,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class EXCodeServiceImpl implements EXCodeService {
     private EXCodeDao exCodeDao;
 
     @Override
-    public ResultData createEXCode(String activityId, int status, int num, double price) {
+    public ResultData createEXCode(String activityId, int status, int num, double price,String label) {
         ResultData result = new ResultData();
         if (num < 0) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -34,7 +35,12 @@ public class EXCodeServiceImpl implements EXCodeService {
         List<EXCode> list = new ArrayList<>();
         for (int i = 0; i < num; i++) {
             String codeValue = new StringBuffer(EXSerialGenerator.generate()).toString();
-            EXCode code = new EXCode(activityId, codeValue, price);
+            EXCode code;
+            if(StringUtils.isEmpty(label)){
+                code = new EXCode(activityId, codeValue, price);
+            }else {
+                code = new EXCode(activityId, codeValue, price,label);
+            }
             if (status == 1) {
                 code.setStatus(EXCodeStatus.EXCHANGED);
             }
@@ -72,6 +78,25 @@ public class EXCodeServiceImpl implements EXCodeService {
     public ResultData fetchEXCode(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = exCodeDao.query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No EXCode found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve EXCode from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData fetchEXCodeLabel(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = exCodeDao.queryLabel(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("No EXCode found from database");

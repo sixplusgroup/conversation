@@ -100,7 +100,7 @@ public class InstallController {
     public ResultData create(AssignForm form) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getConsumerConsignee()) || StringUtils.isEmpty(form.getConsumerPhone())
-                || StringUtils.isEmpty(form.getConsumerAddress()) || StringUtils.isEmpty(form.getSource())) {
+                || StringUtils.isEmpty(form.getConsumerAddress())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请输入所有的安装任务用户相关的信息");
             return result;
@@ -110,10 +110,12 @@ public class InstallController {
         String consumerAddress = form.getConsumerAddress();
         String model = form.getModel();
         String source = form.getSource();
-        if (StringUtils.isEmpty(form.getDescription())) {
+        if (StringUtils.isEmpty(form.getDescription())&&StringUtils.isEmpty(form.getCompany())) {
             result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source);
-        } else {
+        } else if(StringUtils.isEmpty(form.getCompany())){
             result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription());
+        }else {
+            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription(),form.getCompany());
         }
         return result;
     }
@@ -131,12 +133,12 @@ public class InstallController {
     }
 
     @GetMapping("/assign/list")
-    public ResultData assigns(String status, String teamId, Integer start, Integer length,String search) {
+    public ResultData assigns(String status, String teamId, Integer curPage, Integer length,String search) {
         ResultData result;
-        if (start == null || length == null) {
+        if (curPage == null || length == null) {
             result = installService.fetchAssign(status, teamId , search);
         } else {
-            result = installService.fetchAssignByPage(status, teamId, start, length);
+            result = installService.fetchAssignByPage(status, teamId, curPage, length,search);
         }
         return result;
     }
@@ -610,5 +612,10 @@ public class InstallController {
         }
         result = installService.restore(assignId);
         return result;
+    }
+
+    @GetMapping("/assign/company/list")
+    ResultData getCompanyList(){
+        return installService.getCompanyList();
     }
 }

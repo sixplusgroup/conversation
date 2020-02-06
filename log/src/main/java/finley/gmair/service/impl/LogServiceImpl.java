@@ -214,4 +214,37 @@ public class LogServiceImpl implements LogService {
         return result;
     }
 
+    @Override
+    public ResultData createAdminLog(AdminAccountOperationLog adminAccountOperationLog) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.insertAdminLog(adminAccountOperationLog);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to store admin log");
+        return result;
+    }
+
+    @Override
+    public ResultData fetchAdminLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryAdminLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No user log found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve admin log");
+        }
+        return result;
+    }
+
 }

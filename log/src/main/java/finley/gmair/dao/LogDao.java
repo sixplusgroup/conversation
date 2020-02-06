@@ -29,4 +29,8 @@ public interface LogDao {
     ResultData insertMqttAckLog(MqttAckLog mqttAckLog);
 
     ResultData queryMqttAckLog(Map<String, Object> condition);
+
+    ResultData insertAdminLog(AdminAccountOperationLog adminAccountOperationLog);
+
+    ResultData queryAdminLog(Map<String, Object> condition);
 }

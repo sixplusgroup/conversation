@@ -6,6 +6,28 @@
         <result property="codeValue" column="code_value"></result>
         <result property="teamId" column="team_id"></result>
         <result property="memberId" column="member_id"></result>
+        <result property="companyId" column="company_id"></result>
+        <result property="assignStatus" column="assign_status"
+                typeHandler="finley.gmair.mybatis.handler.AssignStatusHandler"></result>
+        <result property="consumerConsignee" column="consumer_consignee"></result>
+        <result property="consumerPhone" column="consumer_phone"></result>
+        <result property="consumerAddress" column="consumer_address"></result>
+        <result property="region" column="assign_region"></result>
+        <result property="detail" column="assign_detail"></result>
+        <result property="assignDate" column="assign_date"></result>
+        <result property="source" column="assign_source"></result>
+        <result property="description" column="assign_description"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <resultMap id="assignMemberVo" type="finley.gmair.model.installation.AssignMember">
+        <result property="assignId" column="assign_id"></result>
+        <result property="codeValue" column="code_value"></result>
+        <result property="teamId" column="team_id"></result>
+        <result property="teamName" column="team_name"></result>
+        <result property="memberId" column="member_id"></result>
+        <result property="memberName" column="member_name"></result>
         <result property="assignStatus" column="assign_status"
                 typeHandler="finley.gmair.mybatis.handler.AssignStatusHandler"></result>
         <result property="consumerConsignee" column="consumer_consignee"></result>
@@ -26,6 +48,7 @@
         code_value,
         team_id,
         member_id,
+        company_id,
         assign_status,
         consumer_consignee,
         consumer_phone,
@@ -47,6 +70,9 @@
         </if>
         <if test="teamId != null">
             AND team_id = #{teamId}
+        </if>
+        <if test="companyId != null">
+            AND company_id = #{companyId}
         </if>
         <if test="teams != null">
             AND team_id IN
@@ -76,31 +102,43 @@
             AND block_flag = #{blockFlag}
         </if>
         ORDER BY create_time ASC
-        LIMIT 0,800
         <!--<if test="page != null and pageLength!= null">-->
             <!--LIMIT page,pageLength-->
         <!--</if>-->
     </select>
 
-    <select id="principal" parameterType="java.util.Map" resultMap="assignVo">
+    <select id="principal" parameterType="java.util.Map" resultMap="assignMemberVo">
         SELECT
         assign_id,
         code_value,
         team_id,
+        team_name,
         member_id,
+        member_name,
         assign_status,
         consumer_consignee,
         consumer_phone,
         consumer_address,
+        assign_region,
         assign_date,
-        assign_source,
         assign_detail,
+        assign_source,
+        assign_description,
         block_flag,
         create_time
         FROM gmair_install.assign_member_view
         WHERE 1 = 1
-        <if test="assignStatus != null">
-            AND assign_status = #{assignStatus}
+        <if test="assignId != null">
+            AND assign_id = #{assignId}
+        </if>
+        <if test="codeValue != null">
+        AND code_value = #{codeValue}
+        </if>
+        <if test="teamId != null">
+            AND team_id = #{teamId}
+        </if>
+        <if test="memberId != null">
+            AND member_id = #{memberId}
         </if>
         <if test="teams != null">
             AND team_id IN
@@ -116,10 +154,65 @@
             OR team_name LIKE #{consumer}
             OR member_name LIKE #{consumer})
         </if>
+        <if test="assignStatus != null">
+            AND assign_status = #{assignStatus}
+        </if>
+        <if test="region != null">
+            AND assgin_region = #{region}
+        </if>
+        <if test="source != null">
+            AND assign_source = #{source}
+        </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
-        ORDER BY create_time ASC
+        <if test="reverse != null">
+            ORDER BY create_time ${reverse}
+        </if>
+    </select>
+
+    <select id="principalLength" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM gmair_install.assign_member_view
+        WHERE 1 = 1
+        <if test="assignId != null">
+            AND assign_id = #{assignId}
+        </if>
+        <if test="codeValue != null">
+            AND code_value = #{codeValue}
+        </if>
+        <if test="teamId != null">
+            AND team_id = #{teamId}
+        </if>
+        <if test="memberId != null">
+            AND member_id = #{memberId}
+        </if>
+        <if test="teams != null">
+            AND team_id IN
+            <foreach item="item" collection="teams" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="phone != null">
+            AND consumer_phone LIKE #{phone}
+        </if>
+        <if test="consumer != null">
+            AND (consumer_consignee LIKE #{consumer}
+            OR team_name LIKE #{consumer}
+            OR member_name LIKE #{consumer})
+        </if>
+        <if test="assignStatus != null">
+            AND assign_status = #{assignStatus}
+        </if>
+        <if test="region != null">
+            AND assgin_region = #{region}
+        </if>
+        <if test="source != null">
+            AND assign_source = #{source}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
     </select>
 
     <select id="worker" parameterType="java.util.Map" resultMap="assignVo">
@@ -159,8 +252,8 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Assign">
-        INSERT INTO gmair_install.install_assign (assign_id, code_value, team_id, member_id, assign_status, consumer_consignee, consumer_phone, consumer_address, assign_region, assign_detail, assign_date, assign_source, assign_description, block_flag, create_time)
-        VALUES (#{assignId}, #{codeValue}, #{teamId}, #{memberId},
+        INSERT INTO gmair_install.install_assign (assign_id, code_value, team_id, member_id,company_id, assign_status, consumer_consignee, consumer_phone, consumer_address, assign_region, assign_detail, assign_date, assign_source, assign_description, block_flag, create_time)
+        VALUES (#{assignId}, #{codeValue}, #{teamId}, #{memberId},#{companyId},
                              #{assignStatus, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
                              #{consumerConsignee}, #{consumerPhone}, #{consumerAddress}, #{region}, #{detail},
                              #{assignDate}, #{source}, #{description}, #{blockFlag}, #{createAt})

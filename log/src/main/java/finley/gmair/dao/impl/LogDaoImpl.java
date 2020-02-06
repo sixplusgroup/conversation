@@ -26,6 +26,8 @@ public class LogDaoImpl extends BaseDao implements LogDao {
 
     private final static String Collection_UserLog = "user_account_operation_log";
 
+    private final static String Collection_AdminLog = "admin_account_operation_log";
+
     private final static String Collection_MqttAckLog = "mqtt_ack_log";
 
     @Override
@@ -247,6 +249,44 @@ public class LogDaoImpl extends BaseDao implements LogDao {
                 list = mongoTemplate.find(new Query(Criteria.where("ackId").is(condition.get("ackId"))), MqttAckLog.class, Collection_MqttAckLog);
             } else {
                 list = mongoTemplate.findAll(MqttAckLog.class, Collection_MqttAckLog);
+            }
+
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData insertAdminLog(AdminAccountOperationLog adminAccountOperationLog) {
+        ResultData result = new ResultData();
+        adminAccountOperationLog.setLogId(IDGenerator.generate("ADL"));
+        try {
+            mongoTemplate.insert(adminAccountOperationLog, Collection_AdminLog);
+            result.setData(adminAccountOperationLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryAdminLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<AdminAccountOperationLog> list;
+            if (condition.containsKey("userId")) {
+                list = mongoTemplate.find(new Query(Criteria.where("userId").is(condition.get("userId"))), AdminAccountOperationLog.class, Collection_AdminLog);
+            } else {
+                list = mongoTemplate.findAll(AdminAccountOperationLog.class, Collection_AdminLog);
             }
 
             if (list.isEmpty()) {

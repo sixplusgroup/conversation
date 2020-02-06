@@ -85,25 +85,29 @@ public class ConsumerQRcodeController {
     }
 
     @GetMapping("/qrcode/bind/list")
-    public ResultData qrcodeBindList(String qrcode){
+    public ResultData qrcodeBindList(String search){
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(qrcode)){
+        if(StringUtils.isEmpty(search)){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请提供qrcode");
+            result.setDescription("请提供二维码或手机号");
             return result;
         }
         Map<String,Object> condition = new HashMap<>();
         condition.put("blockFlag",false);
-        condition.put("codeValue",qrcode);
-        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if(PhoneUtil.isMobile(search)){
+            condition.put("consumerPhone",search);
+        }else {
+            condition.put("codeValue",search);
+        }
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBindView(condition);
         if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("查找失败");
+            result.setDescription("查找结果为空，请检查手机号/二维码是否输入完整");
             return result;
         }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setData(response.getData());
-            result.setDescription("查找过程出现错误");
+            result.setDescription("查找过程出现错误，请重试");
             return result;
         }else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);

@@ -7,6 +7,7 @@ import finley.gmair.model.message.MessageTemplate;
 import finley.gmair.model.message.TextMessage;
 import finley.gmair.service.MessageService;
 import finley.gmair.service.MessageTemplateService;
+import finley.gmair.util.MessageProperties;
 import finley.gmair.util.MessageUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -54,7 +55,13 @@ public class EurekaClientApplication {
     @RequestMapping(method = RequestMethod.POST, value = "/send/single")
     public ResultData sendOne(MessageForm form) {
         ResultData result = new ResultData();
-        MessageUtil.sendOne(form.getPhone().trim(), form.getText().trim());
+        String text;
+        if(StringUtils.isEmpty(form.getSignature())){
+            text = new StringBuffer(form.getText()).append(MessageProperties.getValue("message_signature")).toString();
+        }else {
+            text = new StringBuffer(form.getText()).append(form.getSignature()).toString();
+        }
+        MessageUtil.sendOne(form.getPhone().trim(), text.trim());
         //save the message to database asynchronously
         TextMessage message = new TextMessage(form.getPhone().trim(), form.getText().trim());
         new Thread(() -> messageService.createTextMessage(message)).start();
@@ -72,7 +79,13 @@ public class EurekaClientApplication {
     @RequestMapping(method = RequestMethod.POST, value = "/send/group")
     public ResultData sendGroup(MessageForm form) {
         ResultData result = new ResultData();
-        MessageUtil.sendGroup(form.getPhone().trim(), form.getText().trim());
+        String text;
+        if(StringUtils.isEmpty(form.getSignature())){
+            text = new StringBuffer(form.getText()).append(MessageProperties.getValue("message_signature")).toString();
+        }else {
+            text = new StringBuffer(form.getText()).append(form.getSignature()).toString();
+        }
+        MessageUtil.sendGroup(form.getPhone().trim(), text.trim());
         //save the message to database asynchronously
         String[] phones = form.getPhone().split(",");
         Arrays.stream(phones).forEach(item -> {

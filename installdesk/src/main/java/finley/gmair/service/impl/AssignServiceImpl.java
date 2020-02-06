@@ -150,6 +150,22 @@ public class AssignServiceImpl implements AssignService {
     }
 
     @Override
+    public ResultData principal(Map<String, Object> condition, int start, int length) {
+        ResultData result = new ResultData();
+        ResultData response = assignDao.principal(condition, start, length);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData worker(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = assignDao.worker(condition);

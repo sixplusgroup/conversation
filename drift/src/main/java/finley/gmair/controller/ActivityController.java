@@ -310,7 +310,8 @@ public class ActivityController extends BaseController {
         int num = form.getNum();
         double price = form.getPrice();
         int status = form.getStatus();
-        response = exCodeService.createEXCode(activityId, status, num, price);
+        String label = form.getLabel();
+        response = exCodeService.createEXCode(activityId, status, num, price,label);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             new Thread(() -> {
@@ -325,9 +326,19 @@ public class ActivityController extends BaseController {
     }
 
     @GetMapping(value = "/excode/one/create")
-    public ResultData createOneEXCode(String activityId,String codeValue,double price,int status) {
+    public ResultData createOneEXCode(String activityId,String codeValue,double price,int status,String label) {
         ResultData result = new ResultData();
-        EXCode code = new EXCode(activityId, codeValue, price);
+        if(StringUtils.isEmpty(activityId)||StringUtils.isEmpty(codeValue)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供相应条件");
+            return result;
+        }
+        EXCode code;
+        if(StringUtils.isEmpty(label)){
+            code = new EXCode(activityId, codeValue, price);
+        }else {
+            code = new EXCode(activityId, codeValue, price,label);
+        }
         if (status == 1) {
             code.setStatus(EXCodeStatus.EXCHANGED);
         }
@@ -689,6 +700,37 @@ public class ActivityController extends BaseController {
         list.add(EXCodeStatus.EXCHANGED.getValue());
         condition.put("status", list);
         result = exCodeService.fetchEXCode(condition);
+        return result;
+    }
+
+    @GetMapping(value = "/excode/search")
+    public ResultData getExcode(String activityId,String label) {
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(label)||StringUtils.isEmpty(activityId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供查询所需的条件");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("label",label);
+        condition.put("activityId",activityId);
+        result = exCodeService.fetchEXCode(condition);
+        return result;
+    }
+
+    @GetMapping(value = "/excode/query/label")
+    public ResultData getExcodeLabels(String activityId) {
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(activityId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供查询的activityId");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("activityId",activityId);
+        result = exCodeService.fetchEXCodeLabel(condition);
         return result;
     }
 
