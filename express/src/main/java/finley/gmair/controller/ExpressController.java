@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,7 +65,7 @@ public class ExpressController {
      * 快递100推送消息接收
      * */
     @PostMapping("/receive")
-    public ResultData receive(String param) {
+    public ResultData receive(@RequestBody String param) {
         JSONObject json = JSONObject.parseObject(param);
         System.out.println(json);
         ResultData result = new ResultData();
