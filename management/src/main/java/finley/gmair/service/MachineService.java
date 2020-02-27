@@ -88,4 +88,7 @@ public interface MachineService {
     @PostMapping("/machine/consumer/qrcode/unbind")
     ResultData unbindConsumerWithQRcode(@RequestParam("consumerId") String consumerId,
                                         @RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/qrcode/findbyqrcode/consumer")
+    ResultData qrcodeGetMachineId(@RequestParam("codeValue") String codeValue);
 }
