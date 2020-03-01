@@ -11,16 +11,45 @@ public class Admin extends Entity {
 
     private String password;
 
+    private AdminRole role;
+
     public Admin() {
         super();
         blockFlag = true;
     }
 
-    public Admin(String email, String username, String password) {
+    public Admin(String email, String username, String password, AdminRole role){
         this();
         this.email = email;
         this.username = username;
         this.password = password;
+        this.role = role;
+    }
+
+    public Admin(String email, String username, String password, int role) {
+        this();
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        switch (role){
+            case 0:
+                this.role = AdminRole.MANAGER;
+                break;
+            case 1:
+                this.role = AdminRole.INSTALL;
+                break;
+            case 2:
+                this.role = AdminRole.CHECK;
+                break;
+            case 3:
+                this.role = AdminRole.CUSTOM_SERVICE;
+                break;
+            case 4:
+                this.role = AdminRole.MESSAGE;
+                break;
+            default:
+                this.role = null;
+        }
     }
 
     public String getAdminId() {
@@ -53,5 +82,13 @@ public class Admin extends Entity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public AdminRole getRole() {
+        return role;
+    }
+
+    public void setRole(AdminRole role) {
+        this.role = role;
     }
 }
