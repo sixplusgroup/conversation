@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -51,6 +52,8 @@ public class OAuth2ServerConfig {
         @Autowired
         AuthenticationManager authenticationManager;
 
+        @Autowired
+        UserDetailsService consumerDetailService;
 
         @Override
         public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -73,6 +76,7 @@ public class OAuth2ServerConfig {
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
             endpoints
+                    .userDetailsService(consumerDetailService)
                     .tokenStore(new InMemoryTokenStore())
                     .authenticationManager(authenticationManager);
         }
