@@ -11,6 +11,8 @@ import finley.gmair.service.MessageTemplateService;
 import finley.gmair.service.WechatUserService;
 import finley.gmair.util.*;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -31,6 +33,7 @@ import java.util.Map;
 @RequestMapping("/wechat/message")
 @PropertySource("classpath:wechat.properties")
 public class MessageTemplateController {
+    private Logger logger = LoggerFactory.getLogger(MessageTemplateController.class);
 
     @Autowired
     private MessageTemplateService messageTemplateService;
@@ -55,11 +58,12 @@ public class MessageTemplateController {
 
     /**
      * 根据模板类别号获取模板id等信息
+     *
      * @param type
      * @return
      */
-    @GetMapping(value="/query")
-    public ResultData getTemplate(int type){
+    @GetMapping(value = "/query")
+    public ResultData getTemplate(int type) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("messageType", type);
@@ -84,6 +88,7 @@ public class MessageTemplateController {
 
     /**
      * 根据模板号推送消息
+     *
      * @param type
      * @param json
      * @param orderId
@@ -91,38 +96,38 @@ public class MessageTemplateController {
      * @throws IOException
      */
     @GetMapping(value = "/sendMessage")
-    public ResultData sendMessage(int type,String json,String orderId) throws IOException {
+    public ResultData sendMessage(int type, String json, String orderId) throws IOException {
         //获得令牌
         ResultData re = accessTokenController.getToken(wechatAppId);
 
         String TemplateMessage_Url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
 
-        String token = ((AccessToken)re.getData()).getAccessToken();
+        String token = ((AccessToken) re.getData()).getAccessToken();
 
         //创建返回实体对象
         ResultData vo = new ResultData();
         //获得新的token
-        String url=TemplateMessage_Url.replace("ACCESS_TOKEN", token);
+        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
         //获取模板id
         ResultData res = getTemplate(type);
-        String templateId = ((MessageTemplate)res.getData()).getTemplateId();
+        String templateId = ((MessageTemplate) res.getData()).getTemplateId();
 
         JSONObject js = JSONObject.parseObject(json);
-        js.put("template_id",templateId);
+        js.put("template_id", templateId);
 //        jsonObject.put("url", "http://www.baidu.com");
 
         //设置跳转页面
         JSONObject miniprogram = new JSONObject();
-        miniprogram.put("appid",wechattiaozhuanappid);
-        miniprogram.put("pagepath",wechattiaozhuanpagepath+orderId);
-        js.put("miniprogram",miniprogram);
+        miniprogram.put("appid", wechattiaozhuanappid);
+        miniprogram.put("pagepath", wechattiaozhuanpagepath + orderId);
+        js.put("miniprogram", miniprogram);
 
 
         String string = HttpClientUtils.sendPostJsonStr(url, js.toJSONString());
         System.out.println(string);
         JSONObject result = JSON.parseObject(string);
         int errcode = result.getIntValue("errcode");
-        if(errcode == 0){
+        if (errcode == 0) {
             // 发送成功
             System.out.println("发送成功");
         } else {
@@ -130,10 +135,10 @@ public class MessageTemplateController {
             System.out.println("发送失败");
         }
 
-        if (errcode == 0){
+        if (errcode == 0) {
             vo.setResponseCode(ResponseCode.RESPONSE_OK);
             vo.setDescription("成功");
-        }else{
+        } else {
             vo.setResponseCode(ResponseCode.RESPONSE_ERROR);
             vo.setDescription("失败");
         }
@@ -142,7 +147,37 @@ public class MessageTemplateController {
     }
 
     /**
+     * 发送设备维护消息
+     *
+     * @param qrcode   设备二维码
+     * @param openid   用户的微信openid
+     * @param schedule 预期的升级时间
+     * @return
+     */
+    @PostMapping("/maintenance")
+    public ResultData sendMaintenanceMsg(String qrcode, String openid, String schedule) {
+        ResultData result = new ResultData();
+        String msgId = "srCFUHM9MlfgEgLRWDH7R8CT2hJLgMWaDgHsfpEQHsY";
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("templateId", msgId);
+        condition.put("blockFlag", false);
+        ResultData response = messageTemplateService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error("[Error]: Fail to obtain message template from the database");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未能找到对应的消息模板，消息发送失败");
+            return result;
+        }
+
+
+        //发送模板消息
+        HttpDeal.postJSONResponse("", new JSONObject());
+        return result;
+    }
+
+    /**
      * remain to be completed
+     *
      * @return
      * @throws IOException
      */
@@ -168,6 +203,7 @@ public class MessageTemplateController {
 
     /**
      * remain to be completed
+     *
      * @return
      * @throws IOException
      */
@@ -184,7 +220,6 @@ public class MessageTemplateController {
 
         return res;
     }
-
 
 
 }

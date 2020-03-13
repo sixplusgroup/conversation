@@ -10,7 +10,7 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.wechat.MessageTemplate">
-        REPLACE INTO gmair_wechat.message_template (template_id, message_type,message_content, block_flag, create_time)
+        REPLACE INTO gmair_wechat.message_template (template_id, message_type, message_content, block_flag, create_time)
         VALUES (#{templateId}, #{messageType}, #{messageContent}, #{blockFlag}, #{createAt})
     </insert>
 
@@ -23,6 +23,9 @@
         create_time
         FROM gmair_wechat.message_template
         WHERE 1 = 1
+        <if test="templateId != null">
+            AND template_id  = #{templateId}
+        </if>
         <if test="messageType != null">
             AND message_type = #{messageType}
         </if>
@@ -33,11 +36,11 @@
 
     <update id="update" parameterType="finley.gmair.model.wechat.MessageTemplate">
         UPDATE gmair_wechat.message_template
-        SET template_id = #{templateId},
-            message_type = #{messageType},
+        SET template_id     = #{templateId},
+            message_type    = #{messageType},
             message_content = #{messageContent},
-            block_flag   = #{blockFlag},
-            create_time  = #{createAt}
+            block_flag      = #{blockFlag},
+            create_time     = #{createAt}
         WHERE message_type = #{messageType}
     </update>
 </mapper>

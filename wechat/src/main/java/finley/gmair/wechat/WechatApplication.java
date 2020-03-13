@@ -100,6 +100,7 @@ public class WechatApplication {
                     Map<String, Object> condition = new HashMap<>();
                     condition.put("messageType", "text");
                     condition.put("keyword", tmessage.getContent());
+                    condition.put("blockFlag", false);
                     ResultData response = autoReplyService.fetch(condition);
                     if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                         AutoReply reply = ((List<AutoReply>) response.getData()).get(0);
