@@ -52,6 +52,9 @@ public class WechatApplication {
     @Autowired
     private MachineService machineService;
 
+    @Autowired
+    private VideoTemplateService videoTemplateService;
+
 //    @Autowired
 //    private WechatScheduler wechatScheduler;
 
@@ -127,6 +130,15 @@ public class WechatApplication {
                             condition.put("templateId", reply.getTemplateId());
                             ArticleReplyVo vo = getArticle(condition);
                             String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), tmessage);
+                            return xml;
+                        }
+                        if (reply.getTemplateId().startsWith("VTI")) {
+                            condition.clear();
+                            condition.put("templateId", reply.getTemplateId());
+                            VideoOutMessage result = initVideo(getVideo(condition), tmessage);
+                            content.alias("xml", VideoOutMessage.class);
+                            content.alias("Video", Video.class);
+                            String xml = content.toXML(result);
                             return xml;
                         }
                     }
@@ -223,6 +235,16 @@ public class WechatApplication {
         return result;
     }
 
+    private VideoOutMessage initVideo(VideoTemplate template, InMessage message) {
+        VideoOutMessage result = new VideoOutMessage();
+        result.setFromUserName(message.getToUserName());
+        result.setToUserName(message.getFromUserName());
+        result.setCreateTime(new Date().getTime());
+        Video video = new Video(template.getVideoUrl(),template.getVideoTitle(),template.getVideoDesc());
+        result.setVideo(video);
+        return result;
+    }
+
     private ArticleOutMessage initial(List<Article> list, InMessage message) {
         ArticleOutMessage result = new ArticleOutMessage();
         result.setFromUserName(message.getToUserName());
@@ -252,6 +274,16 @@ public class WechatApplication {
             return result;
         } else {
             return "";
+        }
+    }
+
+    private VideoTemplate getVideo(Map<String, Object> condition) {
+        ResultData rd = videoTemplateService.fetch(condition);
+        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            VideoTemplate vo = ((List<VideoTemplate>) rd.getData()).get(0);
+            return vo;
+        } else {
+            return null;
         }
     }
 

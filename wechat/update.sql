@@ -74,4 +74,15 @@ create_time datetime
 )
 
 #====================================
-
+#2020.04.15
+CREATE TABLE `gmair_wechat`.`video_template` (
+  `template_id` VARCHAR(20) NOT NULL,
+  `video_url` VARCHAR(200) NOT NULL,
+  `video_title` VARCHAR(45) NOT NULL,
+  `video_desc` VARCHAR(200) NOT NULL,
+  `block_flag` TINYINT(1) NOT NULL,
+  `create_time` DATETIME NOT NULL,
+  PRIMARY KEY (`template_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin;

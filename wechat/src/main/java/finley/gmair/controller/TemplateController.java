@@ -3,11 +3,9 @@ package finley.gmair.controller;
 import finley.gmair.form.wechat.ArticleTemplateForm;
 import finley.gmair.form.wechat.PictureTemplateForm;
 import finley.gmair.form.wechat.TextTemplateForm;
+import finley.gmair.form.wechat.VideoTemplateForm;
 import finley.gmair.model.wechat.*;
-import finley.gmair.service.ArticleTemplateService;
-import finley.gmair.service.AutoReplyService;
-import finley.gmair.service.PictureTemplateService;
-import finley.gmair.service.TextTemplateService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +32,9 @@ public class TemplateController {
 
     @Autowired
     private AutoReplyService autoReplyService;
+
+    @Autowired
+    private VideoTemplateService videoTemplateService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/text/list")
     public ResultData TextList() {
@@ -185,6 +186,58 @@ public class TemplateController {
         }
 
         template = (PictureTemplate) response.getData();
+        AutoReply reply = new AutoReply(form.getInMessageType(), form.getKeyword(), template.getTemplateId());
+        response = autoReplyService.create(reply);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to save the auto reply");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("The auto reply is configured successfully");
+        }
+        return result;
+    }
+
+    @GetMapping(value = "/video/list")
+    public ResultData videoList() {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = videoTemplateService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("video is empty");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription("video fetch error,please inspect");
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/video/create")
+    public ResultData createVideo(VideoTemplateForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getInMessageType()) || StringUtils.isEmpty(form.getKeyword()) || StringUtils.isEmpty(form.getVideoUrl())||
+        StringUtils.isEmpty(form.getVideoDesc())||StringUtils.isEmpty(form.getVideoTitle())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please make sure you fill all the required fields");
+            return result;
+        }
+        VideoTemplate template = new VideoTemplate(form.getVideoUrl(),form.getVideoTitle(),form.getVideoDesc());
+        ResultData response = videoTemplateService.create(template);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("video create error");
+            return result;
+        }
+
+        template = (VideoTemplate) response.getData();
         AutoReply reply = new AutoReply(form.getInMessageType(), form.getKeyword(), template.getTemplateId());
         response = autoReplyService.create(reply);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
