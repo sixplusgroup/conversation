@@ -229,7 +229,7 @@ public class ControlOptionController {
                     response = coreV3Service.configPower(machineId, commandValue);
                     break;
                 case 4:
-                    response = fanCoreService.config(vo.getModelName(), machineId, commandValue, null, null, null, null, null, null, null);
+                    response = fanCoreService.config(vo.getModelName(), machineId, commandValue, null, null, null, null, null, null, null, null);
                     break;
                 default:
                     logger.error("Unrecognized board version in power");
@@ -262,7 +262,7 @@ public class ControlOptionController {
                     response = coreV3Service.configHeat(machineId, commandValue);
                     break;
                 case 4:
-                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, commandValue, null, null, null);
+                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, commandValue, null, null, null, null);
                     break;
                 default:
                     logger.error("Unrecognized board version in heat");
@@ -280,7 +280,7 @@ public class ControlOptionController {
                     response = coreV3Service.configMode(machineId, commandValue);
                     break;
                 case 4:
-                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, commandValue, null, null, null, null, null);
+                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, commandValue, null, null, null, null, null, null);
                     break;
                 default:
                     logger.error("Unrecognized board version in heat");
@@ -289,7 +289,7 @@ public class ControlOptionController {
         } else if (component.equals("sweep")) {
             switch (version) {
                 case 4:
-                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, commandValue, null, null, null, null);
+                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, commandValue, null, null, null, null, null);
                     break;
                 default:
                     logger.error("当前设备".concat(qrcode).concat("不支持扫风调节"));
@@ -297,10 +297,15 @@ public class ControlOptionController {
         } else if (component.equals("buzz")) {
             switch (version) {
                 case 4:
-                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, null, null, commandValue);
+                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, null, null, commandValue, null);
                     break;
                 default:
                     logger.error("当前设备".concat(qrcode).concat("不支持蜂鸣器调节"));
+            }
+        } else if (component.equals("uv")) {
+            switch (version) {
+                case 4:
+                    response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, null, null, null, commandValue);
             }
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -429,7 +434,7 @@ public class ControlOptionController {
                 response = coreV3Service.configSpeed(machineId, speed);
                 break;
             case 4:
-                response = fanCoreService.config(vo.getModelName(), machineId, null, speed, null, null, null, null, null, null);
+                response = fanCoreService.config(vo.getModelName(), machineId, null, speed, null, null, null, null, null, null, null);
                 break;
             default:
                 logger.error("Unrecognized board version in heat");
@@ -574,7 +579,7 @@ public class ControlOptionController {
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
         switch (version) {
             case 4:
-                result = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, null, temp, null);
+                result = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, null, temp, null, null);
                 break;
             default:
                 response.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -619,7 +624,7 @@ public class ControlOptionController {
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
         switch (version) {
             case 4:
-                result = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, countdown, null, null);
+                result = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, countdown, null, null, null);
                 break;
             default:
                 response.setResponseCode(ResponseCode.RESPONSE_ERROR);
