@@ -36,11 +36,13 @@ public class FanStatus extends Entity implements Serializable {
 
     private int mutemode;
 
+    private int uv;
+
     public FanStatus() {
         super();
     }
 
-    public FanStatus(String mac, int power, int speed, int mode, int sweep, int heat, int runtime, int countdown, int targettemp, int temp,int mutemode) {
+    public FanStatus(String mac, int power, int speed, int mode, int sweep, int heat, int runtime, int countdown, int targettemp, int temp,int mutemode,int uv) {
         this();
         this.mac = mac;
         this.power = power;
@@ -53,6 +55,7 @@ public class FanStatus extends Entity implements Serializable {
         this.targettemp = targettemp;
         this.temp = temp;
         this.mutemode = mutemode;
+        this.uv = uv;
     }
 
     public String getMac() {
@@ -141,5 +144,13 @@ public class FanStatus extends Entity implements Serializable {
 
     public void setMutemode(int mutemode) {
         this.mutemode = mutemode;
+    }
+
+    public int getUv() {
+        return uv;
+    }
+
+    public void setUv(int uv) {
+        this.uv = uv;
     }
 }

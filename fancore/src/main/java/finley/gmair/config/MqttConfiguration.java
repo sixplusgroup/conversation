@@ -194,6 +194,7 @@ public class MqttConfiguration {
                 case "STATUS":
                     if (json.containsKey("mac")) mac = json.getString("mac");
                     FanStatus status = MQTTUtil.interpret(json);
+                    logger.info(JSONObject.toJSONString(status));
                     //put the current status into redis
                     final String uid = mac;
                     CorePool.getHandlePool().execute(() -> {

@@ -44,6 +44,7 @@ public class MQTTUtil {
         int temp = json.containsKey("temp") ? json.getIntValue("temp") : 0;
         int mode = json.containsKey("mode") ? json.getIntValue("mode") : 0;
         int buzz = json.containsKey("mutemode") ? json.getIntValue("mutemode") : 0;
-        return new FanStatus(mac, power, speed, mode, sweep, heat, runtime, countdown, targettemp, temp, buzz);
+        int uv = json.containsKey("uv") ? json.getIntValue("uv") : 0;
+        return new FanStatus(mac, power, speed, mode, sweep, heat, runtime, countdown, targettemp, temp, buzz,uv);
     }
 }
