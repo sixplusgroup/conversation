@@ -564,7 +564,7 @@ public class AssignController {
      * @return
      */
     @PostMapping("/submit")
-    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description, String date) {
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description, String date, int hole) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -599,7 +599,7 @@ public class AssignController {
             pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
         }
         picture = StringUtils.join(newUrls,",");
-        Snapshot snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description);
+        Snapshot snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description, hole);
         //存储安装快照
         response = assignSnapshotService.create(snapshot);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {

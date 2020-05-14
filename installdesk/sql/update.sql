@@ -253,6 +253,10 @@ ENGINE=InnoDB
 DEFAULT CHARSET=utf8;
 SET FOREIGN_KEY_CHECKS = 1;
 
+#2020-05-14
+ALTER TABLE `gmair_install`.`assign_snapshot`
+ADD COLUMN `hole` tinyint(1) NOT NULL AFTER `create_time`;
+
 
 
 
