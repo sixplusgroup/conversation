@@ -193,6 +193,70 @@ COLLATE = utf8_bin;
 ALTER TABLE `gmair_install`.`install_assign`
 ADD COLUMN `company_id` VARCHAR(45) NULL AFTER `member_id`;
 
+#2020-05-13
+DROP TABLE IF EXISTS `fix_snapshot`;
+CREATE TABLE `fix_snapshot` (
+    `snapshot_id` varchar(20) NOT NULL,
+    `assign_id` varchar(20) NOT NULL,
+    `code_value` varchar(45) NOT NULL,
+    `picture_path` longtext NOT NULL,
+    `description` varchar(45) DEFAULT NULL,
+    `block_flag` tinyint(1) NOT NULL DEFAULT '0',
+    `create_time` datetime NOT NULL,
+    PRIMARY KEY (`snapshot_id`))
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8;
+SET FOREIGN_KEY_CHECKS = 1;
+
+DROP TABLE IF EXISTS `survey_snapshot`;
+CREATE TABLE `survey_snapshot` (
+   `snapshot_id` varchar(20) NOT NULL,
+   `assign_id` varchar(20) NOT NULL,
+   `picture_path` longtext NOT NULL,
+   `description` varchar(45) DEFAULT NULL,
+   `block_flag` tinyint(1) NOT NULL DEFAULT '0',
+   `create_time` datetime NOT NULL,
+   PRIMARY KEY (`snapshot_id`))
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8;
+SET FOREIGN_KEY_CHECKS = 1;
+
+DROP TABLE IF EXISTS `change_machine_snapshot`;
+CREATE TABLE `change_machine_snapshot` (
+   `snapshot_id` varchar(20) NOT NULL,
+   `assign_id` varchar(20) NOT NULL,
+   `old_code_value` varchar(45) NOT NULL,
+   `new_code_value` varchar(45) NOT NULL,
+   `picture_path` longtext NOT NULL,
+   `wifi_configured` tinyint(1) NOT NULL DEFAULT '0',
+   `description` varchar(45) DEFAULT NULL,
+   `waybill_number` varchar(100) NOT NULL,
+   `block_flag` tinyint(1) NOT NULL DEFAULT '0',
+   `create_time` datetime NOT NULL,
+   PRIMARY KEY (`snapshot_id`))
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8;
+SET FOREIGN_KEY_CHECKS = 1;
+
+DROP TABLE IF EXISTS `disassemble_snapshot`;
+CREATE TABLE `disassemble_snapshot` (
+    `snapshot_id` varchar(20) NOT NULL,
+    `assign_id` varchar(20) NOT NULL,
+    `code_value` varchar(45) NOT NULL,
+    `picture_path` longtext NOT NULL,
+    `description` varchar(45) DEFAULT NULL,
+    `waybill_number` varchar(100) NULL,
+    `block_flag` tinyint(1) NOT NULL DEFAULT '0',
+    `create_time` datetime NOT NULL,
+    PRIMARY KEY (`snapshot_id`))
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8;
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+
+
 
 
 

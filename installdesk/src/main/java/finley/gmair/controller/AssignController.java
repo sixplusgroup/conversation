@@ -64,6 +64,18 @@ public class AssignController {
     @Autowired
     private CompanyService companyService;
 
+    @Autowired
+    private FixSnapshotService fixSnapshotService;
+
+    @Autowired
+    private SurveySnapshotService surveySnapshotService;
+
+    @Autowired
+    private ChangeMachineSnapshotService changeMachineSnapshotService;
+
+    @Autowired
+    private DisassembleSnapshotService disassembleSnapshotService;
+
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
      *
@@ -540,6 +552,17 @@ public class AssignController {
         return result;
     }
 
+    /**
+     * 提交安装任务相关信息
+     * @param assignId
+     * @param qrcode
+     * @param picture
+     * @param wifi
+     * @param method
+     * @param description
+     * @param date
+     * @return
+     */
     @PostMapping("/submit")
     public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description, String date) {
         ResultData result = new ResultData();
@@ -888,6 +911,468 @@ public class AssignController {
             return result;
         }
         result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 提交维修任务相关信息
+     * @param assignId
+     * @param qrcode
+     * @param picture
+     * @param description
+     * @param date
+     * @return
+     */
+    @PostMapping("/submit/fix")
+    public ResultData submitFix(String assignId, String qrcode, String picture, String description, String date){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供维修快照相关的信息");
+            return result;
+        }
+        //检测图片是否已存在
+        String[] urls = picture.split(",");
+        List<String> md5s=new ArrayList<>();
+        List<String> newUrls=new ArrayList<>();
+        ResultData response = null;
+        Map<String, Object> md5_condition = new HashMap<>();
+        for(int i = 0; i<urls.length;i++){
+            response = resourcesService.getTempFileMap(urls[i]);
+            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                String md5 = (String) response.getData();
+                newUrls.add(urls[i]);
+                md5_condition.clear();
+                md5_condition.put("md5",md5);
+                md5_condition.put("blockFlag",false);
+                response = pictureMd5Service.fetch(md5_condition);
+                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                    md5s.add(md5);
+                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("请勿上传重复图片");
+                    return result;
+                }
+            }
+        }
+        for (int i=0;i<md5s.size();i++){
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        }
+        picture = StringUtils.join(newUrls,",");
+        SnapshotFix snapshot = new SnapshotFix(assignId, qrcode, picture, description);
+        //存储维修快照
+        response = fixSnapshotService.create(snapshot);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("创建维修任务快照失败，请稍后尝试");
+            return result;
+        }
+        //更新完成时间
+        if (!StringUtils.isEmpty(date)) {
+            Map<String, Object> install_assign_condition = new HashMap<>();
+            install_assign_condition.put("assignDate", date);
+            install_assign_condition.put("assignId", assignId);
+            install_assign_condition.put("blockFlag", false);
+            assignService.update(install_assign_condition);
+        }
+        //更新维修任务状态
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.FINISHED.getValue());
+        response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("维修任务状态更改失败，请稍后尝试");
+            return result;
+        }
+        //记录维修任务操作日志
+        InstallPool.getLogExecutor().execute(() -> {
+            AssignAction action = new AssignAction(assignId, "维修完成" + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
+            assignActionService.create(action);
+            //获取安装任务信息
+            condition.clear();
+            condition.put("assignId", assignId);
+            condition.put("blockFlag", false);
+            ResultData r = assignService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            Assign assign = ((List<Assign>) r.getData()).get(0);
+            //判断是否要发送短信
+            condition.clear();
+            condition.put("configComp", "message");
+            condition.put("status", true);
+            condition.put("blockFlag", false);
+            r = configService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            //获取短信模板
+            r = messageService.template("NOTIFICATION_INSTALL");
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+
+            logger.info("template message: " + JSON.toJSONString(r));
+            JSONObject json = JSONObject.parseObject(JSON.toJSONString(r));
+            if (!json.getString("responseCode").equalsIgnoreCase("RESPONSE_OK")) return;
+            json = json.getJSONArray("data").getJSONObject(0);
+            String template = json.getString("message");
+            String candidate = template.replaceAll("###", "%s");
+//            String code = SerialUtil.serial(4);
+//            //存储安装服务码
+//            AssignCode ac = new AssignCode(assignId, code);
+//            r = assignCodeService.create(ac);
+//            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                logger.error("Fail to create code for assign");
+//                return;
+//            }
+//            candidate = String.format(candidate, assign.getDetail(), code);
+            //发送短信
+            messageService.send(assign.getConsumerPhone(), candidate);
+        });
+        result.setDescription("维修任务完成");
+        return result;
+    }
+
+    /**
+     * 提交勘测任务相关信息
+     * @param assignId
+     * @param picture
+     * @param description
+     * @param date
+     * @return
+     */
+    @PostMapping("/submit/survey")
+    public ResultData submitSurvey(String assignId, String picture, String description, String date){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(picture)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供勘测快照相关的信息");
+            return result;
+        }
+        //检测图片是否已存在
+        String[] urls = picture.split(",");
+        List<String> md5s=new ArrayList<>();
+        List<String> newUrls=new ArrayList<>();
+        ResultData response = null;
+        Map<String, Object> md5_condition = new HashMap<>();
+        for(int i = 0; i<urls.length;i++){
+            response = resourcesService.getTempFileMap(urls[i]);
+            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                String md5 = (String) response.getData();
+                newUrls.add(urls[i]);
+                md5_condition.clear();
+                md5_condition.put("md5",md5);
+                md5_condition.put("blockFlag",false);
+                response = pictureMd5Service.fetch(md5_condition);
+                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                    md5s.add(md5);
+                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("请勿上传重复图片");
+                    return result;
+                }
+            }
+        }
+        for (int i=0;i<md5s.size();i++){
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        }
+        picture = StringUtils.join(newUrls,",");
+        SnapshotSurvey snapshot = new SnapshotSurvey(assignId, picture, description);
+        //存储勘测快照
+        response = surveySnapshotService.create(snapshot);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("创建勘测任务快照失败，请稍后尝试");
+            return result;
+        }
+        //更新完成时间
+        if (!StringUtils.isEmpty(date)) {
+            Map<String, Object> install_assign_condition = new HashMap<>();
+            install_assign_condition.put("assignDate", date);
+            install_assign_condition.put("assignId", assignId);
+            install_assign_condition.put("blockFlag", false);
+            assignService.update(install_assign_condition);
+        }
+        //更新勘测任务状态
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.FINISHED.getValue());
+        response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("勘测任务状态更改失败，请稍后尝试");
+            return result;
+        }
+        //记录勘测任务操作日志
+        InstallPool.getLogExecutor().execute(() -> {
+            AssignAction action = new AssignAction(assignId, "勘测完成" + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
+            assignActionService.create(action);
+            //获取安装任务信息
+            condition.clear();
+            condition.put("assignId", assignId);
+            condition.put("blockFlag", false);
+            ResultData r = assignService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            Assign assign = ((List<Assign>) r.getData()).get(0);
+            //判断是否要发送短信
+            condition.clear();
+            condition.put("configComp", "message");
+            condition.put("status", true);
+            condition.put("blockFlag", false);
+            r = configService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            //获取短信模板
+            r = messageService.template("NOTIFICATION_INSTALL");
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+
+            logger.info("template message: " + JSON.toJSONString(r));
+            JSONObject json = JSONObject.parseObject(JSON.toJSONString(r));
+            if (!json.getString("responseCode").equalsIgnoreCase("RESPONSE_OK")) return;
+            json = json.getJSONArray("data").getJSONObject(0);
+            String template = json.getString("message");
+            String candidate = template.replaceAll("###", "%s");
+//            String code = SerialUtil.serial(4);
+//            //存储安装服务码
+//            AssignCode ac = new AssignCode(assignId, code);
+//            r = assignCodeService.create(ac);
+//            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                logger.error("Fail to create code for assign");
+//                return;
+//            }
+//            candidate = String.format(candidate, assign.getDetail(), code);
+            //发送短信
+            messageService.send(assign.getConsumerPhone(), candidate);
+        });
+        result.setDescription("勘测任务完成");
+        return result;
+    }
+
+    /**
+     * 提交换机任务相关信息
+     * @param assignId
+     * @param oldQrcode
+     * @param newQrcode
+     * @param picture
+     * @param wifi
+     * @param description
+     * @param date
+     * @return
+     */
+    @PostMapping("/submit/changemachine")
+    public ResultData submitChangeMachine(String assignId, String oldQrcode, String newQrcode, String picture, Boolean wifi, String description, String date, String wayBill){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(oldQrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(newQrcode) || StringUtils.isEmpty(wayBill)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供换机快照相关的信息");
+            return result;
+        }
+        //检测图片是否已存在
+        String[] urls = picture.split(",");
+        List<String> md5s=new ArrayList<>();
+        List<String> newUrls=new ArrayList<>();
+        ResultData response = null;
+        Map<String, Object> md5_condition = new HashMap<>();
+        for(int i = 0; i<urls.length;i++){
+            response = resourcesService.getTempFileMap(urls[i]);
+            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                String md5 = (String) response.getData();
+                newUrls.add(urls[i]);
+                md5_condition.clear();
+                md5_condition.put("md5",md5);
+                md5_condition.put("blockFlag",false);
+                response = pictureMd5Service.fetch(md5_condition);
+                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                    md5s.add(md5);
+                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("请勿上传重复图片");
+                    return result;
+                }
+            }
+        }
+        for (int i=0;i<md5s.size();i++){
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        }
+        picture = StringUtils.join(newUrls,",");
+        SnapshotChangeMachine snapshot = new SnapshotChangeMachine(assignId, oldQrcode, newQrcode, picture, wifi, description, wayBill);
+        //存储换机快照
+        response = changeMachineSnapshotService.create(snapshot);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("创建换机任务快照失败，请稍后尝试");
+            return result;
+        }
+        //更新完成时间
+        if (!StringUtils.isEmpty(date)) {
+            Map<String, Object> install_assign_condition = new HashMap<>();
+            install_assign_condition.put("assignDate", date);
+            install_assign_condition.put("assignId", assignId);
+            install_assign_condition.put("blockFlag", false);
+            assignService.update(install_assign_condition);
+        }
+        //更新换机任务状态
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.FINISHED.getValue());
+        response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("换机任务状态更改失败，请稍后尝试");
+            return result;
+        }
+        //记录换机任务操作日志
+        InstallPool.getLogExecutor().execute(() -> {
+            AssignAction action = new AssignAction(assignId, "换机完成" + ", 网络" + ((wifi) ? "已配置" : "未配置") + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
+            assignActionService.create(action);
+            //获取安装任务信息
+            condition.clear();
+            condition.put("assignId", assignId);
+            condition.put("blockFlag", false);
+            ResultData r = assignService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            Assign assign = ((List<Assign>) r.getData()).get(0);
+            //判断是否要发送短信
+            condition.clear();
+            condition.put("configComp", "message");
+            condition.put("status", true);
+            condition.put("blockFlag", false);
+            r = configService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            //获取短信模板
+            r = messageService.template("NOTIFICATION_INSTALL");
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+
+            logger.info("template message: " + JSON.toJSONString(r));
+            JSONObject json = JSONObject.parseObject(JSON.toJSONString(r));
+            if (!json.getString("responseCode").equalsIgnoreCase("RESPONSE_OK")) return;
+            json = json.getJSONArray("data").getJSONObject(0);
+            String template = json.getString("message");
+            String candidate = template.replaceAll("###", "%s");
+//            String code = SerialUtil.serial(4);
+//            //存储安装服务码
+//            AssignCode ac = new AssignCode(assignId, code);
+//            r = assignCodeService.create(ac);
+//            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                logger.error("Fail to create code for assign");
+//                return;
+//            }
+//            candidate = String.format(candidate, assign.getDetail(), code);
+            //发送短信
+            messageService.send(assign.getConsumerPhone(), candidate);
+        });
+        result.setDescription("换机任务完成");
+        return result;
+    }
+
+    /**
+     * 提交拆机任务相关信息
+     * @param assignId
+     * @param qrcode
+     * @param picture
+     * @param description
+     * @param date
+     * @param wayBill
+     * @return
+     */
+    @PostMapping("submit/disassemble")
+    public ResultData submitDisassemble(String assignId, String qrcode, String picture, String description, String date, String wayBill){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供拆机快照相关的信息");
+            return result;
+        }
+        //检测图片是否已存在
+        String[] urls = picture.split(",");
+        List<String> md5s=new ArrayList<>();
+        List<String> newUrls=new ArrayList<>();
+        ResultData response = null;
+        Map<String, Object> md5_condition = new HashMap<>();
+        for(int i = 0; i<urls.length;i++){
+            response = resourcesService.getTempFileMap(urls[i]);
+            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                String md5 = (String) response.getData();
+                newUrls.add(urls[i]);
+                md5_condition.clear();
+                md5_condition.put("md5",md5);
+                md5_condition.put("blockFlag",false);
+                response = pictureMd5Service.fetch(md5_condition);
+                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                    md5s.add(md5);
+                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("请勿上传重复图片");
+                    return result;
+                }
+            }
+        }
+        for (int i=0;i<md5s.size();i++){
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        }
+        picture = StringUtils.join(newUrls,",");
+        SnapshotDisassemble snapshot = new SnapshotDisassemble(assignId, qrcode, picture, description, wayBill);
+        //存储换机快照
+        response = disassembleSnapshotService.create(snapshot);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("创建换机任务快照失败，请稍后尝试");
+            return result;
+        }
+        //更新完成时间
+        if (!StringUtils.isEmpty(date)) {
+            Map<String, Object> install_assign_condition = new HashMap<>();
+            install_assign_condition.put("assignDate", date);
+            install_assign_condition.put("assignId", assignId);
+            install_assign_condition.put("blockFlag", false);
+            assignService.update(install_assign_condition);
+        }
+        //更新换机任务状态
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.FINISHED.getValue());
+        response = assignService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("换机任务状态更改失败，请稍后尝试");
+            return result;
+        }
+        //记录维修任务操作日志
+        InstallPool.getLogExecutor().execute(() -> {
+            AssignAction action = new AssignAction(assignId, "换机完成" + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
+            assignActionService.create(action);
+            //获取安装任务信息
+            condition.clear();
+            condition.put("assignId", assignId);
+            condition.put("blockFlag", false);
+            ResultData r = assignService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            Assign assign = ((List<Assign>) r.getData()).get(0);
+            //判断是否要发送短信
+            condition.clear();
+            condition.put("configComp", "message");
+            condition.put("status", true);
+            condition.put("blockFlag", false);
+            r = configService.fetch(condition);
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+            //获取短信模板
+            r = messageService.template("NOTIFICATION_INSTALL");
+            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
+
+            logger.info("template message: " + JSON.toJSONString(r));
+            JSONObject json = JSONObject.parseObject(JSON.toJSONString(r));
+            if (!json.getString("responseCode").equalsIgnoreCase("RESPONSE_OK")) return;
+            json = json.getJSONArray("data").getJSONObject(0);
+            String template = json.getString("message");
+            String candidate = template.replaceAll("###", "%s");
+//            String code = SerialUtil.serial(4);
+//            //存储安装服务码
+//            AssignCode ac = new AssignCode(assignId, code);
+//            r = assignCodeService.create(ac);
+//            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                logger.error("Fail to create code for assign");
+//                return;
+//            }
+//            candidate = String.format(candidate, assign.getDetail(), code);
+            //发送短信
+            messageService.send(assign.getConsumerPhone(), candidate);
+        });
+        result.setDescription("换机任务完成");
         return result;
     }
 }
