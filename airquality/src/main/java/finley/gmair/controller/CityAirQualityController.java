@@ -24,8 +24,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
+@CrossOrigin
 @RequestMapping(value = "/airquality")
-@PropertySource("classpath:moji.properties")
 public class CityAirQualityController {
 
     @Autowired

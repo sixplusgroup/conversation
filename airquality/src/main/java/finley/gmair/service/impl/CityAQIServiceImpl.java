@@ -312,15 +312,6 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     @Autowired
     private AirQualityCacheService airQualityCacheService;
-
-//    @Value("${token}")
-//    private String token;
-//
-//    @Value("${password}")
-//    private String password;
-//
-//    @Value("${url}")
-//    private String url;
     
     @Value("${base}")
     private String base;
