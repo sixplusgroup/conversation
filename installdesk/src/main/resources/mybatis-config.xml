@@ -19,5 +19,9 @@
         <mapper resource="mapper/picture_md5.xml"/>
         <mapper resource="mapper/express.xml"/>
         <mapper resource="mapper/company.xml"/>
+        <mapper resource="mapper/fixsnapshot.xml"/>
+        <mapper resource="mapper/surveysnapshot.xml"/>
+        <mapper resource="mapper/changemachinesnapshot.xml"/>
+        <mapper resource="mapper/disassemblesnapshot.xml"/>
     </mappers>
 </configuration>

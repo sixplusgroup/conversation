@@ -27,6 +27,7 @@ import java.util.Map;
 @RestController
 @SpringBootApplication
 @ComponentScan({"finley.gmair.service", "finley.gmair.dao"})
+@CrossOrigin
 @RequestMapping("/location")
 public class LocationApplication {
     private final static String TENCENT_DISTRICT_URL = "http://apis.map.qq.com/ws/district/v1/list";
@@ -81,7 +82,6 @@ public class LocationApplication {
         return process(response);
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/province/list")
     public ResultData province() {
         ResultData result = new ResultData();
@@ -98,7 +98,6 @@ public class LocationApplication {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/{provinceId}/cities")
     public ResultData city(@PathVariable("provinceId") String province) {
         ResultData result = new ResultData();
@@ -120,7 +119,6 @@ public class LocationApplication {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/{cityId}/districts")
     public ResultData district(@PathVariable("cityId") String city) {
         ResultData result = new ResultData();
@@ -211,7 +209,6 @@ public class LocationApplication {
         return result;
     }
 
-
     @GetMapping("/probe/provinceId")
     public ResultData probeProvinceIdByCityId(String cityId) {
         ResultData result = new ResultData();
@@ -262,7 +259,6 @@ public class LocationApplication {
         return result;
     }
 
-    @CrossOrigin
     @GetMapping("/overview")
     public ResultData overview() {
         ResultData result = new ResultData();

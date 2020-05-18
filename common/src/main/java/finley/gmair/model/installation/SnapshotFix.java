@@ -2,8 +2,7 @@ package finley.gmair.model.installation;
 
 import finley.gmair.model.Entity;
 
-public class Snapshot extends Entity {
-
+public class SnapshotFix extends Entity {
     private String snapshotId;
 
     private String assignId;
@@ -12,26 +11,17 @@ public class Snapshot extends Entity {
 
     private String picturePath;
 
-    private boolean wifiConfigured;
-
-    private String installMethod;
-
     private String description;
 
-    private int hole;
-
-    public Snapshot() {
+    public SnapshotFix() {
         super();
     }
 
-    public Snapshot(String assignId, String codeValue, String picturePath, boolean wifiConfigured, String installMethod, String description, int hole) {
+    public SnapshotFix(String assignId, String codeValue, String picturePath, String description) {
         this.assignId = assignId;
         this.codeValue = codeValue;
         this.picturePath = picturePath;
-        this.wifiConfigured = wifiConfigured;
-        this.installMethod = installMethod;
         this.description = description;
-        this.hole = hole;
     }
 
     public String getSnapshotId() {
@@ -66,22 +56,6 @@ public class Snapshot extends Entity {
         this.picturePath = picturePath;
     }
 
-    public boolean isWifiConfigured() {
-        return wifiConfigured;
-    }
-
-    public void setWifiConfigured(boolean wifiConfigured) {
-        this.wifiConfigured = wifiConfigured;
-    }
-
-    public String getInstallMethod() {
-        return installMethod;
-    }
-
-    public void setInstallMethod(String installMethod) {
-        this.installMethod = installMethod;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -89,8 +63,4 @@ public class Snapshot extends Entity {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    public int isHole() { return hole; }
-
-    public void setHole(int hole) { this.hole = hole; }
 }
