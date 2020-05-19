@@ -2,7 +2,7 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.VolumeDailyDao;
 import finley.gmair.dao.VolumeHourlyDao;
-import finley.gmair.model.dataAnalysis.VolumeHourly;
+import finley.gmair.model.analysis.VolumeHourly;
 import finley.gmair.service.VolumeService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

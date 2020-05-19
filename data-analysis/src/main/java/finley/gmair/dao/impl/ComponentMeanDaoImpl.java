@@ -2,7 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.ComponentMeanDao;
-import finley.gmair.model.dataAnalysis.ComponentMean;
+import finley.gmair.model.analysis.ComponentMean;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

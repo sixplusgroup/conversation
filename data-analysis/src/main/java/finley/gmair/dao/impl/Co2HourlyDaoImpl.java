@@ -2,7 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.Co2HourlyDao;
-import finley.gmair.model.dataAnalysis.Co2Hourly;
+import finley.gmair.model.analysis.Co2Hourly;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

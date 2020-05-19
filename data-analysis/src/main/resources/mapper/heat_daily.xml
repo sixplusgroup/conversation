@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.machine.heat_daily">
-    <resultMap id="heatDaily" type="finley.gmair.model.dataAnalysis.HeatHourly">
+    <resultMap id="heatDaily" type="finley.gmair.model.analysis.HeatHourly">
         <result property="statusId" column="status_id"></result>
         <result property="machineId" column="machine_id"></result>
         <result property="heatOnMinute" column="heat_on_minute"></result>
@@ -10,7 +10,7 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <insert id="insert" parameterType="finley.gmair.model.dataAnalysis.HeatHourly" useGeneratedKeys="false">
+    <insert id="insert" parameterType="finley.gmair.model.analysis.HeatHourly" useGeneratedKeys="false">
         INSERT INTO gmair_data_analysis.heat_daily(status_id, machine_id, heat_on_minute, heat_off_minute, block_flag, create_time)
         VALUES(#{statusId}, #{machineId}, #{heatOnMinute}, #{heatOffMinute}, #{blockFlag}, #{createAt})
     </insert>

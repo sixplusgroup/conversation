@@ -1,7 +1,6 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.UserActionMongoDao;
-import finley.gmair.model.dataAnalysis.UserActionDaily;
 import finley.gmair.model.machine.UserAction;
 import finley.gmair.service.UserActionMongoService;
 import finley.gmair.util.ResponseCode;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UserActionMongoServiceImpl implements UserActionMongoService {
@@ -18,7 +16,7 @@ public class UserActionMongoServiceImpl implements UserActionMongoService {
     @Autowired
     private UserActionMongoDao userActionMongoDao;
 
-    public ResultData fetchData(Map<String, Object> condition){
+    public ResultData fetchData(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = userActionMongoDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {

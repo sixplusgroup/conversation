@@ -1,4 +1,4 @@
-package finley.gmair.model.dataAnalysis;
+package finley.gmair.model.analysis;
 
 import finley.gmair.model.Entity;
 

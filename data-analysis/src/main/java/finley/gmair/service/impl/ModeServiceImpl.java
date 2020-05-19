@@ -2,7 +2,7 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.ModeDailyDao;
 import finley.gmair.dao.ModeHourlyDao;
-import finley.gmair.model.dataAnalysis.ModeHourly;
+import finley.gmair.model.analysis.ModeHourly;
 import finley.gmair.service.ModeService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

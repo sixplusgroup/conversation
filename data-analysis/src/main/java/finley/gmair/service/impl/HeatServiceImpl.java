@@ -2,7 +2,7 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.HeatDailyDao;
 import finley.gmair.dao.HeatHourlyDao;
-import finley.gmair.model.dataAnalysis.HeatHourly;
+import finley.gmair.model.analysis.HeatHourly;
 import finley.gmair.service.HeatService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

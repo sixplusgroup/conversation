@@ -2,7 +2,7 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.Co2DailyDao;
 import finley.gmair.dao.Co2HourlyDao;
-import finley.gmair.model.dataAnalysis.Co2Hourly;
+import finley.gmair.model.analysis.Co2Hourly;
 import finley.gmair.service.Co2Service;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

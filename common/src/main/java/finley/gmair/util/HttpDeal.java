@@ -51,6 +51,54 @@ public class HttpDeal {
         return null;
     }
 
+    public static String postJSONResponse(String url, JSONObject param) {
+        try {
+
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(2000) // 设置连接超时时间，单位毫秒
+                    .setConnectionRequestTimeout(1000)
+                    .setSocketTimeout(5000) // 请求获取数据的超时时间，单位毫秒
+                    .build();
+            HttpRequestRetryHandler myRetryHandler = new HttpRequestRetryHandler() {
+                @Override
+                public boolean retryRequest(IOException e, int i, HttpContext httpContext) {
+                    return false;
+                }
+            };
+            CloseableHttpClient client = HttpClients.custom()
+                    .setDefaultRequestConfig(requestConfig)
+                    .setRetryHandler(myRetryHandler)
+                    .build();
+
+            try {
+                StringEntity paramEntity = new StringEntity(param.toString(), "UTF-8"); // 对参数进行编码
+                paramEntity.setContentType("application/json; charset=utf-8");
+
+                HttpPost httpPost = new HttpPost(url);
+                httpPost.setEntity(paramEntity);
+                httpPost.setConfig(requestConfig);
+
+                CloseableHttpResponse response = client.execute(httpPost);
+
+                HttpEntity entity = response.getEntity();
+
+                if (entity != null) {
+                    String responseStr = EntityUtils.toString(entity, "UTF-8");
+                    if (responseStr == null || responseStr.trim().length() == 0) {
+                        responseStr = "{}";
+                    }
+                    return responseStr;
+                }
+                response.close();
+            } finally {
+                client.close();
+            }
+            return null;
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
 
     public static String postJSONResponse(String url, JSONObject param, Map<String, String> header) {
         try {

@@ -2,7 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.VolumeDailyDao;
-import finley.gmair.model.dataAnalysis.VolumeHourly;
+import finley.gmair.model.analysis.VolumeHourly;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

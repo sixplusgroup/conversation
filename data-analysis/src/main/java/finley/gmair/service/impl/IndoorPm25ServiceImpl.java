@@ -2,7 +2,7 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.IndoorPm25DailyDao;
 import finley.gmair.dao.IndoorPm25HourlyDao;
-import finley.gmair.model.dataAnalysis.IndoorPm25Hourly;
+import finley.gmair.model.analysis.IndoorPm25Hourly;
 import finley.gmair.service.IndoorPm25Service;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

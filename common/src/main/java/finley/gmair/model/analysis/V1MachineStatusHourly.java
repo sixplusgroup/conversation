@@ -1,8 +1,8 @@
-package finley.gmair.model.dataAnalysis;
+package finley.gmair.model.analysis;
 
 import finley.gmair.model.Entity;
 
-public class V2MachineStatusHourly extends Entity {
+public class V1MachineStatusHourly extends Entity {
     //机器id
     private String machineId;
 
@@ -23,10 +23,6 @@ public class V2MachineStatusHourly extends Entity {
     private int maxHumid;
     private int minHumid;
 
-    private double averageCo2;
-    private int maxCo2;
-    private int minCo2;
-
     private int powerOnMinute;
     private int powerOffMinute;
 
@@ -37,11 +33,11 @@ public class V2MachineStatusHourly extends Entity {
     private int heatOnMinute;
     private int heatOffMinute;
 
-    public V2MachineStatusHourly() {
+    public V1MachineStatusHourly() {
         super();
     }
 
-    public V2MachineStatusHourly(String machineId, double averagePm25, int maxPm25, int minPm25, double averageVolume, int maxVolume, int minVolume, double averageTemp, int maxTemp, int minTemp, double averageHumid, int maxHumid, int minHumid, double averageCo2, int maxCo2, int minCo2, int powerOnMinute, int powerOffMinute, int autoMinute, int manualMinute, int sleepMinute, int heatOnMinute, int heatOffMinute) {
+    public V1MachineStatusHourly(String machineId, double averagePm25, int maxPm25, int minPm25, double averageVolume, int maxVolume, int minVolume, double averageTemp, int maxTemp, int minTemp, double averageHumid, int maxHumid, int minHumid, int powerOnMinute, int powerOffMinute, int autoMinute, int manualMinute, int sleepMinute, int heatOnMinute, int heatOffMinute) {
         super();
         this.machineId = machineId;
         this.averagePm25 = averagePm25;
@@ -56,9 +52,6 @@ public class V2MachineStatusHourly extends Entity {
         this.averageHumid = averageHumid;
         this.maxHumid = maxHumid;
         this.minHumid = minHumid;
-        this.averageCo2 = averageCo2;
-        this.maxCo2 = maxCo2;
-        this.minCo2 = minCo2;
         this.powerOnMinute = powerOnMinute;
         this.powerOffMinute = powerOffMinute;
         this.autoMinute = autoMinute;
@@ -170,30 +163,6 @@ public class V2MachineStatusHourly extends Entity {
 
     public void setMinHumid(int minHumid) {
         this.minHumid = minHumid;
-    }
-
-    public double getAverageCo2() {
-        return averageCo2;
-    }
-
-    public void setAverageCo2(double averageCo2) {
-        this.averageCo2 = averageCo2;
-    }
-
-    public int getMaxCo2() {
-        return maxCo2;
-    }
-
-    public void setMaxCo2(int maxCo2) {
-        this.maxCo2 = maxCo2;
-    }
-
-    public int getMinCo2() {
-        return minCo2;
-    }
-
-    public void setMinCo2(int minCo2) {
-        this.minCo2 = minCo2;
     }
 
     public int getPowerOnMinute() {

@@ -41,10 +41,10 @@ public class TimeUtil {
     }
 
     //将String类型转化为时间 年月日
-    public static Date formatTimeToDate(String str){
+    public static Date formatTimeToDate(String str) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
-        try{
+        try {
             date = sdf.parse(str);
         } catch (ParseException e) {
             e.printStackTrace();

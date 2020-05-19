@@ -1,6 +1,6 @@
 package finley.gmair.service;
 
-import finley.gmair.model.dataAnalysis.HumidHourly;
+import finley.gmair.model.analysis.HumidHourly;
 import finley.gmair.util.ResultData;
 
 import java.util.List;
