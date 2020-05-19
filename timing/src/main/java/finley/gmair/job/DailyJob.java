@@ -84,21 +84,21 @@ public class DailyJob implements Job {
             machineFeignService.createMachineListDaily();
 //            }
         }));
-//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20190121gzu9ov57");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-//            dataAnalysisService.statisticalUserDaily();
+            dataAnalysisService.statisticalUserDaily();
 //            }
-//        }));
-//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+        }));
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20190121ezryn460");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-//            dataAnalysisService.statisticalComponentDaily();
+            dataAnalysisService.statisticalComponentDaily();
 //            }
-//        }));
+        }));
     }
 }

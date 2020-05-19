@@ -79,14 +79,14 @@ public class HourlyJob implements Job {
             machineFeignService.handleMachineStatusHourly();
 //            }
         }));
-//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI201811309xagf377");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-//            machineFeignService.probePartialPM2_5Hourly();
+            machineFeignService.probePartialPM2_5Hourly();
 //            }
-//        }));
+        }));
 //        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20181130yo7yi341");
@@ -103,13 +103,13 @@ public class HourlyJob implements Job {
             machineFeignService.turnOffScreenHourly();
 //            }
         }));
-//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI20190109522w8i1");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-//            dataAnalysisService.statisticalDataHourly();
+            dataAnalysisService.statisticalDataHourly();
 //            }
-//        }));
+        }));
     }
 }
