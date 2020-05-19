@@ -1,4 +1,4 @@
-package finley.gmair.dataAnalysis;
+package finley.gmair;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @EnableDiscoveryClient
 @SpringBootApplication
-public class dataAnalysisApplication {
+public class DataAnalysisApplication {
     public static void main(String[] args) {
-        SpringApplication.run(dataAnalysisApplication.class, args);
+        SpringApplication.run(DataAnalysisApplication.class, args);
     }
 }
