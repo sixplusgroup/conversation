@@ -401,6 +401,7 @@ public class ConsumerQRcodeController {
             o.put("modelCode", vo.getModelCode());
             o.put("modelName", vo.getModelName());
             o.put("modelThumbnail", vo.getModelThumbnail());
+            o.put("modelBg", vo.getModelBg());
             json.add(o);
         }
         if (json.size() == 0) {

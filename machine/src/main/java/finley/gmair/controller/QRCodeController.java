@@ -466,6 +466,29 @@ public class QRCodeController {
         return result;
     }
 
+    /**
+     * 根据型号ID查询型号的详细信息
+     *
+     * @param modelId
+     * @return
+     */
+    @GetMapping("/model/detail")
+    public ResultData modelInfo(String modelId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(modelId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供设备的型号");
+            return result;
+        }
+        ResultData response = qrCodeService.modelDetail(modelId);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription("根据型号ID查询");
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
     @GetMapping(value = "/findbyqrcode")
     public ResultData findMachineIdByCodeValue(String codeValue) {
         ResultData result = new ResultData();

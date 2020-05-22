@@ -6,6 +6,7 @@
         <result property="goodsId" column="goods_id"></result>
         <result property="modelCode" column="model_code"></result>
         <result property="modelName" column="model_name"></result>
+        <result property="modelBg" column="model_bg"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
@@ -22,7 +23,7 @@
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="goodsModelVo">
-        SELECT model_id, goods_id, model_code, model_name, block_flag, create_time
+        SELECT model_id, goods_id, model_code, model_name, model_bg, block_flag, create_time
         FROM gmair_machine.goods_model
         WHERE 1 = 1
         <if test="modelId != null">

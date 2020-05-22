@@ -132,4 +132,20 @@ public class QRCodeServiceImpl implements QRCodeService {
         result.setData(vo);
         return result;
     }
+
+    @Override
+    public ResultData modelDetail(String modelId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("modelId", modelId);
+        ResultData response = goodsModelDao.detail(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到该型号ID对应的商品及型号信息");
+            return result;
+        }
+        GoodsModelDetailVo vo = ((List<GoodsModelDetailVo>) response.getData()).get(0);
+        result.setData(vo);
+        return result;
+    }
 }

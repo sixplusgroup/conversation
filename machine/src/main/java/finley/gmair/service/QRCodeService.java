@@ -24,4 +24,6 @@ public interface QRCodeService {
      * @return
      */
     ResultData profile(String qrcode);
+
+    ResultData modelDetail(String modelId);
 }
