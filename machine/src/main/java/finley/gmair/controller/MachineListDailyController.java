@@ -81,8 +81,7 @@ public class MachineListDailyController {
             return flag;
         }).collect(Collectors.toList());
         //list = list.stream().filter(e -> e.getOverCount() !=0).collect(Collectors.toList());
-
-
+        //todo optimize
         try {
             ResultData r = machineListDailyService.queryMachineListDaily(new HashMap<>());
             if (r.getResponseCode() == ResponseCode.RESPONSE_OK) {

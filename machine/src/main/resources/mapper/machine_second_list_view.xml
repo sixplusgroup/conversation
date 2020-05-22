@@ -14,7 +14,8 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
     <select id="query" parameterType="java.util.Map" resultMap="machine_list_second_view">
-        SELECT consumer_id, bind_name, code_value, machine_id, consumer_name, consumer_phone, over_count, out_pm25_time, block_flag, create_time
+        SELECT consumer_id, bind_name, code_value, machine_id, consumer_name, consumer_phone, over_count, out_pm25_time,
+        block_flag, create_time
         FROM gmair_machine.machine_list_second_view
         WHERE 1 = 1
         <if test="consumerId != null">

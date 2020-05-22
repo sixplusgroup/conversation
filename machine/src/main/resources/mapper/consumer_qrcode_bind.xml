@@ -12,7 +12,7 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <resultMap id="consumer_machine_bind_view" type="finley.gmair.model.machine.ConsumerMachineBindView">
+    <resultMap id="consumer_machine_bind_view" type="finley.gmair.model.machine.ConsumerQRcodeBind">
         <result property="bindId" column="bind_id"></result>
         <result property="consumerId" column="consumer_id"></result>
         <result property="bindName" column="bind_name"></result>

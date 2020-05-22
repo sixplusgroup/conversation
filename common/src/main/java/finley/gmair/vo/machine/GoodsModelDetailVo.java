@@ -21,6 +21,8 @@ public class GoodsModelDetailVo {
 
     private String modelThumbnail;
 
+    private String modelBg;
+
     public String getGoodsId() {
         return goodsId;
     }
@@ -75,5 +77,13 @@ public class GoodsModelDetailVo {
 
     public void setModelThumbnail(String modelThumbnail) {
         this.modelThumbnail = modelThumbnail;
+    }
+
+    public String getModelBg() {
+        return modelBg;
+    }
+
+    public void setModelBg(String modelBg) {
+        this.modelBg = modelBg;
     }
 }
