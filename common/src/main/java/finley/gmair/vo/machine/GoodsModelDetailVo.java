@@ -17,6 +17,8 @@ public class GoodsModelDetailVo {
 
     private String modelCode;
 
+    private String modelAbbr;
+
     private String modelName;
 
     private String modelThumbnail;
@@ -85,5 +87,13 @@ public class GoodsModelDetailVo {
 
     public void setModelBg(String modelBg) {
         this.modelBg = modelBg;
+    }
+
+    public String getModelAbbr() {
+        return modelAbbr;
+    }
+
+    public void setModelAbbr(String modelAbbr) {
+        this.modelAbbr = modelAbbr;
     }
 }

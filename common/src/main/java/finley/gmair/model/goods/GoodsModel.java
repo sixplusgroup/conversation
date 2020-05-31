@@ -14,9 +14,13 @@ public class GoodsModel extends Entity {
 
     private String modelCode;
 
+    private String modelAbbr;
+
     private String modelName;
 
     private ModelVolume volume;
+
+    private String modelBg;
 
     public GoodsModel() {
         super();
@@ -72,5 +76,21 @@ public class GoodsModel extends Entity {
 
     public void setVolume(ModelVolume volume) {
         this.volume = volume;
+    }
+
+    public String getModelBg() {
+        return modelBg;
+    }
+
+    public void setModelBg(String modelBg) {
+        this.modelBg = modelBg;
+    }
+
+    public String getModelAbbr() {
+        return modelAbbr;
+    }
+
+    public void setModelAbbr(String modelAbbr) {
+        this.modelAbbr = modelAbbr;
     }
 }

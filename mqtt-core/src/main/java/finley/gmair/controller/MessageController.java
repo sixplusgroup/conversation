@@ -150,6 +150,7 @@ public class MessageController {
         }
         Firmware firmware = ((List<Firmware>) response.getData()).get(0);
         String topic = MQTTUtil.produceTopic(uid, TopicExtension.UPDATE);
+        logger.info("[Info] topic name: " + topic);
         JSONObject json = new JSONObject();
         json.put("newversion", newVersion);
         json.put("link", firmware.getFirmwareLink());

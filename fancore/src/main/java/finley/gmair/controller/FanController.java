@@ -75,7 +75,8 @@ public class FanController {
     }
 
     @PostMapping("/status/config")
-    public ResultData infoconfig(String model, String mac, Integer power, Integer speed, Integer mode, Integer sweep, Integer heat, Integer countdown, Integer targettemp, Integer mutemode, Integer uv) {
+    public ResultData infoconfig(String model, String mac, Integer power, Integer speed, Integer mode, Integer sweep, Integer heat, Integer countdown, Integer targettemp,
+                                 Integer mutemode, Integer uv) {
         ResultData result = new ResultData();
         String topic = "/GM/FAN/".concat(model).concat("/").concat(mac).concat("/STATUS/CONFIG");
         JSONObject json = init(mac, true);
