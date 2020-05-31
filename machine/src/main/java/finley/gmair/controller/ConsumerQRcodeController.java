@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
@@ -86,31 +87,31 @@ public class ConsumerQRcodeController {
     }
 
     @GetMapping("/qrcode/bind/list")
-    public ResultData qrcodeBindList(String search){
+    public ResultData qrcodeBindList(String search) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(search)){
+        if (StringUtils.isEmpty(search)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供二维码或手机号");
             return result;
         }
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("blockFlag",false);
-        if(PhoneUtil.isMobile(search)){
-            condition.put("consumerPhone",search);
-        }else {
-            condition.put("codeValue",search);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        if (PhoneUtil.isMobile(search)) {
+            condition.put("consumerPhone", search);
+        } else {
+            condition.put("codeValue", search);
         }
         ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBindView(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("查找结果为空，请检查手机号/二维码是否输入完整");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setData(response.getData());
             result.setDescription("查找过程出现错误，请重试");
             return result;
-        }else {
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             return result;
@@ -391,6 +392,7 @@ public class ConsumerQRcodeController {
                 continue;
             }
             GoodsModelDetailVo vo = (GoodsModelDetailVo) response.getData();
+            logger.info("goods model info: " + JSON.toJSONString(vo));
             o.put("bindId", bind.getBindId());
             o.put("bindName", bind.getBindName());
             o.put("codeValue", bind.getCodeValue());
@@ -399,7 +401,7 @@ public class ConsumerQRcodeController {
             o.put("goodsName", vo.getGoodsName());
             o.put("modelId", vo.getModelId());
             o.put("modelCode", vo.getModelCode());
-            o.put("modelName", vo.getModelName());
+            o.put("modelName", vo.getModelAbbr());
             o.put("modelThumbnail", vo.getModelThumbnail());
             o.put("modelBg", vo.getModelBg());
             json.add(o);
@@ -513,10 +515,10 @@ public class ConsumerQRcodeController {
             condition.put("overCountLTE", ovcLTE);
         }
         ResultData response;
-        if(curPage==null||pageSize==null){
+        if (curPage == null || pageSize == null) {
             response = machineListDailyService.queryMachineListDaily(condition);
-        }else {
-            response = machineListDailyService.queryMachineListDaily(condition,curPage,pageSize);
+        } else {
+            response = machineListDailyService.queryMachineListDaily(condition, curPage, pageSize);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

@@ -39,6 +39,7 @@ public class MachineUtil {
         json.put("target_temperature", status.getTargettemp());
         json.put("temperature", status.getTemp());
         json.put("buzz", status.getMutemode());
+        json.put("uv", status.getUv());
         return json;
     }
 

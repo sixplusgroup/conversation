@@ -5,6 +5,7 @@
         <result property="modelId" column="model_id"></result>
         <result property="goodsId" column="goods_id"></result>
         <result property="modelCode" column="model_code"></result>
+        <result property="modelAbbr" column="model_abbr"></result>
         <result property="modelName" column="model_name"></result>
         <result property="modelBg" column="model_bg"></result>
         <result property="blockFlag" column="block_flag"></result>
@@ -17,13 +18,14 @@
         <result property="goodsDescription" column="goods_description"></result>
         <result property="modelId" column="model_id"></result>
         <result property="modelCode" column="model_code"></result>
+        <result property="modelAbbr" column="model_abbr"></result>
         <result property="modelName" column="model_name"></result>
         <result property="modelThumbnail" column="model_thumbnail"></result>
         <result property="modelBg" column="model_bg"></result>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="goodsModelVo">
-        SELECT model_id, goods_id, model_code, model_name, model_bg, block_flag, create_time
+        SELECT model_id, goods_id, model_code, model_abbr, model_name, model_bg, block_flag, create_time
         FROM gmair_machine.goods_model
         WHERE 1 = 1
         <if test="modelId != null">
@@ -45,7 +47,7 @@
     </select>
 
     <select id="queryindetail" parameterType="java.util.Map" resultMap="goodsModelDetailVo">
-        SELECT goods_id, goods_name, goods_description, model_id, model_code, model_name, model_thumbnail, model_bg
+        SELECT goods_id, goods_name, goods_description, model_id, model_code, model_abbr, model_name, model_thumbnail, model_bg
         FROM gmair_machine.goods_model_view
         WHERE 1 = 1
         <if test="goodsId != null">
