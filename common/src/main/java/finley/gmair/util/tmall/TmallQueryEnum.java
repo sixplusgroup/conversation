@@ -6,7 +6,7 @@ package finley.gmair.util.tmall;
  * @author TangXin
  * @see <a href="https://www.yuque.com/qw5nze/ga14hc/rftwyo#W2cqR"></a>
  */
-public enum TmallQuery {
+public enum TmallQueryEnum {
     // 查询所有标准属性，详情见各个属性
     Query,
     // 查询颜色，Red、Yellow、Blue、White、Black等值（AliGenie以这些值为准，厂家适配）

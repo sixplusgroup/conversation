@@ -1,6 +1,6 @@
 package finley.gmair.service.holder;
 
-import finley.gmair.util.tmall.TmallDeviceType;
+import finley.gmair.util.tmall.TmallDeviceTypeEnum;
 
 import java.lang.annotation.*;
 
@@ -16,6 +16,6 @@ public @interface HandlerOperationType {
      *
      * @return 设备类型
      */
-    TmallDeviceType value();
+    TmallDeviceTypeEnum value();
 
 }

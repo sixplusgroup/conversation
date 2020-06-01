@@ -1,14 +1,17 @@
 package finley.gmair.service.strategy.impl;
 
 import finley.gmair.service.MachineService;
+import finley.gmair.service.holder.HandlerOperationType;
 import finley.gmair.service.strategy.OperationStrategy;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.tmall.TmallDeviceTypeEnum;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@Deprecated
-public class DefaultOperationStrategy implements OperationStrategy {
+@HandlerOperationType(TmallDeviceTypeEnum.VMC)
+public class VMCAbstractOperationStrategy implements OperationStrategy {
 
     @Autowired
     private MachineService machineService;

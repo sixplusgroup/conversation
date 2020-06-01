@@ -9,7 +9,7 @@ import finley.gmair.service.TmallDiscoveryService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 
-import finley.gmair.util.tmall.TmallNameSpace;
+import finley.gmair.util.tmall.TmallNameSpaceEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,7 +48,7 @@ public class TmallGenieController {
         // String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         String consumerId = "";
-        TmallNameSpace nameSpace = TmallNameSpace.fromString(header.getNamespace());
+        TmallNameSpaceEnum nameSpace = TmallNameSpaceEnum.fromString(header.getNamespace());
         switch (nameSpace) {
             case QUERY:
                 // TODO

@@ -8,8 +8,8 @@ import finley.gmair.service.holder.OperationStrategyHolder;
 import finley.gmair.service.strategy.OperationStrategy;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.util.tmall.TmallControl;
-import finley.gmair.util.tmall.TmallDeviceType;
+import finley.gmair.util.tmall.TmallControlEnum;
+import finley.gmair.util.tmall.TmallDeviceTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +35,7 @@ public class TmallControlServiceImpl implements TmallControlService {
     @Override
     public AliGenieRe control(Payload payload, Header header) {
 
-        TmallDeviceType deviceType = TmallDeviceType.valueOf(payload.getDeviceType());
+        TmallDeviceTypeEnum deviceType = TmallDeviceTypeEnum.valueOf(payload.getDeviceType());
 
         // 根据设备类型获取对应的操作策略
         OperationStrategy operationStrategy = operationStrategyHolder.getByDeviceType(deviceType);
@@ -57,7 +57,7 @@ public class TmallControlServiceImpl implements TmallControlService {
         if(operationStrategy != null) {
             String value = payload.getValue();
             // 对设备的控制操作
-            TmallControl controlOperation = TmallControl.valueOf(header.getName());
+            TmallControlEnum controlOperation = TmallControlEnum.valueOf(header.getName());
             switch (controlOperation) {
                 case TurnOn:
                     resultData = operationStrategy.turnOn(deviceId);

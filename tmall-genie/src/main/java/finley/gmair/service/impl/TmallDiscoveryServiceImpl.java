@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.tmallGenie.*;
 import finley.gmair.service.TmallDiscoveryService;
 import finley.gmair.util.ResultData;
-import finley.gmair.util.tmall.TmallDeviceType;
+import finley.gmair.util.tmall.TmallDeviceTypeEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
                 device.setDeviceName("新风机");
                 // http://doc-bot.tmall.com/docs/doc.htm?spm=0.0.0.0.AELDhC&treeId=393&articleId=108271&docType=1中返回对应的英文值
                 // https://www.yuque.com/qw5nze/ga14hc/gxhx67最新文档
-                device.setDeviceType(String.valueOf(TmallDeviceType.VMC));
+                device.setDeviceType(String.valueOf(TmallDeviceTypeEnum.VMC));
             }
 
             // 参考接口： https://open.bot.tmall.com/oauth/api/placelist

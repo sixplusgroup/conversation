@@ -9,7 +9,7 @@ import java.util.Map;
  * @author TangXin
  * @see <a href="https://www.yuque.com/qw5nze/ga14hc/rftwyo#VuTzZ"></a>
  */
-public enum TmallNameSpace {
+public enum TmallNameSpaceEnum {
 
     // 设备发现
     DISCOVERY("AliGenie.Iot.Device.Discovery"),
@@ -22,7 +22,7 @@ public enum TmallNameSpace {
 
     private String namespace;
 
-    TmallNameSpace(String namespace) {
+    TmallNameSpaceEnum(String namespace) {
         this.namespace = namespace;
     }
 
@@ -31,17 +31,17 @@ public enum TmallNameSpace {
     }
 
     // Implementing a fromString method on an enum type
-    private static final Map<String, TmallNameSpace> stringToEnum = new HashMap<>();
+    private static final Map<String, TmallNameSpaceEnum> stringToEnum = new HashMap<>();
 
     static {
         // Initialize map from constant name to enum constant
-        for (TmallNameSpace nameSpace : values()) {
+        for (TmallNameSpaceEnum nameSpace : values()) {
             stringToEnum.put(nameSpace.toString(), nameSpace);
         }
     }
 
     // Returns NameSpace for string, or null if string is invalid
-    public static TmallNameSpace fromString(String symbol) {
+    public static TmallNameSpaceEnum fromString(String symbol) {
         return stringToEnum.get(symbol);
     }
 

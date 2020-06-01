@@ -6,7 +6,7 @@ package finley.gmair.util.tmall;
  * @author TangXin
  * @see <a href="https://www.yuque.com/qw5nze/ga14hc/rftwyo#OKLBv></a>
  */
-public enum TmallControl {
+public enum TmallControlEnum {
     // 打开
     TurnOn,
     // 关闭

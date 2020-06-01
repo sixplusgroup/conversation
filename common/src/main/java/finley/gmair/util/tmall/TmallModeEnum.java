@@ -1,6 +1,6 @@
 package finley.gmair.util.tmall;
 
-public enum TmallMode {
+public enum TmallModeEnum {
 
     auto("自动模式"),
     cold("制冷模式"),
@@ -45,7 +45,7 @@ public enum TmallMode {
 
     private String mode;
 
-    TmallMode(String mode) {
+    TmallModeEnum(String mode) {
         this.mode = mode;
     }
 

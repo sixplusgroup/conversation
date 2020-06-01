@@ -4,7 +4,7 @@ package finley.gmair.util.tmall;
  * AliGenie支持控制的颜色
  * 部分支持查询的颜色
  */
-public enum TmallControlColor {
+public enum TmallControlColorEnum {
     // 红色
     Red,
     // 黄色

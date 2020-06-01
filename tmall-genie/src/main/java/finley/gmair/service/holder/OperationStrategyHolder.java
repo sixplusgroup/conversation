@@ -1,7 +1,7 @@
 package finley.gmair.service.holder;
 
 import finley.gmair.service.strategy.OperationStrategy;
-import finley.gmair.util.tmall.TmallDeviceType;
+import finley.gmair.util.tmall.TmallDeviceTypeEnum;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -13,9 +13,9 @@ import java.util.Map;
 @Component
 public class OperationStrategyHolder {
 
-    public static Map<TmallDeviceType, OperationStrategy> operationStrategyMap = new HashMap<>();
+    public static Map<TmallDeviceTypeEnum, OperationStrategy> operationStrategyMap = new HashMap<>();
 
-    public OperationStrategy getByDeviceType(TmallDeviceType operation) {
+    public OperationStrategy getByDeviceType(TmallDeviceTypeEnum operation) {
         return operationStrategyMap.get(operation);
     }
 

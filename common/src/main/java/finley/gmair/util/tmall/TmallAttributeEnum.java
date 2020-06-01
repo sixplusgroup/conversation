@@ -3,7 +3,7 @@ package finley.gmair.util.tmall;
 /**
  * @see <a href="https://www.yuque.com/qw5nze/ga14hc/rftwyo#e6367251"></a>
  */
-public enum TmallAttribute {
+public enum TmallAttributeEnum {
 
     // 电源状态 on(打开) off(关闭)
     powerstate("powerstate"),
@@ -61,7 +61,7 @@ public enum TmallAttribute {
 
     private String attribute;
 
-    TmallAttribute(String attribute) {
+    TmallAttributeEnum(String attribute) {
         this.attribute = attribute;
     }
 

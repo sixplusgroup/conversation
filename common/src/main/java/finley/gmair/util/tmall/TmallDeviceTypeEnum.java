@@ -6,7 +6,7 @@ package finley.gmair.util.tmall;
  * @author TangXin
  * @see <a href="https://www.yuque.com/qw5nze/ga14hc/gxhx67"></a>
  */
-public enum TmallDeviceType {
+public enum TmallDeviceTypeEnum {
     // 新风机
     VMC,
     // 冷暖风扇
