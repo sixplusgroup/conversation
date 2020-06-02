@@ -20,15 +20,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class TmallControlServiceImpl implements TmallControlService {
 
-//    @Autowired
-//    VMCOperationStrategy vmcOperationStrategy;
-//
-//    @Autowired
-//    FanOperationStrategy fanOperationStrategy;
-//
-//    @Autowired
-//    DefaultOperationStrategy defaultOperationStrategy;
-
     @Autowired
     OperationStrategyHolder operationStrategyHolder;
 
@@ -37,20 +28,9 @@ public class TmallControlServiceImpl implements TmallControlService {
 
         TmallDeviceTypeEnum deviceType = TmallDeviceTypeEnum.valueOf(payload.getDeviceType());
 
+        // 原来实现是通过switch case装配对应的策略，后来发现逻辑太冗余了，改成策略+注解方式
         // 根据设备类型获取对应的操作策略
         OperationStrategy operationStrategy = operationStrategyHolder.getByDeviceType(deviceType);
-
-//        switch (deviceType) {
-//            case VMC:
-//                operationStrategy = vmcOperationStrategy;
-//                break;
-//            case fan:
-//                operationStrategy = fanOperationStrategy;
-//                break;
-//            default:
-//                operationStrategy = defaultOperationStrategy;
-//                break;
-//        }
 
         ResultData resultData = new ResultData();
         String deviceId = payload.getDeviceId();

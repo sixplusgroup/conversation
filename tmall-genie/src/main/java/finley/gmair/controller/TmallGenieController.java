@@ -10,12 +10,19 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 
 import finley.gmair.util.tmall.TmallNameSpaceEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tmallgenie")
 public class TmallGenieController {
+
+    private Logger logger = LoggerFactory.getLogger(TmallGenieController.class);
 
     @Autowired
     private TmallControlService tmallControlService;
@@ -31,7 +38,7 @@ public class TmallGenieController {
      * @param request 请求体
      * @return 返回结果
      */
-    @PostMapping(value = "/voiceControl")
+    @PostMapping(value = "/voice/control")
     public AliGenieRe voiceControl(@RequestBody AliGenieRe request) {
         // 构建服务返回结果
         AliGenieRe response = new AliGenieRe();
@@ -39,19 +46,20 @@ public class TmallGenieController {
         Header header = request.getHeader();
         Payload payload = request.getPayload();
 
-        // TODO 将messageID封装在设备发现协议中。会话ID，用于排查问题记日志
-        String messageID = header.getMessageId();
+        // 将messageID封装在设备发现协议中。会话ID，用于排查问题记日志
+        logger.info("messageID: " + header.getMessageId());
 
-
-        // 根据accessToken获取consumerId TODO
+        // 根据accessToken获取consumerId
         // 只要在请求中带上token，后台会自动把它映射称Spring Security里面的Principal对象，进而可以获取到用户的consumerid
-        // String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        String consumerId = (String) authentication.getPrincipal();
+//        String consumerId = "anonymousUser";
 
-        String consumerId = "";
         TmallNameSpaceEnum nameSpace = TmallNameSpaceEnum.fromString(header.getNamespace());
         switch (nameSpace) {
             case QUERY:
-                // TODO
+                // TODO 查询属性
                 break;
 
             case CONTROL:

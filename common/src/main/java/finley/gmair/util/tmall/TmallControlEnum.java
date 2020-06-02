@@ -59,9 +59,9 @@ public enum TmallControlEnum {
     SetMode,
     // 设置颜色
     SetColor,
-    // 打开功能
+    // 打开XX功能
     OpenFunction,
-    // 关闭功能
+    // 关闭XX功能
     CloseFunction,
     // 取消
     Cancel,

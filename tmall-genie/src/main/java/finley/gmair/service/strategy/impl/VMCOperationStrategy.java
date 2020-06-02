@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @HandlerOperationType(TmallDeviceTypeEnum.VMC)
-public class VMCAbstractOperationStrategy implements OperationStrategy {
+public class VMCOperationStrategy implements OperationStrategy {
 
     @Autowired
     private MachineService machineService;
