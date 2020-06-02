@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient("machine-agent")
 public interface MachineService {
 
+    //////////////////////////////////ControlOptionControl//////////////////////////////////////
+
     /**
      * 用户控制设备
      * 查看finley.gmair.controller.ControlOptionControl#chooseComponent[machine]
@@ -32,6 +34,10 @@ public interface MachineService {
     @PostMapping(value = "/machine/control/option/config/speed")
     ResultData configSpeed(@RequestParam("qrcode") String qrcode, @RequestParam("speed") int speed);
 
+    ////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////ConsumerQRcodeController/////////////////////////////////////
+
     /**
      * 根据顾客Id获取其账号绑定的设备列表
      * 查看finley.gmair.controller.ConsumerQRcodeController#list[machine]
@@ -41,6 +47,10 @@ public interface MachineService {
      */
     @GetMapping("/machine/consumer/machine/list")
     ResultData obtainMachineList(@RequestParam("consumerId") String consumerId);
+
+    ////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////QRCodeController//////////////////////////////////////
 
     /**
      * 根据codeValue，获取modelId
@@ -52,6 +62,10 @@ public interface MachineService {
     @GetMapping(value = "/machine/qrcode/model")
     ResultData getModel(@RequestParam("codeValue") String codeValue);
 
+    ////////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////////////
     /**
      * 根据设备号，获取设备风量信息
      * 查看finley.gmair.controller.ModelVolumeController#probeModelVolumeByModelId[machine]
@@ -62,4 +76,5 @@ public interface MachineService {
     @GetMapping("/machine/model/volume/probe/by/modelId")
     ResultData probeModelVolumeByModelId(@RequestParam("modelId") String modelId);
 
+    ////////////////////////////////////////////////////////////////////////
 }
