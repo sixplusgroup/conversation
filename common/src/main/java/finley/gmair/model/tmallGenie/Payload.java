@@ -1,7 +1,10 @@
 package finley.gmair.model.tmallGenie;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Payload {
 
     String accessToken;
@@ -10,17 +13,30 @@ public class Payload {
 
     String deviceType;
 
-    String errorCode;
-
-    String message;
-
     String attribute;
 
     String value;
 
     Extensions extensions;
 
+    String errorCode;
+
+    String message;
+
     List<Device> devices;
+
+    public Payload() {
+        super();
+    }
+
+    public Payload(String accessToken, String deviceId, String deviceType, String attribute, String value, Extensions extensions) {
+        this.accessToken = accessToken;
+        this.deviceId = deviceId;
+        this.deviceType = deviceType;
+        this.attribute = attribute;
+        this.value = value;
+        this.extensions = extensions;
+    }
 
     /**
      * 用于设备发现响应的构造函数
@@ -30,29 +46,14 @@ public class Payload {
         this.devices = devices;
     }
 
-    public Payload() {
-        super();
-    }
-
-    public Payload(String deviceId) {
-        this.deviceId = deviceId;
-    }
-
     public Payload(String deviceId, String errorCode, String message) {
         this.deviceId = deviceId;
         this.errorCode = errorCode;
         this.message = message;
     }
 
-    public Payload(String accessToken, String deviceId, String deviceType, String errorCode, String message, String attribute, String value, Extensions extensions) {
-        this.accessToken = accessToken;
+    public Payload(String deviceId) {
         this.deviceId = deviceId;
-        this.deviceType = deviceType;
-        this.errorCode = errorCode;
-        this.message = message;
-        this.attribute = attribute;
-        this.value = value;
-        this.extensions = extensions;
     }
 
     public String getErrorCode() {
@@ -70,7 +71,6 @@ public class Payload {
     public void setMessage(String message) {
         this.message = message;
     }
-
     public String getAccessToken() {
         return accessToken;
     }

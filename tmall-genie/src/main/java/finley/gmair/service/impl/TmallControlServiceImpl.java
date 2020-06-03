@@ -1,8 +1,7 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.model.tmallGenie.AliGenieRe;
-import finley.gmair.model.tmallGenie.Header;
-import finley.gmair.model.tmallGenie.Payload;
+import com.fasterxml.jackson.annotation.JsonView;
+import finley.gmair.model.tmallGenie.*;
 import finley.gmair.service.TmallControlService;
 import finley.gmair.service.holder.OperationStrategyHolder;
 import finley.gmair.service.strategy.OperationStrategy;
@@ -61,6 +60,7 @@ public class TmallControlServiceImpl implements TmallControlService {
                     resultData = operationStrategy.closeSwing(deviceId);
                     break;
                 default:
+                    resultData = null;
                     break;
             }
         }

@@ -6,16 +6,12 @@ import finley.gmair.model.tmallGenie.Payload;
 import finley.gmair.service.MachineService;
 import finley.gmair.service.TmallControlService;
 import finley.gmair.service.TmallDiscoveryService;
-import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 
 import finley.gmair.util.tmall.TmallNameSpaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -67,14 +63,9 @@ public class TmallGenieController {
                 break;
 
             case DISCOVERY:
-                System.out.println(consumerId);
                 ResultData resultData = machineService.obtainMachineList(consumerId);
-                System.out.println(resultData);
                 // 根据结果做一些转换
-                Payload payloadResp = tmallDiscoveryService.discovery(resultData);
-                response.setPayload(payloadResp);
-                header.setName(header.getName().concat("Response"));
-                response.setHeader(header);
+                response = tmallDiscoveryService.discovery(resultData, header);
                 break;
 
             default:
@@ -84,20 +75,20 @@ public class TmallGenieController {
         return response;
     }
 
-    /**
-     * 测试连通性
-     *
-     * @return 测试结果
-     */
-    @GetMapping(value = "/test")
-    public ResultData test() {
-        // 构建服务返回结果
-        ResultData result = new ResultData();
-        String id = "test";
-        System.out.println(id);
-        result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(id);
-        return result;
-    }
+//    /**
+//     * 测试连通性
+//     *
+//     * @return 测试结果
+//     */
+//    @GetMapping(value = "/test")
+//    public ResultData test() {
+//        // 构建服务返回结果
+//        ResultData result = new ResultData();
+//        String id = "test";
+//        System.out.println(id);
+//        result.setResponseCode(ResponseCode.RESPONSE_OK);
+//        result.setData(id);
+//        return result;
+//    }
 
 }

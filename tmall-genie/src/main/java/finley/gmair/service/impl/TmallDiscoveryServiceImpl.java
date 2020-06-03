@@ -1,9 +1,6 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.model.tmallGenie.Attribute;
-import finley.gmair.model.tmallGenie.Device;
-import finley.gmair.model.tmallGenie.Extensions;
-import finley.gmair.model.tmallGenie.Payload;
+import finley.gmair.model.tmallGenie.*;
 import finley.gmair.service.TmallDiscoveryService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -20,11 +17,15 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Payload discovery(ResultData resultData) {
+    public AliGenieRe discovery(ResultData resultData, Header header) {
+        AliGenieRe response = new AliGenieRe();
+        header.setName(header.getName().concat("Response"));
+        response.setHeader(header);
+
         List<Device> devices = new ArrayList<>();
-        Payload payload = new Payload(devices);
         if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return payload;
+            response.setPayload(new Payload(devices));
+            return response;
         }
 
         List<LinkedHashMap<String, Object>> machineLists = (List<LinkedHashMap<String, Object>>) resultData.getData();
@@ -71,8 +72,8 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
             devices.add(device);
         }
 
-        payload.setDevices(devices);
-        return payload;
+        response.setPayload(new Payload(devices));
+        return response;
     }
 
 }
