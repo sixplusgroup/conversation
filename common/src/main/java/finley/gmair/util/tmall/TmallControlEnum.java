@@ -70,6 +70,27 @@ public enum TmallControlEnum {
     // 开启摆风
     OpenSwing,
     // 关闭摆风
-    CloseSwing
+    CloseSwing,
+
+    // 2020/6/3新增
+    // 角度取值30,60(默认),90
+    // 开启上下X度摆动
+    OpenUpAndDownSwing,
+    // 开启向上X度摆动
+    OpenUpSwing,
+    // 开启向下X度摆动
+    OpenDownSwing,
+    // 开启左右X度摆动
+    OpenLeftAndRightSwing,
+    // 开启向左X度摆动
+    OpenLeftSwing,
+    // 开启向右X度摆动
+    OpenRightSwing,
+    // 开启前后X度摆动
+    OpenForwardAndBackSwing,
+    // 开启向前X度摆动
+    OpenForwardSwing,
+    // 开启向后X度摆动
+    OpenBackSwing
 
 }

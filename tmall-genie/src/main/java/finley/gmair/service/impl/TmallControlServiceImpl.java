@@ -19,6 +19,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class TmallControlServiceImpl implements TmallControlService {
 
+    static final String DEVICE_NOT_SUPPORT_FUNCTION = "DEVICE_NOT_SUPPORT_FUNCTION";
+
+    static final String DEVICE_NPT_SUPPORT = "device not support";
+
+    static final String ERROR_RESPONSE = "ErrorResponse";
+
     @Autowired
     OperationStrategyHolder operationStrategyHolder;
 
@@ -65,6 +71,7 @@ public class TmallControlServiceImpl implements TmallControlService {
             }
         }
 
+        // 返回结果封装
         AliGenieRe response = new AliGenieRe();
         Payload payloadRes;
         // 如果是不支持的操作/不支持的设备，则resultData == null
@@ -73,9 +80,9 @@ public class TmallControlServiceImpl implements TmallControlService {
             response.setHeader(header);
             payloadRes = new Payload(deviceId);
         } else {
-            header.setName("ErrorResponse");
+            header.setName(ERROR_RESPONSE);
             response.setHeader(header);
-            payloadRes = new Payload(deviceId, "DEVICE_NOT_SUPPORT_FUNCTION", "device not support");
+            payloadRes = new Payload(deviceId, DEVICE_NOT_SUPPORT_FUNCTION, DEVICE_NPT_SUPPORT);
         }
         response.setPayload(payloadRes);
 
