@@ -18,13 +18,13 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
     static final String ACTION_SUFFIX = ".actions";
 
     @Autowired
-    private MachineService machineService;
+    private ServiceUtil serviceUtil;
 
     @Override
     @SuppressWarnings("unchecked")
     public AliGenieRe discovery(ResultData resultData, Header header) {
         AliGenieRe response = new AliGenieRe();
-        header.setName(header.getName().concat("Response"));
+        header.setName(serviceUtil.setResponseName(header.getName()));
         response.setHeader(header);
 
         List<Device> devices = new ArrayList<>();
@@ -87,27 +87,8 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
 
             // properties
             // 与设备状态查询相关 https://www.yuque.com/qw5nze/ga14hc/ozlpg3?inner=cb0d29b3
-            List<Attribute> properties = new ArrayList<>();
-            ResultData runningStatus = machineService.runningStatus(deviceId);
-            LinkedHashMap<String, Object> runningInfo = (LinkedHashMap<String, Object>) runningStatus.getData();
-            System.out.println(runningInfo);
-            if(runningStatus.getResponseCode() == ResponseCode.RESPONSE_OK && runningInfo != null) {
-                // Query请求电源状态(powerstate)必须返回，其他属性的返回与否视设备自身情况而定
-                int p = (int) runningInfo.get("power");
-                String power;
-                if(p == 0) {
-                    power = "off";
-                } else if(p == 1) {
-                    power = "on";
-                } else {
-                    break;
-                }
-                properties.add(new Attribute("powerstate", power));
-                // 档位
-                String windspeed = getWindspeedByVolume((int) runningInfo.get("volume"), (String) machineInfo.get("modelId"));
-                properties.add(new Attribute("windspeed", windspeed));
-                properties.add(new Attribute("temperature", Integer.toString((int) runningInfo.get("temperature"))));
-            }
+            String modelId = (String) machineInfo.get("modelId");
+            List<Attribute> properties = serviceUtil.getProperties(deviceId, modelId);
             device.setProperties(properties);
 
             // extensions(可选)
@@ -119,40 +100,6 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
 
         response.setPayload(new Payload(devices));
         return response;
-    }
-
-    private String getWindspeedByVolume(int volume, String modelId) {
-        // 根据型号获取型号具体信息
-        ResultData resultData = machineService.probeModelVolumeByModelId(modelId);
-        List<LinkedHashMap<String, Object>> modelLists = (List<LinkedHashMap<String, Object>>) resultData.getData();
-
-        if (modelLists != null) {
-            for (LinkedHashMap<String, Object> modelInfo : modelLists) {
-                if (modelInfo.get("configMode").equals("cold")) {
-
-                    int minVolume = Integer.parseInt(modelInfo.get("minVolume").toString());
-                    int maxVolume = Integer.parseInt(modelInfo.get("maxVolume").toString());
-
-                    // 间隔，舍掉
-                    int gap = (int) Math.floor((maxVolume - minVolume) / 3.0);
-                    // 档位，步长为1，是指1档跳成2档这样
-                    return getGearBySpeed(minVolume, gap, volume);
-                }
-            }
-        }
-        return null;
-    }
-
-    private String getGearBySpeed(int minVolume, int gap, int speed) {
-        int initVolume = minVolume;
-        for(int i = 1; i <= 4; i++) {
-            if(speed >= initVolume && speed < initVolume + gap) {
-                return String.valueOf(i);
-            } else {
-                initVolume += gap;
-            }
-        }
-        return null;
     }
 
 }

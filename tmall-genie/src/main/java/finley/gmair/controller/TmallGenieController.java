@@ -6,6 +6,7 @@ import finley.gmair.model.tmallGenie.Payload;
 import finley.gmair.service.MachineService;
 import finley.gmair.service.TmallControlService;
 import finley.gmair.service.TmallDiscoveryService;
+import finley.gmair.service.TmallQueryService;
 import finley.gmair.util.ResultData;
 
 import finley.gmair.util.tmall.TmallNameSpaceEnum;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 public class TmallGenieController {
 
     private Logger logger = LoggerFactory.getLogger(TmallGenieController.class);
+
+    @Autowired
+    private TmallQueryService tmallQueryService;
 
     @Autowired
     private TmallControlService tmallControlService;
@@ -55,7 +59,7 @@ public class TmallGenieController {
         TmallNameSpaceEnum nameSpace = TmallNameSpaceEnum.fromString(header.getNamespace());
         switch (nameSpace) {
             case QUERY:
-                // TODO 查询属性
+                response = tmallQueryService.query(payload, header);
                 break;
 
             case CONTROL:

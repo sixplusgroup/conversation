@@ -28,6 +28,9 @@ public class TmallControlServiceImpl implements TmallControlService {
     @Autowired
     OperationStrategyHolder operationStrategyHolder;
 
+    @Autowired
+    private ServiceUtil serviceUtil;
+
     @Override
     public AliGenieRe control(Payload payload, Header header) {
 
@@ -76,7 +79,7 @@ public class TmallControlServiceImpl implements TmallControlService {
         Payload payloadRes;
         // 如果是不支持的操作/不支持的设备，则resultData == null
         if (resultData != null && resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            header.setName(header.getName().concat("Response"));
+            header.setName(serviceUtil.setResponseName(header.getName()));
             response.setHeader(header);
             payloadRes = new Payload(deviceId);
         } else {

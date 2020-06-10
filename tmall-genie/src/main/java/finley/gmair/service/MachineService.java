@@ -87,5 +87,4 @@ public interface MachineService {
      */
     @GetMapping("/machine/{qrcode}/status")
     ResultData runningStatus(@PathVariable("qrcode") String qrcode);
-
 }

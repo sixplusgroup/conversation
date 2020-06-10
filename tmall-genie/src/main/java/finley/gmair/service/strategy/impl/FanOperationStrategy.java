@@ -76,7 +76,6 @@ public class FanOperationStrategy implements OperationStrategy {
             String modelId = (String) goodsModelList.get(0).get("modelId");
             ResultData resultData = machineService.probeModelVolumeByModelId(modelId);
             List<LinkedHashMap<String, Object>> modelLists = (List<LinkedHashMap<String, Object>>) resultData.getData();
-            System.out.println(modelLists);
             if (modelLists != null) {
                 for(LinkedHashMap<String, Object> modelInfo : modelLists) {
                     if(modelInfo.get("configMode").equals(COLD)) {
