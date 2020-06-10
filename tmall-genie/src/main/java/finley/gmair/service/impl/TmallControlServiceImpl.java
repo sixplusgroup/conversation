@@ -56,7 +56,7 @@ public class TmallControlServiceImpl implements TmallControlService {
                 case AdjustUpWindSpeed:
                     resultData = operationStrategy.setWindSpeed(deviceId, value, true, false);
                     break;
-                case AdjustDownVolume:
+                case AdjustDownWindSpeed:
                     resultData = operationStrategy.setWindSpeed(deviceId, value, false, true);
                     break;
                 case OpenSwing:

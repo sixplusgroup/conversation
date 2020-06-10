@@ -67,7 +67,7 @@ public class FanOperationStrategy implements OperationStrategy {
      */
     @SuppressWarnings("unchecked")
     private int getSpeedByValue(String codeValue, String value, boolean up, boolean down) {
-        // 感觉二维码获取型号
+        // 根据二维码获取型号
         ResultData response = machineService.getModel(codeValue);
         List<LinkedHashMap<String, Object>> goodsModelList = (List<LinkedHashMap<String, Object>>) response.getData();
 
@@ -76,7 +76,7 @@ public class FanOperationStrategy implements OperationStrategy {
             String modelId = (String) goodsModelList.get(0).get("modelId");
             ResultData resultData = machineService.probeModelVolumeByModelId(modelId);
             List<LinkedHashMap<String, Object>> modelLists = (List<LinkedHashMap<String, Object>>) resultData.getData();
-
+            System.out.println(modelLists);
             if (modelLists != null) {
                 for(LinkedHashMap<String, Object> modelInfo : modelLists) {
                     if(modelInfo.get("configMode").equals(COLD)) {
@@ -84,8 +84,8 @@ public class FanOperationStrategy implements OperationStrategy {
                         int minVolume = Integer.parseInt(modelInfo.get("minVolume").toString());
                         int maxVolume = Integer.parseInt(modelInfo.get("maxVolume").toString());
 
-                        // 间隔
-                        int gap = (maxVolume - minVolume) / 3;
+                        // 间隔，舍掉
+                        int gap = (int) Math.floor((maxVolume - minVolume) / 3.0);
                         // 风速
                         int speed;
                         // 档位，步长为1，是指1档跳成2档这样

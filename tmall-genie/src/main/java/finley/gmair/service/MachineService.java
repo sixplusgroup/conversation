@@ -77,4 +77,15 @@ public interface MachineService {
     ResultData probeModelVolumeByModelId(@RequestParam("modelId") String modelId);
 
     ////////////////////////////////////////////////////////////////////////
+
+
+    /**
+     * 根据二维码，获取设备运行状态
+     * 查看finley.gmair.controller.MachineStatusCacheController#runningStatus[machine]
+     * @param qrcode 二维码
+     * @return 设备运行状态数据
+     */
+    @GetMapping("/machine/{qrcode}/status")
+    ResultData runningStatus(@PathVariable("qrcode") String qrcode);
+
 }
