@@ -68,6 +68,9 @@ public class TmallControlServiceImpl implements TmallControlService {
                 case CloseSwing:
                     resultData = operationStrategy.closeSwing(deviceId);
                     break;
+                case SetMode:
+                    resultData = operationStrategy.setMode(deviceId, payload.getValue());
+                    break;
                 default:
                     resultData = null;
                     break;

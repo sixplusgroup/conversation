@@ -6,6 +6,7 @@ import finley.gmair.service.strategy.OperationStrategy;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.tmall.TmallDeviceTypeEnum;
 
+import finley.gmair.util.tmall.TmallModeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,12 +58,41 @@ public class FanOperationStrategy implements OperationStrategy {
         return machineService.chooseComponent(deviceId, "sweep", "off");
     }
 
+    @Override
+    public ResultData setMode(String deviceId, String value) {
+        ResultData resultData = new ResultData();
+        TmallModeEnum modeEnum = TmallModeEnum.valueOf(value);
+        switch (modeEnum) {
+            case sleep:
+                resultData = machineService.chooseComponent(deviceId, "mode", "sleep");
+                break;
+            case natureWind:
+                resultData = machineService.chooseComponent(deviceId, "mode", "normal");
+                break;
+            case power:
+                resultData = machineService.chooseComponent(deviceId, "mode", "strong");
+                break;
+            case manual:
+                resultData = machineService.chooseComponent(deviceId, "mode", "manual");
+                break;
+            case auto:
+                resultData = machineService.chooseComponent(deviceId, "mode", "auto");
+                break;
+            case hygiene:
+                // 除菌 → 净化
+                resultData = machineService.chooseComponent(deviceId, "mode", "pure");
+                break;
+        }
+        return resultData;
+    }
+
     /**
      * 获取应该调整的风速
+     *
      * @param codeValue 二维码
-     * @param value 可能是1 ~ 4，也可以是min，max
-     * @param up 调高风速
-     * @param down 调低风速
+     * @param value     可能是1 ~ 4，也可以是min，max
+     * @param up        调高风速
+     * @param down      调低风速
      * @return 调整后的风速
      */
     @SuppressWarnings("unchecked")
@@ -77,8 +107,8 @@ public class FanOperationStrategy implements OperationStrategy {
             ResultData resultData = machineService.probeModelVolumeByModelId(modelId);
             List<LinkedHashMap<String, Object>> modelLists = (List<LinkedHashMap<String, Object>>) resultData.getData();
             if (modelLists != null) {
-                for(LinkedHashMap<String, Object> modelInfo : modelLists) {
-                    if(modelInfo.get("configMode").equals(COLD)) {
+                for (LinkedHashMap<String, Object> modelInfo : modelLists) {
+                    if (modelInfo.get("configMode").equals(COLD)) {
 
                         int minVolume = Integer.parseInt(modelInfo.get("minVolume").toString());
                         int maxVolume = Integer.parseInt(modelInfo.get("maxVolume").toString());

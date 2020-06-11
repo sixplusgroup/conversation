@@ -42,4 +42,5 @@ public interface OperationStrategy {
      */
     ResultData closeSwing(String deviceId);
 
+    ResultData setMode(String deviceId, String value);
 }

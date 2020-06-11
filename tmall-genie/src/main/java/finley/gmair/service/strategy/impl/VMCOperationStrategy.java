@@ -41,4 +41,9 @@ public class VMCOperationStrategy implements OperationStrategy {
         return null;
     }
 
+    @Override
+    public ResultData setMode(String deviceId, String value) {
+        return null;
+    }
+
 }
