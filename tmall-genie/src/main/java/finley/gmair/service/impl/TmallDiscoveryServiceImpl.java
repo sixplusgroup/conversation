@@ -17,6 +17,8 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
 
     static final String ACTION_SUFFIX = ".actions";
 
+    static final String SEPERATOR = ",";
+
     @Autowired
     private ServiceUtil serviceUtil;
 
@@ -65,7 +67,7 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
 
             // actions
             List<String> actions = Arrays.asList(Objects.requireNonNull(
-                    GoodsProperties.getValue(deviceType.concat(ACTION_SUFFIX))).split(","));
+                    GoodsProperties.getValue(deviceType.concat(ACTION_SUFFIX))).split(SEPERATOR));
             device.setActions(actions);
 
             // zone(可选)
