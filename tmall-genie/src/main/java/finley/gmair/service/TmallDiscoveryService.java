@@ -2,7 +2,6 @@ package finley.gmair.service;
 
 import finley.gmair.model.tmallGenie.AliGenieRe;
 import finley.gmair.model.tmallGenie.Header;
-import finley.gmair.model.tmallGenie.Payload;
 import finley.gmair.util.ResultData;
 
 public interface TmallDiscoveryService {

@@ -79,20 +79,4 @@ public class TmallGenieController {
         return response;
     }
 
-//    /**
-//     * 测试连通性
-//     *
-//     * @return 测试结果
-//     */
-//    @GetMapping(value = "/test")
-//    public ResultData test() {
-//        // 构建服务返回结果
-//        ResultData result = new ResultData();
-//        String id = "test";
-//        System.out.println(id);
-//        result.setResponseCode(ResponseCode.RESPONSE_OK);
-//        result.setData(id);
-//        return result;
-//    }
-
 }

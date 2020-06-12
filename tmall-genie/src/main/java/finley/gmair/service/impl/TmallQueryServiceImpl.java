@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static finley.gmair.util.tmall.TmallQueryEnum.QueryPowerState;
-
 @Service
 public class TmallQueryServiceImpl implements TmallQueryService {
 
