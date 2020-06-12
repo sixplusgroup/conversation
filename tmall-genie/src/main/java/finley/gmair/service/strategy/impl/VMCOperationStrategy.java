@@ -34,11 +34,13 @@ public class VMCOperationStrategy implements OperationStrategy {
 
     @Override
     public ResultData openSwing(String deviceId) {
+        // 不支持摆风
         return null;
     }
 
     @Override
     public ResultData closeSwing(String deviceId) {
+        // 不支持摆风
         return null;
     }
 
