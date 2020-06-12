@@ -6,6 +6,7 @@ import finley.gmair.service.strategy.OperationStrategy;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.tmall.TmallDeviceTypeEnum;
 
+import finley.gmair.util.tmall.TmallModeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,20 @@ public class VMCOperationStrategy implements OperationStrategy {
 
     @Override
     public ResultData setMode(String deviceId, String value) {
-        return null;
+        ResultData resultData = new ResultData();
+        TmallModeEnum modeEnum = TmallModeEnum.valueOf(value);
+        switch (modeEnum) {
+            case sleep:
+                resultData = machineService.chooseComponent(deviceId, "mode", "sleep");
+                break;
+            case manual:
+                resultData = machineService.chooseComponent(deviceId, "mode", "manual");
+                break;
+            case auto:
+                resultData = machineService.chooseComponent(deviceId, "mode", "auto");
+                break;
+        }
+        return resultData;
     }
 
 }

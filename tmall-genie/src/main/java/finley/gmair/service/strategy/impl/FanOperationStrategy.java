@@ -72,12 +72,6 @@ public class FanOperationStrategy implements OperationStrategy {
             case power:
                 resultData = machineService.chooseComponent(deviceId, "mode", "strong");
                 break;
-            case manual:
-                resultData = machineService.chooseComponent(deviceId, "mode", "manual");
-                break;
-            case auto:
-                resultData = machineService.chooseComponent(deviceId, "mode", "auto");
-                break;
             case hygiene:
                 // 除菌 → 净化
                 resultData = machineService.chooseComponent(deviceId, "mode", "pure");
