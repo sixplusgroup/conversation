@@ -68,10 +68,17 @@ public interface InstallService {
     ResultData fetchTeam(@RequestParam(value = "start", required = false) int start, @RequestParam(value = "length", required = false) int length);
 
     @PostMapping("/install/member/watch/team")
-    ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamId);
+    ResultData watch(@RequestParam("memberId") String memberId, @RequestParam("teamId") String teamid);
+
+    @GetMapping("/install/assign/{assignId}/info")
+    ResultData detail(@PathVariable("assignId") String assignId);
 
     @GetMapping("/install/assign/trace")
     ResultData trace(@RequestParam("assignId") String assignId);
+
+
+    @GetMapping("/install/assign/snapshot")
+    ResultData snapshot(@RequestParam("assignId") String assignId);
 
     @GetMapping("/install/member/list")
     ResultData fetchTeamMember(@RequestParam("teamId") String teamId);
@@ -85,9 +92,6 @@ public interface InstallService {
 
     @GetMapping("/install/member/block")
     ResultData deleteMember(@RequestParam("memberId") String memberId);
-
-    @GetMapping("/install/assign/snapshot")
-    ResultData snapshot(@RequestParam("assignId") String assignId);
 
     @GetMapping("/install/team/block")
     ResultData deleteTeam(@RequestParam("teamId") String teamId);
