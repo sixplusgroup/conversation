@@ -130,6 +130,7 @@ public class MemberServiceImpl implements MemberService {
         Map<String, Object> condition = new HashMap<>();
         condition.put("memberId", memberId);
         condition.put("teamId", teamId);
+        condition.put("blockFlag",false);
         ResultData response = teamWatchDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
