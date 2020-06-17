@@ -13,4 +13,6 @@ public interface GoodsModelDao {
     ResultData query(Map<String, Object> condition);
 
     ResultData insert(GoodsModel model);
+
+    ResultData detail(Map<String, Object> condition);
 }

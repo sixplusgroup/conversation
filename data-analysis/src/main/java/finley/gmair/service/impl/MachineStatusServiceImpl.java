@@ -3,8 +3,9 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.*;
 import finley.gmair.datastructrue.LimitQueue;
-import finley.gmair.model.dataAnalysis.*;
+import finley.gmair.model.analysis.*;
 import finley.gmair.model.machine.v1.MachineStatus;
+import finley.gmair.model.machine.v3.MachineStatusV3;
 import finley.gmair.service.MachineStatusService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MachineStatusServiceImpl implements MachineStatusService {
@@ -77,12 +79,12 @@ public class MachineStatusServiceImpl implements MachineStatusService {
     public ResultData handleHourlyStatisticalData() {
         ResultData result = new ResultData();
 
-        //1.从redis中获取前一小时的数据
+        //从redis中获取数据作为前一个小时的统计数据
         ResultData response = machineStatusRedisDao.queryHourlyStatus();
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            logger.info("not find any data in redis");
+            logger.info(MachineStatusServiceImpl.class.toString() + ", no data found in redis");
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find any data in redis");
+            result.setDescription("no data found in redis");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             logger.info("error happen when fetch machine status from redis");
@@ -115,6 +117,14 @@ public class MachineStatusServiceImpl implements MachineStatusService {
                         list.add(((LimitQueue<finley.gmair.model.machine.MachineStatus>) queue).get(i));
                     }
                     V2MachineStatusHourly msh = countV2Status(list);
+                    if (msh != null)
+                        statisticalDataList.add(msh);
+                } else if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatusV3) {
+                    List<MachineStatusV3> list = new ArrayList<>(120);
+                    for (int i = 0; i < ((LimitQueue<Object>) queue).size(); i++) {
+                        list.add(((LimitQueue<MachineStatusV3>) queue).get(i));
+                    }
+                    MachineStatusHourly msh = countStatus(list);
                     if (msh != null)
                         statisticalDataList.add(msh);
                 }
@@ -227,6 +237,63 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             msh = new V2MachineStatusHourly(machineId, averagePm25, maxPm25, minPm25, averageVolume, maxVolume, minVolume, averageTemp, maxTemp, minTemp, averageHumid, maxHumid, minHumid, averageCo2, maxCo2, minCo2, powerOnMinute, powerOffMinute, autoMinute, manualMinute, sleepMinute, heatOnMinute, heatOffMinute);
         } catch (Exception e) {
 
+        }
+        return msh;
+    }
+
+    private MachineStatusHourly countStatus(List<MachineStatusV3> list) {
+        int packetCount41Minute = 2;
+        String machineId = list.get(0).getUid();
+        MachineStatusHourly msh = new MachineStatusHourly(machineId);
+        int count = list.size();
+        Stream<MachineStatusV3> origin = list.stream();
+        int powerOnCount = (int) list.stream().filter(e -> e.getPower() == 1).count();
+        //统计运行模式下室内的PM2.5数值
+        if (powerOnCount > 0) {
+            double avgPm2_5Indoor = origin.filter(e -> e.getPower() == 1).mapToDouble(MachineStatusV3::getPm2_5a).average().getAsDouble();
+            int minPm2_5Indoor = origin.mapToInt(MachineStatusV3::getPm2_5a).min().getAsInt();
+            int maxPm2_5Indoor = origin.mapToInt(MachineStatusV3::getPm2_5a).max().getAsInt();
+            msh.setPM2_5Indoor(avgPm2_5Indoor, minPm2_5Indoor, maxPm2_5Indoor);
+        }
+        //统计运行模式下滤网处的PM2.5数值
+        if (powerOnCount > 0) {
+            double avgPm2_5Inner = origin.filter(e -> e.getPower() == 1).mapToDouble(MachineStatusV3::getPm2_5b).average().getAsDouble();
+            int minPm2_5Inner = origin.mapToInt(MachineStatusV3::getPm2_5b).min().getAsInt();
+            int maxPm2_5Inner = origin.mapToInt(MachineStatusV3::getPm2_5b).max().getAsInt();
+            msh.setPM2_5Inner(avgPm2_5Inner, minPm2_5Inner, maxPm2_5Inner);
+        }
+        //统计温度数值
+        if (count > 0) {
+            double avgTemp = origin.mapToDouble(MachineStatusV3::getTempIndoor).average().getAsDouble();
+            int minTemp = origin.mapToInt(MachineStatusV3::getTempIndoor).min().getAsInt();
+            int maxTemp = origin.mapToInt(MachineStatusV3::getTempIndoor).max().getAsInt();
+            msh.setTemp(avgTemp, minTemp, maxTemp);
+        }
+        //统计二氧化碳
+        if (count > 0) {
+            double avgCo2 = origin.mapToDouble(MachineStatusV3::getCo2).average().getAsDouble();
+            int minCo2 = origin.mapToInt(MachineStatusV3::getCo2).min().getAsInt();
+            int maxCo2 = origin.mapToInt(MachineStatusV3::getCo2).max().getAsInt();
+            msh.setCo2(avgCo2, minCo2, maxCo2);
+        }
+        //统计开关机时间
+        if (count > 0) {
+            int powerOnMinute = (int) origin.filter(e -> e.getPower() == 1).count() / packetCount41Minute;
+            int powerOffMinute = (int) origin.filter(e -> e.getPower() == 0).count() / packetCount41Minute;
+            msh.setPower(powerOnMinute, powerOffMinute);
+        }
+        //统计运行模式
+        if (powerOnCount > 0) {
+            int autoMinute = (int) origin.filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 0).count() / packetCount41Minute;
+            int sleepMinute = (int) origin.filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 1).count() / packetCount41Minute;
+            int manualMinute = (int) origin.filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 2).count() / packetCount41Minute;
+            msh.setMode(autoMinute, manualMinute, sleepMinute);
+        }
+        //统计辅热运行情况
+        if (count > 0) {
+            int heatOffMinute = (int) origin.filter(e -> e.getHeat() == 0).count() / packetCount41Minute;
+            int heatOnMinute = (int) origin.filter(e -> e.getHeat() == 1).count() / packetCount41Minute;
+            msh.setHeat(heatOnMinute, heatOffMinute);
         }
         return msh;
     }

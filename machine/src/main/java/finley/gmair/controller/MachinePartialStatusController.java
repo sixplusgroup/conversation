@@ -5,7 +5,10 @@ import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/machine/partial/status")
 public class MachinePartialStatusController {
+    private Logger logger = LoggerFactory.getLogger(MachinePartialStatusController.class);
+
     @Autowired
     private MachinePm25Service machinePm25Service;
 
@@ -95,14 +100,14 @@ public class MachinePartialStatusController {
     public ResultData savePm25Daily() {
         ResultData result = new ResultData();
         new Thread(() -> {
+            Map<String, Object> condition = new HashMap<>();
             //首先,获取滤网Pm25的阈值
-            ResultData response = filterLimitConfigService.fetch(new HashMap<>());
-            int overPm25Limit = 25;
+            ResultData response = filterLimitConfigService.fetch(condition);
+            int overPm25Limit = 25; //default value
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 overPm25Limit = ((List<FilterLimitConfig>) response.getData()).get(0).getOverPm25Limit();
+                logger.info("current pm2.5 configuration: " + overPm25Limit);
             }
-
-            //todo mysql
             //然后,从Mongo获取当天所有机器 pm25的统计平均值
             response = machinePm25Service.fetchAveragePm25();
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -166,6 +171,41 @@ public class MachinePartialStatusController {
         return outPm25DailyService.fetch(condition);
     }
 
+    //查看单台设备是否滤网需要点亮
+    @GetMapping("/filter")
+    public ResultData filter(String qrcode) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供正确的二维码");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确认二维码是否正确");
+            return result;
+        }
+        MachineQrcodeBindVo bind = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
+        String machineId = bind.getMachineId();
+        condition.clear();
+        condition.put("machineId", machineId);
+        condition.put("blockFlag", false);
+        response = filterLightService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前暂无该设备的滤网状态信息");
+            return result;
+        }
+        result.setData(((List<FilterLight>) response.getData()).get(0));
+        result.setDescription("成功获取设备的滤网状态信息");
+        return result;
+    }
+
+
     //每日12点调用,根据mysql中的数据来点亮滤网警戒灯.
     @PostMapping("/screen/on/daily")
     public ResultData turnOnScreenDaily() {
@@ -186,7 +226,7 @@ public class MachinePartialStatusController {
                             response = filterLightService.fetch(condition);
                             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                                 condition.put("lightStatus", true);
-                                condition.put("createAt",new Timestamp(System.currentTimeMillis()));
+                                condition.put("createAt", new Timestamp(System.currentTimeMillis()));
                                 filterLightService.update(condition);
                             } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                                 filterLightService.create(new FilterLight(machineId, true));

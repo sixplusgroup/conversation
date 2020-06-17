@@ -4,12 +4,14 @@ import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.Path;
+import javax.xml.transform.Result;
+
 @FeignClient("machine-agent")
 public interface MachineService {
 
     @GetMapping("/machine/qrcode/model")
     ResultData findModel(@RequestParam("codeValue") String codeValue);
-
 
     //ControlOptionController
     @GetMapping("/machine/control/option/create")
@@ -33,6 +35,12 @@ public interface MachineService {
     @PostMapping("/machine/control/option/config/light")
     ResultData configLight(@RequestParam("qrcode") String qrcode, @RequestParam("light") int light);
 
+    @PostMapping("/machine/control/option/config/temp")
+    ResultData configTemp(@RequestParam("qrcode") String qrcode, @RequestParam("temp") int temp);
+
+    @PostMapping("/machine/control/option/config/timing")
+    ResultData configTiming(@RequestParam("qrcode") String qrcode, @RequestParam("countdown") int countdown);
+
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")
     ResultData findMachineIdByCodeValue(@RequestParam("codeValue") String codeValue);
@@ -46,9 +54,8 @@ public interface MachineService {
     @PostMapping("machine/qrcode/probe/byurl")
     ResultData probeQRcodeByUrl(@RequestParam("codeUrl") String codeUrl);
 
-    @GetMapping("/machine/qrcode/checkonline")
-    ResultData checkOnline(@RequestParam("qrcode") String qrcode);
-
+    @GetMapping("/machine/{qrcode}/isonline")
+    ResultData checkOnline(@PathVariable("qrcode") String qrcode);
 
     //ConsumerQRcodeController
     @PostMapping("/machine/consumer/qrcode/bind")
@@ -77,15 +84,26 @@ public interface MachineService {
     @GetMapping("/machine/consumer/machinelist")
     ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
 
+    @GetMapping("/machine/consumer/machine/list")
+    ResultData obtainMachineList(@RequestParam("consumerId") String consumerId);
+
     @PostMapping("/machine/consumer/modify/bind/name")
     ResultData modifyBindName(@RequestParam("qrcode") String qrcode, @RequestParam("bindName") String bindName, @RequestParam("consumerId") String consumerId);
 
     @GetMapping("/machine/consumer/probe/by/qrcode")
     ResultData probeBindByQRcode(@RequestParam("qrcode") String qrcode, @RequestParam("consumerId") String consumerId);
 
-    //MachineAirQualityController
+    /**
+     * 获取设备的运行状态信息
+     *
+     * @param qrcode
+     * @return
+     */
     @GetMapping("/machine/status/byqrcode")
     ResultData getMachineStatusByQRcode(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/{qrcode}/status")
+    ResultData runningStatus(@PathVariable("qrcode") String qrcode);
 
     //MachineDefaultLocationController
     @GetMapping("/machine/default/location/probe/cityid")

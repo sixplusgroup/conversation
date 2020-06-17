@@ -7,6 +7,10 @@ public class AdminForm {
 
     private String password;
 
+    private int role;
+
+
+
     public AdminForm() {
         super();
     }
@@ -33,5 +37,13 @@ public class AdminForm {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
     }
 }

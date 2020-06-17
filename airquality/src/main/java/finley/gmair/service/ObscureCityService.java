@@ -7,5 +7,6 @@ import java.util.Map;
 
 public interface ObscureCityService {
     ResultData fetch(Map<String, Object> condition);
+
     ResultData assign(ObscureCity obscureCity);
 }

@@ -2,7 +2,7 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.HumidDailyDao;
 import finley.gmair.dao.HumidHourlyDao;
-import finley.gmair.model.dataAnalysis.HumidHourly;
+import finley.gmair.model.analysis.HumidHourly;
 import finley.gmair.service.HumidService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

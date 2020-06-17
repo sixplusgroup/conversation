@@ -1,11 +1,14 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.service.AdminRoleService;
 import finley.gmair.service.AdminService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.role.RoleVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -18,7 +21,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class AdminDetailServiceImpl implements UserDetailsService{
+public class AdminDetailServiceImpl implements UserDetailsService {
+
+    private Logger logger = LoggerFactory.getLogger(AdminDetailServiceImpl.class);
 
     @Autowired
     AdminService adminService;
@@ -32,11 +37,13 @@ public class AdminDetailServiceImpl implements UserDetailsService{
         Map<String, Object> condition = new HashMap<>();
         condition.put("username", userName);
         ResultData resultData = adminService.fetchAdmin(condition);
+
         if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
             //use email login
             condition.clear();
             condition.put("email", userName);
             resultData = adminService.fetchAdmin(condition);
+            logger.info("email response: " + JSON.toJSONString(resultData));
             if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 throw new UsernameNotFoundException("no user");
             }

@@ -9,6 +9,8 @@ public class EXCode extends Entity {
 
     private String codeValue;
 
+    private String label;
+
     private EXCodeStatus status;
 
     private double price;
@@ -16,6 +18,7 @@ public class EXCode extends Entity {
     public EXCode() {
         super();
         this.status = EXCodeStatus.CREATED;
+        this.label = "果麦检测";
     }
 
     public EXCode(String activityId, String codeValue, double price) {
@@ -23,6 +26,14 @@ public class EXCode extends Entity {
         this.activityId = activityId;
         this.codeValue = codeValue;
         this.price = price;
+    }
+
+    public EXCode(String activityId, String codeValue, double price,String label) {
+        this();
+        this.activityId = activityId;
+        this.codeValue = codeValue;
+        this.price = price;
+        this.label = label;
     }
 
     public String getCodeId() {
@@ -63,5 +74,13 @@ public class EXCode extends Entity {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

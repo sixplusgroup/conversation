@@ -469,4 +469,37 @@ public class ConsumerAuthController {
         }
     }
 
+    /**
+     * 根据手机号获取Wechat
+     *
+     * @param
+     * @return
+     */
+    @GetMapping("/probe/wechat/by/phone")
+    public ResultData probeWechatByPhone(String phone){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(phone)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("phone",phone);
+        condition.put("blockFlag",false);
+        ResultData response = consumerService.fetchConsumer(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get consumer info by phone");
+            return result;
+        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find consumer info by phone");
+            return result;
+        }else{
+            result.setData(((List<ConsumerVo>)response.getData()).get(0).getWechat());
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to find consumer info by phone");
+            return result;
+        }
+    }
 }

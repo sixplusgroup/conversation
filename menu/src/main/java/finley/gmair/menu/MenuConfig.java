@@ -13,9 +13,6 @@ import java.net.URL;
 
 public class MenuConfig {
 
-    //private final static String wechat_appid = "wxc23d6a94677bb85f";
-
-    //private final static String wechat_secret = "991f23ba9d364748fe35acbb52d1f68a";
     public static String createMenu(String token) {
 
         //关于果麦
@@ -106,10 +103,21 @@ public class MenuConfig {
             e.printStackTrace();
         }
 
+        //试用申请
+        JSONObject applicant = new JSONObject();
+        applicant.put("name", "试用申请");
+        applicant.put("type", "view");
+        try {
+            applicant.put("url", "http://www.gmair.net/acquire.html");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         JSONArray after_support = new JSONArray();
         after_support.add(contact_us);
         after_support.add(online_purchase);
         after_support.add(card_exchange);
+        after_support.add(applicant);
 
         JSONObject as_menu = new JSONObject();
         as_menu.put("name", "购买与服务");
@@ -185,7 +193,7 @@ public class MenuConfig {
     }
 
     public static void main(String[] args) {
-        String token = "";
+        String token = "25_8ILI5000Vm7ybcIb-_MMzRmSG_y04FpyD96lXGiHMvYpOgK8_nWJaZ2liZBg17jXM-DWn21gjwVEZB9EWnnuH2Dv-mqf_HjNF_T5r_chVdTsyn-wUrNuRBnhrZZtQB05SwJpbKAfAHCf-wRJYJMbABAPAD";
         String deleteMessage = MenuConfig.deleteMenu(token);
         System.out.println("删除操作: " + deleteMessage);
         String createMessage = MenuConfig.createMenu(token);

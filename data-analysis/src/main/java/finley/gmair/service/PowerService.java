@@ -1,6 +1,6 @@
 package finley.gmair.service;
 
-import finley.gmair.model.dataAnalysis.PowerHourly;
+import finley.gmair.model.analysis.PowerHourly;
 import finley.gmair.util.ResultData;
 
 import java.util.List;

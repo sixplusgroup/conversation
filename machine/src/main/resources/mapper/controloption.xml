@@ -77,6 +77,9 @@
         <if test="actionOperator != null">
             AND action_operator = #{actionOperator}
         </if>
+        <if test="commandValue != null">
+            AND command_value = #{commandValue}
+        </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
@@ -95,4 +98,5 @@
         WHERE co.option_id = coa.control_id AND coa.model_id = #{modelId} AND co.block_flag = 0 AND coa.block_flag = 0
         GROUP BY co.option_id
     </select>
+
 </mapper>

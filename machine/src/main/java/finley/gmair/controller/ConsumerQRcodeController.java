@@ -1,15 +1,22 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.MachineListDaily;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.model.machine.QRCodeStatus;
+import finley.gmair.pool.MachinePool;
+import finley.gmair.util.ParamUtils;
+import finley.gmair.util.PhoneUtil;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.machine.MachineInfoVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,14 +25,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/machine/consumer")
 public class ConsumerQRcodeController {
+    private Logger logger = LoggerFactory.getLogger(ConsumerQRcodeController.class);
+
     @Autowired
     private ConsumerQRcodeBindService consumerQRcodeBindService;
 
@@ -80,16 +86,47 @@ public class ConsumerQRcodeController {
         return result;
     }
 
+    @GetMapping("/qrcode/bind/list")
+    public ResultData qrcodeBindList(String search) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(search)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供二维码或手机号");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        if (PhoneUtil.isMobile(search)) {
+            condition.put("consumerPhone", search);
+        } else {
+            condition.put("codeValue", search);
+        }
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBindView(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("查找结果为空，请检查手机号/二维码是否输入完整");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setData(response.getData());
+            result.setDescription("查找过程出现错误，请重试");
+            return result;
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+    }
+
     @RequestMapping(value = "/qrcode/bind", method = RequestMethod.POST)
-    public ResultData bindConsumerWithQRcode(String consumerId, String bindName, String qrcode, int ownership) {
+    public ResultData bindConsumerWithQRcode(String consumerId, String bindName, String qrcode, Integer ownership) {
         ResultData result = new ResultData();
         //check empty
-        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(bindName) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(Ownership.fromValue(ownership))) {
+        if (ParamUtils.containEmpty(consumerId, bindName, qrcode, Ownership.fromValue(ownership))) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all the information");
             return result;
         }
-
         //check whether the bind exist
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", consumerId);
@@ -103,7 +140,6 @@ public class ConsumerQRcodeController {
             result.setDescription("exist bind,don't have to bind again");
             return result;
         }
-
         //save to consumer_qrcode_bind table
         ConsumerQRcodeBind consumerQRcodeBind = new ConsumerQRcodeBind();
         consumerQRcodeBind.setConsumerId(consumerId);
@@ -131,13 +167,13 @@ public class ConsumerQRcodeController {
          * if ownership = 1, is sharer, no need to update
          */
         if (ownership == 0) {
-            new Thread(() -> {
+            MachinePool.getMachinePool().execute(() -> {
                 condition.clear();
                 condition.put("codeValue", qrcode);
                 condition.put("status", QRCodeStatus.OCCUPIED.getValue());
                 condition.put("blockFlag", false);
                 qrCodeService.modifyByQRcode(condition);
-            }).start();
+            });
         }
         return result;
     }
@@ -145,13 +181,13 @@ public class ConsumerQRcodeController {
     @RequestMapping(value = "/qrcode/unbind", method = RequestMethod.POST)
     public ResultData unbindConsumerWithQRcode(String consumerId, String qrcode) {
         ResultData result = new ResultData();
+        logger.info("consumerId: " + consumerId + ", qrcode: " + qrcode);
         //check empty
-        if (StringUtils.isEmpty(consumerId) || StringUtils.isEmpty(qrcode)) {
+        if (ParamUtils.containEmpty(consumerId, qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all information");
             return result;
         }
-
         //find the consumerId-codeValue correspond record in consumer_qrcode_bind table
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", consumerId);
@@ -168,7 +204,6 @@ public class ConsumerQRcodeController {
             return result;
         }
         ConsumerQRcodeBind consumerQRcodeBind = ((List<ConsumerQRcodeBind>) response.getData()).get(0);
-
         //according to the onwership,update the  consumer_qrcode_bind and qrcode table and code_machine_bind table
         if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
             new Thread(() -> {
@@ -183,8 +218,6 @@ public class ConsumerQRcodeController {
                 condition.put("blockFlag", true);
                 machineQrcodeBindService.modifyByQRcode(condition);
             }).start();
-
-
             condition.clear();
             condition.put("codeValue", qrcode);
             condition.put("blockFlag", false);
@@ -294,6 +327,10 @@ public class ConsumerQRcodeController {
         return result;
     }
 
+    /**
+     * @param consumerId
+     * @return
+     */
     @RequestMapping(value = "/machinelist", method = RequestMethod.GET)
     public ResultData getMachineListByConsumerId(String consumerId) {
         ResultData result = new ResultData();
@@ -303,7 +340,6 @@ public class ConsumerQRcodeController {
             result.setDescription("please provide the consumerId");
             return result;
         }
-
         Map<String, Object> condition = new HashMap<>();
         condition.put("consumerId", consumerId);
         condition.put("blockFlag", false);
@@ -321,6 +357,59 @@ public class ConsumerQRcodeController {
             result.setData(response.getData());
             result.setDescription("success to fetch device list by consumerid");
         }
+        return result;
+    }
+
+    @GetMapping("/machine/list")
+    public ResultData list(String consumerId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(consumerId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供用户的身份信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        //查询用户的绑定信息
+        condition.put("consumerId", consumerId);
+        condition.put("blockFlag", false);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find device list by consumerid");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find device list by consumerid");
+            return result;
+        }
+        JSONArray json = new JSONArray();
+        List<ConsumerQRcodeBind> list = (List<ConsumerQRcodeBind>) response.getData();
+        for (ConsumerQRcodeBind bind : list) {
+            JSONObject o = new JSONObject();
+            String qrcode = bind.getCodeValue();
+            response = qrCodeService.profile(qrcode);
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                continue;
+            }
+            GoodsModelDetailVo vo = (GoodsModelDetailVo) response.getData();
+            logger.info("goods model info: " + JSON.toJSONString(vo));
+            o.put("bindId", bind.getBindId());
+            o.put("bindName", bind.getBindName());
+            o.put("codeValue", bind.getCodeValue());
+            o.put("ownership", bind.getOwnership());
+            o.put("goodsId", vo.getGoodsId());
+            o.put("goodsName", vo.getGoodsName());
+            o.put("modelId", vo.getModelId());
+            o.put("modelCode", vo.getModelCode());
+            o.put("modelName", vo.getModelAbbr());
+            o.put("modelThumbnail", vo.getModelThumbnail());
+            o.put("modelBg", vo.getModelBg());
+            json.add(o);
+        }
+        if (json.size() == 0) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        result.setData(json);
         return result;
     }
 
@@ -398,7 +487,7 @@ public class ConsumerQRcodeController {
     }
 
     @GetMapping("/owner/machine/list")
-    public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount, String overCountGTE, String overCountLTE) {
+    public ResultData getOwnerMachineList(Integer curPage, Integer pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount, String overCountGTE, String overCountLTE) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(phone)) {
@@ -425,9 +514,12 @@ public class ConsumerQRcodeController {
             int ovcLTE = Integer.parseInt(overCountLTE);
             condition.put("overCountLTE", ovcLTE);
         }
-        condition.put("start", (curPage - 1) * pageSize);
-        condition.put("pageSize", pageSize);
-        ResultData response = machineListDailyService.queryMachineListDaily(condition);
+        ResultData response;
+        if (curPage == null || pageSize == null) {
+            response = machineListDailyService.queryMachineListDaily(condition);
+        } else {
+            response = machineListDailyService.queryMachineListDaily(condition, curPage, pageSize);
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch");
@@ -438,18 +530,18 @@ public class ConsumerQRcodeController {
             return result;
         }
 
-        List<MachineListDaily> resultList = (List<MachineListDaily>) response.getData();
-        int totalPage = resultList.size() / pageSize + 1;
-        if (curPage < 1 || curPage > totalPage) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to got that page because that page not exist");
-            return result;
-        }
-        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("totalPage", totalPage);
-        jsonObject.put("machineList", resultList);
-        result.setData(jsonObject);
+//        List<MachineListDaily> resultList = (List<MachineListDaily>) response.getData();
+//        int totalPage = resultList.size() / pageSize + 1;
+//        if (curPage < 1 || curPage > totalPage) {
+//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//            result.setDescription("fail to got that page because that page not exist");
+//            return result;
+//        }
+//        resultList = resultList.subList((curPage - 1) * pageSize, Math.min(curPage * pageSize, resultList.size()));
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("totalPage", totalPage);
+//        jsonObject.put("machineList", resultList);
+        result.setData(response.getData());
         result.setDescription("success to fetch data");
         return result;
     }

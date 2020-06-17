@@ -23,7 +23,7 @@ public class MessageUtil {
                 "http://sms-api.luosimao.com/v1/send.json");
         MultivaluedMapImpl formData = new MultivaluedMapImpl();
         formData.add("mobile", phone);
-        formData.add("message", new StringBuffer(text).append(MessageProperties.getValue("message_signature")).toString());
+        formData.add("message", text);
         ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).
                 post(ClientResponse.class, formData);
         logger.info(JSON.toJSONString(response));
@@ -38,7 +38,7 @@ public class MessageUtil {
                 "http://sms-api.luosimao.com/v1/send_batch.json");
         MultivaluedMapImpl formData = new MultivaluedMapImpl();
         formData.add("mobile_list", phones);
-        formData.add("message", new StringBuffer(text).append(MessageProperties.getValue("message_signature")));
+        formData.add("message", text);
         ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).
                 post(ClientResponse.class, formData);
         logger.info(JSON.toJSONString(response));

@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
 import finley.gmair.model.wechat.Article;
-import finley.gmair.scheduler.wechat.WechatScheduler;
+//import finley.gmair.scheduler.wechat.WechatScheduler;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.wechat.ArticleReplyVo;
@@ -53,16 +53,19 @@ public class WechatApplication {
     private MachineService machineService;
 
     @Autowired
-    private WechatScheduler wechatScheduler;
+    private VideoTemplateService videoTemplateService;
+
+//    @Autowired
+//    private WechatScheduler wechatScheduler;
 
     public static void main(String[] args) {
         SpringApplication.run(WechatApplication.class, args);
     }
 
-    @PostConstruct
-    public void init() {
-        wechatScheduler.renewal();
-    }
+//    @PostConstruct
+//    public void init() {
+//        wechatScheduler.renewal();
+//    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/wechat")
     public String check(HttpServletRequest request) {
@@ -100,6 +103,7 @@ public class WechatApplication {
                     Map<String, Object> condition = new HashMap<>();
                     condition.put("messageType", "text");
                     condition.put("keyword", tmessage.getContent());
+                    condition.put("blockFlag", false);
                     ResultData response = autoReplyService.fetch(condition);
                     if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                         AutoReply reply = ((List<AutoReply>) response.getData()).get(0);
@@ -126,6 +130,15 @@ public class WechatApplication {
                             condition.put("templateId", reply.getTemplateId());
                             ArticleReplyVo vo = getArticle(condition);
                             String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), tmessage);
+                            return xml;
+                        }
+                        if (reply.getTemplateId().startsWith("VTI")) {
+                            condition.clear();
+                            condition.put("templateId", reply.getTemplateId());
+                            VideoOutMessage result = initVideo(getVideo(condition), tmessage);
+                            content.alias("xml", VideoOutMessage.class);
+                            content.alias("Video", Video.class);
+                            String xml = content.toXML(result);
                             return xml;
                         }
                     }
@@ -222,6 +235,16 @@ public class WechatApplication {
         return result;
     }
 
+    private VideoOutMessage initVideo(VideoTemplate template, InMessage message) {
+        VideoOutMessage result = new VideoOutMessage();
+        result.setFromUserName(message.getToUserName());
+        result.setToUserName(message.getFromUserName());
+        result.setCreateTime(new Date().getTime());
+        Video video = new Video(template.getVideoUrl(),template.getVideoTitle(),template.getVideoDesc());
+        result.setVideo(video);
+        return result;
+    }
+
     private ArticleOutMessage initial(List<Article> list, InMessage message) {
         ArticleOutMessage result = new ArticleOutMessage();
         result.setFromUserName(message.getToUserName());
@@ -251,6 +274,16 @@ public class WechatApplication {
             return result;
         } else {
             return "";
+        }
+    }
+
+    private VideoTemplate getVideo(Map<String, Object> condition) {
+        ResultData rd = videoTemplateService.fetch(condition);
+        if (rd.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            VideoTemplate vo = ((List<VideoTemplate>) rd.getData()).get(0);
+            return vo;
+        } else {
+            return null;
         }
     }
 

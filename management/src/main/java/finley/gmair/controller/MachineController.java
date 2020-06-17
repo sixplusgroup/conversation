@@ -4,10 +4,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.service.CoreService;
 import finley.gmair.service.MachineService;
+import finley.gmair.service.MqttLoggerService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * This method is responsible to fetch response from machine-agent
@@ -22,6 +28,9 @@ public class MachineController {
 
     @Autowired
     private CoreService coreService;
+
+    @Autowired
+    private MqttLoggerService mqttLoggerService;
 
 
     @GetMapping("/model/list")
@@ -79,4 +88,74 @@ public class MachineController {
     public ResultData getOwnerMachineList(int curPage, int pageSize, String qrcode, String phone, String createTimeGTE, String createTimeLTE, String online, String overCount, String overCountGTE, String overCountLTE) {
         return machineService.getOwnerMachineList(curPage, pageSize, qrcode, phone, createTimeGTE, createTimeLTE, online,overCount, overCountGTE, overCountLTE);
     }
+
+    @PostMapping("/qrcode/status")
+    public ResultData findStatusByQRcode(String qrcode) {
+        return machineService.checkQRcodeExist(qrcode);
+    }
+
+    @RequestMapping(value = "/model/component/probe", method = RequestMethod.GET)
+    public ResultData fetchModelEnabledComponent(String modelId, String componentName) {
+        return machineService.fetchModelEnabledComponent(modelId, componentName);
+    }
+
+    @PostMapping("/config/screen")
+    public ResultData configScreen(String qrcode,int screen) {
+        return machineService.configScreen(qrcode,screen);
+    }
+
+    /**
+     * 根据qrcode查绑定列表
+     * @param search
+     * @return
+     */
+    @GetMapping("/qrcode/bind/list")
+    public ResultData bindList(String search){
+        return machineService.qrcodeBindList(search);
+    }
+
+    /**
+     * 设备解绑
+     * @param qrcode
+     * @param consumerId
+     * @return
+     */
+    @RequestMapping(value = "/qrcode/unbind", method = RequestMethod.POST)
+    public ResultData unbindConsumerWithQRcode(String qrcode,String consumerId) {
+        return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
+    }
+
+    /**
+     * 根据qrcode查mqtt-logger
+     * @param qrcode
+     * @return
+     */
+    @GetMapping("/mqtt/logger/list")
+    public ResultData getMqttLogger(String qrcode){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(qrcode)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide qrcode");
+            return result;
+        }
+        ResultData response = machineService.qrcodeGetMachineId(qrcode);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription("根据二维码查找机器MAC失败");
+            return result;
+        }
+        MachineQrcodeBindVo machineQrcodeBindVo = JSONArray.parseArray(JSONObject.toJSONString(response.getData()),MachineQrcodeBindVo.class).get(0);
+        System.out.println(machineQrcodeBindVo);
+        String machineId = machineQrcodeBindVo.getMachineId();
+        response = mqttLoggerService.list(machineId);
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription("根据机器MAC查找log失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        return result;
+    }
+
 }

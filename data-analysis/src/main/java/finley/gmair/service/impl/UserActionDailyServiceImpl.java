@@ -1,7 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.UserActionDailyDao;
-import finley.gmair.model.dataAnalysis.UserActionDaily;
+import finley.gmair.model.analysis.UserActionDaily;
 import finley.gmair.service.UserActionDailyService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

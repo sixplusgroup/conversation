@@ -1,7 +1,6 @@
 package finley.gmair.service;
 
-import finley.gmair.model.dataAnalysis.Co2Hourly;
-import finley.gmair.model.dataAnalysis.HumidHourly;
+import finley.gmair.model.analysis.Co2Hourly;
 import finley.gmair.util.ResultData;
 
 import java.util.List;

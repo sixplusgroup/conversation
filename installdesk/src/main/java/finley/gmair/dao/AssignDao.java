@@ -13,6 +13,14 @@ public interface AssignDao {
 
     ResultData query(Map<String, Object> condition, int start, int length);
 
+    ResultData report_query(Map<String,Object> condition);
+
+    ResultData principal(Map<String, Object> condition);
+
+    ResultData principal(Map<String, Object> condition,int start,int length);
+
+    ResultData worker(Map<String, Object> condition);
+
     ResultData update(Map<String, Object> condition);
 
     ResultData block(String assignId);

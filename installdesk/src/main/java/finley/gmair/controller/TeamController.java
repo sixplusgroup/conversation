@@ -1,7 +1,9 @@
 package finley.gmair.controller;
 
 import finley.gmair.form.installation.TeamForm;
+import finley.gmair.model.installation.Member;
 import finley.gmair.model.installation.Team;
+import finley.gmair.service.MemberService;
 import finley.gmair.service.TeamService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -28,6 +30,9 @@ public class TeamController {
 
     @Autowired
     private TeamService teamService;
+
+    @Autowired
+    private MemberService memberService;
 
     @PostMapping("/create")
     public ResultData create(TeamForm form) {
@@ -83,7 +88,7 @@ public class TeamController {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         condition.put("teamId", teamId);
-        condition.put("blockFlag", false);
+//        condition.put("blockFlag", false);
         ResultData response = teamService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -94,6 +99,41 @@ public class TeamController {
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(((List) response.getData()).get(0));
+        }
+        return result;
+    }
+
+    @GetMapping("/block")
+    public ResultData block(String teamId){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(teamId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供teamId");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("teamId",teamId);
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetch(condition);
+        List<Member> list = (List<Member>)response.getData();
+        for(int i =0;i<list.size();i++){
+            memberService.block(list.get(i).getMemberId());
+        }
+        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("删除成员失败");
+            return result;
+        }
+        response = teamService.block(teamId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("没有找到要删除的团队");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("删除团队失败，请稍后尝试");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
         }
         return result;
     }

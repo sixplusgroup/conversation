@@ -72,25 +72,25 @@ public class WechatUserController {
         return result;
     }
 
-    @PostMapping(value = "/openid")
-    public ResultData openid(String code) {
-        ResultData result = new ResultData();
-        final String appid = WechatProperties.getValue("wechat_appid");
-        final String secret = WechatProperties.getValue("wechat_secret");
-        try {
-            String openid = WechatUtil.queryOauthOpenId(appid, secret, code);
-            if (!StringUtils.isEmpty(openid)) {
-                result.setData(openid);
-            } else {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription(new StringBuffer("Fail to resolve the current code: ").append(code).toString());
-            }
-        } catch (Exception e) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("Code: ").append(code).append(" not valid").toString());
-        }
-        return result;
-    }
+//    @PostMapping(value = "/openid")
+//    public ResultData openid(String code) {
+//        ResultData result = new ResultData();
+//        final String appid = WechatProperties.getValue("wechat_appid");
+//        final String secret = WechatProperties.getValue("wechat_secret");
+//        try {
+//            String openid = WechatUtil.queryOauthOpenId(appid, secret, code);
+//            if (!StringUtils.isEmpty(openid)) {
+//                result.setData(openid);
+//            } else {
+//                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//                result.setDescription(new StringBuffer("Fail to resolve the current code: ").append(code).toString());
+//            }
+//        } catch (Exception e) {
+//            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+//            result.setDescription(new StringBuffer("Code: ").append(code).append(" not valid").toString());
+//        }
+//        return result;
+//    }
 
     @PostMapping(value = "/create/byopenId")
     public ResultData createUser(String openId) {

@@ -5,10 +5,12 @@
 <configuration>
     <mappers>
         <mapper resource="mapper/wechat/accesstoken.xml"></mapper>
+        <mapper resource="mapper/wechat/messagetemplate.xml"></mapper>
         <mapper resource="mapper/wechat/wechatuser.xml"></mapper>
         <mapper resource="mapper/wechat/autoreply.xml"></mapper>
         <mapper resource="mapper/wechat/articletemplate.xml"></mapper>
         <mapper resource="mapper/wechat/picturetemplate.xml"></mapper>
+        <mapper resource="mapper/wechat/videotemplate.xml"></mapper>
         <mapper resource="mapper/wechat/texttemplate.xml"></mapper>
         <mapper resource="mapper/wechat/wechatresource.xml"></mapper>
     </mappers>

@@ -1,19 +1,21 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ActivityForm;
 import finley.gmair.form.drift.AttachmentForm;
 import finley.gmair.form.drift.EXCodeCreateForm;
 import finley.gmair.model.drift.*;
 import finley.gmair.service.*;
-import finley.gmair.util.DriftProperties;
-import finley.gmair.util.IDGenerator;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
+import finley.gmair.util.*;
+import finley.gmair.vo.drift.ActivityEquipmentVo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/drift/activity")
-public class ActivityController {
+public class ActivityController extends BaseController {
 
     @Autowired
     private ActivityService activityService;
@@ -45,7 +47,16 @@ public class ActivityController {
     @Autowired
     private AttachmentService attachmentService;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private OrderService orderService;
+
     private Object lock = new Object();
+
+    private Logger logger = LoggerFactory.getLogger(ActivityController.class);
+
     /**
      * the method is used to create activity
      *
@@ -54,16 +65,17 @@ public class ActivityController {
     @PostMapping(value = "/create")
     public ResultData createDriftActivity(ActivityForm form) throws Exception {
         ResultData result = new ResultData();
-
-        //judge the parameter complete or not
-        if (StringUtils.isEmpty(form.getActivityName()) || StringUtils.isEmpty(form.getRepositorySize())
-                || StringUtils.isEmpty(form.getThreshold()) || StringUtils.isEmpty(form.getReservableDays())
-                || StringUtils.isEmpty(form.getStartTime()) || StringUtils.isEmpty(form.getEndTime()) || StringUtils.isEmpty(form.getIntroduction())) {
+        // 检查参数的完整性
+        if (StringUtil.isEmpty(form.getActivityName(), form.getStartTime(), form.getEndTime(), form.getIntroduction(), form.getHost())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("please make sure you fill all the required fields");
+            result.setDescription("请确认活动名称、起讫时间、活动介绍及主办方信息的完整性");
             return result;
         }
-
+        if (form.getRepositorySize() <= 0 || form.getReservableDays() <= 0) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请设置有效的活动所使用的设备数量、设备的可持有天数");
+            return result;
+        }
         //build activity entity
         String activityName = form.getActivityName().trim();
         int repositorySize = form.getRepositorySize();
@@ -72,12 +84,17 @@ public class ActivityController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date start = sdf.parse(form.getStartTime());
         Date end = sdf.parse(form.getEndTime());
+        Date open = sdf.parse(form.getOpenDate());
+        Date close = sdf.parse(form.getCloseDate());
+        int delaydays = form.getDelayDays();
         String introduction = form.getIntroduction();
-        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction);
+        String host = form.getHost();
+        Activity activity = new Activity(activityName, repositorySize, threshold, reservableDays, start, end, introduction, host, open, close, delaydays);
         ResultData response = activityService.createActivity(activity);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to store activity to database");
+            return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -91,6 +108,7 @@ public class ActivityController {
      *
      * @return
      */
+    //todo 添加设备图片
     @PostMapping(value = "/equip/create")
     public ResultData createEquipment(String equipmentName, double equipPrice) {
         ResultData result = new ResultData();
@@ -128,7 +146,13 @@ public class ActivityController {
         String equipId = form.getEquipId().trim();
         String attachName = form.getAttachName().trim();
         double attachPrice = form.getAttachPrice();
+        int attachSingle = form.getAttachSingle();
+        String meal = form.getMeal();
         Attachment attachment = new Attachment(equipId, attachName, attachPrice);
+        attachment.setAttachSingle(attachSingle);
+        if (!StringUtils.isEmpty(meal)) {
+            attachment.setMeal(meal);
+        }
         ResultData response = attachmentService.create(attachment);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -193,8 +217,8 @@ public class ActivityController {
      *
      * @return
      */
-    @PostMapping(value = "/getActivity/byId")
-    public ResultData getActivityById(String activityId) {
+    @GetMapping(value = "/{activityId}/profile")
+    public ResultData profile(@PathVariable("activityId") String activityId) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(activityId)) {
@@ -218,6 +242,45 @@ public class ActivityController {
         return result;
     }
 
+    @GetMapping("/{activityId}/thumbnail")
+    public ResultData thumbnail(@PathVariable("activityId") String activityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供活动的基本信息");
+            return result;
+        }
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivityThumbnail(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到和该活动相关的图片");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询活动图片失败，请稍后尝试");
+        }
+        return result;
+    }
+
+    /**
+     * the method is used to select actual equipment by activityId
+     *
+     * @return
+
+     @GetMapping("/{activityId}/equipment") public ResultData equipment(@PathVariable("activityId") String activityId) {
+     ResultData result = new ResultData();
+
+
+     return result;
+     }
+     */
+
     /**
      * the method is called to create excode if activity needs
      *
@@ -227,7 +290,7 @@ public class ActivityController {
     public ResultData createEXCode(EXCodeCreateForm form) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(form.getActivityId()) || StringUtils.isEmpty(form.getNum())
-                || StringUtils.isEmpty(form.getPrice())) {
+                || StringUtils.isEmpty(form.getPrice()) || StringUtils.isEmpty(form.getStatus())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please make sure you fill all the required fields");
             return result;
@@ -246,7 +309,9 @@ public class ActivityController {
 
         int num = form.getNum();
         double price = form.getPrice();
-        response = exCodeService.createEXCode(activityId, num, price);
+        int status = form.getStatus();
+        String label = form.getLabel();
+        response = exCodeService.createEXCode(activityId, status, num, price,label);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             new Thread(() -> {
@@ -257,6 +322,27 @@ public class ActivityController {
         }
         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         result.setDescription("Sorry, the EXCodes are not generated as expected, please try again");
+        return result;
+    }
+
+    @GetMapping(value = "/excode/one/create")
+    public ResultData createOneEXCode(String activityId,String codeValue,double price,int status,String label) {
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(activityId)||StringUtils.isEmpty(codeValue)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供相应条件");
+            return result;
+        }
+        EXCode code;
+        if(StringUtils.isEmpty(label)){
+            code = new EXCode(activityId, codeValue, price);
+        }else {
+            code = new EXCode(activityId, codeValue, price,label);
+        }
+        if (status == 1) {
+            code.setStatus(EXCodeStatus.EXCHANGED);
+        }
+        result = exCodeService.createOneExcode(code);
         return result;
     }
 
@@ -358,7 +444,6 @@ public class ActivityController {
         BufferedOutputStream outputStream = null;
         try {
             inputStream = new BufferedInputStream(new FileInputStream(file));
-            response.setCharacterEncoding("UTF-8");
             response.setContentType("application/octet-stream");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             outputStream = new BufferedOutputStream(response.getOutputStream());
@@ -571,6 +656,41 @@ public class ActivityController {
         return result;
     }
 
+    @GetMapping(value = "/attachment/list")
+    public ResultData getAttachment(String activityId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivityEquipment(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("服务器正忙，请稍后重试");
+            return result;
+        }
+        ActivityEquipmentVo vo = ((List<ActivityEquipmentVo>) response.getData()).get(0);
+        List<Attachment> list = new ArrayList();
+        condition.remove("activityId");
+        condition.put("equipId", vo.getEquipmentId());
+        response = attachmentService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            list = (List<Attachment>) response.getData();
+        }
+        if (list.isEmpty()) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未获取到相关附属品");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(list);
+        return result;
+    }
+
     @GetMapping(value = "/excode/list")
     public ResultData getlist() {
         ResultData result = new ResultData();
@@ -581,5 +701,143 @@ public class ActivityController {
         condition.put("status", list);
         result = exCodeService.fetchEXCode(condition);
         return result;
+    }
+
+    @GetMapping(value = "/excode/search")
+    public ResultData getExcode(String activityId,String label) {
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(label)||StringUtils.isEmpty(activityId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供查询所需的条件");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("label",label);
+        condition.put("activityId",activityId);
+        result = exCodeService.fetchEXCode(condition);
+        return result;
+    }
+
+    @GetMapping(value = "/excode/query/label")
+    public ResultData getExcodeLabels(String activityId) {
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(activityId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供查询的activityId");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("activityId",activityId);
+        result = exCodeService.fetchEXCodeLabel(condition);
+        return result;
+    }
+
+    //todo obtain notification corresponding to a given activity identified by activityId
+    @GetMapping("/{activityId}/notification")
+    public ResultData notification(@PathVariable("activityId") String activityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (StringUtils.isEmpty(activityId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供活动的基本信息");
+            return result;
+        }
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = notificationService.fetchNotification(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get notification by activityId");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No notification found by activityId");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @GetMapping("/{activityId}/available")
+    public ResultData available(@PathVariable("activityId") String activityId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            return error(result, "未能够根据活动ID: " + activityId + "查询到相应的活动信息");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            return empty(result, "当前不存在ID为: " + activityId + "的活动");
+        }
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        Date start = activity.getStartTime();
+        Date end = activity.getEndTime();
+
+        Calendar current = Calendar.getInstance();
+        if (start.compareTo(current.getTime()) < 0) start = current.getTime();
+        current.setTime(start);
+        JSONArray array = new JSONArray();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for (int i = 0; i < CalendarUtil.daysBetween(start, end); i++) {
+            JSONObject json = new JSONObject();
+            if (i <= activity.getDelayDays()) {
+                json.put(sdf.format(current.getTime()), false);
+                array.add(json);
+                current.add(Calendar.DATE, 1);
+                continue;
+            }
+            //获取当前活动每天的预约情况
+            if (available(activityId, current.getTime())) {
+                json.put(sdf.format(current.getTime()), true);
+                array.add(json);
+            } else {
+                json.put(sdf.format(current.getTime()), false);
+                array.add(json);
+            }
+            current.add(Calendar.DATE, 1);
+        }
+        result.setData(array);
+        return result;
+    }
+
+    private boolean available(String activityId, Date date) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("activityId", activityId);
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.info("未能查询到活动相关的信息");
+            return false;
+        }
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        //判断传入的日期是否可以预约
+        if (date.compareTo(activity.getStartTime()) < 0 || date.compareTo(activity.getEndTime()) > 0) {
+            return false;
+        }
+        Calendar current = Calendar.getInstance();
+        if (date.compareTo(current.getTime()) < 0) return false;
+
+        //获取当天的预约情况
+        condition.clear();
+        condition.put("activityId", activityId);
+        List statusList = new ArrayList();
+        statusList.add(DriftOrderStatus.PAYED.getValue());
+        statusList.add(DriftOrderStatus.CONFIRMED.getValue());
+        statusList.add(DriftOrderStatus.DELIVERED.getValue());
+        statusList.add(DriftOrderStatus.FINISHED.getValue());
+        condition.put("statusList", statusList);
+        condition.put("createDate", date);
+        condition.put("blockFlag",false);
+        response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) return true;
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            int size = ((List<Activity>) response.getData()).size();
+            if (size < activity.getRepositorySize() * activity.getThreshold()) return true;
+        }
+        return false;
     }
 }

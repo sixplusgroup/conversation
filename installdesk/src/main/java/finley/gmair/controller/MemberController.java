@@ -82,6 +82,7 @@ public class MemberController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("teamId", teamId);
+        condition.put("blockFlag",false);
         ResultData response = memberService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -108,14 +109,16 @@ public class MemberController {
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(openid)) {
             condition.put("wechatId", openid);
+            condition.put("blockFlag",false);
         }
         if (!StringUtils.isEmpty(phone)) {
             condition.put("memberPhone", phone);
+            condition.put("blockFlag",false);
         }
         if (!StringUtils.isEmpty(memberId)) {
             condition.put("memberId", memberId);
         }
-        condition.put("blockFlag", false);
+//        condition.put("blockFlag", false);
         ResultData response = memberService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -210,4 +213,96 @@ public class MemberController {
 
         return result;
     }
+
+    /**
+     * 修改成员信息
+     * @param memberPhone
+     * @return
+     */
+    @PostMapping("/update")
+    public ResultData update(String memberPhone,String memberId,String memberName,String teamId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberPhone)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确认memberId已提供");
+            return result;
+        }
+        if(StringUtils.isEmpty(memberName)&&StringUtils.isEmpty(memberPhone)&&StringUtils.isEmpty(teamId)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供更新的信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("memberId", memberId);
+        if(!StringUtils.isEmpty(memberPhone)){
+            condition.put("memberPhone", memberPhone);
+        }
+        if(!StringUtils.isEmpty(teamId)){
+            condition.put("teamId", teamId);
+        }
+        if(!StringUtils.isEmpty(memberName)){
+            condition.put("memberName", memberName);
+        }
+        condition.put("blockFlag", false);
+        ResultData response = memberService.update(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("联系方式修改成功");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("修改联系方式失败，请稍后尝试");
+        }
+        return result;
+    }
+
+    /**
+     * 根据memberId删除成员
+     * @param memberId
+     * @return
+     */
+
+    @GetMapping("/block")
+    public ResultData block(String memberId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供成员ID");
+            return result;
+        }
+        ResultData response = memberService.block(memberId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("团队成员删除成功");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("团队成员删除失败，请稍后尝试");
+        }
+        return result;
+    }
+
+    /**
+     * 获取负责人列表
+     * @return
+     */
+    @GetMapping("/leader/list")
+    public ResultData leaderList(){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("memberRole", 1);
+        condition.put("blockFlag",false);
+        ResultData response = memberService.fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("获取负责人信息失败，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到负责人信息");
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
 }

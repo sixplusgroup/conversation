@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <mappers>
+        <mapper resource="mapper/activity.xml" />
+        <mapper resource="mapper/repository.xml" />
+        <mapper resource="mapper/excode.xml" />
+        <mapper resource="mapper/driftorderitem.xml" />
+        <mapper resource="mapper/driftorder.xml" />
+        <mapper resource="mapper/equipment.xml" />
+        <mapper resource="mapper/equipactivity.xml" />
+        <mapper resource="mapper/qrexcode.xml" />
+        <mapper resource="mapper/attachment.xml" />
+        <mapper resource="mapper/usersession.xml"></mapper>
+        <mapper resource="mapper/notification.xml"></mapper>
+        <mapper resource="mapper/thumbnail.xml"></mapper>
+        <mapper resource="mapper/express.xml"></mapper>
+        <mapper resource="mapper/verification.xml"></mapper>
+        <mapper resource="mapper/address.xml"></mapper>
+        <mapper resource="mapper/user.xml"></mapper>
+        <mapper resource="mapper/driftordercancel.xml"></mapper>
+        <mapper resource="mapper/orderaction.xml"></mapper>
+        <mapper resource="mapper/reporttemplate.xml"></mapper>
+        <mapper resource="mapper/driftreport.xml"></mapper>
+        <mapper resource="mapper/dataitem.xml"></mapper>
+    </mappers>
+</configuration>

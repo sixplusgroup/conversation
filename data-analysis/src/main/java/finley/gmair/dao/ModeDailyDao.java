@@ -1,6 +1,6 @@
 package finley.gmair.dao;
 
-import finley.gmair.model.dataAnalysis.ModeHourly;
+import finley.gmair.model.analysis.ModeHourly;
 import finley.gmair.util.ResultData;
 
 import java.util.List;

@@ -8,6 +8,10 @@ public class EXCodeCreateForm {
 
     private double price;
 
+    private int status;
+
+    private String label;
+
     public String getActivityId() {
         return activityId;
     }
@@ -32,4 +36,19 @@ public class EXCodeCreateForm {
         this.price = price;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
 }

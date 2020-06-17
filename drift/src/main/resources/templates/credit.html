@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>芝麻信用授权</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/drift/static/materialize/css/materialize.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/drift/static/css/customize.css}"/>
+    <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>-->
+    <script text="text/javascript" th:src="@{/drift/static/materialize/js/materialize.js}"></script>
+</head>
+<body>
+<main>
+    <div class="row">
+        <div class="container">
+            <h1/>
+            <div class="col s4 center">
+                <a class="btn-floating btn-large"><i class="material-icons">filter_1</i></a>
+
+                <div>同意授权</div>
+            </div>
+            <div class="col s4 center">
+                <a class="btn-floating btn-large cyan"><i class="material-icons">filter_2</i></a>
+
+                <div>同意协议</div>
+            </div>
+            <div class="col s4 center">
+                <a class="btn-floating btn-large cyan"><i class="material-icons">filter_3</i></a>
+
+                <div>短信验证</div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="container fluid">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field">
+                        <input id="username" type="text" class="validate"/>
+                        <label for="username">姓名</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field">
+                        <input id="credit" type="text" class="validate"/>
+                        <label for="credit">身份证号</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field inline">
+                        <span class="helper-text">*以上信息用于确认您的身份</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <h8>芝麻信用+果麦新风</h8>
+                    <p>1.高于650分的用户将可以免押金使用专业检测设备</p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row center">
+        <button class="btn btn-large waves-effect waves-light" type="submit" name="action">授权获取信用
+            <i class="material-icons right">send</i>
+        </button>
+    </div>
+</main>
+</body>
+<script type="text/javascript">
+
+
+
+</script>
+</html>

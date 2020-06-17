@@ -1,6 +1,6 @@
 package finley.gmair.dao;
 
-import finley.gmair.model.dataAnalysis.UserActionDaily;
+import finley.gmair.model.analysis.UserActionDaily;
 import finley.gmair.util.ResultData;
 
 import java.util.List;

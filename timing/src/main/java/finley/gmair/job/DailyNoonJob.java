@@ -1,6 +1,7 @@
 package finley.gmair.job;
 
 import finley.gmair.pool.TimingPool;
+import finley.gmair.service.DriftFeignService;
 import finley.gmair.service.MachineFeignService;
 import finley.gmair.service.TaskService;
 import org.quartz.Job;
@@ -23,18 +24,23 @@ public class DailyNoonJob implements Job {
     private MachineFeignService machineFeignService;
 
     @Autowired
-    private TaskService taskService;
+    private DriftFeignService driftFeignService;
+
+//    @Autowired
+//    private TaskService taskService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        Map<String, Object> condition = new HashMap<>();
+//        Map<String, Object> condition = new HashMap<>();
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI20181130ex72fi16");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                machineFeignService.turnOnScreenDaily();
-            }
+//            condition.clear();
+//            condition.put("taskId", "GTI20181130ex72fi16");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+            machineFeignService.turnOnScreenDaily();
+//            }
         }));
+
+        TimingPool.getTimingExecutor().execute(() -> driftFeignService.orderReturnMessage());
     }
 }

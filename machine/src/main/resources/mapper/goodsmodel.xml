@@ -5,13 +5,27 @@
         <result property="modelId" column="model_id"></result>
         <result property="goodsId" column="goods_id"></result>
         <result property="modelCode" column="model_code"></result>
+        <result property="modelAbbr" column="model_abbr"></result>
         <result property="modelName" column="model_name"></result>
+        <result property="modelBg" column="model_bg"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="goodsModelDetailVo" type="finley.gmair.vo.machine.GoodsModelDetailVo">
+        <result property="goodsId" column="goods_id"></result>
+        <result property="goodsName" column="goods_name"></result>
+        <result property="goodsDescription" column="goods_description"></result>
+        <result property="modelId" column="model_id"></result>
+        <result property="modelCode" column="model_code"></result>
+        <result property="modelAbbr" column="model_abbr"></result>
+        <result property="modelName" column="model_name"></result>
+        <result property="modelThumbnail" column="model_thumbnail"></result>
+        <result property="modelBg" column="model_bg"></result>
+    </resultMap>
+
     <select id="query" parameterType="java.util.Map" resultMap="goodsModelVo">
-        SELECT model_id, goods_id, model_code, model_name, block_flag, create_time
+        SELECT model_id, goods_id, model_code, model_abbr, model_name, model_bg, block_flag, create_time
         FROM gmair_machine.goods_model
         WHERE 1 = 1
         <if test="modelId != null">
@@ -32,8 +46,23 @@
         ORDER BY create_time DESC
     </select>
 
+    <select id="queryindetail" parameterType="java.util.Map" resultMap="goodsModelDetailVo">
+        SELECT goods_id, goods_name, goods_description, model_id, model_code, model_abbr, model_name, model_thumbnail, model_bg
+        FROM gmair_machine.goods_model_view
+        WHERE 1 = 1
+        <if test="goodsId != null">
+            AND goods_id = #{goodsId}
+        </if>
+        <if test="modelId != null">
+            AND model_id = #{modelId}
+        </if>
+        <if test="modelCode != null">
+            AND model_code = #{modelCode}
+        </if>
+    </select>
+
     <insert id="insert" parameterType="finley.gmair.model.goods.GoodsModel" useGeneratedKeys="false">
-        INSERT INTO gmair_machine.goods_model(model_id, goods_id, model_code, model_name, block_flag, create_time)
+        INSERT INTO gmair_machine.goods_model (model_id, goods_id, model_code, model_name, block_flag, create_time)
         VALUES (#{modelId}, #{goodsId}, #{modelCode}, #{modelName}, #{blockFlag}, #{createAt})
     </insert>
 </mapper>

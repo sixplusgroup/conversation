@@ -6,7 +6,7 @@
         <result property="orderId" column="order_id"></result>
         <result property="setupMethod" column="setup_method"></result>
         <result property="description" column="description"></result>
-        <result property="status" column="recon_status"
+        <result property="power" column="recon_status"
                 typeHandler="finley.gmair.mybatis.handler.install.ReconnaissanceStatusHandler"></result>
         <result property="reconnaissanceDate" column="recon_date"></result>
         <result property="blockFlag" column="block_flag"></result>
@@ -16,7 +16,7 @@
     <insert id="insert" parameterType="finley.gmair.model.installation.Reconnaissance" useGeneratedKeys="false">
         INSERT INTO gmair_install.reconnaissance_list (recon_id, order_id, setup_method, description, recon_status, recon_date, block_flag, create_time)
         VALUES (#{reconId}, #{orderId}, #{setupMethod}, #{description},
-                #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{reconnaissanceDate}, #{blockFlag}, #{createAt})
+                #{power, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, #{reconnaissanceDate}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="reconnaissanceVo">
@@ -29,8 +29,8 @@
         <if test="orderId != null">
             AND order_id = #{orderId}
         </if>
-        <if test="status != null">
-            AND recon_status = #{status}
+        <if test="power != null">
+            AND recon_status = #{power}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
@@ -47,8 +47,8 @@
             <if test="description != null">
                 description = #{description},
             </if>
-            <if test="status != null">
-                recon_status = #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+            <if test="power != null">
+                recon_status = #{power, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
             </if>
             <if test="reconnaissanceDate != null">
                 recon_date = #{reconnaissanceDate},

@@ -11,5 +11,7 @@ public interface EXCodeDao {
 
     ResultData query(Map<String, Object> condition);
 
+    ResultData queryLabel(Map<String, Object> condition);
+
     ResultData update(Map<String, Object> condition);
 }

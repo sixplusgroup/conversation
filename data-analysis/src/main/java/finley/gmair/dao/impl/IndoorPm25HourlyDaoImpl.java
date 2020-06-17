@@ -2,7 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.IndoorPm25HourlyDao;
-import finley.gmair.model.dataAnalysis.IndoorPm25Hourly;
+import finley.gmair.model.analysis.IndoorPm25Hourly;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

@@ -19,7 +19,7 @@ public class ConfigurationController {
     @PostMapping("/init")
     public ResultData config(String url) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(url) || StringUtils.isEmpty(url.split("#")[0])) {
+        if (StringUtils.isEmpty(url) || StringUtils.isEmpty(url.split("#")[0])) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure the url is valid.");
             return result;

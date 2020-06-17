@@ -281,4 +281,102 @@ public class LogController {
         }
         return result;
     }
+
+    @PostMapping("/mqtt/ack/create")
+    public ResultData createMqttAckLog(MqttAckLogForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getAckId()) || StringUtils.isEmpty(form.getCode())
+                || StringUtils.isEmpty(form.getComponent()) || StringUtils.isEmpty(form.getMachineId())
+                || StringUtils.isEmpty(form.getIp()) || StringUtils.isEmpty(form.getLogDetail())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        String detail = form.getLogDetail().trim();
+        String ip = form.getIp().trim();
+        String ackId = form.getAckId().trim();
+        String machineId = form.getMachineId().trim();
+        int code = form.getCode();
+        String component = form.getComponent().trim();
+        MqttAckLog log = new MqttAckLog(detail, ip, ackId, machineId, code, component);
+        ResultData response = logService.createMqttAckLog(log);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store mqtt ack log");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @PostMapping(value = "/mqtt/ack/query")
+    public ResultData getMqttAckLog(String machineId, String ackId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(machineId)) {
+            condition.put("machineId", machineId);
+        }
+        if (!StringUtils.isEmpty(ackId)) {
+            condition.put("ackId", ackId);
+        }
+        ResultData response = logService.fetchMqttAckLog(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No mqtt ack log found");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to query mqtt ack log");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/adminlog/create")
+    public ResultData createAdminLog(UserLogForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getUserId()) || StringUtils.isEmpty(form.getComponent())
+                || StringUtils.isEmpty(form.getLogDetail()) || StringUtils.isEmpty(form.getIp())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required");
+            return result;
+        }
+        String userId = form.getUserId().trim();
+        String component = form.getComponent().trim();
+        String logDetail = form.getLogDetail().trim();
+        String ip = form.getIp().trim();
+        AdminAccountOperationLog log = new AdminAccountOperationLog(logDetail, ip, userId, component);
+        ResultData response = logService.createAdminLog(log);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store admin log");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @PostMapping("/adminlog/query")
+    public ResultData getAdminLog(String userId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(userId)) {
+            condition.put("userId", userId);
+        }
+        ResultData response = logService.fetchAdminLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query admin log");
+        }
+        return result;
+    }
 }

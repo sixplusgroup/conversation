@@ -9,6 +9,8 @@ import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineInfoVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.Map;
 
 @Repository
 public class ConsumerQRcodeBindDaoImpl extends BaseDao implements ConsumerQRcodeBindDao {
+    private Logger logger = LoggerFactory.getLogger(ConsumerQRcodeBindDaoImpl.class);
+
 
     @Override
     public ResultData insert(ConsumerQRcodeBind consumerQRcodeBind) {
@@ -25,9 +29,9 @@ public class ConsumerQRcodeBindDaoImpl extends BaseDao implements ConsumerQRcode
             sqlSession.insert("gmair.machine.consumer_qrcode_bind.insert", consumerQRcodeBind);
             result.setData(consumerQRcodeBind);
         } catch (Exception e) {
-            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
+            logger.error(e.getMessage());
         }
         return result;
     }
@@ -50,6 +54,23 @@ public class ConsumerQRcodeBindDaoImpl extends BaseDao implements ConsumerQRcode
     }
 
     @Override
+    public ResultData query_view(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<ConsumerQRcodeBind> list = sqlSession.selectList("gmair.machine.consumer_qrcode_bind.query_view", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
@@ -58,6 +79,17 @@ public class ConsumerQRcodeBindDaoImpl extends BaseDao implements ConsumerQRcode
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData remove(String bindId) {
+        ResultData result = new ResultData();
+        try {
+
+        } catch (Exception e) {
+
         }
         return result;
     }

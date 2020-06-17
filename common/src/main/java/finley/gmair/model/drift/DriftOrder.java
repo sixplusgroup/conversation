@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 public class DriftOrder extends AbstractDriftOrder {
-    private String orderNo;
 
     private String equipId;
 
@@ -16,13 +15,13 @@ public class DriftOrder extends AbstractDriftOrder {
 
     private String description;
 
-    private String activity;
+    private String activityId;
 
     private double realPay;
 
-    private String testTarget;
-
     private String excode;
+
+    private String machineOrderNo;
 
     private DriftOrderStatus status;
 
@@ -33,30 +32,16 @@ public class DriftOrder extends AbstractDriftOrder {
         this.status = DriftOrderStatus.APPLIED;
     }
 
-    public DriftOrder(String orderNo) {
-        this();
-        this.orderNo = orderNo;
-    }
-
-    public DriftOrder(String consumerId, String equipId, String consignee, String phone, String address, String orderNo, String province,
-                      String city, String district, String description, String activity, Date expectedDate, int intervalDate) {
+    public DriftOrder(String consumerId, String equipId, String consignee, String phone, String address, String province,
+                      String city, String district, String description, String activityId, Date expectedDate, int intervalDate) {
         super(consumerId, consignee, phone, address, expectedDate, intervalDate);
-        this.orderNo = orderNo;
         this.equipId = equipId;
         this.province = province;
         this.city = city;
         this.district = district;
         this.description = description;
-        this.activity = activity;
+        this.activityId = activityId;
         this.status = DriftOrderStatus.APPLIED;
-    }
-
-    public String getOrderNo() {
-        return orderNo;
-    }
-
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
     }
 
     public String getEquipId() {
@@ -107,12 +92,12 @@ public class DriftOrder extends AbstractDriftOrder {
         this.realPay = realPay;
     }
 
-    public String getActivity() {
-        return activity;
+    public String getActivityId() {
+        return activityId;
     }
 
-    public void setActivity(String activity) {
-        this.activity = activity;
+    public void setActivityId(String activityId) {
+        this.activityId = activityId;
     }
 
     public String getExcode() {
@@ -131,19 +116,19 @@ public class DriftOrder extends AbstractDriftOrder {
         this.status = status;
     }
 
-    public String getTestTarget() {
-        return testTarget;
-    }
-
-    public void setTestTarget(String testTarget) {
-        this.testTarget = testTarget;
-    }
-
     public List<DriftOrderItem> getList() {
         return list;
     }
 
     public void setList(List<DriftOrderItem> list) {
         this.list = list;
+    }
+
+    public String getMachineOrderNo() {
+        return machineOrderNo;
+    }
+
+    public void setMachineOrderNo(String machineOrderNo) {
+        this.machineOrderNo = machineOrderNo;
     }
 }

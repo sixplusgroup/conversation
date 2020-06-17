@@ -47,6 +47,23 @@ public class EXCodeDaoImpl extends BaseDao implements EXCodeDao {
     }
 
     @Override
+    public ResultData queryLabel(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            List<EXCode> list = sqlSession.selectList("gmair.drift.excode.queryLabel", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {

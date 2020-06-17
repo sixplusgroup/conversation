@@ -6,19 +6,20 @@
         <result property="fileUrl" column="file_url"/>
         <result property="actualPath" column="actual_path"/>
         <result property="fileName" column="filename"/>
+        <result property="md5" column="md5"/>
         <result property="blockFlag" column="block_flag"/>
         <result property="createAt" column="create_time"/>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.resource.FileMap" useGeneratedKeys="false">
-        INSERT INTO gmair_resource.tempfile_location(file_id, file_url, actual_path, filename, block_flag, create_time)
+        INSERT INTO gmair_resource.tempfile_location(file_id, file_url, actual_path, filename,md5, block_flag, create_time)
         VALUES(
-          #{fileId},#{fileUrl},#{actualPath},#{fileName},#{blockFlag},#{createAt}
+          #{fileId},#{fileUrl},#{actualPath},#{fileName},#{md5},#{blockFlag},#{createAt}
         )
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="TempFileMap">
-        SELECT file_id,file_url,actual_path,filename,block_flag,create_time
+        SELECT file_id,file_url,actual_path,filename,md5,block_flag,create_time
         FROM gmair_resource.tempfile_location
         WHERE 1 = 1
         <if test="fileId != null">
@@ -32,6 +33,9 @@
         </if>
         <if test="fileName != null">
             AND filename = #{fileName}
+        </if>
+        <if test="md5 != null">
+            AND md5 = #{md5}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}

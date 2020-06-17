@@ -7,6 +7,7 @@ import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.TimeUtil;
+import finley.gmair.utils.DAUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -75,16 +76,16 @@ public class MachineStatusController {
     private ResultData getFormatedData(String machineId, JSONArray dataList, int listLength, int timeType) {
         Timestamp cur;
         Timestamp last;
-        int timeInteval = 0;
+        long timeInteval = 0;
         //0代表格式化daily data
         if (timeType == 0) {
-            timeInteval = 24 * 60 * 60 * 1000;
+            timeInteval = DAUtils.DAY_INTERVAL_IN_SECONDS * 1000;
             cur = TimeUtil.getTodayZeroTimestamp();
             last = new Timestamp(cur.getTime() - (listLength - 1) * timeInteval);
         }
         //其他代表格式化hourly data
         else {
-            timeInteval = 60 * 60 * 1000;
+            timeInteval = DAUtils.HOUR_INTERVAL_IN_SECONDS * 1000;
             cur = TimeUtil.getThatTimeStampHourTimestamp(new Timestamp(System.currentTimeMillis()));
             last = new Timestamp(cur.getTime() - (listLength - 1) * timeInteval);
         }
@@ -196,7 +197,7 @@ public class MachineStatusController {
         condition.put("createTimeGTE", lastNHourZero);
         condition.put("blockFlag", false);
         ResultData response = new ResultData();
-        switch (statusType){
+        switch (statusType) {
             case "pm25":
                 response = indoorPm25Service.fetchHourly(condition);
                 break;

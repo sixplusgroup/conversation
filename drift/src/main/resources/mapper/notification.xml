@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.drift.notification">
+    <resultMap id="notifiVo" type="finley.gmair.model.drift.Notification">
+        <result property="notificationId" column="notification_id"></result>
+        <result property="activityId" column="activity_id"></result>
+        <result property="context" column="notification_context"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" parameterType="java.util.Map" resultMap="notifiVo">
+        select notification_id, activity_id, notification_context, block_flag, create_time
+        from gmair_drift.activity_notification
+        where 1 = 1
+        <if test="notificationId != null">
+            and notification_id = #{notificationId}
+        </if>
+        <if test="activityId != null">
+            and activity_id = #{activityId}
+        </if>
+        <if test="context != null">
+            and notification_context = #{context}
+        </if>
+        <if test="blockFlag  != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by create_time desc
+    </select>
+
+    <insert id="insert" parameterType="finley.gmair.model.drift.Notification" useGeneratedKeys="false">
+        insert into gmair_drift.activity_notification(notification_id, activity_id, notification_context, block_flag, create_time)
+        values(#{notificationId}, #{activityId}, #{context}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        update gmair_drift.activity_notification
+        <set>
+            <if test="context != null">
+                notification_context = #{context},
+            </if>
+            <if test="blockFlag  != null">
+                block_flag = #{blockFlag},
+            </if>
+            notification_id = #{notificationId}
+        </set>
+        where notification_id = #{notificationId}
+    </update>
+</mapper>

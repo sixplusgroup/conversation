@@ -18,17 +18,20 @@ public class Snapshot extends Entity {
 
     private String description;
 
+    private int hole;
+
     public Snapshot() {
         super();
     }
 
-    public Snapshot(String assignId, String codeValue, String picturePath, boolean wifiConfigured, String installMethod, String description) {
+    public Snapshot(String assignId, String codeValue, String picturePath, boolean wifiConfigured, String installMethod, String description, int hole) {
         this.assignId = assignId;
         this.codeValue = codeValue;
         this.picturePath = picturePath;
         this.wifiConfigured = wifiConfigured;
         this.installMethod = installMethod;
         this.description = description;
+        this.hole = hole;
     }
 
     public String getSnapshotId() {
@@ -86,4 +89,8 @@ public class Snapshot extends Entity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public int isHole() { return hole; }
+
+    public void setHole(int hole) { this.hole = hole; }
 }

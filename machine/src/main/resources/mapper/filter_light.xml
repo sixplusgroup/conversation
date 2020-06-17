@@ -9,8 +9,8 @@
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.machine.FilterLight" useGeneratedKeys="false">
-        INSERT INTO gmair_machine.filter_light(machine_id, light_status, block_flag, create_time)
-        VALUES(#{machineId}, #{lightStatus}, #{blockFlag}, #{createAt})
+        INSERT INTO gmair_machine.filter_light (machine_id, light_status, block_flag, create_time)
+        VALUES (#{machineId}, #{lightStatus}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="filterLight">
@@ -22,6 +22,9 @@
         </if>
         <if test="lightStatus != null">
             AND light_status = #{lightStatus}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
         </if>
     </select>
 

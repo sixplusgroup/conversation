@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.machine.mode_hourly">
-    <resultMap id="modeHourly" type="finley.gmair.model.dataAnalysis.ModeHourly">
+    <resultMap id="modeHourly" type="finley.gmair.model.analysis.ModeHourly">
         <result property="statusId" column="status_id"></result>
         <result property="machineId" column="machine_id"></result>
         <result property="autoMinute" column="auto_minute"></result>
@@ -11,7 +11,7 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <insert id="insert" parameterType="finley.gmair.model.dataAnalysis.ModeHourly" useGeneratedKeys="false">
+    <insert id="insert" parameterType="finley.gmair.model.analysis.ModeHourly" useGeneratedKeys="false">
         INSERT INTO gmair_data_analysis.mode_hourly(status_id, machine_id, auto_minute, manual_minute, sleep_minute, block_flag, create_time)
         VALUES(#{statusId}, #{machineId}, #{autoMinute}, #{manualMinute}, #{sleepMinute}, #{blockFlag}, #{createAt})
     </insert>

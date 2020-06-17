@@ -269,10 +269,10 @@
     }
 
     function co2_render(co2) {
-        if (co2 <= 1500) {
+        if (co2 <= 1000) {
             $("#co2-content").html("<span> 氧气&nbsp;&nbsp;<span class='font-bold'>充沛</span></span>");
         }
-        if (co2 > 1500 && co2 < 2000) {
+        if (co2 > 1000 && co2 < 2000) {
             $("#co2-content").html("<span>二氧化碳&nbsp;</span>");
         }
     }
@@ -379,8 +379,8 @@
                 if (response.responseCode === "RESPONSE_OK") {
                     indoor_pm25 = response.data.pm2_5;
                     co2 = response.data.co2;
-                    temp = response.data.temp;
-                    humid = response.data.humid;
+                    temp = response.data.temperature;
+                    humid = response.data.humidity;
                 } else {
                     console.log(response.responseCode);
                 }

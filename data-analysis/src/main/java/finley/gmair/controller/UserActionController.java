@@ -1,7 +1,7 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.dataAnalysis.ComponentMean;
-import finley.gmair.model.dataAnalysis.UserActionDaily;
+import finley.gmair.model.analysis.ComponentMean;
+import finley.gmair.model.analysis.UserActionDaily;
 import finley.gmair.model.machine.UserAction;
 import finley.gmair.service.ComponentMeanService;
 import finley.gmair.service.UserActionMongoService;
@@ -64,7 +64,7 @@ public class UserActionController {
         for (List<UserAction> list : userIdLists) {
             String userId = list.get(0).getUserId();
             String qrcode = list.get(0).getQrcode();
-            Map<String, Long> map = list.stream().collect(Collectors.groupingBy(UserAction::getComponent,Collectors.counting()));
+            Map<String, Long> map = list.stream().collect(Collectors.groupingBy(UserAction::getComponent, Collectors.counting()));
             for (String componentKey : map.keySet()) {
                 int componentTimes = map.get(componentKey).intValue();
                 UserActionDaily userActionDaily = new UserActionDaily(userId, qrcode, componentKey, componentTimes);
@@ -110,36 +110,36 @@ public class UserActionController {
         //获取mongo数据，进行component group
         List<UserAction> actionList = (List<UserAction>) response.getData();
         response = userActionMongoService.getDataGroupByComponent(actionList);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("group user action by component error");
             return result;
         }
         List<List<UserAction>> componentLists = (List<List<UserAction>>) response.getData();
         List<ComponentMean> componentDailyList = new ArrayList<>();
-        for(List<UserAction> componentList : componentLists) {
+        for (List<UserAction> componentList : componentLists) {
             Map<String, Long> map = componentList.stream().collect(Collectors.groupingBy(UserAction::getUserId, Collectors.counting()));
             int componentSize = componentList.size();
             int userNum = map.size();
-            double component_mean = Double.valueOf(df.format((double)componentSize/(double)userNum));
+            double component_mean = Double.valueOf(df.format((double) componentSize / (double) userNum));
             String date_index = sdf.format(lastDay);
             String component = componentList.get(0).getComponent();
             ComponentMean componentMean = new ComponentMean(date_index, component, componentSize, component_mean);
             componentDailyList.add(componentMean);
         }
         if (componentDailyList.isEmpty()) {
-        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("retrieve component list error");
-        return result;
-    }
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("retrieve component list error");
+            return result;
+        }
 
-    //list不为空，批量插入
-    response = componentMeanService.insertBatchDaily(componentDailyList);
+        //list不为空，批量插入
+        response = componentMeanService.insertBatchDaily(componentDailyList);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-        result.setDescription("store component data error");
-        return result;
-    }
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("store component data error");
+            return result;
+        }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(response.getData());
         result.setDescription("store component data successfully");
@@ -147,23 +147,23 @@ public class UserActionController {
     }
 
     @RequestMapping(value = "/query", method = RequestMethod.POST)
-    public ResultData queryUserAction(String userId){
+    public ResultData queryUserAction(String userId) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(userId)){
+        if (StringUtils.isEmpty(userId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all information");
             return result;
         }
 
         Map<String, Object> condition = new HashMap<>();
-        condition.put("userId",userId);
+        condition.put("userId", userId);
         condition.put("blockFlag", false);
         ResultData response = userActionDailyService.fetchDaily(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to get user action");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find user action record");
             return result;

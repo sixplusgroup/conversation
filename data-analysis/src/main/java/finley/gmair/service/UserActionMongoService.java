@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.model.dataAnalysis.UserActionDaily;
 import finley.gmair.model.machine.UserAction;
 import finley.gmair.util.ResultData;
 

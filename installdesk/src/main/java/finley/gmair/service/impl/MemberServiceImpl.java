@@ -130,6 +130,7 @@ public class MemberServiceImpl implements MemberService {
         Map<String, Object> condition = new HashMap<>();
         condition.put("memberId", memberId);
         condition.put("teamId", teamId);
+        condition.put("blockFlag",false);
         ResultData response = teamWatchDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -166,6 +167,37 @@ public class MemberServiceImpl implements MemberService {
             return result;
         }
         result.setData(response.getData());
+        return result;
+    }
+
+    @Override
+    public ResultData fetchMemberTeam(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = teamWatchDao.queryMemberTeam(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
+    @Override
+    public ResultData blockTeam(Map<String, Object> condition){
+        ResultData result = new ResultData();
+        ResultData response = teamWatchDao.block(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
         return result;
     }
 }

@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 /**
  * @ClassName: AssignController
  * @Description: TODO
@@ -37,17 +41,17 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData assigns(String memberId, Integer status) {
+    public ResultData assigns(String memberId, Integer status, String search,String page,String pageLength,String reverse) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装负责人的信息");
             return result;
         }
-        if (status == null) {
-            result = assignService.fetchAssign(memberId);
-        } else {
-            result = assignService.fetchAssign(memberId, status);
+        if(!StringUtils.isEmpty(page)&&!StringUtils.isEmpty(pageLength)){
+            result=assignService.fetchAssign(memberId, status, search,page,pageLength,reverse);
+        }else {
+            result = assignService.fetchAssign(memberId, status, search,reverse);
         }
         return result;
     }
@@ -66,18 +70,14 @@ public class AssignController {
     }
 
     @GetMapping("/own")
-    public ResultData overview(String memberId, Integer status) {
+    public ResultData overview(String memberId, Integer status, String search) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装工人的信息");
             return result;
         }
-        if (status == null) {
-            result = assignService.fetchOwnAssign(memberId);
-        } else {
-            result = assignService.fetchOwnAssign(memberId, status);
-        }
+        result = assignService.fetchOwnAssign(memberId, status, search);
         return result;
     }
 
@@ -158,7 +158,7 @@ public class AssignController {
      * @return
      */
     @PostMapping("/submit")
-    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description) {
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -171,13 +171,19 @@ public class AssignController {
             return result;
         }
         if (StringUtils.isEmpty(description)) {
-            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method);
+            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method,date);
         } else {
-            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method, description);
+            result = assignService.submitAssign(assignId, qrcode, picture, wifi, method,description,date);
         }
         return result;
     }
 
+    /**
+     * 查看安装任务的快照
+     *
+     * @param assignId
+     * @return
+     */
     @GetMapping("/snapshot")
     public ResultData snapshot(String assignId) {
         ResultData result = new ResultData();
@@ -187,6 +193,42 @@ public class AssignController {
             return result;
         }
         result = assignService.snapshotAssign(assignId);
+        return result;
+    }
+
+    /**
+     * 安装工人提交服务码
+     *
+     * @param assignId
+     * @param code
+     * @return
+     */
+    @PostMapping("/eval")
+    public ResultData eval(String assignId, String code) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(code)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务及服务码信息");
+            return result;
+        }
+        result = assignService.evalAssign(assignId, code);
+        return result;
+    }
+
+    /**
+     * 将安装任务状态改为已签收（待安装）等待安装人员安装
+     * @param assignId
+     * @return
+     */
+    @PostMapping("/receive")
+    public ResultData receive(String assignId){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装任务信息");
+            return result;
+        }
+        result = assignService.receive(assignId);
         return result;
     }
 }

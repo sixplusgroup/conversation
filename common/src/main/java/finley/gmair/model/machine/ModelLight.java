@@ -3,11 +3,18 @@ package finley.gmair.model.machine;
 import finley.gmair.model.Entity;
 
 public class ModelLight extends Entity {
+
     private String configId;
+
     private String modelId;
+
     private int minLight;
+
     private int maxLight;
-    public ModelLight(){
+
+    private int step;
+
+    public ModelLight() {
         super();
     }
 
@@ -53,5 +60,13 @@ public class ModelLight extends Entity {
 
     public void setMaxLight(int maxLight) {
         this.maxLight = maxLight;
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
     }
 }

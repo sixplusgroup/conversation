@@ -2,10 +2,12 @@ package finley.gmair.bill;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@EnableFeignClients({"finley.gmair.service"})
 @ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao"})
 @SpringBootApplication
 public class BillApplication {

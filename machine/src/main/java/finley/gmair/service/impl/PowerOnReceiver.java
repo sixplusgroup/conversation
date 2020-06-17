@@ -4,8 +4,12 @@ import finley.gmair.dao.BoardVersionDao;
 import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.service.CoreV1Service;
 import finley.gmair.service.CoreV2Service;
+import finley.gmair.service.CoreV3Service;
+import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,7 @@ import java.util.Map;
 @Component
 @RabbitListener(queues = "turn-on-queue")
 public class PowerOnReceiver {
+    private Logger logger = LoggerFactory.getLogger(PowerOnReceiver.class);
 
     @Autowired
     private BoardVersionDao boardVersionDao;
@@ -27,6 +32,12 @@ public class PowerOnReceiver {
 
     @Autowired
     private CoreV2Service coreV2Service;
+
+    @Autowired
+    private CoreV3Service coreV3Service;
+
+    @Autowired
+    private LogService logService;
 
     @RabbitHandler
     public void process(String uid) {
@@ -38,6 +49,7 @@ public class PowerOnReceiver {
             return;
         }
         BoardVersion boardVersion = ((List<BoardVersion>) response.getData()).get(0);
+        logger.info("[Info] prepare to turn on " + uid + ", version: " + boardVersion.getVersion());
         switch (boardVersion.getVersion()) {
             case 1:
                 new Thread(() -> {
@@ -50,6 +62,7 @@ public class PowerOnReceiver {
                         }
                     }
                 }).start();
+                logService.createMachineComLog(uid, "power", "System turns on machine per scheduled power plan", "172.16.235.162");
                 //coreV1Service.configPower(uid, 1, 1);
                 break;
             case 2:
@@ -63,8 +76,20 @@ public class PowerOnReceiver {
                         }
                     }
                 }).start();
+                logService.createMachineComLog(uid, "power", "System turns on machine per scheduled power plan", "172.16.235.162");
                 //coreV2Service.configPower(uid, 1, 2);
                 break;
+            case 3:
+                try {
+                    coreV3Service.configPower(uid, 1);
+                    logService.createMachineComLog(uid, "power", "System turns on machine per scheduled power plan", "172.16.235.162");
+                } catch (Exception e) {
+                    logger.error("[Error: ] ".concat(uid).concat(" fail to be turned on."));
+                    logger.error(e.getMessage());
+                }
+                break;
+            default:
+                logger.error("[Error] Fail to turn on power for machine: " + uid);
         }
     }
 }

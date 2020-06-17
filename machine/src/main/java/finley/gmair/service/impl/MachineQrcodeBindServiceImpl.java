@@ -20,7 +20,17 @@ public class MachineQrcodeBindServiceImpl implements MachineQrcodeBindService {
 
     @Override
     public ResultData fetch(Map<String, Object> condition) {
-        return machineQrcodeBindDao.select(condition);
+        ResultData result = new ResultData();
+        ResultData response = machineQrcodeBindDao.select(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setData(response.getData());
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+        }
+        return result;
     }
 
     @Override
@@ -49,14 +59,14 @@ public class MachineQrcodeBindServiceImpl implements MachineQrcodeBindService {
     }
 
     @Override
-    public ResultData modifyByQRcode(Map<String, Object> condition){
+    public ResultData modifyByQRcode(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = machineQrcodeBindDao.update(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to update the code-machine table");
             return result;
-        }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to update the code-machine table");
             return result;
@@ -65,10 +75,10 @@ public class MachineQrcodeBindServiceImpl implements MachineQrcodeBindService {
     }
 
     @Override
-    public ResultData deleteByBindId(String bindId){
+    public ResultData deleteByBindId(String bindId) {
         ResultData result = new ResultData();
         ResultData response = machineQrcodeBindDao.delete(bindId);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to delete the code-machine table");
             return result;

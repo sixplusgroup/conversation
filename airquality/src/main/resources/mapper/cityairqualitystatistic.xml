@@ -83,11 +83,11 @@
             and city_id = #{cityId}
         </if>
         <if test="createTimeGTE != null">
-            AND create_time > #{createTimeGTE}
+            AND to_days(create_time) > to_days(#{createTimeGTE})
         </if>
         <if test="createTimeLTE != null">
             <![CDATA[
-              AND create_time <= #{createTimeLTE}
+              AND to_days(create_time) <= to_days(#{createTimeLTE})
             ]]>
         </if>
         <if test="last7day != null">

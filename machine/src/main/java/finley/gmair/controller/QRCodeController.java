@@ -57,6 +57,9 @@ public class QRCodeController {
     @Autowired
     private CoreV1Service coreV1Service;
 
+    @Autowired
+    private CoreV3Service coreV3Service;
+
     /**
      * This method is used to create a record of qrcode
      *
@@ -463,6 +466,29 @@ public class QRCodeController {
         return result;
     }
 
+    /**
+     * 根据型号ID查询型号的详细信息
+     *
+     * @param modelId
+     * @return
+     */
+    @GetMapping("/model/detail")
+    public ResultData modelInfo(String modelId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(modelId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供设备的型号");
+            return result;
+        }
+        ResultData response = qrCodeService.modelDetail(modelId);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(response.getResponseCode());
+            result.setDescription("根据型号ID查询");
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
     @GetMapping(value = "/findbyqrcode")
     public ResultData findMachineIdByCodeValue(String codeValue) {
         ResultData result = new ResultData();
@@ -584,6 +610,12 @@ public class QRCodeController {
 
     }
 
+    /**
+     * 获取设备的在线状态(旧)
+     *
+     * @param qrcode
+     * @return
+     */
     //check online
     @GetMapping("/checkonline")
     public ResultData checkOnline(String qrcode) {
@@ -605,7 +637,7 @@ public class QRCodeController {
             result.setDescription("can not find machine id by qrcode in code machine bind table");
             return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            String machineId = (String) ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+            String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
             Map<String, Object> condition = new HashMap<>();
             condition.put("machineId", machineId);
             condition.put("blockFlag", false);
@@ -621,10 +653,13 @@ public class QRCodeController {
             }
             int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
 
-            if (version == 1)
+            if (version == 1) {
                 response = coreV1Service.isOnline(machineId);
-            else if (version == 2)
+            } else if (version == 2) {
                 response = coreV2Service.isOnline(machineId);
+            } else if (version == 3) {
+                response = coreV3Service.isOnline(machineId);
+            }
 
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -636,7 +671,6 @@ public class QRCodeController {
                 return result;
             }
         }
-
         return result;
     }
 

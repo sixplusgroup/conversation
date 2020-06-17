@@ -66,4 +66,29 @@ public interface MachineService {
 
     @GetMapping("/machine/info/list/daily/cityaqi/lastNday")
     ResultData getCitylastNdayData(@RequestParam("qrcode") String qrcode, @RequestParam("lastNday") int lastNday);
+
+    @GetMapping("/machine/qrcode/check/existqrcode")
+    ResultData checkQRcodeExist(@RequestParam("codeValue") String codeValue);
+
+    @GetMapping("/machine/model/enabled/component/fetch")
+    ResultData fetchModelEnabledComponent(@RequestParam("modelId") String modelId,
+                                          @RequestParam("componentName") String componentName);
+
+    @PostMapping("/machine/control/option/operate")
+    ResultData chooseComponent(@RequestParam("qrcode") String qrcode,
+                               @RequestParam("component") String component,
+                               @RequestParam("operation") String operation);
+
+    @PostMapping("/machine/control/option/config/screen")
+    ResultData configScreen(@RequestParam("qrcode") String qrcode, @RequestParam("screen") int screen);
+
+    @GetMapping("/machine/consumer/qrcode/bind/list")
+    ResultData qrcodeBindList(@RequestParam("search") String search);
+
+    @PostMapping("/machine/consumer/qrcode/unbind")
+    ResultData unbindConsumerWithQRcode(@RequestParam("consumerId") String consumerId,
+                                        @RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/qrcode/findbyqrcode/consumer")
+    ResultData qrcodeGetMachineId(@RequestParam("codeValue") String codeValue);
 }

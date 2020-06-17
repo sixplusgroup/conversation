@@ -22,6 +22,9 @@
         <if test="consumerId != null">
             AND consumer_id = #{consumerId}
         </if>
+        <if test="preferred != null">
+            AND addr_preferred = #{preferred}
+        </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>

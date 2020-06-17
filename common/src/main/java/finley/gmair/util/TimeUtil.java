@@ -1,6 +1,7 @@
 package finley.gmair.util;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,5 +38,17 @@ public class TimeUtil {
 
     public static Timestamp getThatTimeStampDayZeroTimestamp(Timestamp timestamp) {
         return new Timestamp(timestamp.getTime() - (timestamp.getTime() + 8 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000));
+    }
+
+    //将String类型转化为时间 年月日
+    public static Date formatTimeToDate(String str) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        try {
+            date = sdf.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 }

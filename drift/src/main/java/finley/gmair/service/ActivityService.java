@@ -13,4 +13,6 @@ public interface ActivityService {
     ResultData modifyActivity(Map<String, Object> condition);
 
     ResultData fetchActivityEquipment(Map<String, Object> condition);
+
+    ResultData fetchActivityThumbnail(Map<String, Object> condition);
 }

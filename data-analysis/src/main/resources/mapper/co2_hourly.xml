@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.machine.co2_hourly">
-    <resultMap id="co2Hourly" type="finley.gmair.model.dataAnalysis.Co2Hourly">
+    <resultMap id="co2Hourly" type="finley.gmair.model.analysis.Co2Hourly">
         <result property="statusId" column="status_id"></result>
         <result property="machineId" column="machine_id"></result>
         <result property="averageCo2" column="average_co2"></result>
@@ -11,7 +11,7 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
-    <insert id="insert" parameterType="finley.gmair.model.dataAnalysis.Co2Hourly" useGeneratedKeys="false">
+    <insert id="insert" parameterType="finley.gmair.model.analysis.Co2Hourly" useGeneratedKeys="false">
         INSERT INTO gmair_data_analysis.co2_hourly(status_id, machine_id, average_co2, max_co2, min_co2, block_flag, create_time)
         VALUES(#{statusId}, #{machineId}, #{averageCo2}, #{maxCo2}, #{minCo2}, #{blockFlag}, #{createAt})
     </insert>

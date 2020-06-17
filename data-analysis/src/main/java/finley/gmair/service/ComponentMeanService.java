@@ -1,6 +1,6 @@
 package finley.gmair.service;
 
-import finley.gmair.model.dataAnalysis.ComponentMean;
+import finley.gmair.model.analysis.ComponentMean;
 import finley.gmair.util.ResultData;
 
 import java.util.List;

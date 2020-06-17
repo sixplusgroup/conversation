@@ -1,5 +1,29 @@
 # Drift Module
 
+## 更新信息
+
+### 1.10.1
+
++ 更新内容
+    
+    订单物流排序
+    
++ 更新时间
+
+    2019年10月21日
+    
+### 1.12.1
+
++ 更新内容
+    
+    订单发出及订单待寄回提醒公众号推送
+    
++ 更新时间
+
+    2019年12月29日
+
+
+
 ## Introduction
 * This module aims to provide core drift background implementation
 * It is a component to:
@@ -18,7 +42,7 @@
 
 ## Data Structure
 * User registration
-    * Registration will call auth consumer service, which is transparent here.
+    * No limitation to access the mini program.
 * Drift goods
     * Columns: goods_id | goods_name | block_flag | create_time
 * Repository
@@ -29,7 +53,7 @@
     * Columns: reservation_id | consumer_id | activity_id | expected_date | interval | consignee_name | consignee_phone | consignee_address | province_id | city_id | block_flag | create_time
 
 ## API List
-
+1. Activity create
 
 ##2018.10.10@hushenghao
 #### Interface
@@ -51,3 +75,15 @@
     * Controller: create | list
 * @FeignService
     * Auth-consumer service: login | register (maybe change later)
+    
+#### API
+
+##### 活动模块
+
+1. 查询活动的预览图
+
+    `/drift/activity/{activityId}/thumbnail`
+
+2. 查询活动的通知消息
+    
+    `/drift/activity/{activityId}/notification`

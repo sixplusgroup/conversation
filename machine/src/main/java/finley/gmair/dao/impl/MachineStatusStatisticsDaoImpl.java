@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class MachineStatusStatisticsDaoImpl extends BaseDao implements MachineStatusStatisticsDao{
+public class MachineStatusStatisticsDaoImpl extends BaseDao implements MachineStatusStatisticsDao {
 
     @Override
     public ResultData insertHourlyBatch(List<MachinePm2_5> list) {
         ResultData result = new ResultData();
-        for (MachinePm2_5 machinePm2_5: list) {
+        for (MachinePm2_5 machinePm2_5 : list) {
             if (machinePm2_5.getStatusId() == null)
                 machinePm2_5.setStatusId(IDGenerator.generate("mas"));
         }
@@ -54,7 +54,7 @@ public class MachineStatusStatisticsDaoImpl extends BaseDao implements MachineSt
     @Override
     public ResultData insertDailyBatch(List<MachinePm2_5> list) {
         ResultData result = new ResultData();
-        for (MachinePm2_5 machinePm2_5: list) {
+        for (MachinePm2_5 machinePm2_5 : list) {
             if (machinePm2_5.getStatusId() == null)
                 machinePm2_5.setStatusId(IDGenerator.generate("mas"));
         }
@@ -90,7 +90,7 @@ public class MachineStatusStatisticsDaoImpl extends BaseDao implements MachineSt
     @Override
     public ResultData insertMonthlyBatch(List<MachinePm2_5> list) {
         ResultData result = new ResultData();
-        for (MachinePm2_5 machinePm2_5: list) {
+        for (MachinePm2_5 machinePm2_5 : list) {
             if (machinePm2_5.getStatusId() == null)
                 machinePm2_5.setStatusId(IDGenerator.generate("mas"));
         }

@@ -9,18 +9,19 @@
         <result property="wifiConfigured" column="wifi_configured"></result>
         <result property="installMethod" column="install_method"></result>
         <result property="description" column="description"></result>
+        <result property="hole" column="hole"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Snapshot" useGeneratedKeys="false">
-        INSERT INTO gmair_install.assign_snapshot (snapshot_id, assign_id, code_value, picture_path, wifi_configured, install_method, description, block_flag, create_time)
+        INSERT INTO gmair_install.assign_snapshot (snapshot_id, assign_id, code_value, picture_path, wifi_configured, install_method, description, hole, block_flag, create_time)
         VALUES (#{snapshotId}, #{assignId}, #{codeValue}, #{picturePath}, #{wifiConfigured}, #{installMethod},
-                #{description}, #{blockFlag}, #{createAt})
+                #{description}, #{hole}, #{blockFlag}, #{createAt})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="snapshotVo">
-        SELECT snapshot_id, assign_id, code_value, picture_path, wifi_configured, install_method, description,
+        SELECT snapshot_id, assign_id, code_value, picture_path, wifi_configured, install_method, description, hole,
         block_flag, create_time
         FROM gmair_install.assign_snapshot
         WHERE 1 = 1
@@ -41,6 +42,9 @@
         </if>
         <if test="installMethod != null">
             AND install_method = #{installMethod}
+        </if>
+        <if test="hole != null">
+            AND hole = #{hole}
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}

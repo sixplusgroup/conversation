@@ -94,6 +94,25 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
     }
 
     @Override
+    public ResultData fetchConsumerQRcodeBindView(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = consumerQRcodeBindDao.query_view(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No bind found from database");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to find bind");
+        }
+        return result;
+    }
+
+    @Override
     public ResultData modifyConsumerQRcodeBind(Map<String, Object> condition){
         ResultData result= new ResultData();
         ResultData response = consumerQRcodeBindDao.update(condition);

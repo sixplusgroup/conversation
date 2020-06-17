@@ -11,5 +11,7 @@ public interface MachineListDailyDao {
 
     ResultData queryMachineListView(Map<String, Object> condition);
 
+    ResultData queryMachineListView(Map<String, Object> condition,int curPage,int pageSize);
+
     ResultData deleteMachineListDailyByCodeValue(String codeValue);
 }

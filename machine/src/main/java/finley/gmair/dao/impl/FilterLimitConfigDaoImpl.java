@@ -14,15 +14,15 @@ import java.util.Map;
 public class FilterLimitConfigDaoImpl extends BaseDao implements FilterLimitConfigDao {
 
     @Override
-    public ResultData query(Map<String, Object> condition){
+    public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        try{
-            List<FilterLimitConfig> list = sqlSession.selectList("gmair.machine.filterLimitConfig.query",condition);
+        try {
+            List<FilterLimitConfig> list = sqlSession.selectList("gmair.machine.filter.limit.config.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(list);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());

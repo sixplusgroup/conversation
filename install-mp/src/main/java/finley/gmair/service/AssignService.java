@@ -13,7 +13,11 @@ public interface AssignService {
     ResultData fetchAssign(@RequestParam("memberId") String memberId);
 
     @GetMapping("/install/assign/tasks")
-    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,@RequestParam("reverse") String reverse);
+
+    @GetMapping("/install/assign/tasks")
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,
+                           @RequestParam("page") String page,@RequestParam("pageLength") String pageLength,@RequestParam("reverse") String reverse);
 
     @PostMapping("/install/assign/assign")
     ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("memberId") String memberId);
@@ -22,7 +26,7 @@ public interface AssignService {
     ResultData fetchOwnAssign(@RequestParam("memberId") String memberId);
 
     @GetMapping("/install/assign/overview")
-    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = false) Integer status);
+    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search);
 
     @PostMapping("/install/assign/recall")
     ResultData recallAssign(@RequestParam("assignId") String assignId, @RequestParam("message") String message);
@@ -37,11 +41,17 @@ public interface AssignService {
     ResultData initAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode);
 
     @PostMapping("/install/assign/submit")
-    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method);
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method,@RequestParam("date") String date);
 
     @PostMapping("/install/assign/submit")
-    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description);
+    ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description,@RequestParam("date") String date);
 
     @GetMapping("/install/assign/snapshot")
     ResultData snapshotAssign(@RequestParam("assignId") String assignId);
+
+    @PostMapping("/install/assign/eval")
+    ResultData evalAssign(@RequestParam("assignId") String assignId, @RequestParam("code") String code);
+
+    @PostMapping("/install/assign/receive")
+    ResultData receive(@RequestParam("assignId")String assignId);
 }

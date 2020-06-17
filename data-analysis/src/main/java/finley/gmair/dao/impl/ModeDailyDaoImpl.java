@@ -2,7 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.ModeDailyDao;
-import finley.gmair.model.dataAnalysis.ModeHourly;
+import finley.gmair.model.analysis.ModeHourly;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
