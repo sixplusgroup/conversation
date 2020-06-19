@@ -17,3 +17,7 @@ eureka:
 
 mybatis:
   config-location: classpath:/mybatis-config.xml
+
+ribbon:
+  eager-load:
+    enabled: true

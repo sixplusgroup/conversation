@@ -24,13 +24,18 @@ public class Snapshot extends Entity {
         super();
     }
 
-    public Snapshot(String assignId, String codeValue, String picturePath, boolean wifiConfigured, String installMethod, String description, int hole) {
+    public Snapshot(String assignId, String codeValue, String picturePath, boolean wifiConfigured, String installMethod, String description) {
         this.assignId = assignId;
         this.codeValue = codeValue;
         this.picturePath = picturePath;
         this.wifiConfigured = wifiConfigured;
         this.installMethod = installMethod;
         this.description = description;
+        this.hole = hole;
+    }
+
+    public Snapshot(String assignId, String codeValue, String picturePath, boolean wifiConfigured, String installMethod, String description, int hole) {
+        this(assignId,codeValue,picturePath,wifiConfigured,installMethod,description);
         this.hole = hole;
     }
 
