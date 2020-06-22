@@ -31,11 +31,10 @@ public class Snapshot extends Entity {
         this.wifiConfigured = wifiConfigured;
         this.installMethod = installMethod;
         this.description = description;
-        this.hole = hole;
     }
 
     public Snapshot(String assignId, String codeValue, String picturePath, boolean wifiConfigured, String installMethod, String description, int hole) {
-        this(assignId,codeValue,picturePath,wifiConfigured,installMethod,description);
+        this(assignId, codeValue, picturePath, wifiConfigured, installMethod, description);
         this.hole = hole;
     }
 
@@ -95,7 +94,11 @@ public class Snapshot extends Entity {
         this.description = description;
     }
 
-    public int isHole() { return hole; }
+    public int isHole() {
+        return hole;
+    }
 
-    public void setHole(int hole) { this.hole = hole; }
+    public void setHole(int hole) {
+        this.hole = hole;
+    }
 }

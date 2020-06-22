@@ -4,12 +4,20 @@ import finley.gmair.model.Entity;
 
 public class ConsumerQRcodeBind extends Entity {
     private String bindId;
+
     private String consumerId;
+
+    private String consumerName;
+
+    private String consumerPhone;
+
     private String bindName;
+
     private String codeValue;
+
     private Ownership ownership;
 
-    public ConsumerQRcodeBind(){
+    public ConsumerQRcodeBind() {
         super();
     }
 
@@ -27,6 +35,22 @@ public class ConsumerQRcodeBind extends Entity {
 
     public void setConsumerId(String consumerId) {
         this.consumerId = consumerId;
+    }
+
+    public String getConsumerName() {
+        return consumerName;
+    }
+
+    public void setConsumerName(String consumerName) {
+        this.consumerName = consumerName;
+    }
+
+    public String getConsumerPhone() {
+        return consumerPhone;
+    }
+
+    public void setConsumerPhone(String consumerPhone) {
+        this.consumerPhone = consumerPhone;
     }
 
     public String getBindName() {

@@ -96,7 +96,13 @@ public class AssignController {
         String address = form.getConsumerAddress().trim();
         String detail = form.getModel().trim();
         String source = form.getSource().trim();
-        Assign assign = new Assign(consignee, phone, address, detail, source, form.getDescription(),form.getCompany().trim());
+        Assign assign;
+        if (!StringUtils.isEmpty(form.getCompany())) {
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim());
+        } else {
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription());
+        }
+
 
         //若上传了二维码，则安装必须为该指定设备
         String qrcode = form.getQrcode();
@@ -154,7 +160,7 @@ public class AssignController {
         if (curPage == null || length == null) {
             response = assignService.principal(condition);
         } else {
-            int start = (curPage-1)*length;
+            int start = (curPage - 1) * length;
             response = assignService.principal(condition, start, length);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
@@ -239,19 +245,19 @@ public class AssignController {
         condition.put("assignId", assignId);
         condition.put("blockFlag", false);
         ResultData response = assignService.fetch(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
             return result;
         }
         //获取signature信息
-        String companyId = ((List<Assign>)response.getData()).get(0).getCompanyId();
+        String companyId = ((List<Assign>) response.getData()).get(0).getCompanyId();
         response = getCompanyById(companyId);
         String signature;
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             signature = "";
-        }else {
-            signature = ((List<Company>)response.getData()).get(0).getMessageTitle();
+        } else {
+            signature = ((List<Company>) response.getData()).get(0).getMessageTitle();
         }
 
         condition.clear();
@@ -295,10 +301,10 @@ public class AssignController {
                 candidate = String.format(candidate, assign.getDetail(), member.getMemberName(), member.getMemberPhone());
                 logger.info("message content: " + candidate);
                 //发送短信
-                if(signature.equals("")){
+                if (signature.equals("")) {
                     messageService.send(assign.getConsumerPhone(), candidate);
-                }else {
-                    messageService.send(assign.getConsumerPhone(), candidate,signature);
+                } else {
+                    messageService.send(assign.getConsumerPhone(), candidate, signature);
                 }
             });
         } else {
@@ -380,7 +386,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength,String reverse) {
+    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength, String reverse) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -410,12 +416,12 @@ public class AssignController {
         condition.clear();
         condition.put("teams", teams);
         condition.put("blockFlag", false);
-        if(reverse.equals("true")){
+        if (reverse.equals("true")) {
             reverse = "desc";
-        }else {
+        } else {
             reverse = "asc";
         }
-        condition.put("reverse",reverse);
+        condition.put("reverse", reverse);
         if (status != null) {
             condition.put("assignStatus", status);
         }
@@ -427,11 +433,11 @@ public class AssignController {
             } else {
                 condition.put("consumer", fuzzysearch);
             }
-            response = assignService.principal(condition,(Integer.parseInt(page)-1) * Integer.parseInt(pageLength), Integer.parseInt(pageLength));
+            response = assignService.principal(condition, (Integer.parseInt(page) - 1) * Integer.parseInt(pageLength), Integer.parseInt(pageLength));
             result.setResponseCode(response.getResponseCode());
             result.setData(response.getData());
         } else {
-            response = assignService.principal(condition,(Integer.parseInt(page)-1) * Integer.parseInt(pageLength), Integer.parseInt(pageLength));
+            response = assignService.principal(condition, (Integer.parseInt(page) - 1) * Integer.parseInt(pageLength), Integer.parseInt(pageLength));
             if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("查询安装负责人所负责的安装任务失败，请稍后尝试");
@@ -554,6 +560,7 @@ public class AssignController {
 
     /**
      * 提交安装任务相关信息
+     *
      * @param assignId
      * @param qrcode
      * @param picture
@@ -573,36 +580,36 @@ public class AssignController {
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
-        List<String> md5s=new ArrayList<>();
-        List<String> newUrls=new ArrayList<>();
+        List<String> md5s = new ArrayList<>();
+        List<String> newUrls = new ArrayList<>();
         ResultData response = null;
         Map<String, Object> md5_condition = new HashMap<>();
-        for(int i = 0; i<urls.length;i++){
+        for (int i = 0; i < urls.length; i++) {
             response = resourcesService.getTempFileMap(urls[i]);
-            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 String md5 = (String) response.getData();
                 newUrls.add(urls[i]);
                 md5_condition.clear();
-                md5_condition.put("md5",md5);
-                md5_condition.put("blockFlag",false);
+                md5_condition.put("md5", md5);
+                md5_condition.put("blockFlag", false);
                 response = pictureMd5Service.fetch(md5_condition);
-                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                     md5s.add(md5);
-                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("请勿上传重复图片");
                     return result;
                 }
             }
         }
-        for (int i=0;i<md5s.size();i++){
-            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        for (int i = 0; i < md5s.size(); i++) {
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i), md5s.get(i)));
         }
-        picture = StringUtils.join(newUrls,",");
+        picture = StringUtils.join(newUrls, ",");
         Snapshot snapshot = null;
-        if(hole==null){
+        if (hole == null) {
             snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description);
-        }else {
+        } else {
             snapshot = new Snapshot(assignId, qrcode, picture, wifi, method, description, hole);
         }
         //存储安装快照
@@ -782,11 +789,12 @@ public class AssignController {
 
     /**
      * 将安装任务状态改为已签收（待安装）等待安装人员安装
+     *
      * @param assignId
      * @return
      */
     @PostMapping("/receive")
-    public ResultData receive(String assignId){
+    public ResultData receive(String assignId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -814,41 +822,42 @@ public class AssignController {
 
     /**
      * 根据assignId恢复订单状态为进行中
+     *
      * @param assignId
      * @return
      */
     @PostMapping("/restore")
-    public ResultData restore(String assignId){
+    public ResultData restore(String assignId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(assignId)){
+        if (StringUtils.isEmpty(assignId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供assignId");
             return result;
         }
-        Map<String,Object> condition = new HashMap<>();
+        Map<String, Object> condition = new HashMap<>();
         //删除snapshot
-        condition.put("blockFlag",false);
-        condition.put("assignId",assignId);
+        condition.put("blockFlag", false);
+        condition.put("assignId", assignId);
         ResultData response = assignSnapshotService.fetch(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
             return result;
         }
-        Snapshot snapshot = ((List<Snapshot>)response.getData()).get(0);
+        Snapshot snapshot = ((List<Snapshot>) response.getData()).get(0);
         String snapshotId = snapshot.getSnapshotId();
         response = assignSnapshotService.block(snapshotId);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("删除快照失败");
             return result;
         }
         //恢复任务为进行中
         condition.clear();
-        condition.put("assignId",assignId);
-        condition.put("assignStatus",AssignStatus.PROCESSING.getValue());
+        condition.put("assignId", assignId);
+        condition.put("assignStatus", AssignStatus.PROCESSING.getValue());
         response = assignService.update(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("恢复任务失败");
             return result;
@@ -862,15 +871,16 @@ public class AssignController {
 
     /**
      * 创建服务公司
+     *
      * @param form
      * @return
      */
     @PostMapping("/company/create")
-    ResultData createCompany(CompanyForm form){
+    ResultData createCompany(CompanyForm form) {
         ResultData result = new ResultData();
-        Company company = new Company(form.getCompanyName(),form.getMessageTitle(),form.getCompanyDetail());
+        Company company = new Company(form.getCompanyName(), form.getMessageTitle(), form.getCompanyDetail());
         ResultData response = companyService.create(company);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription("创建失败");
             return result;
@@ -881,15 +891,16 @@ public class AssignController {
 
     /**
      * 获取公司列表
+     *
      * @return
      */
     @GetMapping("/company/list")
-    ResultData getCompanyList(){
+    ResultData getCompanyList() {
         ResultData result = new ResultData();
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
         ResultData response = companyService.fetch(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
             return result;
@@ -900,17 +911,18 @@ public class AssignController {
 
     /**
      * 根据companyId查询公司详情
+     *
      * @param companyId
      * @return
      */
     @GetMapping("/company/query")
-    ResultData getCompanyById(String companyId){
+    ResultData getCompanyById(String companyId) {
         ResultData result = new ResultData();
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("companyId",companyId);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("companyId", companyId);
+        condition.put("blockFlag", false);
         ResultData response = companyService.fetch(condition);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
             return result;
@@ -921,6 +933,7 @@ public class AssignController {
 
     /**
      * 提交维修任务相关信息
+     *
      * @param assignId
      * @param qrcode
      * @param picture
@@ -929,7 +942,7 @@ public class AssignController {
      * @return
      */
     @PostMapping("/submit/fix")
-    public ResultData submitFix(String assignId, String qrcode, String picture, String description, String date){
+    public ResultData submitFix(String assignId, String qrcode, String picture, String description, String date) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -938,32 +951,32 @@ public class AssignController {
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
-        List<String> md5s=new ArrayList<>();
-        List<String> newUrls=new ArrayList<>();
+        List<String> md5s = new ArrayList<>();
+        List<String> newUrls = new ArrayList<>();
         ResultData response = null;
         Map<String, Object> md5_condition = new HashMap<>();
-        for(int i = 0; i<urls.length;i++){
+        for (int i = 0; i < urls.length; i++) {
             response = resourcesService.getTempFileMap(urls[i]);
-            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 String md5 = (String) response.getData();
                 newUrls.add(urls[i]);
                 md5_condition.clear();
-                md5_condition.put("md5",md5);
-                md5_condition.put("blockFlag",false);
+                md5_condition.put("md5", md5);
+                md5_condition.put("blockFlag", false);
                 response = pictureMd5Service.fetch(md5_condition);
-                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                     md5s.add(md5);
-                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("请勿上传重复图片");
                     return result;
                 }
             }
         }
-        for (int i=0;i<md5s.size();i++){
-            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        for (int i = 0; i < md5s.size(); i++) {
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i), md5s.get(i)));
         }
-        picture = StringUtils.join(newUrls,",");
+        picture = StringUtils.join(newUrls, ",");
         SnapshotFix snapshot = new SnapshotFix(assignId, qrcode, picture, description);
         //存储维修快照
         response = fixSnapshotService.create(snapshot);
@@ -1036,6 +1049,7 @@ public class AssignController {
 
     /**
      * 提交勘测任务相关信息
+     *
      * @param assignId
      * @param picture
      * @param description
@@ -1043,7 +1057,7 @@ public class AssignController {
      * @return
      */
     @PostMapping("/submit/survey")
-    public ResultData submitSurvey(String assignId, String picture, String description, String date){
+    public ResultData submitSurvey(String assignId, String picture, String description, String date) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(picture)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1052,32 +1066,32 @@ public class AssignController {
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
-        List<String> md5s=new ArrayList<>();
-        List<String> newUrls=new ArrayList<>();
+        List<String> md5s = new ArrayList<>();
+        List<String> newUrls = new ArrayList<>();
         ResultData response = null;
         Map<String, Object> md5_condition = new HashMap<>();
-        for(int i = 0; i<urls.length;i++){
+        for (int i = 0; i < urls.length; i++) {
             response = resourcesService.getTempFileMap(urls[i]);
-            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 String md5 = (String) response.getData();
                 newUrls.add(urls[i]);
                 md5_condition.clear();
-                md5_condition.put("md5",md5);
-                md5_condition.put("blockFlag",false);
+                md5_condition.put("md5", md5);
+                md5_condition.put("blockFlag", false);
                 response = pictureMd5Service.fetch(md5_condition);
-                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                     md5s.add(md5);
-                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("请勿上传重复图片");
                     return result;
                 }
             }
         }
-        for (int i=0;i<md5s.size();i++){
-            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        for (int i = 0; i < md5s.size(); i++) {
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i), md5s.get(i)));
         }
-        picture = StringUtils.join(newUrls,",");
+        picture = StringUtils.join(newUrls, ",");
         SnapshotSurvey snapshot = new SnapshotSurvey(assignId, picture, description);
         //存储勘测快照
         response = surveySnapshotService.create(snapshot);
@@ -1150,6 +1164,7 @@ public class AssignController {
 
     /**
      * 提交换机任务相关信息
+     *
      * @param assignId
      * @param oldQrcode
      * @param newQrcode
@@ -1160,7 +1175,7 @@ public class AssignController {
      * @return
      */
     @PostMapping("/submit/changemachine")
-    public ResultData submitChangeMachine(String assignId, String oldQrcode, String newQrcode, String picture, Boolean wifi, String description, String date, String wayBill){
+    public ResultData submitChangeMachine(String assignId, String oldQrcode, String newQrcode, String picture, Boolean wifi, String description, String date, String wayBill) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(oldQrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(newQrcode) || StringUtils.isEmpty(wayBill)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1169,32 +1184,32 @@ public class AssignController {
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
-        List<String> md5s=new ArrayList<>();
-        List<String> newUrls=new ArrayList<>();
+        List<String> md5s = new ArrayList<>();
+        List<String> newUrls = new ArrayList<>();
         ResultData response = null;
         Map<String, Object> md5_condition = new HashMap<>();
-        for(int i = 0; i<urls.length;i++){
+        for (int i = 0; i < urls.length; i++) {
             response = resourcesService.getTempFileMap(urls[i]);
-            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 String md5 = (String) response.getData();
                 newUrls.add(urls[i]);
                 md5_condition.clear();
-                md5_condition.put("md5",md5);
-                md5_condition.put("blockFlag",false);
+                md5_condition.put("md5", md5);
+                md5_condition.put("blockFlag", false);
                 response = pictureMd5Service.fetch(md5_condition);
-                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                     md5s.add(md5);
-                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("请勿上传重复图片");
                     return result;
                 }
             }
         }
-        for (int i=0;i<md5s.size();i++){
-            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        for (int i = 0; i < md5s.size(); i++) {
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i), md5s.get(i)));
         }
-        picture = StringUtils.join(newUrls,",");
+        picture = StringUtils.join(newUrls, ",");
         SnapshotChangeMachine snapshot = new SnapshotChangeMachine(assignId, oldQrcode, newQrcode, picture, wifi, description, wayBill);
         //存储换机快照
         response = changeMachineSnapshotService.create(snapshot);
@@ -1267,6 +1282,7 @@ public class AssignController {
 
     /**
      * 提交拆机任务相关信息
+     *
      * @param assignId
      * @param qrcode
      * @param picture
@@ -1276,7 +1292,7 @@ public class AssignController {
      * @return
      */
     @PostMapping("submit/disassemble")
-    public ResultData submitDisassemble(String assignId, String qrcode, String picture, String description, String date, String wayBill){
+    public ResultData submitDisassemble(String assignId, String qrcode, String picture, String description, String date, String wayBill) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1285,32 +1301,32 @@ public class AssignController {
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
-        List<String> md5s=new ArrayList<>();
-        List<String> newUrls=new ArrayList<>();
+        List<String> md5s = new ArrayList<>();
+        List<String> newUrls = new ArrayList<>();
         ResultData response = null;
         Map<String, Object> md5_condition = new HashMap<>();
-        for(int i = 0; i<urls.length;i++){
+        for (int i = 0; i < urls.length; i++) {
             response = resourcesService.getTempFileMap(urls[i]);
-            if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 String md5 = (String) response.getData();
                 newUrls.add(urls[i]);
                 md5_condition.clear();
-                md5_condition.put("md5",md5);
-                md5_condition.put("blockFlag",false);
+                md5_condition.put("md5", md5);
+                md5_condition.put("blockFlag", false);
                 response = pictureMd5Service.fetch(md5_condition);
-                if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+                if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                     md5s.add(md5);
-                }else if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
+                } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     result.setDescription("请勿上传重复图片");
                     return result;
                 }
             }
         }
-        for (int i=0;i<md5s.size();i++){
-            pictureMd5Service.create(new PictureMd5(newUrls.get(i),md5s.get(i)));
+        for (int i = 0; i < md5s.size(); i++) {
+            pictureMd5Service.create(new PictureMd5(newUrls.get(i), md5s.get(i)));
         }
-        picture = StringUtils.join(newUrls,",");
+        picture = StringUtils.join(newUrls, ",");
         SnapshotDisassemble snapshot = new SnapshotDisassemble(assignId, qrcode, picture, description, wayBill);
         //存储换机快照
         response = disassembleSnapshotService.create(snapshot);
