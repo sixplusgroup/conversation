@@ -25,7 +25,7 @@
              #{MachinePm2_5.blockFlag}, #{MachinePm2_5.createAt})
         </foreach>
     </insert>
-    
+
     <select id="selectHourly" parameterType="java.util.Map" resultMap="machinePm2_5">
         SELECT machine_id, average_pm2_5, `index`, create_time FROM `gmair_machine`.`machine_hourly_status`
         WHERE 1 = 1
@@ -104,6 +104,7 @@
         </if>
     </select>
 
+
     <insert id="insertMonthly" parameterType="finley.gmair.model.machine.MachinePm2_5">
         INSERT INTO `gmair_machine`.`machine_monthly_status`
         (status_id, machine_id, average_pm2_5, `index`, block_flag, create_time)
@@ -123,6 +124,33 @@
 
     <select id="selectMonthly" parameterType="java.util.Map" resultMap="machinePm2_5">
         SELECT machine_id, average_pm2_5, `index`, create_time FROM `gmair_machine`.`machine_monthly_status`
+        WHERE 1 = 1
+        <if test="uid != null">
+            AND machine_id = #{uid}
+        </if>
+        <if test="indexGTE != null">
+            AND `index` >= #{indexGTE}
+        </if>
+        <if test="indexLTE != null">
+            <![CDATA[
+                AND `index` <= #{indexGTE}
+            ]]>
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <select id="selectWeekly" parameterType="java.util.Map" resultMap="machinePm2_5">
+        SELECT machine_id, average_pm2_5, `index`, create_time FROM `gmair_machine`.`machine_daily_status`
         WHERE 1 = 1
         <if test="uid != null">
             AND machine_id = #{uid}
