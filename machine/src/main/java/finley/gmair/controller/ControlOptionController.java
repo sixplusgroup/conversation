@@ -62,10 +62,18 @@ public class ControlOptionController {
     private RedisService redisService;
 
     @Autowired
-    private  PreBindService preBindService;
+    private PreBindService preBindService;
 
     @Autowired
     private ModelVolumeService modelVolumeService;
+
+    public static boolean isEmpty(String... args) {
+        for (String arg : args) {
+            if (StringUtils.isEmpty(arg))
+                return true;
+        }
+        return false;
+    }
 
     //先查control_option表,如果对应的操作不存在,则创建.
     //如果存在,取出controlId,并根据传入的值新建control_option_action配置.
@@ -167,10 +175,15 @@ public class ControlOptionController {
         ResultData response = machineQrcodeBindService.fetch(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             // 如果在code_machine_bind中沒有查詢到code_value对应的machine_id
+            Map<String, Object> condition2 = new HashMap<>();
+            condition2.put("codeValue", qrcode);
             response = preBindService.fetch(condition);
-            /*result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("未能查询到二维码所对应的设备信息");
-            return result;*/
+            if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                // 如果在pre_bind表中还没有记录就返回未查询到信息
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("未能查询到二维码所对应的设备信息");
+                return result;
+            }
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         //根据qrcode 查设备商品及型号详情
@@ -328,7 +341,6 @@ public class ControlOptionController {
         }
         return result;
     }
-
 
     /**
      * 调节设备风量
@@ -693,14 +705,6 @@ public class ControlOptionController {
         }
         result.setData(response.getData());
         return result;
-    }
-
-    public static boolean isEmpty(String... args) {
-        for (String arg : args) {
-            if (StringUtils.isEmpty(arg))
-                return true;
-        }
-        return false;
     }
 
     private ResultData boardVersionResponse(String machineId, ResultData response) {
