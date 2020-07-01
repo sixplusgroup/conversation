@@ -104,6 +104,7 @@ public class PreBindServiceImpl implements PreBindService {
             // 如果code_machine_bind中没有记录，则去pre_bind表中继续查询
             Map<String, Object> condition = new HashMap<>();
             condition.put("codeValue", qrcode);
+            condition.put("blockFlag", false);
             ResultData response2 = fetch(condition);
             if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 response2.setDescription("根据二维码获取machineId成功");
