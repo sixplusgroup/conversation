@@ -98,6 +98,7 @@ public class PreBindServiceImpl implements PreBindService {
         ResponseCode responseCode = response.getResponseCode();
         if (responseCode == ResponseCode.RESPONSE_OK) {
             // 如果code_machine_bind中有记录，则直接返回
+            response.setDescription("根据二维码获取machineId成功");
             return response;
         } else if (responseCode == ResponseCode.RESPONSE_NULL) {
             // 如果code_machine_bind中没有记录，则去pre_bind表中继续查询
@@ -105,6 +106,7 @@ public class PreBindServiceImpl implements PreBindService {
             condition.put("codeValue", qrcode);
             ResultData response2 = fetch(condition);
             if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                response2.setDescription("根据二维码获取machineId成功");
                 return response2;
             } else if (response2.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
