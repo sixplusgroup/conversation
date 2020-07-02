@@ -69,6 +69,15 @@ public class OAuth2ServerConfig {
                     .authorizedGrantTypes("password", "refresh_token")
                     .scopes("select")
                     .authorities("client")
+                    .secret("123456")
+                    .and()
+                    .withClient("client_3")
+                    .resourceIds()
+                    .authorizedGrantTypes("authorization_code", "refresh_token")
+                    .autoApprove(true)//用户自动同意授权
+                    .redirectUris("http://software.nju.edu.cn")
+                    .scopes("select")
+                    .authorities("client")
                     .secret("123456");
         }
 
