@@ -6,6 +6,9 @@ import finley.gmair.util.ResultData;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 查询设备风量接口
+ */
 public interface VolumeService {
 
     ResultData insertBatchHourly(List<VolumeHourly> list);

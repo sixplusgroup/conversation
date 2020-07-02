@@ -20,5 +20,5 @@ public interface MachineSummaryService {
      * @return
      */
     @GetMapping("/machine/status/daily")
-    ResultData getWeeklyPM25(@PathVariable("qrcode") String qrcode);
+    ResultData getDailyPM25(String qrcode);
 }

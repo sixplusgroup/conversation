@@ -4,9 +4,9 @@ import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.service.CorpMachineSubsService;
 import finley.gmair.service.CorpProfileService;
 import finley.gmair.service.MachineSummaryService;
+import finley.gmair.service.DataAnalysisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,30 +29,86 @@ public class SummaryController {
     @Resource
     MachineSummaryService machineSummaryService;
 
-    @Autowired
+    @Resource
     private CorpProfileService corpProfileService;
 
-    @Autowired
+    @Resource
     private CorpMachineSubsService corpMachineSubsService;
 
+    @Resource
+    private DataAnalysisService dataAnalysisService;
+
+
     @GetMapping("/pm2_5")
-    public ResultData queryWeekly(String appid, String qrcode) {
+    public ResultData pm25QueryDaily(String appid, String qrcode) {
         ResultData result = new ResultData();
-        //check empty
-        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+        if (!checkAvailable(appid, qrcode)) {
             result.setDescription("请提供正确的appid和qrcode");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
+        }
+        return machineSummaryService.getDailyPM25(qrcode);
+    }
+
+    @GetMapping("/power/hourly")
+    public ResultData powerQueryHourly(String appid, String qrcode) {
+        if (!checkAvailable(appid, qrcode)) {
+            ResultData result = new ResultData();
+            result.setDescription("请提供正确的appid和qrcode");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        return dataAnalysisService.fetchPowerHourly(qrcode, 24);
+    }
+
+    @GetMapping("/power/daily")
+    public ResultData powerQueryDaily(String appid, String qrcode) {
+        if (!checkAvailable(appid, qrcode)) {
+            ResultData result = new ResultData();
+            result.setDescription("请提供正确的appid和qrcode");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        return dataAnalysisService.fetchPowerDaily(qrcode, 7);
+    }
+
+    @GetMapping("/wind/hourly")
+    public ResultData windQueryHourly(String appid, String qrcode) {
+        if (!checkAvailable(appid, qrcode)) {
+            ResultData result = new ResultData();
+            result.setDescription("请提供正确的appid和qrcode");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        return dataAnalysisService.fetchVolumeHourly(qrcode, 24);
+    }
+
+    @GetMapping("/wind/daily")
+    public ResultData windQueryDaily(String appid, String qrcode) {
+        if (!checkAvailable(appid, qrcode)) {
+            ResultData result = new ResultData();
+            result.setDescription("请提供正确的appid和qrcode");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        return dataAnalysisService.fetchVolumeDaily(qrcode, 7);
+    }
+
+    /**
+     * 检查appid和qrcode是否可用
+     *
+     * @param appid
+     * @param qrcode
+     * @return
+     */
+    private boolean checkAvailable(String appid, String qrcode) {
+        //check empty
+        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
+            return false;
         }
 
         //检查appid和qrcode是否存在订阅关系
-        if (!prerequisities(appid, qrcode)) {
-            result.setDescription("请提供正确的appid和qrcode");
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            return result;
-        }
-
-        return machineSummaryService.getWeeklyPM25(qrcode);
+        return prerequisities(appid, qrcode);
     }
 
     /**
