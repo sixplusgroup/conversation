@@ -131,4 +131,13 @@ public interface MachineService {
      */
     @PostMapping("/machine/control/option/operate")
     ResultData heat(@RequestParam("qrcode") String qrcode, @RequestParam("component") String component, @RequestParam("operation") String operation);
+
+    /**
+     * 获取某个设备一星期内的pm25数据
+     *
+     * @param qrcode
+     * @return
+     */
+    @GetMapping("/machine/status/daily")
+    ResultData getDailyPM25(@RequestParam("qrcode") String qrcode);
 }
