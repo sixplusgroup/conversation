@@ -19,7 +19,6 @@ public class MachineListDailyServiceImpl implements MachineListDailyService {
     @Override
     public ResultData insertMachineListDailyBatch(List<MachineListDaily> list) {
         return machineListDailyDao.insertMachineListDailyBatch(list);
-
     }
 
     @Override

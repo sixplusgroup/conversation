@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.entity.MachineStatusDTO;
 import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.model.openplatform.MachineSubscription;
 import finley.gmair.service.*;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.ResponseErrorHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -261,35 +261,70 @@ public class MachineController {
     @GetMapping("/indoor")
     public ResultData indoor(String appid, String qrcode) {
         ResultData result = new ResultData();
+
+        MachineStatusDTO machineStatusDTO = getMachineStatusByAppIdAndQrCode(appid, qrcode);
+        if (machineStatusDTO.getData() == null) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(machineStatusDTO.getMsg());
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(machineStatusDTO.getData());
+        return result;
+    }
+
+    /**
+     * 批量获取设备的状态信息
+     *
+     * @param appid
+     * @param qrcode_list
+     * @return
+     */
+    @GetMapping("/indoor")
+    public ResultData indoor(String appid, List<String> qrcode_list) {
+        ResultData result = new ResultData();
+
+        JSONArray array = new JSONArray();
+        for (String qrcode : qrcode_list) {
+            MachineStatusDTO machineStatusDTO = getMachineStatusByAppIdAndQrCode(appid, qrcode);
+            if (machineStatusDTO.getData() == null) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription(machineStatusDTO.getMsg());
+                return result;
+            }
+            array.add(machineStatusDTO.getData());
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(array);
+        return result;
+    }
+
+    /**
+     * 通过 appid 和 qrcode 获取设备信息
+     *
+     * @param appid
+     * @param qrcode
+     * @return
+     */
+    private MachineStatusDTO getMachineStatusByAppIdAndQrCode(String appid, String qrcode) {
         //check empty
         if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请提供正确的appid和qrcode");
-            return result;
+            return new MachineStatusDTO("请提供正确的appid和qrcode", null);
         }
         //检查appid和qrcode是否存在订阅关系
         if (!prerequisities(appid, qrcode)) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请确保该appid有效，且已订阅该设备二维码");
-            return result;
+            return new MachineStatusDTO("请确保该appid有效，且已订阅该设备二维码", null);
         }
         //获取设备状态信息
         ResultData response = machineService.indoor(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("获取设备状态信息失败");
-            return result;
+            return new MachineStatusDTO("获取设备状态信息失败", null);
         }
         //根据qrcode获取model_id
         ResultData r = machineService.getModel(qrcode);
         if (r.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("未查询到该设备的model_id");
-            return result;
+            return new MachineStatusDTO("未查询到该设备的model_id", null);
         } else if (r.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("查询该设备model_id失败");
-            return result;
+            return new MachineStatusDTO("查询该设备model_id失败", null);
         }
         JSONObject j = JSONArray.parseArray(JSON.toJSONString(r.getData())).getJSONObject(0);
         String modelId = j.getString("modelId");
@@ -300,13 +335,9 @@ public class MachineController {
             //根据modelId,component和value获取action name
             ResultData res = machineService.search(modelId, "mode", modeValue);
             if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("查询action_name失败");
-                return result;
+                return new MachineStatusDTO("查询action_name失败", null);
             } else if (res.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("未查询到action_name");
-                return result;
+                return new MachineStatusDTO("未查询到action_name", null);
             }
             JSONObject js = JSONArray.parseArray(JSON.toJSONString(res.getData())).getJSONObject(0);
             String actionName = js.getString("actionName");
@@ -322,13 +353,9 @@ public class MachineController {
             //根据modelId,component和value获取action name
             ResultData res = machineService.search(modelId, "heat", heatValue);
             if (res.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("查询action_name失败");
-                return result;
+                return new MachineStatusDTO("查询action_name失败", null);
             } else if (res.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("未查询到action_name");
-                return result;
+                return new MachineStatusDTO("未查询到action_name", null);
             }
             JSONObject js = JSONArray.parseArray(JSON.toJSONString(res.getData())).getJSONObject(0);
             String actionName = js.getString("actionName");
@@ -337,9 +364,9 @@ public class MachineController {
         //去除设备的UID信息，加入设备的二维码信息
         json.remove("uid");
         json.put("qrcode", qrcode);
-        result.setData(json);
-        return result;
+        return new MachineStatusDTO("查询成功", json);
     }
+
 
     /**
      * 获取设备所处城市的空气信息

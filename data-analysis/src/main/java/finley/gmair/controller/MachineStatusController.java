@@ -121,7 +121,7 @@ public class MachineStatusController {
         return result;
     }
 
-    //获取machine过去N天的pm2.5记录
+    //获取machine过去N天的statusType记录
     @GetMapping("/{statusType}/lastNday")
     public ResultData fetchLastNDayData(String qrcode, int lastNday, @PathVariable("statusType") String statusType) {
         ResultData result = new ResultData();
@@ -180,7 +180,7 @@ public class MachineStatusController {
         return getFormatedData(machineId, jsonArray, lastNday, 0);
     }
 
-    //获取machine过去N小时的pm2.5记录
+    //获取machine过去N小时的statusType记录
     @GetMapping("/{statusType}/lastNhour")
     public ResultData fetchLastNHourData(String qrcode, int lastNhour, @PathVariable("statusType") String statusType) {
         ResultData result = new ResultData();
