@@ -14,7 +14,7 @@ public class MachineFilterClean extends Entity {
     /**
      * 设备唯一标识符
      */
-    private String qrCode;
+    private String qrcode;
 
     /**
      * 设备是否需要清洗，最初默认为true
@@ -35,20 +35,20 @@ public class MachineFilterClean extends Entity {
         super();
     }
 
-    public MachineFilterClean(String qrCode, boolean isNeedClean,
+    public MachineFilterClean(String qrcode, boolean isNeedClean,
                               boolean cleanRemindStatus, Date lastConfirmTime) {
-        this.qrCode = qrCode;
+        this.qrcode = qrcode;
         this.isNeedClean = isNeedClean;
         this.cleanRemindStatus = cleanRemindStatus;
         this.lastConfirmTime = lastConfirmTime;
     }
 
     public String getQrcode() {
-        return qrCode;
+        return qrcode;
     }
 
     public void setQrcode(String qrcode) {
-        this.qrCode = qrcode;
+        this.qrcode = qrcode;
     }
 
     public boolean isNeedClean() {
