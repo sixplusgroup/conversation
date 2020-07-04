@@ -1,7 +1,9 @@
 package finley.gmair.service.impl;
 
+import finley.gmair.dao.MachineFilterCleanDao;
 import finley.gmair.service.MachineFilterCleanService;
 import finley.gmair.util.ResultData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -15,13 +17,16 @@ import java.util.Map;
 @Service
 public class MachineFilterCleanServiceImpl implements MachineFilterCleanService {
 
+    @Autowired
+    private MachineFilterCleanDao machineFilterCleanDao;
+
     @Override
     public ResultData fetch(Map<String, Object> condition) {
-        return null;
+        return machineFilterCleanDao.query(condition);
     }
 
     @Override
     public ResultData modify(Map<String, Object> condition) {
-        return null;
+        return machineFilterCleanDao.update(condition);
     }
 }
