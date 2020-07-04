@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.machine_filter_clean">
+    <resultMap id="machine_filter_clean" type="finley.gmair.model.machine.MachineFilterClean">
+        <result property="qrCode" column="qr_code"></result>
+        <result property="isNeedClean" column="is_need_clean"></result>
+        <result property="cleanRemindStatus" column="clean_remind_status"></result>
+        <result property="lastConfirmTime" column="last_confirm_time"></result>
+    </resultMap>
+    <select id="query" parameterType="java.lang.String" resultMap="machine_filter_clean">
+        SELECT qr_code, is_need_clean, clean_remind_status, last_confirm_time
+        FROM gmair_machine.machine_filter_clean
+        WHERE 1 = 1
+        <if test="qrCode != null">
+            AND qr_code = #{qrCode}
+        </if>
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_machine.machine_filter_clean
+        <set>
+            <if test="isNeedClean != null">
+                is_need_clean = #{isNeedClean},
+            </if>
+            <if test="cleanRemindStatus != null">
+                clean_remind_status = #{cleanRemindStatus},
+            </if>
+            <if test="lastConfirmTime != null">
+                last_confirm_time = #{lastConfirmTime},
+            </if>
+            qr_code = #{qrCode}
+        </set>
+        WHERE qr_code = #{qrCode}
+    </update>
+
+</mapper>
