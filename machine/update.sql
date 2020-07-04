@@ -370,3 +370,14 @@ VIEW `consumer_machine_bind_view` AS
         ((`gmair_machine`.`consumer_code_bind`.`block_flag` = 0)
             AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_info`.`consumer_id`)
             AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_phone`.`consumer_id`))
+
+#2020-07-04
+CREATE TABLE `machine_filter_clean` (
+  `qr_code`                 VARCHAR(255) NOT NULL,
+  `is_need_clean`           BOOLEAN NOT NULL DEFAULT TRUE,
+  `clean_remind_status`     BOOLEAN  NOT NULL DEFAULT TRUE,
+  `last_confirm_time`       DATETIME  NOT NULL DEFAULT '1970-01-01 00:00:00',
+  PRIMARY KEY (`qr_code`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;

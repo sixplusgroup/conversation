@@ -1,7 +1,16 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.machine.MachineFilterClean;
+import finley.gmair.service.MachineFilterCleanService;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author: Bright Chan
@@ -13,24 +22,69 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/machine/filter/clean")
 public class MachineFilterCleanController {
 
+    private static final int CLEAN_TIME_INTERVAL = 30;
+
+    @Autowired
+    private MachineFilterCleanService machineFilterCleanService;
+
     /**
      * 查询设备初效滤网是否需要清洗
-     * @return ResultData，若返回成功，则data字段中包含qrcode、lightStatus和createAt三个属性。
+     * 判断逻辑：查询MachineFilterClean表中对应字段，若该字段中的isNeedClean属性为true，
+     * 则直接判断为需要清洗；若为false，则将lastConfirmTime与请求时间做对比，若相差大于等于30天，
+     * 则判断为需要清洗，否则判断为不需要清洗。
+     * @return ResultData，若返回成功，则data字段中包含qrcode和isNeedClean两个属性。
      */
     @GetMapping("/")
-    public ResultData filterNeedCleanOrNot(@RequestParam("appid") String appId,
-                                           @RequestParam String qrcode) {
+    public ResultData filterNeedCleanOrNot(@RequestParam String qrcode) {
         ResultData res = new ResultData();
+        Map<String, Object> resData = new HashMap<>();
+        resData.put("qrcode", qrcode);
+
+        //检测参数
+        if (StringUtils.isEmpty(qrcode)) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("qrcode cannot be empty");
+            return res;
+        }
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("qrcode", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineFilterCleanService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("fetch machineFilterClean failed");
+            return res;
+        }
+
+        MachineFilterClean selectedOne = (MachineFilterClean) response.getData();
+        if (selectedOne.isNeedClean()) {
+            resData.put("isNeedClean", selectedOne.isNeedClean());
+        }
+        else {
+            long dayDiff = (new Date().getTime() - selectedOne.getLastConfirmTime().getTime()) /
+                            (1000 * 60 * 60 * 24);
+            if (dayDiff >= CLEAN_TIME_INTERVAL) {
+                resData.put("isNeedClean", true);
+                //更新isNeedClean字段
+                Map<String, Object> modification = new HashMap<>();
+                modification.put("isNeedClean", true);
+                machineFilterCleanService.modify(modification);
+            }
+            else {
+                resData.put("isNeedClean", false);
+            }
+        }
+        res.setData(resData);
         return res;
     }
 
     /**
      * 查询设备初效滤网清洗提醒是否开启
-     * @return ResultData，若返回成功，则data字段中包含qrcode、isOpen和createAt三个属性。
+     * @return ResultData，若返回成功，则data字段中包含qrcode和isOpen两个属性。
      */
     @GetMapping("/isOpen")
-    public ResultData filterCleanRemindIsOpen(@RequestParam("appid") String appId,
-                                              @RequestParam String qrcode) {
+    public ResultData filterCleanRemindIsOpen(@RequestParam String qrcode) {
         ResultData res = new ResultData();
         return res;
     }
@@ -40,9 +94,8 @@ public class MachineFilterCleanController {
      * @return ResultData，若返回成功，则data字段中包含qrcode和createAt两个属性。
      */
     @PostMapping("/change")
-    public ResultData changeFilterCleanRemindStatus(@RequestParam("appid") String appId,
-                                                    @RequestParam String qrcode,
-                                                    @RequestParam String status) {
+    public ResultData changeFilterCleanRemindStatus(@RequestParam String qrcode,
+                                                    @RequestParam String cleanRemindStatus) {
         ResultData res = new ResultData();
         return res;
     }
@@ -52,8 +105,7 @@ public class MachineFilterCleanController {
      * @return ResultData，若返回成功，则data字段中包含qrcode和createAt两个属性。
      */
     @GetMapping("/confirm")
-    public ResultData confirmClean(@RequestParam("appid") String appId,
-                                   @RequestParam String qrcode) {
+    public ResultData confirmClean(@RequestParam String qrcode) {
         ResultData res = new ResultData();
         return res;
     }
