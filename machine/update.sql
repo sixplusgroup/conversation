@@ -1,3 +1,4 @@
+USE `gmair_machine` ;
 ## create machine power setting view
 CREATE VIEW `gmair_machine`.`power_setting_view`
   AS
@@ -194,7 +195,7 @@ CREATE TABLE `out_pm2_5_daily` (
   PRIMARY KEY (`record_id`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
+  DEFAULT CHARSET = utf8;
 
 CREATE TABLE `filter_limit_config` (
   `over_count_limit` INT(11) NOT NULL,
@@ -202,7 +203,7 @@ CREATE TABLE `filter_limit_config` (
   PRIMARY KEY (`over_count_limit`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
+  DEFAULT CHARSET = utf8;
 
 CREATE TABLE `gmair_machine`.`filter_light` (
   `machine_id`   VARCHAR(20) NOT NULL,
@@ -244,7 +245,7 @@ CREATE TABLE `machine_daily_power` (
   PRIMARY KEY (`status_id`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
+  DEFAULT CHARSET = utf8;
 
 #2018-01-14
 CREATE TABLE `machine_list_daily` (
@@ -261,7 +262,7 @@ CREATE TABLE `machine_list_daily` (
   PRIMARY KEY (`consumer_id`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
+  DEFAULT CHARSET = utf8;
 
 #2018-01-14
 CREATE
@@ -285,7 +286,7 @@ VIEW `gmair_machine`.`machine_list_view` AS
       LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ccb`.`consumer_id` = `cp`.`consumer_id`)))
   WHERE
     ((`ccb`.`ownership` = 0)
-     AND (`ccb`.`block_flag` = 0))
+     AND (`ccb`.`block_flag` = 0));
 
 #2018-01-15
 CREATE
@@ -313,7 +314,7 @@ VIEW `gmair_machine`.`machine_list_second_view` AS
   WHERE
     ((`ccb`.`ownership` = 0)
      AND (`ccb`.`block_flag` = 0)
-     AND ((TO_DAYS(CURDATE()) - TO_DAYS(`opd`.`create_time`)) < 1))
+     AND ((TO_DAYS(CURDATE()) - TO_DAYS(`opd`.`create_time`)) < 1));
 
 #2019-11-04
 ALTER TABLE `gmair_machine`.`filter_limit_config`
@@ -344,7 +345,7 @@ CREATE OR REPLACE VIEW `goods_model_view` AS
     `gm`.`model_snapshot`   AS `snapshot`
   FROM
     (`goods_model` `gm`
-      LEFT JOIN `goods` `g` ON ((`gm`.`goods_id` = `g`.`goods_id`)))
+      LEFT JOIN `goods` `g` ON ((`gm`.`goods_id` = `g`.`goods_id`)));
 
 #2019-12-31
 CREATE
@@ -369,4 +370,4 @@ VIEW `consumer_machine_bind_view` AS
     WHERE
         ((`gmair_machine`.`consumer_code_bind`.`block_flag` = 0)
             AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_info`.`consumer_id`)
-            AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_phone`.`consumer_id`))
+            AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_phone`.`consumer_id`));
