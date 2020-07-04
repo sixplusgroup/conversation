@@ -3,7 +3,8 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.entity.MachineStatusDTO;
+import finley.gmair.dto.MachineStatusDTO;
+import finley.gmair.dto.QrCodeParamDTO;
 import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.model.openplatform.MachineSubscription;
 import finley.gmair.service.*;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -220,10 +222,6 @@ public class MachineController {
         return result;
     }
 
-
-    /**
-     *
-     */
     @GetMapping("/online/{qrcode}")
     public ResultData isOnline(String appid, @PathVariable("qrcode") String qrcode) {
         ResultData result = new ResultData();
@@ -254,9 +252,9 @@ public class MachineController {
     /**
      * 获取设备的状态信息
      *
-     * @param appid
-     * @param qrcode
-     * @return
+     * @param appid  appId
+     * @param qrcode 设备二维码
+     * @return 结果
      */
     @GetMapping("/indoor")
     public ResultData indoor(String appid, String qrcode) {
@@ -275,15 +273,17 @@ public class MachineController {
     /**
      * 批量获取设备的状态信息
      *
-     * @param appid
-     * @param qrcode_list
-     * @return
+     * @param qrCodeParamDTO 设备二维码的实体对象，包括appId和qrcode_list
+     * @return 结果
      */
-    @GetMapping("/indoor")
-    public ResultData indoor(String appid, List<String> qrcode_list) {
+    @PostMapping("/indoor")
+    public ResultData indoor(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
+        String appid = qrCodeParamDTO.getAppid();
+        List<String> qrcode_list = qrCodeParamDTO.getQrCodeList();
+
         ResultData result = new ResultData();
 
-        JSONArray array = new JSONArray();
+        List<Object> machineStatusList = new ArrayList<>();
         for (String qrcode : qrcode_list) {
             MachineStatusDTO machineStatusDTO = getMachineStatusByAppIdAndQrCode(appid, qrcode);
             if (machineStatusDTO.getData() == null) {
@@ -291,19 +291,19 @@ public class MachineController {
                 result.setDescription(machineStatusDTO.getMsg());
                 return result;
             }
-            array.add(machineStatusDTO.getData());
+            machineStatusList.add(machineStatusDTO.getData());
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
-        result.setData(array);
+        result.setData(machineStatusList);
         return result;
     }
 
     /**
      * 通过 appid 和 qrcode 获取设备信息
      *
-     * @param appid
-     * @param qrcode
-     * @return
+     * @param appid  设备id
+     * @param qrcode 设备二维码
+     * @return 结果
      */
     private MachineStatusDTO getMachineStatusByAppIdAndQrCode(String appid, String qrcode) {
         //check empty
@@ -366,7 +366,6 @@ public class MachineController {
         json.put("qrcode", qrcode);
         return new MachineStatusDTO("查询成功", json);
     }
-
 
     /**
      * 获取设备所处城市的空气信息
