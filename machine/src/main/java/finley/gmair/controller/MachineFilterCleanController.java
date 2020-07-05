@@ -34,13 +34,6 @@ public class MachineFilterCleanController {
     public ResultData filterNeedCleanOrNot(@RequestParam String qrcode) {
         ResultData res = new ResultData();
 
-        //检测参数
-        if (StringUtils.isEmpty(qrcode)) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("qrcode cannot be empty");
-            return res;
-        }
-
         ResultData response = machineFilterCleanService.fetchByQRCode(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -61,13 +54,6 @@ public class MachineFilterCleanController {
     public ResultData filterCleanRemindIsOpen(@RequestParam String qrcode) {
         ResultData res = new ResultData();
         Map<String, Object> resData = new HashMap<>();
-
-        //检测参数
-        if (StringUtils.isEmpty(qrcode)) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("qrcode cannot be empty");
-            return res;
-        }
 
         ResultData response = machineFilterCleanService.fetchByQRCode(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {

@@ -5,6 +5,7 @@ import finley.gmair.model.machine.MachineFilterClean;
 import finley.gmair.service.MachineFilterCleanService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,14 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
 
     @Override
     public ResultData fetchByQRCode(String qrcode) {
+        ResultData res = new ResultData();
+
+        //检测参数
+        if (StringUtils.isEmpty(qrcode)) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return res;
+        }
+
         Map<String, Object> condition = new HashMap<>();
         condition.put("qrcode", qrcode);
         condition.put("blockFlag", false);
