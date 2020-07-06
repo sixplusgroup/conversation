@@ -22,37 +22,19 @@ import java.util.Map;
 @RequestMapping("/machine/filter/clean")
 public class MachineFilterCleanController {
 
-    private static final int CLEAN_TIME_INTERVAL = 30;
-    private static final String TRUE = "true";
-    private static final String FALSE = "false";
-
     @Autowired
     private MachineFilterCleanService machineFilterCleanService;
 
     /**
      * 查询设备初效滤网是否需要清洗
-     * 判断逻辑：查询MachineFilterClean表中对应字段，若该字段中的isNeedClean属性为true，
-     * 则直接判断为需要清洗；若为false，则将lastConfirmTime与请求时间做对比，若相差大于等于30天，
-     * 则判断为需要清洗，否则判断为不需要清洗。
+     * 判断逻辑：详见MachineFilterCleanService.filterCleanCheck方法
      * @return ResultData，若返回成功，则data字段中包含qrcode和isNeedClean两个属性。
      */
     @GetMapping("")
     public ResultData filterNeedCleanOrNot(@RequestParam String qrcode) {
         ResultData res = new ResultData();
-        Map<String, Object> resData = new HashMap<>();
-        resData.put("qrcode", qrcode);
 
-        //检测参数
-        if (StringUtils.isEmpty(qrcode)) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("qrcode cannot be empty");
-            return res;
-        }
-
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("qrcode", qrcode);
-        condition.put("blockFlag", false);
-        ResultData response = machineFilterCleanService.fetch(condition);
+        ResultData response = machineFilterCleanService.fetchByQRCode(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("fetch machineFilterClean failed");
@@ -60,30 +42,7 @@ public class MachineFilterCleanController {
         }
 
         MachineFilterClean selectedOne = (MachineFilterClean) response.getData();
-        if (selectedOne.isNeedClean()) {
-            resData.put("isNeedClean", selectedOne.isNeedClean());
-        }
-        else {
-            long dayDiff = (new Date().getTime() - selectedOne.getLastConfirmTime().getTime()) /
-                            (1000 * 60 * 60 * 24);
-            if (dayDiff >= CLEAN_TIME_INTERVAL) {
-                resData.put("isNeedClean", true);
-                //更新isNeedClean字段
-                Map<String, Object> modification = new HashMap<>();
-                modification.put("qrcode", qrcode);
-                modification.put("isNeedClean", true);
-                ResultData modifyRes = machineFilterCleanService.modify(modification);
-                if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    res.setDescription("modify MachineFilterClean failed");
-                    return res;
-                }
-            }
-            else {
-                resData.put("isNeedClean", false);
-            }
-        }
-        res.setData(resData);
+        res = machineFilterCleanService.filterCleanCheck(selectedOne);
         return res;
     }
 
@@ -96,17 +55,7 @@ public class MachineFilterCleanController {
         ResultData res = new ResultData();
         Map<String, Object> resData = new HashMap<>();
 
-        //检测参数
-        if (StringUtils.isEmpty(qrcode)) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("qrcode cannot be empty");
-            return res;
-        }
-
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("qrcode", qrcode);
-        condition.put("blockFlag", false);
-        ResultData response = machineFilterCleanService.fetch(condition);
+        ResultData response = machineFilterCleanService.fetchByQRCode(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("fetch machineFilterClean failed");
@@ -126,31 +75,21 @@ public class MachineFilterCleanController {
      */
     @PostMapping("/change")
     public ResultData changeFilterCleanRemindStatus(@RequestParam String qrcode,
-                                                    @RequestParam String cleanRemindStatus) {
+                                                    @RequestParam boolean cleanRemindStatus) {
         ResultData res = new ResultData();
         Map<String, Object> resData = new HashMap<>();
         resData.put("qrcode", qrcode);
 
         //检测参数
-        if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(cleanRemindStatus)) {
+        if (StringUtils.isEmpty(qrcode)) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("qrcode or cleanRemindStatus cannot be empty");
+            res.setDescription("qrcode cannot be empty");
             return res;
         }
 
         Map<String, Object> condition = new HashMap<>();
         condition.put("qrcode", qrcode);
-        if (TRUE.equals(cleanRemindStatus)) {
-            condition.put("cleanRemindStatus", true);
-        }
-        else if (FALSE.equals(cleanRemindStatus)) {
-            condition.put("cleanRemindStatus", false);
-        }
-        else {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("cleanRemindStatus is illegal");
-            return res;
-        }
+        condition.put("cleanRemindStatus", cleanRemindStatus);
         ResultData response = machineFilterCleanService.modify(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
