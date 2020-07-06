@@ -383,3 +383,6 @@ CREATE TABLE `machine_filter_clean` (
 )
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
+
+#2020-07-06
+insert into machine_filter_clean (`qr_code`) select distinct(`code_value`) from `code_machine_bind` where `block_flag`=0;

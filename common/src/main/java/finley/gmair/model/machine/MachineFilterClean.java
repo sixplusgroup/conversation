@@ -12,7 +12,7 @@ import java.util.Date;
 public class MachineFilterClean extends Entity {
 
     /**
-     * 设备唯一标识符
+     * 设备二维码
      */
     private String qrcode;
 
