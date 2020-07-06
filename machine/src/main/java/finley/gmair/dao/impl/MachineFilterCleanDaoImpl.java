@@ -51,6 +51,15 @@ public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterC
 
     @Override
     public ResultData add(MachineFilterClean machineFilterClean) {
-        return null;
+        ResultData result = new ResultData();
+        try {
+            sqlSession.insert("gmair.machine.machine_filter_clean.insert", machineFilterClean);
+            result.setData(machineFilterClean);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            System.err.println(new StringBuffer(MachineFilterCleanDaoImpl.class.getName()).append(" - error - ").append(e.getMessage()).toString());
+        }
+        return result;
     }
 }

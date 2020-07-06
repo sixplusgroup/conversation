@@ -6,9 +6,11 @@
         <result property="isNeedClean" column="is_need_clean"></result>
         <result property="cleanRemindStatus" column="clean_remind_status"></result>
         <result property="lastConfirmTime" column="last_confirm_time"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
     </resultMap>
     <select id="query" parameterType="java.lang.String" resultMap="machine_filter_clean">
-        SELECT qr_code, is_need_clean, clean_remind_status, last_confirm_time
+        SELECT qr_code, is_need_clean, clean_remind_status, last_confirm_time,block_flag, create_time
         FROM gmair_machine.machine_filter_clean
         WHERE 1 = 1
         <if test="_parameter != null">
@@ -28,9 +30,20 @@
             <if test="lastConfirmTime != null">
                 last_confirm_time = #{lastConfirmTime},
             </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            <if test="createAt != null">
+                create_time= #{createAt},
+            </if>
             qr_code = #{qrcode}
         </set>
         WHERE qr_code = #{qrcode}
     </update>
+
+    <insert id="insert" parameterType="finley.gmair.model.machine.MachineFilterClean" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.machine_filter_clean(qr_code, is_need_clean, clean_remind_status, last_confirm_time,block_flag, create_time)
+        VALUES(#{qrcode}, #{isNeedClean}, #{cleanRemindStatus}, #{lastConfirmTime}, #{blockFlag}, #{createAt})
+    </insert>
 
 </mapper>
