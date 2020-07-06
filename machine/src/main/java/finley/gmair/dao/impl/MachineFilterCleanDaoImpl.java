@@ -48,4 +48,9 @@ public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterC
         }
         return result;
     }
+
+    @Override
+    public ResultData add(MachineFilterClean machineFilterClean) {
+        return null;
+    }
 }

@@ -27,4 +27,11 @@ public interface MachineFilterCleanService {
      * @return 判断结果
      */
     ResultData filterCleanCheck(MachineFilterClean selectedOne);
+
+    /**
+     * 新增绑定用户的时候调用此方法新增machine_filter_clean表数据
+     * @param qrcode 新增绑定的二维码
+     * @return 新增结果
+     */
+    ResultData addNewBindMachine(String qrcode);
 }

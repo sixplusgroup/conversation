@@ -85,4 +85,19 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
         res.setData(resData);
         return res;
     }
+
+    @Override
+    public ResultData addNewBindMachine(String qrcode) {
+        ResultData res = new ResultData();
+
+        //检测参数
+        if (StringUtils.isEmpty(qrcode)) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return res;
+        }
+
+        MachineFilterClean newBindMachine = new MachineFilterClean();
+        newBindMachine.setQrcode(qrcode);
+        return machineFilterCleanDao.add(newBindMachine);
+    }
 }
