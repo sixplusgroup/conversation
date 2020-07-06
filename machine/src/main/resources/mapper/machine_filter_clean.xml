@@ -11,8 +11,8 @@
         SELECT qr_code, is_need_clean, clean_remind_status, last_confirm_time
         FROM gmair_machine.machine_filter_clean
         WHERE 1 = 1
-        <if test="qrcode != null">
-            AND qr_code = #{qrcode}
+        <if test="_parameter != null">
+            AND qr_code = #{_parameter}
         </if>
     </select>
 

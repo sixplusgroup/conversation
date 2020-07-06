@@ -36,7 +36,7 @@ public class MachineFilterCleanController {
      * 则判断为需要清洗，否则判断为不需要清洗。
      * @return ResultData，若返回成功，则data字段中包含qrcode和isNeedClean两个属性。
      */
-    @GetMapping("/")
+    @GetMapping("")
     public ResultData filterNeedCleanOrNot(@RequestParam String qrcode) {
         ResultData res = new ResultData();
         Map<String, Object> resData = new HashMap<>();
