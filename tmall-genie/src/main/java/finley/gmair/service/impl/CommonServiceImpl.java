@@ -12,13 +12,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
-public class ServiceUtil {
+public class CommonServiceImpl {
 
     // 风速最低档
-    public static final int MIN_GEAR = 1;
+    private static final int MIN_GEAR = 1;
 
     // 风速最高档
-    public static final int MAX_GEAR = 4;
+    private static final int MAX_GEAR = 4;
 
     public static final int CAN_NOT_CONFIG_SPEED = -1;
 

@@ -19,13 +19,13 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
     static final String SEPERATOR = ",";
 
     @Autowired
-    private ServiceUtil serviceUtil;
+    private CommonServiceImpl commonServiceImpl;
 
     @Override
     @SuppressWarnings("unchecked")
     public AliGenieRe discovery(ResultData resultData, Header header) {
         AliGenieRe response = new AliGenieRe();
-        header.setName(serviceUtil.setResponseName(header.getName()));
+        header.setName(commonServiceImpl.setResponseName(header.getName()));
         response.setHeader(header);
 
         List<Device> devices = new ArrayList<>();
@@ -89,7 +89,7 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
             // properties
             // 与设备状态查询相关 https://www.yuque.com/qw5nze/ga14hc/ozlpg3?inner=cb0d29b3
             String modelId = (String) machineInfo.get("modelId");
-            List<Attribute> properties = serviceUtil.getProperties(deviceId, modelId);
+            List<Attribute> properties = commonServiceImpl.getProperties(deviceId, modelId);
             device.setProperties(properties);
 
             // extensions(可选)

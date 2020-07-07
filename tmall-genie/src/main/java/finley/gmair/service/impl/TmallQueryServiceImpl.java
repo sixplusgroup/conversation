@@ -20,7 +20,7 @@ import java.util.List;
 public class TmallQueryServiceImpl implements TmallQueryService {
 
     @Autowired
-    private ServiceUtil serviceUtil;
+    private CommonServiceImpl commonServiceImpl;
 
     @Autowired
     private MachineService machineService;
@@ -38,7 +38,7 @@ public class TmallQueryServiceImpl implements TmallQueryService {
             switch (queryEnum) {
                 case Query:
                     // 就是设备发现的结果
-                    properties = serviceUtil.getProperties(deviceId, getModelId(deviceId));
+                    properties = commonServiceImpl.getProperties(deviceId, getModelId(deviceId));
                     break;
                 case QueryTemperature:
                     properties.add(new Attribute("temperature", Integer.toString((int) runningInfo.get("temperature"))));
@@ -47,14 +47,14 @@ public class TmallQueryServiceImpl implements TmallQueryService {
                     // 档位
                     String modelId = getModelId(deviceId);
                     if(modelId != null) {
-                        String windspeed = serviceUtil.getWindspeedByVolume((int) runningInfo.get("volume"), modelId);
+                        String windspeed = commonServiceImpl.getWindspeedByVolume((int) runningInfo.get("volume"), modelId);
                         properties.add(new Attribute("windspeed", windspeed));
                     }
                     break;
                 case QueryPowerState:
                     // 电源状态
                     int p = (int) runningInfo.get("power");
-                    String power = serviceUtil.getPower(p);
+                    String power = commonServiceImpl.getPower(p);
                     if (power != null) {
                         properties.add(new Attribute("powerstate", power));
                     }
@@ -64,7 +64,7 @@ public class TmallQueryServiceImpl implements TmallQueryService {
 
         AliGenieRe response = new AliGenieRe();
         response.setProperties(properties);
-        header.setName(serviceUtil.setResponseName(header.getName()));
+        header.setName(commonServiceImpl.setResponseName(header.getName()));
         response.setHeader(header);
         Payload responsePayload = new Payload(deviceId);
         response.setPayload(responsePayload);

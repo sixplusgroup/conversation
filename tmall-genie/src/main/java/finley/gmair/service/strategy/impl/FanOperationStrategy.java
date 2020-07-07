@@ -2,7 +2,7 @@ package finley.gmair.service.strategy.impl;
 
 import finley.gmair.service.MachineService;
 import finley.gmair.service.holder.HandlerOperationType;
-import finley.gmair.service.impl.ServiceUtil;
+import finley.gmair.service.impl.CommonServiceImpl;
 import finley.gmair.service.strategy.OperationStrategy;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.tmall.TmallDeviceTypeEnum;
@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 public class FanOperationStrategy implements OperationStrategy {
 
     @Autowired
-    private ServiceUtil serviceUtil;
-
-
+    private CommonServiceImpl commonServiceImpl;
 
     @Autowired
     private MachineService machineService;
@@ -35,8 +33,8 @@ public class FanOperationStrategy implements OperationStrategy {
     @Override
     public ResultData setWindSpeed(String deviceId, String value, boolean up, boolean down) {
         // value 1 ~ 4，表示风速 1 - 4档
-        int speed = serviceUtil.getSpeedByValue(deviceId, value, up, down);
-        return speed == ServiceUtil.CAN_NOT_CONFIG_SPEED ? null : machineService.configSpeed(deviceId, speed);
+        int speed = commonServiceImpl.getSpeedByValue(deviceId, value, up, down);
+        return speed == CommonServiceImpl.CAN_NOT_CONFIG_SPEED ? null : machineService.configSpeed(deviceId, speed);
     }
 
     @Override

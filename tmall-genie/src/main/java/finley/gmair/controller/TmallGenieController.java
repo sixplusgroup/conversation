@@ -13,6 +13,9 @@ import finley.gmair.util.tmall.TmallNameSpaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -51,10 +54,9 @@ public class TmallGenieController {
 
         // 根据accessToken获取consumerId
         // 只要在请求中带上token，后台会自动把它映射称Spring Security里面的Principal对象，进而可以获取到用户的consumerid
-//        SecurityContext context = SecurityContextHolder.getContext();
-//        Authentication authentication = context.getAuthentication();
-//        String consumerId = (String) authentication.getPrincipal();
-        String consumerId = "CSR20181008hh2ufn48";
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        String consumerId = (String) authentication.getPrincipal();
 
         TmallNameSpaceEnum nameSpace = TmallNameSpaceEnum.fromString(header.getNamespace());
         switch (nameSpace) {
