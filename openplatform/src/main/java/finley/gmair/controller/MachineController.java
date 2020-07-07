@@ -8,6 +8,8 @@ import finley.gmair.dto.QrCodeParamDTO;
 import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.model.openplatform.MachineSubscription;
 import finley.gmair.service.*;
+import finley.gmair.service.rpc.AirQualityService;
+import finley.gmair.service.rpc.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +35,7 @@ import java.util.Map;
 public class MachineController {
     private Logger logger = LoggerFactory.getLogger(MachineController.class);
 
-    @Autowired
+    @Resource
     private MachineService machineService;
 
     @Autowired
@@ -46,7 +49,6 @@ public class MachineController {
 
     @Autowired
     private MachineNotifyService machineNotifyService;
-
 
     /**
      * appid 订阅设备

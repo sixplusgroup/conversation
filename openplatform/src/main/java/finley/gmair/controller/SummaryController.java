@@ -1,156 +1,66 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.openplatform.CorpProfile;
-import finley.gmair.service.*;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import finley.gmair.dto.QrCodeParamDTO;
+import finley.gmair.pojo.ApiResult;
+import finley.gmair.service.SummaryService;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author lyy
- * @Description
- * @create 2020-06-30 11:29 下午
+ * @date 2020-06-30 11:29 下午
  */
 @RestController
 @RequestMapping("/openplatform/summary")
 public class SummaryController {
 
-    @Autowired
-    private MachineService machineService;
-
-    @Autowired
-    private CorpProfileService corpProfileService;
-
-    @Autowired
-    private CorpMachineSubsService corpMachineSubsService;
-
-    @Autowired
-    private DataAnalysisService dataAnalysisService;
+    @Resource
+    private SummaryService summaryService;
 
     @GetMapping("/pm2_5")
-    public ResultData pm25QueryDaily(String appid, String qrcode) {
-        ResultData result = new ResultData();
-        if (!checkAvailable(appid, qrcode)) {
-            result.setDescription("请提供正确的appid和qrcode");
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            return result;
-        }
-        return machineService.getDailyPM25(qrcode);
+    public ApiResult pm25QueryDaily(String appid, String qrcode) {
+        return summaryService.getDailyPM25(appid, qrcode);
     }
 
     @GetMapping("/power/hourly")
-    public ResultData powerQueryHourly(String appid, String qrcode) {
-        if (!checkAvailable(appid, qrcode)) {
-            ResultData result = new ResultData();
-            result.setDescription("请提供正确的appid和qrcode");
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            return result;
-        }
-        return dataAnalysisService.fetchPowerHourly(qrcode, 24);
+    public ApiResult powerQueryHourly(String appid, String qrcode) {
+        return summaryService.getHourlyPower(appid, qrcode);
+    }
+
+    @PostMapping("/power/hourly")
+    public ApiResult powerQueryListHourly(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
+        return summaryService.getHourlyPower(qrCodeParamDTO);
     }
 
     @GetMapping("/power/daily")
-    public ResultData powerQueryDaily(String appid, String qrcode) {
-        if (!checkAvailable(appid, qrcode)) {
-            ResultData result = new ResultData();
-            result.setDescription("请提供正确的appid和qrcode");
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            return result;
-        }
-        return dataAnalysisService.fetchPowerDaily(qrcode, 7);
+    public ApiResult powerQueryDaily(String appid, String qrcode) {
+        return summaryService.getDailyPower(appid, qrcode);
+    }
+
+    @PostMapping("/power/daily")
+    public ApiResult powerQueryDaily(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
+        return summaryService.getDailyPower(qrCodeParamDTO);
     }
 
     @GetMapping("/wind/hourly")
-    public ResultData windQueryHourly(String appid, String qrcode) {
-        if (!checkAvailable(appid, qrcode)) {
-            ResultData result = new ResultData();
-            result.setDescription("请提供正确的appid和qrcode");
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            return result;
-        }
-        return dataAnalysisService.fetchVolumeHourly(qrcode, 24);
+    public ApiResult windQueryHourly(String appid, String qrcode) {
+        return summaryService.getHourlyVolume(appid, qrcode);
+    }
+
+    @PostMapping("/wind/hourly")
+    public ApiResult windQueryHourly(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
+        return summaryService.getDailyVolume(qrCodeParamDTO);
     }
 
     @GetMapping("/wind/daily")
-    public ResultData windQueryDaily(String appid, String qrcode) {
-        if (!checkAvailable(appid, qrcode)) {
-            ResultData result = new ResultData();
-            result.setDescription("请提供正确的appid和qrcode");
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            return result;
-        }
-        return dataAnalysisService.fetchVolumeDaily(qrcode, 7);
+    public ApiResult windQueryDaily(String appid, String qrcode) {
+        return summaryService.getDailyVolume(appid, qrcode);
     }
 
-    /**
-     * 检查appid和qrcode是否可用
-     *
-     * @param appid
-     * @param qrcode
-     * @return
-     */
-    private boolean checkAvailable(String appid, String qrcode) {
-        //check empty
-        if (StringUtils.isEmpty(appid) || StringUtils.isEmpty(qrcode)) {
-            return false;
-        }
-
-        //检查appid和qrcode是否存在订阅关系
-        return prerequisities(appid, qrcode);
-    }
-
-    /**
-     * 判断appid和qrcode是否存在订阅关系
-     *
-     * @param appid
-     * @param qrcode
-     * @return
-     */
-    private boolean prerequisities(String appid, String qrcode) {
-        ResultData result = new ResultData();
-        //判断appid是否合法
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("appid", appid);
-        condition.put("blockFlag", false);
-        ResultData response = corpProfileService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("检查appid合法性失败");
-            return false;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("请提供正确的appid");
-            return false;
-        }
-        CorpProfile corpProfile = ((List<CorpProfile>) response.getData()).get(0);
-        String corpId = corpProfile.getProfileId();
-        //检查该appid和qrcode是否存在订阅关系
-        Map<String, Object> con = new HashMap<>();
-        con.put("corpId", corpId);
-        con.put("qrcode", qrcode);
-        con.put("blockFlag", false);
-        response = corpMachineSubsService.fetch(con);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("查询与该设备的订阅关系失败");
-            return false;
-        }
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("未订阅该设备");
-            return false;
-        }
-        return true;
+    @PostMapping("/wind/daily")
+    public ApiResult windQueryDaily(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
+        return summaryService.getDailyVolume(qrCodeParamDTO);
     }
 
 }
