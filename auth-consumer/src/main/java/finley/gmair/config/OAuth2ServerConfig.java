@@ -75,7 +75,7 @@ public class OAuth2ServerConfig {
                     .resourceIds()
                     .authorizedGrantTypes("authorization_code", "refresh_token")
                     .autoApprove(true)//用户自动同意授权
-                    .redirectUris("http://software.nju.edu.cn")
+                    .redirectUris("https://oauth-redirect.api.home.mi.com/r/2147479194")
                     .scopes("select")
                     .authorities("client")
                     .secret("123456");
