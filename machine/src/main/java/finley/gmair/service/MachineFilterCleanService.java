@@ -34,4 +34,11 @@ public interface MachineFilterCleanService {
      * @return 新增结果
      */
     ResultData addNewBindMachine(String qrcode);
+
+    /**
+     * 发送微信公众号清洗提醒
+     * @param qrcode 设备二维码
+     * @return 发送结果
+     */
+    ResultData sendWeChatMessage(String qrcode);
 }

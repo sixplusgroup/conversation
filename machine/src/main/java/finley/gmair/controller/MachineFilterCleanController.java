@@ -6,7 +6,10 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -133,6 +136,32 @@ public class MachineFilterCleanController {
         resData.put("qrcode", qrcode);
         resData.put("createAt", now.getTime());
         res.setData(resData);
+        return res;
+    }
+
+    /**
+     * 发送微信公众号二维码
+     * @return ResultData，若返回成功，则data字段中包含qrcode和createAt两个属性。
+     */
+    @GetMapping("/sendWeChatMessage")
+    public ResultData sendWeChatMessage(@RequestParam String qrcode) {
+        ResultData res = new ResultData();
+
+        //检测参数
+        if (StringUtils.isEmpty(qrcode)) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("qrcode cannot be empty");
+            return res;
+        }
+
+        Date now = new Date();
+        ResultData response = machineFilterCleanService.sendWeChatMessage(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("modify machineFilterClean failed");
+            return res;
+        }
+
         return res;
     }
 }

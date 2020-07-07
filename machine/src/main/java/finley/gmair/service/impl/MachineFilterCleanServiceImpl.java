@@ -1,16 +1,21 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.MachineFilterCleanDao;
+import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.MachineFilterClean;
+import finley.gmair.service.ConsumerQRcodeBindService;
 import finley.gmair.service.MachineFilterCleanService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.consumer.ConsumerVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,7 +30,13 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     private static final int CLEAN_TIME_INTERVAL = 30;
 
     @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
     private MachineFilterCleanDao machineFilterCleanDao;
+
+    @Autowired
+    private ConsumerQRcodeBindService consumerQRcodeBindService;
 
     @Override
     public ResultData fetch(Map<String, Object> condition) {
@@ -99,5 +110,20 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
         MachineFilterClean newBindMachine = new MachineFilterClean();
         newBindMachine.setQrcode(qrcode);
         return machineFilterCleanDao.add(newBindMachine);
+    }
+
+    @Override
+    public ResultData sendWeChatMessage(String qrcode) {
+        ResultData res=new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("qrcode", qrcode);
+        ResultData resultData = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        List<ConsumerQRcodeBind> consumerQRcodeBindList = (List<ConsumerQRcodeBind>) resultData.getData();
+        for (ConsumerQRcodeBind consumerQRcodeBind:consumerQRcodeBindList){
+            ResultData resultConsumer=restTemplate.getForObject("http://consumer-auth-agent/auth/consumer/profile?consumerId="+consumerQRcodeBind.getConsumerId(),ResultData.class);
+            ConsumerVo consumerVo=(ConsumerVo)resultConsumer.getData();
+            ResultData resultWeChat=restTemplate.getForObject("http://wechat-agent/wechat/message/sendMessage?openId="+consumerVo.getWechat(),ResultData.class);
+        }
+        return res;
     }
 }
