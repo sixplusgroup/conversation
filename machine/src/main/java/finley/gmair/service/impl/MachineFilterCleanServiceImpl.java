@@ -44,6 +44,11 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     }
 
     @Override
+    public ResultData fetchAll() {
+        return machineFilterCleanDao.queryAll();
+    }
+
+    @Override
     public ResultData fetchByQRCode(String qrcode) {
         ResultData res = new ResultData();
 

@@ -14,6 +14,8 @@ public interface MachineFilterCleanService {
 
     ResultData fetch(Map<String, Object> condition);
 
+    ResultData fetchAll();
+
     ResultData fetchByQRCode(String qrcode);
 
     ResultData modify(Map<String, Object> condition);

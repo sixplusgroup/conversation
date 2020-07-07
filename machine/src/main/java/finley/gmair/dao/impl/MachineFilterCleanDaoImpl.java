@@ -36,6 +36,11 @@ public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterC
     }
 
     @Override
+    public ResultData queryAll() {
+        return null;
+    }
+
+    @Override
     public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
