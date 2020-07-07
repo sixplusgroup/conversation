@@ -58,7 +58,10 @@ public class MachineFilterCleanCheck {
         for (MachineFilterClean one : store) {
             //消息提醒开关处于打开状态 && 设备需要清洗 && 本周期内还未提醒
             if (one.isCleanRemindStatus() && one.isNeedClean() && !one.isReminded()) {
-                //TODO 向所有绑定此设备的用户发送推送消息
+                ResultData sendRes = machineFilterCleanService.sendWeChatMessage(one.getQrcode());
+                if (sendRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("send weChat message failed");
+                }
 
                 Map<String, Object> modification = new HashMap<>();
                 modification.put("qrcode", one.getQrcode());
