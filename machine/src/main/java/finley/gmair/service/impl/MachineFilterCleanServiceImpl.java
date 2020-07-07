@@ -78,10 +78,11 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
                     (1000 * 60 * 60 * 24);
             if (dayDiff >= CLEAN_TIME_INTERVAL) {
                 resData.put("isNeedClean", true);
-                //更新isNeedClean字段
+                //更新isNeedClean和isReminded字段
                 Map<String, Object> modification = new HashMap<>();
                 modification.put("qrcode", selectedOne.getQrcode());
                 modification.put("isNeedClean", true);
+                modification.put("isReminded", false);
                 ResultData modifyRes = modify(modification);
                 if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     res.setResponseCode(ResponseCode.RESPONSE_ERROR);

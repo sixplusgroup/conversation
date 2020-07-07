@@ -27,6 +27,13 @@ public class MachineFilterClean extends Entity {
     private boolean cleanRemindStatus;
 
     /**
+     * 是否在微信公众号中发送了推送提醒，最初默认为false
+     * 每当isNeedClean属性由false变为true的时候，
+     * isReminded属性就需要被重新赋值为false
+     */
+    private boolean isReminded;
+
+    /**
      * 用户最近一次确认清洗的时间，最初默认为1970.01.01
      */
     private Date lastConfirmTime;
@@ -35,11 +42,12 @@ public class MachineFilterClean extends Entity {
         super();
     }
 
-    public MachineFilterClean(String qrcode, boolean isNeedClean,
-                              boolean cleanRemindStatus, Date lastConfirmTime) {
+    public MachineFilterClean(String qrcode, boolean isNeedClean, boolean cleanRemindStatus,
+                              boolean isReminded, Date lastConfirmTime) {
         this.qrcode = qrcode;
         this.isNeedClean = isNeedClean;
         this.cleanRemindStatus = cleanRemindStatus;
+        this.isReminded = isReminded;
         this.lastConfirmTime = lastConfirmTime;
     }
 
@@ -65,6 +73,14 @@ public class MachineFilterClean extends Entity {
 
     public void setCleanRemindStatus(boolean cleanRemindStatus) {
         this.cleanRemindStatus = cleanRemindStatus;
+    }
+
+    public boolean isReminded() {
+        return isReminded;
+    }
+
+    public void setReminded(boolean reminded) {
+        isReminded = reminded;
     }
 
     public Date getLastConfirmTime() {

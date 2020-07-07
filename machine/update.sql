@@ -378,6 +378,7 @@ CREATE TABLE `machine_filter_clean` (
     `qr_code`                 VARCHAR(255) NOT NULL,
     `is_need_clean`           BOOLEAN NOT NULL DEFAULT TRUE,
     `clean_remind_status`     BOOLEAN NOT NULL DEFAULT TRUE,
+    `is_reminded`             BOOLEAN NOT NULL DEFAULT FALSE,
     `last_confirm_time`       DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
     `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
     `create_time`             DATETIME NOT NULL DEFAULT NOW(),
