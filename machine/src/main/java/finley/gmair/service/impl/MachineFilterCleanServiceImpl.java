@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,6 +127,7 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
 
         MachineFilterClean newBindMachine = new MachineFilterClean();
         newBindMachine.setQrcode(qrcode);
+        newBindMachine.setLastConfirmTime(new Date());
         return machineFilterCleanDao.add(newBindMachine);
     }
 

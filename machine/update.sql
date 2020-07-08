@@ -376,10 +376,10 @@ VIEW `consumer_machine_bind_view` AS
 CREATE TABLE `machine_filter_clean` (
 
     `qr_code`                 VARCHAR(255) NOT NULL,
-    `is_need_clean`           BOOLEAN NOT NULL DEFAULT TRUE,
+    `is_need_clean`           BOOLEAN NOT NULL DEFAULT FALSE,
     `clean_remind_status`     BOOLEAN NOT NULL DEFAULT TRUE,
     `is_reminded`             BOOLEAN NOT NULL DEFAULT FALSE,
-    `last_confirm_time`       DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
+    `last_confirm_time`       DATETIME NOT NULL,
     `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
     `create_time`             DATETIME NOT NULL DEFAULT NOW(),
     PRIMARY KEY (`qr_code`)
@@ -388,4 +388,9 @@ CREATE TABLE `machine_filter_clean` (
     DEFAULT CHARSET = utf8;
 
 #2020-07-06
-insert into machine_filter_clean (`qr_code`) select distinct(`code_value`) from `code_machine_bind` where `block_flag`=0;
+insert into machine_filter_clean (`qr_code`, `last_confirm_time`)
+    select `code_value`, min(`create_time`) from `code_machine_bind` where `block_flag` = 0
+    group by `code_value`;
+update machine_filter_clean set `is_need_clean` = true where `block_flag` = 0
+    and `is_need_clean` = false
+    and (unix_timestamp() - unix_timestamp(`last_confirm_time`)) >= (30 * 24 * 60 * 60);

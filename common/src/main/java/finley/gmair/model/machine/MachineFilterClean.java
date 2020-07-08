@@ -17,7 +17,7 @@ public class MachineFilterClean extends Entity {
     private String qrcode;
 
     /**
-     * 设备是否需要清洗，最初默认为true
+     * 设备是否需要清洗，最初默认为false
      */
     private boolean isNeedClean;
 
@@ -34,7 +34,7 @@ public class MachineFilterClean extends Entity {
     private boolean isReminded;
 
     /**
-     * 用户最近一次确认清洗的时间，最初默认为1970.01.01
+     * 用户最近一次确认清洗的时间，初值为绑定时间
      */
     private Date lastConfirmTime;
 
