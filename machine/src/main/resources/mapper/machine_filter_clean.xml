@@ -38,6 +38,9 @@
             <if test="cleanRemindStatus != null">
                 clean_remind_status = #{cleanRemindStatus},
             </if>
+            <if test="isReminded != null">
+                is_reminded = #{isReminded},
+            </if>
             <if test="lastConfirmTime != null">
                 last_confirm_time = #{lastConfirmTime},
             </if>
