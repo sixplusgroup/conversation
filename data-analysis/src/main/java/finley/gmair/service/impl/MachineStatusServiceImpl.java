@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.*;
 import finley.gmair.datastructrue.LimitQueue;
@@ -100,6 +101,10 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             for (String machineId : map.keySet()) {
                 logger.info("[Processing] machine mac: " + machineId);
                 Object queue = map.get(machineId);
+                if (queue == null) {
+                    logger.info("current mac : " + machineId + " has no data, skip...");
+                    continue;
+                }
                 //若这个queue存了v1的status
                 if (((LimitQueue<Object>) queue).getLast() instanceof MachineStatus) {
                     LinkedList<MachineStatus> list = new LinkedList<>();
@@ -143,24 +148,28 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             return result;
         }
         //3.将统计结果插入到数据库
+        logger.info("size of data to be processed: " + statisticalDataList.size());
+
         try {
             List<JSONObject> dataList = statisticalDataList.stream().map(e -> JSONObject.parseObject(e.toString())).collect(Collectors.toList());
+            logger.info("data format: " + JSON.toJSONString(dataList.get(0)));
             List<IndoorPm25Hourly> pm25HourlyList = dataList.stream().map(e -> new IndoorPm25Hourly(e.getString("machineId"), e.getDouble("averagePm25"), e.getIntValue("maxPm25"), e.getIntValue("minPm25"))).collect(Collectors.toList());
-            List<VolumeHourly> volumeHourlyList = dataList.stream().map(e -> new VolumeHourly(e.getString("machineId"), e.getDouble("averageVolume"), e.getIntValue("maxVolume"), e.getIntValue("minVolume"))).collect(Collectors.toList());
-            List<TempHourly> tempHourlyList = dataList.stream().map(e -> new TempHourly(e.getString("machineId"), e.getDouble("averageTemp"), e.getIntValue("maxTemp"), e.getIntValue("minTemp"))).collect(Collectors.toList());
-            List<Co2Hourly> co2HourlyList = dataList.stream().filter(e -> e.getString("averageCo2") != null).map(e -> new Co2Hourly(e.getString("machineId"), e.getDouble("averageCo2"), e.getIntValue("maxCo2"), e.getIntValue("minCo2"))).collect(Collectors.toList());
-            List<HumidHourly> humidHourlyList = dataList.stream().map(e -> new HumidHourly(e.getString("machineId"), e.getDouble("averageHumid"), e.getIntValue("maxHumid"), e.getIntValue("minHumid"))).collect(Collectors.toList());
-            List<PowerHourly> powerHourlyList = dataList.stream().map(e -> new PowerHourly(e.getString("machineId"), e.getIntValue("powerOnMinute"), e.getIntValue("powerOffMinute"))).collect(Collectors.toList());
-            List<HeatHourly> heatHourlyList = dataList.stream().map(e -> new HeatHourly(e.getString("machineId"), e.getIntValue("heatOnMinute"), e.getIntValue("heatOffMinute"))).collect(Collectors.toList());
-            List<ModeHourly> modeHourlyList = dataList.stream().map(e -> new ModeHourly(e.getString("machineId"), e.getIntValue("autoMinute"), e.getIntValue("manualMinute"), e.getIntValue("sleepMinute"))).collect(Collectors.toList());
             indoorPm25HourlyDao.insertBatch(pm25HourlyList);
+            List<VolumeHourly> volumeHourlyList = dataList.stream().map(e -> new VolumeHourly(e.getString("machineId"), e.getDouble("averageVolume"), e.getIntValue("maxVolume"), e.getIntValue("minVolume"))).collect(Collectors.toList());
             volumeHourlyDao.insertBatch(volumeHourlyList);
+            List<TempHourly> tempHourlyList = dataList.stream().map(e -> new TempHourly(e.getString("machineId"), e.getDouble("averageTemp"), e.getIntValue("maxTemp"), e.getIntValue("minTemp"))).collect(Collectors.toList());
             tempHourlyDao.insertBatch(tempHourlyList);
+            List<Co2Hourly> co2HourlyList = dataList.stream().filter(e -> e.getInteger("averageCo2") != null).map(e -> new Co2Hourly(e.getString("machineId"), e.getDouble("averageCo2"), e.getIntValue("maxCo2"), e.getIntValue("minCo2"))).collect(Collectors.toList());
             co2HourlyDao.insertBatch(co2HourlyList);
+            List<HumidHourly> humidHourlyList = dataList.stream().map(e -> new HumidHourly(e.getString("machineId"), e.getDouble("averageHumid"), e.getIntValue("maxHumid"), e.getIntValue("minHumid"))).collect(Collectors.toList());
             humidHourlyDao.insertBatch(humidHourlyList);
+            List<PowerHourly> powerHourlyList = dataList.stream().map(e -> new PowerHourly(e.getString("machineId"), e.getIntValue("powerOnMinute"), e.getIntValue("powerOffMinute"))).collect(Collectors.toList());
             powerHourlyDao.insertBatch(powerHourlyList);
+            List<HeatHourly> heatHourlyList = dataList.stream().map(e -> new HeatHourly(e.getString("machineId"), e.getIntValue("heatOnMinute"), e.getIntValue("heatOffMinute"))).collect(Collectors.toList());
             heatHourlyDao.insertBatch(heatHourlyList);
+            List<ModeHourly> modeHourlyList = dataList.stream().map(e -> new ModeHourly(e.getString("machineId"), e.getIntValue("autoMinute"), e.getIntValue("manualMinute"), e.getIntValue("sleepMinute"))).collect(Collectors.toList());
             modeHourlyDao.insertBatch(modeHourlyList);
+            logger.info("all data stored successfully");
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("satistical data transfer and insert error");
@@ -246,53 +255,52 @@ public class MachineStatusServiceImpl implements MachineStatusService {
         String machineId = list.get(0).getUid();
         MachineStatusHourly msh = new MachineStatusHourly(machineId);
         int count = list.size();
-        Stream<MachineStatusV3> origin = list.stream();
         int powerOnCount = (int) list.stream().filter(e -> e.getPower() == 1).count();
         //统计运行模式下室内的PM2.5数值
         if (powerOnCount > 0) {
-            double avgPm2_5Indoor = origin.filter(e -> e.getPower() == 1).mapToDouble(MachineStatusV3::getPm2_5a).average().getAsDouble();
-            int minPm2_5Indoor = origin.mapToInt(MachineStatusV3::getPm2_5a).min().getAsInt();
-            int maxPm2_5Indoor = origin.mapToInt(MachineStatusV3::getPm2_5a).max().getAsInt();
+            double avgPm2_5Indoor = list.stream().filter(e -> e.getPower() == 1).mapToDouble(MachineStatusV3::getPm2_5a).average().getAsDouble();
+            int minPm2_5Indoor = list.stream().mapToInt(MachineStatusV3::getPm2_5a).min().getAsInt();
+            int maxPm2_5Indoor = list.stream().mapToInt(MachineStatusV3::getPm2_5a).max().getAsInt();
             msh.setPM2_5Indoor(avgPm2_5Indoor, minPm2_5Indoor, maxPm2_5Indoor);
         }
         //统计运行模式下滤网处的PM2.5数值
         if (powerOnCount > 0) {
-            double avgPm2_5Inner = origin.filter(e -> e.getPower() == 1).mapToDouble(MachineStatusV3::getPm2_5b).average().getAsDouble();
-            int minPm2_5Inner = origin.mapToInt(MachineStatusV3::getPm2_5b).min().getAsInt();
-            int maxPm2_5Inner = origin.mapToInt(MachineStatusV3::getPm2_5b).max().getAsInt();
+            double avgPm2_5Inner = list.stream().filter(e -> e.getPower() == 1).mapToDouble(MachineStatusV3::getPm2_5b).average().getAsDouble();
+            int minPm2_5Inner = list.stream().mapToInt(MachineStatusV3::getPm2_5b).min().getAsInt();
+            int maxPm2_5Inner = list.stream().mapToInt(MachineStatusV3::getPm2_5b).max().getAsInt();
             msh.setPM2_5Inner(avgPm2_5Inner, minPm2_5Inner, maxPm2_5Inner);
         }
         //统计温度数值
         if (count > 0) {
-            double avgTemp = origin.mapToDouble(MachineStatusV3::getTempIndoor).average().getAsDouble();
-            int minTemp = origin.mapToInt(MachineStatusV3::getTempIndoor).min().getAsInt();
-            int maxTemp = origin.mapToInt(MachineStatusV3::getTempIndoor).max().getAsInt();
+            double avgTemp = list.stream().mapToDouble(MachineStatusV3::getTempIndoor).average().getAsDouble();
+            int minTemp = list.stream().mapToInt(MachineStatusV3::getTempIndoor).min().getAsInt();
+            int maxTemp = list.stream().mapToInt(MachineStatusV3::getTempIndoor).max().getAsInt();
             msh.setTemp(avgTemp, minTemp, maxTemp);
         }
         //统计二氧化碳
         if (count > 0) {
-            double avgCo2 = origin.mapToDouble(MachineStatusV3::getCo2).average().getAsDouble();
-            int minCo2 = origin.mapToInt(MachineStatusV3::getCo2).min().getAsInt();
-            int maxCo2 = origin.mapToInt(MachineStatusV3::getCo2).max().getAsInt();
+            double avgCo2 = list.stream().mapToDouble(MachineStatusV3::getCo2).average().getAsDouble();
+            int minCo2 = list.stream().mapToInt(MachineStatusV3::getCo2).min().getAsInt();
+            int maxCo2 = list.stream().mapToInt(MachineStatusV3::getCo2).max().getAsInt();
             msh.setCo2(avgCo2, minCo2, maxCo2);
         }
         //统计开关机时间
         if (count > 0) {
-            int powerOnMinute = (int) origin.filter(e -> e.getPower() == 1).count() / packetCount41Minute;
-            int powerOffMinute = (int) origin.filter(e -> e.getPower() == 0).count() / packetCount41Minute;
+            int powerOnMinute = (int) list.stream().filter(e -> e.getPower() == 1).count() / packetCount41Minute;
+            int powerOffMinute = (int) list.stream().filter(e -> e.getPower() == 0).count() / packetCount41Minute;
             msh.setPower(powerOnMinute, powerOffMinute);
         }
         //统计运行模式
         if (powerOnCount > 0) {
-            int autoMinute = (int) origin.filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 0).count() / packetCount41Minute;
-            int sleepMinute = (int) origin.filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 1).count() / packetCount41Minute;
-            int manualMinute = (int) origin.filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 2).count() / packetCount41Minute;
+            int autoMinute = (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 0).count() / packetCount41Minute;
+            int sleepMinute = (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 1).count() / packetCount41Minute;
+            int manualMinute = (int) list.stream().filter(e -> e.getPower() == 1).filter(e -> e.getMode() == 2).count() / packetCount41Minute;
             msh.setMode(autoMinute, manualMinute, sleepMinute);
         }
         //统计辅热运行情况
         if (count > 0) {
-            int heatOffMinute = (int) origin.filter(e -> e.getHeat() == 0).count() / packetCount41Minute;
-            int heatOnMinute = (int) origin.filter(e -> e.getHeat() == 1).count() / packetCount41Minute;
+            int heatOffMinute = (int) list.stream().filter(e -> e.getHeat() == 0).count() / packetCount41Minute;
+            int heatOnMinute = (int) list.stream().filter(e -> e.getHeat() == 1).count() / packetCount41Minute;
             msh.setHeat(heatOnMinute, heatOffMinute);
         }
         return msh;
