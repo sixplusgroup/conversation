@@ -69,6 +69,24 @@ public class OAuth2ServerConfig {
                     .authorizedGrantTypes("password", "refresh_token")
                     .scopes("select")
                     .authorities("client")
+                    .secret("123456")
+                    .and()
+                    .withClient("client_3")
+                    .resourceIds()
+                    .authorizedGrantTypes("authorization_code", "refresh_token")
+                    .autoApprove(true)//用户自动同意授权
+                    .redirectUris("https://oauth-redirect.api.home.mi.com/r/2147479194")
+                    .scopes("select")
+                    .authorities("client")
+                    .secret("123456")
+                    .and()
+                    .withClient("client_4")
+                    .resourceIds()
+                    .authorizedGrantTypes("authorization_code", "refresh_token")
+                    .autoApprove(true)//用户自动同意授权
+                    .redirectUris("https://open.bot.tmall.com/oauth/callback")
+                    .scopes("select")
+                    .authorities("client")
                     .secret("123456");
         }
 

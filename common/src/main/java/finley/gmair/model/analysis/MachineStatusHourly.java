@@ -27,7 +27,7 @@ public class MachineStatusHourly extends Entity {
     private int maxSpeed;
 
     //设备一小时的温度
-    private double avgTemp;
+    private double averageTemp;
     private int minTemp;
     private int maxTemp;
 
@@ -37,7 +37,7 @@ public class MachineStatusHourly extends Entity {
     private int minHumid;
 
     //设备一小时的二氧化碳
-    private double avgCo2;
+    private double averageCo2;
     private int maxCo2;
     private int minCo2;
 
@@ -82,7 +82,7 @@ public class MachineStatusHourly extends Entity {
     }
 
     public void setTemp(double avg, int min, int max) {
-        this.avgTemp = avg;
+        this.averageTemp = avg;
         this.minTemp = min;
         this.maxTemp = max;
     }
@@ -94,7 +94,7 @@ public class MachineStatusHourly extends Entity {
     }
 
     public void setCo2(double avg, int min, int max) {
-        this.avgCo2 = avg;
+        this.averageCo2 = avg;
         this.minCo2 = min;
         this.maxCo2 = max;
     }
@@ -195,12 +195,12 @@ public class MachineStatusHourly extends Entity {
         this.maxSpeed = maxSpeed;
     }
 
-    public double getAvgTemp() {
-        return avgTemp;
+    public double getAverageTemp() {
+        return averageTemp;
     }
 
-    public void setAvgTemp(double avgTemp) {
-        this.avgTemp = avgTemp;
+    public void setAverageTemp(double averageTemp) {
+        this.averageTemp = averageTemp;
     }
 
     public int getMinTemp() {
@@ -243,12 +243,12 @@ public class MachineStatusHourly extends Entity {
         this.minHumid = minHumid;
     }
 
-    public double getAvgCo2() {
-        return avgCo2;
+    public double getAverageCo2() {
+        return averageCo2;
     }
 
-    public void setAvgCo2(double avgCo2) {
-        this.avgCo2 = avgCo2;
+    public void setAverageCo2(double averageCo2) {
+        this.averageCo2 = averageCo2;
     }
 
     public int getMaxCo2() {
