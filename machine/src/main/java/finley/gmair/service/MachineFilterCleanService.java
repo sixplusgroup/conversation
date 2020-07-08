@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.model.machine.MachineFilterClean;
 import finley.gmair.util.ResultData;
 
 import java.util.Map;

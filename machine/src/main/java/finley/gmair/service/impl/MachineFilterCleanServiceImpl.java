@@ -116,6 +116,14 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
             return res;
         }
 
+        //检测是否已存在此二维码
+        ResultData response = fetchByQRCode(qrcode);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("qrcode already exists");
+            return res;
+        }
+
         MachineFilterClean newBindMachine = new MachineFilterClean();
         newBindMachine.setQrcode(qrcode);
         return machineFilterCleanDao.add(newBindMachine);

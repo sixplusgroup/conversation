@@ -6,9 +6,13 @@ import finley.gmair.dao.PreBindDao;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.model.machine.PreBindCode;
+import finley.gmair.pool.MachinePool;
 import finley.gmair.service.ConsumerQRcodeBindService;
+import finley.gmair.service.MachineFilterCleanService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +24,17 @@ import java.util.Map;
 
 @Service
 public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService {
+
+    private Logger logger = LoggerFactory.getLogger(ConsumerQRcodeBindServiceImpl.class);
+
     @Autowired
     private ConsumerQRcodeBindDao consumerQRcodeBindDao;
 
     @Autowired
     private MachineQrcodeBindDao machineQrcodeBindDao;
 
+    @Autowired
+    private MachineFilterCleanService machineFilterCleanService;
 
     @Autowired PreBindDao preBindDao;
 
@@ -71,6 +80,15 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             machineQrcodeBind.setMachineId(preBindCode.getMachineId());
             machineQrcodeBindDao.insert(machineQrcodeBind);
         }
+
+        //update table: machine_filter_clean
+        MachinePool.getMachinePool().execute(() ->{
+            ResultData addRes = machineFilterCleanService.
+                                addNewBindMachine(consumerQRcodeBind.getCodeValue());
+            if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error(consumerQRcodeBind.getCodeValue() + ": update machine_filter_clean failed");
+            }
+        });
         return result;
     }
 
