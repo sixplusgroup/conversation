@@ -8,6 +8,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,11 +37,6 @@ public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterC
     }
 
     @Override
-    public ResultData queryAll() {
-        return null;
-    }
-
-    @Override
     public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
@@ -64,6 +60,36 @@ public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterC
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
             System.err.println(new StringBuffer(MachineFilterCleanDaoImpl.class.getName()).append(" - error - ").append(e.getMessage()).toString());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData queryNeedRemind() {
+        ResultData result = new ResultData();
+        try {
+            List<MachineFilterClean> machineFilterCleanList = sqlSession.selectList("gmair.machine.machine_filter_clean.query_need_clean");
+            if (StringUtils.isEmpty(machineFilterCleanList)) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(machineFilterCleanList);
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData updateDaily(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.machine.machine_filter_clean.update_daily", condition);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setData(condition);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
         }
         return result;
     }

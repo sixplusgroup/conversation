@@ -14,9 +14,12 @@ public interface MachineFilterCleanDao {
 
     ResultData query(Map<String, Object> condition);
 
-    ResultData queryAll();
-
     ResultData update(Map<String, Object> condition);
 
     ResultData add(MachineFilterClean machineFilterClean);
+
+    ResultData queryNeedRemind();
+
+    ResultData updateDaily(Map<String, Object> condition);
+
 }
