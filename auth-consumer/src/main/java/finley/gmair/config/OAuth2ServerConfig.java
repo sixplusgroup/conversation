@@ -1,7 +1,9 @@
 package finley.gmair.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +15,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 @Configuration
@@ -90,11 +94,29 @@ public class OAuth2ServerConfig {
                     .secret("123456");
         }
 
+
+        @Bean
+        @Primary
+        public DefaultTokenServices defaultTokenServices() {
+            DefaultTokenServices services = new DefaultTokenServices();
+            services.setSupportRefreshToken(true);
+            services.setAccessTokenValiditySeconds(60 * 60 * 48);//设置token的过期时间
+            services.setRefreshTokenValiditySeconds(60 * 60 * 48);
+            services.setTokenStore(tokenStore());
+            return services;
+        }
+
+        @Bean
+        public TokenStore tokenStore() {
+            return new InMemoryTokenStore();
+        }
+
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
             endpoints
-                    .tokenStore(new InMemoryTokenStore())
-                    .authenticationManager(authenticationManager);
+                    .tokenStore(tokenStore())
+                    .authenticationManager(authenticationManager)
+                    .tokenServices(defaultTokenServices());
         }
 
         @Override
