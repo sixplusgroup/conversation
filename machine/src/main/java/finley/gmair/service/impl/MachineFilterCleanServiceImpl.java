@@ -9,11 +9,12 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ import java.util.Map;
 @Service
 public class MachineFilterCleanServiceImpl implements MachineFilterCleanService {
 
-    private static final int CLEAN_TIME_INTERVAL = 30;
+    private Logger logger = LoggerFactory.getLogger(MachineFilterCleanServiceImpl.class);
 
     @Autowired
     private RestTemplate restTemplate;
@@ -44,8 +45,8 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     }
 
     @Override
-    public ResultData fetchAll() {
-        return machineFilterCleanDao.queryAll();
+    public ResultData fetchNeedRemind() {
+        return machineFilterCleanDao.queryNeedRemind();
     }
 
     @Override
@@ -70,35 +71,37 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     }
 
     @Override
-    public ResultData filterCleanCheck(MachineFilterClean selectedOne) {
+    public ResultData updateIsNeedClean(Map<String, Object> condition) {
+        return machineFilterCleanDao.updateIsNeedClean(condition);
+    }
+
+    @Override
+    public ResultData filterCleanCheck(String qrcode) {
         ResultData res = new ResultData();
         Map<String, Object> resData = new HashMap<>();
-        resData.put("qrcode", selectedOne.getQrcode());
 
-        if (selectedOne.isNeedClean()) {
-            resData.put("isNeedClean", selectedOne.isNeedClean());
+        //调用更新方法，更新isNeedClean字段
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("qrcode", qrcode);
+        ResultData response = updateIsNeedClean(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error(qrcode + ": update isNeedClean failed");
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("update isNeedClean failed");
+            return res;
         }
-        else {
-            long dayDiff = (new Date().getTime() - selectedOne.getLastConfirmTime().getTime()) /
-                    (1000 * 60 * 60 * 24);
-            if (dayDiff >= CLEAN_TIME_INTERVAL) {
-                resData.put("isNeedClean", true);
-                //更新isNeedClean和isReminded字段
-                Map<String, Object> modification = new HashMap<>();
-                modification.put("qrcode", selectedOne.getQrcode());
-                modification.put("isNeedClean", true);
-                modification.put("isReminded", false);
-                ResultData modifyRes = modify(modification);
-                if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                    res.setDescription("modify MachineFilterClean failed");
-                    return res;
-                }
-            }
-            else {
-                resData.put("isNeedClean", false);
-            }
+
+        //得到更新之后的结果
+        response = fetchByQRCode(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error(qrcode + ": fetch machineFilterClean failed");
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("fetch machineFilterClean failed");
+            return res;
         }
+        MachineFilterClean oneAfterUpdate = (MachineFilterClean) response.getData();
+        resData.put("qrcode", qrcode);
+        resData.put("isNeedClean", oneAfterUpdate.isNeedClean());
         res.setData(resData);
         return res;
     }

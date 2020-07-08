@@ -20,6 +20,6 @@ public interface MachineFilterCleanDao {
 
     ResultData queryNeedRemind();
 
-    ResultData updateDaily(Map<String, Object> condition);
+    ResultData updateIsNeedClean(Map<String, Object> condition);
 
 }

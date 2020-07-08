@@ -14,21 +14,23 @@ public interface MachineFilterCleanService {
 
     ResultData fetch(Map<String, Object> condition);
 
-    ResultData fetchAll();
+    ResultData fetchNeedRemind();
 
     ResultData fetchByQRCode(String qrcode);
 
     ResultData modify(Map<String, Object> condition);
+
+    ResultData updateIsNeedClean(Map<String, Object> condition);
 
     /**
      * 判断被选中的设备是否需要清洗
      * 判断逻辑：查询MachineFilterClean表中对应字段，若该字段中的isNeedClean属性为true，
      * 则直接判断为需要清洗；若为false，则将lastConfirmTime与请求时间做对比，若相差大于等于30天，
      * 则判断为需要清洗，否则判断为不需要清洗。
-     * @param selectedOne 被选中的设备的二维码
+     * @param qrcode 被选中的设备的二维码
      * @return 判断结果
      */
-    ResultData filterCleanCheck(MachineFilterClean selectedOne);
+    ResultData filterCleanCheck(String qrcode);
 
     /**
      * 新增绑定用户的时候调用此方法新增machine_filter_clean表数据

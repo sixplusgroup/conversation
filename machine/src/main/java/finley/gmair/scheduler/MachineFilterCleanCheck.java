@@ -33,42 +33,37 @@ public class MachineFilterCleanCheck {
      */
     @Scheduled(cron = "0 0 0 * * ?")
     public void dailyCheck() {
-        ResultData response = machineFilterCleanService.fetchAll();
+        //首先更新表中的isNeedClean字段
+        Map<String, Object> condition = new HashMap<>();
+        ResultData response = machineFilterCleanService.updateIsNeedClean(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error("machine_filter_clean daily update failed");
             return;
-        }
-        List<MachineFilterClean> store = (List<MachineFilterClean>) response.getData();
-        //首先更新所有数据的isNeedClean字段，
-        //isNeedClean为true时可以不更新
-        for (MachineFilterClean one : store) {
-            if (!one.isNeedClean()) {
-                ResultData checkRes = machineFilterCleanService.filterCleanCheck(one);
-                if (checkRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    logger.error("check machineFilterClean failed");
-                }
-            }
         }
 
         //得到更新之后的数据
-        response = machineFilterCleanService.fetchAll();
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return;
+        response = machineFilterCleanService.fetchNeedRemind();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            logger.info("no machine needs to be reminded");
         }
-        store = (List<MachineFilterClean>) response.getData();
-        for (MachineFilterClean one : store) {
-            //消息提醒开关处于打开状态 && 设备需要清洗 && 本周期内还未提醒
-            if (one.isCleanRemindStatus() && one.isNeedClean() && !one.isReminded()) {
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            logger.error("fetch machines that need to be reminded failed");
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<MachineFilterClean> store = (List<MachineFilterClean>) response.getData();
+            for (MachineFilterClean one : store) {
                 ResultData sendRes = machineFilterCleanService.sendWeChatMessage(one.getQrcode());
                 if (sendRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     logger.error("send weChat message failed");
                 }
-
-                Map<String, Object> modification = new HashMap<>();
-                modification.put("qrcode", one.getQrcode());
-                modification.put("isReminded", true);
-                ResultData modifyRes = machineFilterCleanService.modify(modification);
-                if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    logger.error("modify isReminded failed");
+                else {
+                    Map<String, Object> modification = new HashMap<>();
+                    modification.put("qrcode", one.getQrcode());
+                    modification.put("isReminded", true);
+                    ResultData modifyRes = machineFilterCleanService.modify(modification);
+                    if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error(one.getQrcode() + ": modify isReminded failed");
+                    }
                 }
             }
         }

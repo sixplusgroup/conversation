@@ -52,7 +52,7 @@
         WHERE qr_code = #{qrcode}
     </update>
 
-    <update id="update_daily" parameterType="java.util.Map">
+    <update id="update_is_need_clean" parameterType="java.util.Map">
         UPDATE gmair_machine.machine_filter_clean
         <set>
             is_need_clean = true,

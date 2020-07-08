@@ -81,10 +81,10 @@ public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterC
     }
 
     @Override
-    public ResultData updateDaily(Map<String, Object> condition) {
+    public ResultData updateIsNeedClean(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            sqlSession.update("gmair.machine.machine_filter_clean.update_daily", condition);
+            sqlSession.update("gmair.machine.machine_filter_clean.update_is_need_clean", condition);
         } catch (Exception e) {
             e.printStackTrace();
             result.setData(condition);

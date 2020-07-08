@@ -37,15 +37,14 @@ public class MachineFilterCleanController {
     public ResultData filterNeedCleanOrNot(@RequestParam String qrcode) {
         ResultData res = new ResultData();
 
-        ResultData response = machineFilterCleanService.fetchByQRCode(qrcode);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+        //检测参数
+        if (StringUtils.isEmpty(qrcode)) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("fetch machineFilterClean failed");
+            res.setDescription("qrcode cannot be empty");
             return res;
         }
 
-        MachineFilterClean selectedOne = (MachineFilterClean) response.getData();
-        res = machineFilterCleanService.filterCleanCheck(selectedOne);
+        res = machineFilterCleanService.filterCleanCheck(qrcode);
         return res;
     }
 
