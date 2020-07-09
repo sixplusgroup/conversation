@@ -1,11 +1,14 @@
 package finley.gmair.service.impl;
 
+import finley.gmair.controller.TmallGenieController;
 import finley.gmair.model.tmallGenie.*;
 import finley.gmair.service.TmallDiscoveryService;
 import finley.gmair.util.GoodsProperties;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.tmall.TmallDeviceTypeEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,8 @@ import java.util.*;
 
 @Service
 public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
+
+    private Logger logger = LoggerFactory.getLogger(TmallDiscoveryServiceImpl.class);
 
     static final String ACTION_SUFFIX = ".actions";
 
@@ -33,6 +38,8 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
             response.setPayload(new Payload(devices));
             return response;
         }
+
+        logger.info("begin trans...");
 
         List<LinkedHashMap<String, Object>> machineLists = (List<LinkedHashMap<String, Object>>) resultData.getData();
         for (LinkedHashMap<String, Object> machineInfo : machineLists) {
@@ -59,6 +66,7 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
                 deviceType = String.valueOf(TmallDeviceTypeEnum.fan);
             } else {
                 // 未知类型的设备
+                logger.info("unknown devices...");
                 continue;
             }
             device.setDeviceName(deviceName);
@@ -95,6 +103,8 @@ public class TmallDiscoveryServiceImpl implements TmallDiscoveryService {
             // extensions(可选)
 //            Extensions extensions = new Extensions("", "");
 //            device.setExtensions(extensions);
+
+            logger.info("device: " + device);
 
             devices.add(device);
         }

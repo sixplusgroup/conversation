@@ -2,8 +2,6 @@ package finley.gmair.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -24,12 +22,7 @@ public class GoodsProperties {
     }
 
     public static String getValue(String key) {
-        try {
-            return new String(props.getProperty(key).getBytes(StandardCharsets.ISO_8859_1), "gbk");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return props.getProperty(key);
     }
 
     public static boolean contains(String key, String goodsName) {

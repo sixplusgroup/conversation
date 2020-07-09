@@ -30,9 +30,6 @@ public class TmallGenieController {
     private TmallDiscoveryService tmallDiscoveryService;
 
     @Autowired
-    private MachineService machineService;
-
-    @Autowired
     private ReceptionService receptionService;
 
     /**

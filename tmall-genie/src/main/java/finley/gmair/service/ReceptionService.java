@@ -10,6 +10,6 @@ public interface ReceptionService {
 
     // 根据token获取设备列表
     @GetMapping("/reception/machine/list")
-    ResultData getDeviceListByToken(@RequestParam("accessToken") String accessToken);
+    ResultData getDeviceListByToken(@RequestParam("access_token") String accessToken);
 
 }
