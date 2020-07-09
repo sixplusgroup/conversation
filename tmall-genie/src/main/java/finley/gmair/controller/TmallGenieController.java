@@ -75,6 +75,9 @@ public class TmallGenieController {
                 logger.info("accessToken: " + accessToken);
 
                 ResultData resultData = receptionService.getDeviceListByToken(accessToken);
+
+                logger.info(String.valueOf(resultData));
+
                 // 根据结果做一些转换
                 response = tmallDiscoveryService.discovery(resultData, header);
 
