@@ -1,6 +1,5 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.controller.TmallGenieController;
 import finley.gmair.model.tmallGenie.*;
 import finley.gmair.service.TmallDiscoveryService;
 import finley.gmair.util.GoodsProperties;

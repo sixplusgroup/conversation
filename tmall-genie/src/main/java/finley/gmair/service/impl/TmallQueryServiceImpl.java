@@ -9,6 +9,8 @@ import finley.gmair.service.TmallQueryService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.tmall.TmallQueryEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ import java.util.List;
 
 @Service
 public class TmallQueryServiceImpl implements TmallQueryService {
+
+    private Logger logger = LoggerFactory.getLogger(TmallQueryServiceImpl.class);
 
     @Autowired
     private CommonServiceImpl commonServiceImpl;
@@ -35,6 +39,9 @@ public class TmallQueryServiceImpl implements TmallQueryService {
         LinkedHashMap<String, Object> runningInfo = (LinkedHashMap<String, Object>) runningStatus.getData();
         if (runningStatus.getResponseCode() == ResponseCode.RESPONSE_OK && runningInfo != null) {
             TmallQueryEnum queryEnum = TmallQueryEnum.valueOf(name);
+
+            logger.info("query type: " + queryEnum);
+
             switch (queryEnum) {
                 case Query:
                     // 就是设备发现的结果

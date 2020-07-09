@@ -10,6 +10,8 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.tmall.TmallControlEnum;
 import finley.gmair.util.tmall.TmallDeviceTypeEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TmallControlServiceImpl implements TmallControlService {
+
+    private Logger logger = LoggerFactory.getLogger(TmallControlServiceImpl.class);
 
     static final String DEVICE_NOT_SUPPORT_FUNCTION = "DEVICE_NOT_SUPPORT_FUNCTION";
 
@@ -47,6 +51,9 @@ public class TmallControlServiceImpl implements TmallControlService {
             String value = payload.getValue();
             // 对设备的控制操作
             TmallControlEnum controlOperation = TmallControlEnum.valueOf(header.getName());
+
+            logger.info("begin control: " + controlOperation);
+
             switch (controlOperation) {
                 case TurnOn:
                     resultData = operationStrategy.turnOn(deviceId);
@@ -77,6 +84,8 @@ public class TmallControlServiceImpl implements TmallControlService {
                     break;
             }
         }
+
+        logger.info("after control: " + resultData);
 
         // 返回结果封装
         AliGenieRe response = new AliGenieRe();
