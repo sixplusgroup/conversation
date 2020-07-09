@@ -152,8 +152,8 @@ public class MachineFilterCleanController {
     }
 
     /**
-     * 发送微信公众号二维码
-     * @return ResultData，若返回成功，则data字段中包含qrcode和createAt两个属性。
+     * 在微信公众号推送滤网清洗提醒消息
+     * @return ResultData.
      */
     @GetMapping("/sendWeChatMessage")
     public ResultData sendWeChatMessage(@RequestParam String qrcode) {
@@ -166,11 +166,10 @@ public class MachineFilterCleanController {
             return res;
         }
 
-        Date now = new Date();
         ResultData response = machineFilterCleanService.sendWeChatMessage(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("modify machineFilterClean failed");
+            res.setDescription("send weChat message failed");
             return res;
         }
 
