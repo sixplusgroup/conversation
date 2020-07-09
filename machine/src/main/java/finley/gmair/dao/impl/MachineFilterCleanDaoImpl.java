@@ -68,7 +68,7 @@ public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterC
     public ResultData queryNeedRemind() {
         ResultData result = new ResultData();
         try {
-            List<MachineFilterClean> machineFilterCleanList = sqlSession.selectList("gmair.machine.machine_filter_clean.query_need_clean");
+            List<MachineFilterClean> machineFilterCleanList = sqlSession.selectList("gmair.machine.machine_filter_clean.query_need_remind");
             if (StringUtils.isEmpty(machineFilterCleanList)) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }

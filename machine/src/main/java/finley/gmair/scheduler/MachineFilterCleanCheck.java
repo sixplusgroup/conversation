@@ -29,9 +29,9 @@ public class MachineFilterCleanCheck {
     private MachineFilterCleanService machineFilterCleanService;
 
     /**
-     * 每天零点查看并更新machine_filter_clean表
+     * 每天早上八点查看并更新machine_filter_clean表
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void dailyCheck() {
         //首先更新表中的isNeedClean字段
         Map<String, Object> condition = new HashMap<>();
@@ -41,7 +41,7 @@ public class MachineFilterCleanCheck {
             return;
         }
 
-        //得到更新之后的数据
+        //从更新之后的数据得到需要提醒的设备数据并发送消息提醒
         response = machineFilterCleanService.fetchNeedRemind();
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             logger.info("no machine needs to be reminded");
