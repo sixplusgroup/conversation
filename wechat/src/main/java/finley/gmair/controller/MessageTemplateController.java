@@ -236,17 +236,17 @@ public class MessageTemplateController {
      */
     @GetMapping(value = "/sendFilterCleanMessage")
     public ResultData sendFilterCleanMessage(String json, int type) throws IOException {
-//        ResultData re = accessTokenController.getToken(wechatAppId);
+        ResultData re = accessTokenController.getToken(wechatAppId);
 
         String TemplateMessage_Url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
 
-//        String token = ((AccessToken) re.getData()).getAccessToken();
+        String token = ((AccessToken) re.getData()).getAccessToken();
 
         //创建返回实体对象
         ResultData vo = new ResultData();
         //获得新的token
-//        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
-        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", wechatToken);
+        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
+//        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", wechatToken);
         //获取模板id
         ResultData res = getTemplate(type);
         String templateId = ((MessageTemplate) res.getData()).getTemplateId();
