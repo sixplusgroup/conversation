@@ -359,6 +359,31 @@ public class MachineController {
         return machineService.getRecord(qrcode);
     }
 
+    //确认用户滤网是否需要清洗
+    @GetMapping("/filter/clean")
+    public ResultData filterNeedCleanOrNot(String qrcode){
+        return machineService.getRecord(qrcode);
+    }
+
+    //查询用户滤网提醒功能是否开启
+    @GetMapping("/filter/clean/isOpen")
+    public ResultData filterCleanRemindIsOpen(String qrcode){
+        return machineService.filterCleanRemindIsOpen(qrcode);
+    }
+
+    //改变用户滤网提醒功能的状态
+    @PostMapping("/filter/clean/change")
+    public ResultData changeFilterCleanRemindStatus(String qrcode, boolean cleanRemindStatus){
+        return machineService.changeFilterCleanRemindStatus(qrcode,cleanRemindStatus);
+    }
+
+    //确认清洗滤网
+    @GetMapping("/filter/clean/confirm")
+    public ResultData confirmClean(String qrcode){
+        return machineService.confirmClean(qrcode);
+    }
+
+
     /**
      * @Description: TODO
      * city和pastlist参数未传
