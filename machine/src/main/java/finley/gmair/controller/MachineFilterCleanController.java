@@ -116,6 +116,22 @@ public class MachineFilterCleanController {
             return res;
         }
 
+        //在确认清洗之前再检查一下设备是否需要清洗，若不需要则不修改数据库
+        ResultData checkRes = machineFilterCleanService.filterCleanCheck(qrcode);
+        if (checkRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("check filter clean failed");
+            return res;
+        }
+        else {
+            boolean isNeedClean = (boolean) ((Map<String, Object>) checkRes.getData()).get("isNeedClean");
+            if (!isNeedClean) {
+                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                res.setDescription("The filter of this machine does not need to be cleaned.");
+                return res;
+            }
+        }
+
         //将isNeedClean字段修改为false，将lastConfirmTime字段修改为当前时间
         Map<String, Object> condition = new HashMap<>();
         Date now = new Date();
