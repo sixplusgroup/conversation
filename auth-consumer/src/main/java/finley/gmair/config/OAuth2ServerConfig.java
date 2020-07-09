@@ -1,7 +1,9 @@
 package finley.gmair.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +15,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 @Configuration
@@ -75,17 +79,44 @@ public class OAuth2ServerConfig {
                     .resourceIds()
                     .authorizedGrantTypes("authorization_code", "refresh_token")
                     .autoApprove(true)//用户自动同意授权
-                    .redirectUris("http://software.nju.edu.cn")
+                    .redirectUris("https://oauth-redirect.api.home.mi.com/r/2147479194")
+                    .scopes("select")
+                    .authorities("client")
+                    .secret("123456")
+                    .and()
+                    .withClient("client_4")
+                    .resourceIds()
+                    .authorizedGrantTypes("authorization_code", "refresh_token")
+                    .autoApprove(true)//用户自动同意授权
+                    .redirectUris("https://open.bot.tmall.com/oauth/callback")
                     .scopes("select")
                     .authorities("client")
                     .secret("123456");
         }
 
+
+        @Bean
+        @Primary
+        public DefaultTokenServices defaultTokenServices() {
+            DefaultTokenServices services = new DefaultTokenServices();
+            services.setSupportRefreshToken(true);
+            services.setAccessTokenValiditySeconds(60 * 60 * 48);//设置token的过期时间
+            services.setRefreshTokenValiditySeconds(60 * 60 * 48);
+            services.setTokenStore(tokenStore());
+            return services;
+        }
+
+        @Bean
+        public TokenStore tokenStore() {
+            return new InMemoryTokenStore();
+        }
+
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
             endpoints
-                    .tokenStore(new InMemoryTokenStore())
-                    .authenticationManager(authenticationManager);
+                    .tokenStore(tokenStore())
+                    .authenticationManager(authenticationManager)
+                    .tokenServices(defaultTokenServices());
         }
 
         @Override

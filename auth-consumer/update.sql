@@ -29,4 +29,4 @@ VIEW `gmair_userinfo`.`view_consumer_info` AS
         (
         (`gmair_userinfo`.`consumer_info` `ci` LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ci`.`consumer_id` = `cp`.`consumer_id`)))
         LEFT JOIN `gmair_userinfo`.`consumer_addr` `ca` ON ((`ci`.`consumer_id` = `ca`.`consumer_id` AND  `ca`.`addr_preferred` = 1)))
-	)
+	);

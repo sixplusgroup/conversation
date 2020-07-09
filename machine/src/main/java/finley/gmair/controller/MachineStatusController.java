@@ -219,7 +219,6 @@ public class MachineStatusController {
         }
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
-
         //通过Calendar获取今日零点零分零秒的毫秒数
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);

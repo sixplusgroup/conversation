@@ -1,12 +1,10 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.openplatform.CorpProfile;
-import finley.gmair.service.CorpMachineSubsService;
-import finley.gmair.service.CorpProfileService;
-import finley.gmair.service.MachineSummaryService;
-import finley.gmair.service.DataAnalysisService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,18 +24,17 @@ import java.util.Map;
 @RequestMapping("/openplatform/summary")
 public class SummaryController {
 
-    @Resource
-    MachineSummaryService machineSummaryService;
+    @Autowired
+    private MachineService machineService;
 
-    @Resource
+    @Autowired
     private CorpProfileService corpProfileService;
 
-    @Resource
+    @Autowired
     private CorpMachineSubsService corpMachineSubsService;
 
-    @Resource
+    @Autowired
     private DataAnalysisService dataAnalysisService;
-
 
     @GetMapping("/pm2_5")
     public ResultData pm25QueryDaily(String appid, String qrcode) {
@@ -47,7 +44,7 @@ public class SummaryController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
-        return machineSummaryService.getDailyPM25(qrcode);
+        return machineService.getDailyPM25(qrcode);
     }
 
     @GetMapping("/power/hourly")

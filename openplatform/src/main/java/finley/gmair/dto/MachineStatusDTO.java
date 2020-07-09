@@ -1,4 +1,4 @@
-package finley.gmair.entity;
+package finley.gmair.dto;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class MachineStatusDTO {
     String msg;
-    JSONObject data;
+    Object data;
 
     public MachineStatusDTO(String msg, JSONObject data) {
         this.msg = msg;
@@ -20,7 +20,7 @@ public class MachineStatusDTO {
         return msg;
     }
 
-    public JSONObject getData() {
+    public Object getData() {
         return data;
     }
 }

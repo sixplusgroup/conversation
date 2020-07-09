@@ -71,7 +71,7 @@ message_type int(3),
 message_content longtext,
 block_flag tinyint(1),
 create_time datetime
-)
+);
 
 #====================================
 #2020.04.15
