@@ -5,19 +5,14 @@ import finley.gmair.model.tmallGenie.Header;
 import finley.gmair.model.tmallGenie.Payload;
 import finley.gmair.service.*;
 import finley.gmair.util.ResultData;
-
 import finley.gmair.util.tmall.TmallNameSpaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/tmallgenie")
@@ -41,9 +36,9 @@ public class TmallGenieController {
     private ReceptionService receptionService;
 
     /**
-     * @see <a href="https://www.yuque.com/qw5nze/ga14hc/rftwyo">AliGenie智能家居接入协议</a>
      * @param request 请求体
      * @return 返回结果
+     * @see <a href="https://www.yuque.com/qw5nze/ga14hc/rftwyo">AliGenie智能家居接入协议</a>
      */
     @PostMapping(value = "/voice/control")
     public AliGenieRe voiceControl(@RequestBody AliGenieRe request) {
@@ -83,7 +78,7 @@ public class TmallGenieController {
                 // 根据结果做一些转换
                 response = tmallDiscoveryService.discovery(resultData, header);
 
-                if(response == null) {
+                if (response == null) {
                     logger.info("can not find any device");
                 }
 
