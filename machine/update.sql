@@ -1,3 +1,4 @@
+USE `gmair_machine` ;
 ## create machine power setting view
 CREATE VIEW `gmair_machine`.`power_setting_view`
   AS
@@ -194,7 +195,7 @@ CREATE TABLE `out_pm2_5_daily` (
   PRIMARY KEY (`record_id`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
+  DEFAULT CHARSET = utf8;
 
 CREATE TABLE `filter_limit_config` (
   `over_count_limit` INT(11) NOT NULL,
@@ -202,7 +203,7 @@ CREATE TABLE `filter_limit_config` (
   PRIMARY KEY (`over_count_limit`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
+  DEFAULT CHARSET = utf8;
 
 CREATE TABLE `gmair_machine`.`filter_light` (
   `machine_id`   VARCHAR(20) NOT NULL,
@@ -244,7 +245,7 @@ CREATE TABLE `machine_daily_power` (
   PRIMARY KEY (`status_id`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
+  DEFAULT CHARSET = utf8;
 
 #2018-01-14
 CREATE TABLE `machine_list_daily` (
@@ -261,7 +262,7 @@ CREATE TABLE `machine_list_daily` (
   PRIMARY KEY (`consumer_id`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
+  DEFAULT CHARSET = utf8;
 
 #2018-01-14
 CREATE
@@ -285,7 +286,7 @@ VIEW `gmair_machine`.`machine_list_view` AS
       LEFT JOIN `gmair_userinfo`.`consumer_phone` `cp` ON ((`ccb`.`consumer_id` = `cp`.`consumer_id`)))
   WHERE
     ((`ccb`.`ownership` = 0)
-     AND (`ccb`.`block_flag` = 0))
+     AND (`ccb`.`block_flag` = 0));
 
 #2018-01-15
 CREATE
@@ -313,7 +314,7 @@ VIEW `gmair_machine`.`machine_list_second_view` AS
   WHERE
     ((`ccb`.`ownership` = 0)
      AND (`ccb`.`block_flag` = 0)
-     AND ((TO_DAYS(CURDATE()) - TO_DAYS(`opd`.`create_time`)) < 1))
+     AND ((TO_DAYS(CURDATE()) - TO_DAYS(`opd`.`create_time`)) < 1));
 
 #2019-11-04
 ALTER TABLE `gmair_machine`.`filter_limit_config`
@@ -344,7 +345,7 @@ CREATE OR REPLACE VIEW `goods_model_view` AS
     `gm`.`model_snapshot`   AS `snapshot`
   FROM
     (`goods_model` `gm`
-      LEFT JOIN `goods` `g` ON ((`gm`.`goods_id` = `g`.`goods_id`)))
+      LEFT JOIN `goods` `g` ON ((`gm`.`goods_id` = `g`.`goods_id`)));
 
 #2019-12-31
 CREATE
@@ -369,4 +370,27 @@ VIEW `consumer_machine_bind_view` AS
     WHERE
         ((`gmair_machine`.`consumer_code_bind`.`block_flag` = 0)
             AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_info`.`consumer_id`)
-            AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_phone`.`consumer_id`))
+            AND (`gmair_machine`.`consumer_code_bind`.`consumer_id` = `gmair_userinfo`.`consumer_phone`.`consumer_id`));
+
+#2020-07-04
+CREATE TABLE `machine_filter_clean` (
+
+    `qr_code`                 VARCHAR(255) NOT NULL,
+    `is_need_clean`           BOOLEAN NOT NULL DEFAULT FALSE,
+    `clean_remind_status`     BOOLEAN NOT NULL DEFAULT TRUE,
+    `is_reminded`             BOOLEAN NOT NULL DEFAULT FALSE,
+    `last_confirm_time`       DATETIME NOT NULL,
+    `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
+    `create_time`             DATETIME NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (`qr_code`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
+
+#2020-07-06
+insert into machine_filter_clean (`qr_code`, `last_confirm_time`)
+    select `code_value`, min(`create_time`) from `code_machine_bind` where `block_flag` = 0
+    group by `code_value`;
+update machine_filter_clean set `is_need_clean` = true where `block_flag` = 0
+    and `is_need_clean` = false
+    and (unix_timestamp() - unix_timestamp(`last_confirm_time`)) >= (30 * 24 * 60 * 60);
