@@ -9,15 +9,16 @@ import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.pool.MachinePool;
 import finley.gmair.service.ConsumerQRcodeBindService;
 import finley.gmair.service.MachineFilterCleanService;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.transform.Result;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,8 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
     private Logger logger = LoggerFactory.getLogger(ConsumerQRcodeBindServiceImpl.class);
 
+    private static final String SELECTED_MACHINE_TYPE_ID = "GUO20180607ggxi8a96";
+
     @Autowired
     private ConsumerQRcodeBindDao consumerQRcodeBindDao;
 
@@ -35,6 +38,9 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
     @Autowired
     private MachineFilterCleanService machineFilterCleanService;
+
+    @Autowired
+    private QRCodeService qrCodeService;
 
     @Autowired PreBindDao preBindDao;
 
@@ -83,10 +89,20 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
         //update table: machine_filter_clean
         MachinePool.getMachinePool().execute(() ->{
-            ResultData addRes = machineFilterCleanService.
-                                addNewBindMachine(consumerQRcodeBind.getCodeValue());
-            if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                logger.error(consumerQRcodeBind.getCodeValue() + ": update machine_filter_clean failed");
+            String newBindQRCode = consumerQRcodeBind.getCodeValue();
+            ResultData checkMachineType = qrCodeService.profile(newBindQRCode);
+            if (checkMachineType.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error(newBindQRCode + "check machine type failed");
+            }
+            else {
+                GoodsModelDetailVo vo = (GoodsModelDetailVo) checkMachineType.getData();
+                if (SELECTED_MACHINE_TYPE_ID.equals(vo.getGoodsId())) {
+                    ResultData addRes = machineFilterCleanService.
+                                        addNewBindMachine(newBindQRCode);
+                    if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error(newBindQRCode + ": update machine_filter_clean failed");
+                    }
+                }
             }
         });
         return result;
