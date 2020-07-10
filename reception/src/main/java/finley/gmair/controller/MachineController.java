@@ -362,7 +362,7 @@ public class MachineController {
     //确认用户滤网是否需要清洗
     @GetMapping("/filter/clean")
     public ResultData filterNeedCleanOrNot(String qrcode){
-        return machineService.getRecord(qrcode);
+        return machineService.filterNeedCleanOrNot(qrcode);
     }
 
     //查询用户滤网提醒功能是否开启
