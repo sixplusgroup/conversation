@@ -392,14 +392,11 @@ insert into machine_filter_clean (`qr_code`, `last_confirm_time`)
     select `code_value`, min(`create_time`) from `code_machine_bind` where `block_flag` = 0
     group by `code_value`;
 
-delete from mc where qr_code in
-(select * from machine_filter_clean mc,qrcode qr,goods_model gm
-where mc.qr_code=qr.code_value and qr.model_id=gm.model_id and gm.goods_id <> 'GUO20180607ggxi8a96');
+delete from machine_filter_clean where qr_code in
+    (select qr_code from
+        (select mc.qr_code from machine_filter_clean mc,qrcode qr,goods_model gm
+        where mc.qr_code=qr.code_value and qr.model_id=gm.model_id and gm.goods_id <> 'GUO20180607ggxi8a96') temp);
 
 update machine_filter_clean set `is_need_clean` = true where `block_flag` = 0
     and `is_need_clean` = false
     and (unix_timestamp() - unix_timestamp(`last_confirm_time`)) >= (30 * 24 * 60 * 60);
-delete from machine_filter_clean where qr_code in 
-    (select qr_code from
-        (select mc.qr_code from machine_filter_clean mc,qrcode qr,goods_model gm
-        where mc.qr_code=qr.code_value and qr.model_id=gm.model_id and gm.goods_id <> 'GUO20180607ggxi8a96') temp);
