@@ -137,6 +137,7 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
 
         MachineFilterClean newBindMachine = new MachineFilterClean();
         newBindMachine.setQrcode(qrcode);
+        newBindMachine.setCleanRemindStatus(true);
         newBindMachine.setLastConfirmTime(new Date());
         return machineFilterCleanDao.add(newBindMachine);
     }
