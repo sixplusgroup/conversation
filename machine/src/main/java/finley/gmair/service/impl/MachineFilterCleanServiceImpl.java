@@ -118,6 +118,48 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     }
 
     @Override
+    public ResultData filterCleanDailyCheck() {
+        ResultData res = new ResultData();
+        //首先更新表中的isNeedClean字段
+        Map<String, Object> condition = new HashMap<>();
+        ResultData response = updateIsNeedClean(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error("machine_filter_clean daily update failed");
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("machine_filter_clean daily update failed");
+            return res;
+        }
+
+        //从更新之后的数据得到需要提醒的设备数据并发送消息提醒
+        response = fetchNeedRemind();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            logger.info("no machine needs to be reminded");
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            logger.error("fetch machines that need to be reminded failed");
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<MachineFilterClean> store = (List<MachineFilterClean>) response.getData();
+            for (MachineFilterClean one : store) {
+                ResultData sendRes = sendWeChatMessage(one.getQrcode());
+                if (sendRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("send weChat message failed");
+                }
+                else {
+                    Map<String, Object> modification = new HashMap<>();
+                    modification.put("qrcode", one.getQrcode());
+                    modification.put("isReminded", true);
+                    ResultData modifyRes = modify(modification);
+                    if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error(one.getQrcode() + ": modify isReminded failed");
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
     public ResultData addNewBindMachine(String qrcode) {
         ResultData res = new ResultData();
 

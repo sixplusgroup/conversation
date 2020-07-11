@@ -25,6 +25,11 @@ public class MachineFilterCleanController {
     @Autowired
     private MachineFilterCleanService machineFilterCleanService;
 
+    @PostMapping("/check/daily")
+    public ResultData filterCleanDailyCheck() {
+        return machineFilterCleanService.filterCleanDailyCheck();
+    }
+
     /**
      * 查询设备初效滤网是否需要清洗
      * 判断逻辑：详见MachineFilterCleanService.filterCleanCheck方法

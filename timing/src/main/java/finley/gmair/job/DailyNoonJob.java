@@ -42,5 +42,9 @@ public class DailyNoonJob implements Job {
         }));
 
         TimingPool.getTimingExecutor().execute(() -> driftFeignService.orderReturnMessage());
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            machineFeignService.filterCleanDailyCheck();
+        }));
     }
 }

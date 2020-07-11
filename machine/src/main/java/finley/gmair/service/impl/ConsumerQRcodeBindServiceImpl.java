@@ -85,26 +85,26 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             machineQrcodeBind.setCodeValue(preBindCode.getCodeValue());
             machineQrcodeBind.setMachineId(preBindCode.getMachineId());
             machineQrcodeBindDao.insert(machineQrcodeBind);
-        }
 
-        //update table: machine_filter_clean
-        MachinePool.getMachinePool().execute(() ->{
-            String newBindQRCode = consumerQRcodeBind.getCodeValue();
-            ResultData checkMachineType = qrCodeService.profile(newBindQRCode);
-            if (checkMachineType.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                logger.error(newBindQRCode + "check machine type failed");
-            }
-            else {
-                GoodsModelDetailVo vo = (GoodsModelDetailVo) checkMachineType.getData();
-                if (SELECTED_MACHINE_TYPE_ID.equals(vo.getGoodsId())) {
-                    ResultData addRes = machineFilterCleanService.
-                                        addNewBindMachine(newBindQRCode);
-                    if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                        logger.error(newBindQRCode + ": update machine_filter_clean failed");
+            //update table: machine_filter_clean
+            MachinePool.getMachinePool().execute(() ->{
+                String newBindQRCode = consumerQRcodeBind.getCodeValue();
+                ResultData checkMachineType = qrCodeService.profile(newBindQRCode);
+                if (checkMachineType.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error(newBindQRCode + "check machine type failed");
+                }
+                else {
+                    GoodsModelDetailVo vo = (GoodsModelDetailVo) checkMachineType.getData();
+                    if (SELECTED_MACHINE_TYPE_ID.equals(vo.getGoodsId())) {
+                        ResultData addRes = machineFilterCleanService.
+                                            addNewBindMachine(newBindQRCode);
+                        if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                            logger.error(newBindQRCode + ": update machine_filter_clean failed");
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
         return result;
     }
 
