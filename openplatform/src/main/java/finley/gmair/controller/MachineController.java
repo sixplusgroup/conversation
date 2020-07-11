@@ -7,7 +7,9 @@ import finley.gmair.dto.MachineStatusDTO;
 import finley.gmair.dto.QrCodeParamDTO;
 import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.model.openplatform.MachineSubscription;
-import finley.gmair.service.*;
+import finley.gmair.service.CorpMachineSubsService;
+import finley.gmair.service.CorpProfileService;
+import finley.gmair.service.MachineNotifyService;
 import finley.gmair.service.rpc.AirQualityService;
 import finley.gmair.service.rpc.MachineService;
 import finley.gmair.util.ResponseCode;
@@ -288,11 +290,6 @@ public class MachineController {
         List<Object> machineStatusList = new ArrayList<>();
         for (String qrcode : qrcode_list) {
             MachineStatusDTO machineStatusDTO = getMachineStatusByAppIdAndQrCode(appid, qrcode);
-            if (machineStatusDTO.getData() == null) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription(machineStatusDTO.getMsg());
-                return result;
-            }
             machineStatusList.add(machineStatusDTO.getData());
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -319,7 +316,7 @@ public class MachineController {
         //获取设备状态信息
         ResultData response = machineService.indoor(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return new MachineStatusDTO("获取设备状态信息失败", null);
+            return new MachineStatusDTO(response.getDescription(), null);
         }
         //根据qrcode获取model_id
         ResultData r = machineService.getModel(qrcode);

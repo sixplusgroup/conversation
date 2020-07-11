@@ -17,47 +17,31 @@ public interface SummaryService {
      */
     ApiResult getDailyPM25(String appId, String qrCode);
 
-    //---------------------------运行时长查询-----------------------------//
+    /**
+     * 获取设备每天的状态（单机）
+     *
+     * @param statusType 具体指标（风量、运行时长等）
+     */
+    ApiResult getHourly(String appId, String qrCode, String statusType);
 
     /**
-     * 获取设备每天的运行时长（单机查询）
+     * 获取设备每天的状态（批量）
+     *
+     * @param statusType 具体指标（风量、运行时长等）
      */
-    ApiResult getHourlyPower(String appId, String qrCode);
+    ApiResult getHourly(QrCodeParamDTO qrCodeParamDTO, String statusType);
 
     /**
-     * 获取设备每天的运行时长（批量查询）
+     * 获取设备每周的状态（单机）
+     *
+     * @param statusType 具体指标（风量、运行时长等）
      */
-    ApiResult getHourlyPower(QrCodeParamDTO qrCodeParamDTO);
+    ApiResult getDaily(String appId, String qrCode, String statusType);
 
     /**
-     * 获取设备每周的运行时长（单机查询）
+     * 获取设备每周的状态（批量）
+     *
+     * @param statusType 具体指标（风量、运行时长等）
      */
-    ApiResult getDailyPower(String appId, String qrCode);
-
-    /**
-     * 获取设备每周的运行时长（批量查询）
-     */
-    ApiResult getDailyPower(QrCodeParamDTO qrCodeParamDTO);
-
-    //---------------------------风量查询-----------------------------//
-
-    /**
-     * 获取设备每天的风量（单机查询）
-     */
-    ApiResult getHourlyVolume(String appId, String qrCode);
-
-    /**
-     * 获取设备每天的风量（批量查询）
-     */
-    ApiResult getHourlyVolume(QrCodeParamDTO qrCodeParamDTO);
-
-    /**
-     * 获取设备每周的风量（单机查询）
-     */
-    ApiResult getDailyVolume(String appId, String qrCode);
-
-    /**
-     * 获取设备每周的风量（批量查询）
-     */
-    ApiResult getDailyVolume(QrCodeParamDTO qrCodeParamDTO);
+    ApiResult getDaily(QrCodeParamDTO qrCodeParamDTO, String statusType);
 }

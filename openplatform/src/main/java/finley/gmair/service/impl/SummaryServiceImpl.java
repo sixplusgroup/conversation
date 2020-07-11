@@ -3,7 +3,7 @@ package finley.gmair.service.impl;
 import finley.gmair.dto.QrCodeParamDTO;
 import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.pojo.ApiResult;
-import finley.gmair.pojo.BizException;
+import finley.gmair.pojo.CheckResult;
 import finley.gmair.pojo.ErrorCode;
 import finley.gmair.service.CorpMachineSubsService;
 import finley.gmair.service.CorpProfileService;
@@ -13,6 +13,7 @@ import finley.gmair.service.rpc.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.ResultUtil;
+import finley.gmair.vo.MachineStatusVO;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -43,128 +44,120 @@ public class SummaryServiceImpl implements SummaryService {
 
     @Override
     public ApiResult getDailyPM25(String appId, String qrCode) {
-        checkAvailable(appId, qrCode);
+        CheckResult checkResult = checkAvailable(appId, qrCode);
+        if (checkResult.getErrorCode() != ErrorCode.SUCCESS) {
+            return ResultUtil.error(checkResult.getErrorCode());
+        }
         ResultData rpcData = machineService.getDailyPM25(qrCode);
         return ResultUtil.success(rpcData.getDescription(), rpcData.getData());
     }
 
     @Override
-    public ApiResult getHourlyPower(String appId, String qrCode) {
-        checkAvailable(appId, qrCode);
-        ResultData rpcData = dataAnalysisService.fetchHourly(qrCode, 24, "power");
+    public ApiResult getHourly(String appId, String qrCode, String statusType) {
+        ResultData rpcData = queryOne(appId, qrCode, true, statusType);
         return ResultUtil.success(rpcData.getDescription(), rpcData.getData());
     }
 
     @Override
-    public ApiResult getHourlyPower(QrCodeParamDTO qrCodeParamDTO) {
+    public ApiResult getHourly(QrCodeParamDTO qrCodeParamDTO, String statusType) {
+
         String appId = qrCodeParamDTO.getAppid();
         List<String> qrCodeList = qrCodeParamDTO.getQrCodeList();
 
-        List<Object> hourlyPowerList = new ArrayList<>();
+        List<MachineStatusVO> hourlyList = new ArrayList<>();
         for (String qrCode : qrCodeList) {
-            checkAvailable(appId, qrCode);
-            ResultData rpcData = dataAnalysisService.fetchHourly(qrCode, 24, "power");
-            hourlyPowerList.add(rpcData.getData());
+            CheckResult checkResult = checkAvailable(appId, qrCode);
+
+            MachineStatusVO machineStatusVO = new MachineStatusVO();
+            machineStatusVO.setQrCode(qrCode);
+            if (checkResult.getErrorCode() != ErrorCode.SUCCESS) {
+                machineStatusVO.setMsg(checkResult.getErrorCode().getMsg());
+            } else {
+                ResultData rpcData = dataAnalysisService.fetchHourly(qrCode, 24, statusType);
+                machineStatusVO.setData(rpcData.getData());
+            }
+            hourlyList.add(machineStatusVO);
         }
-        return ResultUtil.success("批量查询成功", hourlyPowerList);
+        return ResultUtil.success("批量查询成功", hourlyList);
     }
 
     @Override
-    public ApiResult getDailyPower(String appId, String qrCode) {
-        checkAvailable(appId, qrCode);
-        ResultData rpcData = dataAnalysisService.fetchDaily(qrCode, 7, "power");
+    public ApiResult getDaily(String appId, String qrCode, String statusType) {
+        ResultData rpcData = queryOne(appId, qrCode, false, statusType);
         return ResultUtil.success(rpcData.getDescription(), rpcData.getData());
     }
 
     @Override
-    public ApiResult getDailyPower(QrCodeParamDTO qrCodeParamDTO) {
+    public ApiResult getDaily(QrCodeParamDTO qrCodeParamDTO, String statusType) {
+
         String appId = qrCodeParamDTO.getAppid();
         List<String> qrCodeList = qrCodeParamDTO.getQrCodeList();
 
-        List<Object> dailyPowerList = new ArrayList<>();
+        List<MachineStatusVO> dailyList = new ArrayList<>();
         for (String qrCode : qrCodeList) {
-            checkAvailable(appId, qrCode);
-            ResultData rpcData = dataAnalysisService.fetchDaily(qrCode, 7, "power");
-            dailyPowerList.add(rpcData.getData());
+
+            CheckResult checkResult = checkAvailable(appId, qrCode);
+
+            MachineStatusVO machineStatusVO = new MachineStatusVO();
+            machineStatusVO.setQrCode(qrCode);
+            if (checkResult.getErrorCode() != ErrorCode.SUCCESS) {
+                machineStatusVO.setMsg(checkResult.getErrorCode().getMsg());
+            } else {
+                ResultData rpcData = dataAnalysisService.fetchDaily(qrCode, 7, statusType);
+                machineStatusVO.setData(rpcData.getData());
+            }
+            dailyList.add(machineStatusVO);
         }
-        return ResultUtil.success("批量查询成功", dailyPowerList);
+        return ResultUtil.success("批量查询成功", dailyList);
     }
 
-    @Override
-    public ApiResult getHourlyVolume(String appId, String qrCode) {
-        checkAvailable(appId, qrCode);
-        ResultData rpcData = dataAnalysisService.fetchHourly(qrCode, 24, "volume");
-        return ResultUtil.success(rpcData.getDescription(), rpcData.getData());
-    }
+    /**
+     * 单机查询
+     *
+     * @param hourlyOrDaily 查一天还是查一周
+     * @param statusType    查询指标
+     */
+    private ResultData queryOne(String appId, String qrCode, boolean hourlyOrDaily, String statusType) {
+        CheckResult checkResult = checkAvailable(appId, qrCode);
 
-    @Override
-    public ApiResult getHourlyVolume(QrCodeParamDTO qrCodeParamDTO) {
-        String appId = qrCodeParamDTO.getAppid();
-        List<String> qrCodeList = qrCodeParamDTO.getQrCodeList();
-
-        List<Object> hourlyVolumeList = new ArrayList<>();
-        for (String qrCode : qrCodeList) {
-            checkAvailable(appId, qrCode);
-            ResultData rpcData = dataAnalysisService.fetchHourly(qrCode, 24, "volume");
-            hourlyVolumeList.add(rpcData.getData());
+        ResultData rpcData = new ResultData();
+        if (checkResult.getErrorCode() != ErrorCode.SUCCESS) {
+            rpcData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            rpcData.setDescription(checkResult.getErrorCode().getMsg());
         }
-        return ResultUtil.success("批量查询成功", hourlyVolumeList);
-    }
-
-    @Override
-    public ApiResult getDailyVolume(String appId, String qrCode) {
-        checkAvailable(appId, qrCode);
-        ResultData rpcData = dataAnalysisService.fetchDaily(qrCode, 7, "volume");
-        return ResultUtil.success(rpcData.getDescription(), rpcData.getData());
-    }
-
-    @Override
-    public ApiResult getDailyVolume(QrCodeParamDTO qrCodeParamDTO) {
-        String appId = qrCodeParamDTO.getAppid();
-        List<String> qrCodeList = qrCodeParamDTO.getQrCodeList();
-
-        List<Object> dailyVolumeList = new ArrayList<>();
-        for (String qrCode : qrCodeList) {
-            checkAvailable(appId, qrCode);
-            ResultData rpcData = dataAnalysisService.fetchDaily(qrCode, 7, "volume");
-            dailyVolumeList.add(rpcData.getData());
+        if (hourlyOrDaily) {
+            rpcData = dataAnalysisService.fetchHourly(qrCode, 24, statusType);
+        } else {
+            rpcData = dataAnalysisService.fetchDaily(qrCode, 7, statusType);
         }
-        return ResultUtil.success("批量查询成功", dailyVolumeList);
+        return rpcData;
     }
 
     /**
      * 检查appid和qrcode是否可用
      */
-    private void checkAvailable(String appid, String qrcode) {
+    private CheckResult checkAvailable(String appid, String qrcode) {
 
         //check empty
         if (StringUtils.isEmpty(appid)) {
-            throw new BizException(ErrorCode.APP_ID_IS_NULL);
+            return new CheckResult(ErrorCode.APP_ID_IS_NULL);
         }
 
         if (StringUtils.isEmpty(qrcode)) {
-            throw new BizException(ErrorCode.QR_CODE_IS_NULL);
+            return new CheckResult(ErrorCode.QR_CODE_IS_NULL);
         }
 
         //检查appid和qrcode是否存在订阅关系
-        prerequisities(appid, qrcode);
-    }
-
-    /**
-     * 判断appid和qrcode是否存在订阅关系
-     */
-    private void prerequisities(String appid, String qrcode) {
-        ResultData result = new ResultData();
         //判断appid是否合法
         Map<String, Object> condition = new HashMap<>();
         condition.put("appid", appid);
         condition.put("blockFlag", false);
         ResultData response = corpProfileService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            throw new BizException(ErrorCode.APP_ID_NOT_AVAILABLE);
+            return new CheckResult(ErrorCode.APP_ID_NOT_AVAILABLE);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            throw new BizException(ErrorCode.APP_ID_IS_NULL);
+            return new CheckResult(ErrorCode.APP_ID_IS_NULL);
         }
         CorpProfile corpProfile = ((List<CorpProfile>) response.getData()).get(0);
         String corpId = corpProfile.getProfileId();
@@ -175,10 +168,12 @@ public class SummaryServiceImpl implements SummaryService {
         con.put("blockFlag", false);
         response = corpMachineSubsService.fetch(con);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            throw new BizException(ErrorCode.QR_CODE_SUBSCRIBE_FAILED);
+            return new CheckResult(ErrorCode.QR_CODE_SUBSCRIBE_FAILED);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            throw new BizException(ErrorCode.QR_CODE_NOT_SUBSCRIBE);
+            return new CheckResult(ErrorCode.QR_CODE_NOT_SUBSCRIBE);
         }
+
+        return new CheckResult(ErrorCode.SUCCESS);
     }
 }

@@ -25,42 +25,42 @@ public class SummaryController {
 
     @GetMapping("/power/hourly")
     public ApiResult powerQueryHourly(String appid, String qrcode) {
-        return summaryService.getHourlyPower(appid, qrcode);
+        return summaryService.getHourly(appid, qrcode, "power");
     }
 
     @PostMapping("/power/hourly")
     public ApiResult powerQueryListHourly(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
-        return summaryService.getHourlyPower(qrCodeParamDTO);
+        return summaryService.getHourly(qrCodeParamDTO, "power");
     }
 
     @GetMapping("/power/daily")
     public ApiResult powerQueryDaily(String appid, String qrcode) {
-        return summaryService.getDailyPower(appid, qrcode);
+        return summaryService.getDaily(appid, qrcode, "power");
     }
 
     @PostMapping("/power/daily")
     public ApiResult powerQueryDaily(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
-        return summaryService.getDailyPower(qrCodeParamDTO);
+        return summaryService.getDaily(qrCodeParamDTO, "power");
     }
 
     @GetMapping("/wind/hourly")
     public ApiResult windQueryHourly(String appid, String qrcode) {
-        return summaryService.getHourlyVolume(appid, qrcode);
+        return summaryService.getHourly(appid, qrcode, "volume");
     }
 
     @PostMapping("/wind/hourly")
     public ApiResult windQueryHourly(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
-        return summaryService.getDailyVolume(qrCodeParamDTO);
+        return summaryService.getHourly(qrCodeParamDTO, "volume");
     }
 
     @GetMapping("/wind/daily")
     public ApiResult windQueryDaily(String appid, String qrcode) {
-        return summaryService.getDailyVolume(appid, qrcode);
+        return summaryService.getDaily(appid, qrcode, "volume");
     }
 
     @PostMapping("/wind/daily")
     public ApiResult windQueryDaily(@RequestBody QrCodeParamDTO qrCodeParamDTO) {
-        return summaryService.getDailyVolume(qrCodeParamDTO);
+        return summaryService.getDaily(qrCodeParamDTO, "volume");
     }
 
 }
