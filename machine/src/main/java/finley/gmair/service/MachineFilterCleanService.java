@@ -32,7 +32,7 @@ public interface MachineFilterCleanService {
     ResultData filterCleanCheck(String qrcode);
 
     /**
-     * 每天早上八点查看并更新machine_filter_clean表
+     * 每天中午十二点查看并更新machine_filter_clean表
      * 向需要提醒进行滤网清洗的用户微信推送提醒
      * @return 执行结果
      */

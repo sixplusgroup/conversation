@@ -8,14 +8,12 @@ import finley.gmair.model.machine.MachineFilterClean;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.consumer.ConsumerVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;

@@ -1,10 +1,13 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.machine.MachineFilterClean;
+import finley.gmair.pool.MachinePool;
 import finley.gmair.service.MachineFilterCleanService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +25,21 @@ import java.util.Map;
 @RequestMapping("/machine/filter/clean")
 public class MachineFilterCleanController {
 
+    private Logger logger = LoggerFactory.getLogger(MachineFilterCleanController.class);
+
     @Autowired
     private MachineFilterCleanService machineFilterCleanService;
 
     @PostMapping("/check/daily")
     public ResultData filterCleanDailyCheck() {
-        return machineFilterCleanService.filterCleanDailyCheck();
+        //avoid exception: read timed out at Timing service side.
+        MachinePool.getMachinePool().execute(() -> {
+            ResultData res = machineFilterCleanService.filterCleanDailyCheck();
+            if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("daily check: filter clean. failed!");
+            }
+        });
+        return new ResultData();
     }
 
     /**
