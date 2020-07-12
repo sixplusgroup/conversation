@@ -210,10 +210,15 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
         String locationName="";
         if(location.getResponseCode()==ResponseCode.RESPONSE_OK) {
             MachineDefaultLocation machineDefaultLocation = ((List<MachineDefaultLocation>) location.getData()).get(0);
-            ResultData resultConsumer = locationService.idProfile(machineDefaultLocation.getCityId());
-            if(resultConsumer.getResponseCode()==ResponseCode.RESPONSE_OK) {
-                Map<String,String> resultMap = (Map<String,String>)resultConsumer.getData();
-                locationName = resultMap.get("name");
+            if ("null".equals(machineDefaultLocation.getCityId())){
+                locationName = "地址暂未绑定";
+            }
+            else {
+                ResultData resultConsumer = locationService.idProfile(machineDefaultLocation.getCityId());
+                if (resultConsumer.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    Map<String, String> resultMap = (Map<String, String>) resultConsumer.getData();
+                    locationName = resultMap.get("name");
+                }
             }
         }
 
@@ -223,7 +228,8 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
             Map<String,Object> consumerVo = (Map<String,Object>)resultConsumer.getData();
 
             //未绑定微信
-            if ((resultConsumer.getResponseCode()!=ResponseCode.RESPONSE_OK)||(StringUtils.isEmpty((String)consumerVo.get("wechat")))){
+            if ((resultConsumer.getResponseCode()!=ResponseCode.RESPONSE_OK)||(StringUtils.isEmpty((String)consumerVo.get("wechat")))||
+                    ("null".equals(consumerVo.get("wechat")))){
                 continue;
             }
 
