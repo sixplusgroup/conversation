@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import feign.FeignException;
 import finley.gmair.dao.MachineFilterCleanDao;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.MachineDefaultLocation;
@@ -214,48 +215,58 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
                 locationName = "地址暂未绑定";
             }
             else {
-                ResultData resultConsumer = locationService.idProfile(machineDefaultLocation.getCityId());
-                if (resultConsumer.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    Map<String, String> resultMap = (Map<String, String>) resultConsumer.getData();
-                    locationName = resultMap.get("name");
+                try {
+                    ResultData resultConsumer = locationService.idProfile(machineDefaultLocation.getCityId());
+                    if (resultConsumer.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        Map<String, String> resultMap = (Map<String, String>) resultConsumer.getData();
+                        locationName = resultMap.get("name");
+                    }
+                } catch (Exception ex) {
+                    logger.error("得到地址错误");
+                    locationName = "地址暂无";
                 }
             }
         }
 
         for (ConsumerQRcodeBind consumerQRcodeBind:consumerQRcodeBindList){
             String name = qrcode+"("+consumerQRcodeBind.getBindName()+")";
-            ResultData resultConsumer = authConsumerService.profile(consumerQRcodeBind.getConsumerId());
-            Map<String,Object> consumerVo = (Map<String,Object>)resultConsumer.getData();
+            try {
+                ResultData resultConsumer = authConsumerService.profile(consumerQRcodeBind.getConsumerId());
+                Map<String,Object> consumerVo = (Map<String,Object>)resultConsumer.getData();
 
-            //未绑定微信
-            if ((resultConsumer.getResponseCode()!=ResponseCode.RESPONSE_OK)||(StringUtils.isEmpty((String)consumerVo.get("wechat")))||
-                    ("null".equals(consumerVo.get("wechat")))){
+                //未绑定微信
+                if ((resultConsumer.getResponseCode()!=ResponseCode.RESPONSE_OK)||(StringUtils.isEmpty((String)consumerVo.get("wechat")))||
+                        ("null".equals(consumerVo.get("wechat")))){
+                    continue;
+                }
+
+                //构造json
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("touser", (String)consumerVo.get("wechat"));   // openid
+
+                JSONObject data = new JSONObject();
+                JSONObject keyword1 = new JSONObject();
+                keyword1.put("value", name);
+                keyword1.put("color", "#173177");
+                JSONObject keyword2 = new JSONObject();
+                keyword2.put("value", locationName);
+                keyword2.put("color", "#173177");
+                JSONObject keyword3 = new JSONObject();
+                keyword3.put("value", "初效(金属)滤网待清洁");
+                keyword3.put("color", "#173177");
+
+                data.put("keyword1",keyword1);
+                data.put("keyword2",keyword2);
+                data.put("keyword3",keyword3);
+
+                jsonObject.put("data", data);
+                String jsonString = jsonObject.toJSONString();
+
+                ResultData resultWeChat = weChatService.sendFilterCleanMessage(jsonString,2);
+            } catch (Exception ex) {
+                logger.error("得到用户或发送消息错误");
                 continue;
             }
-
-            //构造json
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("touser", (String)consumerVo.get("wechat"));   // openid
-
-            JSONObject data = new JSONObject();
-            JSONObject keyword1 = new JSONObject();
-            keyword1.put("value", name);
-            keyword1.put("color", "#173177");
-            JSONObject keyword2 = new JSONObject();
-            keyword2.put("value", locationName);
-            keyword2.put("color", "#173177");
-            JSONObject keyword3 = new JSONObject();
-            keyword3.put("value", "初效(金属)滤网待清洁");
-            keyword3.put("color", "#173177");
-
-            data.put("keyword1",keyword1);
-            data.put("keyword2",keyword2);
-            data.put("keyword3",keyword3);
-
-            jsonObject.put("data", data);
-            String jsonString = jsonObject.toJSONString();
-
-            ResultData resultWeChat = weChatService.sendFilterCleanMessage(jsonString,2);
         }
         return res;
     }
