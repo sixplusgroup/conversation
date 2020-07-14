@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
@@ -45,6 +46,9 @@ public class MachinePartialStatusController {
 
     @Autowired
     private OutPm25HourlyService outPm25HourlyService;
+
+    @Autowired
+    private PreBindService preBindService;
 
     private Map<String, Integer> pm25Over25Count = new HashMap<>();
 
@@ -184,11 +188,13 @@ public class MachinePartialStatusController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("请确认二维码是否正确");
-            return result;
+
+        // 检查machineId是否已获取到
+        response = preBindService.checkMachineId(response,result,qrcode);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            return response;
         }
+
         MachineQrcodeBindVo bind = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
         String machineId = bind.getMachineId();
         condition.clear();
