@@ -66,7 +66,7 @@ public class MachineOnOffController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machine_id是否获取成功
-        response = preBindService.checkMachineId(response, result, qrcode);
+        response = preBindService.checkMachineId(response, qrcode);
         if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
             return response;
         }
@@ -169,7 +169,7 @@ public class MachineOnOffController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machine_id是否获取成功
-        response = preBindService.checkMachineId(response, result, qrcode);
+        response = preBindService.checkMachineId(response, qrcode);
         if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
             return response;
         }

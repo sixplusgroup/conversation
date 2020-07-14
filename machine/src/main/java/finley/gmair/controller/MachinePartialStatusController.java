@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import com.netflix.discovery.converters.Auto;
 import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
@@ -190,8 +189,8 @@ public class MachinePartialStatusController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machineId是否已获取到
-        response = preBindService.checkMachineId(response,result,qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 

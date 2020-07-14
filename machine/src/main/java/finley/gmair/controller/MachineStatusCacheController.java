@@ -2,7 +2,6 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.datastructrue.LimitQueue;
-import finley.gmair.service.BoardVersionService;
 import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.service.PreBindService;
 import finley.gmair.service.QRCodeService;
@@ -53,8 +52,8 @@ public class MachineStatusCacheController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machineId是否已获取，如果没有则进行相应的处理
-        response = preBindService.checkMachineId(response, result, qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 
@@ -110,8 +109,8 @@ public class MachineStatusCacheController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machineId是否已获取，如果没有则进行相应的处理
-        response = preBindService.checkMachineId(response, result, qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 
@@ -134,8 +133,8 @@ public class MachineStatusCacheController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machineId是否已获取，如果没有则进行相应的处理
-        response = preBindService.checkMachineId(response, result, qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 

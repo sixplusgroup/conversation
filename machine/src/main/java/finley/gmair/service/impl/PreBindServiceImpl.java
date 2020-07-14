@@ -5,10 +5,13 @@ import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.service.PreBindService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,12 +92,12 @@ public class PreBindServiceImpl implements PreBindService {
      * 在code_machine_bind中根据qrcode（codeValue）查询不到machine_id的处理方法
      *
      * @param response machineQrcodeBindService.fetch()查询返回的结果
-     * @param result   用于返回的结果
      * @param qrcode   即code_value
      * @return 如果在pre_bind表中查询到记录就直接返回记录，如归找不到则返回失败result
      */
     @Override
-    public ResultData checkMachineId(ResultData response, ResultData result, String qrcode) {
+    public ResultData checkMachineId(ResultData response, String qrcode) {
+        ResultData result = new ResultData();
         ResponseCode responseCode = response.getResponseCode();
         if (responseCode == ResponseCode.RESPONSE_OK) {
             // 如果code_machine_bind中有记录，则直接返回
@@ -105,11 +108,20 @@ public class PreBindServiceImpl implements PreBindService {
             Map<String, Object> condition = new HashMap<>();
             condition.put("codeValue", qrcode);
             condition.put("blockFlag", false);
-            ResultData response2 = fetch(condition);
-            if (response2.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                response2.setDescription("根据二维码获取machineId成功");
-                return response2;
-            } else if (response2.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            response = fetch(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                result.setDescription("根据二维码获取machineId成功");
+                List<PreBindCode> list = (List<PreBindCode>) response.getData();
+                PreBindCode code = list.get(0);
+                MachineQrcodeBindVo bind = new MachineQrcodeBindVo();
+                bind.setBindId(code.getBindId());
+                bind.setCodeValue(code.getCodeValue());
+                bind.setMachineId(code.getMachineId());
+                List<MachineQrcodeBindVo> vos = new ArrayList<>();
+                vos.add(bind);
+                result.setData(vos);
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("未能查询到二维码对应的设备信息");
                 return result;

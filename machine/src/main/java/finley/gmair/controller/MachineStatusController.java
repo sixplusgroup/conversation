@@ -92,7 +92,7 @@ public class MachineStatusController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machineId是否已获取，如果没有则进行相应的处理
-        response = preBindService.checkMachineId(response, result, qrcode);
+        response = preBindService.checkMachineId(response, qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
@@ -145,7 +145,7 @@ public class MachineStatusController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machineId是否已获取，如果没有则进行相应的处理
-        response = preBindService.checkMachineId(response, result, qrcode);
+        response = preBindService.checkMachineId(response, qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
@@ -208,7 +208,7 @@ public class MachineStatusController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machineId是否已获取，如果没有则进行相应的处理
-        response = preBindService.checkMachineId(response, result, qrcode);
+        response = preBindService.checkMachineId(response, qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }

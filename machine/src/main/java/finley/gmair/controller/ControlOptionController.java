@@ -1,11 +1,10 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSON;
-import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.form.machine.ControlOptionForm;
-import finley.gmair.model.machine.*;
-import finley.gmair.model.machine.v1.MachineStatus;
-import finley.gmair.model.machine.v3.MachineStatusV3;
+import finley.gmair.model.machine.BoardVersion;
+import finley.gmair.model.machine.ControlOption;
+import finley.gmair.model.machine.ControlOptionAction;
+import finley.gmair.model.machine.ModelVolume;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.MachineConstant;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Condition;
 
 /**
  * @author shenghaohu@hshvip.com
@@ -176,8 +174,8 @@ public class ControlOptionController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machineId是否已获取，如果没有则进行相应的处理
-        response = preBindService.checkMachineId(response, result, qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 
@@ -404,8 +402,8 @@ public class ControlOptionController {
         condition.put("blockFlag", false);
         response = machineQrcodeBindService.fetch(condition);
         // 检查machineId是否已经获取到
-        response = preBindService.checkMachineId(response, result, qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 
@@ -472,8 +470,8 @@ public class ControlOptionController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machine_id是否获取到
-        response = preBindService.checkMachineId(response,result,qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 
@@ -515,8 +513,8 @@ public class ControlOptionController {
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
         // 检查machine_id是否获取到
-        response = preBindService.checkMachineId(response,result,qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 
@@ -559,8 +557,8 @@ public class ControlOptionController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machine_id是否获取到
-        response = preBindService.checkMachineId(response,result,qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 
@@ -606,8 +604,8 @@ public class ControlOptionController {
         ResultData response = machineQrcodeBindService.fetch(condition);
 
         // 检查machine_id是否获取到
-        response = preBindService.checkMachineId(response,result,qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
 
