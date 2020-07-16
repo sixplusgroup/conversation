@@ -109,16 +109,17 @@ public class MachineController {
     @PostMapping("/deviceinit")
     public ResultData deviceInit(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+            logService.createUserMachineOperationLog(consumerId, qrcode, "bind", new StringBuffer("User:").append(consumerId).append(" bind device with name ").append(deviceName).toString(), IPUtil.getIP(request), "bind");
+        }));
+        ResultData res = machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
         //调用天猫精灵服务的接口
         Map<String, Object> store = (HashMap<String, Object>)
                 SecurityContextHolder.getContext().getAuthentication().getDetails();
         String accessToken = (String) store.get("access_token");
         tmallGenieService.updateListNotify(accessToken);
 
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserMachineOperationLog(consumerId, qrcode, "bind", new StringBuffer("User:").append(consumerId).append(" bind device with name ").append(deviceName).toString(), IPUtil.getIP(request), "bind");
-        }));
-        return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
+        return res;
     }
 
     /**
@@ -207,18 +208,19 @@ public class MachineController {
     @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
     public ResultData unbindConsumerWithQRcode(String qrcode, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        logger.info("Consumer ID: " + consumerId);
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+            logService.createUserMachineOperationLog(consumerId, qrcode, "unbind",
+                    new StringBuffer("User:").append(consumerId).append(" unbind device with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "unbind");
+        }));
+        ResultData res = machineService.unbindConsumerWithQRcode(consumerId, qrcode);
         //调用天猫精灵服务的接口
         Map<String, Object> store = (HashMap<String, Object>)
                 SecurityContextHolder.getContext().getAuthentication().getDetails();
         String accessToken = (String) store.get("access_token");
         tmallGenieService.updateListNotify(accessToken);
 
-        logger.info("Consumer ID: " + consumerId);
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserMachineOperationLog(consumerId, qrcode, "unbind",
-                    new StringBuffer("User:").append(consumerId).append(" unbind device with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "unbind");
-        }));
-        return machineService.unbindConsumerWithQRcode(consumerId, qrcode);
+        return res;
     }
 
     /**
@@ -232,16 +234,18 @@ public class MachineController {
     @PostMapping("/device/bind/share")
     public ResultData acquireControlOn(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
+            logService.createUserMachineOperationLog(consumerId, qrcode, "shareBind", new StringBuffer("User:").append(consumerId).append(" share device binding with ").append(deviceName).toString(), IPUtil.getIP(request), "share");
+        }));
+        ResultData res = machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.SHARE.getValue());
         //调用天猫精灵服务的接口
         Map<String, Object> store = (HashMap<String, Object>)
                 SecurityContextHolder.getContext().getAuthentication().getDetails();
         String accessToken = (String) store.get("access_token");
         tmallGenieService.updateListNotify(accessToken);
 
-        ReceptionPool.getLogExecutor().execute(new Thread(() -> {
-            logService.createUserMachineOperationLog(consumerId, qrcode, "shareBind", new StringBuffer("User:").append(consumerId).append(" share device binding with ").append(deviceName).toString(), IPUtil.getIP(request), "share");
-        }));
-        return machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.SHARE.getValue());
+        return res;
     }
 
     /**
