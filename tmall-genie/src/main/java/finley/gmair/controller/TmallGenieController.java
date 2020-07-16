@@ -106,8 +106,9 @@ public class TmallGenieController {
     @PostMapping("/list/update")
     ResultData updateListNotify(@RequestParam String accessToken) {
         ResultData result = new ResultData();
+        String authorizationToken = tmallUpdateService.getAuthorizationToken(accessToken);
         try {
-            result = tmallUpdateService.updateListNotify(accessToken);
+            result = tmallUpdateService.updateListNotify(authorizationToken);
         } catch (IOException e) {
             logger.info("updateListNotify, Exception:", e);
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
