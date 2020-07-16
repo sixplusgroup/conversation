@@ -1,20 +1,16 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.tmallGenie.AliGenieRe;
 import finley.gmair.model.tmallGenie.Header;
 import finley.gmair.model.tmallGenie.Payload;
 import finley.gmair.service.*;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.tmall.TmallNameSpaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -103,19 +99,20 @@ public class TmallGenieController {
     /**
      * 设备列表更新通知
      * https://open.taobao.com/api.htm?docId=42961&docType=2&scopeId=16015
+     *
+     * @param accessToken
+     * @return
      */
     @PostMapping("/list/update")
-    void updateListNotify() {
-        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(SecurityContextHolder.getContext().getAuthentication().getDetails());
-        logger.info("consumerId:{}", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        logger.info("details:{}", jsonObject.toJSONString());
-        String accessToken = jsonObject.getString("access_token");
-        logger.info("accessToken:{}", accessToken);
+    ResultData updateListNotify(@RequestParam String accessToken) {
+        ResultData result = new ResultData();
         try {
-            tmallUpdateService.updateListNotify(accessToken);
+            result = tmallUpdateService.updateListNotify(accessToken);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info("updateListNotify, Exception:", e);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
         }
+        return result;
     }
-
 }
