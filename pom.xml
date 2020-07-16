@@ -53,6 +53,7 @@
         <module>verify</module>
         <module>fancore</module>
         <module>mqtt-logger</module>
+        <module>tmall-genie</module>
     </modules>
 
     <parent>
