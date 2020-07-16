@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.tmallGenie.AliGenieRe;
 import finley.gmair.model.tmallGenie.Header;
 import finley.gmair.model.tmallGenie.Payload;
@@ -9,10 +10,13 @@ import finley.gmair.util.tmall.TmallNameSpaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/tmallgenie")
@@ -28,6 +32,9 @@ public class TmallGenieController {
 
     @Autowired
     private TmallDiscoveryService tmallDiscoveryService;
+
+    @Autowired
+    private TmallUpdateService tmallUpdateService;
 
     @Autowired
     private ReceptionService receptionService;
@@ -91,6 +98,24 @@ public class TmallGenieController {
         logger.info(String.valueOf(response));
 
         return response;
+    }
+
+    /**
+     * 设备列表更新通知
+     * https://open.taobao.com/api.htm?docId=42961&docType=2&scopeId=16015
+     */
+    @PostMapping("/list/update")
+    void updateListNotify() {
+        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(SecurityContextHolder.getContext().getAuthentication().getDetails());
+        logger.info("consumerId:{}", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        logger.info("details:{}", jsonObject.toJSONString());
+        String accessToken = jsonObject.getString("access_token");
+        logger.info("accessToken:{}", accessToken);
+        try {
+            tmallUpdateService.updateListNotify(accessToken);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
