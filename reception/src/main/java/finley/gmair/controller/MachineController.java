@@ -24,7 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -51,6 +53,9 @@ public class MachineController {
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private TmallGenieService tmallGenieService;
 
     @Value("${image_share_path}")
     private String path;
@@ -104,6 +109,12 @@ public class MachineController {
     @PostMapping("/deviceinit")
     public ResultData deviceInit(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //调用天猫精灵服务的接口
+        Map<String, Object> store = (HashMap<String, Object>)
+                SecurityContextHolder.getContext().getAuthentication().getDetails();
+        String accessToken = (String) store.get("access_token");
+        tmallGenieService.updateListNotify(accessToken);
+
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
             logService.createUserMachineOperationLog(consumerId, qrcode, "bind", new StringBuffer("User:").append(consumerId).append(" bind device with name ").append(deviceName).toString(), IPUtil.getIP(request), "bind");
         }));
@@ -196,6 +207,12 @@ public class MachineController {
     @RequestMapping(value = "/consumer/qrcode/unbind", method = RequestMethod.POST)
     public ResultData unbindConsumerWithQRcode(String qrcode, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //调用天猫精灵服务的接口
+        Map<String, Object> store = (HashMap<String, Object>)
+                SecurityContextHolder.getContext().getAuthentication().getDetails();
+        String accessToken = (String) store.get("access_token");
+        tmallGenieService.updateListNotify(accessToken);
+
         logger.info("Consumer ID: " + consumerId);
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
             logService.createUserMachineOperationLog(consumerId, qrcode, "unbind",
@@ -215,6 +232,12 @@ public class MachineController {
     @PostMapping("/device/bind/share")
     public ResultData acquireControlOn(String qrcode, String deviceName, HttpServletRequest request) {
         String consumerId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //调用天猫精灵服务的接口
+        Map<String, Object> store = (HashMap<String, Object>)
+                SecurityContextHolder.getContext().getAuthentication().getDetails();
+        String accessToken = (String) store.get("access_token");
+        tmallGenieService.updateListNotify(accessToken);
+
         ReceptionPool.getLogExecutor().execute(new Thread(() -> {
             logService.createUserMachineOperationLog(consumerId, qrcode, "shareBind", new StringBuffer("User:").append(consumerId).append(" share device binding with ").append(deviceName).toString(), IPUtil.getIP(request), "share");
         }));
