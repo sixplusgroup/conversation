@@ -4,15 +4,15 @@ import finley.gmair.model.tmallGenie.AliGenieRe;
 import finley.gmair.model.tmallGenie.Header;
 import finley.gmair.model.tmallGenie.Payload;
 import finley.gmair.service.*;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.tmall.TmallNameSpaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/tmallgenie")
@@ -28,6 +28,9 @@ public class TmallGenieController {
 
     @Autowired
     private TmallDiscoveryService tmallDiscoveryService;
+
+    @Autowired
+    private TmallUpdateService tmallUpdateService;
 
     @Autowired
     private ReceptionService receptionService;
@@ -93,4 +96,23 @@ public class TmallGenieController {
         return response;
     }
 
+    /**
+     * 设备列表更新通知
+     * https://open.taobao.com/api.htm?docId=42961&docType=2&scopeId=16015
+     *
+     * @param accessToken
+     * @return
+     */
+    @PostMapping("/list/update")
+    ResultData updateListNotify(@RequestParam String accessToken) {
+        ResultData result = new ResultData();
+        try {
+            result = tmallUpdateService.updateListNotify(accessToken);
+        } catch (IOException e) {
+            logger.info("updateListNotify, Exception:", e);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
 }

@@ -24,6 +24,7 @@ public class TmallGenieSecurityConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/tmallgenie/voice/control").permitAll()
+                .antMatchers("/tmallgenie/list/update").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
