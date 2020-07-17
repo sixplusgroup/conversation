@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,9 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -114,11 +113,10 @@ public class MachineController {
         }));
         ResultData res = machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
         //调用天猫精灵服务的接口
-        Map<String, Object> store = (HashMap<String, Object>)
+        OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
                 SecurityContextHolder.getContext().getAuthentication().getDetails();
-        String accessToken = (String) store.get("access_token");
+        String accessToken = store.getTokenValue();
         tmallGenieService.updateListNotify(accessToken);
-
         return res;
     }
 
@@ -215,11 +213,10 @@ public class MachineController {
         }));
         ResultData res = machineService.unbindConsumerWithQRcode(consumerId, qrcode);
         //调用天猫精灵服务的接口
-        Map<String, Object> store = (HashMap<String, Object>)
+        OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
                 SecurityContextHolder.getContext().getAuthentication().getDetails();
-        String accessToken = (String) store.get("access_token");
+        String accessToken = store.getTokenValue();
         tmallGenieService.updateListNotify(accessToken);
-
         return res;
     }
 
@@ -240,11 +237,10 @@ public class MachineController {
         }));
         ResultData res = machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.SHARE.getValue());
         //调用天猫精灵服务的接口
-        Map<String, Object> store = (HashMap<String, Object>)
+        OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
                 SecurityContextHolder.getContext().getAuthentication().getDetails();
-        String accessToken = (String) store.get("access_token");
+        String accessToken = store.getTokenValue();
         tmallGenieService.updateListNotify(accessToken);
-
         return res;
     }
 
@@ -388,25 +384,25 @@ public class MachineController {
 
     //确认用户滤网是否需要清洗
     @GetMapping("/filter/clean")
-    public ResultData filterNeedCleanOrNot(String qrcode){
+    public ResultData filterNeedCleanOrNot(String qrcode) {
         return machineService.filterNeedCleanOrNot(qrcode);
     }
 
     //查询用户滤网提醒功能是否开启
     @GetMapping("/filter/clean/isOpen")
-    public ResultData filterCleanRemindIsOpen(String qrcode){
+    public ResultData filterCleanRemindIsOpen(String qrcode) {
         return machineService.filterCleanRemindIsOpen(qrcode);
     }
 
     //改变用户滤网提醒功能的状态
     @PostMapping("/filter/clean/change")
-    public ResultData changeFilterCleanRemindStatus(String qrcode, boolean cleanRemindStatus){
-        return machineService.changeFilterCleanRemindStatus(qrcode,cleanRemindStatus);
+    public ResultData changeFilterCleanRemindStatus(String qrcode, boolean cleanRemindStatus) {
+        return machineService.changeFilterCleanRemindStatus(qrcode, cleanRemindStatus);
     }
 
     //确认清洗滤网
     @GetMapping("/filter/clean/confirm")
-    public ResultData confirmClean(String qrcode){
+    public ResultData confirmClean(String qrcode) {
         return machineService.confirmClean(qrcode);
     }
 

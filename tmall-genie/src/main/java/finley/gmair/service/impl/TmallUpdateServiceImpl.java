@@ -8,6 +8,8 @@ import finley.gmair.service.TmallUpdateService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.TaobaoUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,8 @@ public class TmallUpdateServiceImpl implements TmallUpdateService {
 
     @Autowired
     AuthConsumerService authConsumerService;
+
+    private Logger logger = LoggerFactory.getLogger(TmallUpdateServiceImpl.class);
 
     private static final String METHOD_NAME = "alibaba.ailabs.iot.device.list.update.notify";
     private static final String SERVER_URL = "http://gw.api.taobao.com/router/rest";
@@ -89,7 +93,8 @@ public class TmallUpdateServiceImpl implements TmallUpdateService {
         String code = location.split("code=")[1].substring(0, 6);
         //根据code换取授权码token
         Map<String, String> map = authConsumerService.getToken(code, GRANT_TYPE, REDIRECT_URI, CLIENT_ID, CLIENT_SECRET);
-        System.out.println(map);
-        return map.get("access_token");
+        String token = map.get("access_token");
+        logger.info("getAuthorizationToken, location:{}, code:{}, token:{}", location, code, token);
+        return token;
     }
 }

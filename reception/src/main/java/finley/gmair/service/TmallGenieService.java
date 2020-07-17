@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @description: TODO
  */
 
-@FeignClient("tmall-genie-agent")
+@FeignClient("tmallgenie-agent")
 public interface TmallGenieService {
 
     @PostMapping("/tmallgenie/list/update")
-    ResultData updateListNotify(@RequestParam String accessToken);
+    ResultData updateListNotify(@RequestParam("accessToken") String accessToken);
 }

@@ -114,6 +114,7 @@ public class TmallGenieController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
+        logger.info("updateListNotify result:{}", result);
         return result;
     }
 }
