@@ -79,7 +79,7 @@ public class OAuth2ServerConfig {
                     .resourceIds()
                     .authorizedGrantTypes("authorization_code", "refresh_token")
                     .autoApprove(true)//用户自动同意授权
-                    .redirectUris("https://oauth-redirect.api.home.mi.com/r/2147479194")
+                    .redirectUris("https://oauth-redirect.api.home.mi.com/r/4453")
                     .scopes("select")
                     .authorities("client")
                     .secret("123456")

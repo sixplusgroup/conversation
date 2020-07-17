@@ -7,6 +7,7 @@ package finley.gmair.model.packet;
  * @Date 2019/5/20 10:11 AM
  */
 public class PacketV3Info {
+
     public static final String HEAT = "heat";
 
     public static final String TEMPERATURE_INDOOR = "temp";
@@ -34,4 +35,6 @@ public class PacketV3Info {
     public static final String CREATE_AT = "time";
 
     public static final String POWER = "power";
+
+    public static final String TURBO = "turbo";
 }

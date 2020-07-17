@@ -42,6 +42,8 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     private int childlock;
 
+    private int turbo;
+
     public MachineStatusV3() {
         super();
     }
@@ -93,6 +95,9 @@ public class MachineStatusV3 extends Entity implements Serializable {
         }
         if (json.containsKey(PacketV3Info.HUMIDITY)) {
             this.humidity = json.getInteger(PacketV3Info.HUMIDITY);
+        }
+        if (json.containsKey(PacketV3Info.TURBO)) {
+            this.turbo = json.getInteger(PacketV3Info.TURBO);
         }
         if (json.containsKey(PacketV3Info.CREATE_AT)) {
             this.createAt = new Timestamp(json.getLongValue(PacketV3Info.CREATE_AT) * 1000);
@@ -201,5 +206,13 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     public void setChildlock(int childlock) {
         this.childlock = childlock;
+    }
+
+    public int getTurbo() {
+        return turbo;
+    }
+
+    public void setTurbo(int turbo) {
+        this.turbo = turbo;
     }
 }

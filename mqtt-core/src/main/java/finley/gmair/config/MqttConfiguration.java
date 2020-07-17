@@ -280,6 +280,12 @@ public class MqttConfiguration {
                     break;
                 case "VER":
                     break;
+                case "RESPONSE":
+                    logger.info(" turbo action response received, mac: " + machineId + ", payload: " + JSON.toJSONString(json));
+                    break;
+                case "TURBO":
+                    logger.info(" turbo action response received, mac: " + machineId + ", payload: " + JSON.toJSONString(json));
+                    break;
                 default:
                     logger.info("unrecognized action: " + baseAction);
             }
