@@ -1,7 +1,6 @@
 package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import feign.FeignException;
 import finley.gmair.dao.MachineFilterCleanDao;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.MachineDefaultLocation;

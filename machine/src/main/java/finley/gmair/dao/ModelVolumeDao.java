@@ -11,4 +11,6 @@ public interface ModelVolumeDao {
     ResultData query(Map<String, Object> condition);
 
     ResultData updateByModelId(Map<String, Object> condition);
+
+    ResultData queryTurboVolumeValue(String modelId);
 }

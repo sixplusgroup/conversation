@@ -58,4 +58,9 @@ public class ModelVolumeDaoImpl extends BaseDao implements ModelVolumeDao {
         }
         return result;
     }
+
+    @Override
+    public ResultData queryTurboVolumeValue(String modelId) {
+        return null;
+    }
 }
