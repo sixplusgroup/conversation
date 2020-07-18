@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @description: TODO
  */
 
-@FeignClient("tmallgenie-agent")
+@FeignClient("aligenie-control-agent")
 public interface TmallGenieService {
 
     @PostMapping("/tmallgenie/list/update")

@@ -112,11 +112,12 @@ public class MachineController {
             logService.createUserMachineOperationLog(consumerId, qrcode, "bind", new StringBuffer("User:").append(consumerId).append(" bind device with name ").append(deviceName).toString(), IPUtil.getIP(request), "bind");
         }));
         ResultData res = machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.OWNER.getValue());
+
+        //调用天猫精灵服务的接口
+        OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
+                SecurityContextHolder.getContext().getAuthentication().getDetails();
+        logger.info("register: " + JSON.toJSONString(store));
         ReceptionPool.getTmallPool().execute(() -> {
-            //调用天猫精灵服务的接口
-            OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
-                    SecurityContextHolder.getContext().getAuthentication().getDetails();
-            logger.info("register: " + JSON.toJSONString(store));
             String accessToken = store.getTokenValue();
             tmallGenieService.updateListNotify(accessToken);
         });
@@ -215,11 +216,11 @@ public class MachineController {
                     new StringBuffer("User:").append(consumerId).append(" unbind device with qrcode ").append(qrcode).toString(), IPUtil.getIP(request), "unbind");
         }));
         ResultData res = machineService.unbindConsumerWithQRcode(consumerId, qrcode);
+        //调用天猫精灵服务的接口
+        OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
+                SecurityContextHolder.getContext().getAuthentication().getDetails();
+        logger.info(JSON.toJSONString("unbind: " + store));
         ReceptionPool.getTmallPool().execute(() -> {
-            //调用天猫精灵服务的接口
-            OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
-                    SecurityContextHolder.getContext().getAuthentication().getDetails();
-            logger.info(JSON.toJSONString("unbind: " + store));
             String accessToken = store.getTokenValue();
             tmallGenieService.updateListNotify(accessToken);
         });
@@ -242,11 +243,12 @@ public class MachineController {
             logService.createUserMachineOperationLog(consumerId, qrcode, "shareBind", new StringBuffer("User:").append(consumerId).append(" share device binding with ").append(deviceName).toString(), IPUtil.getIP(request), "share");
         }));
         ResultData res = machineService.bindConsumerWithQRcode(consumerId, deviceName, qrcode, Ownership.SHARE.getValue());
+
+        //调用天猫精灵服务的接口
+        OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
+                SecurityContextHolder.getContext().getAuthentication().getDetails();
+        logger.info("share: " + JSON.toJSONString(store));
         ReceptionPool.getTmallPool().execute(() -> {
-            //调用天猫精灵服务的接口
-            OAuth2AuthenticationDetails store = (OAuth2AuthenticationDetails)
-                    SecurityContextHolder.getContext().getAuthentication().getDetails();
-            logger.info("share: " + JSON.toJSONString(store));
             String accessToken = store.getTokenValue();
             tmallGenieService.updateListNotify(accessToken);
         });
