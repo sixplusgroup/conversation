@@ -72,7 +72,8 @@ public class ModelVolumeDaoImpl extends BaseDao implements ModelVolumeDao {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             else {
-                result.setData(turboVolume);
+                Integer integer= Integer.parseInt(turboVolume);
+                result.setData(integer);
             }
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

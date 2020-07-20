@@ -44,6 +44,7 @@ public class MachineFilterClean extends Entity {
 
     public MachineFilterClean(String qrcode, boolean isNeedClean, boolean cleanRemindStatus,
                               boolean isReminded, Date lastConfirmTime) {
+        super();
         this.qrcode = qrcode;
         this.isNeedClean = isNeedClean;
         this.cleanRemindStatus = cleanRemindStatus;
