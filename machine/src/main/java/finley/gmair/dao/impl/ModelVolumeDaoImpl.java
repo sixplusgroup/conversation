@@ -6,8 +6,10 @@ import finley.gmair.model.machine.ModelVolume;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +63,21 @@ public class ModelVolumeDaoImpl extends BaseDao implements ModelVolumeDao {
 
     @Override
     public ResultData queryTurboVolumeValue(String modelId) {
-        return null;
+        ResultData result = new ResultData();
+        Map<String,Object> condition = new HashMap<>(1);
+        condition.put("modelId",modelId);
+        try {
+            String turboVolume = sqlSession.selectOne("gmair.machine.modelvolume.queryTurboVolume", condition);
+            if (turboVolume == null || StringUtils.isEmpty(turboVolume)) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            else {
+                result.setData(turboVolume);
+            }
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
     }
 }

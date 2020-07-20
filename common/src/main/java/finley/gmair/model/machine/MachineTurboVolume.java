@@ -24,6 +24,7 @@ public class MachineTurboVolume extends Entity {
     }
 
     public MachineTurboVolume(String qrcode, boolean turboVolumeStatus) {
+        super();
         this.qrcode = qrcode;
         this.turboVolumeStatus = turboVolumeStatus;
     }

@@ -383,6 +383,23 @@ public class MachineController {
         return machineService.confirmClean(qrcode);
     }
 
+    //得到隐藏风量开关
+    @GetMapping("/turboVolume/getStatus")
+    public ResultData getTurboVolumeStatus(String qrcode){
+        return machineService.getTurboVolumeStatus(qrcode);
+    }
+
+    //改变隐藏风量开关
+    @GetMapping("/turboVolume/changeStatus")
+    public ResultData changeTurboVolumeStatus(String qrcode, boolean turboVolumeStatus){
+        return machineService.changeTurboVolumeStatus(qrcode,turboVolumeStatus);
+    }
+
+    //得到隐藏风量
+    @GetMapping("/turboVolume/getValue")
+    public ResultData showTurboVolumeValue(String qrcode){
+        return machineService.showTurboVolumeValue(qrcode);
+    }
 
     /**
      * @Description: TODO
