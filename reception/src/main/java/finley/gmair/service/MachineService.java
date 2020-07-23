@@ -165,4 +165,14 @@ public interface MachineService {
     @GetMapping("/machine/filter/clean/confirm")
     ResultData confirmClean(@RequestParam("qrcode") String qrcode);
 
+    @GetMapping("/machine/turboVolume/getStatus")
+    ResultData getTurboVolumeStatus(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/turboVolume/changeStatus")
+    ResultData changeTurboVolumeStatus(@RequestParam("qrcode") String qrcode,
+                                              @RequestParam("turboVolumeStatus") boolean turboVolumeStatus);
+
+    @GetMapping("/machine/turboVolume/getValue")
+    ResultData showTurboVolumeValue(@RequestParam("qrcode") String qrcode);
+
 }

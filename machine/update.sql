@@ -400,3 +400,20 @@ delete from machine_filter_clean where qr_code in
 update machine_filter_clean set `is_need_clean` = true where `block_flag` = 0
     and `is_need_clean` = false
     and (unix_timestamp() - unix_timestamp(`last_confirm_time`)) >= (30 * 24 * 60 * 60);
+
+#2020-07-18
+CREATE TABLE `machine_turbo_volume` (
+
+    `qr_code`                 VARCHAR(255) NOT NULL,
+    `turbo_volume_status`     BOOLEAN NOT NULL DEFAULT false,
+    `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
+    `create_time`             DATETIME NOT NULL DEFAULT current_timestamp(),
+    PRIMARY KEY (`qr_code`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
+
+insert into machine_turbo_volume (`qr_code`)
+    select distinct cmb.code_value from code_machine_bind cmb,qrcode q,model_volume_config mlc 
+        where cmb.code_value = q.code_value and q.model_id = mlc.model_id and mlc.block_flag = 0 and
+        cmb.block_flag = 0 and q.block_flag = 0 and mlc.turbo_volume is not null;

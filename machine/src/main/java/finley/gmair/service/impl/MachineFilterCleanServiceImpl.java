@@ -8,14 +8,12 @@ import finley.gmair.model.machine.MachineFilterClean;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.consumer.ConsumerVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -118,6 +116,48 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     }
 
     @Override
+    public ResultData filterCleanDailyCheck() {
+        ResultData res = new ResultData();
+        //首先更新表中的isNeedClean字段
+        Map<String, Object> condition = new HashMap<>();
+        ResultData response = updateIsNeedClean(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error("machine_filter_clean daily update failed");
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("machine_filter_clean daily update failed");
+            return res;
+        }
+
+        //从更新之后的数据得到需要提醒的设备数据并发送消息提醒
+        response = fetchNeedRemind();
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            logger.info("no machine needs to be reminded");
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            logger.error("fetch machines that need to be reminded failed");
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<MachineFilterClean> store = (List<MachineFilterClean>) response.getData();
+            for (MachineFilterClean one : store) {
+                ResultData sendRes = sendWeChatMessage(one.getQrcode());
+                if (sendRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("send weChat message failed");
+                }
+                else {
+                    Map<String, Object> modification = new HashMap<>();
+                    modification.put("qrcode", one.getQrcode());
+                    modification.put("isReminded", true);
+                    ResultData modifyRes = modify(modification);
+                    if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error(one.getQrcode() + ": modify isReminded failed");
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
     public ResultData addNewBindMachine(String qrcode) {
         ResultData res = new ResultData();
 
@@ -170,46 +210,62 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
         String locationName="";
         if(location.getResponseCode()==ResponseCode.RESPONSE_OK) {
             MachineDefaultLocation machineDefaultLocation = ((List<MachineDefaultLocation>) location.getData()).get(0);
-            ResultData resultConsumer = locationService.idProfile(machineDefaultLocation.getCityId());
-            if(resultConsumer.getResponseCode()==ResponseCode.RESPONSE_OK) {
-                Map<String,String> resultMap = (Map<String,String>)resultConsumer.getData();
-                locationName = resultMap.get("name");
+            if ("null".equals(machineDefaultLocation.getCityId())){
+                locationName = "地址暂未绑定";
+            }
+            else {
+                try {
+                    ResultData resultConsumer = locationService.idProfile(machineDefaultLocation.getCityId());
+                    if (resultConsumer.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        Map<String, String> resultMap = (Map<String, String>) resultConsumer.getData();
+                        locationName = resultMap.get("name");
+                    }
+                } catch (Exception ex) {
+                    logger.error("得到地址错误");
+                    locationName = "地址暂无";
+                }
             }
         }
 
         for (ConsumerQRcodeBind consumerQRcodeBind:consumerQRcodeBindList){
             String name = qrcode+"("+consumerQRcodeBind.getBindName()+")";
-            ResultData resultConsumer = authConsumerService.profile(consumerQRcodeBind.getConsumerId());
-            Map<String,Object> consumerVo = (Map<String,Object>)resultConsumer.getData();
+            try {
+                ResultData resultConsumer = authConsumerService.profile(consumerQRcodeBind.getConsumerId());
+                Map<String,Object> consumerVo = (Map<String,Object>)resultConsumer.getData();
 
-            //未绑定微信
-            if ((resultConsumer.getResponseCode()!=ResponseCode.RESPONSE_OK)||(StringUtils.isEmpty((String)consumerVo.get("wechat")))){
+                //未绑定微信
+                if ((resultConsumer.getResponseCode()!=ResponseCode.RESPONSE_OK)||(StringUtils.isEmpty((String)consumerVo.get("wechat")))||
+                        ("null".equals(consumerVo.get("wechat")))){
+                    continue;
+                }
+
+                //构造json
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("touser", (String)consumerVo.get("wechat"));   // openid
+
+                JSONObject data = new JSONObject();
+                JSONObject keyword1 = new JSONObject();
+                keyword1.put("value", name);
+                keyword1.put("color", "#173177");
+                JSONObject keyword2 = new JSONObject();
+                keyword2.put("value", locationName);
+                keyword2.put("color", "#173177");
+                JSONObject keyword3 = new JSONObject();
+                keyword3.put("value", "初效(金属)滤网待清洁");
+                keyword3.put("color", "#173177");
+
+                data.put("keyword1",keyword1);
+                data.put("keyword2",keyword2);
+                data.put("keyword3",keyword3);
+
+                jsonObject.put("data", data);
+                String jsonString = jsonObject.toJSONString();
+
+                ResultData resultWeChat = weChatService.sendFilterCleanMessage(jsonString,2);
+            } catch (Exception ex) {
+                logger.error("得到用户或发送消息错误");
                 continue;
             }
-
-            //构造json
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("touser", (String)consumerVo.get("wechat"));   // openid
-
-            JSONObject data = new JSONObject();
-            JSONObject keyword1 = new JSONObject();
-            keyword1.put("value", name);
-            keyword1.put("color", "#173177");
-            JSONObject keyword2 = new JSONObject();
-            keyword2.put("value", locationName);
-            keyword2.put("color", "#173177");
-            JSONObject keyword3 = new JSONObject();
-            keyword3.put("value", "初效(金属)滤网待清洁");
-            keyword3.put("color", "#173177");
-
-            data.put("keyword1",keyword1);
-            data.put("keyword2",keyword2);
-            data.put("keyword3",keyword3);
-
-            jsonObject.put("data", data);
-            String jsonString = jsonObject.toJSONString();
-
-            ResultData resultWeChat = weChatService.sendFilterCleanMessage(jsonString,2);
         }
         return res;
     }

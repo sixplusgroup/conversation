@@ -17,4 +17,8 @@ public interface ConsumerQRcodeBindService {
     ResultData queryMachineListView(Map<String, Object> condition);
 
     ResultData queryMachineSecondListView(Map<String, Object> condition);
+
+    void updateMachineTurboVolume(ConsumerQRcodeBind consumerQRcodeBind);
+
+    void updateMachineFilterClean(ConsumerQRcodeBind consumerQRcodeBind);
 }

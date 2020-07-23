@@ -25,7 +25,7 @@ public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterC
         String qrcode=(String)condition.get("qrcode");
         try {
             MachineFilterClean machineFilterClean = sqlSession.selectOne("gmair.machine.machine_filter_clean.query", qrcode);
-            if (StringUtils.isEmpty(machineFilterClean)) {
+            if (machineFilterClean == null || StringUtils.isEmpty(machineFilterClean)) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(machineFilterClean);

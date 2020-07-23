@@ -1,19 +1,27 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ModelVolumeDao;
+import finley.gmair.dao.QRCodeDao;
 import finley.gmair.model.machine.ModelVolume;
+import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.ModelVolumeService;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class ModelVolumeServiceImpl implements ModelVolumeService {
     @Autowired
     private ModelVolumeDao modelVolumeDao;
+
+    @Autowired
+    private QRCodeDao qrCodeDao;
 
     @Override
     public ResultData create(ModelVolume modelVolume){
@@ -58,6 +66,32 @@ public class ModelVolumeServiceImpl implements ModelVolumeService {
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("success to update volume by modelId");
+        return result;
+    }
+
+    @Override
+    public ResultData isNeedTurboVolume(String qrcode) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>(5);
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        ResultData responseModel = qrCodeDao.query(condition);
+        if (responseModel.getResponseCode() == ResponseCode.RESPONSE_OK){
+            QRCode qrCode = ((List<QRCode>)responseModel.getData()).get(0);
+            ResultData response = modelVolumeDao.queryTurboVolumeValue(qrCode.getModelId());
+            if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("is not need turbo volume");
+            }
+            else {
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setDescription("is need turbo volume");
+            }
+        }
+        else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("no such qrcode");
+        }
         return result;
     }
 }

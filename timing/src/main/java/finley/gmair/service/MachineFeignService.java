@@ -38,4 +38,7 @@ public interface MachineFeignService {
     @PostMapping("/machine/info/list/daily/schedule/create")
     ResultData createMachineListDaily();
 
+    @PostMapping("/machine/filter/clean/check/daily")
+    ResultData filterCleanDailyCheck();
+
 }
