@@ -424,7 +424,7 @@ public class MachineController {
     }
 
     //改变隐藏风量开关
-    @GetMapping("/turboVolume/changeStatus")
+    @PostMapping("/turboVolume/changeStatus")
     public ResultData changeTurboVolumeStatus(String qrcode, boolean turboVolumeStatus){
         return machineService.changeTurboVolumeStatus(qrcode,turboVolumeStatus);
     }

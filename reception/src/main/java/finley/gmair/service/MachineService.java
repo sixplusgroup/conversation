@@ -168,7 +168,7 @@ public interface MachineService {
     @GetMapping("/machine/turboVolume/getStatus")
     ResultData getTurboVolumeStatus(@RequestParam("qrcode") String qrcode);
 
-    @GetMapping("/machine/turboVolume/changeStatus")
+    @PostMapping("/machine/turboVolume/changeStatus")
     ResultData changeTurboVolumeStatus(@RequestParam("qrcode") String qrcode,
                                               @RequestParam("turboVolumeStatus") boolean turboVolumeStatus);
 
