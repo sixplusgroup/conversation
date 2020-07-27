@@ -35,4 +35,11 @@ public interface MachineEfficientFilterService {
      * @return 设备列表
      */
     ResultData fetchNeedRemindSecond();
+
+    /**
+     * 发送微信公众号清洗提醒
+     * @param qrcode 设备二维码, number提醒次数（1/2）
+     * @return 发送结果
+     */
+    ResultData sendWeChatMessage(String qrcode, int number);
 }

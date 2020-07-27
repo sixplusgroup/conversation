@@ -13,4 +13,6 @@ public interface ModelVolumeService {
     ResultData updateByModelId(Map<String, Object> condition);
 
     ResultData isNeedTurboVolume(String qrcode);
+
+    ResultData fetchTurboVolume(String modelId);
 }

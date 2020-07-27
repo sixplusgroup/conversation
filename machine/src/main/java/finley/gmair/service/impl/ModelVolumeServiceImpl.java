@@ -94,4 +94,23 @@ public class ModelVolumeServiceImpl implements ModelVolumeService {
         }
         return result;
     }
+
+    @Override
+    public ResultData fetchTurboVolume(String modelId) {
+        ResultData result = new ResultData();
+        ResultData response = modelVolumeDao.queryTurboVolumeValue(modelId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to fetch turbo volume.");
+            return result;
+        }
+        else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No turbo volume found.");
+            return result;
+        }
+        result.setData(response.getData());
+        result.setDescription("success to find turbo volume");
+        return result;
+    }
 }
