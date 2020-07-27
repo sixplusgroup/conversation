@@ -417,3 +417,18 @@ insert into machine_turbo_volume (`qr_code`)
     select distinct cmb.code_value from code_machine_bind cmb,qrcode q,model_volume_config mlc 
         where cmb.code_value = q.code_value and q.model_id = mlc.model_id and mlc.block_flag = 0 and
         cmb.block_flag = 0 and q.block_flag = 0 and mlc.turbo_volume is not null;
+
+# 2020-07-27
+# machine模块新增一张数据表，记录设备型号(model_id)对应的耗材名称和耗材购买链接
+create table map_model_consumer
+(
+    mmc_id        int auto_increment comment '主键id'
+        primary key,
+    model_id      varchar(20)  null comment '设备型号',
+    consumer_name varchar(50)  null comment '耗材名称',
+    consumer_link varchar(100) null comment '耗材购买链接',
+    create_time   datetime     null comment '数据行创建时间',
+    modify_time   datetime     null comment '数据行修改时间'
+)
+    comment 'modelId对应的耗材信息';
+
