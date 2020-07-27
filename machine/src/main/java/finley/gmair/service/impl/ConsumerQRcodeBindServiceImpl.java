@@ -17,16 +17,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService {
 
     private Logger logger = LoggerFactory.getLogger(ConsumerQRcodeBindServiceImpl.class);
 
-    private static final String SELECTED_MACHINE_TYPE_ID = "GUO20180607ggxi8a96";
+    //具有初效滤网的设备的goodsId
+    private static final String[] MACHINE_FILTER_GOODS_ID = {"GUO20180607ggxi8a96"};
+
+    //具有高效滤网的设备的modelId
+    private static final String[] MACHINE_EFFICIENT_FILTER_MODEL_ID = {"MOD20200718g4l9xy79"};
 
     @Autowired
     private ConsumerQRcodeBindDao consumerQRcodeBindDao;
@@ -36,6 +38,9 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
     @Autowired
     private MachineFilterCleanService machineFilterCleanService;
+
+    @Autowired
+    private MachineEfficientFilterService machineEfficientFilterService;
 
     @Autowired
     private QRCodeService qrCodeService;
@@ -95,6 +100,9 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
             //update table: machine_turbo_volume
             updateMachineTurboVolume(consumerQRcodeBind);
+
+            //update table: machine_efficient_filter
+            updateMachineEfficientFilter(consumerQRcodeBind);
         }
         return result;
     }
@@ -201,7 +209,8 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             }
             else {
                 GoodsModelDetailVo vo = (GoodsModelDetailVo) checkMachineType.getData();
-                if (SELECTED_MACHINE_TYPE_ID.equals(vo.getGoodsId())) {
+                ArrayList<String> tmpStore = new ArrayList<>(Arrays.asList(MACHINE_FILTER_GOODS_ID));
+                if (tmpStore.contains(vo.getGoodsId())) {
                     //判断是否存在
                     Map<String,Object> condition = new HashMap<>(1);
                     condition.put("qrcode",newBindQRCode);
@@ -214,7 +223,7 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
                         }
                     }
                     //重新绑定
-                    else {
+                    else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
                         condition.clear();
                         condition.put("qrcode",newBindQRCode);
                         condition.put("blockFlag",false);
@@ -246,11 +255,48 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
                     }
                 }
                 //重新绑定
-                else {
+                else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     condition.clear();
                     condition.put("qrcode", newBindQRCode);
                     condition.put("blockFlag", false);
                     machineTurboVolumeService.modify(condition);
+                }
+            }
+        });
+    }
+
+    //update table: machine_efficient_filter
+    @Override
+    public void updateMachineEfficientFilter(ConsumerQRcodeBind consumerQRcodeBind) {
+        MachinePool.getMachinePool().execute(() ->{
+            String newBindQRCode = consumerQRcodeBind.getCodeValue();
+            ResultData checkMachineType = qrCodeService.profile(newBindQRCode);
+            if (checkMachineType.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error(newBindQRCode + "check machine type failed");
+            }
+            else {
+                GoodsModelDetailVo vo = (GoodsModelDetailVo) checkMachineType.getData();
+                ArrayList<String> tmpStore =
+                        new ArrayList<>(Arrays.asList(MACHINE_EFFICIENT_FILTER_MODEL_ID));
+                if (tmpStore.contains(vo.getModelId())) {
+                    //判断是否存在
+                    Map<String,Object> condition = new HashMap<>(1);
+                    condition.put("qrcode",newBindQRCode);
+                    ResultData isExist = machineEfficientFilterService.fetch(condition);
+                    if (isExist.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                        ResultData addRes = machineEfficientFilterService.
+                                addNewBindMachine(newBindQRCode);
+                        if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                            logger.error(newBindQRCode + ": update machine_efficient_filter failed");
+                        }
+                    }
+                    //重新绑定
+                    else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        condition.clear();
+                        condition.put("qrcode",newBindQRCode);
+                        condition.put("blockFlag",false);
+                        machineEfficientFilterService.modify(condition);
+                    }
                 }
             }
         });
