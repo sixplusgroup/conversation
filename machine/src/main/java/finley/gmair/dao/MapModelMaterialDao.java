@@ -19,5 +19,5 @@ public interface MapModelMaterialDao {
 
     int updateByPrimaryKey(MapModelMaterial record);
 
-    List<MapModelMaterial> selectAllByModelId(@Param("modelId") String modelId);
+    List<String> selectMaterialLinkByModelId(@Param("modelId") String modelId);
 }

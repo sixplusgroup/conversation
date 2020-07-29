@@ -50,24 +50,28 @@ public class MapModelMaterialServiceImpl implements MapModelMaterialService {
         return mapModelMaterialDao.updateByPrimaryKey(record);
     }
 
-    @Override
-    public ResultData getModelMaterialMap(String modelId) {
-        ResultData resultData = new ResultData();
 
-        List<MapModelMaterial> mapModelMaterials;
+    @Override
+    public ResultData getMaterial(String modelId) {
+        ResultData resultData = new ResultData();
+        String materialLink = "";
 
         try {
-            mapModelMaterials  = mapModelMaterialDao.selectAllByModelId(modelId);
-        }catch (Exception e){
+            List<String> linkList = mapModelMaterialDao.selectMaterialLinkByModelId(modelId);
+            if (linkList.size() != 1) {
+                throw new Exception("modelId对应多个materialLink");
+            }
+            materialLink = linkList.get(0);
+        } catch (Exception e) {
             e.printStackTrace();
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            resultData.setDescription(new StringBuffer("Fail to load the modelId-Material").toString());
+            resultData.setDescription(new StringBuffer("Fail to load the modelId-materialLink").toString());
             return resultData;
         }
 
         resultData.setResponseCode(ResponseCode.RESPONSE_OK);
-        resultData.setData(mapModelMaterials);
-        resultData.setDescription(new StringBuffer("success to load modelMaterialMap").toString());
+        resultData.setData(materialLink);
+        resultData.setDescription(new StringBuffer("success to load modelId-materialLink").toString());
 
         return resultData;
     }

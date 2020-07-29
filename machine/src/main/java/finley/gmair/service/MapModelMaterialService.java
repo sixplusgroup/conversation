@@ -18,12 +18,9 @@ public interface MapModelMaterialService {
     public int updateByPrimaryKey(MapModelMaterial record);
 
     /**
-     * 根据modelId返回相关联的耗材信息，并封装在ResultData中
-     *
-     * @param [modelId] 设备型号
-     * @return finley.gmair.util.ResultData
+     * @param modelId 设备型号
+     * @return 返回的ResultData中的data是对应的耗材购买链接
      * @author zm
-     * @date 2020/7/28 0028 15:54
-     **/
-    public ResultData getModelMaterialMap(String modelId);
+     */
+    public ResultData getMaterial(String modelId);
 }

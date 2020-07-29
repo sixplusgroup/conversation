@@ -1,13 +1,11 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.machine.ModelLight;
 import finley.gmair.service.MapModelMaterialService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,13 +24,14 @@ public class ModelMaterialController {
 
     @GetMapping(value = "/getMaterial")
     /**
+     * 返回设别型号对应的购买链接
      *
      * @author zm
      * @param [modelId] 设备型号
-     * @return 返回设别型号对应的所有耗材信息：1. 耗材名称；2. 耗材购买链接
-     * @date 2020/7/28 0028 15:49
+     * @return finley.gmair.util.ResultData
+     * @date 2020/7/29 0029 13:32
      **/
-    public ResultData getMapModelMaterial(String modelId) {
+    public ResultData getMaterial(String modelId) {
 
         ResultData resultData = new ResultData();
 
@@ -43,7 +42,7 @@ public class ModelMaterialController {
             return resultData;
         }
 
-        ResultData response = modelMaterialService.getModelMaterialMap(modelId);
+        ResultData response = modelMaterialService.getMaterial(modelId);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             return response;
