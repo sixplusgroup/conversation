@@ -8,11 +8,11 @@ import lombok.Data;
  * modelId对应的耗材信息
  */
 @Data
-public class MapModelConsumer {
+public class MapModelMaterial {
     /**
      * 主键id
      */
-    private Integer mmcId;
+    private Integer mmmId;
 
     /**
      * 设备型号
@@ -22,12 +22,12 @@ public class MapModelConsumer {
     /**
      * 耗材名称
      */
-    private String consumerName;
+    private String materialName;
 
     /**
      * 耗材购买链接
      */
-    private String consumerLink;
+    private String materialLink;
 
     /**
      * 数据行创建时间

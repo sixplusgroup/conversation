@@ -1,11 +1,12 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.machine.ModelLight;
-import finley.gmair.service.MapModelConsumerService;
+import finley.gmair.service.MapModelMaterialService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RestController
 @RequestMapping("/machine/model")
-public class ModelConsumerController {
+public class ModelMaterialController {
 
     @Autowired
-    private MapModelConsumerService modelConsumerService;
+    private MapModelMaterialService modelMaterialService;
 
 
-    @PostMapping(value = "/getConsumer")
+    @GetMapping(value = "/getMaterial")
     /**
      *
      * @author zm
@@ -31,7 +32,7 @@ public class ModelConsumerController {
      * @return 返回设别型号对应的所有耗材信息：1. 耗材名称；2. 耗材购买链接
      * @date 2020/7/28 0028 15:49
      **/
-    public ResultData getMapModelConsumer(String modelId) {
+    public ResultData getMapModelMaterial(String modelId) {
 
         ResultData resultData = new ResultData();
 
@@ -42,7 +43,7 @@ public class ModelConsumerController {
             return resultData;
         }
 
-        ResultData response = modelConsumerService.getModelConsumerMap(modelId);
+        ResultData response = modelMaterialService.getModelMaterialMap(modelId);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             return response;
