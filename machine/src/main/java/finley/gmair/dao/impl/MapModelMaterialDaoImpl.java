@@ -22,7 +22,7 @@ public class MapModelMaterialDaoImpl extends BaseDao implements MapModelMaterial
         try {
             List<String> materialLinkList = sqlSession.selectList(
                     "gmair.machine.modelMaterial.selectMaterialLinkByModelId", modelId);
-            if(materialLinkList == null || materialLinkList.size() > 1){
+            if(materialLinkList.size() != 1){
                 throw new Exception("no map-modelId-material info or multiple mapping");
             }
             result.setData(materialLinkList.get(0));
