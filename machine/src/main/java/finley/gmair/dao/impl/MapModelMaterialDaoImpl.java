@@ -7,6 +7,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description TODO
@@ -17,11 +18,11 @@ import java.util.List;
 public class MapModelMaterialDaoImpl extends BaseDao implements MapModelMaterialDao {
 
     @Override
-    public ResultData selectMaterialLinkByModelId(String modelId) {
+    public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
             List<String> materialLinkList = sqlSession.selectList(
-                    "gmair.machine.modelMaterial.selectMaterialLinkByModelId", modelId);
+                    "gmair.machine.modelMaterial.query", condition);
             if(materialLinkList.size() != 1){
                 throw new Exception("no map-modelId-material info or multiple mapping");
             }

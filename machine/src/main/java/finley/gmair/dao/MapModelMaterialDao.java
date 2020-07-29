@@ -1,9 +1,10 @@
 package finley.gmair.dao;
 
 import finley.gmair.util.ResultData;
-import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 public interface MapModelMaterialDao {
 
-    ResultData selectMaterialLinkByModelId(@Param("modelId") String modelId);
+    ResultData query(Map<String, Object> condition);
 }

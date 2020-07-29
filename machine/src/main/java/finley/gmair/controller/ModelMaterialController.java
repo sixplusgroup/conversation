@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @Description 设备型号-耗材控制器
  * @Author zm
@@ -42,7 +45,9 @@ public class ModelMaterialController {
             return result;
         }
 
-        ResultData response = modelMaterialService.getMaterial(modelId);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("modelId",modelId);
+        ResultData response = modelMaterialService.fetch(condition);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

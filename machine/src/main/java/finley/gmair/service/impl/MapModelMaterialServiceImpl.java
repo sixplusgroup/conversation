@@ -17,9 +17,10 @@ public class MapModelMaterialServiceImpl implements MapModelMaterialService {
     private MapModelMaterialDao mapModelMaterialDao;
 
     @Override
-    public ResultData getMaterial(String modelId) {
+    public ResultData fetch(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        ResultData response = mapModelMaterialDao.selectMaterialLinkByModelId(modelId);
+        ResultData response = mapModelMaterialDao.query(condition);
+
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(new StringBuffer("Fail to get  material information of the modelId").toString());
