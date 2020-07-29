@@ -7,11 +7,8 @@ import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
-import finley.gmair.model.machine.MapModelMaterial;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class MapModelMaterialServiceImpl implements MapModelMaterialService {
@@ -19,60 +16,22 @@ public class MapModelMaterialServiceImpl implements MapModelMaterialService {
     @Resource
     private MapModelMaterialDao mapModelMaterialDao;
 
-
-    @Override
-    public int deleteByPrimaryKey(Integer mmcId) {
-        return mapModelMaterialDao.deleteByPrimaryKey(mmcId);
-    }
-
-    @Override
-    public int insert(MapModelMaterial record) {
-        return mapModelMaterialDao.insert(record);
-    }
-
-    @Override
-    public int insertSelective(MapModelMaterial record) {
-        return mapModelMaterialDao.insertSelective(record);
-    }
-
-    @Override
-    public MapModelMaterial selectByPrimaryKey(Integer mmcId) {
-        return mapModelMaterialDao.selectByPrimaryKey(mmcId);
-    }
-
-    @Override
-    public int updateByPrimaryKeySelective(MapModelMaterial record) {
-        return mapModelMaterialDao.updateByPrimaryKeySelective(record);
-    }
-
-    @Override
-    public int updateByPrimaryKey(MapModelMaterial record) {
-        return mapModelMaterialDao.updateByPrimaryKey(record);
-    }
-
-
     @Override
     public ResultData getMaterial(String modelId) {
-        ResultData resultData = new ResultData();
-        String materialLink = "";
-
-        try {
-            List<String> linkList = mapModelMaterialDao.selectMaterialLinkByModelId(modelId);
-            if (linkList.size() != 1) {
-                throw new Exception("modelId对应多个materialLink");
-            }
-            materialLink = linkList.get(0);
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            resultData.setDescription(new StringBuffer("Fail to load the modelId-materialLink").toString());
-            return resultData;
+        ResultData result = new ResultData();
+        ResultData response = mapModelMaterialDao.selectMaterialLinkByModelId(modelId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(new StringBuffer("Fail to get  material information of the modelId").toString());
+            return result;
         }
 
-        resultData.setResponseCode(ResponseCode.RESPONSE_OK);
-        resultData.setData(materialLink);
-        resultData.setDescription(new StringBuffer("success to load modelId-materialLink").toString());
+        Map<String, String> resMap = new HashMap<>(1);
+        resMap.put("materialsLink", String.valueOf(response.getData()));
 
-        return resultData;
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(resMap);
+        result.setDescription(new StringBuffer("Success to load material information of the modelId").toString());
+        return result;
     }
 }

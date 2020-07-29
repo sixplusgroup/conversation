@@ -22,35 +22,38 @@ public class ModelMaterialController {
     private MapModelMaterialService modelMaterialService;
 
 
-    @GetMapping(value = "/getMaterial")
+    @GetMapping(value = "/getMaterials")
     /**
      * 返回设别型号对应的购买链接
      *
      * @author zm
      * @param [modelId] 设备型号
-     * @return finley.gmair.util.ResultData
+     * @return finley.gmair.util.result
      * @date 2020/7/29 0029 13:32
      **/
     public ResultData getMaterial(String modelId) {
 
-        ResultData resultData = new ResultData();
+        ResultData result = new ResultData();
 
         //check empty
         if (StringUtils.isEmpty(modelId)) {
-            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            resultData.setDescription("please provide modelId");
-            return resultData;
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide modelId");
+            return result;
         }
 
         ResultData response = modelMaterialService.getMaterial(modelId);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            return response;
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(response.getDescription());
+            return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            resultData.setData(response.getData());
-            resultData.setDescription(response.getDescription());
-            return resultData;
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            result.setDescription(response.getDescription());
+            return result;
         }
-        return resultData;
+        return result;
     }
 }
