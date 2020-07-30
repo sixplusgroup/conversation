@@ -25,7 +25,10 @@ public class MachineEfficientFilter extends Entity {
     private boolean replaceRemindOn;
 
     /**
-     * 是否提醒过
+     * 当前周期内，提醒的状态：
+     * 0 - 一次没有提醒
+     * 1 - 提醒过一次
+     * 2 - 提醒过两次
      */
     private EfficientFilterRemindStatus isRemindedStatus;
 

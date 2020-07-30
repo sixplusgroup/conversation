@@ -3,14 +3,21 @@ package finley.gmair.controller;
 import finley.gmair.model.machine.EfficientFilterRemindStatus;
 import finley.gmair.model.machine.EfficientFilterStatus;
 import finley.gmair.model.machine.MachineEfficientFilter;
+import finley.gmair.model.machine.MachineQrcodeBind;
+import finley.gmair.pool.MachinePool;
+import finley.gmair.service.CoreV3Service;
 import finley.gmair.service.MachineEfficientFilterService;
+import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,8 +30,28 @@ import java.util.Map;
 @RequestMapping("/machine/efficientFilter")
 public class MachineEfficientFilterController {
 
+    private Logger logger = LoggerFactory.getLogger(MachineEfficientFilterController.class);
+
     @Autowired
     private MachineEfficientFilterService machineEfficientFilterService;
+
+    @Autowired
+    private CoreV3Service coreV3Service;
+
+    @Autowired
+    private MachineQrcodeBindService machineQrcodeBindService;
+
+    @PostMapping("/check/hourly")
+    public ResultData efficientFilterHourlyCheck() {
+        //avoid exception: read timed out at Timing service side.
+        MachinePool.getMachinePool().execute(() -> {
+            ResultData res = machineEfficientFilterService.efficientFilterHourlyCheck();
+            if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("hourly check: efficient filter. failed!");
+            }
+        });
+        return new ResultData();
+    }
 
     @GetMapping("/replaceStatus")
     public ResultData getReplaceStatus(@RequestParam String qrcode) {
@@ -105,7 +132,6 @@ public class MachineEfficientFilterController {
         }
 
         //将replaceStatus字段修改为0，将isRemindedStatus字段修改为0
-        //TODO 调用core服务中的方法重置该设备高效滤网的使用时间计时
         Map<String, Object> condition = new HashMap<>();
         condition.put("qrcode", qrcode);
         condition.put("replaceStatus", EfficientFilterStatus.NO_NEED);
@@ -114,11 +140,28 @@ public class MachineEfficientFilterController {
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("modify machineFilterClean failed");
-            return res;
         }
-
-        resData.put("qrcode", qrcode);
-        res.setData(resData);
+        else {
+            //调用core服务中的方法重置该设备高效滤网的使用时间计时
+            MachinePool.getMachinePool().execute(() -> {
+                condition.clear();
+                condition.put("codeValue", qrcode);
+                condition.put("blockFlag", false);
+                ResultData machineQRCodeRes = machineQrcodeBindService.fetch(condition);
+                if (machineQRCodeRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    List<MachineQrcodeBind> tmpStore = (List<MachineQrcodeBind>) machineQRCodeRes.getData();
+                    String machineId = tmpStore.get(0).getMachineId();
+                    ResultData surplusRes = coreV3Service.getSurplus(machineId);
+                    if (surplusRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        Map<String, Object> surplusStore = (Map<String, Object>) surplusRes.getData();
+                        int remain = (int) surplusStore.get("surplus");
+                        coreV3Service.resetSurplus(machineId, remain);
+                    }
+                }
+            });
+            resData.put("qrcode", qrcode);
+            res.setData(resData);
+        }
         return res;
     }
 }

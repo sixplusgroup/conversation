@@ -200,7 +200,7 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
     //update table: machine_filter_clean
     @Override
-    public void updateMachineFilterClean(ConsumerQRcodeBind consumerQRcodeBind){
+    public void updateMachineFilterClean(ConsumerQRcodeBind consumerQRcodeBind) {
         MachinePool.getMachinePool().execute(() ->{
             String newBindQRCode = consumerQRcodeBind.getCodeValue();
             ResultData checkMachineType = qrCodeService.profile(newBindQRCode);
@@ -214,7 +214,7 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
                     //判断是否存在
                     Map<String,Object> condition = new HashMap<>(1);
                     condition.put("qrcode",newBindQRCode);
-                    ResultData isExist = machineFilterCleanService.fetch(condition);
+                    ResultData isExist = machineFilterCleanService.fetchOne(condition);
                     if (isExist.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                         ResultData addRes = machineFilterCleanService.
                                 addNewBindMachine(newBindQRCode);

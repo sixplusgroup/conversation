@@ -10,9 +10,6 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * daily job executor
  */
@@ -44,6 +41,7 @@ public class DailyNoonJob implements Job {
         TimingPool.getTimingExecutor().execute(() -> driftFeignService.orderReturnMessage());
 
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            //初效滤网每天中午更新数据
             machineFeignService.filterCleanDailyCheck();
         }));
     }

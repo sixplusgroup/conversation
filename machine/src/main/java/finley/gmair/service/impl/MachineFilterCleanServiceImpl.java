@@ -48,9 +48,14 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     @Autowired
     AuthConsumerService authConsumerService;
 
+//    @Override
+//    public ResultData fetch(Map<String, Object> condition) {
+//        return machineFilterCleanDao.query(condition);
+//    }
+
     @Override
-    public ResultData fetch(Map<String, Object> condition) {
-        return machineFilterCleanDao.query(condition);
+    public ResultData fetchOne(Map<String, Object> condition) {
+        return machineFilterCleanDao.queryOne(condition);
     }
 
     @Override
@@ -71,7 +76,7 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
         Map<String, Object> condition = new HashMap<>();
         condition.put("qrcode", qrcode);
         condition.put("blockFlag", false);
-        return fetch(condition);
+        return fetchOne(condition);
     }
 
     @Override

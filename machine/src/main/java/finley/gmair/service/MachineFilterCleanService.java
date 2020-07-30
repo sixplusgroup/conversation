@@ -11,10 +11,17 @@ import java.util.Map;
  */
 public interface MachineFilterCleanService {
 
-    ResultData fetch(Map<String, Object> condition);
+//    ResultData fetch(Map<String, Object> condition);
+
+    ResultData fetchOne(Map<String, Object> condition);
 
     ResultData fetchNeedRemind();
 
+    /**
+     * 返回值中的data字段只包含一个对象
+     * @param qrcode 设备二维码
+     * @return 查询结果
+     */
     ResultData fetchByQRCode(String qrcode);
 
     ResultData modify(Map<String, Object> condition);

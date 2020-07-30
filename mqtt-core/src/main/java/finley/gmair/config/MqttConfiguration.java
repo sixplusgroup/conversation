@@ -16,6 +16,7 @@ import finley.gmair.service.LogService;
 import finley.gmair.service.MqttService;
 import finley.gmair.service.RedisService;
 import finley.gmair.service.TopicService;
+import finley.gmair.service.impl.MqMsgSender;
 import finley.gmair.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +87,9 @@ public class MqttConfiguration {
 
     @Autowired
     private MachineStatusV3Repository repository;
+
+    @Autowired
+    private MqMsgSender mqMsgSender;
 
     private Map<String, Integer> devices = new ConcurrentHashMap<>();
 
@@ -274,8 +278,9 @@ public class MqttConfiguration {
                     MQTTUtil.partial(redisService, machineId, json);
                     break;
                 case "SYS_SURPLUS":
-                    //todo 滤网时间处理
+                    //滤网时间处理
                     SurplusPayload surplus = new SurplusPayload(machineId, json);
+                    mqMsgSender.sendSurplus(surplus);
 //                    logger.info("surplus: " + JSON.toJSONString(surplus));
                     break;
                 case "VER":

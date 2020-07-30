@@ -13,6 +13,11 @@ public interface MachineEfficientFilterService {
 
     ResultData fetch(Map<String, Object> condition);
 
+    /**
+     * 返回值的data中只包含一个符合条件的对象
+     * @param qrcode 设备二维码
+     * @return 查询结果
+     */
     ResultData fetchByQRCode(String qrcode);
 
     ResultData modify(Map<String, Object> condition);
@@ -42,4 +47,13 @@ public interface MachineEfficientFilterService {
      * @return 发送结果
      */
     ResultData sendWeChatMessage(String qrcode, int number);
+
+    ResultData getSurplusByQRCode(String qrcode);
+
+    /**
+     * 每小时查看并更新machine_efficient_filter表
+     * 向需要提醒进行高效滤网更换的用户微信推送提醒
+     * @return 执行结果
+     */
+    ResultData efficientFilterHourlyCheck();
 }
