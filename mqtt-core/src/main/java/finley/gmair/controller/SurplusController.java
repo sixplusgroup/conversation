@@ -1,7 +1,7 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.mqtt.SurplusPayload;
-import finley.gmair.service.impl.MqMsgReceiver;
+import finley.gmair.service.impl.SurplusMsgReceiver;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class SurplusController {
     private static final int MAX_RETRY_TIMES = 1000;
 
     @Autowired
-    private MqMsgReceiver mqMsgReceiver;
+    private SurplusMsgReceiver surplusMsgReceiver;
 
     @Autowired
     private MessageController messageController;
@@ -52,7 +52,7 @@ public class SurplusController {
             e.printStackTrace();
         }
         //得到设备上报的数据
-        SurplusPayload surplusPayload = mqMsgReceiver.getLatestSurplus();
+        SurplusPayload surplusPayload = surplusMsgReceiver.getLatestSurplus();
 //        int retryTimes = 0;
 //        //当获得的当前的surplus不是指定设备的数据时，重复发送上报请求
 //        while ((surplusPayload == null || !uid.equals(surplusPayload.getMachineId()))

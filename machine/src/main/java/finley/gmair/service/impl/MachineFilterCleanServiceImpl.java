@@ -48,10 +48,10 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     @Autowired
     AuthConsumerService authConsumerService;
 
-//    @Override
-//    public ResultData fetch(Map<String, Object> condition) {
-//        return machineFilterCleanDao.query(condition);
-//    }
+    @Override
+    public ResultData fetch(Map<String, Object> condition) {
+        return machineFilterCleanDao.query(condition);
+    }
 
     @Override
     public ResultData fetchOne(Map<String, Object> condition) {

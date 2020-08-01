@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @PropertySource("classpath:rabbitmq.properties")
-public class MqMsgSender {
+public class SurplusMsgSender {
 
     @Value("${surplus_queue_name}")
     private String surplusQueue;

@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface MachineFilterCleanService {
 
-//    ResultData fetch(Map<String, Object> condition);
+    ResultData fetch(Map<String, Object> condition);
 
     ResultData fetchOne(Map<String, Object> condition);
 

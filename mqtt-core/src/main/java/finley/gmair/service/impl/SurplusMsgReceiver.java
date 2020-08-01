@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RabbitListener(queues = "surplus-queue")
-public class MqMsgReceiver {
+public class SurplusMsgReceiver {
 
     private SurplusPayload surplusPayload = null;
 
