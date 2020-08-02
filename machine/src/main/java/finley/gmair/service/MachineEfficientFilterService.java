@@ -62,4 +62,11 @@ public interface MachineEfficientFilterService {
      * @return 滤芯状态
      */
     EfficientFilterStatus checkEfficientFilterStatus(int remain);
+
+    /**
+     * 更新机器状态
+     * @param remain 滤芯剩余寿命, uid机器mac地址
+     * @return 执行结果
+     */
+    ResultData updateByRemain(int remain, String uid);
 }

@@ -161,4 +161,22 @@ public class MachineEfficientFilterController {
         }
         return res;
     }
+
+    @GetMapping("/updateByRemain")
+    public ResultData updateByRemain(@RequestParam int remain,@RequestParam String uid) {
+        ResultData res = new ResultData();
+        //检测参数
+        if (StringUtils.isEmpty(uid)) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("qrcode cannot be empty");
+            return res;
+        }
+        ResultData response = machineEfficientFilterService.updateByRemain(remain,uid);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("updateByRemain failed");
+            return res;
+        }
+        return res;
+    }
 }

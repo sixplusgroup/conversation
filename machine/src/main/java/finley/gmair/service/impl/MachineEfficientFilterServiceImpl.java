@@ -2,10 +2,12 @@ package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.MachineEfficientFilterDao;
+import finley.gmair.dao.MachineQrcodeBindDao;
 import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,9 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
 
     @Autowired
     private AuthConsumerService authConsumerService;
+
+    @Autowired
+    private MachineQrcodeBindDao machineQrcodeBindDao;
 
 
     @Override
@@ -284,5 +289,30 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
                 }
             }
         }
+    }
+
+    @Override
+    public ResultData updateByRemain(int remain, String uid) {
+        ResultData resultData = new ResultData();
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("machineId",uid);
+        condition.put("blockFlag",0);
+        ResultData machineQRcodeResult = machineQrcodeBindDao.select(condition);
+        String qrcode = "";
+        if (machineQRcodeResult.getResponseCode() == ResponseCode.RESPONSE_OK){
+            MachineQrcodeBindVo machineQrcodeBindVo = ((List<MachineQrcodeBindVo>)machineQRcodeResult.getData()).get(0);
+            qrcode = machineQrcodeBindVo.getCodeValue();
+        }
+        else {
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return resultData;
+        }
+
+        EfficientFilterStatus status = checkEfficientFilterStatus(remain);
+        condition.clear();
+        condition.put("qrcode",qrcode);
+        condition.put("replaceStatus",status.getValue());
+        resultData = machineEfficientFilterDao.update(condition);
+        return resultData;
     }
 }
