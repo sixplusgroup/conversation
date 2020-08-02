@@ -256,7 +256,7 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
                 keyword2.put("value", locationName);
                 keyword2.put("color", "#173177");
                 JSONObject keyword3 = new JSONObject();
-                keyword3.put("value", "初效(金属)滤网待清洁");
+                keyword3.put("value", "初效滤网待清洁");
                 keyword3.put("color", "#173177");
 
                 data.put("keyword1",keyword1);
