@@ -12,10 +12,7 @@ import finley.gmair.model.mqtt.SurplusPayload;
 import finley.gmair.model.mqtt.Topic;
 import finley.gmair.pool.CorePool;
 import finley.gmair.repo.MachineStatusV3Repository;
-import finley.gmair.service.LogService;
-import finley.gmair.service.MqttService;
-import finley.gmair.service.RedisService;
-import finley.gmair.service.TopicService;
+import finley.gmair.service.*;
 import finley.gmair.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +80,9 @@ public class MqttConfiguration {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private MachineFeignService machineFeignService;
 
     @Autowired
     private MachineStatusV3Repository repository;
@@ -276,6 +276,7 @@ public class MqttConfiguration {
                 case "SYS_SURPLUS":
                     //滤网时间处理
                     SurplusPayload surplus = new SurplusPayload(machineId, json);
+                    machineFeignService.updateByRemain(surplus.getRemain(), surplus.getMachineId());
 //                    logger.info("surplus: " + JSON.toJSONString(surplus));
                     break;
                 case "VER":
