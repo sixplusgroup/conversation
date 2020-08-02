@@ -18,11 +18,6 @@ spring:
     url: jdbc:mysql://localhost:3306/gmair_mqtt?useLegacyDatetimeCode=false&serverTimezone=CTT&useUnicode=true&useSSL=false&characterEncoding=UTF-8
     username: root
     password:
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
 
 mybatis:
   config-location: classpath:mybatis-config.xml
