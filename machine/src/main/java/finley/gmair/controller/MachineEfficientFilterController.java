@@ -32,6 +32,8 @@ public class MachineEfficientFilterController {
 
     private Logger logger = LoggerFactory.getLogger(MachineEfficientFilterController.class);
 
+    private static final int REMAIN = 2160;
+
     @Autowired
     private MachineEfficientFilterService machineEfficientFilterService;
 
@@ -151,12 +153,7 @@ public class MachineEfficientFilterController {
                 if (machineQRCodeRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     List<MachineQrcodeBind> tmpStore = (List<MachineQrcodeBind>) machineQRCodeRes.getData();
                     String machineId = tmpStore.get(0).getMachineId();
-                    ResultData surplusRes = coreV3Service.getSurplus(machineId);
-                    if (surplusRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                        Map<String, Object> surplusStore = (Map<String, Object>) surplusRes.getData();
-                        int remain = (int) surplusStore.get("surplus");
-                        coreV3Service.resetSurplus(machineId, remain);
-                    }
+                    coreV3Service.resetSurplus(machineId, REMAIN);
                 }
             });
             resData.put("qrcode", qrcode);

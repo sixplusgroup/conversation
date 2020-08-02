@@ -2,7 +2,6 @@ package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.MachineEfficientFilterDao;
-import finley.gmair.dao.MachineQrcodeBindDao;
 import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
@@ -49,12 +48,6 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
 
     @Autowired
     private AuthConsumerService authConsumerService;
-
-    @Autowired
-    private MachineQrcodeBindDao machineQrcodeBindDao;
-
-    @Autowired
-    private CoreV3Service coreV3Service;
 
 
     @Override
@@ -224,59 +217,8 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
     }
 
     @Override
-    public ResultData getSurplusByQRCode(String qrcode) {
-        ResultData res = new ResultData();
-
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("codeValue", qrcode);
-        condition.put("blockFlag", false);
-        ResultData machineQRCodeRes = machineQrcodeBindDao.select(condition);
-        if (machineQRCodeRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            logger.error(qrcode + ": query machine_qrcode_bind failed");
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("query machine_qrcode_bind failed");
-            return res;
-        }
-        List<MachineQrcodeBind> tmpStore = (List<MachineQrcodeBind>) machineQRCodeRes.getData();
-        String machineId = tmpStore.get(0).getMachineId();
-        return coreV3Service.getSurplus(machineId);
-    }
-
-    @Override
     public ResultData efficientFilterHourlyCheck() {
         ResultData res = new ResultData();
-
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag", false);
-        ResultData response = machineEfficientFilterDao.query(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            logger.error("query machine_efficient_filter failed");
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("query machine_efficient_filter failed");
-            return res;
-        }
-
-        //查询所有设备的滤芯剩余使用寿命并更新machine_efficient_filter
-        List<MachineEfficientFilter> store = (List<MachineEfficientFilter>) response.getData();
-        for (MachineEfficientFilter one : store) {
-            String oneQRCode = one.getQrcode();
-            ResultData surplusRes = getSurplusByQRCode(oneQRCode);
-            if (surplusRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                logger.error(oneQRCode + ": get surplus failed");
-                continue;
-            }
-            //得到该设备的滤芯的剩余使用时间
-            Map<String, Object> surplusStore = (Map<String, Object>) surplusRes.getData();
-            int remain = (int) surplusStore.get("surplus");
-            //更新replaceStatus
-            condition.clear();
-            condition.put("replaceStatus", checkEfficientFilterStatus(remain).getValue());
-            condition.put("qrcode", oneQRCode);
-            ResultData updateRes = modify(condition);
-            if (updateRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                logger.error(oneQRCode + ": update replaceStatus failed");
-            }
-        }
 
         //根据isRemindedStatus发送WeChat消息
         sendFirstRemind();
@@ -284,7 +226,8 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         return res;
     }
 
-    private EfficientFilterStatus checkEfficientFilterStatus(int remain) {
+    @Override
+    public EfficientFilterStatus checkEfficientFilterStatus(int remain) {
         if (remain >= NEED_LINE)
             return EfficientFilterStatus.NO_NEED;
         else if (remain >= URGENT_NEED_LINE)

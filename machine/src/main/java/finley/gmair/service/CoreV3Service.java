@@ -41,10 +41,6 @@ public interface CoreV3Service {
     @PostMapping("/core/com/set/screen")
     ResultData configScreen(@RequestParam("uid") String uid, @RequestParam("valid") Integer valid);
 
-    /*得到设备滤芯剩余寿命*/
-    @GetMapping("/surplus")
-    ResultData getSurplus(@RequestParam("uid") String uid);
-
     /*重置设备滤芯剩余寿命*/
     @PostMapping("/core/com/set/surplus")
     ResultData resetSurplus(@RequestParam("uid") String uid, @RequestParam("remain") Integer remain);

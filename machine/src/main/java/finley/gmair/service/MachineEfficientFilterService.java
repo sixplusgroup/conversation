@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.model.machine.EfficientFilterStatus;
 import finley.gmair.util.ResultData;
 
 import java.util.Map;
@@ -48,12 +49,17 @@ public interface MachineEfficientFilterService {
      */
     ResultData sendWeChatMessage(String qrcode, int number);
 
-    ResultData getSurplusByQRCode(String qrcode);
-
     /**
-     * 每小时查看并更新machine_efficient_filter表
+     * 每小时查看machine_efficient_filter表
      * 向需要提醒进行高效滤网更换的用户微信推送提醒
      * @return 执行结果
      */
     ResultData efficientFilterHourlyCheck();
+
+    /**
+     * 通过当前滤芯剩余寿命判断其处于什么状态
+     * @param remain 滤芯剩余寿命
+     * @return 滤芯状态
+     */
+    EfficientFilterStatus checkEfficientFilterStatus(int remain);
 }
