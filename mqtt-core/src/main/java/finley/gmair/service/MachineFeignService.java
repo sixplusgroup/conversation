@@ -14,6 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("machine-agent")
 public interface MachineFeignService {
 
-    @GetMapping("/updateByRemain")
+    @GetMapping("/machine/efficientFilter/updateByRemain")
     ResultData updateByRemain(@RequestParam("remain") int remain, @RequestParam("uid") String uid);
 }

@@ -329,6 +329,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
     public boolean isCorrectModel(String qrcode) {
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
+        condition.put("blockFlag",false);
         ResultData response = fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             QRCode code = ((List<QRCode>) response.getData()).get(0);
