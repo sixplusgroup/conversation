@@ -276,7 +276,6 @@ public class MqttConfiguration {
                 case "SYS_SURPLUS":
                     //滤网时间处理
                     SurplusPayload surplus = new SurplusPayload(machineId, json);
-                    System.out.println(surplus.getMachineId()+" "+surplus.getRemain());
                     CorePool.getSurplusPool().execute(() -> {
                         try {
                             machineFeignService.updateByRemain(surplus.getRemain(), surplus.getMachineId());
