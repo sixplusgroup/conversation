@@ -21,4 +21,6 @@ public interface ConsumerQRcodeBindService {
     void updateMachineTurboVolume(ConsumerQRcodeBind consumerQRcodeBind);
 
     void updateMachineFilterClean(ConsumerQRcodeBind consumerQRcodeBind);
+
+    void updateMachineEfficientFilter(ConsumerQRcodeBind consumerQRcodeBind);
 }

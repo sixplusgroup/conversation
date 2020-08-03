@@ -298,4 +298,75 @@ public class MessageTemplateController {
 
     }
 
+    /**
+     * 推送更换清洗消息
+     *
+     * @param type 模板类型
+     * @param json 模板内容
+     * @return
+     * @throws IOException
+     */
+    @GetMapping(value = "/sendFilterReplaceMessage")
+    public ResultData sendFilterReplaceMessage(String json, int type) throws IOException {
+        ResultData re = accessTokenController.getToken(wechatAppId);
+
+        String TemplateMessage_Url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
+
+        String token = ((AccessToken) re.getData()).getAccessToken();
+
+        //创建返回实体对象
+        ResultData vo = new ResultData();
+        //获得新的token
+        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
+//        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", wechatToken);
+        //获取模板id
+        ResultData res = getTemplate(type);
+        String templateId = ((MessageTemplate) res.getData()).getTemplateId();
+
+        JSONObject js = JSONObject.parseObject(json);
+        js.put("template_id", templateId);
+//        jsonObject.put("url", "http://www.baidu.com");
+
+        //设置跳转页面
+        js.put("url", "https://reception.gmair.net/machine/list");
+
+        //设置内容
+        JSONObject data = js.getJSONObject("data");
+        JSONObject first = new JSONObject();
+        first.put("value","新风设备滤网更换提醒");
+        first.put("color","#173177");
+
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("messageType","replace");
+        ResultData resultData = textTemplateService.fetch(condition);
+        String remarkValue = ((List<TextTemplate>)resultData.getData()).get(0).getResponse();
+        JSONObject remark = new JSONObject();
+        remark.put("value",remarkValue);
+        remark.put("color","#173177");
+
+        data.put("first",first);
+        data.put("remark",remark);
+
+        String string = HttpClientUtils.sendPostJsonStr(url, js.toJSONString());
+        System.out.println(string);
+        JSONObject result = JSON.parseObject(string);
+        int errcode = result.getIntValue("errcode");
+        if (errcode == 0) {
+            // 发送成功
+            System.out.println("发送成功");
+        } else {
+            // 发送失败
+            System.out.println("发送失败");
+        }
+
+        if (errcode == 0) {
+            vo.setResponseCode(ResponseCode.RESPONSE_OK);
+            vo.setDescription("成功");
+        } else {
+            vo.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            vo.setDescription("失败");
+        }
+        return vo;
+
+    }
 }

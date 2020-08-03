@@ -56,6 +56,9 @@ public class ConsumerQRcodeController {
     @Autowired
     private MachineTurboVolumeService machineTurboVolumeService;
 
+    @Autowired
+    private MachineEfficientFilterService machineEfficientFilterService;
+
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
     public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
         ResultData result = new ResultData();
@@ -237,6 +240,15 @@ public class ConsumerQRcodeController {
                     condition.put("qrcode", qrcode);
                     condition.put("blockFlag", true);
                     machineTurboVolumeService.modify(condition);
+                }
+
+                //设置machine_efficient_filter
+                resultData = machineEfficientFilterService.fetchByQRCode(qrcode);
+                if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode", qrcode);
+                    condition.put("blockFlag", true);
+                    machineEfficientFilterService.modify(condition);
                 }
             }).start();
             condition.clear();

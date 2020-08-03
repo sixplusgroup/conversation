@@ -8,9 +8,6 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * hourly job executor
  */
@@ -110,6 +107,11 @@ public class HourlyJob implements Job {
 //            if (status) {
             dataAnalysisService.statisticalDataHourly();
 //            }
+        }));
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            //高效滤网每小时更新数据
+            machineFeignService.efficientFilterHourlyCheck();
         }));
     }
 }

@@ -431,4 +431,22 @@ create table map_model_material
     modify_time   datetime     null comment '数据行修改时间'
 )
     comment 'modelId对应的耗材信息';
+     
+#2020-07-24
+CREATE TABLE `machine_efficient_filter` (
 
+    `qr_code`                 VARCHAR(255) NOT NULL,
+    `replace_status`          tinyint NOT NULL DEFAULT 0,
+    `replace_remind_on`       BOOLEAN NOT NULL DEFAULT TRUE,
+    `is_reminded_status`      tinyint NOT NULL DEFAULT 0,
+    `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
+    `create_time`             DATETIME NOT NULL,
+    PRIMARY KEY (`qr_code`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
+    
+insert into machine_efficient_filter (qr_code,create_time)
+    select cmb.code_value,current_timestamp() from code_machine_bind cmb,qrcode q 
+    where cmb.code_value = q.code_value
+    and cmb.block_flag = 0 and q.block_flag = 0 and q.model_id='MOD20200718g4l9xy79';
