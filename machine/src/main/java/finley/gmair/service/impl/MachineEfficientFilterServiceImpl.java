@@ -327,12 +327,15 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
 
     @Override
     public boolean isCorrectModel(String qrcode) {
-        ResultData checkMachineType = qrCodeService.profile(qrcode);
-        if (checkMachineType.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            GoodsModelDetailVo vo = (GoodsModelDetailVo) checkMachineType.getData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        ResultData response = fetch(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            QRCode code = ((List<QRCode>) response.getData()).get(0);
+            String modelId = code.getModelId();
             ArrayList<String> tmpStore =
                     new ArrayList<>(Arrays.asList(MACHINE_EFFICIENT_FILTER_MODEL_ID));
-            return tmpStore.contains(vo.getModelId());
+            return tmpStore.contains(modelId);
         }
         return false;
     }
