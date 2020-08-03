@@ -69,4 +69,11 @@ public interface MachineEfficientFilterService {
      * @return 执行结果
      */
     ResultData updateByRemain(int remain, String uid);
+
+    /**
+     * 检查给定的qrcode对应的设备是否具有高效滤网
+     * @param qrcode 设备二维码
+     * @return 检查结果
+     */
+    boolean isCorrectModel(String qrcode);
 }

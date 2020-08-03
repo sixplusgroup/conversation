@@ -8,16 +8,14 @@ import finley.gmair.model.machine.MachineFilterClean;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: Bright Chan
@@ -30,6 +28,9 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
 
     private Logger logger = LoggerFactory.getLogger(MachineFilterCleanServiceImpl.class);
 
+    //具有初效滤网的设备的goodsId
+    private static final String[] MACHINE_FILTER_GOODS_ID = {"GUO20180607ggxi8a96"};
+
     @Autowired
     private MachineFilterCleanDao machineFilterCleanDao;
 
@@ -37,16 +38,19 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
     private ConsumerQRcodeBindService consumerQRcodeBindService;
 
     @Autowired
-    MachineDefaultLocationService machineDefaultLocationService;
+    private MachineDefaultLocationService machineDefaultLocationService;
 
     @Autowired
-    LocationService locationService;
+    private LocationService locationService;
 
     @Autowired
-    WeChatService weChatService;
+    private WeChatService weChatService;
 
     @Autowired
-    AuthConsumerService authConsumerService;
+    private AuthConsumerService authConsumerService;
+
+    @Autowired
+    private QRCodeService qrCodeService;
 
     @Override
     public ResultData fetch(Map<String, Object> condition) {
@@ -273,5 +277,16 @@ public class MachineFilterCleanServiceImpl implements MachineFilterCleanService 
             }
         }
         return res;
+    }
+
+    @Override
+    public boolean isCorrectGoods(String qrcode) {
+        ResultData checkMachineType = qrCodeService.profile(qrcode);
+        if (checkMachineType.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            GoodsModelDetailVo vo = (GoodsModelDetailVo) checkMachineType.getData();
+            ArrayList<String> tmpStore = new ArrayList<>(Arrays.asList(MACHINE_FILTER_GOODS_ID));
+            return tmpStore.contains(vo.getGoodsId());
+        }
+        return false;
     }
 }

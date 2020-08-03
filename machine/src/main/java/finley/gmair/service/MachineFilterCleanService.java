@@ -58,4 +58,11 @@ public interface MachineFilterCleanService {
      * @return 发送结果
      */
     ResultData sendWeChatMessage(String qrcode);
+
+    /**
+     * 检查给定的qrcode对应的设备是否是具有初效滤网的设备
+     * @param qrcode 设备二维码
+     * @return 检查结果
+     */
+    boolean isCorrectGoods(String qrcode);
 }

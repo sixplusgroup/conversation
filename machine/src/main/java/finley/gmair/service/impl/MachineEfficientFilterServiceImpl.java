@@ -7,6 +7,7 @@ import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -14,9 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: Bright Chan
@@ -32,6 +31,9 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
     private static final int NEED_LINE = 120;
 
     private static final int URGENT_NEED_LINE = 60;
+
+    //具有高效滤网的设备的modelId
+    private static final String[] MACHINE_EFFICIENT_FILTER_MODEL_ID = {"MOD20200718g4l9xy79"};
 
     @Autowired
     private MachineEfficientFilterDao machineEfficientFilterDao;
@@ -54,6 +56,8 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
     @Autowired
     private MachineQrcodeBindDao machineQrcodeBindDao;
 
+    @Autowired
+    private QRCodeService qrCodeService;
 
     @Override
     public ResultData fetch(Map<String, Object> condition) {
@@ -302,6 +306,11 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         if (machineQRcodeResult.getResponseCode() == ResponseCode.RESPONSE_OK){
             MachineQrcodeBindVo machineQrcodeBindVo = ((List<MachineQrcodeBindVo>)machineQRcodeResult.getData()).get(0);
             qrcode = machineQrcodeBindVo.getCodeValue();
+            if (!isCorrectModel(qrcode)) {
+                resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                resultData.setDescription("wrong model");
+                return resultData;
+            }
         }
         else {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -314,5 +323,17 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         condition.put("replaceStatus",status.getValue());
         resultData = machineEfficientFilterDao.update(condition);
         return resultData;
+    }
+
+    @Override
+    public boolean isCorrectModel(String qrcode) {
+        ResultData checkMachineType = qrCodeService.profile(qrcode);
+        if (checkMachineType.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            GoodsModelDetailVo vo = (GoodsModelDetailVo) checkMachineType.getData();
+            ArrayList<String> tmpStore =
+                    new ArrayList<>(Arrays.asList(MACHINE_EFFICIENT_FILTER_MODEL_ID));
+            return tmpStore.contains(vo.getModelId());
+        }
+        return false;
     }
 }
