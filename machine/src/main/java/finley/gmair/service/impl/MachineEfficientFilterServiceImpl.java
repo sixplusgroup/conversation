@@ -330,7 +330,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag",false);
-        ResultData response = fetch(condition);
+        ResultData response = qrCodeService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             QRCode code = ((List<QRCode>) response.getData()).get(0);
             String modelId = code.getModelId();
