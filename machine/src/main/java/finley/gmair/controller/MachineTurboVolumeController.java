@@ -6,10 +6,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +54,7 @@ public class MachineTurboVolumeController {
      * @param turboVolumeStatus 修改值
      * @return 修改结果
      */
-    @GetMapping("/changeStatus")
+    @PostMapping("/changeStatus")
     public ResultData changeTurboVolumeStatus(@RequestParam String qrcode,
                                               @RequestParam boolean turboVolumeStatus) {
         ResultData res = new ResultData();

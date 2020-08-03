@@ -386,6 +386,13 @@ public class ControlOptionController {
                 maxVolume = maxVolume > config.getMaxVolume() ? maxVolume : config.getMaxVolume();
             }
         }
+
+        //根据modelId查 model_volume_config表，取隐藏风量
+        response = modelVolumeService.fetchTurboVolume(modelId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            maxVolume = (int)response.getData();
+        }
+
         //根据风量范围判断是否可运行
         if (speed < minVolume) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

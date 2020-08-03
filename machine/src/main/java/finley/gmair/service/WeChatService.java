@@ -14,4 +14,7 @@ public interface WeChatService {
 
     @GetMapping(value = "/wechat/message/sendFilterCleanMessage")
     ResultData sendFilterCleanMessage(@RequestParam("json")String json, @RequestParam("type")int type);
+
+    @GetMapping(value = "/wechat/message/sendFilterReplaceMessage")
+    ResultData sendFilterReplaceMessage(@RequestParam("json")String json, @RequestParam("type")int type);
 }

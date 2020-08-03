@@ -424,7 +424,7 @@ public class MachineController {
     }
 
     //改变隐藏风量开关
-    @GetMapping("/turboVolume/changeStatus")
+    @PostMapping("/turboVolume/changeStatus")
     public ResultData changeTurboVolumeStatus(String qrcode, boolean turboVolumeStatus){
         return machineService.changeTurboVolumeStatus(qrcode,turboVolumeStatus);
     }
@@ -433,6 +433,30 @@ public class MachineController {
     @GetMapping("/turboVolume/getValue")
     public ResultData showTurboVolumeValue(String qrcode){
         return machineService.showTurboVolumeValue(qrcode);
+    }
+
+    //得到高效滤网状态
+    @GetMapping("/efficientFilter/replaceStatus")
+    public ResultData getReplaceStatus(String qrcode){
+        return machineService.getReplaceStatus(qrcode);
+    }
+
+    //得到高效滤网开关
+    @GetMapping("/efficientFilter/replaceRemind/isOpen")
+    public ResultData replaceRemindIsOpen(String qrcode){
+        return machineService.replaceRemindIsOpen(qrcode);
+    }
+
+    //改变高效滤网开关值
+    @PostMapping("/efficientFilter/replaceRemind/status/change")
+    public ResultData changeReplaceRemindStatus(String qrcode, boolean replaceRemindStatus){
+        return machineService.changeReplaceRemindStatus(qrcode, replaceRemindStatus);
+    }
+
+    //确认更换高效滤网
+    @GetMapping("/efficientFilter/replace/confirm")
+    public ResultData confirmReplace(String qrcode){
+        return machineService.confirmReplace(qrcode);
     }
 
     /**

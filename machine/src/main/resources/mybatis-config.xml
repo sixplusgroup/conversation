@@ -37,5 +37,6 @@
         <mapper resource="mapper/machine_list_daily.xml"></mapper>
         <mapper resource="mapper/machine_filter_clean.xml"></mapper>
         <mapper resource="mapper/machine_turbo_volume.xml"></mapper>
+        <mapper resource="mapper/machine_efficient_filter.xml"></mapper>
     </mappers>
 </configuration>
