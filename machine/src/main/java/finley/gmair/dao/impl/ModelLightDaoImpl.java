@@ -34,7 +34,8 @@ public class ModelLightDaoImpl extends BaseDao implements ModelLightDao {
     public ResultData query(Map<String, Object> condition){
         ResultData result = new ResultData();
         try{
-            List<ModelLight> list = sqlSession.selectList("gmair.machine.modellight.query",condition);
+            List<ModelLight> list = sqlSession.selectList(
+                    "gmair.machine.modelMaterial.query",condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
