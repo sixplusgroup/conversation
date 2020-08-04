@@ -136,8 +136,8 @@ public class MachineEfficientFilterController {
         //将replaceStatus字段修改为0，将isRemindedStatus字段修改为0
         Map<String, Object> condition = new HashMap<>();
         condition.put("qrcode", qrcode);
-        condition.put("replaceStatus", EfficientFilterStatus.NO_NEED);
-        condition.put("isRemindedStatus", EfficientFilterRemindStatus.REMIND_ZERO);
+        condition.put("replaceStatus", EfficientFilterStatus.NO_NEED.getValue());
+        condition.put("isRemindedStatus", EfficientFilterRemindStatus.REMIND_ZERO.getValue());
         ResultData response = machineEfficientFilterService.modify(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
