@@ -46,7 +46,7 @@ public class ModelMaterialController {
         }
 
         Map<String, Object> condition = new HashMap<>();
-        condition.put("modelId",modelId);
+        condition.put("modelId", modelId);
         ResultData response = modelMaterialService.fetch(condition);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {

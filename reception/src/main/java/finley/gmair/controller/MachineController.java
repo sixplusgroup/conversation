@@ -419,45 +419,52 @@ public class MachineController {
 
     //得到隐藏风量开关
     @GetMapping("/turboVolume/getStatus")
-    public ResultData getTurboVolumeStatus(String qrcode){
+    public ResultData getTurboVolumeStatus(String qrcode) {
         return machineService.getTurboVolumeStatus(qrcode);
     }
 
     //改变隐藏风量开关
     @PostMapping("/turboVolume/changeStatus")
-    public ResultData changeTurboVolumeStatus(String qrcode, boolean turboVolumeStatus){
-        return machineService.changeTurboVolumeStatus(qrcode,turboVolumeStatus);
+    public ResultData changeTurboVolumeStatus(String qrcode, boolean turboVolumeStatus) {
+        return machineService.changeTurboVolumeStatus(qrcode, turboVolumeStatus);
     }
 
     //得到隐藏风量
     @GetMapping("/turboVolume/getValue")
-    public ResultData showTurboVolumeValue(String qrcode){
+    public ResultData showTurboVolumeValue(String qrcode) {
         return machineService.showTurboVolumeValue(qrcode);
     }
 
     //得到高效滤网状态
     @GetMapping("/efficientFilter/replaceStatus")
-    public ResultData getReplaceStatus(String qrcode){
+    public ResultData getReplaceStatus(String qrcode) {
         return machineService.getReplaceStatus(qrcode);
     }
 
     //得到高效滤网开关
     @GetMapping("/efficientFilter/replaceRemind/isOpen")
-    public ResultData replaceRemindIsOpen(String qrcode){
+    public ResultData replaceRemindIsOpen(String qrcode) {
         return machineService.replaceRemindIsOpen(qrcode);
     }
 
     //改变高效滤网开关值
     @PostMapping("/efficientFilter/replaceRemind/status/change")
-    public ResultData changeReplaceRemindStatus(String qrcode, boolean replaceRemindStatus){
+    public ResultData changeReplaceRemindStatus(String qrcode, boolean replaceRemindStatus) {
         return machineService.changeReplaceRemindStatus(qrcode, replaceRemindStatus);
     }
 
     //确认更换高效滤网
     @GetMapping("/efficientFilter/replace/confirm")
-    public ResultData confirmReplace(String qrcode){
+    public ResultData confirmReplace(String qrcode) {
         return machineService.confirmReplace(qrcode);
     }
+
+    //查询设备型号对应的耗材购买链接
+    @GetMapping("/model/getMaterials")
+    public ResultData material(String modelId) {
+        return machineService.getMaterials(modelId);
+    }
+
 
     /**
      * @Description: TODO

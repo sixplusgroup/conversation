@@ -160,7 +160,7 @@ public interface MachineService {
 
     @PostMapping("/machine/filter/clean/change")
     ResultData changeFilterCleanRemindStatus(@RequestParam("qrcode") String qrcode,
-                                                    @RequestParam("cleanRemindStatus") boolean cleanRemindStatus);
+                                             @RequestParam("cleanRemindStatus") boolean cleanRemindStatus);
 
     @GetMapping("/machine/filter/clean/confirm")
     ResultData confirmClean(@RequestParam("qrcode") String qrcode);
@@ -170,7 +170,7 @@ public interface MachineService {
 
     @PostMapping("/machine/turboVolume/changeStatus")
     ResultData changeTurboVolumeStatus(@RequestParam("qrcode") String qrcode,
-                                              @RequestParam("turboVolumeStatus") boolean turboVolumeStatus);
+                                       @RequestParam("turboVolumeStatus") boolean turboVolumeStatus);
 
     @GetMapping("/machine/turboVolume/getValue")
     ResultData showTurboVolumeValue(@RequestParam("qrcode") String qrcode);
@@ -183,8 +183,11 @@ public interface MachineService {
 
     @PostMapping("/machine/efficientFilter/replaceRemind/status/change")
     ResultData changeReplaceRemindStatus(@RequestParam("qrcode") String qrcode,
-                                                @RequestParam("replaceRemindStatus") boolean replaceRemindStatus);
+                                         @RequestParam("replaceRemindStatus") boolean replaceRemindStatus);
 
     @GetMapping("/machine/efficientFilter/replace/confirm")
     ResultData confirmReplace(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/model/getmaterials")
+    ResultData getMaterials(@RequestParam("modelId") String modelId);
 }
