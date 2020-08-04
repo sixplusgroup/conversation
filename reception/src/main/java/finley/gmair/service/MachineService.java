@@ -188,6 +188,6 @@ public interface MachineService {
     @GetMapping("/machine/efficientFilter/replace/confirm")
     ResultData confirmReplace(@RequestParam("qrcode") String qrcode);
 
-    @GetMapping("/machine/model/getmaterials")
+    @GetMapping("/machine/model/getMaterials")
     ResultData getMaterials(@RequestParam("modelId") String modelId);
 }

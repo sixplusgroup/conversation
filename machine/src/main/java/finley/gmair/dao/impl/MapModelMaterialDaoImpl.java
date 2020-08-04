@@ -21,12 +21,13 @@ public class MapModelMaterialDaoImpl extends BaseDao implements MapModelMaterial
     public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<String> materialLinkList = sqlSession.selectList(
+            List<String> list = sqlSession.selectList(
                     "gmair.machine.modelMaterial.query", condition);
-            if(materialLinkList.size() != 1){
-                throw new Exception("no map-modelId-material info or multiple mapping");
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            } else {
+                result.setData(list.get(0));
             }
-            result.setData(materialLinkList.get(0));
         } catch (Exception e) {
             e.printStackTrace();
             result.setDescription(e.getMessage());

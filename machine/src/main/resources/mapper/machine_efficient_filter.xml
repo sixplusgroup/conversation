@@ -34,21 +34,33 @@
     </select>
 
     <select id="query_need_remind_first" resultMap="machine_efficient_filter">
-        SELECT qr_code, replace_status, replace_remind_on, is_reminded_status, block_flag, create_time
+        SELECT
+            qr_code,
+            replace_status,
+            replace_remind_on,
+            is_reminded_status,
+            block_flag,
+            create_time
         FROM gmair_machine.machine_efficient_filter
         WHERE block_flag = 0
-        AND replace_status = 1
-        AND replace_remind_on = true
-        AND is_reminded_status = 0
+              AND replace_status = 1
+              AND replace_remind_on = TRUE
+              AND is_reminded_status = 0
     </select>
 
     <select id="query_need_remind_second" resultMap="machine_efficient_filter">
-        SELECT qr_code, replace_status, replace_remind_on, is_reminded_status, block_flag, create_time
+        SELECT
+            qr_code,
+            replace_status,
+            replace_remind_on,
+            is_reminded_status,
+            block_flag,
+            create_time
         FROM gmair_machine.machine_efficient_filter
         WHERE block_flag = 0
-        AND replace_status = 2
-        AND replace_remind_on = true
-        AND is_reminded_status &lt;&gt; 2
+              AND replace_status = 2
+              AND replace_remind_on = TRUE
+              AND is_reminded_status &lt;&gt; 2
     </select>
 
     <update id="update" parameterType="java.util.Map">
@@ -72,10 +84,10 @@
     </update>
 
     <insert id="insert" parameterType="finley.gmair.model.machine.MachineEfficientFilter" useGeneratedKeys="false">
-        INSERT INTO gmair_machine.machine_efficient_filter(qr_code, replace_status, replace_remind_on, is_reminded_status, block_flag, create_time)
-        VALUES(#{qrcode}, #{replaceStatus,typeHandler=finley.gmair.mybatis.handler.EfficientFilterStatusHandler},
-         #{replaceRemindOn}, #{isRemindedStatus,typeHandler=finley.gmair.mybatis.handler.EfficientFilterRemindStatusHandler},
-          #{blockFlag}, #{createAt})
+        INSERT INTO gmair_machine.machine_efficient_filter (qr_code, replace_status, replace_remind_on, is_reminded_status, block_flag, create_time)
+        VALUES (#{qrcode}, #{replaceStatus,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+                #{replaceRemindOn}, #{isRemindedStatus,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+                #{blockFlag}, #{createAt})
     </insert>
 
 </mapper>
