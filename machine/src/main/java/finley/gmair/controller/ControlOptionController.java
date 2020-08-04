@@ -1,11 +1,10 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSON;
-import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.form.machine.ControlOptionForm;
-import finley.gmair.model.machine.*;
-import finley.gmair.model.machine.v1.MachineStatus;
-import finley.gmair.model.machine.v3.MachineStatusV3;
+import finley.gmair.model.machine.BoardVersion;
+import finley.gmair.model.machine.ControlOption;
+import finley.gmair.model.machine.ControlOptionAction;
+import finley.gmair.model.machine.ModelVolume;
 import finley.gmair.service.*;
 import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.MachineConstant;
@@ -62,7 +61,18 @@ public class ControlOptionController {
     private RedisService redisService;
 
     @Autowired
+    private PreBindService preBindService;
+
+    @Autowired
     private ModelVolumeService modelVolumeService;
+
+    public static boolean isEmpty(String... args) {
+        for (String arg : args) {
+            if (StringUtils.isEmpty(arg))
+                return true;
+        }
+        return false;
+    }
 
     //先查control_option表,如果对应的操作不存在,则创建.
     //如果存在,取出controlId,并根据传入的值新建control_option_action配置.
@@ -162,11 +172,13 @@ public class ControlOptionController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("未能查询到二维码所对应的设备信息");
-            return result;
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         //根据qrcode 查设备商品及型号详情
         response = qrCodeService.profile(qrcode);
@@ -324,7 +336,6 @@ public class ControlOptionController {
         return result;
     }
 
-
     /**
      * 调节设备风量
      *
@@ -375,6 +386,13 @@ public class ControlOptionController {
                 maxVolume = maxVolume > config.getMaxVolume() ? maxVolume : config.getMaxVolume();
             }
         }
+
+        //根据modelId查 model_volume_config表，取隐藏风量
+        response = modelVolumeService.fetchTurboVolume(modelId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK){
+            maxVolume = (int)response.getData();
+        }
+
         //根据风量范围判断是否可运行
         if (speed < minVolume) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -390,15 +408,12 @@ public class ControlOptionController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("sorry, can not find the qrcode");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find the machine by qrcode");
-            return result;
+        // 检查machineId是否已经获取到
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         //根据machineId查board_version表,获取version
         condition.clear();
@@ -460,15 +475,13 @@ public class ControlOptionController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("未能查找到该二维码");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("查询二维码的");
-            return result;
+
+        // 检查machine_id是否获取到
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
         //根据machineId查board_version表,获取version
@@ -506,15 +519,12 @@ public class ControlOptionController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("sorry, can not find the qrcode");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find the machineId by qrcode");
-            return result;
+        // 检查machine_id是否获取到
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         //根据machineId查board_version表,获取version
         condition.clear();
@@ -552,11 +562,13 @@ public class ControlOptionController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
+
+        // 检查machine_id是否获取到
+        response = preBindService.checkMachineId(response, qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("未能查询到设备的绑定信息");
-            return result;
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         //根据二维码查询设备的商品及型号信息
         response = qrCodeService.profile(qrcode);
@@ -597,11 +609,13 @@ public class ControlOptionController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
+
+        // 检查machine_id是否获取到
+        response = preBindService.checkMachineId(response, qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("未能查询到设备的绑定信息");
-            return result;
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         //根据二维码查询设备的商品及型号信息
         response = qrCodeService.profile(qrcode);
@@ -688,14 +702,6 @@ public class ControlOptionController {
         }
         result.setData(response.getData());
         return result;
-    }
-
-    public static boolean isEmpty(String... args) {
-        for (String arg : args) {
-            if (StringUtils.isEmpty(arg))
-                return true;
-        }
-        return false;
     }
 
     private ResultData boardVersionResponse(String machineId, ResultData response) {

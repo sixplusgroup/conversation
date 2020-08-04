@@ -21,6 +21,7 @@ import java.util.*;
 @RequestMapping("/machine/status")
 public class MachineStatusController {
 
+    Map<String, Integer> pm25Over25Count = new HashMap<>();
     @Autowired
     private MachinePm25Service machinePm25Service;
 
@@ -54,7 +55,8 @@ public class MachineStatusController {
     @Autowired
     private MachinePowerService machinePowerService;
 
-    Map<String, Integer> pm25Over25Count = new HashMap<>();
+    @Autowired
+    private PreBindService preBindService;
 
     //每小时调用,从redis中统计每个机器的pm25每小时平均值,并插入到mysql数据库中machine_hourly_status
     @PostMapping("/schedule/hourly")
@@ -88,44 +90,42 @@ public class MachineStatusController {
         condition.put("blockFlag", false);
 
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(String.format("cannot find the qrcode %s", qrcode));
-            return result;
-        } else {
-            MachineQrcodeBindVo machineQrcodeBindVo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
-            //根据machineId查board_version表,获取version
-            condition.clear();
-            condition.put("machineId", machineQrcodeBindVo.getMachineId());
-            condition.put("blockFlag", false);
-            response = boardVersionService.fetchBoardVersion(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("not find board version by machineId");
-                return result;
-            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("fail to find borad version by machineId");
-                return result;
-            }
-            int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
-            switch (version) {
-                case 1:
-                    response = coreV1Service.isOnline(machineQrcodeBindVo.getMachineId());
-                    break;
-                case 2:
-                    response = coreV2Service.isOnline(machineQrcodeBindVo.getMachineId());
-                    break;
-                case 3:
-                    response = coreV3Service.isOnline(machineQrcodeBindVo.getMachineId());
-                    break;
-            }
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return response;
         }
+
+        MachineQrcodeBindVo machineQrcodeBindVo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
+        //根据machineId查board_version表,获取version
+        condition.clear();
+        condition.put("machineId", machineQrcodeBindVo.getMachineId());
+        condition.put("blockFlag", false);
+        response = boardVersionService.fetchBoardVersion(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find board version by machineId");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to find borad version by machineId");
+            return result;
+        }
+        int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
+        switch (version) {
+            case 1:
+                response = coreV1Service.isOnline(machineQrcodeBindVo.getMachineId());
+                break;
+            case 2:
+                response = coreV2Service.isOnline(machineQrcodeBindVo.getMachineId());
+                break;
+            case 3:
+                response = coreV3Service.isOnline(machineQrcodeBindVo.getMachineId());
+                break;
+        }
+        return response;
+
     }
 
     //从mysql获取machine过去24小时的pm2.5记录,并格式化
@@ -143,15 +143,13 @@ public class MachineStatusController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to get machineId by qrcode");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find machineId by qrcode");
-            return result;
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
         //2.get the last 24 hour data from database
@@ -208,15 +206,13 @@ public class MachineStatusController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to get machineId by qrcode");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find machineId by qrcode.");
-            return result;
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
 
         //通过Calendar获取今日零点零分零秒的毫秒数

@@ -14,6 +14,8 @@ public interface MachineFilterCleanDao {
 
     ResultData query(Map<String, Object> condition);
 
+    ResultData queryOne(Map<String, Object> condition);
+
     ResultData update(Map<String, Object> condition);
 
     ResultData add(MachineFilterClean machineFilterClean);

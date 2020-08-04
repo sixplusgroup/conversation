@@ -7,8 +7,7 @@ import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.model.machine.PreBindCode;
 import finley.gmair.pool.MachinePool;
-import finley.gmair.service.ConsumerQRcodeBindService;
-import finley.gmair.service.MachineFilterCleanService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -17,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.transform.Result;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService {
@@ -35,6 +31,15 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
     @Autowired
     private MachineFilterCleanService machineFilterCleanService;
+
+    @Autowired
+    private MachineEfficientFilterService machineEfficientFilterService;
+
+    @Autowired
+    private MachineTurboVolumeService machineTurboVolumeService;
+
+    @Autowired
+    private ModelVolumeService modelVolumeService;
 
     @Autowired PreBindDao preBindDao;
 
@@ -79,16 +84,16 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             machineQrcodeBind.setCodeValue(preBindCode.getCodeValue());
             machineQrcodeBind.setMachineId(preBindCode.getMachineId());
             machineQrcodeBindDao.insert(machineQrcodeBind);
-        }
 
-        //update table: machine_filter_clean
-        MachinePool.getMachinePool().execute(() ->{
-            ResultData addRes = machineFilterCleanService.
-                                addNewBindMachine(consumerQRcodeBind.getCodeValue());
-            if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                logger.error(consumerQRcodeBind.getCodeValue() + ": update machine_filter_clean failed");
-            }
-        });
+            //update table: machine_filter_clean
+            updateMachineFilterClean(consumerQRcodeBind);
+
+            //update table: machine_turbo_volume
+            updateMachineTurboVolume(consumerQRcodeBind);
+
+            //update table: machine_efficient_filter
+            updateMachineEfficientFilter(consumerQRcodeBind);
+        }
         return result;
     }
 
@@ -181,5 +186,92 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             result.setDescription("Fail to find");
         }
         return result;
+    }
+
+    //update table: machine_filter_clean
+    @Override
+    public void updateMachineFilterClean(ConsumerQRcodeBind consumerQRcodeBind) {
+        MachinePool.getMachinePool().execute(() ->{
+            String newBindQRCode = consumerQRcodeBind.getCodeValue();
+            if (machineFilterCleanService.isCorrectGoods(newBindQRCode)) {
+                //判断是否存在
+                Map<String,Object> condition = new HashMap<>(1);
+                condition.put("qrcode",newBindQRCode);
+                ResultData isExist = machineFilterCleanService.fetchOne(condition);
+                if (isExist.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                    ResultData addRes = machineFilterCleanService.
+                            addNewBindMachine(newBindQRCode);
+                    if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error(newBindQRCode + ": update machine_filter_clean failed");
+                    }
+                }
+                //重新绑定
+                else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode",newBindQRCode);
+                    condition.put("blockFlag",false);
+                    machineFilterCleanService.modify(condition);
+                }
+            }
+        });
+    }
+
+    //update table: machine_turbo_volume
+    @Override
+    public void updateMachineTurboVolume(ConsumerQRcodeBind consumerQRcodeBind){
+        MachinePool.getMachinePool().execute(() ->{
+            String newBindQRCode = consumerQRcodeBind.getCodeValue();
+            ResultData checkMachineType = modelVolumeService.isNeedTurboVolume(newBindQRCode);
+            if (checkMachineType.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error(newBindQRCode + "check machine type failed");
+            }
+            else {
+                //判断是否存在
+                Map<String, Object> condition = new HashMap<>(1);
+                condition.put("qrcode", newBindQRCode);
+                ResultData isExist = machineTurboVolumeService.fetch(condition);
+                if (isExist.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                    ResultData addRes = machineTurboVolumeService.create(newBindQRCode);
+                    if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error(newBindQRCode + ": update machine_turbo_volume failed");
+                    }
+                }
+                //重新绑定
+                else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode", newBindQRCode);
+                    condition.put("blockFlag", false);
+                    machineTurboVolumeService.modify(condition);
+                }
+            }
+        });
+    }
+
+    //update table: machine_efficient_filter
+    @Override
+    public void updateMachineEfficientFilter(ConsumerQRcodeBind consumerQRcodeBind) {
+        MachinePool.getMachinePool().execute(() ->{
+            String newBindQRCode = consumerQRcodeBind.getCodeValue();
+            if (machineEfficientFilterService.isCorrectModel(newBindQRCode)) {
+                //判断是否存在
+                Map<String,Object> condition = new HashMap<>(1);
+                condition.put("qrcode",newBindQRCode);
+                ResultData isExist = machineEfficientFilterService.fetch(condition);
+                if (isExist.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                    ResultData addRes = machineEfficientFilterService.
+                            addNewBindMachine(newBindQRCode);
+                    if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error(newBindQRCode + ": update machine_efficient_filter failed");
+                    }
+                }
+                //重新绑定
+                else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode",newBindQRCode);
+                    condition.put("blockFlag",false);
+                    machineEfficientFilterService.modify(condition);
+                }
+            }
+        });
     }
 }

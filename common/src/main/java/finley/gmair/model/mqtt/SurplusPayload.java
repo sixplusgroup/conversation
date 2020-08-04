@@ -2,9 +2,10 @@ package finley.gmair.model.mqtt;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class SurplusPayload {
+public class SurplusPayload implements Serializable {
     private String machineId;
     private String id;
     private Timestamp time;

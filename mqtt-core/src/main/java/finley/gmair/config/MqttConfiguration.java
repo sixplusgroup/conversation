@@ -12,10 +12,7 @@ import finley.gmair.model.mqtt.SurplusPayload;
 import finley.gmair.model.mqtt.Topic;
 import finley.gmair.pool.CorePool;
 import finley.gmair.repo.MachineStatusV3Repository;
-import finley.gmair.service.LogService;
-import finley.gmair.service.MqttService;
-import finley.gmair.service.RedisService;
-import finley.gmair.service.TopicService;
+import finley.gmair.service.*;
 import finley.gmair.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +80,9 @@ public class MqttConfiguration {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private MachineFeignService machineFeignService;
 
     @Autowired
     private MachineStatusV3Repository repository;
@@ -274,11 +274,25 @@ public class MqttConfiguration {
                     MQTTUtil.partial(redisService, machineId, json);
                     break;
                 case "SYS_SURPLUS":
-                    //todo 滤网时间处理
+                    //滤网时间处理
                     SurplusPayload surplus = new SurplusPayload(machineId, json);
+                    CorePool.getSurplusPool().execute(() -> {
+                        try {
+                            machineFeignService.updateByRemain(surplus.getRemain(), surplus.getMachineId());
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            logger.error(e.getMessage());
+                        }
+                            });
 //                    logger.info("surplus: " + JSON.toJSONString(surplus));
                     break;
                 case "VER":
+                    break;
+                case "RESPONSE":
+                    logger.info(" turbo action response received, mac: " + machineId + ", payload: " + JSON.toJSONString(json));
+                    break;
+                case "TURBO":
+                    logger.info(" turbo action response received, mac: " + machineId + ", payload: " + JSON.toJSONString(json));
                     break;
                 default:
                     logger.info("unrecognized action: " + baseAction);

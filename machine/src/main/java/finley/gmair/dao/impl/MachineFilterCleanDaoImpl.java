@@ -21,11 +21,16 @@ import java.util.Map;
 public class MachineFilterCleanDaoImpl extends BaseDao implements MachineFilterCleanDao {
     @Override
     public ResultData query(Map<String, Object> condition) {
+        return null;
+    }
+
+    @Override
+    public ResultData queryOne(Map<String, Object> condition) {
         ResultData result = new ResultData();
         String qrcode=(String)condition.get("qrcode");
         try {
             MachineFilterClean machineFilterClean = sqlSession.selectOne("gmair.machine.machine_filter_clean.query", qrcode);
-            if (StringUtils.isEmpty(machineFilterClean)) {
+            if (machineFilterClean == null || StringUtils.isEmpty(machineFilterClean)) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(machineFilterClean);

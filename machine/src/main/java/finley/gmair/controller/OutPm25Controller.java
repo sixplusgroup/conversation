@@ -8,6 +8,7 @@ import finley.gmair.model.machine.OutPm25Hourly;
 import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.service.OutPm25DailyService;
 import finley.gmair.service.OutPm25HourlyService;
+import finley.gmair.service.PreBindService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.TimeUtil;
@@ -33,6 +34,10 @@ public class OutPm25Controller {
 
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
+
+    @Autowired
+    private PreBindService preBindService;
+
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResultData createOutPm25Hourly(String machineId, int pm2_5) {
 
@@ -89,10 +94,10 @@ public class OutPm25Controller {
         return result;
     }
 
-    @RequestMapping(value = "/24hour/probe/bycode",method = RequestMethod.GET)
+    @RequestMapping(value = "/24hour/probe/bycode", method = RequestMethod.GET)
     public ResultData probeLast24HourOutPm25ByQrcode(String qrcode) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(qrcode)){
+        if (StringUtils.isEmpty(qrcode)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide the qrcode");
             return result;
@@ -101,23 +106,17 @@ public class OutPm25Controller {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the machineId by qrcode");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription("success to find the machineId by qrcode");
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
 
-        String machineId = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getMachineId();
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         return probeLast24HourOutPm25ByMachineId(machineId);
     }
+
     @RequestMapping(value = "/24hour/probe", method = RequestMethod.GET)
     public ResultData probeLast24HourOutPm25ByMachineId(String machineId) {
         ResultData result = new ResultData();
@@ -227,7 +226,7 @@ public class OutPm25Controller {
             if (diff < 0 || diff >= listLength)
                 continue;
             for (String key : curObj.keySet()) {
-                if (key.contains("average") || key.contains("over") ||key.contains("pm2_5")||key.contains("indexHour")) {
+                if (key.contains("average") || key.contains("over") || key.contains("pm2_5") || key.contains("indexHour")) {
                     resultList.getJSONObject((int) diff).put(key, curObj.get(key));
                 }
             }
@@ -253,16 +252,14 @@ public class OutPm25Controller {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the machineId by qrcode");
-            return result;
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
-        String machineId = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getMachineId();
+
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         if (StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(machineId) || lastNday < 1) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide qrcode or from your qrcode can't find a machineId or lastNday is wrong");
@@ -296,16 +293,14 @@ public class OutPm25Controller {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the machineId by qrcode");
-            return result;
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
-        String machineId = ((List<MachineQrcodeBindVo>)response.getData()).get(0).getMachineId();
+
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         if (org.springframework.util.StringUtils.isEmpty(qrcode) || org.springframework.util.StringUtils.isEmpty(machineId) || lastNhour < 1) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide qrcode or from your qrcode can't find a machineId or lastNhour is wrong");

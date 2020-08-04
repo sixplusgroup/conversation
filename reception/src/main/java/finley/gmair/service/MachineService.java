@@ -151,4 +151,43 @@ public interface MachineService {
 
     @GetMapping("/machine/power/onoff/get/record/by/code")
     ResultData getRecord(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/filter/clean")
+    ResultData filterNeedCleanOrNot(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/filter/clean/isOpen")
+    ResultData filterCleanRemindIsOpen(@RequestParam("qrcode") String qrcode);
+
+    @PostMapping("/machine/filter/clean/change")
+    ResultData changeFilterCleanRemindStatus(@RequestParam("qrcode") String qrcode,
+                                             @RequestParam("cleanRemindStatus") boolean cleanRemindStatus);
+
+    @GetMapping("/machine/filter/clean/confirm")
+    ResultData confirmClean(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/turboVolume/getStatus")
+    ResultData getTurboVolumeStatus(@RequestParam("qrcode") String qrcode);
+
+    @PostMapping("/machine/turboVolume/changeStatus")
+    ResultData changeTurboVolumeStatus(@RequestParam("qrcode") String qrcode,
+                                       @RequestParam("turboVolumeStatus") boolean turboVolumeStatus);
+
+    @GetMapping("/machine/turboVolume/getValue")
+    ResultData showTurboVolumeValue(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/efficientFilter/replaceStatus")
+    ResultData getReplaceStatus(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/efficientFilter/replaceRemind/isOpen")
+    ResultData replaceRemindIsOpen(@RequestParam("qrcode") String qrcode);
+
+    @PostMapping("/machine/efficientFilter/replaceRemind/status/change")
+    ResultData changeReplaceRemindStatus(@RequestParam("qrcode") String qrcode,
+                                         @RequestParam("replaceRemindStatus") boolean replaceRemindStatus);
+
+    @GetMapping("/machine/efficientFilter/replace/confirm")
+    ResultData confirmReplace(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/model/getmaterials")
+    ResultData getMaterials(@RequestParam("modelId") String modelId);
 }

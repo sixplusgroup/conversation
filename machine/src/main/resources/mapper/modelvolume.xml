@@ -51,4 +51,13 @@
         </set>
         WHERE model_id = #{modelId}
     </update>
+
+    <select id="queryTurboVolume" parameterType="java.util.Map" resultType="java.lang.String">
+        SELECT turbo_volume
+        FROM gmair_machine.model_volume_config
+        WHERE 1 = 1
+        <if test="modelId != null">
+            AND model_id = #{modelId}
+        </if>
+    </select>
 </mapper>

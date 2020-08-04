@@ -3,10 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.machine.ConsumerQRcodeBind;
-import finley.gmair.model.machine.MachineListDaily;
-import finley.gmair.model.machine.Ownership;
-import finley.gmair.model.machine.QRCodeStatus;
+import finley.gmair.model.machine.*;
 import finley.gmair.pool.MachinePool;
 import finley.gmair.util.ParamUtils;
 import finley.gmair.util.PhoneUtil;
@@ -52,6 +49,15 @@ public class ConsumerQRcodeController {
 
     @Autowired
     private MachineListDailyService machineListDailyService;
+
+    @Autowired
+    private MachineFilterCleanService machineFilterCleanService;
+
+    @Autowired
+    private MachineTurboVolumeService machineTurboVolumeService;
+
+    @Autowired
+    private MachineEfficientFilterService machineEfficientFilterService;
 
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
     public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
@@ -217,6 +223,33 @@ public class ConsumerQRcodeController {
                 condition.put("codeValue", qrcode);
                 condition.put("blockFlag", true);
                 machineQrcodeBindService.modifyByQRcode(condition);
+
+                //设置machine_filter_clean
+                ResultData resultData = machineFilterCleanService.fetchByQRCode(qrcode);
+                if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode", qrcode);
+                    condition.put("blockFlag", true);
+                    machineFilterCleanService.modify(condition);
+                }
+
+                //设置machine_turbo_volume
+                resultData = machineTurboVolumeService.fetchByQRCode(qrcode);
+                if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode", qrcode);
+                    condition.put("blockFlag", true);
+                    machineTurboVolumeService.modify(condition);
+                }
+
+                //设置machine_efficient_filter
+                resultData = machineEfficientFilterService.fetchByQRCode(qrcode);
+                if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode", qrcode);
+                    condition.put("blockFlag", true);
+                    machineEfficientFilterService.modify(condition);
+                }
             }).start();
             condition.clear();
             condition.put("codeValue", qrcode);

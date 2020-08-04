@@ -40,4 +40,8 @@ public interface CoreV3Service {
     /*控制设备的滤网灯*/
     @PostMapping("/core/com/set/screen")
     ResultData configScreen(@RequestParam("uid") String uid, @RequestParam("valid") Integer valid);
+
+    /*重置设备滤芯剩余寿命*/
+    @PostMapping("/core/com/set/surplus")
+    ResultData resetSurplus(@RequestParam("uid") String uid, @RequestParam("remain") Integer remain);
 }

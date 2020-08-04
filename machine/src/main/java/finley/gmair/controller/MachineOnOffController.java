@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import finley.gmair.model.machine.Machine_on_off;
 import finley.gmair.service.MachineOnOffService;
 import finley.gmair.service.MachineQrcodeBindService;
+import finley.gmair.service.PreBindService;
 import finley.gmair.service.impl.ActionNotifier;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -34,6 +35,9 @@ public class MachineOnOffController {
     private ActionNotifier notifier;
 
     @Autowired
+    private PreBindService preBindService;
+
+    @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
 
     /**
@@ -60,11 +64,13 @@ public class MachineOnOffController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("qrcode is wrong, please inspect");
-            return result;
+
+        // 检查machine_id是否获取成功
+        response = preBindService.checkMachineId(response, qrcode);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            return response;
         }
+
         MachineQrcodeBindVo vo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
 
         LocalTime start = LocalTime.of(startHour, startMinute, 0);
@@ -161,11 +167,13 @@ public class MachineOnOffController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("qrcode is wrong, please inspect");
-            return result;
+
+        // 检查machine_id是否获取成功
+        response = preBindService.checkMachineId(response, qrcode);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            return response;
         }
+
         MachineQrcodeBindVo vo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
 
         condition.remove("codeValue");

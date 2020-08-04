@@ -8,10 +8,7 @@ import finley.gmair.pool.CorePool;
 import finley.gmair.service.FirmwareService;
 import finley.gmair.service.MqttService;
 import finley.gmair.service.RedisService;
-import finley.gmair.util.MQTTUtil;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
-import finley.gmair.util.TopicExtension;
+import finley.gmair.util.*;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +52,7 @@ public class MessageController {
      * action = cmd
      * */
     @PostMapping(value = "/com/control")
-    public ResultData configPower(String uid, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer light) {
+    public ResultData configPower(String uid, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer light, Integer turbo) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(uid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -66,6 +64,8 @@ public class MessageController {
         JSONObject temp = new JSONObject();
         //根据字段是否为空，向json push数据
         JSONObject json = new JSONObject();
+        String code = IDGenerator.generate("ACD");
+        json.put("actioncode", code);
         if (!StringUtils.isEmpty(power)) {
             json.put("power", power);
             temp.put("power", power);
@@ -89,6 +89,10 @@ public class MessageController {
         if (!StringUtils.isEmpty(light)) {
             json.put("light", light);
             temp.put("light", light);
+        }
+        if (!StringUtils.isEmpty(turbo)) {
+            json.put("turbo", turbo);
+            temp.put("turbo", turbo);
         }
         try {
             mqttService.publish(topic, json);
@@ -320,6 +324,28 @@ public class MessageController {
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Check version error: " + e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/com/probe/turbo")
+    public ResultData queryTurbo(String uid) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(uid)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure the uid is provided");
+            return result;
+        }
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.PROBE_TURBO);
+        JSONObject json = new JSONObject();
+        json.put("mac", uid);
+        json.put("timestamp", new Timestamp(System.currentTimeMillis()).getTime());
+        try {
+            mqttService.publish(topic, json);
+            logger.info("query info: " + JSON.toJSONString(json));
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Probe turbo error: " + e.getMessage());
         }
         return result;
     }

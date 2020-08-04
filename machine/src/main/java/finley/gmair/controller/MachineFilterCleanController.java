@@ -1,10 +1,13 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.machine.MachineFilterClean;
+import finley.gmair.pool.MachinePool;
 import finley.gmair.service.MachineFilterCleanService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +25,22 @@ import java.util.Map;
 @RequestMapping("/machine/filter/clean")
 public class MachineFilterCleanController {
 
+    private Logger logger = LoggerFactory.getLogger(MachineFilterCleanController.class);
+
     @Autowired
     private MachineFilterCleanService machineFilterCleanService;
+
+    @PostMapping("/check/daily")
+    public ResultData filterCleanDailyCheck() {
+        //avoid exception: read timed out at Timing service side.
+        MachinePool.getMachinePool().execute(() -> {
+            ResultData res = machineFilterCleanService.filterCleanDailyCheck();
+            if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("daily check: filter clean. failed!");
+            }
+        });
+        return new ResultData();
+    }
 
     /**
      * 查询设备初效滤网是否需要清洗
@@ -114,22 +131,6 @@ public class MachineFilterCleanController {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("qrcode cannot be empty");
             return res;
-        }
-
-        //在确认清洗之前再检查一下设备是否需要清洗，若不需要则不修改数据库
-        ResultData checkRes = machineFilterCleanService.filterCleanCheck(qrcode);
-        if (checkRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("check filter clean failed");
-            return res;
-        }
-        else {
-            boolean isNeedClean = (boolean) ((Map<String, Object>) checkRes.getData()).get("isNeedClean");
-            if (!isNeedClean) {
-                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                res.setDescription("The filter of this machine does not need to be cleaned.");
-                return res;
-            }
         }
 
         //将isNeedClean字段修改为false，将lastConfirmTime字段修改为当前时间

@@ -17,4 +17,6 @@ public class TopicExtension {
 
     public final static String CHECK_VERSION = "chk_ver";
 
+    public final static String PROBE_TURBO = "turbo/query";
+
 }
