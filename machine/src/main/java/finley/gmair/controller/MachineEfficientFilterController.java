@@ -3,13 +3,13 @@ package finley.gmair.controller;
 import finley.gmair.model.machine.EfficientFilterRemindStatus;
 import finley.gmair.model.machine.EfficientFilterStatus;
 import finley.gmair.model.machine.MachineEfficientFilter;
-import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.pool.MachinePool;
 import finley.gmair.service.CoreV3Service;
 import finley.gmair.service.MachineEfficientFilterService;
 import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +151,7 @@ public class MachineEfficientFilterController {
                 condition.put("blockFlag", false);
                 ResultData machineQRCodeRes = machineQrcodeBindService.fetch(condition);
                 if (machineQRCodeRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    List<MachineQrcodeBind> tmpStore = (List<MachineQrcodeBind>) machineQRCodeRes.getData();
+                    List<MachineQrcodeBindVo> tmpStore = (List<MachineQrcodeBindVo>) machineQRCodeRes.getData();
                     String machineId = tmpStore.get(0).getMachineId();
                     coreV3Service.resetSurplus(machineId, REMAIN);
                 }
