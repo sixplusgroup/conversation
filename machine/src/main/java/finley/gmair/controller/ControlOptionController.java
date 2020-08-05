@@ -227,7 +227,7 @@ public class ControlOptionController {
             return result;
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
-
+        //todo 添加关于屏幕开关的调用
         //according the value to control the machine
         if (component.equals("power")) {
             switch (version) {

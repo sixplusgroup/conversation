@@ -51,6 +51,8 @@ public class MessageController {
      * 此条指令qos为2
      * action = cmd
      * */
+    //todo 新增关于led的控制报文的发送
+    //todo 优先级不高，将请求参数用HTTPBody进行传送
     @PostMapping(value = "/com/control")
     public ResultData configPower(String uid, Integer power, Integer speed, Integer heat, Integer mode, Integer childlock, Integer light, Integer turbo) {
         ResultData result = new ResultData();
