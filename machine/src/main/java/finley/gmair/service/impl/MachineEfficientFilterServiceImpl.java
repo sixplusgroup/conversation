@@ -202,10 +202,10 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
                 JSONObject keyword3 = new JSONObject();
                 //判断第几次
                 if(number == 1){
-                    keyword3.put("value", "主滤网（高效滤网）剩余使用时间少于120小时，需更换");
+                    keyword3.put("value", "主滤网（高效滤网）快要到期了，需更换");
                 }
                 else {
-                    keyword3.put("value", "主滤网（高效滤网）剩余使用时间少于60小时，急需更换");
+                    keyword3.put("value", "主滤网（高效滤网）快要到期了，急需更换");
                 }
                 keyword3.put("color", "#173177");
 
