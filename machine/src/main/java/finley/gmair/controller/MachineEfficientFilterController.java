@@ -170,7 +170,6 @@ public class MachineEfficientFilterController {
                         if (modelEfficientRes.getResponseCode() == ResponseCode.RESPONSE_OK){
                             int resetHour = ((List<ModelEfficientConfig>)modelEfficientRes.getData()).get(0).getResetHour();
                             //发消息
-                            System.out.println(machineId+"reset");
                             coreV3Service.resetSurplus(machineId, resetHour);
                         }
                     }
