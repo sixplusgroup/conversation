@@ -3,18 +3,19 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.model.machine.ConfigOption;
 import finley.gmair.model.mqtt.Firmware;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.FirmwareService;
 import finley.gmair.service.MqttService;
 import finley.gmair.service.RedisService;
 import finley.gmair.util.*;
-import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -103,6 +104,46 @@ public class MessageController {
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Command message publishing error with: " + e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/com/config/op")
+    public ResultData configOp(@RequestBody ConfigOption configOption) {
+        ResultData result = new ResultData();
+        if (configOption == null || StringUtils.isEmpty(configOption.getUid())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("wrong param(s)");
+            return result;
+        }
+
+        String uid = configOption.getUid();
+        //根据uid生成对应的topic
+        String topic = MQTTUtil.produceTopic(uid, TopicExtension.CMD_ACTION);
+        JSONObject temp = new JSONObject();
+        //根据字段是否为空，向json push数据
+        JSONObject json = new JSONObject();
+        String code = IDGenerator.generate("ACD");
+        json.put("actioncode", code);
+        boolean hasParam = false;
+        if (!StringUtils.isEmpty(configOption.getPanel())) {
+            json.put("led", configOption.getPanel());
+            temp.put("led", configOption.getPanel());
+            hasParam = true;
+        }
+        if (hasParam) {
+            try {
+                mqttService.publish(topic, json);
+                CorePool.getComPool().execute(() -> MQTTUtil.partial(redisService, uid, temp));
+                logger.info("Send message to " + uid + ", content: " + JSON.toJSONString(json) + " on topic " + topic);
+            } catch (Exception e) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Command message publishing error with: " + e.getMessage());
+            }
+        }
+        else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("no params in ConfigOption!");
         }
         return result;
     }
