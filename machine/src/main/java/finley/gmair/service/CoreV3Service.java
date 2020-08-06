@@ -1,11 +1,9 @@
 package finley.gmair.service;
 
+import finley.gmair.model.machine.ConfigOption;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient("corev3-agent")
 public interface CoreV3Service {
@@ -40,6 +38,9 @@ public interface CoreV3Service {
     /*控制设备的滤网灯*/
     @PostMapping("/core/com/set/screen")
     ResultData configScreen(@RequestParam("uid") String uid, @RequestParam("valid") Integer valid);
+
+    @PostMapping("/core/com/config/op")
+    ResultData configOp(@RequestBody ConfigOption configOption);
 
     /*重置设备滤芯剩余寿命*/
     @PostMapping("/core/com/set/surplus")

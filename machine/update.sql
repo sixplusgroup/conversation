@@ -342,7 +342,9 @@ SELECT
     `gm`.`model_id`         AS `model_id`,
     `gm`.`model_code`       AS `model_code`,
     `gm`.`model_name`       AS `model_name`,
-    `gm`.`model_snapshot`   AS `snapshot`
+    `gm`.`model_abbr`       AS `model_abbr`,
+    `gm`.`model_thumbnail`       AS `model_thumbnail`,
+    `gm`.`model_bg`       AS `model_bg`
 FROM
     (`goods_model` `gm`
         LEFT JOIN `goods` `g` ON ((`gm`.`goods_id` = `g`.`goods_id`)));
