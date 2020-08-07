@@ -1,7 +1,6 @@
 package finley.gmair.util;
 
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.fan.FanStatus;
 
 /**
  * @ClassName: MachineUtil
@@ -10,6 +9,7 @@ import finley.gmair.model.fan.FanStatus;
  * @Date 2019/5/24 12:39 PM
  */
 public class MachineUtil {
+
     public static JSONObject normalize(Object o) {
         if (o instanceof finley.gmair.model.machine.v1.MachineStatus) {
             return normalize((finley.gmair.model.machine.v1.MachineStatus) o);
@@ -89,6 +89,7 @@ public class MachineUtil {
         json.put("heat", status.getHeat());
         json.put("light", status.getLight());
         json.put("lock", status.getChildlock());
+
         return json;
     }
 }

@@ -2,6 +2,8 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.datastructrue.LimitQueue;
+import finley.gmair.model.machine.QRCode;
+import finley.gmair.service.ControlOptionService;
 import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.service.PreBindService;
 import finley.gmair.service.QRCodeService;
@@ -9,6 +11,7 @@ import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.MachineUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.ControlOptionVo;
 import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.slf4j.Logger;
@@ -37,6 +40,9 @@ public class MachineStatusCacheController {
 
     @Autowired
     private PreBindService preBindService;
+
+    @Autowired
+    private ControlOptionService controlOptionService;
 
     @GetMapping("/{qrcode}/isonline")
     public ResultData isOnline(@PathVariable("qrcode") String qrcode) {
@@ -83,7 +89,40 @@ public class MachineStatusCacheController {
             return result;
         }
         LimitQueue<Object> statusQueue = (LimitQueue<Object>) redisService.get(uid);
-        JSONObject json = MachineUtil.normalize(statusQueue.getLast());
+        Object last = statusQueue.getLast();
+        JSONObject json = MachineUtil.normalize(last);
+
+        //查看是否需要加上panel
+        if (last instanceof finley.gmair.model.machine.v3.MachineStatusV3){
+            finley.gmair.model.machine.v3.MachineStatusV3 machineStatusV3 = (finley.gmair.model.machine.v3.MachineStatusV3) last;
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("machineId", uid);
+            condition.put("blockFlag", false);
+            ResultData response = machineQrcodeBindService.fetch(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                String qrcode = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getCodeValue();
+                condition.clear();
+                condition.put("codeValue", qrcode);
+                condition.put("blockFlag", false);
+                response = qrCodeService.fetch(condition);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    String modelId = ((List<QRCode>) response.getData()).get(0).getModelId();
+                    condition.clear();
+                    condition.put("modelId", modelId);
+                    response = controlOptionService.fetchControlOptionActionByModelId(condition);
+                    if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        List<ControlOptionVo> controlOptionVoList = (List<ControlOptionVo>) response.getData();
+                        for (ControlOptionVo controlOptionVo : controlOptionVoList) {
+                            if (controlOptionVo.getOptionComponent().equals("panel")) {
+                                json.put("panel", machineStatusV3.getLed());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         result.setData(json);
         result.setDescription("success to find machine status in redis cache");
         return result;
