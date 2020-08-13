@@ -342,7 +342,9 @@ SELECT
     `gm`.`model_id`         AS `model_id`,
     `gm`.`model_code`       AS `model_code`,
     `gm`.`model_name`       AS `model_name`,
-    `gm`.`model_snapshot`   AS `snapshot`
+    `gm`.`model_abbr`       AS `model_abbr`,
+    `gm`.`model_thumbnail`       AS `model_thumbnail`,
+    `gm`.`model_bg`       AS `model_bg`
 FROM
     (`goods_model` `gm`
         LEFT JOIN `goods` `g` ON ((`gm`.`goods_id` = `g`.`goods_id`)));
@@ -450,3 +452,19 @@ insert into machine_efficient_filter (qr_code,create_time)
     select cmb.code_value,current_timestamp() from code_machine_bind cmb,qrcode q 
     where cmb.code_value = q.code_value
     and cmb.block_flag = 0 and q.block_flag = 0 and q.model_id='MOD20200718g4l9xy79';
+
+#2020-08-06
+CREATE TABLE `model_efficient_config` (
+    `config_id`               VARCHAR(255) NOT NULL,
+    `model_id`                VARCHAR(255) NOT NULL,
+    `first_remind`            int,
+    `second_remind`           int,
+    `reset_hour`              int NOT NULL DEFAULT 0,
+    `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
+    `create_time`             DATETIME NOT NULL,
+    PRIMARY KEY (`config_id`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
+
+insert into model_efficient_config (config_id,model_id,first_remind,second_remind,reset_hour,create_time) value ('CFG00000001','MOD20200718g4l9xy79',120,60,2160,current_timestamp());

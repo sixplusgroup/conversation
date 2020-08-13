@@ -61,7 +61,7 @@ public interface MachineEfficientFilterService {
      * @param remain 滤芯剩余寿命
      * @return 滤芯状态
      */
-    EfficientFilterStatus checkEfficientFilterStatus(int remain);
+    EfficientFilterStatus checkEfficientFilterStatus(int remain, String modelId);
 
     /**
      * 更新机器状态

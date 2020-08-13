@@ -5,8 +5,8 @@ import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.model.machine.ControlOption;
 import finley.gmair.model.machine.ControlOptionAction;
 import finley.gmair.model.machine.ModelVolume;
+import finley.gmair.model.machine.ConfigOption;
 import finley.gmair.service.*;
-import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.MachineConstant;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -56,9 +56,6 @@ public class ControlOptionController {
 
     @Autowired
     private BoardVersionService boardVersionService;
-
-    @Autowired
-    private RedisService redisService;
 
     @Autowired
     private PreBindService preBindService;
@@ -227,7 +224,6 @@ public class ControlOptionController {
             return result;
         }
         int version = ((List<BoardVersion>) response.getData()).get(0).getVersion();
-        //todo 添加关于屏幕开关的调用
         //according the value to control the machine
         if (component.equals("power")) {
             switch (version) {
@@ -319,7 +315,18 @@ public class ControlOptionController {
                 case 4:
                     response = fanCoreService.config(vo.getModelName(), machineId, null, null, null, null, null, null, null, null, commandValue);
             }
-        } else {
+        } else if (component.equals("panel")) {
+            switch (version) {
+                case 3:
+                    ConfigOption configOption = new ConfigOption();
+                    configOption.setUid(machineId);
+                    configOption.setPanel(commandValue);
+                    response = coreV3Service.configOp(configOption);
+                    break;
+                default:
+                    logger.error("当前设备".concat(qrcode).concat("不支持屏显开关"));
+            }
+        }  else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("no such component");
             return result;

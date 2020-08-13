@@ -307,7 +307,7 @@ public class MessageTemplateController {
      * @throws IOException
      */
     @GetMapping(value = "/sendFilterReplaceMessage")
-    public ResultData sendFilterReplaceMessage(String json, int type) throws IOException {
+    public ResultData sendFilterReplaceMessage(String json, int type, int number) throws IOException {
         ResultData re = accessTokenController.getToken(wechatAppId);
 
         String TemplateMessage_Url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
@@ -317,8 +317,8 @@ public class MessageTemplateController {
         //创建返回实体对象
         ResultData vo = new ResultData();
         //获得新的token
-        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
-//        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", wechatToken);
+//        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
+        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", wechatToken);
         //获取模板id
         ResultData res = getTemplate(type);
         String templateId = ((MessageTemplate) res.getData()).getTemplateId();
@@ -340,12 +340,27 @@ public class MessageTemplateController {
         condition.put("messageType","replace");
         ResultData resultData = textTemplateService.fetch(condition);
         String remarkValue = ((List<TextTemplate>)resultData.getData()).get(0).getResponse();
+
+        //title
+        condition.clear();
+        if(number == 1){
+            condition.put("messageType","replace_title1");
+        }
+        else {
+            condition.put("messageType","replace_title2");
+        }
+        ResultData resultDataTitle = textTemplateService.fetch(condition);
+        String title = ((List<TextTemplate>)resultDataTitle.getData()).get(0).getResponse();
+
         JSONObject remark = new JSONObject();
         remark.put("value",remarkValue);
         remark.put("color","#173177");
-
+        JSONObject keyword3 = new JSONObject();
+        keyword3.put("value", title);
+        keyword3.put("color", "#173177");
         data.put("first",first);
         data.put("remark",remark);
+        data.put("keyword3",keyword3);
 
         String string = HttpClientUtils.sendPostJsonStr(url, js.toJSONString());
         System.out.println(string);

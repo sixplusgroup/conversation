@@ -1,12 +1,8 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.machine.EfficientFilterRemindStatus;
-import finley.gmair.model.machine.EfficientFilterStatus;
-import finley.gmair.model.machine.MachineEfficientFilter;
+import finley.gmair.model.machine.*;
 import finley.gmair.pool.MachinePool;
-import finley.gmair.service.CoreV3Service;
-import finley.gmair.service.MachineEfficientFilterService;
-import finley.gmair.service.MachineQrcodeBindService;
+import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
@@ -32,8 +28,6 @@ public class MachineEfficientFilterController {
 
     private Logger logger = LoggerFactory.getLogger(MachineEfficientFilterController.class);
 
-    private static final int REMAIN = 2160;
-
     @Autowired
     private MachineEfficientFilterService machineEfficientFilterService;
 
@@ -42,6 +36,12 @@ public class MachineEfficientFilterController {
 
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
+
+    @Autowired
+    private QRCodeService qrCodeService;
+
+    @Autowired
+    private ModelEfficientConfigService modelEfficientConfigService;
 
     @PostMapping("/check/hourly")
     public ResultData efficientFilterHourlyCheck() {
@@ -142,6 +142,7 @@ public class MachineEfficientFilterController {
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("modify machineFilterClean failed");
+            return res;
         }
         else {
             //调用core服务中的方法重置该设备高效滤网的使用时间计时
@@ -150,10 +151,29 @@ public class MachineEfficientFilterController {
                 condition.put("codeValue", qrcode);
                 condition.put("blockFlag", false);
                 ResultData machineQRCodeRes = machineQrcodeBindService.fetch(condition);
+                //得到uid
                 if (machineQRCodeRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     List<MachineQrcodeBindVo> tmpStore = (List<MachineQrcodeBindVo>) machineQRCodeRes.getData();
                     String machineId = tmpStore.get(0).getMachineId();
-                    coreV3Service.resetSurplus(machineId, REMAIN);
+                    condition.clear();
+                    condition.put("codeValue", qrcode);
+                    condition.put("blockFlag", false);
+                    machineQRCodeRes = qrCodeService.fetch(condition);
+                    //得到qrcode
+                    if (machineQRCodeRes.getResponseCode() == ResponseCode.RESPONSE_OK){
+                        String modelId = ((List<QRCode>)machineQRCodeRes.getData()).get(0).getModelId();
+                        condition.clear();
+                        condition.put("modelId", modelId);
+                        condition.put("blockFlag", false);
+                        ResultData modelEfficientRes = modelEfficientConfigService.fetch(condition);
+                        //得到重置时间
+                        if (modelEfficientRes.getResponseCode() == ResponseCode.RESPONSE_OK){
+                            int resetHour = ((List<ModelEfficientConfig>)modelEfficientRes.getData()).get(0).getResetHour();
+                            //发消息
+                            coreV3Service.resetSurplus(machineId, resetHour);
+                        }
+                    }
+
                 }
             });
             resData.put("qrcode", qrcode);

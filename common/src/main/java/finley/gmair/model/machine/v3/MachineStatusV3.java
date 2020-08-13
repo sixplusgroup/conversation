@@ -44,6 +44,8 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     private int turbo;
 
+    private int led;
+
     public MachineStatusV3() {
         super();
     }
@@ -83,6 +85,7 @@ public class MachineStatusV3 extends Entity implements Serializable {
         }
         if (json.containsKey(PacketV3Info.LED)) {
             int led = json.getInteger(PacketV3Info.LED);
+            this.led = led;
             if (led == 0) {
                 if (json.containsKey(PacketV3Info.LIGHT)) {
                     this.light = 0;
@@ -214,5 +217,13 @@ public class MachineStatusV3 extends Entity implements Serializable {
 
     public void setTurbo(int turbo) {
         this.turbo = turbo;
+    }
+
+    public int getLed() {
+        return led;
+    }
+
+    public void setLed(int led) {
+        this.led = led;
     }
 }
