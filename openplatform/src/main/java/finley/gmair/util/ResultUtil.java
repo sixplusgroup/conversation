@@ -1,7 +1,7 @@
 package finley.gmair.util;
 
-import finley.gmair.pojo.ApiResult;
-import finley.gmair.pojo.ErrorCode;
+import finley.gmair.vo.ApiResult;
+import finley.gmair.dto.ErrorCode;
 
 /**
  * @author lyy

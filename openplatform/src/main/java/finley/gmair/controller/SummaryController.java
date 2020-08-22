@@ -1,7 +1,7 @@
 package finley.gmair.controller;
 
 import finley.gmair.dto.QrCodeParamDTO;
-import finley.gmair.pojo.ApiResult;
+import finley.gmair.vo.ApiResult;
 import finley.gmair.service.SummaryService;
 import org.springframework.web.bind.annotation.*;
 

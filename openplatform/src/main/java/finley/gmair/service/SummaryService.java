@@ -1,7 +1,7 @@
 package finley.gmair.service;
 
 import finley.gmair.dto.QrCodeParamDTO;
-import finley.gmair.pojo.ApiResult;
+import finley.gmair.vo.ApiResult;
 
 /**
  * @author lyy

@@ -2,9 +2,9 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dto.QrCodeParamDTO;
 import finley.gmair.model.openplatform.CorpProfile;
-import finley.gmair.pojo.ApiResult;
-import finley.gmair.pojo.CheckResult;
-import finley.gmair.pojo.ErrorCode;
+import finley.gmair.vo.ApiResult;
+import finley.gmair.dto.CheckResult;
+import finley.gmair.dto.ErrorCode;
 import finley.gmair.service.CorpMachineSubsService;
 import finley.gmair.service.CorpProfileService;
 import finley.gmair.service.SummaryService;

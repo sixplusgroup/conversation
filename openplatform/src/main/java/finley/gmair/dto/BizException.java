@@ -1,4 +1,4 @@
-package finley.gmair.pojo;
+package finley.gmair.dto;
 
 /**
  * @author lyy

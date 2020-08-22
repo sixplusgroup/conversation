@@ -1,8 +1,8 @@
 package finley.gmair;
 
-import finley.gmair.pojo.ApiResult;
-import finley.gmair.pojo.BizException;
-import finley.gmair.pojo.ErrorCode;
+import finley.gmair.vo.ApiResult;
+import finley.gmair.dto.BizException;
+import finley.gmair.dto.ErrorCode;
 import finley.gmair.util.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
