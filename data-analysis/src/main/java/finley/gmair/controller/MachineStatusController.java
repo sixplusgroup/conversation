@@ -109,6 +109,7 @@ public class MachineStatusController {
                 }
             }
         }
+        // add annotation: 没有值的属性补0
         for (int i = 0; i < listLength; i++) {
             JSONObject jsonObject = resultList.getJSONObject(i);
             for (String key : dataList.getJSONObject(0).keySet()) {
@@ -135,7 +136,8 @@ public class MachineStatusController {
 
         //查询数据库获取室内的过去N天的数据
         Timestamp todayZero = TimeUtil.getTodayZeroTimestamp();
-        Timestamp lastNDayZero = new Timestamp(todayZero.getTime() - (lastNday - 1) * 24 * 60 * 60 * 1000);
+        // fix:numeric overflow exception; fix method: add long
+        Timestamp lastNDayZero = new Timestamp(todayZero.getTime() - (long) (lastNday - 1) * 24 * 60 * 60 * 1000);
         Map<String, Object> condition = new HashMap<>();
         condition.put("machineId", machineId);
         condition.put("createTimeGTE", lastNDayZero);
@@ -191,7 +193,8 @@ public class MachineStatusController {
             return result;
         }
         Timestamp curHourZero = TimeUtil.getThatTimeStampHourTimestamp(new Timestamp(System.currentTimeMillis()));
-        Timestamp lastNHourZero = new Timestamp(curHourZero.getTime() - (lastNhour - 1) * 60 * 60 * 1000);
+        // fix:numeric overflow exception; fix method: add long
+        Timestamp lastNHourZero = new Timestamp(curHourZero.getTime() - (long) (lastNhour - 1) * 60 * 60 * 1000);
         Map<String, Object> condition = new HashMap<>();
         condition.put("machineId", machineId);
         condition.put("createTimeGTE", lastNHourZero);

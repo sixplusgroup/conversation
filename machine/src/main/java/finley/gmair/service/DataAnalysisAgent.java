@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("data-analysis-agent")
 public interface DataAnalysisAgent {
+
     //获取machine过去N天的数据记录
     @GetMapping("/data/analysis/machine/status/{statusType}/lastNday")
     ResultData fetchLastNDayData(@RequestParam("qrcode") String qrcode,

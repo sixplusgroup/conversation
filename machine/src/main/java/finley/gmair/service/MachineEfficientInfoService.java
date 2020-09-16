@@ -1,7 +1,6 @@
 package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: Bright Chan
@@ -9,8 +8,9 @@ import org.springframework.stereotype.Service;
  * @description: MachineEfficientInfoService
  */
 
-@Service
 public interface MachineEfficientInfoService {
+
+    ResultData getSubSti(String qrcode);
 
     ResultData getRunning(String qrcode);
 
