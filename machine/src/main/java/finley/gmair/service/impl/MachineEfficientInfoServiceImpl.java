@@ -3,6 +3,8 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.dao.MachineEfficientInformationDao;
+import finley.gmair.model.machine.MachineEfficientInformation;
 import finley.gmair.service.DataAnalysisAgent;
 import finley.gmair.service.MachineEfficientInfoService;
 import finley.gmair.util.ResponseCode;
@@ -11,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author: Bright Chan
@@ -27,6 +32,9 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
 
     @Autowired
     private DataAnalysisAgent dataAnalysisAgent;
+
+    @Autowired
+    private MachineEfficientInformationDao machineEfficientInformationDao;
 
     @Override
     public ResultData getSubSti(String qrcode) {
@@ -59,5 +67,20 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         // minute -> hour
         res.setData(powerOnTime / 60);
         return res;
+    }
+
+    private int getLastNDay(String qrcode) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("qrcode", qrcode);
+
+        ResultData response = machineEfficientInformationDao.query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<MachineEfficientInformation> list = (List<MachineEfficientInformation>) response.getData();
+            MachineEfficientInformation one = list.get(0);
+
+        }
+
+        return 0;
     }
 }
