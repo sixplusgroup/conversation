@@ -52,9 +52,6 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     @Autowired
     private AirqualityAgent airqualityAgent;
 
-    @Autowired
-    private MachineEfficientInformationDao machineEfficientInformationDao;
-
     @Override
     public ResultData getRunning(String qrcode) {
         ResultData res = new ResultData();
@@ -84,28 +81,22 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     }
 
     @Override
-    public ResultData getAbnormal(String qrcode) {
+    public int getAbnormal(String qrcode) {
         int lastNday = 0;
-        ResultData result = new ResultData();
+        int result = 0;
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineDefaultLocationService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
-            return result;
+            return 0;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can't find cityId by qrcode");
-            return result;
+            return 0;
         }
         String cityId = ((List<MachineDefaultLocation>) response.getData()).get(0).getCityId();
         //去null
         if (cityId == null || "null".equals(cityId)){
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can't find cityId by qrcode");
-            return result;
+            return 0;
         }
 
         Date now = new Date();
@@ -117,15 +108,25 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         //得到上次
         response = airqualityAgent.fetchLastNDayData(cityId, lastNday);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("server is busy now");
-            return result;
+            return 0;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can't find cityId by qrcode");
-            return result;
+            return 0;
         }
-        return
+
+        List<Map<String,Object>> weather = (List<Map<String,Object>>)response.getData();
+        for (Map<String,Object> a : weather){
+            if (a.get("pm25") instanceof Double){
+                if (((double)a.get("pm25"))>75.0){
+                    result ++;
+                }
+            }
+            else if (a.get("pm25") instanceof Integer){
+                if (((int)a.get("pm25"))>75){
+                    result ++;
+                }
+            }
+        }
+        return result;
     }
 
     //得到上次的confirm时间

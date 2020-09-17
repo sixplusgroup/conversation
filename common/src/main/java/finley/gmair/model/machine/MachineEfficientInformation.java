@@ -36,6 +36,10 @@ public class MachineEfficientInformation extends Entity {
      */
     private int abnormal;
 
+    public MachineEfficientInformation() {
+        super();
+    }
+
     public MachineEfficientInformation(String qrcode, Date lastConfirmTime, int running, int conti, int abnormal) {
         super();
         this.qrcode = qrcode;
