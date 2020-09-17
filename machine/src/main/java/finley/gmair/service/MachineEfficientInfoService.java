@@ -14,4 +14,5 @@ public interface MachineEfficientInfoService {
 
     ResultData getRunning(String qrcode);
 
+    ResultData getAbnormal(String qrcode);
 }

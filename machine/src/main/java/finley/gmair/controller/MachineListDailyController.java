@@ -138,6 +138,5 @@ public class MachineListDailyController {
         }
         String cityId = ((List<MachineDefaultLocation>) response.getData()).get(0).getCityId();
         return airqualityAgent.fetchLastNDayData(cityId, lastNday);
-
     }
 }
