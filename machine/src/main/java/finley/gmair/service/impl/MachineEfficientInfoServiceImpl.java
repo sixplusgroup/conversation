@@ -7,6 +7,8 @@ import finley.gmair.dao.MachineEfficientInformationDao;
 import finley.gmair.model.machine.MachineDefaultLocation;
 import finley.gmair.model.machine.MachineEfficientInformation;
 import finley.gmair.service.AirqualityAgent;
+import finley.gmair.dao.MachineEfficientInformationDao;
+import finley.gmair.model.machine.MachineEfficientInformation;
 import finley.gmair.service.DataAnalysisAgent;
 import finley.gmair.service.MachineDefaultLocationService;
 import finley.gmair.service.MachineEfficientInfoService;
@@ -35,6 +37,9 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
 
     @Autowired
     private DataAnalysisAgent dataAnalysisAgent;
+
+    @Autowired
+    private MachineEfficientInformationDao machineEfficientInformationDao;
 
     @Override
     public ResultData getSubSti(String qrcode) {
@@ -136,5 +141,20 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         }
         Date lastConfirmDate = ((List<MachineEfficientInformation>) response.getData()).get(0).getLastConfirmTime();
         return lastConfirmDate;
+    }
+
+    private int getLastNDay(String qrcode) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("qrcode", qrcode);
+
+        ResultData response = machineEfficientInformationDao.query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<MachineEfficientInformation> list = (List<MachineEfficientInformation>) response.getData();
+            MachineEfficientInformation one = list.get(0);
+
+        }
+
+        return 0;
     }
 }

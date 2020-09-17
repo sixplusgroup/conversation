@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class MachineStatusServiceImpl implements MachineStatusService {
@@ -313,8 +312,9 @@ public class MachineStatusServiceImpl implements MachineStatusService {
             LocalDate lastDay = LocalDateTime.now().minusDays(1).toLocalDate();
             LocalDate today = LocalDateTime.now().toLocalDate();
             Map<String, Object> condition = new HashMap<>();
-            condition.put("createTimeGTE", lastDay);
-            condition.put("createTimeLT", today);
+            // fix bug: LocalDate(X) LocalDateTime(√)
+            condition.put("createTimeGTE", lastDay.atStartOfDay());
+            condition.put("createTimeLT", today.atStartOfDay());
             condition.put("blockFlag", 0);
 
             //查过去24小时的co2，并统计到daily表中
