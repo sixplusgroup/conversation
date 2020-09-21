@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.MachineEfficientInformationDao;
+import finley.gmair.dao.MachineQrcodeBindDao;
+import finley.gmair.dao.OutPm25DailyDao;
 import finley.gmair.model.machine.MachineDefaultLocation;
 import finley.gmair.model.machine.MachineEfficientInformation;
+import finley.gmair.model.machine.OutPm25Daily;
 import finley.gmair.service.AirqualityAgent;
 import finley.gmair.service.DataAnalysisAgent;
 import finley.gmair.service.MachineDefaultLocationService;
@@ -13,6 +16,7 @@ import finley.gmair.service.MachineEfficientInfoService;
 import finley.gmair.util.CalendarUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,12 +48,46 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     @Autowired
     private AirqualityAgent airqualityAgent;
 
+    @Autowired
+    private OutPm25DailyDao outPm25DailyDao;
+
+    @Autowired
+    private MachineQrcodeBindDao machineQrcodeBindDao;
+
     @Override
     public long getSubSti(String qrcode) {
         Date lastConfirmDate = getLastConfirmDate(qrcode);
-        Date now = new Date();
-
-        return CalendarUtil.hoursBetween(lastConfirmDate, now);
+        Map<String,Object> condition = new HashMap<>(5);
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        ResultData resultData = machineQrcodeBindDao.select(condition);
+        if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK){
+            return 0;
+        }
+        String machineId = ((List<MachineQrcodeBindVo>)resultData.getData()).get(0).getMachineId();
+        condition.clear();
+        condition.put("machineId",machineId);
+        condition.put("createTimeGTE",lastConfirmDate);
+        condition.put("blockFlag",false);
+        resultData = outPm25DailyDao.query(condition);
+        if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK){
+            return 0;
+        }
+        List<OutPm25Daily> outPm25DailyList = (List<OutPm25Daily>)resultData.getData();
+        int result = 0;
+        int sum = 0;
+        for (OutPm25Daily outPm25Daily:outPm25DailyList){
+            if (outPm25Daily.getAveragePm25()>=25.0){
+                sum ++;
+            }
+            else {
+                if (result < sum){
+                    result = sum;
+                }
+                sum = 0;
+            }
+        }
+        return result;
     }
 
     @Override
