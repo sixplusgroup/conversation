@@ -1,7 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.util.ResultData;
-
 /**
  * @author: Bright Chan
  * @date: 2020/9/14 21:42
@@ -10,9 +8,9 @@ import finley.gmair.util.ResultData;
 
 public interface MachineEfficientInfoService {
 
-    ResultData getSubSti(String qrcode);
+    long getSubSti(String qrcode);
 
-    ResultData getRunning(String qrcode);
+    long getRunning(String qrcode);
 
     int getAbnormal(String qrcode);
 }

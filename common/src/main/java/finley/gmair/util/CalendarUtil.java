@@ -19,4 +19,13 @@ public class CalendarUtil {
         long between_days = (time2 - time1) / (1000 * 3600 * 24);
         return Integer.parseInt(String.valueOf(between_days));
     }
+
+    public static long hoursBetween(Date oldDate, Date newDate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(oldDate);
+        long time1 = cal.getTimeInMillis();
+        cal.setTime(newDate);
+        long time2 = cal.getTimeInMillis();
+        return (time2 - time1) / (1000 * 3600);
+    }
 }

@@ -7,11 +7,10 @@ import finley.gmair.dao.MachineEfficientInformationDao;
 import finley.gmair.model.machine.MachineDefaultLocation;
 import finley.gmair.model.machine.MachineEfficientInformation;
 import finley.gmair.service.AirqualityAgent;
-import finley.gmair.dao.MachineEfficientInformationDao;
-import finley.gmair.model.machine.MachineEfficientInformation;
 import finley.gmair.service.DataAnalysisAgent;
 import finley.gmair.service.MachineDefaultLocationService;
 import finley.gmair.service.MachineEfficientInfoService;
+import finley.gmair.util.CalendarUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,6 @@ import java.util.Map;
 @Service
 public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoService {
 
-    private static final long LAST_N_DAY = new Date().getTime() / (1000 * 3600 * 24);
-
     private static final String STATUS_TYPE_POWER = "power", POWER_ON_MIN = "powerOnMinute";
 
     @Autowired
@@ -41,11 +38,6 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     @Autowired
     private MachineEfficientInformationDao machineEfficientInformationDao;
 
-    @Override
-    public ResultData getSubSti(String qrcode) {
-        return null;
-    }
-
     @Autowired
     private MachineDefaultLocationService machineDefaultLocationService;
 
@@ -53,14 +45,21 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     private AirqualityAgent airqualityAgent;
 
     @Override
-    public ResultData getRunning(String qrcode) {
-        ResultData res = new ResultData();
+    public long getSubSti(String qrcode) {
+        Date lastConfirmDate = getLastConfirmDate(qrcode);
+        Date now = new Date();
+
+        return CalendarUtil.hoursBetween(lastConfirmDate, now);
+    }
+
+    @Override
+    public long getRunning(String qrcode) {
         long powerOnTime = 0;
 
         //TODO 如何检测qrcode正确性？
 
         ResultData response =
-                dataAnalysisAgent.fetchLastNDayData(qrcode, (int) LAST_N_DAY, STATUS_TYPE_POWER);
+                dataAnalysisAgent.fetchLastNDayData(qrcode, getLastNDay(qrcode), STATUS_TYPE_POWER);
 
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             JSONArray dataList = JSON.parseArray(JSON.toJSONString(response.getData()));
@@ -71,13 +70,10 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
             }
         }
         else {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("fetch last n day data failed!");
-            return res;
+            return 0;
         }
         // minute -> hour
-        res.setData(powerOnTime / 60);
-        return res;
+        return powerOnTime / 60;
     }
 
     @Override
@@ -145,17 +141,13 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     }
 
     private int getLastNDay(String qrcode) {
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag", false);
-        condition.put("qrcode", qrcode);
-
-        ResultData response = machineEfficientInformationDao.query(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            List<MachineEfficientInformation> list = (List<MachineEfficientInformation>) response.getData();
-            MachineEfficientInformation one = list.get(0);
-
+        int res = 0;
+        Date lastConfirmDate = getLastConfirmDate(qrcode);
+        if (lastConfirmDate != null) {
+            Date now = new Date();
+            res = CalendarUtil.daysBetween(lastConfirmDate, now);
         }
 
-        return 0;
+        return res;
     }
 }
