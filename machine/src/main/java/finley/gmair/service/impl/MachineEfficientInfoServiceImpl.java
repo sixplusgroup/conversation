@@ -17,6 +17,8 @@ import finley.gmair.util.CalendarUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,11 @@ import java.util.Map;
 @Service
 public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoService {
 
+    private Logger logger = LoggerFactory.getLogger(MachineEfficientInfoServiceImpl.class);
+
     private static final String STATUS_TYPE_POWER = "power", POWER_ON_MIN = "powerOnMinute";
+
+    private static final int TOTAL_TIME = 2160;
 
     @Autowired
     private DataAnalysisAgent dataAnalysisAgent;
@@ -55,7 +61,85 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     private MachineQrcodeBindDao machineQrcodeBindDao;
 
     @Override
-    public long getSubSti(String qrcode) {
+    public ResultData create(MachineEfficientInformation machineEfficientInformation) {
+        return machineEfficientInformationDao.add(machineEfficientInformation);
+    }
+
+    @Override
+    public ResultData fetch(Map<String, Object> condition) {
+        return machineEfficientInformationDao.query(condition);
+    }
+
+    @Override
+    // 自上次确认更换到当前的时间（小时）, 用Substi表示
+    public int getSubsti(String qrcode) {
+        Date lastConfirmDate = getLastConfirmDate(qrcode);
+        Date now = new Date();
+
+        return (int) CalendarUtil.hoursBetween(lastConfirmDate, now);
+    }
+
+    @Override
+    // 每小时更新running字段
+    public ResultData hourlyUpdate() {
+        ResultData res = new ResultData();
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = machineEfficientInformationDao.query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<MachineEfficientInformation> store = (List<MachineEfficientInformation>) response.getData();
+            for (MachineEfficientInformation one : store) {
+                condition.clear();
+                condition.put("running", getRunning(one.getQrcode()));
+                condition.put("qrcode", one.getQrcode());
+                ResultData updateRes = machineEfficientInformationDao.update(condition);
+                if (updateRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    logger.error(one.getQrcode() + ": update running failed!");
+                }
+            }
+        }
+        else {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            logger.error("query machineEfficientInfo failed!");
+        }
+
+        return res;
+    }
+
+    @Override
+    // 每天更新conti和abnormal字段
+    public ResultData dailyUpdate() {
+        ResultData res = new ResultData();
+
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = machineEfficientInformationDao.query(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            List<MachineEfficientInformation> store = (List<MachineEfficientInformation>) response.getData();
+            for (MachineEfficientInformation one : store) {
+                condition.clear();
+                condition.put("conti", getConti(one.getQrcode()));
+                condition.put("abnormal", getAbnormal(one.getQrcode()));
+                condition.put("qrcode", one.getQrcode());
+                ResultData updateRes = machineEfficientInformationDao.update(condition);
+                if (updateRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    logger.error(one.getQrcode() + ": update conti and abnormal failed!");
+                }
+            }
+        }
+        else {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            logger.error("query machineEfficientInfo failed!");
+        }
+
+        return res;
+    }
+
+    // 对于420设备，根据PM2.5A数值超过25的连续天数，用Conti表示
+    private int getConti(String qrcode) {
         Date lastConfirmDate = getLastConfirmDate(qrcode);
         Map<String,Object> condition = new HashMap<>(5);
         condition.put("codeValue",qrcode);
@@ -90,11 +174,9 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         return result;
     }
 
-    @Override
-    public long getRunning(String qrcode) {
+    // 设备在线的运行时间，从data-analysis模块进行获取，用Running表示
+    private int getRunning(String qrcode) {
         long powerOnTime = 0;
-
-        //TODO 如何检测qrcode正确性？
 
         ResultData response =
                 dataAnalysisAgent.fetchLastNDayData(qrcode, getLastNDay(qrcode), STATUS_TYPE_POWER);
@@ -111,11 +193,11 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
             return 0;
         }
         // minute -> hour
-        return powerOnTime / 60;
+        return (int) powerOnTime / 60;
     }
 
-    @Override
-    public int getAbnormal(String qrcode) {
+    // 设备所处城市PM2.5在当前周期内大于75的天数，用Abnormal表示
+    private int getAbnormal(String qrcode) {
         int lastNday = 0;
         int result = 0;
         Map<String, Object> condition = new HashMap<>();
@@ -163,8 +245,16 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         return result;
     }
 
+    public int getTAvail(String qrcode) {
+        return TOTAL_TIME - getSubsti(qrcode) - getAbnormal(qrcode) * 24 - getConti(qrcode) * 24;
+    }
+
+    public int getTRun(String qrcode) {
+        return TOTAL_TIME - getRunning(qrcode);
+    }
+
     //得到上次的confirm时间
-    public Date getLastConfirmDate(String qrcode){
+    private Date getLastConfirmDate(String qrcode){
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);

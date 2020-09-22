@@ -8,7 +8,6 @@ import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ import java.util.*;
 /**
  * @author: Bright Chan
  * @date: 2020/7/26 11:25
- * @description: TODO
+ * @description: MachineEfficientFilterServiceImpl
  */
 
 @Service

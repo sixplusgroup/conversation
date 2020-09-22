@@ -100,5 +100,14 @@ public class DailyJob implements Job {
             dataAnalysisService.statisticalComponentDaily();
 //            }
         }));
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//            condition.clear();
+//            condition.put("taskId", "GTI20190121ezryn460");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+            machineFeignService.efficientInfoDailyUpdate();
+//            }
+        }));
     }
 }

@@ -113,5 +113,10 @@ public class HourlyJob implements Job {
             //高效滤网每小时更新数据
             machineFeignService.efficientFilterHourlyCheck();
         }));
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            //高效滤网(efficientInfo)每小时更新数据
+            machineFeignService.efficientInfoHourlyUpdate();
+        }));
     }
 }

@@ -1,5 +1,10 @@
 package finley.gmair.service;
 
+import finley.gmair.model.machine.MachineEfficientInformation;
+import finley.gmair.util.ResultData;
+
+import java.util.Map;
+
 /**
  * @author: Bright Chan
  * @date: 2020/9/14 21:42
@@ -8,9 +13,13 @@ package finley.gmair.service;
 
 public interface MachineEfficientInfoService {
 
-    long getSubSti(String qrcode);
+    ResultData create(MachineEfficientInformation machineEfficientInformation);
 
-    long getRunning(String qrcode);
+    ResultData fetch(Map<String, Object> condition);
 
-    int getAbnormal(String qrcode);
+    int getSubsti(String qrcode);
+
+    ResultData hourlyUpdate();
+
+    ResultData dailyUpdate();
 }

@@ -43,4 +43,10 @@ public interface MachineFeignService {
 
     @PostMapping("/machine/efficientFilter/check/hourly")
     ResultData efficientFilterHourlyCheck();
+
+    @PostMapping("/machine/efficientInfo/update/daily")
+    ResultData efficientInfoDailyUpdate();
+
+    @PostMapping("/machine/efficientInfo/update/hourly")
+    ResultData efficientInfoHourlyUpdate();
 }
