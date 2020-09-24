@@ -182,6 +182,12 @@ public class MachineEfficientFilterController {
         return res;
     }
 
+    /**
+     * 由mqtt-core服务调用，用于更新replace_status字段
+     * @param remain mqtt-core传来的设备剩余可用时间
+     * @param uid 设备uid
+     * @return 执行结果
+     */
     @GetMapping("/updateByRemain")
     public ResultData updateByRemain(@RequestParam int remain,@RequestParam String uid) {
         ResultData res = new ResultData();
