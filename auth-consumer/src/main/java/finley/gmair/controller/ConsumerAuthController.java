@@ -125,6 +125,7 @@ public class ConsumerAuthController {
             result.setDescription("Please enter your phone number correctly");
             return result;
         }
+        //todo 如果该手机号目前缓存中有有效的验证码，则直接读取原先的验证码，重新发送一次
         VerificationCode code = serialService.generate(phone);
         // call message agent to send the text to corresponding phone number
         // retrieve message template from database
