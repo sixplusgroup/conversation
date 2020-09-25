@@ -1,11 +1,10 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ConsumerQRcodeBindDao;
+import finley.gmair.dao.MachineEfficientInformationDao;
 import finley.gmair.dao.MachineQrcodeBindDao;
 import finley.gmair.dao.PreBindDao;
-import finley.gmair.model.machine.ConsumerQRcodeBind;
-import finley.gmair.model.machine.MachineQrcodeBind;
-import finley.gmair.model.machine.PreBindCode;
+import finley.gmair.model.machine.*;
 import finley.gmair.pool.MachinePool;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
@@ -41,7 +40,11 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
     @Autowired
     private ModelVolumeService modelVolumeService;
 
-    @Autowired PreBindDao preBindDao;
+    @Autowired
+    private PreBindDao preBindDao;
+
+    @Autowired
+    private MachineEfficientInformationDao machineEfficientInformationDao;
 
     @Transactional
     @Override
@@ -252,8 +255,18 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
     public void updateMachineEfficientFilter(ConsumerQRcodeBind consumerQRcodeBind) {
         MachinePool.getMachinePool().execute(() ->{
             String newBindQRCode = consumerQRcodeBind.getCodeValue();
-            if (machineEfficientFilterService.isCorrectModel(newBindQRCode)) {
-                //判断是否存在
+            ResultData modelInfoRes = machineEfficientFilterService.getEfficientModelInfo(newBindQRCode);
+            // 当返回码为ResponseCode.RESPONSE_OK时，则此设备具有高效滤网
+            if (modelInfoRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                ModelEfficientConfig one = ((List<ModelEfficientConfig>) modelInfoRes.getData()).get(0);
+                // 无firstRemind字段，说明不是GM280或者GM420S设备，需要更新machine_efficient_information表
+                if (one.getFirstRemind() == 0) {
+                    MachineEfficientInformation oneInfo = new MachineEfficientInformation(
+                            newBindQRCode, new Date(), 0, 0, 0);
+
+                    updateMachineEfficientInformation(oneInfo);
+                }
+                // 判断machine_efficient_filter表中是否已存在对应字段
                 Map<String,Object> condition = new HashMap<>(1);
                 condition.put("qrcode",newBindQRCode);
                 ResultData isExist = machineEfficientFilterService.fetch(condition);
@@ -264,13 +277,39 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
                         logger.error(newBindQRCode + ": update machine_efficient_filter failed");
                     }
                 }
-                //重新绑定
+                // 重新绑定
                 else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     condition.clear();
                     condition.put("qrcode",newBindQRCode);
                     condition.put("blockFlag",false);
                     machineEfficientFilterService.modify(condition);
                 }
+            }
+        });
+    }
+
+    //update table: machine_efficient_information
+    @Override
+    public void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation) {
+        MachinePool.getMachinePool().execute(() ->{
+            String newBindQRCode = machineEfficientInformation.getQrcode();
+            // 判断是否存在
+            Map<String, Object> condition = new HashMap<>(1);
+            condition.put("qrcode", newBindQRCode);
+            ResultData isExist = machineEfficientInformationDao.query(condition);
+            // 如果不存在则新增一条记录
+            if (isExist.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                ResultData addRes = machineEfficientInformationDao.add(machineEfficientInformation);
+                if (addRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error(newBindQRCode + ": update machine_efficient_information failed");
+                }
+            }
+            // 如果存在则重新绑定
+            else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                condition.clear();
+                condition.put("qrcode", newBindQRCode);
+                condition.put("blockFlag", false);
+                machineEfficientInformationDao.update(condition);
             }
         });
     }

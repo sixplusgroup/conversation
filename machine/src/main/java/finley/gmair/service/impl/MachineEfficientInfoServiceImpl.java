@@ -40,8 +40,6 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
 
     private static final String STATUS_TYPE_POWER = "power", POWER_ON_MIN = "powerOnMinute";
 
-    private static final int TOTAL_TIME = 2160;
-
     @Autowired
     private DataAnalysisAgent dataAnalysisAgent;
 
@@ -66,17 +64,13 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     }
 
     @Override
-    public ResultData fetch(Map<String, Object> condition) {
-        return machineEfficientInformationDao.query(condition);
+    public ResultData modify(Map<String, Object> condition) {
+        return machineEfficientInformationDao.update(condition);
     }
 
     @Override
-    // 自上次确认更换到当前的时间（小时）, 用Substi表示
-    public int getSubsti(String qrcode) {
-        Date lastConfirmDate = getLastConfirmDate(qrcode);
-        Date now = new Date();
-
-        return (int) CalendarUtil.hoursBetween(lastConfirmDate, now);
+    public ResultData fetch(Map<String, Object> condition) {
+        return machineEfficientInformationDao.query(condition);
     }
 
     @Override
@@ -109,7 +103,6 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     }
 
     @Override
-    // 每天更新conti和abnormal字段
     public ResultData dailyUpdate() {
         ResultData res = new ResultData();
 
@@ -245,14 +238,6 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         return result;
     }
 
-    public int getTAvail(String qrcode) {
-        return TOTAL_TIME - getSubsti(qrcode) - getAbnormal(qrcode) * 24 - getConti(qrcode) * 24;
-    }
-
-    public int getTRun(String qrcode) {
-        return TOTAL_TIME - getRunning(qrcode);
-    }
-
     //得到上次的confirm时间
     private Date getLastConfirmDate(String qrcode){
         Map<String, Object> condition = new HashMap<>();
@@ -264,8 +249,7 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             return null;
         }
-        Date lastConfirmDate = ((List<MachineEfficientInformation>) response.getData()).get(0).getLastConfirmTime();
-        return lastConfirmDate;
+        return ((List<MachineEfficientInformation>) response.getData()).get(0).getLastConfirmTime();
     }
 
     private int getLastNDay(String qrcode) {

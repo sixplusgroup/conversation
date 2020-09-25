@@ -15,14 +15,9 @@ public interface MachineEfficientInfoService {
 
     ResultData create(MachineEfficientInformation machineEfficientInformation);
 
-    ResultData fetch(Map<String, Object> condition);
+    ResultData modify(Map<String, Object> condition);
 
-    /**
-     * 返回自上次确认更换到当前的时间（小时）, 用Substi表示
-     * @param qrcode 选中的设备qrocde
-     * @return 自上次确认更换到当前的时间（小时）
-     */
-    int getSubsti(String qrcode);
+    ResultData fetch(Map<String, Object> condition);
 
     /**
      * 每小时更新machine_efficient_information表中的running字段
