@@ -233,7 +233,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
     }
 
     @Override
-    public ResultData specifiedMachineFilterStatusHourlyUpdate() {
+    public ResultData specifiedMachineFilterStatusDailyUpdate() {
         ResultData res = new ResultData();
 
         Map<String, Object> condition = new HashMap<>();

@@ -38,6 +38,8 @@ public class MachineEfficientInfoController {
         return new ResultData();
     }
 
+    // 暂时不进行每小时更新，将每小时更新的内容放入上面的每天更新的方法中
+    // 因为每小时更新的方法执行速度有一点慢
     @PostMapping("/update/hourly")
     public ResultData efficientInfoHourlyUpdate() {
         //avoid exception: read timed out at Timing service side.

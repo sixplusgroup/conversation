@@ -55,11 +55,11 @@ public class MachineEfficientFilterController {
         return new ResultData();
     }
 
-    @PostMapping("/update/specifiedMachine/filterStatus/hourly")
-    public ResultData specifiedMachineFilterStatusHourlyUpdate() {
+    @PostMapping("/update/specifiedMachine/filterStatus/daily")
+    public ResultData specifiedMachineFilterStatusDailyUpdate() {
         //avoid exception: read timed out at Timing service side.
         MachinePool.getMachinePool().execute(() -> {
-            ResultData res = machineEfficientFilterService.specifiedMachineFilterStatusHourlyUpdate();
+            ResultData res = machineEfficientFilterService.specifiedMachineFilterStatusDailyUpdate();
             if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 logger.error("hourly update: specified machine efficient filter status. failed!");
             }

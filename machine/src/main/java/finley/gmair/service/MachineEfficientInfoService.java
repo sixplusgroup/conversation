@@ -21,12 +21,14 @@ public interface MachineEfficientInfoService {
 
     /**
      * 每小时更新machine_efficient_information表中的running字段
+     * 暂时不调用
      * @return 执行结果
      */
     ResultData hourlyUpdate();
 
     /**
      * 每天更新machine_efficient_information表中的conti和abnormal字段
+     * 暂时代替上面的方法更新running字段
      * @return 执行结果
      */
     ResultData dailyUpdate();

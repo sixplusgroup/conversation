@@ -113,6 +113,7 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
             List<MachineEfficientInformation> store = (List<MachineEfficientInformation>) response.getData();
             for (MachineEfficientInformation one : store) {
                 condition.clear();
+                condition.put("running", getRunning(one.getQrcode()));
                 condition.put("conti", getConti(one.getQrcode()));
                 condition.put("abnormal", getAbnormal(one.getQrcode()));
                 condition.put("qrcode", one.getQrcode());
