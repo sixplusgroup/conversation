@@ -61,7 +61,7 @@ public interface MachineEfficientFilterService {
      * {@link MachineEfficientFilterService#updateByRemain(int, String)}
      * @return 执行结果
      */
-    ResultData specifiedMachineFilterStatusHourlyUpdate();
+    ResultData specifiedMachineFilterStatusDailyUpdate();
 
     /**
      * 更新GM280和GM420S的replace_status字段
