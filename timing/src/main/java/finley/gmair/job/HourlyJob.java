@@ -114,11 +114,6 @@ public class HourlyJob implements Job {
             machineFeignService.efficientFilterHourlyCheck();
         }));
 
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            // 每天更新除了GM280和GM420S的其他新风设备的高效滤网的replace_status字段
-            machineFeignService.specifiedMachineFilterStatusDailyUpdate();
-        }));
-
 //        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            // 高效滤网(efficientInfo)每小时更新数据
 //            machineFeignService.efficientInfoHourlyUpdate();
