@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,9 @@ public class MachineEfficientFilterController {
 
     @Autowired
     private ModelEfficientConfigService modelEfficientConfigService;
+
+    @Autowired
+    private MachineEfficientInfoService machineEfficientInfoService;
 
     @PostMapping("/check/hourly")
     public ResultData efficientFilterHourlyCheck() {
@@ -181,8 +185,17 @@ public class MachineEfficientFilterController {
                         //得到重置时间
                         if (modelEfficientRes.getResponseCode() == ResponseCode.RESPONSE_OK){
                             int resetHour = ((List<ModelEfficientConfig>)modelEfficientRes.getData()).get(0).getResetHour();
-                            //发消息
-                            coreV3Service.resetSurplus(machineId, resetHour);
+                            //非208/420S
+                            if (resetHour == 0){
+                                condition.clear();
+                                condition.put("qrcode", qrcode);
+                                condition.put("lastConfirmTime", new Date());
+                                machineEfficientInfoService.modify(condition);
+                            }
+                            else {
+                                //发消息
+                                coreV3Service.resetSurplus(machineId, resetHour);
+                            }
                         }
                     }
 

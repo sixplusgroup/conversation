@@ -3,12 +3,12 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.dao.MachineEfficientInformationDao;
-import finley.gmair.dao.MachineQrcodeBindDao;
-import finley.gmair.dao.OutPm25DailyDao;
+import finley.gmair.dao.*;
+import finley.gmair.model.goods.GoodsModel;
 import finley.gmair.model.machine.MachineDefaultLocation;
 import finley.gmair.model.machine.MachineEfficientInformation;
 import finley.gmair.model.machine.OutPm25Daily;
+import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.AirqualityAgent;
 import finley.gmair.service.DataAnalysisAgent;
 import finley.gmair.service.MachineDefaultLocationService;
@@ -57,6 +57,12 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
 
     @Autowired
     private MachineQrcodeBindDao machineQrcodeBindDao;
+
+    @Autowired
+    private QRCodeDao qrCodeDao;
+
+    @Autowired
+    private GoodsModelDao goodsModelDao;
 
     @Override
     public ResultData create(MachineEfficientInformation machineEfficientInformation) {
@@ -114,6 +120,7 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
             for (MachineEfficientInformation one : store) {
                 condition.clear();
                 condition.put("conti", getConti(one.getQrcode()));
+                System.err.println(one.getQrcode()+" "+condition.get("conti"));
                 condition.put("abnormal", getAbnormal(one.getQrcode()));
                 condition.put("qrcode", one.getQrcode());
                 ResultData updateRes = machineEfficientInformationDao.update(condition);
@@ -137,7 +144,29 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         Map<String,Object> condition = new HashMap<>(5);
         condition.put("codeValue",qrcode);
         condition.put("blockFlag",false);
-        ResultData resultData = machineQrcodeBindDao.select(condition);
+
+        //判断是否是420机器
+        ResultData resultData = qrCodeDao.query(condition);
+        if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK){
+            return 0;
+        }
+        String modelId = ((List<QRCode>)resultData.getData()).get(0).getModelId();
+        condition.clear();
+        condition.put("modelId",modelId);
+        condition.put("blockFlag",false);
+        resultData = goodsModelDao.query(condition);
+        if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK){
+            return 0;
+        }
+        String modelName = ((List<GoodsModel>)resultData.getData()).get(0).getModelName();
+        if (!modelName.equals("GM420")){
+            return 0;
+        }
+
+        condition.clear();
+        condition.put("codeValue",qrcode);
+        condition.put("blockFlag",false);
+        resultData = machineQrcodeBindDao.select(condition);
         if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK){
             return 0;
         }

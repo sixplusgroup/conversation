@@ -471,28 +471,28 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         // 剩余可运行时间
         int tRun = TOTAL_TIME - running;
 
-        if (tRun == 0) {
-            double res = 0.8 * (1 + Math.abs(tAvail) / (double) TOTAL_TIME);
-            if (res >= 1) {
-                return EfficientFilterStatus.URGENT_NEED;
+        if (tAvail < 0 || tRun < 0) {
+            if (tRun == 0) {
+                double res = 0.8 * (1 + Math.abs(tAvail) / (double) TOTAL_TIME);
+                if (res >= 1) {
+                    return EfficientFilterStatus.URGENT_NEED;
+                } else if (res >= 0.8) {
+                    return EfficientFilterStatus.NEED;
+                } else
+                    return EfficientFilterStatus.NO_NEED;
+            } else {
+                double res = 0.5 * (1 + Math.abs(tAvail) / (double) TOTAL_TIME) +
+                        0.3 * (1 + Math.abs(running - TOTAL_TIME) / (double) TOTAL_TIME);
+                if (res >= 1) {
+                    return EfficientFilterStatus.URGENT_NEED;
+                } else if (res >= 0.8) {
+                    return EfficientFilterStatus.NEED;
+                } else
+                    return EfficientFilterStatus.NO_NEED;
             }
-            else if (res >= 0.8) {
-                return EfficientFilterStatus.NEED;
-            }
-            else
-                return EfficientFilterStatus.NO_NEED;
         }
         else {
-            double res = 0.5 * (1 + Math.abs(tAvail) / (double) TOTAL_TIME) +
-                    0.3 * (1 + Math.abs(running - TOTAL_TIME) / (double) TOTAL_TIME);
-            if (res >= 1) {
-                return EfficientFilterStatus.URGENT_NEED;
-            }
-            else if (res >= 0.8) {
-                return EfficientFilterStatus.NEED;
-            }
-            else
-                return EfficientFilterStatus.NO_NEED;
+            return EfficientFilterStatus.NO_NEED;
         }
     }
 }

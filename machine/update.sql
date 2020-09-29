@@ -483,3 +483,11 @@ CREATE TABLE `machine_efficient_information` (
 )
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
+    
+#2020-9-24
+insert ignore into machine_efficient_information (qr_code,last_confirm_time,create_time)
+    select cmb.code_value,min(cmb.create_time),current_timestamp() from code_machine_bind cmb,qrcode q 
+    where cmb.code_value = q.code_value
+    and cmb.block_flag = 0 and q.block_flag = 0 
+    and q.model_id in (select model_id from model_efficient_config where reset_hour = 0)
+    group by cmb.code_value;
