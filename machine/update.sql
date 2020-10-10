@@ -448,10 +448,11 @@ CREATE TABLE `machine_efficient_filter` (
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
     
-insert into machine_efficient_filter (qr_code,create_time)
+insert ignore into machine_efficient_filter (qr_code,create_time)
     select cmb.code_value,current_timestamp() from code_machine_bind cmb,qrcode q 
     where cmb.code_value = q.code_value
-    and cmb.block_flag = 0 and q.block_flag = 0 and q.model_id='MOD20200718g4l9xy79';
+    and cmb.block_flag = 0 and q.block_flag = 0 
+    and q.model_id in (select model_id from model_efficient_config);
 
 #2020-08-06
 CREATE TABLE `model_efficient_config` (
@@ -467,4 +468,26 @@ CREATE TABLE `model_efficient_config` (
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
 
-insert into model_efficient_config (config_id,model_id,first_remind,second_remind,reset_hour,create_time) value ('CFG00000001','MOD20200718g4l9xy79',120,60,2160,current_timestamp());
+INSERT ignore into `model_efficient_config` VALUES ('CFG00000001','MOD20200718g4l9xy79',120,60,2160,0,'2020-08-06 14:46:27'),('CFG00000002','MOD20180717nuya5y41',120,60,2160,0,'2020-08-06 14:46:27'),('CFG00000003','MOD20190521n283i850',120,60,2160,0,'2020-08-06 14:46:27'),('CFG00000004','MOD20190527vy5xr321',120,60,2160,0,'2020-08-06 14:46:27'),('CFG00000005','MOD201910193io6yr97',120,60,2160,0,'2020-08-06 14:46:27'),('CFG00000006','MOD20191019luv3ov78',120,60,2160,0,'2020-08-06 14:46:27'),('CFG00000007','MOD20191019nzxei777',120,60,2160,0,'2020-08-06 14:46:27'),('CFG00000008','MOD20191019or6ze589',120,60,2160,0,'2020-08-06 14:46:27');
+
+#2020-08-27
+CREATE TABLE `machine_efficient_information` (
+    `qr_code`                 VARCHAR(255) NOT NULL,
+    `last_confirm_time`       DATETIME NOT NULL,
+    `running`                 int NOT NULL DEFAULT 0,
+    `conti`                   int NOT NULL DEFAULT 0,
+    `abnormal`                int NOT NULL DEFAULT 0,
+    `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
+    `create_time`             DATETIME NOT NULL,
+    PRIMARY KEY (`qr_code`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
+    
+#2020-9-24
+insert ignore into machine_efficient_information (qr_code,last_confirm_time,create_time)
+    select cmb.code_value,min(cmb.create_time),current_timestamp() from code_machine_bind cmb,qrcode q 
+    where cmb.code_value = q.code_value
+    and cmb.block_flag = 0 and q.block_flag = 0 
+    and q.model_id in (select model_id from model_efficient_config where reset_hour = 0)
+    group by cmb.code_value;

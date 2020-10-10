@@ -1,6 +1,7 @@
 package finley.gmair.service;
 
 import finley.gmair.model.machine.ConsumerQRcodeBind;
+import finley.gmair.model.machine.MachineEfficientInformation;
 import finley.gmair.util.ResultData;
 
 import java.util.Map;
@@ -23,4 +24,6 @@ public interface ConsumerQRcodeBindService {
     void updateMachineFilterClean(ConsumerQRcodeBind consumerQRcodeBind);
 
     void updateMachineEfficientFilter(ConsumerQRcodeBind consumerQRcodeBind);
+
+    void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation);
 }

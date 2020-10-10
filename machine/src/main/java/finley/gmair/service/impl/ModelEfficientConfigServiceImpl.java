@@ -1,11 +1,8 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ModelEfficientConfigDao;
-import finley.gmair.dao.ModelLightDao;
 import finley.gmair.model.machine.ModelEfficientConfig;
-import finley.gmair.model.machine.ModelLight;
 import finley.gmair.service.ModelEfficientConfigService;
-import finley.gmair.service.ModelLightService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

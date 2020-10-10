@@ -40,5 +40,6 @@
         <mapper resource="mapper/machine_turbo_volume.xml"></mapper>
         <mapper resource="mapper/machine_efficient_filter.xml"></mapper>
         <mapper resource="mapper/model_efficient_config.xml"></mapper>
+        <mapper resource="mapper/machine_efficient_information.xml"></mapper>
     </mappers>
 </configuration>

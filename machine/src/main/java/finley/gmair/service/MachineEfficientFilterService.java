@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.model.machine.EfficientFilterStatus;
 import finley.gmair.util.ResultData;
 
 import java.util.Map;
@@ -8,7 +7,7 @@ import java.util.Map;
 /**
  * @author: Bright Chan
  * @date: 2020/7/26 11:24
- * @description: TODO
+ * @description: MachineEfficientFilterService
  */
 public interface MachineEfficientFilterService {
 
@@ -57,23 +56,25 @@ public interface MachineEfficientFilterService {
     ResultData efficientFilterHourlyCheck();
 
     /**
-     * 通过当前滤芯剩余寿命判断其处于什么状态
-     * @param remain 滤芯剩余寿命
-     * @return 滤芯状态
+     * 每小时更新除了GM280和GM420S的其他新风设备的高效滤网的replace_status字段
+     * 更新GM280和GM420S的replace_status字段的方法
+     * {@link MachineEfficientFilterService#updateByRemain(int, String)}
+     * @return 执行结果
      */
-    EfficientFilterStatus checkEfficientFilterStatus(int remain, String modelId);
+    ResultData specifiedMachineFilterStatusDailyUpdate();
 
     /**
-     * 更新机器状态
-     * @param remain 滤芯剩余寿命, uid机器mac地址
+     * 更新GM280和GM420S的replace_status字段
+     * @param remain 滤芯剩余寿命
+     * @param uid 机器mac地址
      * @return 执行结果
      */
     ResultData updateByRemain(int remain, String uid);
 
     /**
-     * 检查给定的qrcode对应的设备是否具有高效滤网
+     * 根据设备二维码得到对应modelId在model_efficient_config表中的信息
      * @param qrcode 设备二维码
-     * @return 检查结果
+     * @return 搜索结果
      */
-    boolean isCorrectModel(String qrcode);
+    ResultData getEfficientModelInfo(String qrcode);
 }

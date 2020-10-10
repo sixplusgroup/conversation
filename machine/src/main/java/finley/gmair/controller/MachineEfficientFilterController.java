@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,9 @@ public class MachineEfficientFilterController {
     @Autowired
     private ModelEfficientConfigService modelEfficientConfigService;
 
+    @Autowired
+    private MachineEfficientInfoService machineEfficientInfoService;
+
     @PostMapping("/check/hourly")
     public ResultData efficientFilterHourlyCheck() {
         //avoid exception: read timed out at Timing service side.
@@ -50,6 +54,18 @@ public class MachineEfficientFilterController {
             ResultData res = machineEfficientFilterService.efficientFilterHourlyCheck();
             if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 logger.error("hourly check: efficient filter. failed!");
+            }
+        });
+        return new ResultData();
+    }
+
+    @PostMapping("/update/specifiedMachine/filterStatus/daily")
+    public ResultData specifiedMachineFilterStatusDailyUpdate() {
+        //avoid exception: read timed out at Timing service side.
+        MachinePool.getMachinePool().execute(() -> {
+            ResultData res = machineEfficientFilterService.specifiedMachineFilterStatusDailyUpdate();
+            if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("hourly update: specified machine efficient filter status. failed!");
             }
         });
         return new ResultData();
@@ -169,8 +185,17 @@ public class MachineEfficientFilterController {
                         //得到重置时间
                         if (modelEfficientRes.getResponseCode() == ResponseCode.RESPONSE_OK){
                             int resetHour = ((List<ModelEfficientConfig>)modelEfficientRes.getData()).get(0).getResetHour();
-                            //发消息
-                            coreV3Service.resetSurplus(machineId, resetHour);
+                            //非208/420S
+                            if (resetHour == 0){
+                                condition.clear();
+                                condition.put("qrcode", qrcode);
+                                condition.put("lastConfirmTime", new Date());
+                                machineEfficientInfoService.modify(condition);
+                            }
+                            else {
+                                //发消息
+                                coreV3Service.resetSurplus(machineId, resetHour);
+                            }
                         }
                     }
 
@@ -182,6 +207,12 @@ public class MachineEfficientFilterController {
         return res;
     }
 
+    /**
+     * 由mqtt-core服务调用，用于更新replace_status字段
+     * @param remain mqtt-core传来的设备剩余可用时间
+     * @param uid 设备uid
+     * @return 执行结果
+     */
     @GetMapping("/updateByRemain")
     public ResultData updateByRemain(@RequestParam int remain,@RequestParam String uid) {
         ResultData res = new ResultData();

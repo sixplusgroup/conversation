@@ -68,14 +68,14 @@ public class DailyJob implements Job {
             machineFeignService.handleMachinePowerDaily();
 //            }
         }));
-//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI201901095urigx56");
 //            boolean status = taskService.probeTaskStatus(condition);
 //            if (status) {
-//            dataAnalysisService.statisticalDataDaily();
+            dataAnalysisService.statisticalDataDaily();
 //            }
-//        }));
+        }));
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
 //            condition.clear();
 //            condition.put("taskId", "GTI201901158n42yo27");
@@ -99,6 +99,20 @@ public class DailyJob implements Job {
 //            if (status) {
             dataAnalysisService.statisticalComponentDaily();
 //            }
+        }));
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//            condition.clear();
+//            condition.put("taskId", "GTI20190121ezryn460");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+            machineFeignService.efficientInfoDailyUpdate();
+//            }
+        }));
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+            // 每天更新除了GM280和GM420S的其他新风设备的高效滤网的replace_status字段
+            machineFeignService.specifiedMachineFilterStatusDailyUpdate();
         }));
     }
 }

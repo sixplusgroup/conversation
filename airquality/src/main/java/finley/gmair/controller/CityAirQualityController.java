@@ -210,12 +210,12 @@ public class CityAirQualityController {
     private ResultData getFormatedData(String cityId, JSONArray dataList, int listLength, int timeType) {
         Timestamp cur;
         Timestamp last;
-        int timeInteval = 0;
+        long timeInteval = 0;
         //0代表格式化daily data
         if (timeType == 0) {
             timeInteval = 24 * 60 * 60 * 1000;
             cur = TimeUtil.getTodayZeroTimestamp();
-            last = new Timestamp(cur.getTime() - (listLength - 1) * timeInteval);
+            last = new Timestamp(cur.getTime() - ((long)(listLength - 1)) * timeInteval);
         }
         //其他代表格式化hourly data
         else {
@@ -267,7 +267,7 @@ public class CityAirQualityController {
 
         //查询数据库获取室内的过去N天的数据
         Timestamp todayZero = TimeUtil.getTodayZeroTimestamp();
-        Timestamp lastNDayZero = new Timestamp(todayZero.getTime() - (lastNday - 1) * 24 * 60 * 60 * 1000);
+        Timestamp lastNDayZero = new Timestamp(todayZero.getTime() - (long) (lastNday - 1) * 24 * 60 * 60 * 1000);
         Map<String, Object> condition = new HashMap<>();
         condition.put("cityId", cityId);
         condition.put("createTimeGTE", lastNDayZero);

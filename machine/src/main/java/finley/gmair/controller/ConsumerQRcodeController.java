@@ -9,7 +9,6 @@ import finley.gmair.util.ParamUtils;
 import finley.gmair.util.PhoneUtil;
 import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.service.*;
-import finley.gmair.service.impl.RedisService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -39,15 +38,6 @@ public class ConsumerQRcodeController {
     private QRCodeService qrCodeService;
 
     @Autowired
-    private AuthConsumerService authConsumerService;
-
-    @Autowired
-    private RedisService redisService;
-
-    @Autowired
-    private OutPm25DailyService outPm25DailyService;
-
-    @Autowired
     private MachineListDailyService machineListDailyService;
 
     @Autowired
@@ -58,6 +48,9 @@ public class ConsumerQRcodeController {
 
     @Autowired
     private MachineEfficientFilterService machineEfficientFilterService;
+
+    @Autowired
+    private MachineEfficientInfoService machineEfficientInfoService;
 
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
     public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
@@ -249,6 +242,19 @@ public class ConsumerQRcodeController {
                     condition.put("qrcode", qrcode);
                     condition.put("blockFlag", true);
                     machineEfficientFilterService.modify(condition);
+                    // 查看是否需要更新machine_efficient_information表
+                    ResultData modelInfoRes =
+                            machineEfficientFilterService.getEfficientModelInfo(qrcode);
+                    if (modelInfoRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        ModelEfficientConfig one =
+                                ((List<ModelEfficientConfig>) modelInfoRes.getData()).get(0);
+                        if (one.getFirstRemind() == 0) {
+                            condition.clear();
+                            condition.put("qrcode", qrcode);
+                            condition.put("blockFlag", true);
+                            machineEfficientInfoService.modify(condition);
+                        }
+                    }
                 }
             }).start();
             condition.clear();
