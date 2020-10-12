@@ -312,7 +312,7 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     @Autowired
     private AirQualityCacheService airQualityCacheService;
-    
+
     @Value("${base}")
     private String base;
 
@@ -329,6 +329,8 @@ public class CityAQIServiceImpl implements CityAQIService {
     private Map<String, City> cities;
 
     private Map<String, District> districts;
+
+    private MojiToken mojiToken;
 
     @PostConstruct
     public void init() {
@@ -439,6 +441,9 @@ public class CityAQIServiceImpl implements CityAQIService {
     @Override
     public ResultData obtain() {
         ResultData result = new ResultData();
+        MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
+        logger.info("Active moji token: " + JSON.toJSONString(mojiToken));
+        this.mojiToken = mojiToken;
         rank();
         return result;
     }
@@ -455,7 +460,7 @@ public class CityAQIServiceImpl implements CityAQIService {
 //    }
 
     private CityAirQuality fetch(String lid, int cityId) {
-        MojiToken mojiToken = (((List<MojiToken>) selectToken().getData()).get(0));
+//        MojiToken mojiToken = (((List<MojiToken>) selectToken().getData()).get(0));
         StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?cityId=").append(cityId);
         String url = stringBuffer.toString();
         String subUrl = url.substring("https://api.mojicb.com".length(), url.indexOf("?"));
@@ -470,6 +475,7 @@ public class CityAQIServiceImpl implements CityAQIService {
         map.put("X-AC-Nonce", nonce);
         map.put("X-AC-Signature", signature);
         String result = HttpDeal.getResponse(url, map);
+        logger.info("Request params: " + JSON.toJSONString(map));
         CityAirQuality quality = interpret(lid, result);
         return quality;
     }
@@ -486,7 +492,7 @@ public class CityAQIServiceImpl implements CityAQIService {
 //    }
 
     private CityAirQuality fetch(String lid, double longitude, double latitude) {
-        MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
+//        MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
         StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?lat=").append(latitude).append("&lon=").append(longitude);
         String url = stringBuffer.toString();
         String subUrl = url.substring("https://api.mojicb.com".length(), url.indexOf("?"));
@@ -501,6 +507,7 @@ public class CityAQIServiceImpl implements CityAQIService {
         map.put("X-AC-Nonce", nonce);
         map.put("X-AC-Signature", signature);
         String result = HttpDeal.getResponse(url, map);
+        logger.info("Request params: " + JSON.toJSONString(map));
         CityAirQuality quality = interpret(lid, result);
         return quality;
     }
