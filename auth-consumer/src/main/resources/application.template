@@ -14,3 +14,6 @@ spring.datasource.username=root
 spring.datasource.password=
 
 security.oauth2.resource.filter-order=3
+
+spring.cache.type=redis
+spring.redis.host=127.0.0.1
