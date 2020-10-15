@@ -1,4 +1,4 @@
-package finley.gmair.order;
+package finley.gmair;
 
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -32,7 +32,7 @@ public class TaobaoSDKTest {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         TradesSoldGetRequest req = new TradesSoldGetRequest();
         //req.setFields("tid,type,status,payment,orders,rx_audit_status,created,modified");
-        req.setFields("num_iid,orders");
+        req.setFields("num_iid,delivery_time,collect_time,dispatch_time,sign_time,delivery_cps,orders");
         req.setStartCreated(StringUtils.parseDateTime("2020-09-01 00:00:00"));
         req.setEndCreated(StringUtils.parseDateTime("2020-10-11 23:59:59"));
         req.setPageNo(1L);
