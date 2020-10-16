@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.CompanyForm;
+import finley.gmair.model.Entity;
 import finley.gmair.model.installation.*;
 import finley.gmair.model.resource.FileMap;
 import finley.gmair.pool.InstallPool;
@@ -753,7 +754,7 @@ public class AssignController {
     }
 
     @GetMapping("/report")
-    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime) {
+    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime, String sortType, String sortOrder) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(assignId)) {
@@ -783,7 +784,59 @@ public class AssignController {
             result.setDescription("当前查询条件无记录");
             return result;
         }
+
         result.setData(response.getData());
+        List<AssignReport> assignReportList = (List<AssignReport>) result.getData();
+        //排序
+        if (sortType.equals("CREATE")){
+            if (sortOrder.equals("INC")) {
+                assignReportList.sort(Comparator.comparing(AssignReport::getCreateAt));
+            }
+            else {
+                assignReportList.sort((x, y) -> y.getCreateAt().compareTo(x.getCreateAt()));
+            }
+        }
+        else if (sortType.equals("FINISH")){
+            if (sortOrder.equals("INC")) {
+                assignReportList.sort(new Comparator<AssignReport>() {
+                    @Override
+                    public int compare(AssignReport x, AssignReport y) {
+                        if (x.getAssignDate() == null && y.getAssignDate() == null){
+                            return 0;
+                        }
+                        else if (x.getAssignDate() == null){
+                            return -1;
+                        }
+                        else if (y.getAssignDate() == null){
+                            return 1;
+                        }
+                        else {
+                            return x.getAssignDate().compareTo(y.getAssignDate());
+                        }
+                    }
+                });
+            }
+            else {
+                assignReportList.sort(new Comparator<AssignReport>() {
+                    @Override
+                    public int compare(AssignReport x, AssignReport y) {
+                        if (x.getAssignDate() == null && y.getAssignDate() == null){
+                            return 0;
+                        }
+                        else if (x.getAssignDate() == null){
+                            return 1;
+                        }
+                        else if (y.getAssignDate() == null){
+                            return -1;
+                        }
+                        else {
+                            return y.getAssignDate().compareTo(x.getAssignDate());
+                        }
+                    }
+                });
+            }
+        }
+        result.setData(assignReportList);
         return result;
     }
 

@@ -415,32 +415,32 @@ public class InstallController {
      * @return
      */
     @GetMapping("/assign/report")
-    public ResultData report_query(String assignId,String teamId,String memberId,String beginTime,String endTime){
+    public ResultData report_query(String assignId,String teamId,String memberId,String beginTime,String endTime, String sortType, String sortOrder){
         ResultData result=new ResultData();
         if(!StringUtils.isEmpty(assignId)){
-            result=installService.reportQueryByAssignId(assignId,beginTime,endTime);
+            result=installService.reportQueryByAssignId(assignId,beginTime,endTime,sortType,sortOrder);
         }else if(!StringUtils.isEmpty(memberId)){
-            result=installService.reportQueryByMemberId(memberId,beginTime,endTime);
+            result=installService.reportQueryByMemberId(memberId,beginTime,endTime,sortType,sortOrder);
         }else if(!StringUtils.isEmpty(teamId)){
-            result=installService.reportQueryByTeamId(teamId,beginTime,endTime);
+            result=installService.reportQueryByTeamId(teamId,beginTime,endTime,sortType,sortOrder);
         }else{
-            result=installService.reportQueryByMemberTime(beginTime,endTime);
+            result=installService.reportQueryByMemberTime(beginTime,endTime,sortType,sortOrder);
         }
         return result;
     }
 
 
     @GetMapping("/assign/report/download")
-    public String report_download(String assignId,String teamId,String memberId,String beginTime,String endTime,HttpServletResponse response){
+    public String report_download(String assignId,String teamId,String memberId,String beginTime,String endTime,HttpServletResponse response, String sortType, String sortOrder){
         ResultData result=new ResultData();
         if(!StringUtils.isEmpty(assignId)){
-            result=installService.reportQueryByAssignId(assignId,beginTime,endTime);
+            result=installService.reportQueryByAssignId(assignId,beginTime,endTime,sortType,sortOrder);
         }else if(!StringUtils.isEmpty(memberId)){
-            result=installService.reportQueryByMemberId(memberId,beginTime,endTime);
+            result=installService.reportQueryByMemberId(memberId,beginTime,endTime,sortType,sortOrder);
         }else if(!StringUtils.isEmpty(teamId)){
-            result=installService.reportQueryByTeamId(teamId,beginTime,endTime);
+            result=installService.reportQueryByTeamId(teamId,beginTime,endTime,sortType,sortOrder);
         }else{
-            result=installService.reportQueryByMemberTime(beginTime,endTime);
+            result=installService.reportQueryByMemberTime(beginTime,endTime,sortType,sortOrder);
         }
         String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".xls";
         try {
