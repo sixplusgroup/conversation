@@ -6,6 +6,7 @@ import finley.gmair.util.SerialUtil;
 import java.io.Serializable;
 
 public class VerificationCode extends Entity implements Serializable {
+    private static final long serialVersionUID = -3757938937186622059L;
     private String phone;
 
     private String serial;
