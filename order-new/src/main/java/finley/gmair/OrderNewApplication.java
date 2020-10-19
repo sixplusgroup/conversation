@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.schedule"})
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @EnableScheduling
-public class OrderApplication {
+public class OrderNewApplication {
     public static void main(String[] args) {
-        SpringApplication.run(OrderApplication.class, args);
+        SpringApplication.run(OrderNewApplication.class, args);
     }
 }
