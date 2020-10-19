@@ -5,8 +5,12 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.domain.Trade;
 import com.taobao.api.internal.util.StringUtils;
+import com.taobao.api.request.ItemSkuGetRequest;
+import com.taobao.api.request.ItemsOnsaleGetRequest;
 import com.taobao.api.request.TradesSoldGetRequest;
 import com.taobao.api.request.TradesSoldIncrementGetRequest;
+import com.taobao.api.response.ItemSkuGetResponse;
+import com.taobao.api.response.ItemsOnsaleGetResponse;
 import com.taobao.api.response.TradesSoldGetResponse;
 import com.taobao.api.response.TradesSoldIncrementGetResponse;
 
@@ -28,7 +32,7 @@ public class TaobaoSDKTest {
         getTrades();
     }
 
-    private static final void getTrades() {
+    private static void getTrades() {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         TradesSoldGetRequest req = new TradesSoldGetRequest();
         //req.setFields("tid,type,status,payment,orders,rx_audit_status,created,modified");
@@ -48,7 +52,7 @@ public class TaobaoSDKTest {
         System.out.println(rsp.getBody());
     }
 
-    private static final void getIncrementTrades() {
+    private static void getIncrementTrades() {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         TradesSoldIncrementGetRequest req = new TradesSoldIncrementGetRequest();
         req.setFields("tid,type,status,payment,orders,rx_audit_status,created,modified");
@@ -58,6 +62,20 @@ public class TaobaoSDKTest {
         req.setPageSize(40L);
         req.setUseHasNext(true);
         TradesSoldIncrementGetResponse rsp = null;
+        try {
+            rsp = client.execute(req, sessionKey);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        System.out.println(rsp.getBody());
+    }
+
+    private static void getItemsOnSale(){
+        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+        ItemsOnsaleGetRequest req = new ItemsOnsaleGetRequest();
+        req.setHasShowcase(true);
+        req.setFields("num_iid,cid,props,title,price,num,list_time,delist_time");
+        ItemsOnsaleGetResponse rsp = null;
         try {
             rsp = client.execute(req, sessionKey);
         } catch (ApiException e) {

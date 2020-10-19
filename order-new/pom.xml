@@ -74,11 +74,27 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>com.taobao</groupId>
             <artifactId>taobao-sdk</artifactId>
             <version>1.0.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/taobao-sdk-java-auto_1599984691101-20201010.jar</systemPath>
+            <systemPath>${project.basedir}/src/main/resources/lib/taobao-sdk-java-auto_1599984691101-20201010.jar
+            </systemPath>
         </dependency>
     </dependencies>
 
