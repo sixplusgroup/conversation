@@ -1,5 +1,6 @@
 package finley.gmair.model.ordernew;
 
+import finley.gmair.model.Entity;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,10 +12,10 @@ import java.util.Date;
  */
 
 @Data
-public class TbUser {
-    private Integer id;
+public class TbUser extends Entity {
+    private String user_id;
     private Date startSyncTime;
     private Date lastUpdateTime;
     private String sessionKey;
-    private Long authorizeTime;
+    private Date authorizeTime;
 }

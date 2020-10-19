@@ -2,6 +2,7 @@ package finley.gmair.service.impl;
 
 import com.taobao.api.domain.Trade;
 import finley.gmair.service.TbOrderService;
+import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TbOrderServiceImpl implements TbOrderService {
     @Override
-    public void handleTrade(Trade trade) {
+    public ResultData handleTrade(Trade trade) {
         System.out.println(trade.toString());
+        return null;
     }
 }
