@@ -1,4 +1,4 @@
-package finley.gmair.model;
+package finley.gmair.model.ordernew;
 
 import java.util.Date;
 import lombok.Data;

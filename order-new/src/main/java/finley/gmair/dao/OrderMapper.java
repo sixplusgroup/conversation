@@ -1,7 +1,7 @@
 package finley.gmair.dao;
 import java.util.List;
 
-import finley.gmair.model.Order;
+import finley.gmair.model.ordernew.Order;
 
 public interface OrderMapper {
     int deleteByPrimaryKey(String orderId);

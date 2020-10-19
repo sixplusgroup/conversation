@@ -1,6 +1,6 @@
 package finley.gmair.dao;
 
-import finley.gmair.model.Trade;
+import finley.gmair.model.ordernew.Trade;
 
 public interface TradeMapper {
     int deleteByPrimaryKey(String tradeId);
