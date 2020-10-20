@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.TbUserMapper">
+    <resultMap id="BaseResultMap" type="finley.gmair.model.ordernew.TbUser">
+        <!--@mbg.generated-->
+        <!--@Table gmair_ordercentre.tb_user-->
+        <id column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="start_sync_time" jdbcType="TIMESTAMP" property="startSyncTime"/>
+        <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime"/>
+        <result column="session_key" jdbcType="VARCHAR" property="sessionKey"/>
+        <result column="authorize_time" jdbcType="TIMESTAMP" property="authorizeTime"/>
+        <result column="block_flag" jdbcType="BOOLEAN" property="blockFlag"/>
+        <result column="create_at" jdbcType="TIMESTAMP" property="createAt"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        user_id, start_sync_time, last_update_time, session_key, authorize_time, block_flag,
+        create_at
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from gmair_ordercentre.tb_user
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        <!--@mbg.generated-->
+        delete
+        from gmair_ordercentre.tb_user
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="finley.gmair.model.ordernew.TbUser">
+        <!--@mbg.generated-->
+        insert into gmair_ordercentre.tb_user (user_id, start_sync_time, last_update_time,
+                                               session_key, authorize_time, block_flag,
+                                               create_at)
+        values (#{userId,jdbcType=VARCHAR}, #{startSyncTime,jdbcType=TIMESTAMP}, #{lastUpdateTime,jdbcType=TIMESTAMP},
+                #{sessionKey,jdbcType=VARCHAR}, #{authorizeTime,jdbcType=TIMESTAMP}, #{blockFlag,jdbcType=BOOLEAN},
+                #{createAt,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="finley.gmair.model.ordernew.TbUser">
+        <!--@mbg.generated-->
+        insert into gmair_ordercentre.tb_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="startSyncTime != null">
+                start_sync_time,
+            </if>
+            <if test="lastUpdateTime != null">
+                last_update_time,
+            </if>
+            <if test="sessionKey != null">
+                session_key,
+            </if>
+            <if test="authorizeTime != null">
+                authorize_time,
+            </if>
+            <if test="blockFlag != null">
+                block_flag,
+            </if>
+            <if test="createAt != null">
+                create_at,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="startSyncTime != null">
+                #{startSyncTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastUpdateTime != null">
+                #{lastUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sessionKey != null">
+                #{sessionKey,jdbcType=VARCHAR},
+            </if>
+            <if test="authorizeTime != null">
+                #{authorizeTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="blockFlag != null">
+                #{blockFlag,jdbcType=BOOLEAN},
+            </if>
+            <if test="createAt != null">
+                #{createAt,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="finley.gmair.model.ordernew.TbUser">
+        <!--@mbg.generated-->
+        update gmair_ordercentre.tb_user
+        <set>
+            <if test="startSyncTime != null">
+                start_sync_time = #{startSyncTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastUpdateTime != null">
+                last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sessionKey != null">
+                session_key = #{sessionKey,jdbcType=VARCHAR},
+            </if>
+            <if test="authorizeTime != null">
+                authorize_time = #{authorizeTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag,jdbcType=BOOLEAN},
+            </if>
+            <if test="createAt != null">
+                create_at = #{createAt,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="finley.gmair.model.ordernew.TbUser">
+        <!--@mbg.generated-->
+        update gmair_ordercentre.tb_user
+        set start_sync_time  = #{startSyncTime,jdbcType=TIMESTAMP},
+            last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
+            session_key      = #{sessionKey,jdbcType=VARCHAR},
+            authorize_time   = #{authorizeTime,jdbcType=TIMESTAMP},
+            block_flag       = #{blockFlag,jdbcType=BOOLEAN},
+            create_at        = #{createAt,jdbcType=TIMESTAMP}
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+</mapper>
