@@ -5,10 +5,8 @@ import com.taobao.api.request.TradesSoldGetRequest;
 import com.taobao.api.request.TradesSoldIncrementGetRequest;
 import com.taobao.api.response.TradesSoldGetResponse;
 import com.taobao.api.response.TradesSoldIncrementGetResponse;
-import finley.gmair.model.ordernew.TbUser;
 import finley.gmair.service.TbOrderService;
 import finley.gmair.service.TbOrderSyncService;
-import finley.gmair.service.TbUserService;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,8 +27,6 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
     private TbOrderService tbOrderServiceImpl;
     @Autowired
     private TbAPIServiceImpl tbAPIServiceImpl;
-    @Autowired
-    private TbUserService tbUserServiceImpl;
 
     @Override
     public ResultData fullImport() {

@@ -125,8 +125,7 @@ create table sku_item
     price           double               not null comment '属于这个sku的商品的价格 取值范围:0-100000000;精确到2位小数;单位:元',
     block_flag      tinyint(1) default 0 not null,
     create_at       datetime             not null
-)
-    comment '商品项表';
+) ENGINE=INNODB DEFAULT CHARSET=UTF8 comment '商品项表';
 
 DROP TABLE IF EXISTS `tb_user`;
 create table tb_user
@@ -139,5 +138,4 @@ create table tb_user
     authorize_time   datetime     not null comment '用户授权时间',
     block_flag       tinyint(1)   not null,
     create_at        datetime     not null
-)
-    comment '淘宝卖家用户表';
+) ENGINE=INNODB DEFAULT CHARSET=UTF8 comment '淘宝卖家用户表';
