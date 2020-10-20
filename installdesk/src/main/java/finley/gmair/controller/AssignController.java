@@ -97,11 +97,13 @@ public class AssignController {
         String address = form.getConsumerAddress().trim();
         String detail = form.getModel().trim();
         String source = form.getSource().trim();
+        String type = form.getType();
         Assign assign;
         if (!StringUtils.isEmpty(form.getCompany())) {
-            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim());
+            System.out.println("???");
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim(),type);
         } else {
-            assign = new Assign(consignee, phone, address, detail, source, form.getDescription());
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(),null,type);
         }
 
 
@@ -135,7 +137,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/list")
-    public ResultData list(String status, String teamId, Integer curPage, Integer length, String search) {
+    public ResultData list(String status, String teamId, Integer curPage, Integer length, String search, String sortType) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(status)) {
@@ -174,6 +176,29 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
+
+        List<AssignMember> assignMemberList = (List<AssignMember>) result.getData();
+        //排序
+        if (sortType.equals("CREATE")){
+            assignMemberList.sort((x, y) -> y.getCreateAt().compareTo(x.getCreateAt()));
+        }
+        else if (sortType.equals("FINISH")){
+            assignMemberList.sort((x, y) -> {
+                if (x.getAssignDate() == null && y.getAssignDate() == null){
+                    return 0;
+                }
+                else if (x.getAssignDate() == null){
+                    return 1;
+                }
+                else if (y.getAssignDate() == null){
+                    return -1;
+                }
+                else {
+                    return y.getAssignDate().compareTo(x.getAssignDate());
+                }
+            });
+        }
+        result.setData(assignMemberList);
         return result;
     }
 
@@ -387,7 +412,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength, String reverse) {
+    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength, String reverse, String sortType) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -426,6 +451,9 @@ public class AssignController {
         if (status != null) {
             condition.put("assignStatus", status);
         }
+        if (sortType != null && !sortType.isEmpty()){
+            condition.put("sortType", sortType);
+        }
         if (!StringUtils.isEmpty(search)) {
             String fuzzysearch = "%" + search + "%";
             Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
@@ -462,7 +490,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/overview")
-    public ResultData overview(String memberId, Integer status, String search) {
+    public ResultData overview(String memberId, Integer status, String search, String sortType) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -498,6 +526,28 @@ public class AssignController {
             result.setDescription("当前暂无任何安装任务，请稍后尝试");
         }
         result.setData(response.getData());
+        List<Assign> assignReportList = (List<Assign>) result.getData();
+        //排序
+        if (sortType.equals("CREATE")){
+            assignReportList.sort((x, y) -> y.getCreateAt().compareTo(x.getCreateAt()));
+        }
+        else if (sortType.equals("FINISH")){
+            assignReportList.sort((x, y) -> {
+                if (x.getAssignDate() == null && y.getAssignDate() == null){
+                    return 0;
+                }
+                else if (x.getAssignDate() == null){
+                    return 1;
+                }
+                else if (y.getAssignDate() == null){
+                    return -1;
+                }
+                else {
+                    return y.getAssignDate().compareTo(x.getAssignDate());
+                }
+            });
+        }
+        result.setData(assignReportList);
         return result;
     }
 
@@ -754,7 +804,7 @@ public class AssignController {
     }
 
     @GetMapping("/report")
-    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime, String sortType, String sortOrder) {
+    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime, String sortType) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(assignId)) {
@@ -789,52 +839,23 @@ public class AssignController {
         List<AssignReport> assignReportList = (List<AssignReport>) result.getData();
         //排序
         if (sortType.equals("CREATE")){
-            if (sortOrder.equals("INC")) {
-                assignReportList.sort(Comparator.comparing(AssignReport::getCreateAt));
-            }
-            else {
-                assignReportList.sort((x, y) -> y.getCreateAt().compareTo(x.getCreateAt()));
-            }
+            assignReportList.sort((x, y) -> y.getCreateAt().compareTo(x.getCreateAt()));
         }
         else if (sortType.equals("FINISH")){
-            if (sortOrder.equals("INC")) {
-                assignReportList.sort(new Comparator<AssignReport>() {
-                    @Override
-                    public int compare(AssignReport x, AssignReport y) {
-                        if (x.getAssignDate() == null && y.getAssignDate() == null){
-                            return 0;
-                        }
-                        else if (x.getAssignDate() == null){
-                            return -1;
-                        }
-                        else if (y.getAssignDate() == null){
-                            return 1;
-                        }
-                        else {
-                            return x.getAssignDate().compareTo(y.getAssignDate());
-                        }
-                    }
-                });
-            }
-            else {
-                assignReportList.sort(new Comparator<AssignReport>() {
-                    @Override
-                    public int compare(AssignReport x, AssignReport y) {
-                        if (x.getAssignDate() == null && y.getAssignDate() == null){
-                            return 0;
-                        }
-                        else if (x.getAssignDate() == null){
-                            return 1;
-                        }
-                        else if (y.getAssignDate() == null){
-                            return -1;
-                        }
-                        else {
-                            return y.getAssignDate().compareTo(x.getAssignDate());
-                        }
-                    }
-                });
-            }
+            assignReportList.sort((x, y) -> {
+                if (x.getAssignDate() == null && y.getAssignDate() == null){
+                    return 0;
+                }
+                else if (x.getAssignDate() == null){
+                    return 1;
+                }
+                else if (y.getAssignDate() == null){
+                    return -1;
+                }
+                else {
+                    return y.getAssignDate().compareTo(x.getAssignDate());
+                }
+            });
         }
         result.setData(assignReportList);
         return result;
