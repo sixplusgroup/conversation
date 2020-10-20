@@ -42,8 +42,4 @@ public class SkuItem extends Entity{
      * 属于这个sku的商品的价格 取值范围:0-100000000;精确到2位小数;单位:元
      */
     private Double price;
-
-    private Boolean blockFlag;
-
-    private Date createAt;
 }

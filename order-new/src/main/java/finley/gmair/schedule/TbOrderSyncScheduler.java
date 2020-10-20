@@ -23,6 +23,6 @@ public class TbOrderSyncScheduler {
 
     @Scheduled(cron = "0 0/30 * * * ?")
     public void incrementalImport() {
-        tbOrderSyncServiceImpl.incrementalImport();
+        //tbOrderSyncServiceImpl.incrementalImport();
     }
 }

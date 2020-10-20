@@ -37,8 +37,4 @@ public class TbUser extends Entity{
      * 用户授权时间
      */
     private Date authorizeTime;
-
-    private Boolean blockFlag;
-
-    private Date createAt;
 }

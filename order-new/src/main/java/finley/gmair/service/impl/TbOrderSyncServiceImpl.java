@@ -5,6 +5,8 @@ import com.taobao.api.request.TradesSoldGetRequest;
 import com.taobao.api.request.TradesSoldIncrementGetRequest;
 import com.taobao.api.response.TradesSoldGetResponse;
 import com.taobao.api.response.TradesSoldIncrementGetResponse;
+import finley.gmair.dao.TbUserMapper;
+import finley.gmair.model.ordernew.TbUser;
 import finley.gmair.service.TbOrderService;
 import finley.gmair.service.TbOrderSyncService;
 import finley.gmair.util.ResultData;
@@ -28,8 +30,10 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
     @Autowired
     private TbAPIServiceImpl tbAPIServiceImpl;
 
+
     @Override
     public ResultData fullImport() {
+        /*
         ResultData resultData = tbUserServiceImpl.getTbUser();
         //todo:判断响应结果
         TbUser tbUser = (TbUser) resultData.getData();
@@ -55,6 +59,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
         tbUser.setStartSyncTime(startSyncTime);
         tbUser.setLastUpdateTime(now);
         tbUserServiceImpl.updateTbUser(tbUser);
+         */
         return null;
     }
 

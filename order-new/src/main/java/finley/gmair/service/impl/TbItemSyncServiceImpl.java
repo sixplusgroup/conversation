@@ -14,4 +14,6 @@ public class TbItemSyncServiceImpl implements TbItemSyncService {
 
     @Override
     public void fullImport() {
+
+    }
 }
