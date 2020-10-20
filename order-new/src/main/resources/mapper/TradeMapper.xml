@@ -1,552 +1,555 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="finley.gmair.dao.TradeMapper">
-  <resultMap id="BaseResultMap" type="finley.gmair.model.ordernew.Trade">
-    <!--@mbg.generated-->
-    <!--@Table gmair_ordercentre.trade-->
-    <id column="trade_id" jdbcType="VARCHAR" property="tradeId" />
-    <result column="tid" jdbcType="BIGINT" property="tid" />
-    <result column="num_iid" jdbcType="BIGINT" property="numIid" />
-    <result column="num" jdbcType="INTEGER" property="num" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="shipping_type" jdbcType="VARCHAR" property="shippingType" />
-    <result column="trade_from" jdbcType="VARCHAR" property="tradeFrom" />
-    <result column="step_trade_status" jdbcType="VARCHAR" property="stepTradeStatus" />
-    <result column="buyer_rate" jdbcType="BOOLEAN" property="buyerRate" />
-    <result column="created" jdbcType="TIMESTAMP" property="created" />
-    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
-    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
-    <result column="consign_time" jdbcType="TIMESTAMP" property="consignTime" />
-    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
-    <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
-    <result column="receiver_state" jdbcType="VARCHAR" property="receiverState" />
-    <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress" />
-    <result column="receiver_zip" jdbcType="VARCHAR" property="receiverZip" />
-    <result column="receiver_mobile" jdbcType="VARCHAR" property="receiverMobile" />
-    <result column="receiver_phone" jdbcType="VARCHAR" property="receiverPhone" />
-    <result column="receiver_country" jdbcType="VARCHAR" property="receiverCountry" />
-    <result column="receiver_city" jdbcType="VARCHAR" property="receiverCity" />
-    <result column="receiver_district" jdbcType="VARCHAR" property="receiverDistrict" />
-    <result column="receiver_town" jdbcType="VARCHAR" property="receiverTown" />
-    <result column="tmall_delivery" jdbcType="BOOLEAN" property="tmallDelivery" />
-    <result column="cn_service" jdbcType="VARCHAR" property="cnService" />
-    <result column="delivery_cps" jdbcType="VARCHAR" property="deliveryCps" />
-    <result column="cutoff_minutes" jdbcType="VARCHAR" property="cutoffMinutes" />
-    <result column="delivery_time" jdbcType="TIMESTAMP" property="deliveryTime" />
-    <result column="collect_time" jdbcType="TIMESTAMP" property="collectTime" />
-    <result column="dispatch_time" jdbcType="TIMESTAMP" property="dispatchTime" />
-    <result column="sign_time" jdbcType="TIMESTAMP" property="signTime" />
-    <result column="es_time" jdbcType="INTEGER" property="esTime" />
-    <result column="price" jdbcType="DOUBLE" property="price" />
-    <result column="total_fee" jdbcType="DOUBLE" property="totalFee" />
-    <result column="payment" jdbcType="DOUBLE" property="payment" />
-    <result column="adjust_fee" jdbcType="DOUBLE" property="adjustFee" />
-    <result column="received_payment" jdbcType="DOUBLE" property="receivedPayment" />
-    <result column="discount_fee" jdbcType="DOUBLE" property="discountFee" />
-    <result column="post_fee" jdbcType="DOUBLE" property="postFee" />
-    <result column="credit_card_fee" jdbcType="DOUBLE" property="creditCardFee" />
-    <result column="step_paid_fee" jdbcType="DOUBLE" property="stepPaidFee" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    trade_id, tid, num_iid, num, `status`, `type`, shipping_type, trade_from, step_trade_status, 
-    buyer_rate, created, modified, pay_time, consign_time, end_time, receiver_name, receiver_state, 
-    receiver_address, receiver_zip, receiver_mobile, receiver_phone, receiver_country, 
-    receiver_city, receiver_district, receiver_town, tmall_delivery, cn_service, delivery_cps, 
-    cutoff_minutes, delivery_time, collect_time, dispatch_time, sign_time, es_time, price, 
-    total_fee, payment, adjust_fee, received_payment, discount_fee, post_fee, credit_card_fee, 
-    step_paid_fee
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    <!--@mbg.generated-->
-    select 
-    <include refid="Base_Column_List" />
-    from gmair_ordercentre.trade
-    where trade_id = #{tradeId,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    <!--@mbg.generated-->
-    delete from gmair_ordercentre.trade
-    where trade_id = #{tradeId,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="finley.gmair.model.ordernew.Trade">
-    <!--@mbg.generated-->
-    insert into gmair_ordercentre.trade (trade_id, tid, num_iid,
-      num, `status`, `type`, 
-      shipping_type, trade_from, step_trade_status, 
-      buyer_rate, created, modified, 
-      pay_time, consign_time, end_time, 
-      receiver_name, receiver_state, receiver_address, 
-      receiver_zip, receiver_mobile, receiver_phone, 
-      receiver_country, receiver_city, receiver_district, 
-      receiver_town, tmall_delivery, cn_service, 
-      delivery_cps, cutoff_minutes, delivery_time, 
-      collect_time, dispatch_time, sign_time, 
-      es_time, price, total_fee, 
-      payment, adjust_fee, received_payment, 
-      discount_fee, post_fee, credit_card_fee, 
-      step_paid_fee)
-    values (#{tradeId,jdbcType=VARCHAR}, #{tid,jdbcType=BIGINT}, #{numIid,jdbcType=BIGINT}, 
-      #{num,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
-      #{shippingType,jdbcType=VARCHAR}, #{tradeFrom,jdbcType=VARCHAR}, #{stepTradeStatus,jdbcType=VARCHAR}, 
-      #{buyerRate,jdbcType=BOOLEAN}, #{created,jdbcType=TIMESTAMP}, #{modified,jdbcType=TIMESTAMP}, 
-      #{payTime,jdbcType=TIMESTAMP}, #{consignTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
-      #{receiverName,jdbcType=VARCHAR}, #{receiverState,jdbcType=VARCHAR}, #{receiverAddress,jdbcType=VARCHAR}, 
-      #{receiverZip,jdbcType=VARCHAR}, #{receiverMobile,jdbcType=VARCHAR}, #{receiverPhone,jdbcType=VARCHAR}, 
-      #{receiverCountry,jdbcType=VARCHAR}, #{receiverCity,jdbcType=VARCHAR}, #{receiverDistrict,jdbcType=VARCHAR}, 
-      #{receiverTown,jdbcType=VARCHAR}, #{tmallDelivery,jdbcType=BOOLEAN}, #{cnService,jdbcType=VARCHAR}, 
-      #{deliveryCps,jdbcType=VARCHAR}, #{cutoffMinutes,jdbcType=VARCHAR}, #{deliveryTime,jdbcType=TIMESTAMP}, 
-      #{collectTime,jdbcType=TIMESTAMP}, #{dispatchTime,jdbcType=TIMESTAMP}, #{signTime,jdbcType=TIMESTAMP}, 
-      #{esTime,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, #{totalFee,jdbcType=DOUBLE}, 
-      #{payment,jdbcType=DOUBLE}, #{adjustFee,jdbcType=DOUBLE}, #{receivedPayment,jdbcType=DOUBLE}, 
-      #{discountFee,jdbcType=DOUBLE}, #{postFee,jdbcType=DOUBLE}, #{creditCardFee,jdbcType=DOUBLE}, 
-      #{stepPaidFee,jdbcType=DOUBLE})
-  </insert>
-  <insert id="insertSelective" parameterType="finley.gmair.model.ordernew.Trade">
-    <!--@mbg.generated-->
-    insert into gmair_ordercentre.trade
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="tradeId != null">
-        trade_id,
-      </if>
-      <if test="tid != null">
-        tid,
-      </if>
-      <if test="numIid != null">
-        num_iid,
-      </if>
-      <if test="num != null">
-        num,
-      </if>
-      <if test="status != null">
-        `status`,
-      </if>
-      <if test="type != null">
-        `type`,
-      </if>
-      <if test="shippingType != null">
-        shipping_type,
-      </if>
-      <if test="tradeFrom != null">
-        trade_from,
-      </if>
-      <if test="stepTradeStatus != null">
-        step_trade_status,
-      </if>
-      <if test="buyerRate != null">
-        buyer_rate,
-      </if>
-      <if test="created != null">
-        created,
-      </if>
-      <if test="modified != null">
-        modified,
-      </if>
-      <if test="payTime != null">
-        pay_time,
-      </if>
-      <if test="consignTime != null">
-        consign_time,
-      </if>
-      <if test="endTime != null">
-        end_time,
-      </if>
-      <if test="receiverName != null">
-        receiver_name,
-      </if>
-      <if test="receiverState != null">
-        receiver_state,
-      </if>
-      <if test="receiverAddress != null">
-        receiver_address,
-      </if>
-      <if test="receiverZip != null">
-        receiver_zip,
-      </if>
-      <if test="receiverMobile != null">
-        receiver_mobile,
-      </if>
-      <if test="receiverPhone != null">
-        receiver_phone,
-      </if>
-      <if test="receiverCountry != null">
-        receiver_country,
-      </if>
-      <if test="receiverCity != null">
-        receiver_city,
-      </if>
-      <if test="receiverDistrict != null">
-        receiver_district,
-      </if>
-      <if test="receiverTown != null">
-        receiver_town,
-      </if>
-      <if test="tmallDelivery != null">
-        tmall_delivery,
-      </if>
-      <if test="cnService != null">
-        cn_service,
-      </if>
-      <if test="deliveryCps != null">
-        delivery_cps,
-      </if>
-      <if test="cutoffMinutes != null">
-        cutoff_minutes,
-      </if>
-      <if test="deliveryTime != null">
-        delivery_time,
-      </if>
-      <if test="collectTime != null">
-        collect_time,
-      </if>
-      <if test="dispatchTime != null">
-        dispatch_time,
-      </if>
-      <if test="signTime != null">
-        sign_time,
-      </if>
-      <if test="esTime != null">
-        es_time,
-      </if>
-      <if test="price != null">
-        price,
-      </if>
-      <if test="totalFee != null">
-        total_fee,
-      </if>
-      <if test="payment != null">
-        payment,
-      </if>
-      <if test="adjustFee != null">
-        adjust_fee,
-      </if>
-      <if test="receivedPayment != null">
-        received_payment,
-      </if>
-      <if test="discountFee != null">
-        discount_fee,
-      </if>
-      <if test="postFee != null">
-        post_fee,
-      </if>
-      <if test="creditCardFee != null">
-        credit_card_fee,
-      </if>
-      <if test="stepPaidFee != null">
-        step_paid_fee,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="tradeId != null">
-        #{tradeId,jdbcType=VARCHAR},
-      </if>
-      <if test="tid != null">
-        #{tid,jdbcType=BIGINT},
-      </if>
-      <if test="numIid != null">
-        #{numIid,jdbcType=BIGINT},
-      </if>
-      <if test="num != null">
-        #{num,jdbcType=INTEGER},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        #{type,jdbcType=VARCHAR},
-      </if>
-      <if test="shippingType != null">
-        #{shippingType,jdbcType=VARCHAR},
-      </if>
-      <if test="tradeFrom != null">
-        #{tradeFrom,jdbcType=VARCHAR},
-      </if>
-      <if test="stepTradeStatus != null">
-        #{stepTradeStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="buyerRate != null">
-        #{buyerRate,jdbcType=BOOLEAN},
-      </if>
-      <if test="created != null">
-        #{created,jdbcType=TIMESTAMP},
-      </if>
-      <if test="modified != null">
-        #{modified,jdbcType=TIMESTAMP},
-      </if>
-      <if test="payTime != null">
-        #{payTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="consignTime != null">
-        #{consignTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endTime != null">
-        #{endTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="receiverName != null">
-        #{receiverName,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverState != null">
-        #{receiverState,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverAddress != null">
-        #{receiverAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverZip != null">
-        #{receiverZip,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverMobile != null">
-        #{receiverMobile,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverPhone != null">
-        #{receiverPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverCountry != null">
-        #{receiverCountry,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverCity != null">
-        #{receiverCity,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverDistrict != null">
-        #{receiverDistrict,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverTown != null">
-        #{receiverTown,jdbcType=VARCHAR},
-      </if>
-      <if test="tmallDelivery != null">
-        #{tmallDelivery,jdbcType=BOOLEAN},
-      </if>
-      <if test="cnService != null">
-        #{cnService,jdbcType=VARCHAR},
-      </if>
-      <if test="deliveryCps != null">
-        #{deliveryCps,jdbcType=VARCHAR},
-      </if>
-      <if test="cutoffMinutes != null">
-        #{cutoffMinutes,jdbcType=VARCHAR},
-      </if>
-      <if test="deliveryTime != null">
-        #{deliveryTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="collectTime != null">
-        #{collectTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="dispatchTime != null">
-        #{dispatchTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="signTime != null">
-        #{signTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="esTime != null">
-        #{esTime,jdbcType=INTEGER},
-      </if>
-      <if test="price != null">
-        #{price,jdbcType=DOUBLE},
-      </if>
-      <if test="totalFee != null">
-        #{totalFee,jdbcType=DOUBLE},
-      </if>
-      <if test="payment != null">
-        #{payment,jdbcType=DOUBLE},
-      </if>
-      <if test="adjustFee != null">
-        #{adjustFee,jdbcType=DOUBLE},
-      </if>
-      <if test="receivedPayment != null">
-        #{receivedPayment,jdbcType=DOUBLE},
-      </if>
-      <if test="discountFee != null">
-        #{discountFee,jdbcType=DOUBLE},
-      </if>
-      <if test="postFee != null">
-        #{postFee,jdbcType=DOUBLE},
-      </if>
-      <if test="creditCardFee != null">
-        #{creditCardFee,jdbcType=DOUBLE},
-      </if>
-      <if test="stepPaidFee != null">
-        #{stepPaidFee,jdbcType=DOUBLE},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="finley.gmair.model.ordernew.Trade">
-    <!--@mbg.generated-->
-    update gmair_ordercentre.trade
-    <set>
-      <if test="tid != null">
-        tid = #{tid,jdbcType=BIGINT},
-      </if>
-      <if test="numIid != null">
-        num_iid = #{numIid,jdbcType=BIGINT},
-      </if>
-      <if test="num != null">
-        num = #{num,jdbcType=INTEGER},
-      </if>
-      <if test="status != null">
-        `status` = #{status,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        `type` = #{type,jdbcType=VARCHAR},
-      </if>
-      <if test="shippingType != null">
-        shipping_type = #{shippingType,jdbcType=VARCHAR},
-      </if>
-      <if test="tradeFrom != null">
-        trade_from = #{tradeFrom,jdbcType=VARCHAR},
-      </if>
-      <if test="stepTradeStatus != null">
-        step_trade_status = #{stepTradeStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="buyerRate != null">
-        buyer_rate = #{buyerRate,jdbcType=BOOLEAN},
-      </if>
-      <if test="created != null">
-        created = #{created,jdbcType=TIMESTAMP},
-      </if>
-      <if test="modified != null">
-        modified = #{modified,jdbcType=TIMESTAMP},
-      </if>
-      <if test="payTime != null">
-        pay_time = #{payTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="consignTime != null">
-        consign_time = #{consignTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endTime != null">
-        end_time = #{endTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="receiverName != null">
-        receiver_name = #{receiverName,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverState != null">
-        receiver_state = #{receiverState,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverAddress != null">
-        receiver_address = #{receiverAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverZip != null">
-        receiver_zip = #{receiverZip,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverMobile != null">
-        receiver_mobile = #{receiverMobile,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverPhone != null">
-        receiver_phone = #{receiverPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverCountry != null">
-        receiver_country = #{receiverCountry,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverCity != null">
-        receiver_city = #{receiverCity,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverDistrict != null">
-        receiver_district = #{receiverDistrict,jdbcType=VARCHAR},
-      </if>
-      <if test="receiverTown != null">
-        receiver_town = #{receiverTown,jdbcType=VARCHAR},
-      </if>
-      <if test="tmallDelivery != null">
-        tmall_delivery = #{tmallDelivery,jdbcType=BOOLEAN},
-      </if>
-      <if test="cnService != null">
-        cn_service = #{cnService,jdbcType=VARCHAR},
-      </if>
-      <if test="deliveryCps != null">
-        delivery_cps = #{deliveryCps,jdbcType=VARCHAR},
-      </if>
-      <if test="cutoffMinutes != null">
-        cutoff_minutes = #{cutoffMinutes,jdbcType=VARCHAR},
-      </if>
-      <if test="deliveryTime != null">
-        delivery_time = #{deliveryTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="collectTime != null">
-        collect_time = #{collectTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="dispatchTime != null">
-        dispatch_time = #{dispatchTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="signTime != null">
-        sign_time = #{signTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="esTime != null">
-        es_time = #{esTime,jdbcType=INTEGER},
-      </if>
-      <if test="price != null">
-        price = #{price,jdbcType=DOUBLE},
-      </if>
-      <if test="totalFee != null">
-        total_fee = #{totalFee,jdbcType=DOUBLE},
-      </if>
-      <if test="payment != null">
-        payment = #{payment,jdbcType=DOUBLE},
-      </if>
-      <if test="adjustFee != null">
-        adjust_fee = #{adjustFee,jdbcType=DOUBLE},
-      </if>
-      <if test="receivedPayment != null">
-        received_payment = #{receivedPayment,jdbcType=DOUBLE},
-      </if>
-      <if test="discountFee != null">
-        discount_fee = #{discountFee,jdbcType=DOUBLE},
-      </if>
-      <if test="postFee != null">
-        post_fee = #{postFee,jdbcType=DOUBLE},
-      </if>
-      <if test="creditCardFee != null">
-        credit_card_fee = #{creditCardFee,jdbcType=DOUBLE},
-      </if>
-      <if test="stepPaidFee != null">
-        step_paid_fee = #{stepPaidFee,jdbcType=DOUBLE},
-      </if>
-    </set>
-    where trade_id = #{tradeId,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="finley.gmair.model.ordernew.Trade">
-    <!--@mbg.generated-->
-    update gmair_ordercentre.trade
-    set tid = #{tid,jdbcType=BIGINT},
-      num_iid = #{numIid,jdbcType=BIGINT},
-      num = #{num,jdbcType=INTEGER},
-      `status` = #{status,jdbcType=VARCHAR},
-      `type` = #{type,jdbcType=VARCHAR},
-      shipping_type = #{shippingType,jdbcType=VARCHAR},
-      trade_from = #{tradeFrom,jdbcType=VARCHAR},
-      step_trade_status = #{stepTradeStatus,jdbcType=VARCHAR},
-      buyer_rate = #{buyerRate,jdbcType=BOOLEAN},
-      created = #{created,jdbcType=TIMESTAMP},
-      modified = #{modified,jdbcType=TIMESTAMP},
-      pay_time = #{payTime,jdbcType=TIMESTAMP},
-      consign_time = #{consignTime,jdbcType=TIMESTAMP},
-      end_time = #{endTime,jdbcType=TIMESTAMP},
-      receiver_name = #{receiverName,jdbcType=VARCHAR},
-      receiver_state = #{receiverState,jdbcType=VARCHAR},
-      receiver_address = #{receiverAddress,jdbcType=VARCHAR},
-      receiver_zip = #{receiverZip,jdbcType=VARCHAR},
-      receiver_mobile = #{receiverMobile,jdbcType=VARCHAR},
-      receiver_phone = #{receiverPhone,jdbcType=VARCHAR},
-      receiver_country = #{receiverCountry,jdbcType=VARCHAR},
-      receiver_city = #{receiverCity,jdbcType=VARCHAR},
-      receiver_district = #{receiverDistrict,jdbcType=VARCHAR},
-      receiver_town = #{receiverTown,jdbcType=VARCHAR},
-      tmall_delivery = #{tmallDelivery,jdbcType=BOOLEAN},
-      cn_service = #{cnService,jdbcType=VARCHAR},
-      delivery_cps = #{deliveryCps,jdbcType=VARCHAR},
-      cutoff_minutes = #{cutoffMinutes,jdbcType=VARCHAR},
-      delivery_time = #{deliveryTime,jdbcType=TIMESTAMP},
-      collect_time = #{collectTime,jdbcType=TIMESTAMP},
-      dispatch_time = #{dispatchTime,jdbcType=TIMESTAMP},
-      sign_time = #{signTime,jdbcType=TIMESTAMP},
-      es_time = #{esTime,jdbcType=INTEGER},
-      price = #{price,jdbcType=DOUBLE},
-      total_fee = #{totalFee,jdbcType=DOUBLE},
-      payment = #{payment,jdbcType=DOUBLE},
-      adjust_fee = #{adjustFee,jdbcType=DOUBLE},
-      received_payment = #{receivedPayment,jdbcType=DOUBLE},
-      discount_fee = #{discountFee,jdbcType=DOUBLE},
-      post_fee = #{postFee,jdbcType=DOUBLE},
-      credit_card_fee = #{creditCardFee,jdbcType=DOUBLE},
-      step_paid_fee = #{stepPaidFee,jdbcType=DOUBLE}
-    where trade_id = #{tradeId,jdbcType=VARCHAR}
-  </update>
+    <resultMap id="BaseResultMap" type="finley.gmair.model.ordernew.Trade">
+        <!--@mbg.generated-->
+        <!--@Table gmair_ordercentre.trade-->
+        <id column="trade_id" jdbcType="VARCHAR" property="tradeId"/>
+        <result column="tid" jdbcType="BIGINT" property="tid"/>
+        <result column="num_iid" jdbcType="BIGINT" property="numIid"/>
+        <result column="num" jdbcType="INTEGER" property="num"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="shipping_type" jdbcType="VARCHAR" property="shippingType"/>
+        <result column="trade_from" jdbcType="VARCHAR" property="tradeFrom"/>
+        <result column="step_trade_status" jdbcType="VARCHAR" property="stepTradeStatus"/>
+        <result column="buyer_rate" jdbcType="BOOLEAN" property="buyerRate"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="pay_time" jdbcType="TIMESTAMP" property="payTime"/>
+        <result column="consign_time" jdbcType="TIMESTAMP" property="consignTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="receiver_name" jdbcType="VARCHAR" property="receiverName"/>
+        <result column="receiver_state" jdbcType="VARCHAR" property="receiverState"/>
+        <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress"/>
+        <result column="receiver_zip" jdbcType="VARCHAR" property="receiverZip"/>
+        <result column="receiver_mobile" jdbcType="VARCHAR" property="receiverMobile"/>
+        <result column="receiver_phone" jdbcType="VARCHAR" property="receiverPhone"/>
+        <result column="receiver_country" jdbcType="VARCHAR" property="receiverCountry"/>
+        <result column="receiver_city" jdbcType="VARCHAR" property="receiverCity"/>
+        <result column="receiver_district" jdbcType="VARCHAR" property="receiverDistrict"/>
+        <result column="receiver_town" jdbcType="VARCHAR" property="receiverTown"/>
+        <result column="tmall_delivery" jdbcType="BOOLEAN" property="tmallDelivery"/>
+        <result column="cn_service" jdbcType="VARCHAR" property="cnService"/>
+        <result column="delivery_cps" jdbcType="VARCHAR" property="deliveryCps"/>
+        <result column="cutoff_minutes" jdbcType="VARCHAR" property="cutoffMinutes"/>
+        <result column="delivery_time" jdbcType="TIMESTAMP" property="deliveryTime"/>
+        <result column="collect_time" jdbcType="TIMESTAMP" property="collectTime"/>
+        <result column="dispatch_time" jdbcType="TIMESTAMP" property="dispatchTime"/>
+        <result column="sign_time" jdbcType="TIMESTAMP" property="signTime"/>
+        <result column="es_time" jdbcType="INTEGER" property="esTime"/>
+        <result column="price" jdbcType="DOUBLE" property="price"/>
+        <result column="total_fee" jdbcType="DOUBLE" property="totalFee"/>
+        <result column="payment" jdbcType="DOUBLE" property="payment"/>
+        <result column="adjust_fee" jdbcType="DOUBLE" property="adjustFee"/>
+        <result column="received_payment" jdbcType="DOUBLE" property="receivedPayment"/>
+        <result column="discount_fee" jdbcType="DOUBLE" property="discountFee"/>
+        <result column="post_fee" jdbcType="DOUBLE" property="postFee"/>
+        <result column="credit_card_fee" jdbcType="DOUBLE" property="creditCardFee"/>
+        <result column="step_paid_fee" jdbcType="DOUBLE" property="stepPaidFee"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        trade_id, tid, num_iid, num, `status`, `type`, shipping_type, trade_from, step_trade_status,
+        buyer_rate, created, modified, pay_time, consign_time, end_time, receiver_name, receiver_state,
+        receiver_address, receiver_zip, receiver_mobile, receiver_phone, receiver_country,
+        receiver_city, receiver_district, receiver_town, tmall_delivery, cn_service, delivery_cps,
+        cutoff_minutes, delivery_time, collect_time, dispatch_time, sign_time, es_time, price,
+        total_fee, payment, adjust_fee, received_payment, discount_fee, post_fee, credit_card_fee,
+        step_paid_fee
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from gmair_ordercentre.trade
+        where trade_id = #{tradeId,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        <!--@mbg.generated-->
+        delete
+        from gmair_ordercentre.trade
+        where trade_id = #{tradeId,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="finley.gmair.model.ordernew.Trade">
+        <!--@mbg.generated-->
+        insert into gmair_ordercentre.trade (trade_id, tid, num_iid,
+                                             num, `status`, `type`,
+                                             shipping_type, trade_from, step_trade_status,
+                                             buyer_rate, created, modified,
+                                             pay_time, consign_time, end_time,
+                                             receiver_name, receiver_state, receiver_address,
+                                             receiver_zip, receiver_mobile, receiver_phone,
+                                             receiver_country, receiver_city, receiver_district,
+                                             receiver_town, tmall_delivery, cn_service,
+                                             delivery_cps, cutoff_minutes, delivery_time,
+                                             collect_time, dispatch_time, sign_time,
+                                             es_time, price, total_fee,
+                                             payment, adjust_fee, received_payment,
+                                             discount_fee, post_fee, credit_card_fee,
+                                             step_paid_fee)
+        values (#{tradeId,jdbcType=VARCHAR}, #{tid,jdbcType=BIGINT}, #{numIid,jdbcType=BIGINT},
+                #{num,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+                #{shippingType,jdbcType=VARCHAR}, #{tradeFrom,jdbcType=VARCHAR}, #{stepTradeStatus,jdbcType=VARCHAR},
+                #{buyerRate,jdbcType=BOOLEAN}, #{created,jdbcType=TIMESTAMP}, #{modified,jdbcType=TIMESTAMP},
+                #{payTime,jdbcType=TIMESTAMP}, #{consignTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
+                #{receiverName,jdbcType=VARCHAR}, #{receiverState,jdbcType=VARCHAR},
+                #{receiverAddress,jdbcType=VARCHAR},
+                #{receiverZip,jdbcType=VARCHAR}, #{receiverMobile,jdbcType=VARCHAR}, #{receiverPhone,jdbcType=VARCHAR},
+                #{receiverCountry,jdbcType=VARCHAR}, #{receiverCity,jdbcType=VARCHAR},
+                #{receiverDistrict,jdbcType=VARCHAR},
+                #{receiverTown,jdbcType=VARCHAR}, #{tmallDelivery,jdbcType=BOOLEAN}, #{cnService,jdbcType=VARCHAR},
+                #{deliveryCps,jdbcType=VARCHAR}, #{cutoffMinutes,jdbcType=VARCHAR}, #{deliveryTime,jdbcType=TIMESTAMP},
+                #{collectTime,jdbcType=TIMESTAMP}, #{dispatchTime,jdbcType=TIMESTAMP}, #{signTime,jdbcType=TIMESTAMP},
+                #{esTime,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, #{totalFee,jdbcType=DOUBLE},
+                #{payment,jdbcType=DOUBLE}, #{adjustFee,jdbcType=DOUBLE}, #{receivedPayment,jdbcType=DOUBLE},
+                #{discountFee,jdbcType=DOUBLE}, #{postFee,jdbcType=DOUBLE}, #{creditCardFee,jdbcType=DOUBLE},
+                #{stepPaidFee,jdbcType=DOUBLE})
+    </insert>
+    <insert id="insertSelective" parameterType="finley.gmair.model.ordernew.Trade">
+        <!--@mbg.generated-->
+        insert into gmair_ordercentre.trade
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tradeId != null">
+                trade_id,
+            </if>
+            <if test="tid != null">
+                tid,
+            </if>
+            <if test="numIid != null">
+                num_iid,
+            </if>
+            <if test="num != null">
+                num,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="type != null">
+                `type`,
+            </if>
+            <if test="shippingType != null">
+                shipping_type,
+            </if>
+            <if test="tradeFrom != null">
+                trade_from,
+            </if>
+            <if test="stepTradeStatus != null">
+                step_trade_status,
+            </if>
+            <if test="buyerRate != null">
+                buyer_rate,
+            </if>
+            <if test="created != null">
+                created,
+            </if>
+            <if test="modified != null">
+                modified,
+            </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
+            <if test="consignTime != null">
+                consign_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="receiverName != null">
+                receiver_name,
+            </if>
+            <if test="receiverState != null">
+                receiver_state,
+            </if>
+            <if test="receiverAddress != null">
+                receiver_address,
+            </if>
+            <if test="receiverZip != null">
+                receiver_zip,
+            </if>
+            <if test="receiverMobile != null">
+                receiver_mobile,
+            </if>
+            <if test="receiverPhone != null">
+                receiver_phone,
+            </if>
+            <if test="receiverCountry != null">
+                receiver_country,
+            </if>
+            <if test="receiverCity != null">
+                receiver_city,
+            </if>
+            <if test="receiverDistrict != null">
+                receiver_district,
+            </if>
+            <if test="receiverTown != null">
+                receiver_town,
+            </if>
+            <if test="tmallDelivery != null">
+                tmall_delivery,
+            </if>
+            <if test="cnService != null">
+                cn_service,
+            </if>
+            <if test="deliveryCps != null">
+                delivery_cps,
+            </if>
+            <if test="cutoffMinutes != null">
+                cutoff_minutes,
+            </if>
+            <if test="deliveryTime != null">
+                delivery_time,
+            </if>
+            <if test="collectTime != null">
+                collect_time,
+            </if>
+            <if test="dispatchTime != null">
+                dispatch_time,
+            </if>
+            <if test="signTime != null">
+                sign_time,
+            </if>
+            <if test="esTime != null">
+                es_time,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="totalFee != null">
+                total_fee,
+            </if>
+            <if test="payment != null">
+                payment,
+            </if>
+            <if test="adjustFee != null">
+                adjust_fee,
+            </if>
+            <if test="receivedPayment != null">
+                received_payment,
+            </if>
+            <if test="discountFee != null">
+                discount_fee,
+            </if>
+            <if test="postFee != null">
+                post_fee,
+            </if>
+            <if test="creditCardFee != null">
+                credit_card_fee,
+            </if>
+            <if test="stepPaidFee != null">
+                step_paid_fee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tradeId != null">
+                #{tradeId,jdbcType=VARCHAR},
+            </if>
+            <if test="tid != null">
+                #{tid,jdbcType=BIGINT},
+            </if>
+            <if test="numIid != null">
+                #{numIid,jdbcType=BIGINT},
+            </if>
+            <if test="num != null">
+                #{num,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="shippingType != null">
+                #{shippingType,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeFrom != null">
+                #{tradeFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="stepTradeStatus != null">
+                #{stepTradeStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerRate != null">
+                #{buyerRate,jdbcType=BOOLEAN},
+            </if>
+            <if test="created != null">
+                #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modified != null">
+                #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="payTime != null">
+                #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="consignTime != null">
+                #{consignTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="receiverName != null">
+                #{receiverName,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverState != null">
+                #{receiverState,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverAddress != null">
+                #{receiverAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverZip != null">
+                #{receiverZip,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverMobile != null">
+                #{receiverMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverPhone != null">
+                #{receiverPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCountry != null">
+                #{receiverCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCity != null">
+                #{receiverCity,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverDistrict != null">
+                #{receiverDistrict,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverTown != null">
+                #{receiverTown,jdbcType=VARCHAR},
+            </if>
+            <if test="tmallDelivery != null">
+                #{tmallDelivery,jdbcType=BOOLEAN},
+            </if>
+            <if test="cnService != null">
+                #{cnService,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryCps != null">
+                #{deliveryCps,jdbcType=VARCHAR},
+            </if>
+            <if test="cutoffMinutes != null">
+                #{cutoffMinutes,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryTime != null">
+                #{deliveryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="collectTime != null">
+                #{collectTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dispatchTime != null">
+                #{dispatchTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="signTime != null">
+                #{signTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="esTime != null">
+                #{esTime,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="totalFee != null">
+                #{totalFee,jdbcType=DOUBLE},
+            </if>
+            <if test="payment != null">
+                #{payment,jdbcType=DOUBLE},
+            </if>
+            <if test="adjustFee != null">
+                #{adjustFee,jdbcType=DOUBLE},
+            </if>
+            <if test="receivedPayment != null">
+                #{receivedPayment,jdbcType=DOUBLE},
+            </if>
+            <if test="discountFee != null">
+                #{discountFee,jdbcType=DOUBLE},
+            </if>
+            <if test="postFee != null">
+                #{postFee,jdbcType=DOUBLE},
+            </if>
+            <if test="creditCardFee != null">
+                #{creditCardFee,jdbcType=DOUBLE},
+            </if>
+            <if test="stepPaidFee != null">
+                #{stepPaidFee,jdbcType=DOUBLE},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="finley.gmair.model.ordernew.Trade">
+        <!--@mbg.generated-->
+        update gmair_ordercentre.trade
+        <set>
+            <if test="tid != null">
+                tid = #{tid,jdbcType=BIGINT},
+            </if>
+            <if test="numIid != null">
+                num_iid = #{numIid,jdbcType=BIGINT},
+            </if>
+            <if test="num != null">
+                num = #{num,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="shippingType != null">
+                shipping_type = #{shippingType,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeFrom != null">
+                trade_from = #{tradeFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="stepTradeStatus != null">
+                step_trade_status = #{stepTradeStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerRate != null">
+                buyer_rate = #{buyerRate,jdbcType=BOOLEAN},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modified != null">
+                modified = #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="consignTime != null">
+                consign_time = #{consignTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="receiverName != null">
+                receiver_name = #{receiverName,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverState != null">
+                receiver_state = #{receiverState,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverAddress != null">
+                receiver_address = #{receiverAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverZip != null">
+                receiver_zip = #{receiverZip,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverMobile != null">
+                receiver_mobile = #{receiverMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverPhone != null">
+                receiver_phone = #{receiverPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCountry != null">
+                receiver_country = #{receiverCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCity != null">
+                receiver_city = #{receiverCity,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverDistrict != null">
+                receiver_district = #{receiverDistrict,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverTown != null">
+                receiver_town = #{receiverTown,jdbcType=VARCHAR},
+            </if>
+            <if test="tmallDelivery != null">
+                tmall_delivery = #{tmallDelivery,jdbcType=BOOLEAN},
+            </if>
+            <if test="cnService != null">
+                cn_service = #{cnService,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryCps != null">
+                delivery_cps = #{deliveryCps,jdbcType=VARCHAR},
+            </if>
+            <if test="cutoffMinutes != null">
+                cutoff_minutes = #{cutoffMinutes,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryTime != null">
+                delivery_time = #{deliveryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="collectTime != null">
+                collect_time = #{collectTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dispatchTime != null">
+                dispatch_time = #{dispatchTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="signTime != null">
+                sign_time = #{signTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="esTime != null">
+                es_time = #{esTime,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="totalFee != null">
+                total_fee = #{totalFee,jdbcType=DOUBLE},
+            </if>
+            <if test="payment != null">
+                payment = #{payment,jdbcType=DOUBLE},
+            </if>
+            <if test="adjustFee != null">
+                adjust_fee = #{adjustFee,jdbcType=DOUBLE},
+            </if>
+            <if test="receivedPayment != null">
+                received_payment = #{receivedPayment,jdbcType=DOUBLE},
+            </if>
+            <if test="discountFee != null">
+                discount_fee = #{discountFee,jdbcType=DOUBLE},
+            </if>
+            <if test="postFee != null">
+                post_fee = #{postFee,jdbcType=DOUBLE},
+            </if>
+            <if test="creditCardFee != null">
+                credit_card_fee = #{creditCardFee,jdbcType=DOUBLE},
+            </if>
+            <if test="stepPaidFee != null">
+                step_paid_fee = #{stepPaidFee,jdbcType=DOUBLE},
+            </if>
+        </set>
+        where trade_id = #{tradeId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="finley.gmair.model.ordernew.Trade">
+        <!--@mbg.generated-->
+        update gmair_ordercentre.trade
+        set tid               = #{tid,jdbcType=BIGINT},
+            num_iid           = #{numIid,jdbcType=BIGINT},
+            num               = #{num,jdbcType=INTEGER},
+            `status`          = #{status,jdbcType=VARCHAR},
+            `type`            = #{type,jdbcType=VARCHAR},
+            shipping_type     = #{shippingType,jdbcType=VARCHAR},
+            trade_from        = #{tradeFrom,jdbcType=VARCHAR},
+            step_trade_status = #{stepTradeStatus,jdbcType=VARCHAR},
+            buyer_rate        = #{buyerRate,jdbcType=BOOLEAN},
+            created           = #{created,jdbcType=TIMESTAMP},
+            modified          = #{modified,jdbcType=TIMESTAMP},
+            pay_time          = #{payTime,jdbcType=TIMESTAMP},
+            consign_time      = #{consignTime,jdbcType=TIMESTAMP},
+            end_time          = #{endTime,jdbcType=TIMESTAMP},
+            receiver_name     = #{receiverName,jdbcType=VARCHAR},
+            receiver_state    = #{receiverState,jdbcType=VARCHAR},
+            receiver_address  = #{receiverAddress,jdbcType=VARCHAR},
+            receiver_zip      = #{receiverZip,jdbcType=VARCHAR},
+            receiver_mobile   = #{receiverMobile,jdbcType=VARCHAR},
+            receiver_phone    = #{receiverPhone,jdbcType=VARCHAR},
+            receiver_country  = #{receiverCountry,jdbcType=VARCHAR},
+            receiver_city     = #{receiverCity,jdbcType=VARCHAR},
+            receiver_district = #{receiverDistrict,jdbcType=VARCHAR},
+            receiver_town     = #{receiverTown,jdbcType=VARCHAR},
+            tmall_delivery    = #{tmallDelivery,jdbcType=BOOLEAN},
+            cn_service        = #{cnService,jdbcType=VARCHAR},
+            delivery_cps      = #{deliveryCps,jdbcType=VARCHAR},
+            cutoff_minutes    = #{cutoffMinutes,jdbcType=VARCHAR},
+            delivery_time     = #{deliveryTime,jdbcType=TIMESTAMP},
+            collect_time      = #{collectTime,jdbcType=TIMESTAMP},
+            dispatch_time     = #{dispatchTime,jdbcType=TIMESTAMP},
+            sign_time         = #{signTime,jdbcType=TIMESTAMP},
+            es_time           = #{esTime,jdbcType=INTEGER},
+            price             = #{price,jdbcType=DOUBLE},
+            total_fee         = #{totalFee,jdbcType=DOUBLE},
+            payment           = #{payment,jdbcType=DOUBLE},
+            adjust_fee        = #{adjustFee,jdbcType=DOUBLE},
+            received_payment  = #{receivedPayment,jdbcType=DOUBLE},
+            discount_fee      = #{discountFee,jdbcType=DOUBLE},
+            post_fee          = #{postFee,jdbcType=DOUBLE},
+            credit_card_fee   = #{creditCardFee,jdbcType=DOUBLE},
+            step_paid_fee     = #{stepPaidFee,jdbcType=DOUBLE}
+        where trade_id = #{tradeId,jdbcType=VARCHAR}
+    </update>
 </mapper>
