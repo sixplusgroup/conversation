@@ -6,9 +6,11 @@ import com.taobao.api.TaobaoClient;
 import com.taobao.api.domain.Trade;
 import com.taobao.api.internal.util.StringUtils;
 import com.taobao.api.request.ItemsOnsaleGetRequest;
+import com.taobao.api.request.TopAuthTokenRefreshRequest;
 import com.taobao.api.request.TradesSoldGetRequest;
 import com.taobao.api.request.TradesSoldIncrementGetRequest;
 import com.taobao.api.response.ItemsOnsaleGetResponse;
+import com.taobao.api.response.TopAuthTokenRefreshResponse;
 import com.taobao.api.response.TradesSoldGetResponse;
 import com.taobao.api.response.TradesSoldIncrementGetResponse;
 
@@ -21,7 +23,7 @@ import java.util.List;
  */
 
 public class TaobaoSDKTest {
-    private static final String url = "http://gw.api.taobao.com/router/rest";
+    private static final String url = "https://eco.taobao.com/router/rest";
     private static final String appkey = "31404926";
     private static final String secret = "56539bd811035339bf55fe93383ef615";
     private static final String sessionKey = "6100e02ceb111ceb4e6ff02506458185b2f7afa5fce9f232200642250842";

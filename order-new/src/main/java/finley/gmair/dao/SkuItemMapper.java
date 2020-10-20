@@ -2,7 +2,11 @@ package finley.gmair.dao;
 
 
 import finley.gmair.model.ordernew.SkuItem;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface SkuItemMapper {
     int deleteByPrimaryKey(String itemId);
 
@@ -15,4 +19,6 @@ public interface SkuItemMapper {
     int updateByPrimaryKeySelective(SkuItem record);
 
     int updateByPrimaryKey(SkuItem record);
+
+    List<SkuItem> selectAll();
 }

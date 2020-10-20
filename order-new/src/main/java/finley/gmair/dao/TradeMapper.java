@@ -1,7 +1,9 @@
 package finley.gmair.dao;
 
 import finley.gmair.model.ordernew.Trade;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface TradeMapper {
     int deleteByPrimaryKey(String tradeId);
 

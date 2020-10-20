@@ -135,4 +135,10 @@
             create_at       = #{createAt,jdbcType=TIMESTAMP}
         where item_id = #{itemId,jdbcType=VARCHAR}
     </update>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from gmair_ordercentre.sku_item
+    </select>
 </mapper>

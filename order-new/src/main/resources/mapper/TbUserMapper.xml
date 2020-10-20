@@ -33,11 +33,11 @@
     <insert id="insert" parameterType="finley.gmair.model.ordernew.TbUser">
         <!--@mbg.generated-->
         insert into gmair_ordercentre.tb_user (user_id, start_sync_time, last_update_time,
-                                               session_key, authorize_time, block_flag,
-                                               create_at)
+        session_key, authorize_time, block_flag,
+        create_at)
         values (#{userId,jdbcType=VARCHAR}, #{startSyncTime,jdbcType=TIMESTAMP}, #{lastUpdateTime,jdbcType=TIMESTAMP},
-                #{sessionKey,jdbcType=VARCHAR}, #{authorizeTime,jdbcType=TIMESTAMP}, #{blockFlag,jdbcType=BOOLEAN},
-                #{createAt,jdbcType=TIMESTAMP})
+        #{sessionKey,jdbcType=VARCHAR}, #{authorizeTime,jdbcType=TIMESTAMP}, #{blockFlag,jdbcType=BOOLEAN},
+        #{createAt,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" parameterType="finley.gmair.model.ordernew.TbUser">
         <!--@mbg.generated-->
@@ -117,12 +117,18 @@
     <update id="updateByPrimaryKey" parameterType="finley.gmair.model.ordernew.TbUser">
         <!--@mbg.generated-->
         update gmair_ordercentre.tb_user
-        set start_sync_time  = #{startSyncTime,jdbcType=TIMESTAMP},
-            last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
-            session_key      = #{sessionKey,jdbcType=VARCHAR},
-            authorize_time   = #{authorizeTime,jdbcType=TIMESTAMP},
-            block_flag       = #{blockFlag,jdbcType=BOOLEAN},
-            create_at        = #{createAt,jdbcType=TIMESTAMP}
+        set start_sync_time = #{startSyncTime,jdbcType=TIMESTAMP},
+        last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
+        session_key = #{sessionKey,jdbcType=VARCHAR},
+        authorize_time = #{authorizeTime,jdbcType=TIMESTAMP},
+        block_flag = #{blockFlag,jdbcType=BOOLEAN},
+        create_at = #{createAt,jdbcType=TIMESTAMP}
         where user_id = #{userId,jdbcType=VARCHAR}
     </update>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from gmair_ordercentre.tb_user
+    </select>
 </mapper>

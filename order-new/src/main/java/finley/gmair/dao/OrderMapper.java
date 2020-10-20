@@ -2,7 +2,9 @@ package finley.gmair.dao;
 import java.util.List;
 
 import finley.gmair.model.ordernew.Order;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface OrderMapper {
     int deleteByPrimaryKey(String orderId);
 
