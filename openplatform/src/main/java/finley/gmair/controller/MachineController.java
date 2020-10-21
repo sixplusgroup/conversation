@@ -268,6 +268,7 @@ public class MachineController {
         if (machineStatusDTO.getData() == null) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(machineStatusDTO.getMsg());
+			return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(machineStatusDTO.getData());
@@ -290,6 +291,11 @@ public class MachineController {
         List<Object> machineStatusList = new ArrayList<>();
         for (String qrcode : qrcode_list) {
             MachineStatusDTO machineStatusDTO = getMachineStatusByAppIdAndQrCode(appid, qrcode);
+            if (machineStatusDTO.getData() == null) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription(machineStatusDTO.getMsg());
+                return result;
+            }
             machineStatusList.add(machineStatusDTO.getData());
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -405,7 +411,7 @@ public class MachineController {
             return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("未查询到该设备城市的空气数据");
             return result;
         }
@@ -804,7 +810,7 @@ public class MachineController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             logger.info("[Info] No corp machine subscriptions at the moment");
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
         List<MachineSubscription> list = (List<MachineSubscription>) response.getData();
