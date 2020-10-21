@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author lyy
- * @Description
- * @create 2020-06-30 10:59 下午
+ * @date 2020-06-30 10:59 下午
  */
 public class MachineStatusDTO {
     String msg;
