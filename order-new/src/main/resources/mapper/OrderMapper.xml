@@ -341,33 +341,33 @@
     <update id="updateByPrimaryKey" parameterType="finley.gmair.model.ordernew.Order">
         <!--@mbg.generated-->
         update gmair_ordercentre.order
-        set trade_id = #{tradeId,jdbcType=VARCHAR},
-        num_iid = #{numIid,jdbcType=BIGINT},
-        cid = #{cid,jdbcType=BIGINT},
-        oid = #{oid,jdbcType=BIGINT},
-        `status` = #{status,jdbcType=VARCHAR},
-        num = #{num,jdbcType=BIGINT},
-        title = #{title,jdbcType=VARCHAR},
-        sku_id = #{skuId,jdbcType=BIGINT},
-        sku_properties_name = #{skuPropertiesName,jdbcType=VARCHAR},
-        seller_type = #{sellerType,jdbcType=VARCHAR},
-        refund_status = #{refundStatus,jdbcType=VARCHAR},
-        seller_rate = #{sellerRate,jdbcType=BOOLEAN},
-        buyer_rate = #{buyerRate,jdbcType=BOOLEAN},
-        is_daixiao = #{isDaixiao,jdbcType=BOOLEAN},
-        pic_path = #{picPath,jdbcType=VARCHAR},
-        store_code = #{storeCode,jdbcType=VARCHAR},
-        shipping_type = #{shippingType,jdbcType=VARCHAR},
-        logistics_company = #{logisticsCompany,jdbcType=VARCHAR},
-        invoice_no = #{invoiceNo,jdbcType=VARCHAR},
-        consign_time = #{consignTime,jdbcType=TIMESTAMP},
-        price = #{price,jdbcType=DOUBLE},
-        total_fee = #{totalFee,jdbcType=DOUBLE},
-        payment = #{payment,jdbcType=DOUBLE},
-        adjust_fee = #{adjustFee,jdbcType=DOUBLE},
-        discount_fee = #{discountFee,jdbcType=DOUBLE},
-        part_mjz_discount = #{partMjzDiscount,jdbcType=DOUBLE},
-        divide_order_fee = #{divideOrderFee,jdbcType=DOUBLE}
+        set trade_id            = #{tradeId,jdbcType=VARCHAR},
+            num_iid             = #{numIid,jdbcType=BIGINT},
+            cid                 = #{cid,jdbcType=BIGINT},
+            oid                 = #{oid,jdbcType=BIGINT},
+            `status`            = #{status,jdbcType=VARCHAR},
+            num                 = #{num,jdbcType=BIGINT},
+            title               = #{title,jdbcType=VARCHAR},
+            sku_id              = #{skuId,jdbcType=BIGINT},
+            sku_properties_name = #{skuPropertiesName,jdbcType=VARCHAR},
+            seller_type         = #{sellerType,jdbcType=VARCHAR},
+            refund_status       = #{refundStatus,jdbcType=VARCHAR},
+            seller_rate         = #{sellerRate,jdbcType=BOOLEAN},
+            buyer_rate          = #{buyerRate,jdbcType=BOOLEAN},
+            is_daixiao          = #{isDaixiao,jdbcType=BOOLEAN},
+            pic_path            = #{picPath,jdbcType=VARCHAR},
+            store_code          = #{storeCode,jdbcType=VARCHAR},
+            shipping_type       = #{shippingType,jdbcType=VARCHAR},
+            logistics_company   = #{logisticsCompany,jdbcType=VARCHAR},
+            invoice_no          = #{invoiceNo,jdbcType=VARCHAR},
+            consign_time        = #{consignTime,jdbcType=TIMESTAMP},
+            price               = #{price,jdbcType=DOUBLE},
+            total_fee           = #{totalFee,jdbcType=DOUBLE},
+            payment             = #{payment,jdbcType=DOUBLE},
+            adjust_fee          = #{adjustFee,jdbcType=DOUBLE},
+            discount_fee        = #{discountFee,jdbcType=DOUBLE},
+            part_mjz_discount   = #{partMjzDiscount,jdbcType=DOUBLE},
+            divide_order_fee    = #{divideOrderFee,jdbcType=DOUBLE}
         where order_id = #{orderId,jdbcType=VARCHAR}
     </update>
 
@@ -377,4 +377,180 @@
         <include refid="Base_Column_List"/>
         from gmair_ordercentre.order
     </select>
+
+    <insert id="insertSelectiveWithTbOrder" parameterType="finley.gmair.model.dto.TbOrderDTO">
+        insert into gmair_ordercentre.order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="tradeId != null">
+                trade_id,
+            </if>
+            <if test="tbOrder.numIid != null">
+                num_iid,
+            </if>
+            <if test="tbOrder.cid != null">
+                cid,
+            </if>
+            <if test="tbOrder.oid != null">
+                oid,
+            </if>
+            <if test="tbOrder.status != null">
+                `status`,
+            </if>
+            <if test="tbOrder.num != null">
+                num,
+            </if>
+            <if test="tbOrder.title != null">
+                title,
+            </if>
+            <if test="tbOrder.skuId != null">
+                sku_id,
+            </if>
+            <if test="tbOrder.skuPropertiesName != null">
+                sku_properties_name,
+            </if>
+            <if test="tbOrder.sellerType != null">
+                seller_type,
+            </if>
+            <if test="tbOrder.refundStatus != null">
+                refund_status,
+            </if>
+            <if test="tbOrder.sellerRate != null">
+                seller_rate,
+            </if>
+            <if test="tbOrder.buyerRate != null">
+                buyer_rate,
+            </if>
+            <if test="tbOrder.isDaixiao != null">
+                is_daixiao,
+            </if>
+            <if test="tbOrder.picPath != null">
+                pic_path,
+            </if>
+            <if test="tbOrder.storeCode != null">
+                store_code,
+            </if>
+            <if test="tbOrder.shippingType != null">
+                shipping_type,
+            </if>
+            <if test="tbOrder.logisticsCompany != null">
+                logistics_company,
+            </if>
+            <if test="tbOrder.invoiceNo != null">
+                invoice_no,
+            </if>
+            <if test="tbOrder.consignTime != null">
+                consign_time,
+            </if>
+            <if test="tbOrder.price != null">
+                price,
+            </if>
+            <if test="tbOrder.totalFee != null">
+                total_fee,
+            </if>
+            <if test="tbOrder.payment != null">
+                payment,
+            </if>
+            <if test="tbOrder.adjustFee != null">
+                adjust_fee,
+            </if>
+            <if test="tbOrder.discountFee != null">
+                discount_fee,
+            </if>
+            <if test="tbOrder.partMjzDiscount != null">
+                part_mjz_discount,
+            </if>
+            <if test="tbOrder.divideOrderFee != null">
+                divide_order_fee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                #{orderId,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeId != null">
+                #{tradeId,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.numIid != null">
+                #{tbOrder.numIid,jdbcType=BIGINT},
+            </if>
+            <if test="tbOrder.cid != null">
+                #{tbOrder.cid,jdbcType=BIGINT},
+            </if>
+            <if test="tbOrder.oid != null">
+                #{tbOrder.oid,jdbcType=BIGINT},
+            </if>
+            <if test="tbOrder.status != null">
+                #{tbOrder.status,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.num != null">
+                #{tbOrder.num,jdbcType=BIGINT},
+            </if>
+            <if test="tbOrder.title != null">
+                #{tbOrder.title,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.skuId != null">
+                #{tbOrder.skuId,jdbcType=BIGINT},
+            </if>
+            <if test="tbOrder.skuPropertiesName != null">
+                #{tbOrder.skuPropertiesName,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.sellerType != null">
+                #{tbOrder.sellerType,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.refundStatus != null">
+                #{tbOrder.refundStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.sellerRate != null">
+                #{tbOrder.sellerRate,jdbcType=BOOLEAN},
+            </if>
+            <if test="tbOrder.buyerRate != null">
+                #{tbOrder.buyerRate,jdbcType=BOOLEAN},
+            </if>
+            <if test="tbOrder.isDaixiao != null">
+                #{tbOrder.isDaixiao,jdbcType=BOOLEAN},
+            </if>
+            <if test="tbOrder.picPath != null">
+                #{tbOrder.picPath,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.storeCode != null">
+                #{tbOrder.storeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.shippingType != null">
+                #{tbOrder.shippingType,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.logisticsCompany != null">
+                #{tbOrder.logisticsCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.invoiceNo != null">
+                #{tbOrder.invoiceNo,jdbcType=VARCHAR},
+            </if>
+            <if test="tbOrder.consignTime != null">
+                #{tbOrder.consignTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbOrder.price != null">
+                #{tbOrder.price,jdbcType=DOUBLE},
+            </if>
+            <if test="tbOrder.totalFee != null">
+                #{tbOrder.totalFee,jdbcType=DOUBLE},
+            </if>
+            <if test="tbOrder.payment != null">
+                #{tbOrder.payment,jdbcType=DOUBLE},
+            </if>
+            <if test="tbOrder.adjustFee != null">
+                #{tbOrder.adjustFee,jdbcType=DOUBLE},
+            </if>
+            <if test="tbOrder.discountFee != null">
+                #{tbOrder.discountFee,jdbcType=DOUBLE},
+            </if>
+            <if test="tbOrder.partMjzDiscount != null">
+                #{tbOrder.partMjzDiscount,jdbcType=DOUBLE},
+            </if>
+            <if test="tbOrder.divideOrderFee != null">
+                #{tbOrder.divideOrderFee,jdbcType=DOUBLE},
+            </if>
+        </trim>
+    </insert>
 </mapper>

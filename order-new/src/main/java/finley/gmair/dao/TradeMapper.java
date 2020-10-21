@@ -1,5 +1,6 @@
 package finley.gmair.dao;
 
+import finley.gmair.model.dto.TbTradeDTO;
 import finley.gmair.model.ordernew.Trade;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +17,9 @@ public interface TradeMapper {
     int updateByPrimaryKeySelective(Trade record);
 
     int updateByPrimaryKey(Trade record);
+
+    /**
+     * 将淘宝方的单笔交易导入Trade表中
+     */
+    int insertSelectiveWithTradeDTO(TbTradeDTO tradeDTO);
 }

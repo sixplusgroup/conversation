@@ -13,6 +13,8 @@ import lombok.Data;
 public class TbOrderDTO {
 
     private String orderId;
+    private String tradeId;
+
     private Order tbOrder;
 
     public TbOrderDTO() {
@@ -20,6 +22,12 @@ public class TbOrderDTO {
 
     public TbOrderDTO(Order tbOrder) {
         this.tbOrder = tbOrder;
+        this.orderId = IDGenerator.generate("CentreOrder");
+    }
+
+    public TbOrderDTO(Order tbOrder,String tradeId) {
+        this.tbOrder = tbOrder;
+        this.tradeId = tradeId;
         this.orderId = IDGenerator.generate("CentreOrder");
     }
 }

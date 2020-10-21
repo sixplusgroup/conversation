@@ -372,6 +372,7 @@
             </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="finley.gmair.model.ordernew.Trade">
         <!--@mbg.generated-->
         update gmair_ordercentre.trade
@@ -552,4 +553,270 @@
             step_paid_fee     = #{stepPaidFee,jdbcType=DOUBLE}
         where trade_id = #{tradeId,jdbcType=VARCHAR}
     </update>
+
+    <insert id="insertSelectiveWithTradeDTO" parameterType="finley.gmair.model.dto.TbTradeDTO">
+        insert into gmair_ordercentre.trade
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tradeId != null">
+                trade_id,
+            </if>
+            <if test="tbTrade.tid != null">
+                tid,
+            </if>
+            <if test="tbTrade.numIid != null">
+                num_iid,
+            </if>
+            <if test="tbTrade.num != null">
+                num,
+            </if>
+            <if test="tbTrade.status != null">
+                `status`,
+            </if>
+            <if test="tbTrade.type != null">
+                `type`,
+            </if>
+            <if test="tbTrade.shippingType != null">
+                shipping_type,
+            </if>
+            <if test="tbTrade.tradeFrom != null">
+                trade_from,
+            </if>
+            <if test="tbTrade.stepTradeStatus != null">
+                step_trade_status,
+            </if>
+            <if test="tbTrade.buyerRate != null">
+                buyer_rate,
+            </if>
+            <if test="tbTrade.created != null">
+                created,
+            </if>
+            <if test="tbTrade.modified != null">
+                modified,
+            </if>
+            <if test="tbTrade.payTime != null">
+                pay_time,
+            </if>
+            <if test="tbTrade.consignTime != null">
+                consign_time,
+            </if>
+            <if test="tbTrade.endTime != null">
+                end_time,
+            </if>
+            <if test="tbTrade.receiverName != null">
+                receiver_name,
+            </if>
+            <if test="tbTrade.receiverState != null">
+                receiver_state,
+            </if>
+            <if test="tbTrade.receiverAddress != null">
+                receiver_address,
+            </if>
+            <if test="tbTrade.receiverZip != null">
+                receiver_zip,
+            </if>
+            <if test="tbTrade.receiverMobile != null">
+                receiver_mobile,
+            </if>
+            <if test="tbTrade.receiverPhone != null">
+                receiver_phone,
+            </if>
+            <if test="tbTrade.receiverCountry != null">
+                receiver_country,
+            </if>
+            <if test="tbTrade.receiverCity != null">
+                receiver_city,
+            </if>
+            <if test="tbTrade.receiverDistrict != null">
+                receiver_district,
+            </if>
+            <if test="tbTrade.receiverTown != null">
+                receiver_town,
+            </if>
+            <if test="tbTrade.tmallDelivery != null">
+                tmall_delivery,
+            </if>
+            <if test="tbTrade.cnService != null">
+                cn_service,
+            </if>
+            <if test="tbTrade.deliveryCps != null">
+                delivery_cps,
+            </if>
+            <if test="tbTrade.cutoffMinutes != null">
+                cutoff_minutes,
+            </if>
+            <if test="tbTrade.deliveryTime != null">
+                delivery_time,
+            </if>
+            <if test="tbTrade.collectTime != null">
+                collect_time,
+            </if>
+            <if test="tbTrade.dispatchTime != null">
+                dispatch_time,
+            </if>
+            <if test="tbTrade.signTime != null">
+                sign_time,
+            </if>
+            <if test="tbTrade.esTime != null">
+                es_time,
+            </if>
+            <if test="tbTrade.price != null">
+                price,
+            </if>
+            <if test="tbTrade.totalFee != null">
+                total_fee,
+            </if>
+            <if test="tbTrade.payment != null">
+                payment,
+            </if>
+            <if test="tbTrade.adjustFee != null">
+                adjust_fee,
+            </if>
+            <if test="tbTrade.receivedPayment != null">
+                received_payment,
+            </if>
+            <if test="tbTrade.discountFee != null">
+                discount_fee,
+            </if>
+            <if test="tbTrade.postFee != null">
+                post_fee,
+            </if>
+            <if test="tbTrade.creditCardFee != null">
+                credit_card_fee,
+            </if>
+            <if test="tbTrade.stepPaidFee != null">
+                step_paid_fee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tradeId != null">
+                #{tradeId,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.tid != null">
+                #{tbTrade.tid,jdbcType=BIGINT},
+            </if>
+            <if test="tbTrade.numIid != null">
+                #{tbTrade.numIid,jdbcType=BIGINT},
+            </if>
+            <if test="tbTrade.num != null">
+                #{tbTrade.num,jdbcType=BIGINT},
+            </if>
+            <if test="tbTrade.status != null">
+                #{tbTrade.status,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.type != null">
+                #{tbTrade.type,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.shippingType != null">
+                #{tbTrade.shippingType,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.tradeFrom != null">
+                #{tbTrade.tradeFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.stepTradeStatus != null">
+                #{tbTrade.stepTradeStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.buyerRate != null">
+                #{tbTrade.buyerRate,jdbcType=BOOLEAN},
+            </if>
+            <if test="tbTrade.created != null">
+                #{tbTrade.created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.modified != null">
+                #{tbTrade.modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.payTime != null">
+                #{tbTrade.payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.consignTime != null">
+                #{tbTrade.consignTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.endTime != null">
+                #{tbTrade.endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.receiverName != null">
+                #{tbTrade.receiverName,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverState != null">
+                #{tbTrade.receiverState,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverAddress != null">
+                #{tbTrade.receiverAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverZip != null">
+                #{tbTrade.receiverZip,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverMobile != null">
+                #{tbTrade.receiverMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverPhone != null">
+                #{tbTrade.receiverPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverCountry != null">
+                #{tbTrade.receiverCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverCity != null">
+                #{tbTrade.receiverCity,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverDistrict != null">
+                #{tbTrade.receiverDistrict,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.receiverTown != null">
+                #{tbTrade.receiverTown,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.tmallDelivery != null">
+                #{tbTrade.tmallDelivery,jdbcType=BOOLEAN},
+            </if>
+            <if test="tbTrade.cnService != null">
+                #{tbTrade.cnService,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.deliveryCps != null">
+                #{tbTrade.deliveryCps,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.cutoffMinutes != null">
+                #{tbTrade.cutoffMinutes,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.deliveryTime != null">
+                #{tbTrade.deliveryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.collectTime != null">
+                #{tbTrade.collectTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.dispatchTime != null">
+                #{tbTrade.dispatchTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.signTime != null">
+                #{tbTrade.signTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tbTrade.esTime != null">
+                #{tbTrade.esTime,jdbcType=INTEGER},
+            </if>
+            <if test="tbTrade.price != null">
+                #{tbTrade.price,jdbcType=DOUBLE},
+            </if>
+            <if test="tbTrade.totalFee != null">
+                #{tbTrade.totalFee,jdbcType=DOUBLE},
+            </if>
+            <if test="tbTrade.payment != null">
+                #{tbTrade.payment,jdbcType=DOUBLE},
+            </if>
+            <if test="tbTrade.adjustFee != null">
+                #{tbTrade.adjustFee,jdbcType=DOUBLE},
+            </if>
+            <if test="tbTrade.receivedPayment != null">
+                #{tbTrade.receivedPayment,jdbcType=DOUBLE},
+            </if>
+            <if test="tbTrade.discountFee != null">
+                #{tbTrade.discountFee,jdbcType=DOUBLE},
+            </if>
+            <if test="tbTrade.postFee != null">
+                #{tbTrade.postFee,jdbcType=DOUBLE},
+            </if>
+            <if test="tbTrade.creditCardFee != null">
+                #{tbTrade.creditCardFee,jdbcType=DOUBLE},
+            </if>
+            <if test="tbTrade.stepPaidFee != null">
+                #{tbTrade.stepPaidFee,jdbcType=DOUBLE},
+            </if>
+        </trim>
+    </insert>
 </mapper>
