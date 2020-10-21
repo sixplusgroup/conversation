@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
  * @date ：Created in 2020/10/17 15:46
  * @description ：
  */
-
 @Service
 public class TbOrderServiceImpl implements TbOrderService {
+
     @Override
     public ResultData handleTrade(Trade trade) {
-        System.out.println(trade.toString());
+        // version
         return null;
     }
 }

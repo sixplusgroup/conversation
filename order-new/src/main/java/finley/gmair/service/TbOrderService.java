@@ -11,8 +11,10 @@ import finley.gmair.util.ResultData;
 
 public interface TbOrderService {
     /**
-     * 处理订单
+     * 将淘宝的trade转存到中台系统数据库中的trade和order
+     *
      * @param trade
+     * @return ResultData
      */
     ResultData handleTrade(Trade trade);
 }

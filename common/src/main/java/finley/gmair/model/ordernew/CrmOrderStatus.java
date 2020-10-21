@@ -76,6 +76,6 @@ public enum CrmOrderStatus implements EnumValue {
 
     @Override
     public int getValue() {
-        return 0;
+        return this.value;
     }
 }

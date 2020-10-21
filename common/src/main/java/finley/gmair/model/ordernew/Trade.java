@@ -27,7 +27,7 @@ public class Trade {
     /**
      * 商品购买数量。取值范围：大于零的整数,对于一个trade对应多个order的时候（一笔主订单，对应多笔子订单），num=0，num是一个跟商品关联的属性，一笔订单对应多比子订单的时候，主订单上的num无意义。
      */
-    private Integer num;
+    private Long num;
 
     /**
      * 枚举类值：交易状态。
