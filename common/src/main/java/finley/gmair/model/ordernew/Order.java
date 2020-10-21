@@ -51,7 +51,7 @@ public class Order {
     /**
      * 购买数量（取值范围:大于零的整数）
      */
-    private Integer num;
+    private Long num;
 
     /**
      * 商品标题

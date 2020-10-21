@@ -10,7 +10,7 @@
         <result column="cid" jdbcType="BIGINT" property="cid"/>
         <result column="oid" jdbcType="BIGINT" property="oid"/>
         <result column="status" jdbcType="VARCHAR" property="status"/>
-        <result column="num" jdbcType="INTEGER" property="num"/>
+        <result column="num" jdbcType="BIGINT" property="num"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="sku_id" jdbcType="BIGINT" property="skuId"/>
         <result column="sku_properties_name" jdbcType="VARCHAR" property="skuPropertiesName"/>
@@ -65,7 +65,7 @@
                                              total_fee, payment, adjust_fee,
                                              discount_fee, part_mjz_discount, divide_order_fee)
         values (#{orderId,jdbcType=VARCHAR}, #{tradeId,jdbcType=VARCHAR}, #{numIid,jdbcType=BIGINT},
-                #{cid,jdbcType=BIGINT}, #{oid,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, #{num,jdbcType=INTEGER},
+                #{cid,jdbcType=BIGINT}, #{oid,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, #{num,jdbcType=BIGINT},
                 #{title,jdbcType=VARCHAR}, #{skuId,jdbcType=BIGINT}, #{skuPropertiesName,jdbcType=VARCHAR},
                 #{sellerType,jdbcType=VARCHAR}, #{refundStatus,jdbcType=VARCHAR}, #{sellerRate,jdbcType=BOOLEAN},
                 #{buyerRate,jdbcType=BOOLEAN}, #{isDaixiao,jdbcType=BOOLEAN}, #{picPath,jdbcType=VARCHAR},
@@ -183,7 +183,7 @@
                 #{status,jdbcType=VARCHAR},
             </if>
             <if test="num != null">
-                #{num,jdbcType=INTEGER},
+                #{num,jdbcType=BIGINT},
             </if>
             <if test="title != null">
                 #{title,jdbcType=VARCHAR},
@@ -270,7 +270,7 @@
                 `status` = #{status,jdbcType=VARCHAR},
             </if>
             <if test="num != null">
-                num = #{num,jdbcType=INTEGER},
+                num = #{num,jdbcType=BIGINT},
             </if>
             <if test="title != null">
                 title = #{title,jdbcType=VARCHAR},
@@ -346,7 +346,7 @@
         cid = #{cid,jdbcType=BIGINT},
         oid = #{oid,jdbcType=BIGINT},
         `status` = #{status,jdbcType=VARCHAR},
-        num = #{num,jdbcType=INTEGER},
+        num = #{num,jdbcType=BIGINT},
         title = #{title,jdbcType=VARCHAR},
         sku_id = #{skuId,jdbcType=BIGINT},
         sku_properties_name = #{skuPropertiesName,jdbcType=VARCHAR},
