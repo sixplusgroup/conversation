@@ -87,5 +87,11 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
+        <if test='sortType == "CREATE"'>
+            ORDER BY create_time desc
+        </if>
+        <if test='sortType == "FINISH"'>
+            ORDER BY assign_date desc
+        </if>
     </select>
 </mapper>

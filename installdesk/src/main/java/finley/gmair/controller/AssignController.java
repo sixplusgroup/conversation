@@ -160,6 +160,10 @@ public class AssignController {
                 condition.put("consumer", fuzzysearch);
             }
         }
+
+        if (!StringUtils.isEmpty(sortType)) {
+            condition.put("sortType", sortType);
+        }
         if (curPage == null || length == null) {
             response = assignService.principal(condition);
         } else {
@@ -177,28 +181,6 @@ public class AssignController {
             result.setData(response.getData());
         }
 
-        List<AssignMember> assignMemberList = (List<AssignMember>) result.getData();
-        //排序
-        if (sortType.equals("CREATE")){
-            assignMemberList.sort((x, y) -> y.getCreateAt().compareTo(x.getCreateAt()));
-        }
-        else if (sortType.equals("FINISH")){
-            assignMemberList.sort((x, y) -> {
-                if (x.getAssignDate() == null && y.getAssignDate() == null){
-                    return 0;
-                }
-                else if (x.getAssignDate() == null){
-                    return 1;
-                }
-                else if (y.getAssignDate() == null){
-                    return -1;
-                }
-                else {
-                    return y.getAssignDate().compareTo(x.getAssignDate());
-                }
-            });
-        }
-        result.setData(assignMemberList);
         return result;
     }
 
@@ -503,6 +485,9 @@ public class AssignController {
             condition.put("assignStatus", status);
         }
         condition.put("blockFlag", false);
+        if (!StringUtils.isEmpty(sortType)) {
+            condition.put("sortType", sortType);
+        }
         ResultData response;
         if (!StringUtils.isEmpty(search)) {
             String fuzzysearch = "%" + search + "%";
@@ -526,28 +511,6 @@ public class AssignController {
             result.setDescription("当前暂无任何安装任务，请稍后尝试");
         }
         result.setData(response.getData());
-        List<Assign> assignReportList = (List<Assign>) result.getData();
-        //排序
-        if (sortType.equals("CREATE")){
-            assignReportList.sort((x, y) -> y.getCreateAt().compareTo(x.getCreateAt()));
-        }
-        else if (sortType.equals("FINISH")){
-            assignReportList.sort((x, y) -> {
-                if (x.getAssignDate() == null && y.getAssignDate() == null){
-                    return 0;
-                }
-                else if (x.getAssignDate() == null){
-                    return 1;
-                }
-                else if (y.getAssignDate() == null){
-                    return -1;
-                }
-                else {
-                    return y.getAssignDate().compareTo(x.getAssignDate());
-                }
-            });
-        }
-        result.setData(assignReportList);
         return result;
     }
 
@@ -822,6 +785,9 @@ public class AssignController {
         if (!StringUtils.isEmpty(endTime)) {
             condition.put("endTime", endTime);
         }
+        if (!StringUtils.isEmpty(sortType)) {
+            condition.put("sortType", sortType);
+        }
         condition.put("blockFlag", false);
         ResultData response = assignService.report_fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -837,27 +803,6 @@ public class AssignController {
 
         result.setData(response.getData());
         List<AssignReport> assignReportList = (List<AssignReport>) result.getData();
-        //排序
-        if (sortType.equals("CREATE")){
-            assignReportList.sort((x, y) -> y.getCreateAt().compareTo(x.getCreateAt()));
-        }
-        else if (sortType.equals("FINISH")){
-            assignReportList.sort((x, y) -> {
-                if (x.getAssignDate() == null && y.getAssignDate() == null){
-                    return 0;
-                }
-                else if (x.getAssignDate() == null){
-                    return 1;
-                }
-                else if (y.getAssignDate() == null){
-                    return -1;
-                }
-                else {
-                    return y.getAssignDate().compareTo(x.getAssignDate());
-                }
-            });
-        }
-        result.setData(assignReportList);
         return result;
     }
 

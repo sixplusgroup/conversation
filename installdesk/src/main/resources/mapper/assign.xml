@@ -107,7 +107,12 @@
         <if test="type != null">
             AND assign_type = #{type}
         </if>
-        ORDER BY create_time ASC
+        <if test='sortType == "CREATE"'>
+            ORDER BY create_time desc
+        </if>
+        <if test='sortType == "FINISH"'>
+            ORDER BY assign_date desc
+        </if>
         <!--<if test="page != null and pageLength!= null">-->
             <!--LIMIT page,pageLength-->
         <!--</if>-->
@@ -278,7 +283,12 @@
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
         </if>
-        ORDER BY create_time ASC
+        <if test='sortType == "CREATE"'>
+            ORDER BY create_time desc
+        </if>
+        <if test='sortType == "FINISH"'>
+            ORDER BY assign_date desc
+        </if>
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.installation.Assign">
