@@ -1,5 +1,7 @@
 package finley.gmair.model.drift;
 
+import finley.gmair.model.ordernew.TradeFrom;
+
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +27,8 @@ public class DriftOrder extends AbstractDriftOrder {
 
     private DriftOrderStatus status;
 
+    private TradeFrom tradeFrom;
+
     private List<DriftOrderItem> list;
 
     public DriftOrder() {
@@ -33,7 +37,8 @@ public class DriftOrder extends AbstractDriftOrder {
     }
 
     public DriftOrder(String consumerId, String equipId, String consignee, String phone, String address, String province,
-                      String city, String district, String description, String activityId, Date expectedDate, int intervalDate) {
+                      String city, String district, String description, String activityId, Date expectedDate, int intervalDate,
+                      TradeFrom tradeFrom) {
         super(consumerId, consignee, phone, address, expectedDate, intervalDate);
         this.equipId = equipId;
         this.province = province;
@@ -42,6 +47,7 @@ public class DriftOrder extends AbstractDriftOrder {
         this.description = description;
         this.activityId = activityId;
         this.status = DriftOrderStatus.APPLIED;
+        this.tradeFrom = tradeFrom;
     }
 
     public String getEquipId() {
@@ -131,4 +137,13 @@ public class DriftOrder extends AbstractDriftOrder {
     public void setMachineOrderNo(String machineOrderNo) {
         this.machineOrderNo = machineOrderNo;
     }
+
+    public TradeFrom getTradeFrom() {
+        return tradeFrom;
+    }
+
+    public void setTradeFrom(TradeFrom tradeFrom) {
+        this.tradeFrom = tradeFrom;
+    }
+
 }

@@ -5,9 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.model.drift.*;
-import finley.gmair.model.drift.DriftExpress;
-import finley.gmair.model.express.Express;
-import finley.gmair.model.order.OrderStatus;
+import finley.gmair.model.ordernew.TradeFrom;
 import finley.gmair.model.wechat.OfficialAccountMessage;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
@@ -26,12 +24,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/drift/order")
@@ -235,7 +230,7 @@ public class OrderController {
             }
         }
 
-        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate);
+        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate, TradeFrom.WECHAT);
         driftOrder.setTotalPrice(price);
         driftOrder.setRealPay(price);
         driftOrder.setList(list);
@@ -1067,7 +1062,7 @@ public class OrderController {
             }
             //根据寄出还是寄回推送公众号消息
             if (driftExpress.getStatus() == DriftExpressStatus.DELIVERED) {
-                deliveredMessage(orderId,expressNo,company);
+                deliveredMessage(orderId, expressNo, company);
             } else if (driftExpress.getStatus() == DriftExpressStatus.BACk)
                 backedMessage(orderId);
         }
@@ -1746,7 +1741,7 @@ public class OrderController {
      * @return
      */
     @GetMapping("/notify/delivered")
-    public ResultData deliveredMessage(String orderId,String expressOutNum,String expressOutCompany) {
+    public ResultData deliveredMessage(String orderId, String expressOutNum, String expressOutCompany) {
         ResultData resultData = new ResultData();
         //根据orderId获取手机号
         ResultData re = orderById(orderId);
@@ -1790,10 +1785,10 @@ public class OrderController {
         remark.put("value", "详情请查看果麦检测小程序");
         remark.put("color", "#173177");
 
-        data.put("first",first);
-        data.put("keyword1",keyword1);
-        data.put("keyword2",keyword2);
-        data.put("remark",remark);
+        data.put("first", first);
+        data.put("keyword1", keyword1);
+        data.put("keyword2", keyword2);
+        data.put("remark", remark);
 
         jsonObject.put("data", data);
 
@@ -1877,11 +1872,11 @@ public class OrderController {
             remark.put("value", "详情请查看果麦检测小程序");
             remark.put("color", "#173177");
 
-            data.put("first",first);
-            data.put("keyword1",keyword1);
-            data.put("keyword2",keyword2);
-            data.put("keyword3",keyword3);
-            data.put("remark",remark);
+            data.put("first", first);
+            data.put("keyword1", keyword1);
+            data.put("keyword2", keyword2);
+            data.put("keyword3", keyword3);
+            data.put("remark", remark);
 
             jsonObject.put("data", data);
 
