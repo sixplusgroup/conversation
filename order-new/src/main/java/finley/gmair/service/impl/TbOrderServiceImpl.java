@@ -33,7 +33,16 @@ public class TbOrderServiceImpl implements TbOrderService {
     @Transient
     public ResultData handleTrade(Trade trade) {
         ResultData resultData = new ResultData();
+
+        if(trade == null){
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            resultData.setDescription("待处理的交易为空");
+        }
+
         List<Order> tbOrders = trade.getOrders();
+
+        System.out.println("handleTrade");
+        System.out.println(trade.getOrders());
 
         // 1. 插入Trade
         TbTradeDTO tradeDTO = new TbTradeDTO(trade);
@@ -44,14 +53,16 @@ public class TbOrderServiceImpl implements TbOrderService {
         }
 
         // 2. 插入Order
-        String tradeId = tradeDTO.getTradeId();
-        for (Order tmpTbOrder:tbOrders) {
-            TbOrderDTO orderDTO = new TbOrderDTO(tmpTbOrder);
-            orderDTO.setTradeId(tradeId);
-            int orderInsertNum = orderMapper.insertSelectiveWithTbOrder(orderDTO);
-            if (orderInsertNum == 0){
-                resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                resultData.setDescription("订单插入出错");
+        if (tbOrders != null){
+            String tradeId = tradeDTO.getTradeId();
+            for (Order tmpTbOrder:tbOrders) {
+                TbOrderDTO orderDTO = new TbOrderDTO(tmpTbOrder);
+                orderDTO.setTradeId(tradeId);
+                int orderInsertNum = orderMapper.insertSelectiveWithTbOrder(orderDTO);
+                if (orderInsertNum == 0){
+                    resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    resultData.setDescription("订单插入出错");
+                }
             }
         }
 
