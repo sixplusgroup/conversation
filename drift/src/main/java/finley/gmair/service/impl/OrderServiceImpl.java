@@ -138,6 +138,39 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
+    /**
+     * This method will save the drift order to database
+     * step 1: save the drift order with orderId
+     * step 2: save the order item list with orderId
+     *
+     * @param order
+     * @return
+     */
+    @Override
+    public ResultData createDriftOrderWithId(DriftOrder order) {
+        ResultData result = new ResultData();
+        //first insert order, then insert order item
+        ResultData response = orderDao.insertOrderWithId(order);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to insert drift order with: " + order.toString());
+            return result;
+        }
+        String orderId = ((DriftOrder) response.getData()).getOrderId();
+        order.setOrderId(orderId);
+        //insert order item
+        List<DriftOrderItem> list = order.getList();
+        new Thread(() -> {
+            for (DriftOrderItem item : list) {
+                item.setOrderId(orderId);
+                orderItemDao.insertOrderItem(item);
+            }
+        }).start();
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
     @Override
     public ResultData updateDriftOrder(DriftOrder order) {
         ResultData result = new ResultData();

@@ -11,6 +11,8 @@ import com.taobao.api.response.TradesSoldGetResponse;
 import com.taobao.api.response.TradesSoldIncrementGetResponse;
 import finley.gmair.OrderNewApplication;
 import finley.gmair.dao.OrderMapper;
+import finley.gmair.model.drift.DriftOrderExpress;
+import finley.gmair.service.DriftOrderSyncService;
 import finley.gmair.service.TbItemSyncService;
 import finley.gmair.util.IDGenerator;
 import org.junit.Test;
@@ -32,6 +34,8 @@ public class TbAPIServiceImplTest {
     TbItemSyncService tbItemSyncServiceImpl;
     @Autowired
     TbOrderSyncServiceImpl tbOrderSyncServiceImpl;
+    @Autowired
+    DriftOrderSyncService driftOrderSyncService;
 
 
     private static final String SESSION_KEY = "6100e02ceb111ceb4e6ff02506458185b2f7afa5fce9f232200642250842";
@@ -99,6 +103,11 @@ public class TbAPIServiceImplTest {
     @Test
     public void generateId() {
         System.out.println(IDGenerator.generate("SEL"));
+    }
+
+    @Test
+    public void syncDriftOrder() {
+        driftOrderSyncService.syncOrderToDrift(new DriftOrderExpress());
     }
 
 }
