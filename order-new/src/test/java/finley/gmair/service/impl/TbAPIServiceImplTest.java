@@ -1,5 +1,6 @@
-package finley.gmair.service.impl;
+package java.finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.internal.util.StringUtils;
 import com.taobao.api.request.ItemSellerGetRequest;
 import com.taobao.api.request.ItemsOnsaleGetRequest;
@@ -11,7 +12,12 @@ import com.taobao.api.response.TradesSoldGetResponse;
 import com.taobao.api.response.TradesSoldIncrementGetResponse;
 import finley.gmair.OrderNewApplication;
 import finley.gmair.dao.OrderMapper;
+import finley.gmair.model.dto.CrmStatusDTO;
+import finley.gmair.service.CrmAPIService;
 import finley.gmair.service.TbItemSyncService;
+import finley.gmair.service.TbOrderService;
+import finley.gmair.service.impl.TbAPIServiceImpl;
+import finley.gmair.service.impl.TbOrderSyncServiceImpl;
 import finley.gmair.util.IDGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = OrderNewApplication.class)
@@ -32,7 +39,8 @@ public class TbAPIServiceImplTest {
     TbItemSyncService tbItemSyncServiceImpl;
     @Autowired
     TbOrderSyncServiceImpl tbOrderSyncServiceImpl;
-
+    @Autowired
+    CrmAPIService crmAPIService;
 
     private static final String SESSION_KEY = "6100e02ceb111ceb4e6ff02506458185b2f7afa5fce9f232200642250842";
 
@@ -101,4 +109,13 @@ public class TbAPIServiceImplTest {
         System.out.println(IDGenerator.generate("SEL"));
     }
 
+    @Test
+    public void crmUpdateTest(){
+        CrmStatusDTO crmStatusDTO = new CrmStatusDTO();
+        crmStatusDTO.setDdh("123456789");
+        crmStatusDTO.setLxfs("138139123456");
+        crmStatusDTO.setOrderStatus("4");
+        JSONObject jsonObject = crmAPIService.updateOrderStatus(crmStatusDTO);
+        System.out.println(jsonObject.toString());
+    }
 }
