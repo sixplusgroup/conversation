@@ -13,7 +13,7 @@ public interface TbOrderService {
     /**
      * 将淘宝的trade转存到中台系统数据库中的trade和order
      *
-     * @param trade
+     * @param trade from com.taobao.api.domain.Trade
      * @return ResultData
      */
     ResultData handleTrade(Trade trade);
