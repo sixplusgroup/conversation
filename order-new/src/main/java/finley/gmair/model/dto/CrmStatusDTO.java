@@ -22,9 +22,9 @@ public class CrmStatusDTO {
     /**
      * 订单状态（默认是1，未处理）
      */
-    String orderStatus;
+    String billstat;
 
     public CrmStatusDTO() {
-        this.orderStatus = "1";
+        this.billstat = "1";
     }
 }

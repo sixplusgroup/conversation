@@ -12,11 +12,11 @@ public class CrmOrderDTO {
     /**
      * 渠道来源
      */
-    private String pdly;
+    private String qdly;
     /**
      * 机器型号
      */
-    private String jqxj;
+    private String jqxh;
     /**
      * 用户姓名
      */
@@ -38,7 +38,7 @@ public class CrmOrderDTO {
      */
     private String xdrq;
     /**
-     * 实收金额
+     * 订单金额（实际金额）
      */
     private String ssje;
     /**
@@ -49,7 +49,6 @@ public class CrmOrderDTO {
      * 地址（详细地址）
      */
     private String dz;
-
     /**
      * 订单状态
      */

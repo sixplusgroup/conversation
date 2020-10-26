@@ -1,11 +1,8 @@
 package finley.gmair.service;
 
-import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.dto.CrmOrderDTO;
-import finley.gmair.model.dto.CrmStatusDTO;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author zm
@@ -16,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface CrmAPIService {
 
     @PostMapping(value = "/update")
-    JSONObject updateOrderStatus(
-            @RequestBody CrmStatusDTO crmStatus
+    Object updateOrderStatus(
+            @RequestParam("param") String param
     );
 
     @PostMapping(value = "/add")
-    JSONObject addNewOrder(
-            @RequestBody CrmOrderDTO crmOrder
+    Object createNewOrder(
+            @RequestParam("param") String param
     );
 }

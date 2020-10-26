@@ -11,7 +11,7 @@ import finley.gmair.util.ResultData;
  **/
 public interface CrmOrderService {
     /**
-     * 根据传入的父订单Trade向crm中新增订单
+     * 将中台系统中的trade（一个父订单）转存到crm系统中
      *
      * @author zm
      * @param trade      
@@ -21,7 +21,7 @@ public interface CrmOrderService {
     ResultData createTrade(Trade trade);
 
     /**
-     * 在createTrade方法中添加单个子订单order方法
+     * 将中台系统中的单个order（一个子订单）转存到crm系统中
      *
      * @author zm
      * @param order
