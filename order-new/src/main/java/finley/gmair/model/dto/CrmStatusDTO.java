@@ -14,15 +14,15 @@ public class CrmStatusDTO {
     /**
      * 订单号（订单号+联系方式，确认唯一性）
      */
-    String ddh;
+    private String ddh;
     /**
      * 联系方式（订单号+联系方式，确认唯一性）
      */
-    String lxfs;
+    private String lxfs;
     /**
      * 订单状态（默认是1，未处理）
      */
-    String billstat;
+    private String billstat;
 
     public CrmStatusDTO() {
         this.billstat = "1";

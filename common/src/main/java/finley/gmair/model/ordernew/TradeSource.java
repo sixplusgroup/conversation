@@ -7,21 +7,17 @@ import finley.gmair.model.EnumValue;
  * @date 2020/10/26 0026 17:55
  * @description 中台 -> crm系统转存时候的交易渠道来源
  **/
-public enum TradeSource implements EnumValue {
-    /*淘宝*/
-    TAOBAO(0),
-    /*58*/
-    WUBA(58),
-    ;
+public enum TradeSource {
+    /*天猫*/
+    TMALL("58");
 
-    private int value;
+    private String value;
 
-    TradeSource(int value) {
+    TradeSource(String value) {
         this.value = value;
     }
 
-    @Override
-    public int getValue() {
+    public String getValue() {
         return this.value;
     }
 }

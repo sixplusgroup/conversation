@@ -1,8 +1,11 @@
 package finley.gmair.service;
 
+import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Map;
 
 /**
  * @author zm
@@ -13,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CrmAPIService {
 
     @PostMapping(value = "/update")
-    Object updateOrderStatus(
+    Map<String, Object> updateOrderStatus(
             @RequestParam("param") String param
     );
 
     @PostMapping(value = "/add")
-    Object createNewOrder(
+    Map<String, Object> createNewOrder(
             @RequestParam("param") String param
     );
 }
