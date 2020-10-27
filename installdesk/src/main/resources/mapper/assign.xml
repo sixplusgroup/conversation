@@ -201,6 +201,9 @@
                 </otherwise>
             </choose>
         </if>
+        <if test='start != null and length != null'>
+            LIMIT #{start},#{length}
+        </if>
     </select>
 
     <select id="principalLength" parameterType="java.util.Map" resultType="java.lang.Integer">

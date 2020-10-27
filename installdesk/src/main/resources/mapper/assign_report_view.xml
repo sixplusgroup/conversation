@@ -93,5 +93,66 @@
         <if test='sortType == "FINISH"'>
             ORDER BY assign_date desc
         </if>
+        <if test='start != null and length != null'>
+            LIMIT #{start},#{length}
+        </if>
+    </select>
+
+    <select id="report_query_length" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM gmair_install.assign_report_view
+        WHERE 1 = 1
+        <if test="assignId != null">
+            AND assign_id = #{assignId}
+        </if>
+        <if test="assignDetail != null">
+            AND assign_detail = #{assignDetail}
+        </if>
+        <if test="assignStatus != null">
+            AND assign_status = #{assignStatus}
+        </if>
+        <if test="consumerConsignee != null">
+            AND consumer_consignee = #{consumerConsignee}
+        </if>
+        <if test="teamId != null">
+            AND team_id = #{teamId}
+        </if>
+        <if test="teamName != null">
+            AND team_name = #{teamName}
+        </if>
+        <if test="memberId != null">
+            AND member_id = #{memberId}
+        </if>
+        <if test="memberName != null">
+            AND member_name = #{memberName}
+        </if>
+        <if test="assignType != null">
+            AND assign_type = #{assignType}
+        </if>
+        <if test="teams != null">
+            AND team_id IN
+            <foreach item="item" collection="teams" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="beginTime != null and beginTime !='' ">
+            <![CDATA[
+				and	DATE_FORMAT(create_time, '%Y-%m-%d')>= DATE_FORMAT(#{beginTime}, '%Y-%m-%d')
+			]]>
+        </if>
+        <if test="endTime != null and endTime !='' ">
+            <![CDATA[
+				and	DATE_FORMAT(create_time, '%Y-%m-%d')<= DATE_FORMAT(#{endTime}, '%Y-%m-%d')
+			]]>
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test='sortType == "CREATE"'>
+            ORDER BY create_time desc
+        </if>
+        <if test='sortType == "FINISH"'>
+            ORDER BY assign_date desc
+        </if>
     </select>
 </mapper>

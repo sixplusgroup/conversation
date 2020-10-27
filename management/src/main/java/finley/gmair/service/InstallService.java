@@ -103,16 +103,16 @@ public interface InstallService {
     ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description,@RequestParam("date") String date);
 
     @PostMapping("/install/assign/report")
-    ResultData reportQueryByAssignId(@RequestParam("assignId") String assignId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType);
+    ResultData reportQueryByAssignId(@RequestParam("assignId") String assignId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType, @RequestParam("page")  Integer page, @RequestParam("pageLength") Integer pageLength);
 
     @GetMapping("/install/assign/report")
-    ResultData reportQueryByTeamId(@RequestParam("teamId") String teamId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType);
+    ResultData reportQueryByTeamId(@RequestParam("teamId") String teamId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType, @RequestParam("page")  Integer page, @RequestParam("pageLength") Integer pageLength);
 
     @GetMapping("/install/assign/report")
-    ResultData reportQueryByMemberId(@RequestParam("memberId") String memberId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType);
+    ResultData reportQueryByMemberId(@RequestParam("memberId") String memberId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType, @RequestParam("page")  Integer page, @RequestParam("pageLength") Integer pageLength);
 
     @GetMapping("/install/assign/report")
-    ResultData reportQueryByMemberTime(@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType);
+    ResultData reportQueryByMemberTime(@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType, @RequestParam("page")  Integer page, @RequestParam("pageLength") Integer pageLength);
 
     @PostMapping("/install/assign/init")
     ResultData initAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode);

@@ -767,7 +767,7 @@ public class AssignController {
     }
 
     @GetMapping("/report")
-    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime, String sortType) {
+    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime, String sortType, Integer page, Integer pageLength) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(assignId)) {
@@ -789,7 +789,14 @@ public class AssignController {
             condition.put("sortType", sortType);
         }
         condition.put("blockFlag", false);
-        ResultData response = assignService.report_fetch(condition);
+        ResultData response = null;
+        System.out.println(page+" "+pageLength);
+        if (page != null && pageLength != null){
+            response = assignService.report_fetch(condition , (page-1)*pageLength, pageLength);
+        }
+        else {
+            response = assignService.report_fetch(condition);
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询异常，请稍后尝试");
@@ -802,7 +809,6 @@ public class AssignController {
         }
 
         result.setData(response.getData());
-        List<AssignReport> assignReportList = (List<AssignReport>) result.getData();
         return result;
     }
 
