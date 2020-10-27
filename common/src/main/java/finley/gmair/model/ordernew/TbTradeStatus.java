@@ -1,6 +1,7 @@
 package finley.gmair.model.ordernew;
 
 import finley.gmair.model.EnumValue;
+import finley.gmair.model.drift.DriftOrderStatus;
 
 /**
  * @author zm
@@ -39,5 +40,26 @@ public enum TbTradeStatus implements EnumValue {
     @Override
     public int getValue() {
         return this.value;
+    }
+
+    public DriftOrderStatus toDriftOrderStatus() {
+        switch (this) {
+            case TRADE_CLOSED_BY_TAOBAO:
+                return null;
+            case WAIT_BUYER_PAY:
+                return DriftOrderStatus.APPLIED;
+            case WAIT_SELLER_SEND_GOODS:
+                return DriftOrderStatus.CONFIRMED;
+            case SELLER_CONSIGNED_PART:
+                return DriftOrderStatus.CONFIRMED;
+            case WAIT_BUYER_CONFIRM_GOODS:
+                return DriftOrderStatus.DELIVERED;
+            case TRADE_FINISHED:
+                return DriftOrderStatus.FINISHED;
+            case TRADE_CLOSED:
+                return DriftOrderStatus.CANCELED;
+            default:
+                return null;
+        }
     }
 }
