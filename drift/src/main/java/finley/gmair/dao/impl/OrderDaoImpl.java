@@ -37,6 +37,20 @@ public class OrderDaoImpl extends BaseDao implements OrderDao {
     }
 
     @Override
+    public ResultData insertOrderWithId(DriftOrder order) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.insert("gmair.drift.order.insert", order);
+            result.setData(order);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData queryOrder(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
