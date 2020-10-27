@@ -36,6 +36,26 @@ public class TbOrderServiceImpl implements TbOrderService {
     @Override
     @Transient
     public ResultData handleTrade(Trade trade) {
+        //save trade to db
+        ResultData result = saveTrade(trade);
+        if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return result;
+        }
+        //synchronize trade to drift or crm
+        result = handleTrade(trade);
+        if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return result;
+        }
+        return new ResultData();
+    }
+
+    /**
+     * 淘宝订单入库
+     *
+     * @param trade
+     * @return
+     */
+    private ResultData saveTrade(Trade trade) {
         ResultData resultData = new ResultData();
 
         if (trade == null) {
@@ -73,6 +93,18 @@ public class TbOrderServiceImpl implements TbOrderService {
         resultData.setResponseCode(ResponseCode.RESPONSE_OK);
         resultData.setDescription("订单插入成功");
         return resultData;
+    }
+
+    /**
+     * 淘宝订单同步到drift或crm
+     *
+     * @param trade
+     * @return
+     */
+    private ResultData syncTrade(Trade trade) {
+        ResultData result = new ResultData();
+
+        return result;
     }
 
     /**

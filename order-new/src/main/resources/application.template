@@ -18,3 +18,10 @@ spring.datasource.password=
 taobao.appKey=31404926
 taobao.appSecret=56539bd811035339bf55fe93383ef615
 taobao.url=http://gw.api.taobao.com/router/rest
+
+# crm系统api
+crm.url=http://gmair.net/crm/billapi
+# crm系统修改订单状态接口
+crm.url.update=http://gmair.net/crm/billapi/update
+# crm系统新增订单接口
+crm.url.add=http://d.net/crm/billapi/add
