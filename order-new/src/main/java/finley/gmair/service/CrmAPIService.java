@@ -1,11 +1,9 @@
 package finley.gmair.service;
 
-import finley.gmair.util.ResultData;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Map;
 
 /**
  * @author zm
@@ -16,12 +14,12 @@ import java.util.Map;
 public interface CrmAPIService {
 
     @PostMapping(value = "/update")
-    Map<String, Object> updateOrderStatus(
+    JSONObject updateOrderStatus(
             @RequestParam("param") String param
     );
 
     @PostMapping(value = "/add")
-    Map<String, Object> createNewOrder(
+    JSONObject createNewOrder(
             @RequestParam("param") String param
     );
 }

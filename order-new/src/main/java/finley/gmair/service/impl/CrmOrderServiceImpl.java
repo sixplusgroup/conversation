@@ -78,7 +78,7 @@ public class CrmOrderServiceImpl implements CrmOrderService {
             newOrder.setBillstat("1");
 
             String strOrder = JSONObject.toJSON(newOrder).toString();
-            Map<String, Object> response = crmAPIService.createNewOrder(strOrder);
+            JSONObject response = crmAPIService.createNewOrder(strOrder);
             if(response.get("ResponseCode").equals(ResponseCode.RESPONSE_ERROR.toString())){
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription(response.get("Description").toString());
