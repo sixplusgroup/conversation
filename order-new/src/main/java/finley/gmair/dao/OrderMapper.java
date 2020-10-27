@@ -1,4 +1,7 @@
 package finley.gmair.dao;
+
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 import finley.gmair.model.dto.TbOrderDTO;
@@ -23,6 +26,11 @@ public interface OrderMapper {
 
     /**
      * 将淘宝方的单个订单导入Order表中
-     * */
+     */
     int insertSelectiveWithTbOrder(TbOrderDTO orderDTO);
+
+    /**
+     * 根据交易主键trade_id查询并返回所有子订单
+     */
+    List<Order> selectAllByTradeId(@Param("tradeId") String tradeId);
 }
