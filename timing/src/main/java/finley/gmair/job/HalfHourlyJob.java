@@ -3,6 +3,7 @@ package finley.gmair.job;
 import finley.gmair.pool.TimingPool;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.MachineFeignService;
+import finley.gmair.service.OrderNewFeignService;
 import finley.gmair.service.TaskService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -22,6 +23,9 @@ public class HalfHourlyJob implements Job {
 
     @Autowired
     private MachineFeignService machineFeignService;
+
+    @Autowired
+    private OrderNewFeignService orderNewFeignService;
 
 //    @Autowired
 //    private TaskService taskService;
@@ -45,6 +49,8 @@ public class HalfHourlyJob implements Job {
             machineFeignService.powerTurnOnOff();
 //            }
         }));
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> orderNewFeignService.incrementalImport()));
     }
 
 }

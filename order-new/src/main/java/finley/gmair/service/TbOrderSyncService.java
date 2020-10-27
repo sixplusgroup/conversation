@@ -1,7 +1,6 @@
 package finley.gmair.service;
 
 import finley.gmair.util.ResultData;
-import org.springframework.stereotype.Service;
 
 /**
  * @author ：tsl
