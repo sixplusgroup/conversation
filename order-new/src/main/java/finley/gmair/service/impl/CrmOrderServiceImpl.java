@@ -3,9 +3,7 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.OrderMapper;
 import finley.gmair.model.dto.CrmOrderDTO;
-import finley.gmair.model.ordernew.Order;
-import finley.gmair.model.ordernew.Trade;
-import finley.gmair.model.ordernew.TradeSource;
+import finley.gmair.model.ordernew.*;
 import finley.gmair.service.CrmAPIService;
 import finley.gmair.service.CrmOrderService;
 import finley.gmair.util.ResponseCode;
@@ -74,12 +72,13 @@ public class CrmOrderServiceImpl implements CrmOrderService {
             newOrder.setLxfs(phoneNum);
             newOrder.setDq(dq);
             newOrder.setDz(dz);
-            // TODO 根据order的status设置billstat
-            newOrder.setBillstat("1");
 
+            String billState = String.valueOf(
+                    transTbTradeStat(TbTradeStatus.valueOf(tmpOrder.getStatus())).getValue());
+            newOrder.setBillstat(billState);
             String strOrder = JSONObject.toJSON(newOrder).toString();
             JSONObject response = crmAPIService.createNewOrder(strOrder);
-            if(response.get("ResponseCode").equals(ResponseCode.RESPONSE_ERROR.toString())){
+            if (response.get("ResponseCode").equals(ResponseCode.RESPONSE_ERROR.toString())) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription(response.get("Description").toString());
                 return result;
@@ -88,5 +87,76 @@ public class CrmOrderServiceImpl implements CrmOrderService {
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setDescription("向crm系统中新增交易成功");
         return result;
+    }
+
+    @Override
+    public CrmOrderStatus transTbTradeStat(TbTradeStatus tbTradeStatus) {
+        CrmOrderStatus crmRes;
+        switch (tbTradeStatus) {
+            case TRADE_CLOSED_BY_TAOBAO:
+            case WAIT_BUYER_PAY:
+            case WAIT_SELLER_SEND_GOODS:
+                // 未处理的初始状态
+                crmRes = CrmOrderStatus.UNTREATED;
+                break;
+            case SELLER_CONSIGNED_PART:
+            case WAIT_BUYER_CONFIRM_GOODS:
+                // 部分发货、等待买家确认收货 -> 已发货运输中
+                crmRes = CrmOrderStatus.DELIVERED_IN_TRANSIT;
+                break;
+            case TRADE_CLOSED:
+                // 交易关闭（退款流程的最终状态）
+                crmRes = CrmOrderStatus.GOODS_RETURNED;
+                break;
+            case TRADE_FINISHED:
+                // 交易完成（正常购物流程的最终状态）
+                crmRes = CrmOrderStatus.ALL_INSTALLATION_COMPLETED;
+                break;
+            default:
+                crmRes = null;
+        }
+        return crmRes;
+    }
+
+    @Override
+    public TbTradeStatus transCrmOrderStat(CrmOrderStatus crmOrderStatus) {
+        TbTradeStatus tbRes;
+        switch (crmOrderStatus) {
+            case UNTREATED:
+            case PRE_SURVEY_CONTACT_FAILED:
+            case UNPAID_REMOTEFEE:
+            case CONSIDER_WHETHER_INSTALL:
+            case WAITING_SCHEDULED:
+            case SURVEYED_REQUEST_DELIVERY_DELAY:
+            case SURVEYED_NO_DELIVERY:
+            case CONTACTED_WAITING_NOTIFICATION:
+            case GLASS_SURVEYED:
+            case SCHEDULING:
+            case NOT_IN_INSTALLATION_AREA:
+                // 均为等待卖家发货阶段
+                tbRes = TbTradeStatus.WAIT_SELLER_SEND_GOODS;
+                break;
+
+            case SCHEDULE_INSTALLATION_CONTACT_FAILED:
+            case DELIVERED_IN_TRANSIT:
+            case DELIVERED_NO_SCHEDULED:
+            case DELIVERED_OF_ACCESSORIES_BOX:
+            case PRIORITY_DELIVERED_BY_ACCESSORIES_BOX:
+                // 等待买家确认收货
+                tbRes = TbTradeStatus.WAIT_BUYER_CONFIRM_GOODS;
+                break;
+            case PARTIAL_INSTALLATION_COMPLETED:
+            case ALL_INSTALLATION_COMPLETED:
+            case READY_TO_RETURN:
+                // 已收货
+                tbRes = TbTradeStatus.TRADE_FINISHED;
+                break;
+            case GOODS_RETURNED:
+                tbRes = TbTradeStatus.TRADE_CLOSED;
+                break;
+            default:
+                tbRes = null;
+        }
+        return null;
     }
 }
