@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.schedule"})
+@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao"})
 @MapperScan("finley.gmair.dao")
 @EnableFeignClients(basePackages = "finley.gmair.service")
 @EnableScheduling
