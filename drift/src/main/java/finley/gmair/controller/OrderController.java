@@ -1908,6 +1908,14 @@ public class OrderController {
         }
         DriftOrder order = orderExpress.getDriftOrder();
         DriftExpress express = orderExpress.getDriftExpress();
+        //防止物流表修改失败
+        if (express.getExpressNum() == null) {
+            express.setExpressNum("");
+        }
+        if (express.getCompany() == null) {
+            express.setCompany("");
+        }
+
         logger.info("syncOrder, driftOrder:{}, driftExpress:{}", order, express);
 
         Map<String, Object> condition = new HashMap<>();

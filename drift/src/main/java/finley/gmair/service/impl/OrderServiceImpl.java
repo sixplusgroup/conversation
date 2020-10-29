@@ -156,14 +156,11 @@ public class OrderServiceImpl implements OrderService {
             result.setDescription("Fail to insert drift order with: " + order.toString());
             return result;
         }
-        String orderId = ((DriftOrder) response.getData()).getOrderId();
-        order.setOrderId(orderId);
         //insert order item
         List<DriftOrderItem> list = order.getList();
         new Thread(() -> {
             for (DriftOrderItem item : list) {
-                item.setOrderId(orderId);
-                orderItemDao.insertOrderItem(item);
+                orderItemDao.insertOrderItemWithId(item);
             }
         }).start();
         result.setResponseCode(ResponseCode.RESPONSE_OK);
