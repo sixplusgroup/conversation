@@ -211,9 +211,25 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
                 //重新绑定
                 else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     condition.clear();
-                    condition.put("qrcode",newBindQRCode);
-                    condition.put("blockFlag",false);
-                    machineFilterCleanService.modify(condition);
+                    condition.put("codeValue",newBindQRCode);
+                    condition.put("consumerId",consumerQRcodeBind.getConsumerId());
+                    //判断是否曾经绑定
+                    ResultData consumer = consumerQRcodeBindDao.query(condition);
+                    //新绑定，更新时间
+                    if (consumer.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        condition.clear();
+                        condition.put("qrcode", newBindQRCode);
+                        condition.put("blockFlag", false);
+                        condition.put("lastConfirmTime",new Date());
+                        machineFilterCleanService.modify(condition);
+                    }
+                    //曾经绑定，不更新时间
+                    else {
+                        condition.clear();
+                        condition.put("qrcode", newBindQRCode);
+                        condition.put("blockFlag", false);
+                        machineFilterCleanService.modify(condition);
+                    }
                 }
             }
         });
@@ -264,7 +280,7 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
                     MachineEfficientInformation oneInfo = new MachineEfficientInformation(
                             newBindQRCode, new Date(), 0, 0, 0);
 
-                    updateMachineEfficientInformation(oneInfo);
+                    updateMachineEfficientInformation(oneInfo, consumerQRcodeBind);
                 }
                 // 判断machine_efficient_filter表中是否已存在对应字段
                 Map<String,Object> condition = new HashMap<>(1);
@@ -290,7 +306,7 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
     //update table: machine_efficient_information
     @Override
-    public void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation) {
+    public void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation, ConsumerQRcodeBind consumerQRcodeBind) {
         MachinePool.getMachinePool().execute(() ->{
             String newBindQRCode = machineEfficientInformation.getQrcode();
             // 判断是否存在
@@ -307,9 +323,25 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             // 如果存在则重新绑定
             else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 condition.clear();
-                condition.put("qrcode", newBindQRCode);
-                condition.put("blockFlag", false);
-                machineEfficientInformationDao.update(condition);
+                condition.put("codeValue",newBindQRCode);
+                condition.put("consumerId",consumerQRcodeBind.getConsumerId());
+                //判断是否曾经绑定
+                ResultData consumer = consumerQRcodeBindDao.query(condition);
+                //新绑定，更新时间
+                if (consumer.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode", newBindQRCode);
+                    condition.put("blockFlag", false);
+                    condition.put("lastConfirmTime",new Date());
+                    machineEfficientInformationDao.update(condition);
+                }
+                //曾经绑定，不更新时间
+                else {
+                    condition.clear();
+                    condition.put("qrcode", newBindQRCode);
+                    condition.put("blockFlag", false);
+                    machineEfficientInformationDao.update(condition);
+                }
             }
         });
     }

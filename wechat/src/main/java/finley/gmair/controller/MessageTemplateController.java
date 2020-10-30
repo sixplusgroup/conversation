@@ -246,6 +246,7 @@ public class MessageTemplateController {
         ResultData vo = new ResultData();
         //获得新的token
         String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
+        //测试环境
 //        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", wechatToken);
         //获取模板id
         ResultData res = getTemplate(type);
@@ -317,8 +318,9 @@ public class MessageTemplateController {
         //创建返回实体对象
         ResultData vo = new ResultData();
         //获得新的token
-//        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
-        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", wechatToken);
+        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", token);
+        //测试环境
+//        String url = TemplateMessage_Url.replace("ACCESS_TOKEN", wechatToken);
         //获取模板id
         ResultData res = getTemplate(type);
         String templateId = ((MessageTemplate) res.getData()).getTemplateId();

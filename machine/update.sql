@@ -491,3 +491,14 @@ insert ignore into machine_efficient_information (qr_code,last_confirm_time,crea
     and cmb.block_flag = 0 and q.block_flag = 0 
     and q.model_id in (select model_id from model_efficient_config where reset_hour = 0)
     group by cmb.code_value;
+    
+#2020-10-29
+CREATE TABLE `machine_filter_text` (
+    `text_id`                 VARCHAR(255) NOT NULL,
+    `text_content`            VARCHAR(255) NOT NULL,
+    `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
+    `create_time`             DATETIME NOT NULL,
+    PRIMARY KEY (`qr_code`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;

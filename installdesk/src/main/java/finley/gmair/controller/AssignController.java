@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.CompanyForm;
+import finley.gmair.model.Entity;
 import finley.gmair.model.installation.*;
 import finley.gmair.model.resource.FileMap;
 import finley.gmair.pool.InstallPool;
@@ -96,11 +97,13 @@ public class AssignController {
         String address = form.getConsumerAddress().trim();
         String detail = form.getModel().trim();
         String source = form.getSource().trim();
+        String type = form.getType();
         Assign assign;
         if (!StringUtils.isEmpty(form.getCompany())) {
-            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim());
+            System.out.println("???");
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim(),type);
         } else {
-            assign = new Assign(consignee, phone, address, detail, source, form.getDescription());
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(),null,type);
         }
 
 
@@ -134,7 +137,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/list")
-    public ResultData list(String status, String teamId, Integer curPage, Integer length, String search) {
+    public ResultData list(String status, String teamId, Integer curPage, Integer length, String search, String sortType) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(status)) {
@@ -157,6 +160,10 @@ public class AssignController {
                 condition.put("consumer", fuzzysearch);
             }
         }
+
+        if (!StringUtils.isEmpty(sortType)) {
+            condition.put("sortType", sortType);
+        }
         if (curPage == null || length == null) {
             response = assignService.principal(condition);
         } else {
@@ -173,6 +180,7 @@ public class AssignController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
         }
+
         return result;
     }
 
@@ -386,7 +394,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength, String reverse) {
+    public ResultData tasks(String memberId, Integer status, String search, String page, String pageLength, String reverse, String sortType) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -425,6 +433,9 @@ public class AssignController {
         if (status != null) {
             condition.put("assignStatus", status);
         }
+        if (sortType != null && !sortType.isEmpty()){
+            condition.put("sortType", sortType);
+        }
         if (!StringUtils.isEmpty(search)) {
             String fuzzysearch = "%" + search + "%";
             Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
@@ -461,7 +472,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/overview")
-    public ResultData overview(String memberId, Integer status, String search) {
+    public ResultData overview(String memberId, Integer status, String search, String sortType) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -474,6 +485,9 @@ public class AssignController {
             condition.put("assignStatus", status);
         }
         condition.put("blockFlag", false);
+        if (!StringUtils.isEmpty(sortType)) {
+            condition.put("sortType", sortType);
+        }
         ResultData response;
         if (!StringUtils.isEmpty(search)) {
             String fuzzysearch = "%" + search + "%";
@@ -753,7 +767,7 @@ public class AssignController {
     }
 
     @GetMapping("/report")
-    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime) {
+    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime, String sortType, Integer page, Integer pageLength) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(assignId)) {
@@ -771,8 +785,18 @@ public class AssignController {
         if (!StringUtils.isEmpty(endTime)) {
             condition.put("endTime", endTime);
         }
+        if (!StringUtils.isEmpty(sortType)) {
+            condition.put("sortType", sortType);
+        }
         condition.put("blockFlag", false);
-        ResultData response = assignService.report_fetch(condition);
+        ResultData response = null;
+        System.out.println(page+" "+pageLength);
+        if (page != null && pageLength != null){
+            response = assignService.report_fetch(condition , (page-1)*pageLength, pageLength);
+        }
+        else {
+            response = assignService.report_fetch(condition);
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("查询异常，请稍后尝试");
@@ -783,6 +807,7 @@ public class AssignController {
             result.setDescription("当前查询条件无记录");
             return result;
         }
+
         result.setData(response.getData());
         return result;
     }

@@ -36,6 +36,8 @@ public class AssignMember extends Entity {
 
     private String description;
 
+    private String type;
+
     public AssignMember() {
         super();
         this.assignStatus = AssignStatus.TODOASSIGN;
@@ -53,6 +55,11 @@ public class AssignMember extends Entity {
     public AssignMember(String consumerConsignee, String consumerPhone, String consumerAddress, String detail, String source, String description) {
         this(consumerConsignee, consumerPhone, consumerAddress, detail, source);
         this.description = description;
+    }
+
+    public AssignMember(String consumerConsignee, String consumerPhone, String consumerAddress, String detail, String source, String description, String type) {
+        this(consumerConsignee, consumerPhone, consumerAddress, detail, source,description);
+        this.type = type;
     }
 
     public String getAssignId() {
@@ -173,6 +180,14 @@ public class AssignMember extends Entity {
 
     public void setMemberName(String memberName) {
         this.memberName = memberName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
 
