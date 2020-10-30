@@ -11,6 +11,8 @@ public class VerificationCode extends Entity implements Serializable {
 
     private String serial;
 
+    public VerificationCode(){}
+
     public VerificationCode(String phone) {
         this.phone = phone;
         this.serial = SerialUtil.serial();

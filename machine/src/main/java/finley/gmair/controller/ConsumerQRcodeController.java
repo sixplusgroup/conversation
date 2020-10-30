@@ -584,4 +584,63 @@ public class ConsumerQRcodeController {
         result.setDescription("success to fetch data");
         return result;
     }
+
+    //设备拥有者可查看目前设备的权限分享用户列表
+    public ResultData queryShare(String codeValue) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(codeValue)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查找过程出现错误，请重试");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("codeValue", codeValue);
+        //只查看分享的列表 不包括自己
+        condition.put("ownership", 1);
+        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("查找结果为空");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setData(response.getData());
+            result.setDescription("查找过程出现错误，请重试");
+            return result;
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+    }
+
+    //设备拥有者可撤销目前设备的分享权限
+    public ResultData withdrawShare(String bindID) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(bindID)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("修改过程出现错误，请重试");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("bindID", bindID);
+        condition.put("blockFlag",true);
+        ResultData response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("修改结果为空");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setData(response.getData());
+            result.setDescription("修改过程出现错误，请重试");
+            return result;
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+    }
+
 }

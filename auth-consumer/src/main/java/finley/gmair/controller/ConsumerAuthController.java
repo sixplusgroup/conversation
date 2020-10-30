@@ -41,7 +41,6 @@ public class ConsumerAuthController {
     @Autowired
     private WechatService wechatService;
 
-
     /**
      * register user information
      *
