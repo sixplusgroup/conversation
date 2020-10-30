@@ -35,7 +35,8 @@ public class Order {
     private Long oid;
 
     /**
-     * 字典项：订单状态（请关注此状态，如果为TRADE_CLOSED_BY_TAOBAO状态，则不要对此订单进行发货，切记啊！）。可选值:
+     * 字典项：订单状态（请关注此状态，如果为TRADE_CLOSED_BY_TAOBAO状态，则不要对此订单进行发货）
+     * 可选值:
      * TRADE_NO_CREATE_PAY(没有创建支付宝交易)
      * WAIT_BUYER_PAY(等待买家付款)
      * WAIT_SELLER_SEND_GOODS(等待卖家发货,即:买家已付款)

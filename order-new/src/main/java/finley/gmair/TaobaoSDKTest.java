@@ -5,14 +5,8 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.domain.Trade;
 import com.taobao.api.internal.util.StringUtils;
-import com.taobao.api.request.ItemsOnsaleGetRequest;
-import com.taobao.api.request.TopAuthTokenRefreshRequest;
-import com.taobao.api.request.TradesSoldGetRequest;
-import com.taobao.api.request.TradesSoldIncrementGetRequest;
-import com.taobao.api.response.ItemsOnsaleGetResponse;
-import com.taobao.api.response.TopAuthTokenRefreshResponse;
-import com.taobao.api.response.TradesSoldGetResponse;
-import com.taobao.api.response.TradesSoldIncrementGetResponse;
+import com.taobao.api.request.*;
+import com.taobao.api.response.*;
 
 import java.util.List;
 
@@ -35,6 +29,7 @@ public class TaobaoSDKTest {
 
     public static void main(String[] args) throws ApiException {
         getTrades();
+        // getTradeFullInfo();
     }
 
     private static void getTrades() {
@@ -86,6 +81,19 @@ public class TaobaoSDKTest {
         } catch (ApiException e) {
             e.printStackTrace();
         }
+        System.out.println(rsp.getBody());
+    }
+
+    /**
+     * 获取单笔交易的详细信息
+     */
+    private static void getTradeFullInfo() throws ApiException {
+        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+        TradeFullinfoGetRequest req = new TradeFullinfoGetRequest();
+        req.setFields("tid,type,status,payment,receiver_name,receiver_state,receiver_address," +
+                "receiver_zip,receiver_mobile,receiver_phone,consign_time,orders,promotion_details");
+        req.setTid(1298285822245193333L);
+        TradeFullinfoGetResponse rsp = client.execute(req, sessionKey);
         System.out.println(rsp.getBody());
     }
 }

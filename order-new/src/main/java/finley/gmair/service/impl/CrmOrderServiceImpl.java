@@ -3,9 +3,7 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.OrderMapper;
 import finley.gmair.model.dto.CrmOrderDTO;
-import finley.gmair.model.ordernew.Order;
-import finley.gmair.model.ordernew.Trade;
-import finley.gmair.model.ordernew.TradeSource;
+import finley.gmair.model.ordernew.*;
 import finley.gmair.service.CrmAPIService;
 import finley.gmair.service.CrmOrderService;
 import finley.gmair.util.ResponseCode;
@@ -74,12 +72,13 @@ public class CrmOrderServiceImpl implements CrmOrderService {
             newOrder.setLxfs(phoneNum);
             newOrder.setDq(dq);
             newOrder.setDz(dz);
-            // TODO 根据order的status设置billstat
-            newOrder.setBillstat("1");
 
+            String billState = String.valueOf(
+                    TbTradeStatus.valueOf(tmpOrder.getStatus()).toCrmOrderStatus());
+            newOrder.setBillstat(billState);
             String strOrder = JSONObject.toJSON(newOrder).toString();
-            Map<String, Object> response = crmAPIService.createNewOrder(strOrder);
-            if(response.get("ResponseCode").equals(ResponseCode.RESPONSE_ERROR.toString())){
+            JSONObject response = crmAPIService.createNewOrder(strOrder);
+            if (response.get("ResponseCode").equals(ResponseCode.RESPONSE_ERROR.toString())) {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription(response.get("Description").toString());
                 return result;

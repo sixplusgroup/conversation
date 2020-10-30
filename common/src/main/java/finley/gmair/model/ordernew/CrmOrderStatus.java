@@ -14,9 +14,6 @@ public enum CrmOrderStatus implements EnumValue {
     /*预勘测，联系失败：客服咨询是否发货 -> 未发货*/
     PRE_SURVEY_CONTACT_FAILED(2),
 
-    /*预约安装，联系失败：用户已收货，安装师联系用户失败 -> 已发货*/
-    SCHEDULE_INSTALLATION_CONTACT_FAILED(3),
-
     /*未支付远程费 -> 未发货*/
     UNPAID_REMOTEFEE(4),
 
@@ -32,12 +29,6 @@ public enum CrmOrderStatus implements EnumValue {
     /*已勘测，未发货 -> 未发货*/
     SURVEYED_NO_DELIVERY(8),
 
-    /*已发货，运输中 -> 已发货*/
-    DELIVERED_IN_TRANSIT(9),
-
-    /*已发货，未排期 -> 已发货*/
-    DELIVERED_NO_SCHEDULED(10),
-
     /*已联系，等待客户通知 -> 未发货*/
     CONTACTED_WAITING_NOTIFICATION(11),
 
@@ -47,26 +38,35 @@ public enum CrmOrderStatus implements EnumValue {
     /*排期中 -> 未发货*/
     SCHEDULING(13),
 
+    /*不在安装区域 -> 未发货*/
+    NOT_IN_INSTALLATION_AREA(18),
+
+    /*预约安装，联系失败：用户已收货，安装师联系用户失败 -> 已发货*/
+    SCHEDULE_INSTALLATION_CONTACT_FAILED(3),
+
+    /*已发货，运输中 -> 已发货*/
+    DELIVERED_IN_TRANSIT(9),
+
+    /*已发货，未排期 -> 已发货*/
+    DELIVERED_NO_SCHEDULED(10),
+
+    /*已发配件箱代发货 -> 已发货*/
+    DELIVERED_OF_ACCESSORIES_BOX(19),
+
+    /*优先发配件箱 -> 已发货*/
+    PRIORITY_DELIVERED_BY_ACCESSORIES_BOX(20),
+
     /*部分安装完成 -> 已收货*/
     PARTIAL_INSTALLATION_COMPLETED(14),
 
     /*全部安装完成 -> 已收货*/
     ALL_INSTALLATION_COMPLETED(15),
 
-    /*已退货*/
-    GOODS_RETURNED(16),
-
-    /*准备退货*/
+    /*准备退货 -> 已收货*/
     READY_TO_RETURN(17),
 
-    /*不在安装区域 -> 未发货*/
-    NOT_IN_INSTALLATION_AREA(18),
-
-    /*已发配件箱代发货 -> 已发货*/
-    DELIVERED_OF_ACCESSORIES_BOX(19),
-
-    /*优先发配件箱 -> 已发货*/
-    PRIORITY_DELIVERED_BY_ACCESSORIES_BOX(20);
+    /*已退货*/
+    GOODS_RETURNED(16);
 
     private int value;
 
@@ -74,8 +74,51 @@ public enum CrmOrderStatus implements EnumValue {
         this.value = value;
     }
 
-    @Override
     public int getValue() {
         return this.value;
+    }
+
+    /**
+     * Crm系统中的订单状态转换为tb的订单状态
+     */
+    public TbTradeStatus transCrmOrderStat() {
+        TbTradeStatus tbRes;
+        switch (this) {
+            case UNTREATED:
+            case PRE_SURVEY_CONTACT_FAILED:
+            case UNPAID_REMOTEFEE:
+            case CONSIDER_WHETHER_INSTALL:
+            case WAITING_SCHEDULED:
+            case SURVEYED_REQUEST_DELIVERY_DELAY:
+            case SURVEYED_NO_DELIVERY:
+            case CONTACTED_WAITING_NOTIFICATION:
+            case GLASS_SURVEYED:
+            case SCHEDULING:
+            case NOT_IN_INSTALLATION_AREA:
+                // 均为等待卖家发货阶段
+                tbRes = TbTradeStatus.WAIT_SELLER_SEND_GOODS;
+                break;
+
+            case SCHEDULE_INSTALLATION_CONTACT_FAILED:
+            case DELIVERED_IN_TRANSIT:
+            case DELIVERED_NO_SCHEDULED:
+            case DELIVERED_OF_ACCESSORIES_BOX:
+            case PRIORITY_DELIVERED_BY_ACCESSORIES_BOX:
+                // 等待买家确认收货
+                tbRes = TbTradeStatus.WAIT_BUYER_CONFIRM_GOODS;
+                break;
+            case PARTIAL_INSTALLATION_COMPLETED:
+            case ALL_INSTALLATION_COMPLETED:
+            case READY_TO_RETURN:
+                // 已收货
+                tbRes = TbTradeStatus.TRADE_FINISHED;
+                break;
+            case GOODS_RETURNED:
+                tbRes = TbTradeStatus.TRADE_CLOSED;
+                break;
+            default:
+                tbRes = null;
+        }
+        return tbRes;
     }
 }
