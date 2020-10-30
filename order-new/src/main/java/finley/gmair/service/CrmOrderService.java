@@ -21,20 +21,4 @@ public interface CrmOrderService {
      * @date 2020/10/26 0026 10:42
      **/
     ResultData createTrade(Trade trade);
-
-    /**
-     * @author zm
-     * @param tbTradeStatus
-     * @return finley.gmair.model.ordernew.CrmOrderStatus
-     * @description 中台订单状态（即tb的交易状态）转换为crm的订单状态
-     */
-    CrmOrderStatus transTbTradeStat(TbTradeStatus tbTradeStatus);
-
-    /**
-     * @author zm
-     * @param crmOrderStatus
-     * @return finley.gmair.model.ordernew.TbTradeStatus
-     * @description crm的订单状态转为中台订单状态（即tb的交易状态）
-     */
-    TbTradeStatus transCrmOrderStat(CrmOrderStatus crmOrderStatus);
 }

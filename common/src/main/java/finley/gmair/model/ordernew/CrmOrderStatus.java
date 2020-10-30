@@ -77,4 +77,48 @@ public enum CrmOrderStatus implements EnumValue {
     public int getValue() {
         return this.value;
     }
+
+    /**
+     * Crm系统中的订单状态转换为tb的订单状态
+     */
+    public TbTradeStatus transCrmOrderStat() {
+        TbTradeStatus tbRes;
+        switch (this) {
+            case UNTREATED:
+            case PRE_SURVEY_CONTACT_FAILED:
+            case UNPAID_REMOTEFEE:
+            case CONSIDER_WHETHER_INSTALL:
+            case WAITING_SCHEDULED:
+            case SURVEYED_REQUEST_DELIVERY_DELAY:
+            case SURVEYED_NO_DELIVERY:
+            case CONTACTED_WAITING_NOTIFICATION:
+            case GLASS_SURVEYED:
+            case SCHEDULING:
+            case NOT_IN_INSTALLATION_AREA:
+                // 均为等待卖家发货阶段
+                tbRes = TbTradeStatus.WAIT_SELLER_SEND_GOODS;
+                break;
+
+            case SCHEDULE_INSTALLATION_CONTACT_FAILED:
+            case DELIVERED_IN_TRANSIT:
+            case DELIVERED_NO_SCHEDULED:
+            case DELIVERED_OF_ACCESSORIES_BOX:
+            case PRIORITY_DELIVERED_BY_ACCESSORIES_BOX:
+                // 等待买家确认收货
+                tbRes = TbTradeStatus.WAIT_BUYER_CONFIRM_GOODS;
+                break;
+            case PARTIAL_INSTALLATION_COMPLETED:
+            case ALL_INSTALLATION_COMPLETED:
+            case READY_TO_RETURN:
+                // 已收货
+                tbRes = TbTradeStatus.TRADE_FINISHED;
+                break;
+            case GOODS_RETURNED:
+                tbRes = TbTradeStatus.TRADE_CLOSED;
+                break;
+            default:
+                tbRes = null;
+        }
+        return tbRes;
+    }
 }
