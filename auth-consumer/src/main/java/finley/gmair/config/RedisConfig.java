@@ -17,7 +17,7 @@ public class RedisConfig {
     public CacheManager cacheManager(RedisTemplate redisTemplate) {
         RedisCacheManager rcm = new RedisCacheManager(redisTemplate);
         Map<String, Long> expires = new HashMap<>();
-        expires.put("serials01", 300L);
+        expires.put("serials", 300L);
         rcm.setExpires(expires);
         return rcm;
     }

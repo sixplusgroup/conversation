@@ -8,7 +8,6 @@ import finley.gmair.form.consumer.LoginForm;
 import finley.gmair.model.auth.VerificationCode;
 import finley.gmair.model.consumer.Address;
 import finley.gmair.model.consumer.Consumer;
-import finley.gmair.model.message.MessageCatalog;
 import finley.gmair.model.wechat.WechatUser;
 import finley.gmair.service.ConsumerService;
 import finley.gmair.service.MessageService;
@@ -18,10 +17,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -113,6 +109,8 @@ public class ConsumerAuthController {
             }
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(code);
+        }else{//若Phone或code有空值 应该返回RESPONSE_ERROR
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
         return result;
     }
@@ -130,6 +128,8 @@ public class ConsumerAuthController {
         // call message agent to send the text to corresponding phone number
         // retrieve message template from database
         System.out.println(JSON.toJSONString(code));
+        //下句打印出来已经是JSON形式
+        System.out.println(code);
         ResultData response = messageService.template(String.valueOf(action.toUpperCase()));
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

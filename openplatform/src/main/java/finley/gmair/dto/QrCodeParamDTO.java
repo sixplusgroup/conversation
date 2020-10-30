@@ -1,18 +1,14 @@
 package finley.gmair.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 import java.util.List;
 
 /**
  * @author lyy
- * @Description
- * @create 2020-07-03 11:43 下午
+ * @date 2020-07-03 11:43 下午
  */
 public class QrCodeParamDTO {
     String appid;
 
-    @JSONField(name = "qrcode_list")
     List<String> qrCodeList;
 
     public String getAppid() {
@@ -21,5 +17,13 @@ public class QrCodeParamDTO {
 
     public List<String> getQrCodeList() {
         return qrCodeList;
+    }
+
+    public void setAppid(String appid) {
+        this.appid = appid;
+    }
+
+    public void setQrCodeList(List<String> qrCodeList) {
+        this.qrCodeList = qrCodeList;
     }
 }

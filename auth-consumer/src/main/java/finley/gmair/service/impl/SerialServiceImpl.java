@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 public class SerialServiceImpl implements SerialService {
 
     @Override
-    @Cacheable(value = "serials01", key = "#phone", condition = "#phone != null")
+    @Cacheable(value = "serials", key = "#phone", condition = "#phone != null")
     public VerificationCode generate(String phone) {
         return new VerificationCode(phone);
     }
 
     @Override
-    @Cacheable(value = "serials02", key = "#phone", unless = "#result != null")
+    @Cacheable(value = "serials", key = "#phone", unless = "#result != null")
     public VerificationCode fetch(String phone) {
         return null;
     }
