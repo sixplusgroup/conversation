@@ -1,4 +1,6 @@
 package finley.gmair.dao;
+import org.apache.ibatis.annotations.Param;
+import java.util.List;
 
 import finley.gmair.model.dto.TbTradeDTO;
 import finley.gmair.model.ordernew.Trade;

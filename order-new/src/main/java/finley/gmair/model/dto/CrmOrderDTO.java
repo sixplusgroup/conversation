@@ -38,7 +38,7 @@ public class CrmOrderDTO {
      */
     private String xdrq;
     /**
-     * 订单金额（实际金额）
+     * 实收金额
      */
     private String ssje;
     /**

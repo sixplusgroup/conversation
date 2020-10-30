@@ -121,4 +121,17 @@ public enum CrmOrderStatus implements EnumValue {
         }
         return tbRes;
     }
+
+    /**
+     * 根据value值返回相应的枚举类对象
+     */
+    public static CrmOrderStatus getOrderStatusEnumByValue(int value) {
+        for (CrmOrderStatus cos :
+                CrmOrderStatus.values()) {
+            if (cos.value == value) {
+                return cos;
+            }
+        }
+        return null;
+    }
 }
