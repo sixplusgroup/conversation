@@ -23,6 +23,11 @@ public class RedisConfig {
         Map<String, Long> expires = new HashMap<>();
         expires.put("serials", 300L);
         rcm.setExpires(expires);
+        /*
+        cacheManager.setUsePrefix(false）时，存入redis时有一个维护key的列表
+        cacheManager.setUsePrefix(true）时，开启使用前缀，将会用冒号隔离，而不使用keys维护key值
+         */
+        rcm.setUsePrefix(true);
         return rcm;
     }
 
