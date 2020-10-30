@@ -25,5 +25,5 @@ public interface ConsumerQRcodeBindService {
 
     void updateMachineEfficientFilter(ConsumerQRcodeBind consumerQRcodeBind);
 
-    void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation);
+    void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation, ConsumerQRcodeBind consumerQRcodeBind);
 }
