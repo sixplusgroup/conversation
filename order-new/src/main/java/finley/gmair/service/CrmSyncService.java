@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.model.ordernew.Order;
 import finley.gmair.model.ordernew.Trade;
 import finley.gmair.util.ResultData;
 
