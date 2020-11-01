@@ -7,7 +7,11 @@ import finley.gmair.model.dto.MachineStatusDTO;
 import finley.gmair.model.dto.QrCodeParamDTO;
 import finley.gmair.model.openplatform.CorpProfile;
 import finley.gmair.model.openplatform.MachineSubscription;
-import finley.gmair.service.*;
+import finley.gmair.service.CorpMachineSubsService;
+import finley.gmair.service.CorpProfileService;
+import finley.gmair.service.MachineNotifyService;
+import finley.gmair.service.rpc.AirQualityService;
+import finley.gmair.service.rpc.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -16,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +37,7 @@ import java.util.Map;
 public class MachineController {
     private Logger logger = LoggerFactory.getLogger(MachineController.class);
 
-    @Autowired
+    @Resource
     private MachineService machineService;
 
     @Autowired
@@ -46,7 +51,6 @@ public class MachineController {
 
     @Autowired
     private MachineNotifyService machineNotifyService;
-
 
     /**
      * appid 订阅设备
@@ -264,6 +268,7 @@ public class MachineController {
         if (machineStatusDTO.getData() == null) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(machineStatusDTO.getMsg());
+			return result;
         }
         result.setResponseCode(ResponseCode.RESPONSE_OK);
         result.setData(machineStatusDTO.getData());
@@ -317,7 +322,7 @@ public class MachineController {
         //获取设备状态信息
         ResultData response = machineService.indoor(qrcode);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return new MachineStatusDTO("获取设备状态信息失败", null);
+            return new MachineStatusDTO(response.getDescription(), null);
         }
         //根据qrcode获取model_id
         ResultData r = machineService.getModel(qrcode);
@@ -406,7 +411,7 @@ public class MachineController {
             return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("未查询到该设备城市的空气数据");
             return result;
         }
@@ -805,7 +810,7 @@ public class MachineController {
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             logger.info("[Info] No corp machine subscriptions at the moment");
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
         List<MachineSubscription> list = (List<MachineSubscription>) response.getData();

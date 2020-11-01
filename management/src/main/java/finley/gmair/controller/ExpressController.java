@@ -1,18 +1,12 @@
 package finley.gmair.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.express.ExpressCompanyForm;
-import finley.gmair.form.express.ExpressParcelForm;
 import finley.gmair.service.ExpressService;
 import finley.gmair.service.InstallService;
-import finley.gmair.service.OrderService;
-import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.LinkedHashMap;
 
 @CrossOrigin
 @RestController
@@ -24,9 +18,6 @@ public class ExpressController {
 
     @Autowired
     private InstallService installService;
-
-    @Autowired
-    private OrderService orderService;
 
     @GetMapping({"/company/query", "/company/{companyId}/query"})
     public ResultData companyFetch(@PathVariable(required = false, name = "companyId") String companyId) {

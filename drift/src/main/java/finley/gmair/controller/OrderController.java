@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.model.drift.*;
+import finley.gmair.model.ordernew.TradeFrom;
 import finley.gmair.model.wechat.OfficialAccountMessage;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
@@ -229,7 +230,7 @@ public class OrderController {
             }
         }
 
-        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate);
+        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate, TradeFrom.WECHAT);
         driftOrder.setTotalPrice(price);
         driftOrder.setRealPay(price);
         driftOrder.setList(list);
@@ -1908,6 +1909,14 @@ public class OrderController {
         }
         DriftOrder order = orderExpress.getDriftOrder();
         DriftExpress express = orderExpress.getDriftExpress();
+        //防止物流表修改失败
+        if (express.getExpressNum() == null) {
+            express.setExpressNum("");
+        }
+        if (express.getCompany() == null) {
+            express.setCompany("");
+        }
+
         logger.info("syncOrder, driftOrder:{}, driftExpress:{}", order, express);
 
         Map<String, Object> condition = new HashMap<>();

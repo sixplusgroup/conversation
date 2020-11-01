@@ -10,7 +10,7 @@ create table trade
     type              varchar(50)  null comment '枚举类值：交易类型列表。',
     shipping_type     varchar(50)  null comment '枚举类型：创建交易时的物流方式（交易完成前，物流方式有可能改变，但系统里的这个字段一直不变）。',
     trade_from        varchar(50)  null comment '枚举类值：交易内部来源。',
-    step_trade_status varchar(20)  null comment '枚举类值：分阶段付款的订单状态（例如万人团订单等），目前有三返回状态：
+    step_trade_status varchar(50)  null comment '枚举类值：分阶段付款的订单状态（例如万人团订单等），目前有三返回状态：
 FRONT_NOPAID_FINAL_NOPAID(定金未付尾款未付)
 FRONT_PAID_FINAL_NOPAID(定金已付尾款未付)
 FRONT_PAID_FINAL_PAID(定金和尾款都付)',
@@ -22,7 +22,7 @@ FRONT_PAID_FINAL_PAID(定金和尾款都付)',
     end_time          datetime     null comment '交易结束时间。交易成功时间(更新交易状态为成功的同时更新)/确认收货时间或者交易关闭时间 。格式:yyyy-MM-dd HH:mm:ss',
     receiver_name     varchar(30)  null comment '收货人的姓名',
     receiver_state    varchar(30)  null comment '收货人的所在省份',
-    receiver_address  varchar(30)  null comment '收货人的详细地址',
+    receiver_address  varchar(100)  null comment '收货人的详细地址',
     receiver_zip      varchar(30)  null comment '收货人的邮编',
     receiver_mobile   varchar(30)  null comment '收货人的手机号码',
     receiver_phone    varchar(30)  null comment '收货人的电话号码',
@@ -150,7 +150,7 @@ create table tb_user
 
 
 INSERT INTO `tb_user`
-VALUES ('SEL2020102088rn7213', '2020-10-01 00:00:00', '2020-10-21 17:40:04',
+VALUES ('SEL2020102088rn7213', '2020-10-01 00:00:00', NULL,
         '6100e02ceb111ceb4e6ff02506458185b2f7afa5fce9f232200642250842', '2020-10-01 00:00:00', 0,
         '2020-10-21 17:40:23');
 

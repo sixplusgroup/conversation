@@ -1,4 +1,4 @@
-package finley.gmair.service;
+package finley.gmair.service.rpc;
 
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
