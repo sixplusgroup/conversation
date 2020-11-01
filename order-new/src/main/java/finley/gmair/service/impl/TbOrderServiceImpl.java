@@ -17,7 +17,6 @@ import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
@@ -25,13 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author ：tsl
- * @date ：Created in 2020/10/17 15:46
- * @description ：
+ * @author zm
+ * @date 2020/11/01 2:31 下午
+ * @description TbOrderServiceImpl
  */
-@Service
 public class TbOrderServiceImpl implements TbOrderService {
-
     @Autowired
     private OrderMapper orderMapper;
 
@@ -51,7 +48,6 @@ public class TbOrderServiceImpl implements TbOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultData handleTrade(Trade trade) {
-
         //step1：save trade to db or update the existed trades（including the orders）
         ResultData rsp = new ResultData();
         ResultData res = new ResultData();
@@ -69,28 +65,28 @@ public class TbOrderServiceImpl implements TbOrderService {
             res.setDescription("处理交易失败");
             return res;
         }
-
         //step2：synchronize trade to drift or crm
         // 2.1 同步到CRM
         ResultData rsp1 = new ResultData();
         finley.gmair.model.ordernew.Trade crmTrade =
                 tradeMapper.selectByTid(trade.getTid()).get(0);
         if (tradeNum == 0) {
-            // 添加交易到CRM
+            // 添加交易到CRM系统
             rsp1 = crmSyncService.createNewOrder(crmTrade);
         } else if (tradeNum == 1) {
-            // 更新交易状态到CRM
+            // 更新交易状态到CRM系统
             rsp1 = crmSyncService.updateOrderStatus(crmTrade);
         }
-        //synchronize trade to drift or crm
-        result = syncTrade(trade);
-        if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return result;
-
         if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("处理交易失败");
             return res;
+        }
+
+        //2.2 同步到drift
+        ResultData rsp2 = syncTrade(trade);
+        if (rsp2.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return rsp2;
         }
 
         res.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -105,7 +101,7 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @return ResultData
      * @author zm
      */
-    private ResultData saveTrade(Trade tbTrade) {
+    private ResultData saveTrade (Trade tbTrade){
         ResultData resultData = new ResultData();
 
         if (tbTrade == null) {
@@ -114,7 +110,7 @@ public class TbOrderServiceImpl implements TbOrderService {
             return resultData;
         }
 
-        logger.info("handle trade, trade:{}", JSON.toJSONString(trade));
+        logger.info("handle trade, trade:{}", JSON.toJSONString(tbTrade));
 
         // 1. 插入Trade
         TbTradeDTO tradeDTO = new TbTradeDTO(tbTrade);
@@ -154,7 +150,7 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @return ResultData
      * @author zm
      */
-    private ResultData updateTradeStatus(Trade tbTrade) {
+    private ResultData updateTradeStatus (Trade tbTrade){
         ResultData resultData = new ResultData();
         if (tbTrade == null) {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -197,7 +193,7 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @param trade
      * @return
      */
-    private ResultData syncTrade(Trade trade) {
+    private ResultData syncTrade (Trade trade){
         ResultData result = new ResultData();
         if (isSyncToDriftTrade(trade)) {
             DriftOrderExpress driftOrder = toDriftOrderExpress(trade);
@@ -216,7 +212,7 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @param trade
      * @return
      */
-    private DriftOrderExpress toDriftOrderExpress(Trade trade) {
+    private DriftOrderExpress toDriftOrderExpress (Trade trade){
         //构造DriftOrder
         DriftOrder driftOrder = new DriftOrder();
         driftOrder.setOrderId(trade.getTid().toString());
@@ -276,7 +272,7 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @param trade
      * @return
      */
-    private boolean isSyncToDriftTrade(Trade trade) {
+    private boolean isSyncToDriftTrade (Trade trade){
         if (TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(TbTradeStatus.valueOf(trade.getStatus()))) {
             return false;
         }
