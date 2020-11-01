@@ -1,5 +1,7 @@
 package finley.gmair.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 
 import finley.gmair.model.ordernew.SkuItem;
 import org.springframework.stereotype.Repository;
@@ -21,4 +23,11 @@ public interface SkuItemMapper {
     int updateByPrimaryKey(SkuItem record);
 
     List<SkuItem> selectAll();
+
+    /**
+     * 根据num_iid和sku_id查询返回对应的machine_model（机器型号）
+     */
+    List<String> selectMachineModelByNumIidAndSkuId(
+            @Param("numIid") String numIid,
+            @Param("skuId") String skuId);
 }

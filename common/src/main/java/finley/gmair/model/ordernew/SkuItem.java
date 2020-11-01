@@ -12,7 +12,7 @@ import java.util.Date;
  */
 
 @Data
-public class SkuItem extends Entity{
+public class SkuItem extends Entity {
     /**
      * 主键
      */
@@ -27,6 +27,11 @@ public class SkuItem extends Entity{
      * 商品的最小库存单位Sku的id
      */
     private String skuId;
+
+    /**
+     * 机器型号
+     */
+    private String machineModel;
 
     /**
      * 商品标题,不能超过60字节

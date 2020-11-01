@@ -74,8 +74,11 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             CrmOrderDTO newCrmOrder = new CrmOrderDTO();
             // 渠道来源
             newCrmOrder.setQdly("58");
-            // TODO 机器型号（加一个字段）
-            newCrmOrder.setJqxh("");
+            // 机器型号（根据sku_id和num_iid去获取）
+            newCrmOrder.setJqxh(
+                    skuItemMapper.selectMachineModelByNumIidAndSkuId(
+                            String.valueOf(tmpOrder.getNumIid()),
+                            String.valueOf(tmpOrder.getSkuId())).get(0));
             // 订单号
             newCrmOrder.setDdh(String.valueOf(tmpOrder.getOid()));
             // 数量
