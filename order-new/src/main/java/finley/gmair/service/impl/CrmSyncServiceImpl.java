@@ -51,10 +51,10 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 订单状态：
             newCrmStatus.setBillstat(String.valueOf(TbTradeStatus.valueOf(
                     tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
-
             JSONObject ans = crmAPIService.updateOrderStatus(
                     JSONObject.toJSON(newCrmStatus).toString());
-            if (ans.get("ResponseCode") == ResponseCode.RESPONSE_ERROR) {
+            if (Objects.equals(ans.get("ResponseCode").toString(),
+                    ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("更新交易状态到中台失败");
                 return res;
