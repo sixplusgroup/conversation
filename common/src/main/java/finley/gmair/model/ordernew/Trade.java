@@ -1,5 +1,6 @@
 package finley.gmair.model.ordernew;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import lombok.Data;
@@ -51,7 +52,7 @@ public class Trade {
      * 枚举类值：交易类型列表。
      * 同时查询多种交易类型可用逗号分隔。
      * 默认同时查询guarantee_trade, auto_delivery, ec, cod的4种交易类型的数据
-     *
+     * <p>
      * 可选值：
      * fixed(一口价)
      * auction(拍卖)
@@ -75,7 +76,7 @@ public class Trade {
 
     /**
      * 枚举类型：创建交易时的物流方式（交易完成前，物流方式有可能改变，但系统里的这个字段一直不变）。
-     *
+     * <p>
      * 可选值：
      * free(卖家包邮)
      * post(平邮)
@@ -89,7 +90,7 @@ public class Trade {
 
     /**
      * 枚举类值：交易内部来源。
-     *
+     * <p>
      * WAP(手机)
      * HITAO(嗨淘)
      * TOP(TOP平台)
@@ -101,7 +102,7 @@ public class Trade {
 
     /**
      * 枚举类值：分阶段付款的订单状态（例如万人团订单等），目前有三返回状态：
-     *
+     * <p>
      * FRONT_NOPAID_FINAL_NOPAID(定金未付尾款未付)
      * FRONT_PAID_FINAL_NOPAID(定金已付尾款未付)
      * FRONT_PAID_FINAL_PAID(定金和尾款都付)
@@ -281,4 +282,13 @@ public class Trade {
      * 分阶段付款的已付金额（万人团订单已付金额）
      */
     private Double stepPaidFee;
+
+
+    /**
+     * 获取交易创建时间（年-月-日格式的字符串）
+     */
+    public String getCreatedDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(this.created);
+    }
 }
