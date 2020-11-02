@@ -9,6 +9,7 @@ import finley.gmair.model.drift.*;
 import finley.gmair.model.dto.TbOrderDTO;
 import finley.gmair.model.dto.TbTradeDTO;
 import finley.gmair.model.ordernew.TbTradeStatus;
+import finley.gmair.model.ordernew.TradeFrom;
 import finley.gmair.service.CrmSyncService;
 import finley.gmair.service.DriftOrderSyncService;
 import finley.gmair.service.TbOrderService;
@@ -195,7 +196,7 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @param trade
      * @return
      */
-    private ResultData syncTrade (Trade trade){
+    private ResultData syncTrade(Trade trade) {
         ResultData result = new ResultData();
         if (isSyncToDriftTrade(trade)) {
             DriftOrderExpress driftOrder = toDriftOrderExpress(trade);
@@ -214,7 +215,7 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @param trade
      * @return
      */
-    private DriftOrderExpress toDriftOrderExpress (Trade trade){
+    private DriftOrderExpress toDriftOrderExpress(Trade trade) {
         //构造DriftOrder
         DriftOrder driftOrder = new DriftOrder();
         driftOrder.setOrderId(trade.getTid().toString());
@@ -224,14 +225,14 @@ public class TbOrderServiceImpl implements TbOrderService {
         driftOrder.setCity(trade.getReceiverCity());
         driftOrder.setDistrict(trade.getReceiverDistrict());
         driftOrder.setAddress(trade.getReceiverAddress());
-        driftOrder.setTotalPrice(Double.parseDouble(trade.getTotalFee()));
-        driftOrder.setRealPay(Double.parseDouble(trade.getPayment()));
         driftOrder.setStatus(TbTradeStatus.valueOf(trade.getStatus()).toDriftOrderStatus());
         driftOrder.setCreateTime(trade.getCreated());
         driftOrder.setCreateAt(new Timestamp(trade.getCreated().getTime()));
-        driftOrder.setIntervalDate(2);
-        //todo:设置tradeFrom
+        driftOrder.setExpectedDate(trade.getCreated());
+        driftOrder.setTradeFrom(TradeFrom.TMALL);
 
+        double totalPrice = Double.parseDouble(trade.getPostFee());
+        double realPrice = 0;
         //构造DriftOrderItem
         List<DriftOrderItem> itemList = new ArrayList<>();
         for (Order order : trade.getOrders()) {
@@ -241,7 +242,14 @@ public class TbOrderServiceImpl implements TbOrderService {
             DriftOrderItem item = new DriftOrderItem();
             item.setItemId(order.getOid().toString());
             item.setOrderId(trade.getTid().toString());
-            item.setItemName(order.getSkuPropertiesName());
+            String property = order.getSkuPropertiesName();
+            if (property.contains("试纸")) {
+                item.setItemName("甲醛检测试纸");
+            } else if (property.contains("检测仪")) {
+                item.setItemName("GM甲醛检测仪");
+            } else {
+                item.setItemName(order.getSkuPropertiesName());
+            }
             item.setSingleNum(1);
             item.setQuantity(order.getNum().intValue());
             item.setExQuantity(order.getNum().intValue());
@@ -249,8 +257,12 @@ public class TbOrderServiceImpl implements TbOrderService {
             item.setTotalPrice(Double.parseDouble(order.getTotalFee()));
             item.setRealPrice(Double.parseDouble(order.getPayment()));
             itemList.add(item);
+            totalPrice += item.getTotalPrice();
+            realPrice += item.getRealPrice();
         }
         driftOrder.setList(itemList);
+        driftOrder.setTotalPrice(totalPrice);
+        driftOrder.setRealPay(realPrice);
 
         //构造DriftExpress
         DriftExpress driftExpress = new DriftExpress();
@@ -265,6 +277,14 @@ public class TbOrderServiceImpl implements TbOrderService {
             break;
         }
 
+        //判断是否实际未发货
+        boolean noDelivered = (driftExpress.getExpressNum() == null || driftExpress.getCompany() == null)
+                && (DriftOrderStatus.FINISHED.equals(driftOrder.getStatus())
+                || DriftOrderStatus.DELIVERED.equals(driftOrder.getStatus()));
+        if (noDelivered) {
+            driftOrder.setStatus(DriftOrderStatus.CONFIRMED);
+        }
+
         return new DriftOrderExpress(driftOrder, driftExpress);
     }
 
@@ -274,7 +294,7 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @param trade
      * @return
      */
-    private boolean isSyncToDriftTrade (Trade trade){
+    private boolean isSyncToDriftTrade(Trade trade) {
         if (TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(TbTradeStatus.valueOf(trade.getStatus()))) {
             return false;
         }

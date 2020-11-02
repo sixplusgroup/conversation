@@ -12,6 +12,7 @@ import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
+import finley.gmair.vo.drift.ActivityEquipmentVo;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -1909,17 +1910,35 @@ public class OrderController {
         }
         DriftOrder order = orderExpress.getDriftOrder();
         DriftExpress express = orderExpress.getDriftExpress();
-        //防止物流表修改失败
-        if (express.getExpressNum() == null) {
-            express.setExpressNum("");
-        }
-        if (express.getCompany() == null) {
-            express.setCompany("");
-        }
-
         logger.info("syncOrder, driftOrder:{}, driftExpress:{}", order, express);
 
+        //填充默认活动id和设备id
         Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivityEquipment(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("failed to find activityId and equipId");
+            return result;
+        }
+        ActivityEquipmentVo activityEquipmentVo = ((List<ActivityEquipmentVo>) response.getData()).get(0);
+        order.setActivityId(activityEquipmentVo.getActivityId());
+        order.setEquipId(activityEquipmentVo.getEquipmentId());
+        condition.clear();
+        condition.put("activityId", activityEquipmentVo.getActivityId());
+        condition.put("blockFlag", false);
+        response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("failed to find activity");
+            return result;
+        }
+        //获取活动信息,填充intervalDate
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        order.setIntervalDate(activity.getReservableDays());
+
+
+        condition.clear();
         condition.put("orderId", order.getOrderId());
         condition.put("blockFlag", false);
         ResultData fetchOrderResponse = orderService.fetchDriftOrder(condition);
@@ -1934,11 +1953,15 @@ public class OrderController {
             }
             //如果订单状态为已发货或已完成，创建物流信息
             if (order.getStatus() == DriftOrderStatus.DELIVERED || order.getStatus() == DriftOrderStatus.FINISHED) {
-                ResultData response = expressService.createExpress(express);
-                if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    return response;
+                ResultData createExpressResponse = expressService.createExpress(express);
+                if (createExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    return createExpressResponse;
                 }
             }
+            //写入操作记录表
+            String message = "一条订单被同步创建：订单来源:" + order.getTradeFrom().name() + ",订单状态:" + order.getStatus().name();
+            DriftOrderAction action = new DriftOrderAction(order.getOrderId(), message, order.getTradeFrom().name());
+            driftOrderActionService.create(action);
         }
         //orderId已存在，更新订单，创建或更新物流信息
         else if (fetchOrderResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -1956,9 +1979,9 @@ public class OrderController {
                     return fetchExpressResponse;
                 } else if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                     //express不存在则创建
-                    ResultData response = expressService.createExpress(express);
-                    if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                        return response;
+                    ResultData createExpressResponse = expressService.createExpress(express);
+                    if (createExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        return createExpressResponse;
                     }
                 } else if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     //express已存在则进行修改
@@ -1966,12 +1989,17 @@ public class OrderController {
                     condition.put("expressId", express.getExpressId());
                     condition.put("expressNum", express.getExpressNum());
                     condition.put("company", express.getCompany());
-                    ResultData response = expressService.updateExpress(condition);
-                    if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                        return response;
+                    ResultData updateExpressResponse = expressService.updateExpress(condition);
+                    if (updateExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.info("error4");
+                        return updateExpressResponse;
                     }
                 }
             }
+            //写入操作记录表
+            String message = "一条订单被同步更新：订单来源:" + order.getTradeFrom().name() + ",订单状态:" + order.getStatus().name();
+            DriftOrderAction action = new DriftOrderAction(order.getOrderId(), message, order.getTradeFrom().name());
+            driftOrderActionService.create(action);
         }
         return result;
     }
