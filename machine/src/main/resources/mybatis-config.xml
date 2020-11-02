@@ -41,5 +41,6 @@
         <mapper resource="mapper/machine_efficient_filter.xml"></mapper>
         <mapper resource="mapper/model_efficient_config.xml"></mapper>
         <mapper resource="mapper/machine_efficient_information.xml"></mapper>
+        <mapper resource="mapper/text.xml"></mapper>
     </mappers>
 </configuration>

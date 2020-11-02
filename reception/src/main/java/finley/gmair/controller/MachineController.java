@@ -465,6 +465,12 @@ public class MachineController {
         return machineService.getMaterials(modelId);
     }
 
+    //前端得到后端储存的文字
+    @GetMapping("/text")
+    public ResultData getText(String textType) {
+        return machineService.getText(textType);
+    }
+
 
     /**
      * @Description: TODO
