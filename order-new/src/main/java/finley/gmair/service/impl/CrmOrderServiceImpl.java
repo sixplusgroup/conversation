@@ -60,13 +60,11 @@ public class CrmOrderServiceImpl implements CrmOrderService {
             CrmOrderDTO newOrder = new CrmOrderDTO();
             // 设置渠道来源
             newOrder.setQdly(TradeSource.TMALL.getValue());
-            // TODO 机器型号（因为淘宝来的数据没有一个字段就是表示机器型号，需要从sku_properties_name或者title去提取）
             newOrder.setJqxh("GM420");
-            // TODO 订单号是order中的num_iid还是o_id还是怎么表示
-            newOrder.setDdh("123456789");
+            newOrder.setDdh(String.valueOf(tmpOrder.getOid()));
             newOrder.setSl(String.valueOf(tmpOrder.getNum()));
             newOrder.setXdrq(tradeDate);
-            // TODO ssje是实售金额还是实收金额
+            // 实收金额 == 用户的实付金额？
             newOrder.setSsje(String.valueOf(tmpOrder.getTotalFee()));
             newOrder.setYhxm(receiverName);
             newOrder.setLxfs(phoneNum);

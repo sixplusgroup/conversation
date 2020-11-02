@@ -33,4 +33,18 @@ public interface OrderMapper {
      * 根据交易主键trade_id查询并返回所有子订单
      */
     List<Order> selectAllByTradeId(@Param("tradeId") String tradeId);
+
+    /**
+     * 根据oid（子订单编号）更新订单状态
+     */
+    int updateStatusByOid(
+            @Param("updatedStatus") String updatedStatus,
+            @Param("oid") Long oid);
+
+    /**
+     * 根据order主键更新状态
+     */
+    int updateStatusByOrderId(
+            @Param("updatedStatus") String updatedStatus,
+            @Param("orderId") String orderId);
 }

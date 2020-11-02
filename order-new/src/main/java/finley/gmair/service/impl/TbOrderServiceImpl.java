@@ -10,6 +10,7 @@ import finley.gmair.model.dto.TbOrderDTO;
 import finley.gmair.model.dto.TbTradeDTO;
 import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.TradeFrom;
+import finley.gmair.service.CrmSyncService;
 import finley.gmair.service.DriftOrderSyncService;
 import finley.gmair.service.TbOrderService;
 import finley.gmair.util.ResponseCode;
@@ -17,26 +18,26 @@ import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.Transient;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author ：tsl
- * @date ：Created in 2020/10/17 15:46
- * @description ：
+ * @author zm
+ * @date 2020/11/01 2:31 下午
+ * @description TbOrderServiceImpl
  */
-@Service
 public class TbOrderServiceImpl implements TbOrderService {
-
     @Autowired
     private OrderMapper orderMapper;
 
     @Autowired
     private TradeMapper tradeMapper;
+
+    @Autowired
+    private CrmSyncService crmSyncService;
 
     @Autowired
     private DriftOrderSyncService driftOrderSyncService;
@@ -46,49 +47,86 @@ public class TbOrderServiceImpl implements TbOrderService {
     private static final Long DRIFT_NUM_IID = 618391118089L;
 
     @Override
-    @Transient
+    @Transactional(rollbackFor = Exception.class)
     public ResultData handleTrade(Trade trade) {
-        //save trade to db
-        ResultData result = saveTrade(trade);
-        if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return result;
+        //step1：save trade to db or update the existed trades（including the orders）
+        ResultData rsp = new ResultData();
+        ResultData res = new ResultData();
+        // 判断是否是新增订单
+        int tradeNum = tradeMapper.countByTid(trade.getTid());
+        if (tradeNum == 0) {
+            // 交易不存在 -> 创建新交易
+            rsp = saveTrade(trade);
+        } else if (tradeNum == 1) {
+            // 交易存在 -> 更新交易状态
+            rsp = updateTradeStatus(trade);
         }
-        //synchronize trade to drift or crm
-        result = syncTrade(trade);
-        if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return result;
+        if (rsp.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("处理交易失败");
+            return res;
         }
-        return new ResultData();
+        //step2：synchronize trade to drift or crm
+        // 2.1 同步到CRM
+        ResultData rsp1 = new ResultData();
+        finley.gmair.model.ordernew.Trade crmTrade =
+                tradeMapper.selectByTid(trade.getTid()).get(0);
+        if (tradeNum == 0) {
+            // 添加交易到CRM系统
+            rsp1 = crmSyncService.createNewOrder(crmTrade);
+        } else if (tradeNum == 1) {
+            // 更新交易状态到CRM系统
+            rsp1 = crmSyncService.updateOrderStatus(crmTrade);
+        }
+        if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("处理交易失败");
+            return res;
+        }
+
+        //2.2 同步到drift
+        ResultData rsp2 = syncTrade(trade);
+        if (rsp2.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return rsp2;
+        }
+
+        res.setResponseCode(ResponseCode.RESPONSE_OK);
+        res.setDescription("处理交易成功");
+        return res;
     }
 
     /**
-     * 淘宝订单入库
+     * tb单笔Trade新增到中台
      *
-     * @param trade
-     * @return
+     * @param tbTrade 待添加的订单(com.taobao.api.domain.Trade)
+     * @return ResultData
+     * @author zm
      */
-    private ResultData saveTrade(Trade trade) {
+    private ResultData saveTrade (Trade tbTrade){
         ResultData resultData = new ResultData();
 
-        if (trade == null) {
+        if (tbTrade == null) {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
             resultData.setDescription("待处理的交易为空");
+            return resultData;
         }
 
-        List<Order> tbOrders = trade.getOrders();
-
-        logger.info("handle trade, trade:{}", JSON.toJSONString(trade));
+        logger.info("handle trade, trade:{}", JSON.toJSONString(tbTrade));
 
         // 1. 插入Trade
-        TbTradeDTO tradeDTO = new TbTradeDTO(trade);
+        TbTradeDTO tradeDTO = new TbTradeDTO(tbTrade);
         int tradeInsertNum = tradeMapper.insertSelectiveWithTradeDTO(tradeDTO);
         if (tradeInsertNum == 0) {
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
             resultData.setDescription("订单插入出错");
         }
-
+        List<Order> tbOrders = tbTrade.getOrders();
         // 2. 插入Order
-        if (tbOrders != null) {
+        if (tbOrders == null) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            resultData.setDescription("子订单为空");
+            return resultData;
+        } else {
             String tradeId = tradeDTO.getTradeId();
             for (Order tmpTbOrder : tbOrders) {
                 logger.info("handle order of trade, tradeId:{}, order:{}", tradeId, JSON.toJSONString(tmpTbOrder));
@@ -101,9 +139,52 @@ public class TbOrderServiceImpl implements TbOrderService {
                 }
             }
         }
-
         resultData.setResponseCode(ResponseCode.RESPONSE_OK);
-        resultData.setDescription("订单插入成功");
+        resultData.setDescription("交易新增成功");
+        return resultData;
+    }
+
+    /**
+     * 更新中台交易的订单状态
+     *
+     * @param tbTrade 待更新的订单(com.taobao.api.domain.Trade)
+     * @return ResultData
+     * @author zm
+     */
+    private ResultData updateTradeStatus (Trade tbTrade){
+        ResultData resultData = new ResultData();
+        if (tbTrade == null) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            resultData.setDescription("待处理的交易为空");
+            return resultData;
+        }
+        TbTradeStatus updatedStatus = TbTradeStatus.valueOf(tbTrade.getStatus());
+        // 1. 更新Trade的状态
+        int tradeUpdateNum = tradeMapper.updateStatusByTid(updatedStatus.name(), tbTrade.getTid());
+        if (tradeUpdateNum == 0) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("交易状态更新出错");
+            return resultData;
+        }
+        // 2. 更新Orders的状态
+        List<Order> tbOrders = tbTrade.getOrders();
+        if (tbOrders == null) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            resultData.setDescription("子订单为空");
+            return resultData;
+        } else {
+            for (Order tmpOrder : tbOrders) {
+                int orderUpdateNum = orderMapper.updateStatusByOid(
+                        updatedStatus.name(), tmpOrder.getOid());
+                if (orderUpdateNum == 0) {
+                    resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    resultData.setDescription("子订单状态更新出错");
+                    return resultData;
+                }
+            }
+        }
+        resultData.setResponseCode(ResponseCode.RESPONSE_OK);
+        resultData.setDescription("交易状态更新成功");
         return resultData;
     }
 
