@@ -3,7 +3,7 @@
 <mapper namespace="finley.gmair.dao.TradeMapper">
     <resultMap id="BaseResultMap" type="finley.gmair.model.ordernew.Trade">
         <!--@mbg.generated-->
-        <!--@Table gmair_ordercentre.trade-->
+        <!--@Table trade-->
         <id column="trade_id" jdbcType="VARCHAR" property="tradeId"/>
         <result column="tid" jdbcType="BIGINT" property="tid"/>
         <result column="num_iid" jdbcType="BIGINT" property="numIid"/>
@@ -47,6 +47,7 @@
         <result column="post_fee" jdbcType="DOUBLE" property="postFee"/>
         <result column="credit_card_fee" jdbcType="DOUBLE" property="creditCardFee"/>
         <result column="step_paid_fee" jdbcType="DOUBLE" property="stepPaidFee"/>
+        <result column="mode" jdbcType="INTEGER" property="mode"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
@@ -56,59 +57,62 @@
         receiver_city, receiver_district, receiver_town, tmall_delivery, cn_service, delivery_cps,
         cutoff_minutes, delivery_time, collect_time, dispatch_time, sign_time, es_time, price,
         total_fee, payment, adjust_fee, received_payment, discount_fee, post_fee, credit_card_fee,
-        step_paid_fee
+        step_paid_fee, `mode`
     </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select
+            id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
         <!--@mbg.generated-->
         select
         <include refid="Base_Column_List"/>
-        from gmair_ordercentre.trade
+        from trade
         where trade_id = #{tradeId,jdbcType=VARCHAR}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
         <!--@mbg.generated-->
         delete
-        from gmair_ordercentre.trade
+        from trade
         where trade_id = #{tradeId,jdbcType=VARCHAR}
     </delete>
     <insert id="insert" parameterType="finley.gmair.model.ordernew.Trade">
         <!--@mbg.generated-->
-        insert into gmair_ordercentre.trade (trade_id, tid, num_iid,
-                                             num, `status`, `type`,
-                                             shipping_type, trade_from, step_trade_status,
-                                             buyer_rate, created, modified,
-                                             pay_time, consign_time, end_time,
-                                             receiver_name, receiver_state, receiver_address,
-                                             receiver_zip, receiver_mobile, receiver_phone,
-                                             receiver_country, receiver_city, receiver_district,
-                                             receiver_town, tmall_delivery, cn_service,
-                                             delivery_cps, cutoff_minutes, delivery_time,
-                                             collect_time, dispatch_time, sign_time,
-                                             es_time, price, total_fee,
-                                             payment, adjust_fee, received_payment,
-                                             discount_fee, post_fee, credit_card_fee,
-                                             step_paid_fee)
+        insert into trade (trade_id, tid, num_iid,
+                           num, `status`, `type`, shipping_type,
+                           trade_from, step_trade_status, buyer_rate,
+                           created, modified, pay_time,
+                           consign_time, end_time, receiver_name,
+                           receiver_state, receiver_address, receiver_zip,
+                           receiver_mobile, receiver_phone, receiver_country,
+                           receiver_city, receiver_district, receiver_town,
+                           tmall_delivery, cn_service, delivery_cps,
+                           cutoff_minutes, delivery_time, collect_time,
+                           dispatch_time, sign_time, es_time,
+                           price, total_fee, payment,
+                           adjust_fee, received_payment, discount_fee,
+                           post_fee, credit_card_fee, step_paid_fee,
+                           `mode`)
         values (#{tradeId,jdbcType=VARCHAR}, #{tid,jdbcType=BIGINT}, #{numIid,jdbcType=BIGINT},
                 #{num,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
-                #{shippingType,jdbcType=VARCHAR}, #{tradeFrom,jdbcType=VARCHAR}, #{stepTradeStatus,jdbcType=VARCHAR},
-                #{buyerRate,jdbcType=BOOLEAN}, #{created,jdbcType=TIMESTAMP}, #{modified,jdbcType=TIMESTAMP},
-                #{payTime,jdbcType=TIMESTAMP}, #{consignTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
-                #{receiverName,jdbcType=VARCHAR}, #{receiverState,jdbcType=VARCHAR},
-                #{receiverAddress,jdbcType=VARCHAR},
-                #{receiverZip,jdbcType=VARCHAR}, #{receiverMobile,jdbcType=VARCHAR}, #{receiverPhone,jdbcType=VARCHAR},
-                #{receiverCountry,jdbcType=VARCHAR}, #{receiverCity,jdbcType=VARCHAR},
-                #{receiverDistrict,jdbcType=VARCHAR},
-                #{receiverTown,jdbcType=VARCHAR}, #{tmallDelivery,jdbcType=BOOLEAN}, #{cnService,jdbcType=VARCHAR},
-                #{deliveryCps,jdbcType=VARCHAR}, #{cutoffMinutes,jdbcType=VARCHAR}, #{deliveryTime,jdbcType=TIMESTAMP},
-                #{collectTime,jdbcType=TIMESTAMP}, #{dispatchTime,jdbcType=TIMESTAMP}, #{signTime,jdbcType=TIMESTAMP},
-                #{esTime,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, #{totalFee,jdbcType=DOUBLE},
-                #{payment,jdbcType=DOUBLE}, #{adjustFee,jdbcType=DOUBLE}, #{receivedPayment,jdbcType=DOUBLE},
-                #{discountFee,jdbcType=DOUBLE}, #{postFee,jdbcType=DOUBLE}, #{creditCardFee,jdbcType=DOUBLE},
-                #{stepPaidFee,jdbcType=DOUBLE})
+                #{shippingType,jdbcType=VARCHAR},
+                #{tradeFrom,jdbcType=VARCHAR}, #{stepTradeStatus,jdbcType=VARCHAR}, #{buyerRate,jdbcType=BOOLEAN},
+                #{created,jdbcType=TIMESTAMP}, #{modified,jdbcType=TIMESTAMP}, #{payTime,jdbcType=TIMESTAMP},
+                #{consignTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{receiverName,jdbcType=VARCHAR},
+                #{receiverState,jdbcType=VARCHAR}, #{receiverAddress,jdbcType=VARCHAR}, #{receiverZip,jdbcType=VARCHAR},
+                #{receiverMobile,jdbcType=VARCHAR}, #{receiverPhone,jdbcType=VARCHAR},
+                #{receiverCountry,jdbcType=VARCHAR},
+                #{receiverCity,jdbcType=VARCHAR}, #{receiverDistrict,jdbcType=VARCHAR},
+                #{receiverTown,jdbcType=VARCHAR},
+                #{tmallDelivery,jdbcType=BOOLEAN}, #{cnService,jdbcType=VARCHAR}, #{deliveryCps,jdbcType=VARCHAR},
+                #{cutoffMinutes,jdbcType=VARCHAR}, #{deliveryTime,jdbcType=TIMESTAMP},
+                #{collectTime,jdbcType=TIMESTAMP},
+                #{dispatchTime,jdbcType=TIMESTAMP}, #{signTime,jdbcType=TIMESTAMP}, #{esTime,jdbcType=INTEGER},
+                #{price,jdbcType=DOUBLE}, #{totalFee,jdbcType=DOUBLE}, #{payment,jdbcType=DOUBLE},
+                #{adjustFee,jdbcType=DOUBLE}, #{receivedPayment,jdbcType=DOUBLE}, #{discountFee,jdbcType=DOUBLE},
+                #{postFee,jdbcType=DOUBLE}, #{creditCardFee,jdbcType=DOUBLE}, #{stepPaidFee,jdbcType=DOUBLE},
+                #{mode,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="finley.gmair.model.ordernew.Trade">
         <!--@mbg.generated-->
-        insert into gmair_ordercentre.trade
+        insert into trade
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="tradeId != null">
                 trade_id,
@@ -238,6 +242,9 @@
             </if>
             <if test="stepPaidFee != null">
                 step_paid_fee,
+            </if>
+            <if test="mode != null">
+                `mode`,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -370,12 +377,14 @@
             <if test="stepPaidFee != null">
                 #{stepPaidFee,jdbcType=DOUBLE},
             </if>
+            <if test="mode != null">
+                #{mode,jdbcType=INTEGER},
+            </if>
         </trim>
     </insert>
-
     <update id="updateByPrimaryKeySelective" parameterType="finley.gmair.model.ordernew.Trade">
         <!--@mbg.generated-->
-        update gmair_ordercentre.trade
+        update trade
         <set>
             <if test="tid != null">
                 tid = #{tid,jdbcType=BIGINT},
@@ -503,12 +512,15 @@
             <if test="stepPaidFee != null">
                 step_paid_fee = #{stepPaidFee,jdbcType=DOUBLE},
             </if>
+            <if test="mode != null">
+                `mode` = #{mode,jdbcType=INTEGER},
+            </if>
         </set>
         where trade_id = #{tradeId,jdbcType=VARCHAR}
     </update>
     <update id="updateByPrimaryKey" parameterType="finley.gmair.model.ordernew.Trade">
         <!--@mbg.generated-->
-        update gmair_ordercentre.trade
+        update trade
         set tid               = #{tid,jdbcType=BIGINT},
             num_iid           = #{numIid,jdbcType=BIGINT},
             num               = #{num,jdbcType=BIGINT},
@@ -550,9 +562,45 @@
             discount_fee      = #{discountFee,jdbcType=DOUBLE},
             post_fee          = #{postFee,jdbcType=DOUBLE},
             credit_card_fee   = #{creditCardFee,jdbcType=DOUBLE},
-            step_paid_fee     = #{stepPaidFee,jdbcType=DOUBLE}
+            step_paid_fee     = #{stepPaidFee,jdbcType=DOUBLE},
+            `mode`            = #{mode,jdbcType=INTEGER}
         where trade_id = #{tradeId,jdbcType=VARCHAR}
     </update>
+
+    <!--auto generated by MybatisCodeHelper on 2020-11-01-->
+    <select id="selectByTid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from gmair_ordercentre.trade
+        where tid = #{tid,jdbcType=BIGINT}
+    </select>
+
+    <!--auto generated by MybatisCodeHelper on 2020-10-30-->
+    <select id="countByTid" resultType="java.lang.Integer">
+        select count(1)
+        from gmair_ordercentre.trade
+        where tid = #{tid,jdbcType=BIGINT}
+    </select>
+
+    <!--auto generated by MybatisCodeHelper on 2020-11-01-->
+    <update id="updateStatusByTradeId">
+        update gmair_ordercentre.trade
+        set `status`=#{updatedStatus,jdbcType=VARCHAR}
+        where trade_id = #{tradeId,jdbcType=VARCHAR}
+    </update>
+
+    <!--auto generated by MybatisCodeHelper on 2020-11-01-->
+    <update id="updateStatusByTid">
+        update gmair_ordercentre.trade
+        set `status`=#{updatedStatus,jdbcType=VARCHAR}
+        where tid = #{tid,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectAll" resultType="finley.gmair.model.ordernew.Trade">
+        select
+        <include refid="Base_Column_List"/>
+        from gmair_ordercentre.trade
+    </select>
 
     <insert id="insertSelectiveWithTradeDTO" parameterType="finley.gmair.model.dto.TbTradeDTO">
         insert into gmair_ordercentre.trade
@@ -819,39 +867,4 @@
             </if>
         </trim>
     </insert>
-
-    <!--auto generated by MybatisCodeHelper on 2020-10-30-->
-    <select id="countByTid" resultType="java.lang.Integer">
-        select count(1)
-        from gmair_ordercentre.trade
-        where tid = #{tid,jdbcType=BIGINT}
-    </select>
-
-    <!--auto generated by MybatisCodeHelper on 2020-11-01-->
-    <update id="updateStatusByTradeId">
-        update gmair_ordercentre.trade
-        set `status`=#{updatedStatus,jdbcType=VARCHAR}
-        where trade_id = #{tradeId,jdbcType=VARCHAR}
-    </update>
-
-    <!--auto generated by MybatisCodeHelper on 2020-11-01-->
-    <update id="updateStatusByTid">
-        update gmair_ordercentre.trade
-        set `status`=#{updatedStatus,jdbcType=VARCHAR}
-        where tid = #{tid,jdbcType=BIGINT}
-    </update>
-
-    <!--auto generated by MybatisCodeHelper on 2020-11-01-->
-    <select id="selectByTid" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from gmair_ordercentre.trade
-        where tid = #{tid,jdbcType=BIGINT}
-    </select>
-
-    <select id="selectAll" resultType="finley.gmair.model.ordernew.Trade">
-        select
-        <include refid="Base_Column_List"/>
-        from gmair_ordercentre.trade
-    </select>
 </mapper>

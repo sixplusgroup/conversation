@@ -8,7 +8,9 @@ import finley.gmair.model.dto.CrmStatusDTO;
 import finley.gmair.model.ordernew.Order;
 import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.Trade;
+import finley.gmair.model.ordernew.TradeMode;
 import finley.gmair.service.CrmAPIService;
+import finley.gmair.service.CrmLocalAPIService;
 import finley.gmair.service.CrmSyncService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -36,11 +38,20 @@ public class CrmSyncServiceImpl implements CrmSyncService {
     @Autowired
     private CrmAPIService crmAPIService;
 
+    @Autowired
+    private CrmLocalAPIService crmLocalAPIService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultData updateOrderStatus(Trade interTrade) {
         ResultData res = new ResultData();
 
+        // 只有mode==2的订单才能更新状态并推给CRM
+        if(interTrade.getMode() != TradeMode.PUSHED_TO_CRM.getValue()){
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("更新交易状态到中台失败");
+            return res;
+        }
         List<Order> orders = orderMapper.selectAllByTradeId(interTrade.getTradeId());
         for (Order tmpOrder : orders) {
             CrmStatusDTO newCrmStatus = new CrmStatusDTO();
@@ -51,8 +62,9 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 订单状态：
             newCrmStatus.setBillstat(String.valueOf(TbTradeStatus.valueOf(
                     tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
-            JSONObject ans = crmAPIService.updateOrderStatus(
-                    JSONObject.toJSON(newCrmStatus).toString());
+            JSONObject ans = crmLocalAPIService.updateOrder(JSONObject.toJSON(newCrmStatus).toString());
+            /*crmAPIService.updateOrderStatus(
+                    JSONObject.toJSON(newCrmStatus).toString());*/
             if (Objects.equals(ans.get("ResponseCode").toString(),
                     ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -69,6 +81,13 @@ public class CrmSyncServiceImpl implements CrmSyncService {
     @Transactional(rollbackFor = Exception.class)
     public ResultData createNewOrder(Trade interTrade) {
         ResultData res = new ResultData();
+
+        // 只有去模糊化的交易mode==1才同步
+        if(interTrade.getMode() != TradeMode.DEBLUR.getValue()){
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("新增交易到中台失败");
+            return res;
+        }
 
         List<Order> orders = orderMapper.selectAllByTradeId(interTrade.getTradeId());
         for (Order tmpOrder : orders) {
@@ -96,8 +115,9 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 订单状态
             newCrmOrder.setBillstat(String.valueOf(TbTradeStatus.valueOf(
                     tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
-            JSONObject ans = crmAPIService.createNewOrder(
-                    JSONObject.toJSON(newCrmOrder).toString());
+            JSONObject ans = crmLocalAPIService.addOrder(JSONObject.toJSON(newCrmOrder).toString());
+            /*crmAPIService.createNewOrder(
+                    JSONObject.toJSON(newCrmOrder).toString());*/
             if (Objects.equals(ans.get("ResponseCode").toString(),
                     ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -121,7 +141,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
                 String.valueOf(order.getNumIid()),
                 String.valueOf(order.getSkuId()));
 
-        if (machineModelList.size() == 0) {
+        if (machineModelList == null || machineModelList.size() == 0) {
             return "该机器型号未录入";
         } else {
             return machineModelList.get(0);

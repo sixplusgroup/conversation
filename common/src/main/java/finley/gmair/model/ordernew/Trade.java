@@ -285,6 +285,11 @@ public class Trade {
 
 
     /**
+     * 用作数据的数据状态判断，初始值为0，去模糊化后为1，推送到CRM后为2.
+     */
+    private Integer mode;
+
+    /**
      * 获取交易创建时间（年-月-日格式的字符串）
      */
     public String getCreatedDate() {
