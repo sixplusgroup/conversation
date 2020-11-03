@@ -17,16 +17,16 @@ public interface TradeMapper {
 
     Trade selectByPrimaryKey(String tradeId);
 
+    int updateByPrimaryKeySelective(Trade record);
+
+    int updateByPrimaryKey(Trade record);
+
+    List<Trade> selectAll();
+
     /**
      * 根据tid查询返回对应的Trade
      */
     List<Trade> selectByTid(@Param("tid") Long tid);
-
-    List<Trade> selectAll();
-
-    int updateByPrimaryKeySelective(Trade record);
-
-    int updateByPrimaryKey(Trade record);
 
     /**
      * 将淘宝方的单笔交易导入Trade表中
@@ -46,7 +46,7 @@ public interface TradeMapper {
             @Param("tradeId") String tradeId);
 
     /**
-     * 根据tid封信交易状态
+     * 根据更新交易状态
      */
     int updateStatusByTid(
             @Param("updatedStatus") String updatedStatus,
