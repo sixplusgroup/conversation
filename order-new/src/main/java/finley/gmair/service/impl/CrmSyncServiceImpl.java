@@ -10,7 +10,6 @@ import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.Trade;
 import finley.gmair.model.ordernew.TradeMode;
 import finley.gmair.service.CrmAPIService;
-import finley.gmair.service.CrmLocalAPIService;
 import finley.gmair.service.CrmSyncService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -38,9 +37,6 @@ public class CrmSyncServiceImpl implements CrmSyncService {
     @Autowired
     private CrmAPIService crmAPIService;
 
-    @Autowired
-    private CrmLocalAPIService crmLocalAPIService;
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultData updateOrderStatus(Trade interTrade) {
@@ -62,9 +58,8 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 订单状态：
             newCrmStatus.setBillstat(String.valueOf(TbTradeStatus.valueOf(
                     tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
-            JSONObject ans = crmLocalAPIService.updateOrder(JSONObject.toJSON(newCrmStatus).toString());
-            /*crmAPIService.updateOrderStatus(
-                    JSONObject.toJSON(newCrmStatus).toString());*/
+            JSONObject ans = crmAPIService.updateOrderStatus(
+                    JSONObject.toJSON(newCrmStatus).toString());
             if (Objects.equals(ans.get("ResponseCode").toString(),
                     ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -115,9 +110,8 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 订单状态
             newCrmOrder.setBillstat(String.valueOf(TbTradeStatus.valueOf(
                     tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
-            JSONObject ans = crmLocalAPIService.addOrder(JSONObject.toJSON(newCrmOrder).toString());
-            /*crmAPIService.createNewOrder(
-                    JSONObject.toJSON(newCrmOrder).toString());*/
+            JSONObject ans = crmAPIService.createNewOrder(
+                    JSONObject.toJSON(newCrmOrder).toString());
             if (Objects.equals(ans.get("ResponseCode").toString(),
                     ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
