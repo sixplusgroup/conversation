@@ -7,6 +7,7 @@ import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.TradeMapper;
 import finley.gmair.model.drift.*;
 import finley.gmair.model.dto.TbOrderDTO;
+import finley.gmair.model.dto.TbOrderPartInfo;
 import finley.gmair.model.dto.TbTradeDTO;
 import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.TradeFrom;
@@ -88,6 +89,16 @@ public class TbOrderServiceImpl implements TbOrderService {
         res.setResponseCode(ResponseCode.RESPONSE_OK);
         res.setDescription("处理交易成功");
         return res;
+    }
+
+    /**
+     * 处理excel模糊字段
+     * @param list
+     * @return
+     */
+    @Override
+    public ResultData handlePartInfo(List<TbOrderPartInfo> list) {
+        return null;
     }
 
     /**

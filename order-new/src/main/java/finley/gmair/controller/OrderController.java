@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import finley.gmair.model.dto.TbOrderExcel;
 import finley.gmair.model.dto.TbOrderPartInfo;
 import finley.gmair.service.TbOrderPartInfoService;
+import finley.gmair.service.TbOrderService;
 import finley.gmair.service.TradeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -39,6 +40,9 @@ public class OrderController {
 
     @Autowired
     private TbOrderPartInfoService tbOrderPartInfoService;
+
+    @Autowired
+    private TbOrderService tbOrderService;
 
     @GetMapping("/download")
     public void download(HttpServletResponse response) throws IOException {
@@ -87,6 +91,7 @@ public class OrderController {
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     List<TbOrderPartInfo> store = (List<TbOrderPartInfo>) response.getData();
                     // TODO: 更新数据库 :)
+                    tbOrderService.handlePartInfo(store);
                 }
                 else {
                     res = response;
