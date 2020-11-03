@@ -54,13 +54,10 @@ public class TbOrderServiceImpl implements TbOrderService {
         //step1：save trade to db or update the existed trades（including the orders）
         ResultData rsp = new ResultData();
         ResultData res = new ResultData();
-        // 判断是否是新增订单
         int tradeNum = tradeMapper.countByTid(trade.getTid());
         if (tradeNum == 0) {
-            // 交易不存在 -> 创建新交易
             rsp = saveTrade(trade);
         } else if (tradeNum == 1) {
-            // 交易存在 -> 更新交易状态
             rsp = updateTradeStatus(trade);
         }
         if (rsp.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -69,21 +66,17 @@ public class TbOrderServiceImpl implements TbOrderService {
             return res;
         }
         //step2：synchronize trade to drift or crm
-        // 2.1 同步到CRM
-        ResultData rsp1 = new ResultData();
-        finley.gmair.model.ordernew.Trade crmTrade =
-                tradeMapper.selectByTid(trade.getTid()).get(0);
-        if (tradeNum == 0) {
-            // 添加交易到CRM系统
-            rsp1 = crmSyncService.createNewOrder(crmTrade);
-        } else if (tradeNum == 1) {
-            // 更新交易状态到CRM系统
+        if (tradeNum == 1) {
+            // 仅同步交易状态变更到CRM系统
+            ResultData rsp1 = new ResultData();
+            finley.gmair.model.ordernew.Trade crmTrade =
+                    tradeMapper.selectByTid(trade.getTid()).get(0);
             rsp1 = crmSyncService.updateOrderStatus(crmTrade);
-        }
-        if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("处理交易失败");
-            return res;
+            if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                res.setDescription("处理交易失败");
+                return res;
+            }
         }
 
         //2.2 同步到drift
