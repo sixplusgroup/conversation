@@ -848,4 +848,10 @@
         from gmair_ordercentre.trade
         where tid = #{tid,jdbcType=BIGINT}
     </select>
+
+    <select id="selectAll" resultType="finley.gmair.model.ordernew.Trade">
+        select
+        <include refid="Base_Column_List"/>
+        from gmair_ordercentre.trade
+    </select>
 </mapper>

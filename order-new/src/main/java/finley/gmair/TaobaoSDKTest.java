@@ -29,7 +29,6 @@ public class TaobaoSDKTest {
 
     public static void main(String[] args) throws ApiException {
         getTrades();
-        // getTradeFullInfo();
     }
 
     private static void getTrades() {
@@ -37,10 +36,10 @@ public class TaobaoSDKTest {
         TradesSoldGetRequest req = new TradesSoldGetRequest();
         //req.setFields("tid,type,status,payment,orders,rx_audit_status,created,modified");
         req.setFields(fields);
-        req.setStartCreated(StringUtils.parseDateTime("2020-09-01 00:00:00"));
-        req.setEndCreated(StringUtils.parseDateTime("2020-10-11 23:59:59"));
+        req.setStartCreated(StringUtils.parseDateTime("2020-08-01 00:00:00"));
+        req.setEndCreated(StringUtils.parseDateTime("2020-8-31 23:59:59"));
         req.setPageNo(1L);
-        req.setPageSize(10L);
+        req.setPageSize(40L);
         req.setUseHasNext(true);
         TradesSoldGetResponse rsp = null;
         try {
@@ -94,6 +93,13 @@ public class TaobaoSDKTest {
                 "receiver_zip,receiver_mobile,receiver_phone,consign_time,orders,promotion_details");
         req.setTid(1298285822245193333L);
         TradeFullinfoGetResponse rsp = client.execute(req, sessionKey);
+        System.out.println(rsp.getBody());
+    }
+
+    private static void addUser() throws ApiException{
+        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+        JushitaJdpUsersGetRequest req=new JushitaJdpUsersGetRequest();
+        JushitaJdpUsersGetResponse rsp = client.execute(req, sessionKey);
         System.out.println(rsp.getBody());
     }
 }

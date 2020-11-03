@@ -1,12 +1,11 @@
 package finley.gmair.dao;
 
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
-
 import finley.gmair.model.dto.TbTradeDTO;
 import finley.gmair.model.ordernew.Trade;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface TradeMapper {
@@ -22,6 +21,8 @@ public interface TradeMapper {
      * 根据tid查询返回对应的Trade
      */
     List<Trade> selectByTid(@Param("tid") Long tid);
+
+    List<Trade> selectAll();
 
     int updateByPrimaryKeySelective(Trade record);
 

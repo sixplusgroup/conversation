@@ -92,9 +92,17 @@
             <artifactId>taobao-sdk</artifactId>
             <version>1.0.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/taobao-sdk-java-auto_1599984691101-20201010.jar
+            <systemPath>${project.basedir}/src/main/resources/lib/taobao-sdk-java-auto_1602661101461-20201102.jar
             </systemPath>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.alibaba/easyexcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>2.1.6</version>
+        </dependency>
+
     </dependencies>
 
     <build>
