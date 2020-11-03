@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.taobao.api.internal.util.StringUtils;
 import com.taobao.api.request.ItemSellerGetRequest;
 import com.taobao.api.request.ItemsOnsaleGetRequest;
@@ -44,13 +45,13 @@ public class TbAPIServiceImplTest {
     public void tradesSoldGet() {
         TradesSoldGetRequest req = new TradesSoldGetRequest();
         req.setFields("tid,num_iid,orders,post_fee");
-        req.setStartCreated(StringUtils.parseDateTime("2020-10-20 00:00:00"));
-        req.setEndCreated(new Date());
+        req.setStartCreated(StringUtils.parseDateTime("2020-10-21 00:00:00"));
+        req.setEndCreated(StringUtils.parseDateTime("2020-10-20 00:00:00"));
         req.setPageNo(1L);
         req.setPageSize(40L);
         req.setUseHasNext(false);
         TradesSoldGetResponse response = tbAPIServiceImpl.tradesSoldGet(req, SESSION_KEY);
-        System.out.println(response.getBody());
+        System.out.println(JSON.toJSONString(response));
     }
 
     @Test
@@ -64,6 +65,7 @@ public class TbAPIServiceImplTest {
         req.setUseHasNext(true);
         TradesSoldIncrementGetResponse response = tbAPIServiceImpl.tradesSoldIncrementGet(req, SESSION_KEY);
         System.out.println(response.getBody());
+        System.out.println(response.getRequestUrl());
     }
 
     @Test
