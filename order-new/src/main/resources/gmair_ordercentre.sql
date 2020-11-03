@@ -1,3 +1,5 @@
+create database if not exists gmair_ordercentre;
+use gmair_ordercentre;
 drop table if exists `trade`;
 create table trade
 (
