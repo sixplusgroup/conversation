@@ -518,6 +518,142 @@
         </set>
         where trade_id = #{tradeId,jdbcType=VARCHAR}
     </update>
+    <update id="updateByTidSelective" parameterType="finley.gmair.model.ordernew.Trade">
+        <!--@mbg.generated-->
+        update trade
+        <set>
+            <if test="tid != null">
+                tid = #{tid,jdbcType=BIGINT},
+            </if>
+            <if test="numIid != null">
+                num_iid = #{numIid,jdbcType=BIGINT},
+            </if>
+            <if test="num != null">
+                num = #{num,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="shippingType != null">
+                shipping_type = #{shippingType,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeFrom != null">
+                trade_from = #{tradeFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="stepTradeStatus != null">
+                step_trade_status = #{stepTradeStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerRate != null">
+                buyer_rate = #{buyerRate,jdbcType=BOOLEAN},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modified != null">
+                modified = #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="consignTime != null">
+                consign_time = #{consignTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="receiverName != null">
+                receiver_name = #{receiverName,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverState != null">
+                receiver_state = #{receiverState,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverAddress != null">
+                receiver_address = #{receiverAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverZip != null">
+                receiver_zip = #{receiverZip,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverMobile != null">
+                receiver_mobile = #{receiverMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverPhone != null">
+                receiver_phone = #{receiverPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCountry != null">
+                receiver_country = #{receiverCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCity != null">
+                receiver_city = #{receiverCity,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverDistrict != null">
+                receiver_district = #{receiverDistrict,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverTown != null">
+                receiver_town = #{receiverTown,jdbcType=VARCHAR},
+            </if>
+            <if test="tmallDelivery != null">
+                tmall_delivery = #{tmallDelivery,jdbcType=BOOLEAN},
+            </if>
+            <if test="cnService != null">
+                cn_service = #{cnService,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryCps != null">
+                delivery_cps = #{deliveryCps,jdbcType=VARCHAR},
+            </if>
+            <if test="cutoffMinutes != null">
+                cutoff_minutes = #{cutoffMinutes,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryTime != null">
+                delivery_time = #{deliveryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="collectTime != null">
+                collect_time = #{collectTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dispatchTime != null">
+                dispatch_time = #{dispatchTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="signTime != null">
+                sign_time = #{signTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="esTime != null">
+                es_time = #{esTime,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="totalFee != null">
+                total_fee = #{totalFee,jdbcType=DOUBLE},
+            </if>
+            <if test="payment != null">
+                payment = #{payment,jdbcType=DOUBLE},
+            </if>
+            <if test="adjustFee != null">
+                adjust_fee = #{adjustFee,jdbcType=DOUBLE},
+            </if>
+            <if test="receivedPayment != null">
+                received_payment = #{receivedPayment,jdbcType=DOUBLE},
+            </if>
+            <if test="discountFee != null">
+                discount_fee = #{discountFee,jdbcType=DOUBLE},
+            </if>
+            <if test="postFee != null">
+                post_fee = #{postFee,jdbcType=DOUBLE},
+            </if>
+            <if test="creditCardFee != null">
+                credit_card_fee = #{creditCardFee,jdbcType=DOUBLE},
+            </if>
+            <if test="stepPaidFee != null">
+                step_paid_fee = #{stepPaidFee,jdbcType=DOUBLE},
+            </if>
+            <if test="mode != null">
+                `mode` = #{mode,jdbcType=INTEGER},
+            </if>
+        </set>
+        where tid = #{tid,jdbcType=BIGINT}
+    </update>
     <update id="updateByPrimaryKey" parameterType="finley.gmair.model.ordernew.Trade">
         <!--@mbg.generated-->
         update trade
