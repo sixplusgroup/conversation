@@ -90,7 +90,6 @@ public class OrderController {
                 ResultData response = tbOrderPartInfoService.getTbOrderPartInfo(filePath, password);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     List<TbOrderPartInfo> store = (List<TbOrderPartInfo>) response.getData();
-                    // TODO: 更新数据库 :)
                     tbOrderService.handlePartInfo(store);
                 }
                 else {

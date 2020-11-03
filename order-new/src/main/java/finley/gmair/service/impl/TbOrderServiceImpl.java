@@ -11,6 +11,7 @@ import finley.gmair.model.dto.TbOrderPartInfo;
 import finley.gmair.model.dto.TbTradeDTO;
 import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.TradeFrom;
+import finley.gmair.model.ordernew.TradeMode;
 import finley.gmair.service.CrmSyncService;
 import finley.gmair.service.DriftOrderSyncService;
 import finley.gmair.service.TbOrderService;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -88,12 +90,58 @@ public class TbOrderServiceImpl implements TbOrderService {
 
     /**
      * 处理excel模糊字段
+     *
      * @param list
      * @return
      */
     @Override
     public ResultData handlePartInfo(List<TbOrderPartInfo> list) {
-        return null;
+        for (TbOrderPartInfo partInfo : list) {
+            //step1:update to db
+            List<finley.gmair.model.ordernew.Order> orderList = orderMapper.selectByOid(Long.parseLong(partInfo.getOrderId()));
+            if (CollectionUtils.isEmpty(orderList)) {
+                logger.error("handlePartInfo error, failed to find by oid:{}", partInfo.getOrderId());
+                continue;
+            }
+            finley.gmair.model.ordernew.Order order = orderList.get(0);
+            finley.gmair.model.ordernew.Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
+            if (trade == null) {
+                logger.error("handlePartInfo error, failed to find by tradeId:{}", order.getTradeId());
+                continue;
+            }
+            trade.setReceiverName(partInfo.getReceiver());
+            trade.setReceiverMobile(partInfo.getPhone());
+            trade.setReceiverAddress(partInfo.getDeliveryAddress());
+            trade.setMode(TradeMode.DEBLUR.getValue());
+            tradeMapper.updateByPrimaryKey(trade);
+
+            //step2:sync to crm
+            ResultData resultData1 = crmSyncService.createNewOrder(trade);
+            if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
+                tradeMapper.updateByPrimaryKey(trade);
+            } else {
+                logger.error("syncOrderPartToCrm error, response:{}", resultData1);
+            }
+
+            //step3:sync to drift
+            List<finley.gmair.model.ordernew.Order> orderList2 = orderMapper.selectAllByTradeId(order.getTradeId());
+            boolean syncToDrift = DRIFT_NUM_IID.equals(trade.getNumIid());
+            for (finley.gmair.model.ordernew.Order tempOrder : orderList2) {
+                if (DRIFT_NUM_IID.equals(tempOrder.getNumIid())) {
+                    syncToDrift = true;
+                    break;
+                }
+            }
+            if (syncToDrift) {
+                ResultData resultData2 = driftOrderSyncService.syncOrderPartInfoToDrift(trade.getTradeId(), trade.getReceiverName(),
+                        trade.getReceiverMobile(), trade.getReceiverAddress());
+                if (resultData2.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("syncOrderPartToDrift error, response:{}", resultData2);
+                }
+            }
+        }
+        return new ResultData();
     }
 
     /**

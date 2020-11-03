@@ -17,6 +17,8 @@ public interface OrderMapper {
 
     Order selectByPrimaryKey(String orderId);
 
+    List<Order> selectByOid(Long oid);
+
     /**
      * 根据oid更新相应的订单字段
      */
