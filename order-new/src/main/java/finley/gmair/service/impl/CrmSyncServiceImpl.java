@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author zm
@@ -50,10 +51,10 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 订单状态：
             newCrmStatus.setBillstat(String.valueOf(TbTradeStatus.valueOf(
                     tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
-
             JSONObject ans = crmAPIService.updateOrderStatus(
                     JSONObject.toJSON(newCrmStatus).toString());
-            if (ans.get("ResponseCode") == ResponseCode.RESPONSE_ERROR) {
+            if (Objects.equals(ans.get("ResponseCode").toString(),
+                    ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("更新交易状态到中台失败");
                 return res;
@@ -75,32 +76,30 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 渠道来源
             newCrmOrder.setQdly("58");
             // 机器型号（根据sku_id和num_iid去获取）
-            newCrmOrder.setJqxh(
-                    skuItemMapper.selectMachineModelByNumIidAndSkuId(
-                            String.valueOf(tmpOrder.getNumIid()),
-                            String.valueOf(tmpOrder.getSkuId())).get(0));
+            newCrmOrder.setJqxh(getMachineModel(tmpOrder));
             // 订单号
             newCrmOrder.setDdh(String.valueOf(tmpOrder.getOid()));
             // 数量
             newCrmOrder.setSl(String.valueOf(tmpOrder.getNum()));
-            // 下单日期
-            newCrmOrder.setXdrq(String.valueOf(interTrade.getCreated()));
             // 实收金额
             newCrmOrder.setSsje(String.valueOf(tmpOrder.getPayment()));
+            // 下单日期（格式为：年-月-日）
+            newCrmOrder.setXdrq(interTrade.getCreatedDate());
             // 用户姓名
             newCrmOrder.setYhxm(interTrade.getReceiverName());
             // 联系方式
             newCrmOrder.setLxfs(interTrade.getReceiverMobile());
-            // 地区
-            newCrmOrder.setDq(interTrade.getReceiverDistrict());
+            // 地区（例如：杭州市、南京市等）
+            newCrmOrder.setDq(interTrade.getReceiverCity());
             // 地址
             newCrmOrder.setDz(interTrade.getReceiverAddress());
             // 订单状态
-            newCrmOrder.setBillstat(TbTradeStatus.valueOf(
-                    tmpOrder.getStatus()).toCrmOrderStatus().name());
+            newCrmOrder.setBillstat(String.valueOf(TbTradeStatus.valueOf(
+                    tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
             JSONObject ans = crmAPIService.createNewOrder(
                     JSONObject.toJSON(newCrmOrder).toString());
-            if (ans.get("ResponseCode") == ResponseCode.RESPONSE_ERROR) {
+            if (Objects.equals(ans.get("ResponseCode").toString(),
+                    ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("新增交易到中台失败");
                 return res;
@@ -109,5 +108,23 @@ public class CrmSyncServiceImpl implements CrmSyncService {
         res.setResponseCode(ResponseCode.RESPONSE_OK);
         res.setDescription("新增交易到中台成功");
         return res;
+    }
+
+    /**
+     * @param order finley.gmair.model.ordernew.Order
+     * @author zm
+     * @date 2020/11/02 14:29
+     * @description 查询系统中有无该机器的型号
+     **/
+    private String getMachineModel(Order order) {
+        List<String> machineModelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(
+                String.valueOf(order.getNumIid()),
+                String.valueOf(order.getSkuId()));
+
+        if (machineModelList.size() == 0) {
+            return "该机器型号未录入";
+        } else {
+            return machineModelList.get(0);
+        }
     }
 }
