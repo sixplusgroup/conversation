@@ -17,6 +17,11 @@ public interface TradeMapper {
 
     Trade selectByPrimaryKey(String tradeId);
 
+    /**
+     * 根据tid更新相应的交易字段
+     */
+    int updateByTidSelective(Trade record);
+
     int updateByPrimaryKeySelective(Trade record);
 
     int updateByPrimaryKey(Trade record);
