@@ -54,6 +54,7 @@ public class TradeServiceImpl implements TradeService {
             excel.setTradeFrom(TradeFrom.TMALL.getDesc());
             excel.setTid(trade.getTid().toString());
             excel.setMachineModel(machineModel);
+            excel.setPropertyName(order.getSkuPropertiesName());
             excel.setNum(order.getNum());
             excel.setPayment(order.getPayment());
             excel.setCreated(trade.getCreated());
