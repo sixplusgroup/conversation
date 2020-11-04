@@ -2015,7 +2015,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/sync/partInfo")
-    public ResultData syncOrder(@RequestParam String orderId, @RequestParam String consignee,
+    public ResultData syncOrderPartInfo(@RequestParam String orderId, @RequestParam String consignee,
                                 @RequestParam String phone, @RequestParam String address) {
         ResultData resultData = new ResultData();
         if (StringUtils.isEmpty(orderId)) {
@@ -2039,6 +2039,8 @@ public class OrderController {
             return resultData;
         }
 
+        logger.info("syncOrderPartInfo, orderId:{}, consignee:{}, phone:{}, address:{}",
+                orderId, consignee, phone, address);
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);
         condition.put("blockFlag", false);
