@@ -1,7 +1,6 @@
 package finley.gmair.model.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import finley.gmair.model.ordernew.Trade;
 import lombok.Data;
 
 import java.util.Date;
@@ -52,4 +51,25 @@ public class TbOrderExcel {
 
     @ExcelProperty("地址")
     private String receiverAddress;
+
+    @ExcelProperty("发货时间")
+    private Date deliveryTime;
+
+    @ExcelProperty("发货计划")
+    private String deliveryPlan;
+
+    @ExcelProperty("风管发运")
+    private String aidDutDelivery;
+
+    @ExcelProperty("派单服务商")
+    private String dispatchService;
+
+    @ExcelProperty("派单计划")
+    private String dispatchPlan;
+
+    @ExcelProperty("安装时间")
+    private Date installTime;
+    
+    @ExcelProperty("已安装台数")
+    private Integer installNum;
 }

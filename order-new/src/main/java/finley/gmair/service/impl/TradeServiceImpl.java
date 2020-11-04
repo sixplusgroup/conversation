@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +40,7 @@ public class TradeServiceImpl implements TradeService {
     @Override
     public List<TbOrderExcel> selectAllTradeExcel() {
         List<Order> orderList = orderMapper.selectAll();
-        
+
         return orderList.stream().map(order -> {
             Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
             String numIid = order.getNumIid() == null ? "" : order.getNumIid().toString();
@@ -54,12 +56,12 @@ public class TradeServiceImpl implements TradeService {
             excel.setCreated(trade.getCreated());
             excel.setStatus(order.getStatus());
             excel.setReceiverName(trade.getReceiverName());
-            excel.setReceiverMobile(trade.getReceiverAddress());
+            excel.setReceiverMobile(trade.getReceiverMobile());
             excel.setReceiverCity(trade.getReceiverCity());
             excel.setReceiverAddress(trade.getReceiverState() + trade.getReceiverCity()
                     + trade.getReceiverDistrict() + trade.getReceiverAddress());
             return excel;
-        }).collect(Collectors.toList());
+        }).sorted((e1, e2) -> (int) (e1.getCreated().getTime() - e2.getCreated().getTime())).collect(Collectors.toList());
     }
 
 }
