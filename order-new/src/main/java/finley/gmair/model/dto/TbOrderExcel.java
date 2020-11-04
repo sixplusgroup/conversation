@@ -22,6 +22,9 @@ public class TbOrderExcel {
     @ExcelProperty("机器型号")
     private String machineModel;
 
+    @ExcelProperty("属性名称")
+    private String propertyName;
+
     @ExcelProperty("数量")
     private Long num;
 

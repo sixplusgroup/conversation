@@ -133,8 +133,9 @@ public class TbOrderServiceImpl implements TbOrderService {
             tradeMapper.updateByPrimaryKey(trade);
 
             //step2:sync to crm
-            // 只有去模糊化的交易mode==1才同步
-            if (trade.getMode() == TradeMode.DEBLUR.getValue()) {
+            // 只有去模糊化的交易mode==1，并且状态不是TRADE_CLOSED_BY_TAOBAO和WAIT_BUYER_PAY
+            if (trade.getMode() == TradeMode.DEBLUR.getValue() &&
+                    TbTradeStatus.valueOf(trade.getStatus()).judgeCrmAdd()) {
                 syncResult.setSyncToCRM(true);
                 ResultData resultData1 = crmSyncService.createNewOrder(trade);
                 if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {

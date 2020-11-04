@@ -76,8 +76,6 @@ public enum TbTradeStatus implements EnumValue {
     public CrmOrderStatus toCrmOrderStatus() {
         CrmOrderStatus crmRes;
         switch (this) {
-            case TRADE_CLOSED_BY_TAOBAO:
-            case WAIT_BUYER_PAY:
             case WAIT_SELLER_SEND_GOODS:
                 // 未处理的初始状态
                 crmRes = CrmOrderStatus.UNTREATED;
@@ -99,5 +97,12 @@ public enum TbTradeStatus implements EnumValue {
                 crmRes = null;
         }
         return crmRes;
+    }
+
+    /**
+     * 判断是否能够推送给CRM系统（如果是被taobao关闭或者未支付 -> 返回false）
+     */
+    public boolean judgeCrmAdd() {
+        return !(this == TRADE_CLOSED_BY_TAOBAO || this == WAIT_BUYER_PAY);
     }
 }

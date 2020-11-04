@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +52,9 @@ public class TradeServiceImpl implements TradeService {
             excel.setTradeFrom(TradeFrom.TMALL.getDesc());
             excel.setTid(trade.getTid().toString());
             excel.setMachineModel(machineModel);
+            String skuPropertyName = order.getSkuPropertiesName();
+            String property = skuPropertyName != null && skuPropertyName.length() > 5 ? skuPropertyName.substring(5) : "";
+            excel.setPropertyName(property);
             excel.setNum(order.getNum());
             excel.setPayment(order.getPayment());
             excel.setCreated(trade.getCreated());
