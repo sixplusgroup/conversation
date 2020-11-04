@@ -45,7 +45,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
         // 只有mode==2的订单才能更新状态并推给CRM
         if(interTrade.getMode() != TradeMode.PUSHED_TO_CRM.getValue()){
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("更新交易状态到中台失败");
+            res.setDescription("交易模糊字段状态错误");
             return res;
         }
         List<Order> orders = orderMapper.selectAllByTradeId(interTrade.getTradeId());
@@ -63,12 +63,12 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             if (Objects.equals(ans.get("ResponseCode").toString(),
                     ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                res.setDescription("更新交易状态到中台失败");
+                res.setDescription("更新交易状态到CRM失败");
                 return res;
             }
         }
         res.setResponseCode(ResponseCode.RESPONSE_OK);
-        res.setDescription("交易同步到中台成功");
+        res.setDescription("交易同步到CRM成功");
         return res;
     }
 
@@ -80,7 +80,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
         // 只有去模糊化的交易mode==1才同步
         if(interTrade.getMode() != TradeMode.DEBLUR.getValue()){
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("新增交易到中台失败");
+            res.setDescription("交易模糊字段状态错误");
             return res;
         }
 
@@ -115,12 +115,12 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             if (Objects.equals(ans.get("ResponseCode").toString(),
                     ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                res.setDescription("新增交易到中台失败");
+                res.setDescription("新增交易到CRM失败");
                 return res;
             }
         }
         res.setResponseCode(ResponseCode.RESPONSE_OK);
-        res.setDescription("新增交易到中台成功");
+        res.setDescription("新增交易到CRM成功");
         return res;
     }
 
