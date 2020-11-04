@@ -7,19 +7,23 @@ import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.TradeMapper;
 import finley.gmair.model.drift.*;
 import finley.gmair.model.dto.TbOrderDTO;
+import finley.gmair.model.dto.TbOrderPartInfo;
 import finley.gmair.model.dto.TbTradeDTO;
 import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.TradeFrom;
+import finley.gmair.model.ordernew.TradeMode;
 import finley.gmair.service.CrmSyncService;
 import finley.gmair.service.DriftOrderSyncService;
 import finley.gmair.service.TbOrderService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -32,21 +36,16 @@ import java.util.List;
  */
 @Service
 public class TbOrderServiceImpl implements TbOrderService {
+    private static final Long DRIFT_NUM_IID = 618391118089L;
     @Autowired
     private OrderMapper orderMapper;
-
     @Autowired
     private TradeMapper tradeMapper;
-
     @Autowired
     private CrmSyncService crmSyncService;
-
     @Autowired
     private DriftOrderSyncService driftOrderSyncService;
-
     private Logger logger = LoggerFactory.getLogger(TbOrderSyncServiceImpl.class);
-
-    private static final Long DRIFT_NUM_IID = 618391118089L;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -68,10 +67,9 @@ public class TbOrderServiceImpl implements TbOrderService {
         //step2：synchronize trade to drift or crm
         if (tradeNum == 1) {
             // 仅同步交易状态变更到CRM系统
-            ResultData rsp1 = new ResultData();
             finley.gmair.model.ordernew.Trade crmTrade =
                     tradeMapper.selectByTid(trade.getTid()).get(0);
-            rsp1 = crmSyncService.updateOrderStatus(crmTrade);
+            ResultData rsp1 = crmSyncService.updateOrderStatus(crmTrade);
             if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("处理交易失败");
@@ -91,13 +89,69 @@ public class TbOrderServiceImpl implements TbOrderService {
     }
 
     /**
+     * 处理excel模糊字段
+     *
+     * @param list
+     * @return
+     */
+    @Override
+    public ResultData handlePartInfo(List<TbOrderPartInfo> list) {
+        for (TbOrderPartInfo partInfo : list) {
+            //step1:update to db
+            List<finley.gmair.model.ordernew.Order> orderList = orderMapper.selectByOid(Long.parseLong(partInfo.getOrderId()));
+            if (CollectionUtils.isEmpty(orderList)) {
+                logger.error("handlePartInfo error, failed to find by oid:{}", partInfo.getOrderId());
+                continue;
+            }
+            finley.gmair.model.ordernew.Order order = orderList.get(0);
+            finley.gmair.model.ordernew.Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
+            if (trade == null) {
+                logger.error("handlePartInfo error, failed to find by tradeId:{}", order.getTradeId());
+                continue;
+            }
+            trade.setReceiverName(partInfo.getReceiver());
+            trade.setReceiverMobile(partInfo.getPhone());
+            trade.setReceiverAddress(partInfo.getDeliveryAddress());
+            trade.setMode(TradeMode.DEBLUR.getValue());
+            tradeMapper.updateByPrimaryKey(trade);
+
+            //step2:sync to crm
+            ResultData resultData1 = crmSyncService.createNewOrder(trade);
+            if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
+                tradeMapper.updateByPrimaryKey(trade);
+            } else {
+                logger.error("syncOrderPartToCrm error, response:{}", resultData1);
+            }
+
+            //step3:sync to drift
+            List<finley.gmair.model.ordernew.Order> orderList2 = orderMapper.selectAllByTradeId(order.getTradeId());
+            boolean syncToDrift = DRIFT_NUM_IID.equals(trade.getNumIid());
+            for (finley.gmair.model.ordernew.Order tempOrder : orderList2) {
+                if (DRIFT_NUM_IID.equals(tempOrder.getNumIid())) {
+                    syncToDrift = true;
+                    break;
+                }
+            }
+            if (syncToDrift) {
+                ResultData resultData2 = driftOrderSyncService.syncOrderPartInfoToDrift(trade.getTradeId(), trade.getReceiverName(),
+                        trade.getReceiverMobile(), trade.getReceiverAddress());
+                if (resultData2.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("syncOrderPartToDrift error, response:{}", resultData2);
+                }
+            }
+        }
+        return new ResultData();
+    }
+
+    /**
      * tb单笔Trade新增到中台
      *
      * @param tbTrade 待添加的订单(com.taobao.api.domain.Trade)
      * @return ResultData
      * @author zm
      */
-    private ResultData saveTrade (Trade tbTrade){
+    private ResultData saveTrade(Trade tbTrade) {
         ResultData resultData = new ResultData();
 
         if (tbTrade == null) {
@@ -146,22 +200,46 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @return ResultData
      * @author zm
      */
-    private ResultData updateTradeStatus (Trade tbTrade){
+    private ResultData updateTradeStatus(Trade tbTrade) {
         ResultData resultData = new ResultData();
         if (tbTrade == null) {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
             resultData.setDescription("待处理的交易为空");
             return resultData;
         }
-        TbTradeStatus updatedStatus = TbTradeStatus.valueOf(tbTrade.getStatus());
-        // 1. 更新Trade的状态
-        int tradeUpdateNum = tradeMapper.updateStatusByTid(updatedStatus.name(), tbTrade.getTid());
+        TbTradeStatus updatedStatus =
+                TbTradeStatus.valueOf(tbTrade.getStatus());
+        // 1. 更新Trade的状态和相关时间信息
+        finley.gmair.model.ordernew.Trade interTrade = new finley.gmair.model.ordernew.Trade();
+        // 设置tid
+        interTrade.setTid(tbTrade.getTid());
+        // 更新状态
+        interTrade.setStatus(updatedStatus.name());
+        // 更新交易修改时间
+        interTrade.setModified(tbTrade.getModified());
+        // 更新付款时间
+        interTrade.setPayTime(tbTrade.getPayTime());
+        // 更新交易结束时间
+        interTrade.setEndTime(tbTrade.getEndTime());
+        // 更新派送公司
+        interTrade.setDeliveryCps(tbTrade.getDeliveryCps());
+        // 更新截单时间
+        interTrade.setCutoffMinutes(tbTrade.getCutoffMinutes());
+        // 更新发货时间
+        interTrade.setDeliveryTime(TimeUtil.formatTimeToDatetime(tbTrade.getDeliveryTime()));
+        // 更新揽收时间
+        interTrade.setCollectTime(TimeUtil.formatTimeToDatetime(tbTrade.getCollectTime()));
+        // 更新派送时间
+        interTrade.setDispatchTime(TimeUtil.formatTimeToDatetime(tbTrade.getDispatchTime()));
+        // 更新签收时间
+        interTrade.setSignTime(TimeUtil.formatTimeToDatetime(tbTrade.getSignTime()));
+        int tradeUpdateNum = tradeMapper.updateByTidSelective(interTrade);
         if (tradeUpdateNum == 0) {
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
             resultData.setDescription("交易状态更新出错");
             return resultData;
         }
-        // 2. 更新Orders的状态
+        // 2. 更新Orders的状态以及相关信息
         List<Order> tbOrders = tbTrade.getOrders();
         if (tbOrders == null) {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -169,8 +247,15 @@ public class TbOrderServiceImpl implements TbOrderService {
             return resultData;
         } else {
             for (Order tmpOrder : tbOrders) {
-                int orderUpdateNum = orderMapper.updateStatusByOid(
-                        updatedStatus.name(), tmpOrder.getOid());
+                finley.gmair.model.ordernew.Order interOrder = new finley.gmair.model.ordernew.Order();
+                interOrder.setOid(tmpOrder.getOid());
+                interOrder.setStatus(updatedStatus.name());
+                interOrder.setStoreCode(tmpOrder.getStoreCode());
+                interOrder.setShippingType(tmpOrder.getShippingType());
+                interOrder.setLogisticsCompany(tmpOrder.getLogisticsCompany());
+                interOrder.setInvoiceNo(tmpOrder.getInvoiceNo());
+                interOrder.setConsignTime(TimeUtil.formatTimeToDatetime(tmpOrder.getConsignTime()));
+                int orderUpdateNum = orderMapper.updateByOidSelective(interOrder);
                 if (orderUpdateNum == 0) {
                     resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
                     resultData.setDescription("子订单状态更新出错");
