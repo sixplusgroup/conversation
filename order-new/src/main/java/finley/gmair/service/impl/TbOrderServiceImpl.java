@@ -106,18 +106,21 @@ public class TbOrderServiceImpl implements TbOrderService {
             finley.gmair.model.ordernew.Order order = orderList.get(0);
             finley.gmair.model.ordernew.Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
             if (trade == null) {
-                logger.error("handlePartInfo error, failed to find by tradeId:{}", order.getTradeId());
+                logger.error("handlePartInfo error, failed to find by tradeId:{}, oid:{}, order:{}", order.getTradeId(), partInfo.getOrderId(), order);
                 continue;
             }
             trade.setReceiverName(partInfo.getReceiver());
             trade.setReceiverMobile(partInfo.getPhone());
-            trade.setReceiverAddress(partInfo.getDeliveryAddress());
+            String[] strs = partInfo.getDeliveryAddress().split("    ");
+            String address = strs.length > 1 ? strs[1] : partInfo.getDeliveryAddress();
+            trade.setReceiverAddress(address);
             trade.setMode(TradeMode.DEBLUR.getValue());
             tradeMapper.updateByPrimaryKey(trade);
 
             //step2:sync to crm
             ResultData resultData1 = crmSyncService.createNewOrder(trade);
             if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                logger.info("syncOrderPartToCrm success");
                 trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
                 tradeMapper.updateByPrimaryKey(trade);
             } else {
@@ -134,10 +137,12 @@ public class TbOrderServiceImpl implements TbOrderService {
                 }
             }
             if (syncToDrift) {
-                ResultData resultData2 = driftOrderSyncService.syncOrderPartInfoToDrift(trade.getTradeId(), trade.getReceiverName(),
+                ResultData resultData2 = driftOrderSyncService.syncOrderPartInfoToDrift(trade.getTid().toString(), trade.getReceiverName(),
                         trade.getReceiverMobile(), trade.getReceiverAddress());
                 if (resultData2.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     logger.error("syncOrderPartToDrift error, response:{}", resultData2);
+                } else {
+                    logger.info("syncOrderPartToDrift success");
                 }
             }
         }

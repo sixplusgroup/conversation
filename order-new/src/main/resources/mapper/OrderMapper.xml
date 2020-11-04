@@ -649,7 +649,7 @@
         from gmair_ordercentre.order
         where trade_id = #{tradeId,jdbcType=VARCHAR}
     </select>
-    <select id="selectByOid" resultType="finley.gmair.model.ordernew.Order">
+    <select id="selectByOid" resultMap="BaseResultMap">
             select
             <include refid="Base_Column_List"/>
             from gmair_ordercentre.order

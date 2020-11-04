@@ -19,6 +19,6 @@ public interface DriftOrderSyncService {
     ResultData syncOrderToDrift(@RequestBody DriftOrderExpress orderExpress);
 
     @PostMapping("/drift/order/sync/partInfo")
-    ResultData syncOrderPartInfoToDrift(@RequestParam String orderId, @RequestParam String consignee,
-                                     @RequestParam String phone, @RequestParam String address);
+    ResultData syncOrderPartInfoToDrift(@RequestParam("orderId") String orderId, @RequestParam("consignee")  String consignee,
+                                     @RequestParam("phone") String phone, @RequestParam("address") String address);
 }

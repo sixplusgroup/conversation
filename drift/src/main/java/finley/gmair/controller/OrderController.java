@@ -2046,6 +2046,7 @@ public class OrderController {
         condition.put("blockFlag", false);
         ResultData response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            response.setData(orderId);
             return response;
         }
         DriftOrder driftOrder = ((List<DriftOrder>) response.getData()).get(0);
@@ -2054,6 +2055,7 @@ public class OrderController {
         driftOrder.setAddress(address);
         response = orderService.updateDriftOrder(driftOrder);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            response.setData(orderId);
             return response;
         }
         return resultData;
