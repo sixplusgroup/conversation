@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/order-new")
+@RequestMapping("/order")
 public class OrderController {
 
     @Autowired

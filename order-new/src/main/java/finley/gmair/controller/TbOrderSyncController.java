@@ -18,7 +18,7 @@ import java.util.Date;
  */
 
 @RestController
-@RequestMapping("/order-new/tbOrderSync")
+@RequestMapping("/order/tbOrderSync")
 public class TbOrderSyncController {
 
     private Logger logger = LoggerFactory.getLogger(TbOrderSyncController.class);

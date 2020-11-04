@@ -28,7 +28,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/order-new")
+@RequestMapping("/order")
 public class OrderController {
 
     private Logger logger = LoggerFactory.getLogger(OrderController.class);

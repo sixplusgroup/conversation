@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
  * @description: OrderNewFeignService
  */
 
-@FeignClient("order-new-agent")
+@FeignClient("order-agent")
 public interface OrderNewFeignService {
 
-    @PostMapping("/order-new/tbOrderSync/import/incremental")
+    @PostMapping("/order/tbOrderSync/import/incremental")
     ResultData incrementalImport();
 }
