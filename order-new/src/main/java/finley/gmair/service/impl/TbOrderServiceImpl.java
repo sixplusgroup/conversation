@@ -392,7 +392,8 @@ public class TbOrderServiceImpl implements TbOrderService {
      * @return
      */
     private boolean isSyncToDriftTrade(Trade trade) {
-        if (TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(TbTradeStatus.valueOf(trade.getStatus()))) {
+        if (TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(TbTradeStatus.valueOf(trade.getStatus()))
+                || TbTradeStatus.WAIT_BUYER_PAY.equals(TbTradeStatus.valueOf(trade.getStatus()))) {
             return false;
         }
         if (DRIFT_NUM_IID.equals(trade.getNumIid())) {

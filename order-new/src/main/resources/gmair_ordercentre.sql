@@ -57,6 +57,7 @@ FRONT_PAID_FINAL_PAID(定金和尾款都付)',
     constraint trade_trade_id_uindex
         unique (trade_id)
 )
+DEFAULT CHARSET=utf8
     comment '主订单表';
 
 alter table trade
@@ -115,6 +116,7 @@ SUCCESS(退款成功)',
     constraint order_order_id_uindex
         unique (order_id)
 )
+    DEFAULT CHARSET=utf8
     comment '订单表';
 create index trade_id
     on `order` (trade_id);
@@ -135,6 +137,7 @@ create table sku_item
     block_flag      tinyint(1) default 0 null,
     create_at       datetime             null
 )
+    DEFAULT CHARSET=utf8
     comment '商品项表';
 -- ----------------------------
 -- Records of sku_item
@@ -185,6 +188,7 @@ create table tb_user
     block_flag       tinyint(1)   null,
     create_at        datetime     null
 )
+    DEFAULT CHARSET=utf8
     comment '淘宝卖家用户表';
 
 

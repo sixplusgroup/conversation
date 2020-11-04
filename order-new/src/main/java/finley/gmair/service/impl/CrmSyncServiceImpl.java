@@ -89,7 +89,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
         }
 
         // 如果状态是TRADE_CLOSED_BY_TAOBAO或者是WAIT_BUYER_PAY都禁止推送到CRM
-        if (TbTradeStatus.valueOf(interTrade.getStatus()).judgeCrmAdd()) {
+        if (!TbTradeStatus.valueOf(interTrade.getStatus()).judgeCrmAdd()) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("交易状态错误");
             return res;
