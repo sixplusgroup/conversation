@@ -1,8 +1,5 @@
 package finley.gmair.util;
 
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
-
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -12,8 +9,6 @@ import java.io.FileOutputStream;
  * @description: 文件工具类
  */
 public class FileUtil {
-
-    private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
     /**
      * 存文件
@@ -38,7 +33,7 @@ public class FileUtil {
                 res = true;
             }
         } catch (Exception e) {
-            logger.error("save file " + filename + " failed: " + e.getMessage());
+            e.printStackTrace();
         }
         return res;
     }
