@@ -9,16 +9,21 @@ import finley.gmair.model.EnumValue;
  */
 
 public enum TradeFrom implements EnumValue {
-    TMALL(0), WECHAT(1), ALIPAY(2);
+    TMALL(0, "天猫"), WECHAT(1, "微信小程序"), ALIPAY(2, "支付宝小程序");
 
     private int value;
 
-    TradeFrom(int value) {
+    private String desc;
+
+    TradeFrom(int value, String desc) {
         this.value = value;
+        this.desc = desc;
     }
 
     @Override
     public int getValue() {
         return value;
     }
+
+    public String getDesc() {return desc;}
 }

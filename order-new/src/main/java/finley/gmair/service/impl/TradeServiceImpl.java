@@ -5,6 +5,7 @@ import finley.gmair.dao.SkuItemMapper;
 import finley.gmair.dao.TradeMapper;
 import finley.gmair.model.dto.TbOrderExcel;
 import finley.gmair.model.ordernew.Order;
+import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.Trade;
 import finley.gmair.model.ordernew.TradeFrom;
 import finley.gmair.service.TradeService;
@@ -44,17 +45,20 @@ public class TradeServiceImpl implements TradeService {
         return orderList.stream().map(order -> {
             Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
             String numIid = order.getNumIid() == null ? "" : order.getNumIid().toString();
-            String skuId = order.getSkuId() == null ? "" : order.getSkuId().toString();
-            List<String> modelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numIid, skuId);
+            String skuId= order.getSkuId() == null ? "" : order.getSkuId().toString();
+            List<String> modelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numIid,skuId);
+            if(CollectionUtils.isEmpty(modelList)) {
+                modelList = skuItemMapper.selectMachineModelByNumIid(numIid);
+            }
             String machineModel = CollectionUtils.isEmpty(modelList) ? "" : modelList.get(0);
             TbOrderExcel excel = new TbOrderExcel();
-            excel.setTradeFrom(TradeFrom.TMALL.name());
-            excel.setTid(trade.getTid());
+            excel.setTradeFrom(TradeFrom.TMALL.getDesc());
+            excel.setTid(trade.getTid().toString());
             excel.setMachineModel(machineModel);
             excel.setNum(order.getNum());
             excel.setPayment(order.getPayment());
             excel.setCreated(trade.getCreated());
-            excel.setStatus(order.getStatus());
+            excel.setStatus(TbTradeStatus.valueOf(order.getStatus()).getDesc());
             excel.setReceiverName(trade.getReceiverName());
             excel.setReceiverMobile(trade.getReceiverMobile());
             excel.setReceiverCity(trade.getReceiverCity());

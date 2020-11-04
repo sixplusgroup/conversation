@@ -17,7 +17,7 @@ public class TbOrderExcel {
     private String tradeFrom;
 
     @ExcelProperty("订单号")
-    private Long tid;
+    private String tid;
 
     @ExcelProperty("机器型号")
     private String machineModel;

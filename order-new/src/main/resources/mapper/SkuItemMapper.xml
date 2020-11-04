@@ -158,6 +158,11 @@
         select machine_model
         from gmair_ordercentre.sku_item
         where num_iid = #{numIid,jdbcType=VARCHAR}
-          and sku_id = #{skuId,jdbcType=VARCHAR}
+            and sku_id = #{skuId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectMachineModelByNumIid" resultType="java.lang.String">
+        select machine_model
+        from gmair_ordercentre.sku_item
+        where num_iid = #{numIid,jdbcType=VARCHAR}
     </select>
 </mapper>

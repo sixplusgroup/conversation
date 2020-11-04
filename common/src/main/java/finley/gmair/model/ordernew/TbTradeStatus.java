@@ -11,35 +11,42 @@ import finley.gmair.model.drift.DriftOrderStatus;
 public enum TbTradeStatus implements EnumValue {
 
     /*付款前，卖家或买家主动关闭交易*/
-    TRADE_CLOSED_BY_TAOBAO(0),
+    TRADE_CLOSED_BY_TAOBAO(0, "付款前，卖家或买家主动关闭交易"),
 
     /*等待买家付款*/
-    WAIT_BUYER_PAY(1),
+    WAIT_BUYER_PAY(1, "等待买家付款"),
 
     /*等待卖家发货*/
-    WAIT_SELLER_SEND_GOODS(2),
+    WAIT_SELLER_SEND_GOODS(2, "等待卖家发货"),
 
     /*卖家部分发货*/
-    SELLER_CONSIGNED_PART(3),
+    SELLER_CONSIGNED_PART(3, "卖家部分发货"),
 
     /*等待买家确认收货*/
-    WAIT_BUYER_CONFIRM_GOODS(4),
+    WAIT_BUYER_CONFIRM_GOODS(4, "等待买家确认收货"),
 
     /*交易成功（正常购物流程的最终状态）*/
-    TRADE_FINISHED(5),
+    TRADE_FINISHED(5, "交易成功"),
 
     /*交易关闭（申请退款流程的最终状态）*/
-    TRADE_CLOSED(6);
+    TRADE_CLOSED(6, "交易关闭");
 
     private int value;
 
-    TbTradeStatus(int value) {
+    private String desc;
+
+    TbTradeStatus(int value, String desc) {
         this.value = value;
+        this.desc = desc;
     }
 
     @Override
     public int getValue() {
         return this.value;
+    }
+
+    public String getDesc() {
+        return desc;
     }
 
     public DriftOrderStatus toDriftOrderStatus() {

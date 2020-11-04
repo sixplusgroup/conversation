@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.excel.util.CollectionUtils;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.SkuItemMapper;
@@ -132,8 +133,10 @@ public class CrmSyncServiceImpl implements CrmSyncService {
      **/
     private String getMachineModel(Order order) {
         List<String> machineModelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(
-                String.valueOf(order.getNumIid()),
-                String.valueOf(order.getSkuId()));
+                String.valueOf(order.getNumIid()),String.valueOf(order.getSkuId()));
+        if(CollectionUtils.isEmpty(machineModelList)) {
+            machineModelList = skuItemMapper.selectMachineModelByNumIid(String.valueOf(order.getNumIid()));
+        }
 
         if (machineModelList == null || machineModelList.size() == 0) {
             return "该机器型号未录入";
