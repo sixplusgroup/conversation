@@ -82,7 +82,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             if (nextDayOfStart.after(finishSyncTime)) {
                 nextDayOfStart = finishSyncTime;
             }
-            ImportResult importResult=importByCreatedByPage(start, nextDayOfStart, sessionKey);
+            ImportResult importResult = importByCreatedByPage(start, nextDayOfStart, sessionKey);
             logger.info("fullImport, startTime:{}, endTime:{}, importResult:{}",
                     start, nextDayOfStart, JSON.toJSON(importResult));
             start = DateUtils.addDays(start, 1);
@@ -211,6 +211,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                 if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
                 } else {
+                    logger.info("handle trade success, response:{}", JSON.toJSONString(resultData));
                     tradeHandleSuccessNum++;
                 }
             }
@@ -252,6 +253,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                 if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
                 } else {
+                    logger.info("handle trade success, response:{}", JSON.toJSONString(resultData));
                     tradeHandleSuccessNum++;
                 }
             }

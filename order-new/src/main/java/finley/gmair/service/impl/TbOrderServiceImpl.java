@@ -18,6 +18,7 @@ import finley.gmair.service.TbOrderService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.TimeUtil;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ public class TbOrderServiceImpl implements TbOrderService {
     public ResultData handleTrade(Trade trade) {
         //step1：save trade to db or update the existed trades（including the orders）
         ResultData rsp = new ResultData();
+        SyncResult syncResult = new SyncResult();
         ResultData res = new ResultData();
         int tradeNum = tradeMapper.countByTid(trade.getTid());
         if (tradeNum == 0) {
@@ -61,7 +63,8 @@ public class TbOrderServiceImpl implements TbOrderService {
         }
         if (rsp.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("处理交易失败");
+            res.setDescription("trade入库失败");
+            res.setData(trade);
             return res;
         }
         //step2：synchronize trade to drift or crm
@@ -69,22 +72,33 @@ public class TbOrderServiceImpl implements TbOrderService {
             // 仅同步交易状态变更到CRM系统
             finley.gmair.model.ordernew.Trade crmTrade =
                     tradeMapper.selectByTid(trade.getTid()).get(0);
-            ResultData rsp1 = crmSyncService.updateOrderStatus(crmTrade);
-            if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                res.setDescription("处理交易失败");
-                return res;
+            // 只有去模糊化的交易mode==1才同步
+            if (crmTrade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
+                syncResult.setSyncToCRM(true);
+                ResultData rsp1 = crmSyncService.updateOrderStatus(crmTrade);
+                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("syncOrderToCrm error, response:{}", rsp1);
+                } else {
+                    syncResult.setSyncToCRMSuccess(true);
+                }
             }
         }
 
         //2.2 同步到drift
-        ResultData rsp2 = syncTrade(trade);
-        if (rsp2.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            return rsp2;
+        if (isSyncToDriftTrade(trade)) {
+            syncResult.setSyncToDrift(true);
+            DriftOrderExpress driftOrder = toDriftOrderExpress(trade);
+            ResultData rsp2 = driftOrderSyncService.syncOrderToDrift(driftOrder);
+            if (rsp2.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("syncOrderToDrift error, response:{}", rsp2);
+            } else {
+                syncResult.setSyncToDriftSuccess(true);
+            }
         }
 
         res.setResponseCode(ResponseCode.RESPONSE_OK);
         res.setDescription("处理交易成功");
+        res.setData(syncResult);
         return res;
     }
 
@@ -97,6 +111,7 @@ public class TbOrderServiceImpl implements TbOrderService {
     @Override
     public ResultData handlePartInfo(List<TbOrderPartInfo> list) {
         for (TbOrderPartInfo partInfo : list) {
+            SyncResult syncResult = new SyncResult();
             //step1:update to db
             List<finley.gmair.model.ordernew.Order> orderList = orderMapper.selectByOid(Long.parseLong(partInfo.getOrderId()));
             if (CollectionUtils.isEmpty(orderList)) {
@@ -118,13 +133,17 @@ public class TbOrderServiceImpl implements TbOrderService {
             tradeMapper.updateByPrimaryKey(trade);
 
             //step2:sync to crm
-            ResultData resultData1 = crmSyncService.createNewOrder(trade);
-            if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                logger.info("syncOrderPartToCrm success");
-                trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
-                tradeMapper.updateByPrimaryKey(trade);
-            } else {
-                logger.error("syncOrderPartToCrm error, response:{}", resultData1);
+            // 只有去模糊化的交易mode==1才同步
+            if (trade.getMode() == TradeMode.DEBLUR.getValue()) {
+                syncResult.setSyncToCRM(true);
+                ResultData resultData1 = crmSyncService.createNewOrder(trade);
+                if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
+                    tradeMapper.updateByPrimaryKey(trade);
+                    syncResult.setSyncToCRMSuccess(true);
+                } else {
+                    logger.error("syncOrderPartToCrm error, response:{}", resultData1);
+                }
             }
 
             //step3:sync to drift
@@ -137,14 +156,16 @@ public class TbOrderServiceImpl implements TbOrderService {
                 }
             }
             if (syncToDrift) {
+                syncResult.setSyncToDrift(true);
                 ResultData resultData2 = driftOrderSyncService.syncOrderPartInfoToDrift(trade.getTid().toString(), trade.getReceiverName(),
                         trade.getReceiverMobile(), trade.getReceiverAddress());
                 if (resultData2.getResponseCode() != ResponseCode.RESPONSE_OK) {
                     logger.error("syncOrderPartToDrift error, response:{}", resultData2);
                 } else {
-                    logger.info("syncOrderPartToDrift success");
+                    syncResult.setSyncToDriftSuccess(true);
                 }
             }
+            logger.info("handlePartInfo success, response:{}", syncResult);
         }
         return new ResultData();
     }
@@ -231,13 +252,21 @@ public class TbOrderServiceImpl implements TbOrderService {
         // 更新截单时间
         interTrade.setCutoffMinutes(tbTrade.getCutoffMinutes());
         // 更新发货时间
-        interTrade.setDeliveryTime(TimeUtil.formatTimeToDatetime(tbTrade.getDeliveryTime()));
+        if (tbTrade.getDeliveryTime() != null) {
+            interTrade.setDeliveryTime(TimeUtil.formatTimeToDatetime(tbTrade.getDeliveryTime()));
+        }
         // 更新揽收时间
-        interTrade.setCollectTime(TimeUtil.formatTimeToDatetime(tbTrade.getCollectTime()));
+        if (tbTrade.getCollectTime() != null) {
+            interTrade.setCollectTime(TimeUtil.formatTimeToDatetime(tbTrade.getCollectTime()));
+        }
         // 更新派送时间
-        interTrade.setDispatchTime(TimeUtil.formatTimeToDatetime(tbTrade.getDispatchTime()));
+        if (tbTrade.getDispatchTime() != null) {
+            interTrade.setDispatchTime(TimeUtil.formatTimeToDatetime(tbTrade.getDispatchTime()));
+        }
         // 更新签收时间
-        interTrade.setSignTime(TimeUtil.formatTimeToDatetime(tbTrade.getSignTime()));
+        if (tbTrade.getSignTime() != null) {
+            interTrade.setSignTime(TimeUtil.formatTimeToDatetime(tbTrade.getSignTime()));
+        }
         int tradeUpdateNum = tradeMapper.updateByTidSelective(interTrade);
         if (tradeUpdateNum == 0) {
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -259,7 +288,9 @@ public class TbOrderServiceImpl implements TbOrderService {
                 interOrder.setShippingType(tmpOrder.getShippingType());
                 interOrder.setLogisticsCompany(tmpOrder.getLogisticsCompany());
                 interOrder.setInvoiceNo(tmpOrder.getInvoiceNo());
-                interOrder.setConsignTime(TimeUtil.formatTimeToDatetime(tmpOrder.getConsignTime()));
+                if (tmpOrder.getConsignTime() != null) {
+                    interOrder.setConsignTime(TimeUtil.formatTimeToDatetime(tmpOrder.getConsignTime()));
+                }
                 int orderUpdateNum = orderMapper.updateByOidSelective(interOrder);
                 if (orderUpdateNum == 0) {
                     resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -273,24 +304,6 @@ public class TbOrderServiceImpl implements TbOrderService {
         return resultData;
     }
 
-    /**
-     * 淘宝订单同步到drift或crm
-     *
-     * @param trade
-     * @return
-     */
-    private ResultData syncTrade(Trade trade) {
-        ResultData result = new ResultData();
-        if (isSyncToDriftTrade(trade)) {
-            DriftOrderExpress driftOrder = toDriftOrderExpress(trade);
-            result = driftOrderSyncService.syncOrderToDrift(driftOrder);
-            logger.info("sync trade to drift, driftOrder:{}, syncResult:{}", JSON.toJSONString(driftOrder), result);
-            if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                return result;
-            }
-        }
-        return result;
-    }
 
     /**
      * trade转DriftOrderExpress
@@ -394,5 +407,13 @@ public class TbOrderServiceImpl implements TbOrderService {
             }
         }
         return false;
+    }
+
+    @Data
+    private static class SyncResult {
+        boolean syncToCRM;
+        boolean syncToCRMSuccess;
+        boolean syncToDrift;
+        boolean syncToDriftSuccess;
     }
 }
