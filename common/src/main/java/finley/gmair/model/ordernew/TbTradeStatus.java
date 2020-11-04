@@ -76,8 +76,6 @@ public enum TbTradeStatus implements EnumValue {
     public CrmOrderStatus toCrmOrderStatus() {
         CrmOrderStatus crmRes;
         switch (this) {
-            case TRADE_CLOSED_BY_TAOBAO:
-            case WAIT_BUYER_PAY:
             case WAIT_SELLER_SEND_GOODS:
                 // 未处理的初始状态
                 crmRes = CrmOrderStatus.UNTREATED;

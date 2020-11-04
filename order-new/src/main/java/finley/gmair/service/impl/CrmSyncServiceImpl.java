@@ -6,10 +6,7 @@ import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.SkuItemMapper;
 import finley.gmair.model.dto.CrmOrderDTO;
 import finley.gmair.model.dto.CrmStatusDTO;
-import finley.gmair.model.ordernew.Order;
-import finley.gmair.model.ordernew.TbTradeStatus;
-import finley.gmair.model.ordernew.Trade;
-import finley.gmair.model.ordernew.TradeMode;
+import finley.gmair.model.ordernew.*;
 import finley.gmair.service.CrmAPIService;
 import finley.gmair.service.CrmSyncService;
 import finley.gmair.util.ResponseCode;
@@ -57,8 +54,14 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 联系方式：
             newCrmStatus.setLxfs(interTrade.getReceiverMobile());
             // 订单状态：
-            newCrmStatus.setBillstat(String.valueOf(TbTradeStatus.valueOf(
-                    tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
+            CrmOrderStatus billStatus = TbTradeStatus.valueOf(
+                    tmpOrder.getStatus()).toCrmOrderStatus();
+            if(billStatus == null){
+                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                res.setDescription("交易状态转换失败");
+                return res;
+            }
+            newCrmStatus.setBillstat(String.valueOf(billStatus.getValue()));
             JSONObject ans = crmAPIService.updateOrderStatus(
                     JSONObject.toJSON(newCrmStatus).toString());
             if (Objects.equals(ans.get("ResponseCode").toString(),
@@ -85,6 +88,12 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             return res;
         }
 
+        // 如果状态是TRADE_CLOSED_BY_TAOBAO或者是WAIT_BUYER_PAY都禁止推送到CRM
+        if (TbTradeStatus.valueOf(interTrade.getStatus()).judgeCrmAdd()) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("交易状态错误");
+            return res;
+        }
         List<Order> orders = orderMapper.selectAllByTradeId(interTrade.getTradeId());
         for (Order tmpOrder : orders) {
             CrmOrderDTO newCrmOrder = new CrmOrderDTO();
@@ -114,8 +123,14 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 地址
             newCrmOrder.setDz(interTrade.getReceiverAddress());
             // 订单状态
-            newCrmOrder.setBillstat(String.valueOf(TbTradeStatus.valueOf(
-                    tmpOrder.getStatus()).toCrmOrderStatus().getValue()));
+            CrmOrderStatus billStatus = TbTradeStatus.valueOf(
+                    tmpOrder.getStatus()).toCrmOrderStatus();
+            if(billStatus == null){
+                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                res.setDescription("交易状态转换失败");
+                return res;
+            }
+            newCrmOrder.setBillstat(String.valueOf(billStatus));
             JSONObject ans = crmAPIService.createNewOrder(
                     JSONObject.toJSON(newCrmOrder).toString());
             if (Objects.equals(ans.get("ResponseCode").toString(),
