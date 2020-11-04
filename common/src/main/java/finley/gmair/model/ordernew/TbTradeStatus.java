@@ -100,4 +100,11 @@ public enum TbTradeStatus implements EnumValue {
         }
         return crmRes;
     }
+
+    /**
+     * 判断是否能够推送给CRM系统（如果是被taobao关闭或者未支付 -> 返回false）
+     */
+    public boolean judgeCrmAdd() {
+        return !(this == TRADE_CLOSED_BY_TAOBAO || this == WAIT_BUYER_PAY);
+    }
 }
