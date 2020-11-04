@@ -47,6 +47,20 @@ public class OrderItemDaoImpl extends BaseDao implements OrderItemDao {
     }
 
     @Override
+    public ResultData insertOrderItemWithId(DriftOrderItem item) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.insert("gmair.drift.order.item.insert", item);
+            result.setData(item);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public ResultData updateOrderItem(DriftOrderItem item) {
         ResultData result = new ResultData();
         try {

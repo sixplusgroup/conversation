@@ -5,15 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.model.drift.*;
-import finley.gmair.model.drift.DriftExpress;
-import finley.gmair.model.express.Express;
-import finley.gmair.model.order.OrderStatus;
+import finley.gmair.model.ordernew.TradeFrom;
 import finley.gmair.model.wechat.OfficialAccountMessage;
 import finley.gmair.service.*;
 import finley.gmair.util.IPUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.StringUtil;
+import finley.gmair.vo.drift.ActivityEquipmentVo;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -26,12 +25,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/drift/order")
@@ -235,7 +231,7 @@ public class OrderController {
             }
         }
 
-        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate);
+        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate, TradeFrom.WECHAT);
         driftOrder.setTotalPrice(price);
         driftOrder.setRealPay(price);
         driftOrder.setList(list);
@@ -1067,7 +1063,7 @@ public class OrderController {
             }
             //根据寄出还是寄回推送公众号消息
             if (driftExpress.getStatus() == DriftExpressStatus.DELIVERED) {
-                deliveredMessage(orderId,expressNo,company);
+                deliveredMessage(orderId, expressNo, company);
             } else if (driftExpress.getStatus() == DriftExpressStatus.BACk)
                 backedMessage(orderId);
         }
@@ -1746,7 +1742,7 @@ public class OrderController {
      * @return
      */
     @GetMapping("/notify/delivered")
-    public ResultData deliveredMessage(String orderId,String expressOutNum,String expressOutCompany) {
+    public ResultData deliveredMessage(String orderId, String expressOutNum, String expressOutCompany) {
         ResultData resultData = new ResultData();
         //根据orderId获取手机号
         ResultData re = orderById(orderId);
@@ -1790,10 +1786,10 @@ public class OrderController {
         remark.put("value", "详情请查看果麦检测小程序");
         remark.put("color", "#173177");
 
-        data.put("first",first);
-        data.put("keyword1",keyword1);
-        data.put("keyword2",keyword2);
-        data.put("remark",remark);
+        data.put("first", first);
+        data.put("keyword1", keyword1);
+        data.put("keyword2", keyword2);
+        data.put("remark", remark);
 
         jsonObject.put("data", data);
 
@@ -1877,11 +1873,11 @@ public class OrderController {
             remark.put("value", "详情请查看果麦检测小程序");
             remark.put("color", "#173177");
 
-            data.put("first",first);
-            data.put("keyword1",keyword1);
-            data.put("keyword2",keyword2);
-            data.put("keyword3",keyword3);
-            data.put("remark",remark);
+            data.put("first", first);
+            data.put("keyword1", keyword1);
+            data.put("keyword2", keyword2);
+            data.put("keyword3", keyword3);
+            data.put("remark", remark);
 
             jsonObject.put("data", data);
 
@@ -1891,5 +1887,177 @@ public class OrderController {
             wechatService.sendMessage(OfficialAccountMessage.RETURN.getValue(), json, p.getOrderId());
         }
         return response;
+    }
+
+    /**
+     * 订单中台同步订单
+     *
+     * @param orderExpress
+     * @return
+     */
+    @PostMapping("/sync")
+    public ResultData syncOrder(@RequestBody DriftOrderExpress orderExpress) {
+        ResultData result = new ResultData();
+        if (orderExpress == null) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("DriftOrderExpress object is null");
+            return result;
+        }
+        if (orderExpress.getDriftOrder() == null || orderExpress.getDriftOrder().getOrderId() == null) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("DriftOrder object is null or orderId is null");
+            return result;
+        }
+        DriftOrder order = orderExpress.getDriftOrder();
+        DriftExpress express = orderExpress.getDriftExpress();
+        logger.info("syncOrder, driftOrder:{}, driftExpress:{}", order, express);
+
+        //填充默认活动id和设备id
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        ResultData response = activityService.fetchActivityEquipment(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("failed to find activityId and equipId");
+            return result;
+        }
+        ActivityEquipmentVo activityEquipmentVo = ((List<ActivityEquipmentVo>) response.getData()).get(0);
+        order.setActivityId(activityEquipmentVo.getActivityId());
+        order.setEquipId(activityEquipmentVo.getEquipmentId());
+        condition.clear();
+        condition.put("activityId", activityEquipmentVo.getActivityId());
+        condition.put("blockFlag", false);
+        response = activityService.fetchActivity(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("failed to find activity");
+            return result;
+        }
+        //获取活动信息,填充intervalDate
+        Activity activity = ((List<Activity>) response.getData()).get(0);
+        order.setIntervalDate(activity.getReservableDays());
+
+
+        condition.clear();
+        condition.put("orderId", order.getOrderId());
+        condition.put("blockFlag", false);
+        ResultData fetchOrderResponse = orderService.fetchDriftOrder(condition);
+        if (fetchOrderResponse.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            return fetchOrderResponse;
+        }
+        //orderId不存在,创建订单以及物流信息
+        else if (fetchOrderResponse.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            ResultData createResponse = orderService.createDriftOrderWithId(order);
+            if (createResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                return createResponse;
+            }
+            //如果订单状态为已发货或已完成，创建物流信息
+            if (order.getStatus() == DriftOrderStatus.DELIVERED || order.getStatus() == DriftOrderStatus.FINISHED) {
+                ResultData createExpressResponse = expressService.createExpress(express);
+                if (createExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    return createExpressResponse;
+                }
+            }
+            //写入操作记录表
+            String message = "一条订单被同步创建：订单来源:" + order.getTradeFrom().name() + ",订单状态:" + order.getStatus().name();
+            DriftOrderAction action = new DriftOrderAction(order.getOrderId(), message, order.getTradeFrom().name());
+            driftOrderActionService.create(action);
+        }
+        //orderId已存在，更新订单，创建或更新物流信息
+        else if (fetchOrderResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            ResultData updateResponse = orderService.updateDriftOrder(order);
+            if (updateResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                return updateResponse;
+            }
+            //如果订单状态为已发货或已完成，创建或更新物流信息
+            if (order.getStatus() == DriftOrderStatus.DELIVERED || order.getStatus() == DriftOrderStatus.FINISHED) {
+                condition.clear();
+                condition.put("blockFlag", false);
+                condition.put("orderId", express.getOrderId());
+                ResultData fetchExpressResponse = expressService.fetchExpress(condition);
+                if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                    return fetchExpressResponse;
+                } else if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                    //express不存在则创建
+                    ResultData createExpressResponse = expressService.createExpress(express);
+                    if (createExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        return createExpressResponse;
+                    }
+                } else if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    //express已存在则进行修改
+                    condition.clear();
+                    condition.put("expressId", express.getExpressId());
+                    condition.put("expressNum", express.getExpressNum());
+                    condition.put("company", express.getCompany());
+                    ResultData updateExpressResponse = expressService.updateExpress(condition);
+                    if (updateExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.info("error4");
+                        return updateExpressResponse;
+                    }
+                }
+            }
+            //写入操作记录表
+            String message = "一条订单被同步更新：订单来源:" + order.getTradeFrom().name() + ",订单状态:" + order.getStatus().name();
+            DriftOrderAction action = new DriftOrderAction(order.getOrderId(), message, order.getTradeFrom().name());
+            driftOrderActionService.create(action);
+        }
+        return result;
+    }
+
+
+    /**
+     * 同步模糊字段
+     *
+     * @param orderId
+     * @param consignee
+     * @param phone
+     * @param address
+     * @return
+     */
+    @PostMapping("/sync/partInfo")
+    public ResultData syncOrderPartInfo(@RequestParam String orderId, @RequestParam String consignee,
+                                @RequestParam String phone, @RequestParam String address) {
+        ResultData resultData = new ResultData();
+        if (StringUtils.isEmpty(orderId)) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("orderId cannot be empty");
+            return resultData;
+        }
+        if (StringUtils.isEmpty(consignee)) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("consignee cannot be empty");
+            return resultData;
+        }
+        if (StringUtils.isEmpty(phone)) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("phone cannot be empty");
+            return resultData;
+        }
+        if (StringUtils.isEmpty(address)) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("address cannot be empty");
+            return resultData;
+        }
+
+        logger.info("syncOrderPartInfo, orderId:{}, consignee:{}, phone:{}, address:{}",
+                orderId, consignee, phone, address);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            response.setData(orderId);
+            return response;
+        }
+        DriftOrder driftOrder = ((List<DriftOrder>) response.getData()).get(0);
+        driftOrder.setConsignee(consignee);
+        driftOrder.setPhone(phone);
+        driftOrder.setAddress(address);
+        response = orderService.updateDriftOrder(driftOrder);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            response.setData(orderId);
+            return response;
+        }
+        return resultData;
     }
 }

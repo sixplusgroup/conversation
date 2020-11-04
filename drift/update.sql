@@ -533,3 +533,54 @@ alter view `order_activity_equipment_item_express_view` as (
              JOIN `drift_equipment` ON `drift_order`.`equip_id` = `drift_equipment`.`equip_id`
     ORDER BY `expected_date`);
 
+#2020-10-22
+ALTER TABLE `gmair_drift`.`drift_order`
+    ADD COLUMN `trade_from` tinyint(1) NOT NULL AFTER `excode`;
+alter view `order_activity_equipment_item_express_view` as (
+    SELECT `drift_order`.`order_id`         AS `order_id`
+         , `drift_activity`.`activity_name` AS `activity_name`
+         , `drift_order`.`activity_id`      AS `activity_id`
+         , `drift_equipment`.`equip_name`   AS `equip_name`
+         , `drift_order`.`equip_id`         AS `equip_id`
+         , `drift_order`.`consumer_id`      AS `consumer_id`
+         , `drift_order`.`consignee`        AS `consignee`
+         , `drift_order`.`phone`            AS `phone`
+         , `drift_order`.`province`         AS `province`
+         , `drift_order`.`address`          AS `address`
+         , `drift_order`.`city`             AS `city`
+         , `drift_order`.`district`         AS `district`
+         , concat(`drift_order`.`province`, `drift_order`.`city`, `drift_order`.`district`,
+                  `drift_order`.`address`)  AS `express_address`
+         , `drift_order`.`total_price`      AS `total_price`
+         , `drift_order`.`real_pay`         AS `real_pay`
+         , `drift_order`.`order_status`     AS `order_status`
+         , `drift_order`.`buy_machine`      AS `buy_machine`
+         , `drift_order`.`machine_orderNo`  AS `machine_orderNo`
+         , `drift_order`.`trade_from`       AS `trade_from`
+         , `drift_order_item`.`quantity`    AS `quantity`
+         , `drift_order_item`.`item_price`  AS `item_price`
+         , `drift_order_item`.`total_price` AS `item_total_price`
+         , `drift_order_item`.`real_price`  AS `item_real_price`
+         , `drift_order`.`expected_date`    AS `expected_date`
+         , `drift_order`.`interval_date`    AS `interval_date`
+         , `drift_order`.`excode`           AS `excode`
+         , `drift_order`.`block_flag`       AS `block_flag`
+         , `drift_order`.`create_time`      AS `create_time`
+         , `ex0`.`express_num`              AS `express_out_num`
+         , `ex0`.`company`                  AS `express_out_company`
+         , `ex1`.`express_num`              AS `express_back_num`
+         , `ex1`.`company`                  AS `express_back_company`
+         , `drift_order`.`description`      AS `description`
+    FROM `drift_order`
+             LEFT JOIN `ex0` ON `drift_order`.`order_id` = `ex0`.`order_id`
+             LEFT JOIN `ex1` ON `drift_order`.`order_id` = `ex1`.`order_id`
+             LEFT JOIN `drift_order_item` ON `drift_order_item`.`order_id` = `drift_order`.`order_id` AND
+                                             `drift_order_item`.`item_name` = '甲醛检测试纸'
+             JOIN `drift_activity` ON `drift_order`.`activity_id` = `drift_activity`.`activity_id`
+             JOIN `drift_equipment` ON `drift_order`.`equip_id` = `drift_equipment`.`equip_id`
+    ORDER BY `expected_date`);
+
+update `gmair_drift`.`drift_order`
+set drift_order.`trade_from`=1
+where true;
+
