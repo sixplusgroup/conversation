@@ -41,13 +41,12 @@ public class TradeServiceImpl implements TradeService {
     @Override
     public List<TbOrderExcel> selectAllTradeExcel() {
         List<Order> orderList = orderMapper.selectAll();
-
-        return orderList.stream().map(order -> {
+        List<TbOrderExcel> excelList = orderList.stream().map(order -> {
             Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
             String numIid = order.getNumIid() == null ? "" : order.getNumIid().toString();
-            String skuId= order.getSkuId() == null ? "" : order.getSkuId().toString();
-            List<String> modelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numIid,skuId);
-            if(CollectionUtils.isEmpty(modelList)) {
+            String skuId = order.getSkuId() == null ? "" : order.getSkuId().toString();
+            List<String> modelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numIid, skuId);
+            if (CollectionUtils.isEmpty(modelList)) {
                 modelList = skuItemMapper.selectMachineModelByNumIid(numIid);
             }
             String machineModel = CollectionUtils.isEmpty(modelList) ? "" : modelList.get(0);
@@ -65,7 +64,15 @@ public class TradeServiceImpl implements TradeService {
             excel.setReceiverAddress(trade.getReceiverState() + trade.getReceiverCity()
                     + trade.getReceiverDistrict() + trade.getReceiverAddress());
             return excel;
-        }).sorted((e1, e2) -> (int) (e1.getCreated().getTime() - e2.getCreated().getTime())).collect(Collectors.toList());
+        }).sorted((o1, o2) -> {
+            if (o1.getCreated().before(o2.getCreated())) {
+                return -1;
+            } else if (o1.getCreated().after(o2.getCreated())) {
+                return 1;
+            }
+            return 0;
+        }).collect(Collectors.toList());
+        return excelList;
     }
 
 }
