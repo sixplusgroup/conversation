@@ -33,8 +33,8 @@ public class FileUtil {
                 res = true;
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return res;
     }
-
 }

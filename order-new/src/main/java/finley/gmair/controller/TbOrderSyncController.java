@@ -7,10 +7,9 @@ import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 /**
  * @author: Bright Chan
@@ -42,5 +41,20 @@ public class TbOrderSyncController {
     @GetMapping("/import/full")
     public ResultData fullImport() {
         return tbOrderSyncService.fullImport();
+    }
+
+    @PostMapping("/import/manualByCreated")
+    public ResultData manualImportByCreated(@RequestParam Date startCreated, @RequestParam Date endCreated) {
+        return tbOrderSyncService.manualImportByCreated(startCreated, endCreated);
+    }
+
+    @PostMapping("/import/manualByModified")
+    public ResultData manualImportByModified(@RequestParam Date startModified, @RequestParam Date endModified) {
+        return tbOrderSyncService.manualImportByModified(startModified, endModified);
+    }
+
+    @PostMapping("/import/manualByTid")
+    public ResultData manualImportByTid(@RequestParam Long tid) {
+        return tbOrderSyncService.manualImportByTid(tid);
     }
 }

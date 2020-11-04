@@ -28,7 +28,7 @@ public class TaobaoSDKTest {
             "discount_fee,post_fee,credit_card_fee,step_paid_fee";
 
     public static void main(String[] args) throws ApiException {
-        getTrades();
+        getIncrementTrades();
     }
 
     private static void getTrades() {
@@ -36,8 +36,8 @@ public class TaobaoSDKTest {
         TradesSoldGetRequest req = new TradesSoldGetRequest();
         //req.setFields("tid,type,status,payment,orders,rx_audit_status,created,modified");
         req.setFields(fields);
-        req.setStartCreated(StringUtils.parseDateTime("2020-08-01 00:00:00"));
-        req.setEndCreated(StringUtils.parseDateTime("2020-8-31 23:59:59"));
+        req.setStartCreated(StringUtils.parseDateTime("2020-08-02 00:00:00"));
+        req.setEndCreated(StringUtils.parseDateTime("2020-08-02 23:59:59"));
         req.setPageNo(1L);
         req.setPageSize(40L);
         req.setUseHasNext(true);
@@ -55,8 +55,8 @@ public class TaobaoSDKTest {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         TradesSoldIncrementGetRequest req = new TradesSoldIncrementGetRequest();
         req.setFields("tid,type,status,payment,orders,rx_audit_status,created,modified");
-        req.setStartModified(StringUtils.parseDateTime("2020-09-01 12:00:00"));
-        req.setEndModified(StringUtils.parseDateTime("2020-09-01 13:59:59"));
+        req.setStartModified(StringUtils.parseDateTime("2020-11-03 12:00:00"));
+        req.setEndModified(StringUtils.parseDateTime("2020-11-03 14:59:59"));
         req.setPageNo(1L);
         req.setPageSize(40L);
         req.setUseHasNext(true);
@@ -67,6 +67,7 @@ public class TaobaoSDKTest {
             e.printStackTrace();
         }
         System.out.println(rsp.getBody());
+        System.out.println(rsp.getRequestUrl());
     }
 
     private static void getItemsOnSale() {

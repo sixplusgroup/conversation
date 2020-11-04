@@ -2003,4 +2003,61 @@ public class OrderController {
         }
         return result;
     }
+
+
+    /**
+     * 同步模糊字段
+     *
+     * @param orderId
+     * @param consignee
+     * @param phone
+     * @param address
+     * @return
+     */
+    @PostMapping("/sync/partInfo")
+    public ResultData syncOrderPartInfo(@RequestParam String orderId, @RequestParam String consignee,
+                                @RequestParam String phone, @RequestParam String address) {
+        ResultData resultData = new ResultData();
+        if (StringUtils.isEmpty(orderId)) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("orderId cannot be empty");
+            return resultData;
+        }
+        if (StringUtils.isEmpty(consignee)) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("consignee cannot be empty");
+            return resultData;
+        }
+        if (StringUtils.isEmpty(phone)) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("phone cannot be empty");
+            return resultData;
+        }
+        if (StringUtils.isEmpty(address)) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("address cannot be empty");
+            return resultData;
+        }
+
+        logger.info("syncOrderPartInfo, orderId:{}, consignee:{}, phone:{}, address:{}",
+                orderId, consignee, phone, address);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            response.setData(orderId);
+            return response;
+        }
+        DriftOrder driftOrder = ((List<DriftOrder>) response.getData()).get(0);
+        driftOrder.setConsignee(consignee);
+        driftOrder.setPhone(phone);
+        driftOrder.setAddress(address);
+        response = orderService.updateDriftOrder(driftOrder);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            response.setData(orderId);
+            return response;
+        }
+        return resultData;
+    }
 }

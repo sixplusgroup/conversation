@@ -2,14 +2,8 @@ package finley.gmair.service.impl;
 
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
-import com.taobao.api.request.ItemSellerGetRequest;
-import com.taobao.api.request.ItemsOnsaleGetRequest;
-import com.taobao.api.request.TradesSoldGetRequest;
-import com.taobao.api.request.TradesSoldIncrementGetRequest;
-import com.taobao.api.response.ItemSellerGetResponse;
-import com.taobao.api.response.ItemsOnsaleGetResponse;
-import com.taobao.api.response.TradesSoldGetResponse;
-import com.taobao.api.response.TradesSoldIncrementGetResponse;
+import com.taobao.api.request.*;
+import com.taobao.api.response.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +38,18 @@ public class TbAPIServiceImpl {
         DefaultTaobaoClient client =
                 new DefaultTaobaoClient(url, appKey, appSecret);
         TradesSoldIncrementGetResponse resp = null;
+        try {
+            resp = client.execute(request, sessionKey);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        return resp;
+    }
+
+    public TradeFullinfoGetResponse tradeFullInfoGet(TradeFullinfoGetRequest request, String sessionKey) {
+        DefaultTaobaoClient client =
+                new DefaultTaobaoClient(url, appKey, appSecret);
+        TradeFullinfoGetResponse resp = null;
         try {
             resp = client.execute(request, sessionKey);
         } catch (ApiException e) {

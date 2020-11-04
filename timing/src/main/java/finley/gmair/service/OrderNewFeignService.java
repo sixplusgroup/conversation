@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
  * @description: OrderNewFeignService
  */
 
-@FeignClient("order-agent")
+@FeignClient("order-new-agent")
 public interface OrderNewFeignService {
 
     @PostMapping("/order-new/tbOrderSync/import/incremental")
