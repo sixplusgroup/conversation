@@ -1,6 +1,6 @@
-server.port=8005
+server.port=8030
 
-spring.application.name=order-new-agent
+spring.application.name=order-agent
 
 eureka.client.healthcheck=true
 eureka.client.service-url.defaultZone=http://localhost:8000/eureka/

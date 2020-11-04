@@ -17,10 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
  * @description: OrderNewService
  */
 
-@FeignClient(name = "order-new-agent", configuration = OrderNewService.MultipartSupportConfig.class)
+@FeignClient(name = "order-agent", configuration = OrderNewService.MultipartSupportConfig.class)
 public interface OrderNewService {
 
-    @PostMapping(value = "/order-new/uploadAndSync", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/order/uploadAndSync", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResultData uploadAndSync(@RequestParam("file") MultipartFile file,
                              @RequestParam("password") String password);
 
