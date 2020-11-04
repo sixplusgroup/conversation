@@ -17,12 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/order-new")
 public class OrderController {
 
-//    @Autowired
-//    private OrderNewService orderNewService;
-//
-//    @PostMapping("/uploadAndSync")
-//    public ResultData uploadAndSync(@RequestParam MultipartFile file, @RequestParam String password){
-//        return orderNewService.uploadAndSync(file, password);
-//    }
+    @Autowired
+    private OrderNewService orderNewService;
+
+    @PostMapping("/uploadAndSync")
+    public ResultData uploadAndSync(@RequestParam MultipartFile file, @RequestParam String password){
+        return orderNewService.uploadAndSync(file, password);
+    }
 
 }
