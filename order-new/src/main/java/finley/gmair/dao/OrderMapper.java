@@ -1,10 +1,12 @@
 package finley.gmair.dao;
 
+import finley.gmair.model.dto.OrderInfo;
 import finley.gmair.model.dto.TbOrderDTO;
 import finley.gmair.model.ordernew.Order;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -28,7 +30,7 @@ public interface OrderMapper {
 
     int updateByPrimaryKey(Order record);
 
-    List<Order> selectAll();
+    List<OrderInfo> selectOrderInfOrderByPayTime();
 
     /**
      * 将淘宝方的单个订单导入Order表中
