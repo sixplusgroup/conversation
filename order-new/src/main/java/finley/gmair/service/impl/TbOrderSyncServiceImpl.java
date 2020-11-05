@@ -114,8 +114,9 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
         }
         String sessionKey = tbUser.getSessionKey();
         Date lastUpdateTime = tbUser.getLastUpdateTime();
+        Date startSyncTime = tbUser.getStartSyncTime();
         Date now = new Date();
-        ImportResult importResult = importByModifiedByPage(lastUpdateTime, now, sessionKey);
+        ImportResult importResult = importByModifiedByPage(startSyncTime, lastUpdateTime, now, sessionKey);
         logger.info("incrementalImport, startTime:{}, endTime:{}, importResult:{}",
                 lastUpdateTime, now, JSON.toJSON(importResult));
 
@@ -151,7 +152,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             return resultData;
         }
         String sessionKey = tbUserList.get(0).getSessionKey();
-        ImportResult importResult = importByModifiedByPage(startModified, endModified, sessionKey);
+        ImportResult importResult = importByModifiedByPage(null, startModified, endModified, sessionKey);
         resultData.setData(importResult);
         return resultData;
     }
@@ -222,7 +223,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
         return new ImportResult(requestNum, requestSuccessNum, tradeNum, tradeHandleSuccessNum);
     }
 
-    private ImportResult importByModifiedByPage(Date startModified, Date endModified, String sessionKey) {
+    private ImportResult importByModifiedByPage(Date startSyncTime, Date startModified, Date endModified, String sessionKey) {
         int requestNum = 0, requestSuccessNum = 0, tradeNum = 0, tradeHandleSuccessNum = 0;
 
         TradesSoldIncrementGetRequest request = new TradesSoldIncrementGetRequest();
@@ -248,6 +249,10 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             }
             requestSuccessNum++;
             for (Trade trade : response.getTrades()) {
+                //增量同步限制下单时间不早于开始同步时间
+                if (startSyncTime != null && startSyncTime.after(trade.getCreated())) {
+                    continue;
+                }
                 tradeNum++;
                 ResultData resultData = tbOrderServiceImpl.handleTrade(trade);
                 if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
