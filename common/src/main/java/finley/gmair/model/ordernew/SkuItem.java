@@ -35,7 +35,7 @@ public class SkuItem extends Entity {
     /**
      * 是否为虚拟产品(默认为false)
      */
-    private Boolean virtual;
+    private Boolean fictitious;
 
     /**
      * 商品标题,不能超过60字节

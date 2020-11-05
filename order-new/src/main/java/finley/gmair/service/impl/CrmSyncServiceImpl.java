@@ -143,7 +143,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
                 res.setDescription("交易状态转换失败");
                 return res;
             }
-            newCrmOrder.setBillstat(String.valueOf(billStatus));
+            newCrmOrder.setBillstat(String.valueOf(billStatus.getValue()));
             JSONObject ans = crmAPIService.createNewOrder(
                     JSONObject.toJSON(newCrmOrder).toString());
             if (Objects.equals(ans.get("ResponseCode").toString(),
@@ -194,9 +194,9 @@ public class CrmSyncServiceImpl implements CrmSyncService {
         List<Boolean> resList;
         // 部分订单存在sku_id缺省，如果根据num_id贺sku_id查不到就仅根据num_id查询
         if (skuId == null || skuId.equals("")) {
-            resList = skuItemMapper.selectVirtualByNumIid(numId);
+            resList = skuItemMapper.selectFictitiousByNumIid(numId);
         } else {
-            resList = skuItemMapper.selectVirtualByNumIidAndSkuId(numId, skuId);
+            resList = skuItemMapper.selectFictitiousByNumIidAndSkuId(numId, skuId);
         }
 
         if (resList == null || resList.size() == 0) {

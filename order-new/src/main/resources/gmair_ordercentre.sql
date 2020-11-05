@@ -131,7 +131,7 @@ create table sku_item
     num_iid         varchar(45)          null comment '商品id',
     sku_id          varchar(45)          null comment '商品的最小库存单位Sku的id',
     machine_model   varchar(45)          null comment '机器型号 如: GM420',
-    virtual         tinyint(1)           null comment '是否为虚拟产品(默认为false)',
+    fictitious      tinyint(1) default 0 null comment '是否为虚拟产品(默认为false)',
     title           varchar(45)          null comment '商品标题,不能超过60字节',
     properties_name varchar(45)          null comment '属性名称',
     price           double               null comment '属于这个sku的商品的价格 取值范围:0-100000000;精确到2位小数;单位:元',
