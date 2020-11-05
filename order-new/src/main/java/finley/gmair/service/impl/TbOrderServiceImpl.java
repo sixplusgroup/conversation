@@ -131,7 +131,6 @@ public class TbOrderServiceImpl implements TbOrderService {
             trade.setMode(TradeMode.DEBLUR.getValue());
             tradeMapper.updateByPrimaryKey(trade);
 
-
             //step2:sync to crm
             // 只有去模糊化的交易mode==1，并且状态不是TRADE_CLOSED_BY_TAOBAO和WAIT_BUYER_PAY
             if (trade.getMode() == TradeMode.DEBLUR.getValue() &&
@@ -330,9 +329,9 @@ public class TbOrderServiceImpl implements TbOrderService {
         driftOrder.setDistrict(trade.getReceiverDistrict());
         driftOrder.setAddress(trade.getReceiverAddress());
         driftOrder.setStatus(TbTradeStatus.valueOf(trade.getStatus()).toDriftOrderStatus());
-        driftOrder.setCreateTime(trade.getCreated());
-        driftOrder.setCreateAt(new Timestamp(trade.getCreated().getTime()));
-        driftOrder.setExpectedDate(trade.getCreated());
+        driftOrder.setCreateTime(trade.getPayTime());
+        driftOrder.setCreateAt(new Timestamp(trade.getPayTime().getTime()));
+        driftOrder.setExpectedDate(trade.getPayTime());
         driftOrder.setTradeFrom(TradeFrom.TMALL);
 
         double totalPrice = Double.parseDouble(trade.getPostFee());
