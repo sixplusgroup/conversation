@@ -112,8 +112,8 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             newCrmOrder.setSl(String.valueOf(tmpOrder.getNum()));
             // 实收金额
             newCrmOrder.setSsje(String.valueOf(tmpOrder.getPayment()));
-            // 下单日期（格式为：年-月-日）
-            newCrmOrder.setXdrq(interTrade.getCreatedDate());
+            // 付款日期（格式为：年-月-日）
+            newCrmOrder.setXdrq(interTrade.getPayTimeStr());
             // 用户姓名
             newCrmOrder.setYhxm(interTrade.getReceiverName());
             // 联系方式
@@ -136,7 +136,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             if (Objects.equals(ans.get("ResponseCode").toString(),
                     ResponseCode.RESPONSE_ERROR.toString())) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                res.setDescription("新增交易到CRM失败");
+                res.setDescription(ans.get("Description").toString());
                 return res;
             }
         }
