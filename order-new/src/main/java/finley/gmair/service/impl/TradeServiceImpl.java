@@ -39,7 +39,10 @@ public class TradeServiceImpl implements TradeService {
     @Override
     public List<TbOrderExcel> selectAllTradeExcel() {
         List<Order> orderList = orderMapper.selectAll();
-        List<TbOrderExcel> excelList = orderList.stream().map(order -> {
+        List<TbOrderExcel> excelList = orderList.stream().filter(
+                order -> !(TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(order.getStatus()) ||
+                        TbTradeStatus.WAIT_BUYER_PAY.equals(order.getStatus())))
+                .map(order -> {
             Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
             String numIid = order.getNumIid() == null ? "" : order.getNumIid().toString();
             String skuId = order.getSkuId() == null ? "" : order.getSkuId().toString();
@@ -57,7 +60,7 @@ public class TradeServiceImpl implements TradeService {
             excel.setPropertyName(property);
             excel.setNum(order.getNum());
             excel.setPayment(order.getPayment());
-            excel.setCreated(trade.getCreated());
+            excel.setCreated(trade.getPayTime());
             excel.setStatus(TbTradeStatus.valueOf(order.getStatus()).getDesc());
             excel.setReceiverName(trade.getReceiverName());
             excel.setReceiverMobile(trade.getReceiverMobile());
