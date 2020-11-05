@@ -3,6 +3,7 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.taobao.api.domain.Order;
 import com.taobao.api.domain.Trade;
+import com.taobao.api.internal.util.StringUtils;
 import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.TradeMapper;
 import finley.gmair.model.drift.*;
@@ -28,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,6 +57,7 @@ public class TbOrderServiceImpl implements TbOrderService {
         ResultData rsp = new ResultData();
         SyncResult syncResult = new SyncResult();
         ResultData res = new ResultData();
+
         int tradeNum = tradeMapper.countByTid(trade.getTid());
         if (tradeNum == 0) {
             rsp = saveTrade(trade);
@@ -113,17 +116,13 @@ public class TbOrderServiceImpl implements TbOrderService {
         for (TbOrderPartInfo partInfo : list) {
             SyncResult syncResult = new SyncResult();
             //step1:update to db
-            List<finley.gmair.model.ordernew.Order> orderList = orderMapper.selectByOid(Long.parseLong(partInfo.getOrderId()));
-            if (CollectionUtils.isEmpty(orderList)) {
-                logger.error("handlePartInfo error, failed to find by oid:{}", partInfo.getOrderId());
+            List<finley.gmair.model.ordernew.Trade> tradeList = tradeMapper.selectByTid(Long.parseLong(partInfo.getOrderId()));
+            if (CollectionUtils.isEmpty(tradeList)) {
+                logger.error("handlePartInfo error, failed to find by tid:{}", partInfo.getOrderId());
+                //数据库中没有则不同步
                 continue;
             }
-            finley.gmair.model.ordernew.Order order = orderList.get(0);
-            finley.gmair.model.ordernew.Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
-            if (trade == null) {
-                logger.error("handlePartInfo error, failed to find by tradeId:{}, oid:{}, order:{}", order.getTradeId(), partInfo.getOrderId(), order);
-                continue;
-            }
+            finley.gmair.model.ordernew.Trade trade = tradeList.get(0);
             trade.setReceiverName(partInfo.getReceiver());
             trade.setReceiverMobile(partInfo.getPhone());
             String[] strs = partInfo.getDeliveryAddress().split("    ");
@@ -131,6 +130,7 @@ public class TbOrderServiceImpl implements TbOrderService {
             trade.setReceiverAddress(address);
             trade.setMode(TradeMode.DEBLUR.getValue());
             tradeMapper.updateByPrimaryKey(trade);
+
 
             //step2:sync to crm
             // 只有去模糊化的交易mode==1，并且状态不是TRADE_CLOSED_BY_TAOBAO和WAIT_BUYER_PAY
@@ -143,30 +143,37 @@ public class TbOrderServiceImpl implements TbOrderService {
                     tradeMapper.updateByPrimaryKey(trade);
                     syncResult.setSyncToCRMSuccess(true);
                 } else {
-                    logger.error("syncOrderPartToCrm error, response:{}", resultData1);
+                    logger.error("syncOrderPartToCrm error, response:{}, tid:{}", resultData1, trade.getTid());
                 }
             }
 
             //step3:sync to drift
-            List<finley.gmair.model.ordernew.Order> orderList2 = orderMapper.selectAllByTradeId(order.getTradeId());
-            boolean syncToDrift = DRIFT_NUM_IID.equals(trade.getNumIid());
+            List<finley.gmair.model.ordernew.Order> orderList2 = orderMapper.selectAllByTradeId(trade.getTradeId());
+            boolean syncToDrift = false;
+            if (DRIFT_NUM_IID.equals(trade.getNumIid())) {
+                syncToDrift = true;
+            }
             for (finley.gmair.model.ordernew.Order tempOrder : orderList2) {
                 if (DRIFT_NUM_IID.equals(tempOrder.getNumIid())) {
                     syncToDrift = true;
                     break;
                 }
             }
+            if (TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(TbTradeStatus.valueOf(trade.getStatus()))
+                    || TbTradeStatus.WAIT_BUYER_PAY.equals(TbTradeStatus.valueOf(trade.getStatus()))) {
+                syncToDrift = false;
+            }
             if (syncToDrift) {
                 syncResult.setSyncToDrift(true);
                 ResultData resultData2 = driftOrderSyncService.syncOrderPartInfoToDrift(trade.getTid().toString(), trade.getReceiverName(),
                         trade.getReceiverMobile(), trade.getReceiverAddress());
                 if (resultData2.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    logger.error("syncOrderPartToDrift error, response:{}", resultData2);
+                    logger.error("syncOrderPartToDrift error, response:{}, tid:{}", resultData2, trade.getTid());
                 } else {
                     syncResult.setSyncToDriftSuccess(true);
                 }
             }
-            logger.info("handlePartInfo success, response:{}", syncResult);
+            logger.info("handlePartInfo success, response:{}, tid:{}", syncResult, trade.getTid());
         }
         return new ResultData();
     }

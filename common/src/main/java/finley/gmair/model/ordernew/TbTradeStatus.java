@@ -56,7 +56,7 @@ public enum TbTradeStatus implements EnumValue {
             case WAIT_BUYER_PAY:
                 return DriftOrderStatus.APPLIED;
             case WAIT_SELLER_SEND_GOODS:
-                return DriftOrderStatus.CONFIRMED;
+                return DriftOrderStatus.PAYED;
             case SELLER_CONSIGNED_PART:
                 return DriftOrderStatus.CONFIRMED;
             case WAIT_BUYER_CONFIRM_GOODS:

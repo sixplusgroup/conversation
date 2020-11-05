@@ -39,43 +39,42 @@ public class TradeServiceImpl implements TradeService {
     @Override
     public List<TbOrderExcel> selectAllTradeExcel() {
         List<Order> orderList = orderMapper.selectAll();
-        List<TbOrderExcel> excelList = orderList.stream().filter(
-                order -> !(TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(order.getStatus()) ||
-                        TbTradeStatus.WAIT_BUYER_PAY.equals(order.getStatus())))
+        List<TbOrderExcel> excelList = orderList.stream()
                 .map(order -> {
-            Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
-            String numIid = order.getNumIid() == null ? "" : order.getNumIid().toString();
-            String skuId = order.getSkuId() == null ? "" : order.getSkuId().toString();
-            List<String> modelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numIid, skuId);
-            if (CollectionUtils.isEmpty(modelList)) {
-                modelList = skuItemMapper.selectMachineModelByNumIid(numIid);
-            }
-            String machineModel = CollectionUtils.isEmpty(modelList) ? "" : modelList.get(0);
-            TbOrderExcel excel = new TbOrderExcel();
-            excel.setTradeFrom(TradeFrom.TMALL.getDesc());
-            excel.setTid(trade.getTid().toString());
-            excel.setMachineModel(machineModel);
-            String skuPropertyName = order.getSkuPropertiesName();
-            String property = skuPropertyName != null && skuPropertyName.length() > 5 ? skuPropertyName.substring(5) : "";
-            excel.setPropertyName(property);
-            excel.setNum(order.getNum());
-            excel.setPayment(order.getPayment());
-            excel.setCreated(trade.getPayTime());
-            excel.setStatus(TbTradeStatus.valueOf(order.getStatus()).getDesc());
-            excel.setReceiverName(trade.getReceiverName());
-            excel.setReceiverMobile(trade.getReceiverMobile());
-            excel.setReceiverCity(trade.getReceiverCity());
-            excel.setReceiverAddress(trade.getReceiverState() + trade.getReceiverCity()
-                    + trade.getReceiverDistrict() + trade.getReceiverAddress());
-            return excel;
-        }).sorted((o1, o2) -> {
-            if (o1.getCreated().before(o2.getCreated())) {
+                    Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
+                    String numIid = order.getNumIid() == null ? "" : order.getNumIid().toString();
+                    String skuId = order.getSkuId() == null ? "" : order.getSkuId().toString();
+                    List<String> modelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numIid, skuId);
+                    if (CollectionUtils.isEmpty(modelList)) {
+                        modelList = skuItemMapper.selectMachineModelByNumIid(numIid);
+                    }
+                    String machineModel = CollectionUtils.isEmpty(modelList) ? "" : modelList.get(0);
+                    TbOrderExcel excel = new TbOrderExcel();
+                    excel.setTradeFrom(TradeFrom.TMALL.getDesc());
+                    excel.setTid(trade.getTid().toString());
+                    excel.setMachineModel(machineModel);
+                    String skuPropertyName = order.getSkuPropertiesName();
+                    String property = skuPropertyName != null && skuPropertyName.length() > 5 ? skuPropertyName.substring(5) : "";
+                    excel.setPropertyName(property);
+                    excel.setNum(order.getNum());
+                    excel.setPayment(order.getPayment());
+                    excel.setCreated(trade.getCreated());
+                    excel.setStatus(TbTradeStatus.valueOf(order.getStatus()).getDesc());
+                    excel.setReceiverName(trade.getReceiverName());
+                    excel.setReceiverMobile(trade.getReceiverMobile());
+                    excel.setReceiverCity(trade.getReceiverCity());
+                    excel.setReceiverAddress(trade.getReceiverState() + trade.getReceiverCity()
+                            + trade.getReceiverDistrict() + trade.getReceiverAddress());
+                    return excel;
+                }).collect(Collectors.toList());
+        excelList.sort((o1, o2) -> {
+            if ((o1.getCreated()).before(o2.getCreated())) {
                 return -1;
             } else if (o1.getCreated().after(o2.getCreated())) {
                 return 1;
             }
             return 0;
-        }).collect(Collectors.toList());
+        });
         return excelList;
     }
 
