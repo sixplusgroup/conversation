@@ -71,35 +71,6 @@ public enum TbTradeStatus implements EnumValue {
     }
 
     /**
-     * 淘宝订单状态转换为Crm订单状态
-     */
-    public CrmOrderStatus toCrmOrderStatus() {
-        CrmOrderStatus crmRes;
-        switch (this) {
-            case WAIT_SELLER_SEND_GOODS:
-                // 未处理的初始状态
-                crmRes = CrmOrderStatus.UNTREATED;
-                break;
-            case SELLER_CONSIGNED_PART:
-            case WAIT_BUYER_CONFIRM_GOODS:
-                // 部分发货、等待买家确认收货 -> 已发货运输中
-                crmRes = CrmOrderStatus.DELIVERED_IN_TRANSIT;
-                break;
-            case TRADE_CLOSED:
-                // 交易关闭（退款流程的最终状态）
-                crmRes = CrmOrderStatus.GOODS_RETURNED;
-                break;
-            case TRADE_FINISHED:
-                // 交易完成（正常购物流程的最终状态）
-                crmRes = CrmOrderStatus.ALL_INSTALLATION_COMPLETED;
-                break;
-            default:
-                crmRes = null;
-        }
-        return crmRes;
-    }
-
-    /**
      * 判断是否能够推送给CRM系统（如果是被taobao关闭或者未支付 -> 返回false）
      */
     public boolean judgeCrmAdd() {
