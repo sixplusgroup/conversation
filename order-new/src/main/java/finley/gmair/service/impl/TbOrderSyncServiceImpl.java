@@ -206,14 +206,16 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                 logger.error("failed to get response, response:{}", JSON.toJSONString(response));
             }
             requestSuccessNum++;
-            for (Trade trade : response.getTrades()) {
-                tradeNum++;
-                ResultData resultData = tbOrderServiceImpl.handleTrade(trade);
-                if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
-                } else {
-                    logger.info("handle trade success, response:{}", JSON.toJSONString(resultData));
-                    tradeHandleSuccessNum++;
+            if (!CollectionUtils.isEmpty(response.getTrades())) {
+                for (Trade trade : response.getTrades()) {
+                    tradeNum++;
+                    ResultData resultData = tbOrderServiceImpl.handleTrade(trade);
+                    if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
+                    } else {
+                        logger.info("handle trade success, response:{}", JSON.toJSONString(resultData));
+                        tradeHandleSuccessNum++;
+                    }
                 }
             }
             if (!response.getHasNext()) {
@@ -248,18 +250,20 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                 logger.error("failed to get response, response:{}", JSON.toJSONString(response));
             }
             requestSuccessNum++;
-            for (Trade trade : response.getTrades()) {
-                //增量同步限制下单时间不早于开始同步时间
-                if (startSyncTime != null && startSyncTime.after(trade.getCreated())) {
-                    continue;
-                }
-                tradeNum++;
-                ResultData resultData = tbOrderServiceImpl.handleTrade(trade);
-                if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
-                } else {
-                    logger.info("handle trade success, response:{}", JSON.toJSONString(resultData));
-                    tradeHandleSuccessNum++;
+            if (!CollectionUtils.isEmpty(response.getTrades())) {
+                for (Trade trade : response.getTrades()) {
+                    //增量同步限制下单时间不早于开始同步时间
+                    if (startSyncTime != null && startSyncTime.after(trade.getCreated())) {
+                        continue;
+                    }
+                    tradeNum++;
+                    ResultData resultData = tbOrderServiceImpl.handleTrade(trade);
+                    if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
+                    } else {
+                        logger.info("handle trade success, response:{}", JSON.toJSONString(resultData));
+                        tradeHandleSuccessNum++;
+                    }
                 }
             }
             if (!response.getHasNext()) {
