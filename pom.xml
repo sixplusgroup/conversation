@@ -22,6 +22,7 @@
         <module>location</module>
         <module>ribbon-server</module>
         <module>order</module>
+        <module>order-new</module>
         <module>airquality</module>
         <module>wechat</module>
         <module>core</module>

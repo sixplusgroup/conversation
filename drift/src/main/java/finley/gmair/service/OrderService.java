@@ -19,6 +19,8 @@ public interface OrderService {
 
     ResultData createDriftOrder(DriftOrder order);
 
+    ResultData createDriftOrderWithId(DriftOrder order);
+
     ResultData updateDriftOrder(DriftOrder order);
 
     ResultData deleteDriftOrder(String orderId);

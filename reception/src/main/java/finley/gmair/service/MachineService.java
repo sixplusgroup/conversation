@@ -190,4 +190,7 @@ public interface MachineService {
 
     @GetMapping("/machine/model/getMaterials")
     ResultData getMaterials(@RequestParam("modelId") String modelId);
+
+    @GetMapping("/machine/text")
+    ResultData getText(@RequestParam("textType") String textType);
 }

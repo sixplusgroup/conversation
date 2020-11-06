@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @date 2020/10/26 0026 11:03
  * @description Crm系统提供的接口
  **/
-@FeignClient(url = "", name = "crm")
+@FeignClient(url = "${crm.url}", name = "crm")
 public interface CrmAPIService {
 
     /**
