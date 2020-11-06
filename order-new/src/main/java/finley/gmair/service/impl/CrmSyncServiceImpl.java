@@ -4,6 +4,7 @@ import com.alibaba.excel.util.CollectionUtils;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.SkuItemMapper;
+import finley.gmair.dao.TradeMapper;
 import finley.gmair.model.dto.CrmOrderDTO;
 import finley.gmair.model.dto.CrmStatusDTO;
 import finley.gmair.model.ordernew.*;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +39,12 @@ public class CrmSyncServiceImpl implements CrmSyncService {
 
     @Autowired
     private CrmAPIService crmAPIService;
+
+   /* @Resource
+    private CrmLocalAPIService crmLocalAPIService;*/
+
+    @Resource
+    private TradeMapper tradeMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -153,6 +161,9 @@ public class CrmSyncServiceImpl implements CrmSyncService {
                 return res;
             }
         }
+        // 将交易的mode更新为已同步到CRM
+        tradeMapper.updateModeByTid(TradeMode.PUSHED_TO_CRM.getValue(), interTrade.getTid());
+
         res.setResponseCode(ResponseCode.RESPONSE_OK);
         res.setDescription("新增交易到CRM成功");
         return res;
@@ -165,14 +176,15 @@ public class CrmSyncServiceImpl implements CrmSyncService {
      * @description 查询机器型号
      **/
     private String getMachineModel(Order order) {
-        String numId = String.valueOf(order.getNumIid());
-        String skuId = String.valueOf(order.getSkuId());
         List<String> machineModelList;
         // 部分订单存在sku_id缺省，如果根据num_id贺sku_id查不到就仅根据num_id查询
-        if (skuId == null || skuId.equals("")) {
-            machineModelList = skuItemMapper.selectMachineModelByNumIid(numId);
+        if (order.getSkuId() == null) {
+            machineModelList = skuItemMapper.selectMachineModelByNumIid(
+                    String.valueOf(order.getNumIid()));
         } else {
-            machineModelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numId, skuId);
+            machineModelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(
+                    String.valueOf(order.getNumIid()),
+                    String.valueOf(order.getSkuId()));
         }
 
         if (machineModelList == null || machineModelList.size() == 0) {
@@ -189,14 +201,15 @@ public class CrmSyncServiceImpl implements CrmSyncService {
      * @description 判断是不是虚拟订单，是则返回true
      */
     private boolean isVirtualOrder(Order order) {
-        String numId = String.valueOf(order.getNumIid());
-        String skuId = String.valueOf(order.getSkuId());
         List<Boolean> resList;
         // 部分订单存在sku_id缺省，如果根据num_id贺sku_id查不到就仅根据num_id查询
-        if (skuId == null || skuId.equals("")) {
-            resList = skuItemMapper.selectFictitiousByNumIid(numId);
+        if (order.getSkuId() == null) {
+            resList = skuItemMapper.selectFictitiousByNumIid(
+                    String.valueOf(order.getNumIid()));
         } else {
-            resList = skuItemMapper.selectFictitiousByNumIidAndSkuId(numId, skuId);
+            resList = skuItemMapper.selectFictitiousByNumIidAndSkuId(
+                    String.valueOf(order.getNumIid()),
+                    String.valueOf(order.getSkuId()));
         }
 
         if (resList == null || resList.size() == 0) {
