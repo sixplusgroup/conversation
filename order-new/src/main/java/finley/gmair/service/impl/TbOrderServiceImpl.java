@@ -128,6 +128,12 @@ public class TbOrderServiceImpl implements TbOrderService {
             String[] strs = partInfo.getDeliveryAddress().split("    ");
             String address = strs.length > 1 ? strs[1] : partInfo.getDeliveryAddress();
             trade.setReceiverAddress(address);
+
+            // 防止excel重复导入，需排除原已经导入的订单项（mode==2)
+            if (trade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
+                logger.error("handlePartInfo error, excel repeat import, tid:{}", trade.getTid());
+                continue;
+            }
             trade.setMode(TradeMode.DEBLUR.getValue());
             tradeMapper.updateByPrimaryKey(trade);
 
