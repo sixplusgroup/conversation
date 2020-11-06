@@ -1,3 +1,4 @@
+import finley.gmair.controller.CityAirQualityController;
 import finley.gmair.quality.AirQualityApplication;
 import finley.gmair.service.AirQualityStatisticService;
 import finley.gmair.service.MonitorStationCrawler;
@@ -20,6 +21,9 @@ public class AirQualityTest {
     @Autowired
     private AirQualityStatisticService airQualityStatisticService;
 
+    @Autowired
+    private CityAirQualityController cityAirQualityController;
+
     @Test
     public void test1() {
         airQualityStatisticService.handleAirQualityDailyStatistic();
@@ -36,5 +40,10 @@ public class AirQualityTest {
         ResultData response = airQualityStatisticService.fetchAirQualityDailyStatistic(condition);
 
         System.out.println(response);
+    }
+
+    @Test
+    public void test3() {
+        cityAirQualityController.fetchLastNDayData("320100",54);
     }
 }
