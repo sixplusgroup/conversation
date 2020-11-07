@@ -98,9 +98,11 @@ public class AssignController {
         String detail = form.getModel().trim();
         String source = form.getSource().trim();
         String type = form.getType();
+        if (!type.equals("换机")){
+            type = "安裝";
+        }
         Assign assign;
         if (!StringUtils.isEmpty(form.getCompany())) {
-            System.out.println("???");
             assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim(),type);
         } else {
             assign = new Assign(consignee, phone, address, detail, source, form.getDescription(),null,type);
