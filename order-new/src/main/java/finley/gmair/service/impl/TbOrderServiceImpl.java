@@ -157,6 +157,15 @@ public class TbOrderServiceImpl implements TbOrderService {
                 } else {
                     logger.error("syncOrderPartToCrm error, response:{}, tid:{}", resultData1, trade.getTid());
                 }
+                //如果订单已同步至crm, 则向crm更新订单状态
+            } else if (trade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
+                syncResult.setSyncToCRM(true);
+                ResultData rsp1 = crmSyncService.updateOrderStatus(trade);
+                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("syncOrderPartToCrm error, response:{}", rsp1);
+                } else {
+                    syncResult.setSyncToCRMSuccess(true);
+                }
             }
 
             //step3:sync to drift
