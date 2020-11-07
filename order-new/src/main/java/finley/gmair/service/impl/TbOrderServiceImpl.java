@@ -51,11 +51,11 @@ public class TbOrderServiceImpl implements TbOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultData handleTrade(Trade trade) {
-        //step1：save trade to db or update the existed trades（including the orders）
         ResultData rsp = new ResultData();
         SyncResult syncResult = new SyncResult();
         ResultData res = new ResultData();
 
+        //step1：save trade to db or update the existed trades（including the orders）
         int tradeNum = tradeMapper.countByTid(trade.getTid());
         if (tradeNum == 0) {
             rsp = saveTrade(trade);
@@ -68,13 +68,23 @@ public class TbOrderServiceImpl implements TbOrderService {
             res.setData(trade);
             return res;
         }
-        //step2：synchronize trade to drift or crm
+        //step2：synchronize trade to crm
         if (tradeNum == 1) {
-            // 仅同步交易状态变更到CRM系统
             finley.gmair.model.ordernew.Trade crmTrade =
                     tradeMapper.selectByTid(trade.getTid()).get(0);
-            // 只有去模糊化的交易mode==1才同步
-            if (crmTrade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
+            // 去模糊化的交易mode==1则同步新订单到crm
+            if (crmTrade.getMode() == TradeMode.DEBLUR.getValue()) {
+                syncResult.setSyncToCRM(true);
+                ResultData rsp1 = crmSyncService.createNewOrder(crmTrade);
+                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    logger.error("syncOrderToCrm error, response:{}", rsp1);
+                } else {
+                    tradeMapper.updateModeByTid(TradeMode.PUSHED_TO_CRM.getValue(), trade.getTid());
+                    syncResult.setSyncToCRMSuccess(true);
+                }
+            }
+            // 已经推送到crm的交易mode==2则更新订单状态到crm
+            else if (crmTrade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
                 syncResult.setSyncToCRM(true);
                 ResultData rsp1 = crmSyncService.updateOrderStatus(crmTrade);
                 if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -121,6 +131,7 @@ public class TbOrderServiceImpl implements TbOrderService {
                 continue;
             }
             finley.gmair.model.ordernew.Trade trade = tradeList.get(0);
+            //如果订单未去模糊化，则去模糊化并更新mode，否则不更新
             if (trade.getMode() == TradeMode.INITIAL.getValue()) {
                 trade.setReceiverName(partInfo.getReceiver());
                 trade.setReceiverMobile(partInfo.getPhone());
@@ -133,14 +144,17 @@ public class TbOrderServiceImpl implements TbOrderService {
 
 
             //step2:sync to crm
-            syncResult.setSyncToCRM(true);
-            ResultData resultData1 = crmSyncService.createNewOrder(trade);
-            if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
-                tradeMapper.updateByPrimaryKey(trade);
-                syncResult.setSyncToCRMSuccess(true);
-            } else {
-                logger.error("syncOrderPartToCrm error, response:{}, tid:{}", resultData1, trade.getTid());
+            //如果订单已去模糊化且未同步，则向crm同步新订单
+            if (trade.getMode() == TradeMode.DEBLUR.getValue()) {
+                syncResult.setSyncToCRM(true);
+                ResultData resultData1 = crmSyncService.createNewOrder(trade);
+                if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
+                    tradeMapper.updateByPrimaryKey(trade);
+                    syncResult.setSyncToCRMSuccess(true);
+                } else {
+                    logger.error("syncOrderPartToCrm error, response:{}, tid:{}", resultData1, trade.getTid());
+                }
             }
 
             //step3:sync to drift
