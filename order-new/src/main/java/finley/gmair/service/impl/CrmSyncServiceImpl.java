@@ -161,8 +161,6 @@ public class CrmSyncServiceImpl implements CrmSyncService {
                 return res;
             }
         }
-        // 将交易的mode更新为已同步到CRM
-        tradeMapper.updateModeByTid(TradeMode.PUSHED_TO_CRM.getValue(), interTrade.getTid());
 
         res.setResponseCode(ResponseCode.RESPONSE_OK);
         res.setDescription("新增交易到CRM成功");

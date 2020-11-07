@@ -3,7 +3,6 @@ package finley.gmair.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.taobao.api.domain.Order;
 import com.taobao.api.domain.Trade;
-import com.taobao.api.internal.util.StringUtils;
 import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.TradeMapper;
 import finley.gmair.model.drift.*;
@@ -29,7 +28,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -123,19 +121,16 @@ public class TbOrderServiceImpl implements TbOrderService {
                 continue;
             }
             finley.gmair.model.ordernew.Trade trade = tradeList.get(0);
-            trade.setReceiverName(partInfo.getReceiver());
-            trade.setReceiverMobile(partInfo.getPhone());
-            String[] strs = partInfo.getDeliveryAddress().split("    ");
-            String address = strs.length > 1 ? strs[1] : partInfo.getDeliveryAddress();
-            trade.setReceiverAddress(address);
-
-            // 防止excel重复导入，需排除原已经导入的订单项（mode==2)
-            if (trade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
-                logger.error("handlePartInfo error, excel repeat import, tid:{}", trade.getTid());
-                continue;
+            if (trade.getMode() == TradeMode.INITIAL.getValue()) {
+                trade.setReceiverName(partInfo.getReceiver());
+                trade.setReceiverMobile(partInfo.getPhone());
+                String[] strs = partInfo.getDeliveryAddress().split("    ");
+                String address = strs.length > 1 ? strs[1] : partInfo.getDeliveryAddress();
+                trade.setReceiverAddress(address);
+                trade.setMode(TradeMode.DEBLUR.getValue());
+                tradeMapper.updateByPrimaryKey(trade);
             }
-            trade.setMode(TradeMode.DEBLUR.getValue());
-            tradeMapper.updateByPrimaryKey(trade);
+
 
             //step2:sync to crm
             syncResult.setSyncToCRM(true);
