@@ -73,7 +73,8 @@ public class TbOrderServiceImpl implements TbOrderService {
             finley.gmair.model.ordernew.Trade crmTrade =
                     tradeMapper.selectByTid(trade.getTid()).get(0);
             // 去模糊化的交易mode==1则同步新订单到crm
-            if (crmTrade.getMode() == TradeMode.DEBLUR.getValue()) {
+            if (crmTrade.getMode() == TradeMode.DEBLUR.getValue()
+                    && TbTradeStatus.valueOf(trade.getStatus()).judgeCrmAdd()) {
                 syncResult.setSyncToCRM(true);
                 ResultData rsp1 = crmSyncService.createNewOrder(crmTrade);
                 if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -145,7 +146,8 @@ public class TbOrderServiceImpl implements TbOrderService {
 
             //step2:sync to crm
             //如果订单已去模糊化且未同步，则向crm同步新订单
-            if (trade.getMode() == TradeMode.DEBLUR.getValue()) {
+            if (trade.getMode() == TradeMode.DEBLUR.getValue()
+                    && TbTradeStatus.valueOf(trade.getStatus()).judgeCrmAdd()) {
                 syncResult.setSyncToCRM(true);
                 ResultData resultData1 = crmSyncService.createNewOrder(trade);
                 if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
