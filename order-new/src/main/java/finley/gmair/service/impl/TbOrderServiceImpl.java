@@ -128,22 +128,24 @@ public class TbOrderServiceImpl implements TbOrderService {
             String[] strs = partInfo.getDeliveryAddress().split("    ");
             String address = strs.length > 1 ? strs[1] : partInfo.getDeliveryAddress();
             trade.setReceiverAddress(address);
+
+            // 防止excel重复导入，需排除原已经导入的订单项（mode==2)
+            if (trade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
+                logger.error("handlePartInfo error, excel repeat import, tid:{}", trade.getTid());
+                continue;
+            }
             trade.setMode(TradeMode.DEBLUR.getValue());
             tradeMapper.updateByPrimaryKey(trade);
 
             //step2:sync to crm
-            // 只有去模糊化的交易mode==1，并且状态不是TRADE_CLOSED_BY_TAOBAO和WAIT_BUYER_PAY
-            if (trade.getMode() == TradeMode.DEBLUR.getValue() &&
-                    TbTradeStatus.valueOf(trade.getStatus()).judgeCrmAdd()) {
-                syncResult.setSyncToCRM(true);
-                ResultData resultData1 = crmSyncService.createNewOrder(trade);
-                if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
-                    tradeMapper.updateByPrimaryKey(trade);
-                    syncResult.setSyncToCRMSuccess(true);
-                } else {
-                    logger.error("syncOrderPartToCrm error, response:{}, tid:{}", resultData1, trade.getTid());
-                }
+            syncResult.setSyncToCRM(true);
+            ResultData resultData1 = crmSyncService.createNewOrder(trade);
+            if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                trade.setMode(TradeMode.PUSHED_TO_CRM.getValue());
+                tradeMapper.updateByPrimaryKey(trade);
+                syncResult.setSyncToCRMSuccess(true);
+            } else {
+                logger.error("syncOrderPartToCrm error, response:{}, tid:{}", resultData1, trade.getTid());
             }
 
             //step3:sync to drift
