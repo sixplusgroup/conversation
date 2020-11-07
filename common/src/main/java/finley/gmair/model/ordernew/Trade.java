@@ -292,8 +292,16 @@ public class Trade {
     /**
      * 获取交易创建时间（年-月-日格式的字符串）
      */
-    public String getCreatedDate() {
+    public String getCreatedTimeStr() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(this.created);
+    }
+
+    /**
+     * 获取买家付款时间
+     */
+    public String getPayTimeStr() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(this.payTime);
     }
 }

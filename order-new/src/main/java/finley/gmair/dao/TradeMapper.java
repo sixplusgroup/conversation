@@ -51,9 +51,13 @@ public interface TradeMapper {
             @Param("tradeId") String tradeId);
 
     /**
-     * 根据更新交易状态
+     * 根据tid更新交易状态
      */
     int updateStatusByTid(
             @Param("updatedStatus") String updatedStatus,
+            @Param("tid") Long tid);
+
+    int updateModeByTid(
+            @Param("updatedMode") Integer updatedMode,
             @Param("tid") Long tid);
 }

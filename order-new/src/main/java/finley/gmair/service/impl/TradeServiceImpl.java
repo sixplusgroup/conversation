@@ -1,17 +1,16 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.OrderMapper;
-import finley.gmair.dao.SkuItemMapper;
 import finley.gmair.dao.TradeMapper;
+import finley.gmair.model.dto.OrderInfo;
 import finley.gmair.model.dto.TbOrderExcel;
-import finley.gmair.model.ordernew.Order;
 import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.Trade;
 import finley.gmair.model.ordernew.TradeFrom;
+import finley.gmair.service.SkuItemService;
 import finley.gmair.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +28,7 @@ public class TradeServiceImpl implements TradeService {
     @Autowired
     OrderMapper orderMapper;
     @Autowired
-    SkuItemMapper skuItemMapper;
+    SkuItemService skuItemService;
 
     @Override
     public List<Trade> selectAll() {
@@ -38,42 +37,30 @@ public class TradeServiceImpl implements TradeService {
 
     @Override
     public List<TbOrderExcel> selectAllTradeExcel() {
-        List<Order> orderList = orderMapper.selectAll();
-        List<TbOrderExcel> excelList = orderList.stream().map(order -> {
-            Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
-            String numIid = order.getNumIid() == null ? "" : order.getNumIid().toString();
-            String skuId = order.getSkuId() == null ? "" : order.getSkuId().toString();
-            List<String> modelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numIid, skuId);
-            if (CollectionUtils.isEmpty(modelList)) {
-                modelList = skuItemMapper.selectMachineModelByNumIid(numIid);
-            }
-            String machineModel = CollectionUtils.isEmpty(modelList) ? "" : modelList.get(0);
+        List<OrderInfo> orderList = orderMapper.selectOrderInfOrderByPayTime();
+
+        return orderList.stream().map(o -> {
             TbOrderExcel excel = new TbOrderExcel();
             excel.setTradeFrom(TradeFrom.TMALL.getDesc());
-            excel.setTid(trade.getTid().toString());
+            excel.setTid(o.getTid().toString());
+            String skuPropertiesName = o.getSkuPropertiesName();
+            String property = skuPropertiesName != null && skuPropertiesName.length() > 5 ? skuPropertiesName.substring(5) : "";
+            String numIid = o.getNumIid() == null ? "" : o.getNumIid().toString();
+            String skuId = o.getSkuId() == null ? "" : o.getSkuId().toString();
+            String machineModel = skuItemService.selectMachineModelByNumIidAndSkuId(numIid, skuId);
             excel.setMachineModel(machineModel);
-            String skuPropertyName = order.getSkuPropertiesName();
-            String property = skuPropertyName != null && skuPropertyName.length() > 5 ? skuPropertyName.substring(5) : "";
             excel.setPropertyName(property);
-            excel.setNum(order.getNum());
-            excel.setPayment(order.getPayment());
-            excel.setCreated(trade.getCreated());
-            excel.setStatus(TbTradeStatus.valueOf(order.getStatus()).getDesc());
-            excel.setReceiverName(trade.getReceiverName());
-            excel.setReceiverMobile(trade.getReceiverMobile());
-            excel.setReceiverCity(trade.getReceiverCity());
-            excel.setReceiverAddress(trade.getReceiverState() + trade.getReceiverCity()
-                    + trade.getReceiverDistrict() + trade.getReceiverAddress());
+            excel.setNum(o.getNum());
+            excel.setPayment(o.getPayment());
+            excel.setCreated(o.getPayTime());
+            excel.setStatus(TbTradeStatus.valueOf(o.getStatus()).getDesc());
+            excel.setReceiverName(o.getReceiverName());
+            excel.setReceiverMobile(o.getReceiverMobile());
+            excel.setReceiverCity(o.getReceiverCity());
+            excel.setReceiverAddress(o.getReceiverState() + o.getReceiverCity()
+                    + o.getReceiverDistrict() + o.getReceiverAddress());
             return excel;
-        }).sorted((o1, o2) -> {
-            if (o1.getCreated().before(o2.getCreated())) {
-                return -1;
-            } else if (o1.getCreated().after(o2.getCreated())) {
-                return 1;
-            }
-            return 0;
         }).collect(Collectors.toList());
-        return excelList;
     }
 
 }

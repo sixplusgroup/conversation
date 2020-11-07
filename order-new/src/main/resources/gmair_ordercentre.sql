@@ -57,6 +57,7 @@ FRONT_PAID_FINAL_PAID(定金和尾款都付)',
     constraint trade_trade_id_uindex
         unique (trade_id)
 )
+DEFAULT CHARSET=utf8
     comment '主订单表';
 
 alter table trade
@@ -115,6 +116,7 @@ SUCCESS(退款成功)',
     constraint order_order_id_uindex
         unique (order_id)
 )
+    DEFAULT CHARSET=utf8
     comment '订单表';
 create index trade_id
     on `order` (trade_id);
@@ -129,13 +131,16 @@ create table sku_item
     num_iid         varchar(45)          null comment '商品id',
     sku_id          varchar(45)          null comment '商品的最小库存单位Sku的id',
     machine_model   varchar(45)          null comment '机器型号 如: GM420',
+    fictitious      tinyint(1) default 0 null comment '是否为虚拟产品(默认为false)',
     title           varchar(45)          null comment '商品标题,不能超过60字节',
     properties_name varchar(45)          null comment '属性名称',
     price           double               null comment '属于这个sku的商品的价格 取值范围:0-100000000;精确到2位小数;单位:元',
     block_flag      tinyint(1) default 0 null,
     create_at       datetime             null
 )
+    DEFAULT CHARSET=utf8
     comment '商品项表';
+
 -- ----------------------------
 -- Records of sku_item
 -- ----------------------------
@@ -185,6 +190,7 @@ create table tb_user
     block_flag       tinyint(1)   null,
     create_at        datetime     null
 )
+    DEFAULT CHARSET=utf8
     comment '淘宝卖家用户表';
 
 
