@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,6 +45,8 @@ import java.io.File;
 @PropertySource("classpath:management.properties")
 public class InstallController {
     private Logger logger = LoggerFactory.getLogger(InstallController.class);
+
+    private static String CREATE_TEMPLATE_NAME = "果麦新风安装任务模板";
 
     @Autowired
     private InstallService installService;
@@ -618,5 +621,62 @@ public class InstallController {
     @GetMapping("/assign/company/list")
     ResultData getCompanyList(){
         return installService.getCompanyList();
+    }
+
+    /**
+     *
+     * @description:下载创建工单模板
+     * @param: HttpServletResponse[response]
+     * @return: ResultData
+     * @auther: CK
+     * @date: 2020/11/8 15:13
+     */
+    @GetMapping("/assign/create/template/download")
+    public ResultData templateDownloadCreate(HttpServletResponse response) throws IOException {
+        ResultData resultData = new ResultData();
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 这里URLEncoder.encode可以防止中文乱码
+        String fileName = URLEncoder.encode(CREATE_TEMPLATE_NAME, "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+
+        String filePath = "/template/" + CREATE_TEMPLATE_NAME + ".xlsx";
+//        String filePath = "E://"+"test.xlsx";
+        File file = new File(filePath);
+        //判断文件存在
+        if (!file.exists()){
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("文件不存在");
+            logger.error("创建工单模板文件不存在");
+            return resultData;
+        }
+
+        BufferedInputStream inputStream = null;
+        BufferedOutputStream outputStream = null;
+        try {
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+            outputStream = new BufferedOutputStream(response.getOutputStream());
+            byte[] buffer = new byte[2048];
+            int bytesRead;
+            while (-1 != (bytesRead = inputStream.read(buffer, 0, buffer.length))) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return resultData;
     }
 }
