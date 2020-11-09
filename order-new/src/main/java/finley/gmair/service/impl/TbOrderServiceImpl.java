@@ -68,45 +68,45 @@ public class TbOrderServiceImpl implements TbOrderService {
             res.setData(trade);
             return res;
         }
-        //step2：synchronize trade to crm
-        if (tradeNum == 1) {
-            finley.gmair.model.ordernew.Trade crmTrade =
-                    tradeMapper.selectByTid(trade.getTid()).get(0);
-            // 去模糊化的交易mode==1则同步新订单到crm
-            if (crmTrade.getMode() == TradeMode.DEBLUR.getValue()
-                    && TbTradeStatus.valueOf(trade.getStatus()).judgeCrmAdd()) {
-                syncResult.setSyncToCRM(true);
-                ResultData rsp1 = crmSyncService.createNewOrder(crmTrade);
-                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    logger.error("syncOrderToCrm error, response:{}", rsp1);
-                } else {
-                    tradeMapper.updateModeByTid(TradeMode.PUSHED_TO_CRM.getValue(), trade.getTid());
-                    syncResult.setSyncToCRMSuccess(true);
-                }
-            }
-            // 已经推送到crm的交易mode==2则更新订单状态到crm
-            else if (crmTrade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
-                syncResult.setSyncToCRM(true);
-                ResultData rsp1 = crmSyncService.updateOrderStatus(crmTrade);
-                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    logger.error("syncOrderToCrm error, response:{}", rsp1);
-                } else {
-                    syncResult.setSyncToCRMSuccess(true);
-                }
-            }
-        }
-
-        //2.2 同步到drift
-        if (isSyncToDriftTrade(trade)) {
-            syncResult.setSyncToDrift(true);
-            DriftOrderExpress driftOrder = toDriftOrderExpress(trade);
-            ResultData rsp2 = driftOrderSyncService.syncOrderToDrift(driftOrder);
-            if (rsp2.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                logger.error("syncOrderToDrift error, response:{}", rsp2);
-            } else {
-                syncResult.setSyncToDriftSuccess(true);
-            }
-        }
+//        //step2：synchronize trade to crm
+//        if (tradeNum == 1) {
+//            finley.gmair.model.ordernew.Trade crmTrade =
+//                    tradeMapper.selectByTid(trade.getTid()).get(0);
+//            // 去模糊化的交易mode==1则同步新订单到crm
+//            if (crmTrade.getMode() == TradeMode.DEBLUR.getValue()
+//                    && TbTradeStatus.valueOf(trade.getStatus()).judgeCrmAdd()) {
+//                syncResult.setSyncToCRM(true);
+//                ResultData rsp1 = crmSyncService.createNewOrder(crmTrade);
+//                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                    logger.error("syncOrderToCrm error, response:{}", rsp1);
+//                } else {
+//                    tradeMapper.updateModeByTid(TradeMode.PUSHED_TO_CRM.getValue(), trade.getTid());
+//                    syncResult.setSyncToCRMSuccess(true);
+//                }
+//            }
+//            // 已经推送到crm的交易mode==2则更新订单状态到crm
+//            else if (crmTrade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()) {
+//                syncResult.setSyncToCRM(true);
+//                ResultData rsp1 = crmSyncService.updateOrderStatus(crmTrade);
+//                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                    logger.error("syncOrderToCrm error, response:{}", rsp1);
+//                } else {
+//                    syncResult.setSyncToCRMSuccess(true);
+//                }
+//            }
+//        }
+//
+//        //2.2 同步到drift
+//        if (isSyncToDriftTrade(trade)) {
+//            syncResult.setSyncToDrift(true);
+//            DriftOrderExpress driftOrder = toDriftOrderExpress(trade);
+//            ResultData rsp2 = driftOrderSyncService.syncOrderToDrift(driftOrder);
+//            if (rsp2.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                logger.error("syncOrderToDrift error, response:{}", rsp2);
+//            } else {
+//                syncResult.setSyncToDriftSuccess(true);
+//            }
+//        }
 
         res.setResponseCode(ResponseCode.RESPONSE_OK);
         res.setDescription("处理交易成功");

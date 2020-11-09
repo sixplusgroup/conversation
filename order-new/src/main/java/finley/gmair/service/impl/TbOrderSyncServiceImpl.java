@@ -40,6 +40,10 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             "delivery_cps,cutoff_minutes,delivery_time,collect_time,dispatch_time,sign_time,es_time,price,total_fee,payment,adjust_fee," +
             "received_payment,discount_fee,post_fee,credit_card_fee,step_paid_fee";
 
+    private static final String TID = "tid";
+
+    private static final String TID_AND_CREATED = "tid,created";
+
     private static final Long PAGES_SIZE = 50L;
 
     private static final int RETRY_TIMES = 3;
@@ -167,26 +171,22 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             return resultData;
         }
         String sessionKey = tbUserList.get(0).getSessionKey();
-        TradeFullinfoGetRequest request = new TradeFullinfoGetRequest();
-        request.setTid(tid);
-        request.setFields(IMPORT_FIELDS);
-        TradeFullinfoGetResponse response = tbAPIServiceImpl.tradeFullInfoGet(request, sessionKey);
-        if (!response.isSuccess()) {
+        Trade trade = importFullInfoByTid(tid, sessionKey);
+        if (trade == null) {
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
             resultData.setDescription("failed to find trade from taobao");
-            resultData.setData(JSON.toJSONString(response));
             return resultData;
         }
-        resultData = tbOrderServiceImpl.handleTrade(response.getTrade());
+        resultData = tbOrderServiceImpl.handleTrade(trade);
         return resultData;
     }
 
     private ImportResult importByCreatedByPage(Date startCreated, Date endCreated, String sessionKey) {
-        int requestNum = 0, requestSuccessNum = 0, tradeNum = 0, tradeHandleSuccessNum = 0;
+        int batchRequestNum = 0, batchRequestSuccessNum = 0, tradeNum = 0, tradeInfoGetSuccessNum = 0, tradeHandleSuccessNum = 0;
 
         TradesSoldGetRequest request = new TradesSoldGetRequest();
         request.setUseHasNext(true);
-        request.setFields(IMPORT_FIELDS);
+        request.setFields(TID);
         request.setPageSize(PAGES_SIZE);
         request.setUseHasNext(true);
         request.setStartCreated(startCreated);
@@ -194,7 +194,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
         //分页同步
         long pageNo = 1L;
         while (true) {
-            requestNum++;
+            batchRequestNum++;
             request.setPageNo(pageNo++);
             logger.info("startTime:{}, endTime:{}, pageNo:{}", request.getStartCreated(), request.getEndCreated(), request.getPageNo());
             TradesSoldGetResponse response = tbAPIServiceImpl.tradesSoldGet(request, sessionKey);
@@ -204,12 +204,20 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             }
             if (!response.isSuccess()) {
                 logger.error("failed to get response, response:{}", JSON.toJSONString(response));
+                continue;
             }
-            requestSuccessNum++;
+            batchRequestSuccessNum++;
             if (!CollectionUtils.isEmpty(response.getTrades())) {
                 for (Trade trade : response.getTrades()) {
                     tradeNum++;
-                    ResultData resultData = tbOrderServiceImpl.handleTrade(trade);
+                    //获取订单详情
+                    Trade fullInfoTrade = importFullInfoByTid(trade.getTid(), sessionKey);
+                    if (fullInfoTrade == null) {
+                        continue;
+                    } else {
+                        tradeInfoGetSuccessNum++;
+                    }
+                    ResultData resultData = tbOrderServiceImpl.handleTrade(fullInfoTrade);
                     if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
                         logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
                     } else {
@@ -222,23 +230,24 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                 break;
             }
         }
-        return new ImportResult(requestNum, requestSuccessNum, tradeNum, tradeHandleSuccessNum);
+        return new ImportResult(batchRequestNum, batchRequestSuccessNum, tradeNum, tradeInfoGetSuccessNum, tradeHandleSuccessNum);
     }
 
     private ImportResult importByModifiedByPage(Date startSyncTime, Date startModified, Date endModified, String sessionKey) {
-        int requestNum = 0, requestSuccessNum = 0, tradeNum = 0, tradeHandleSuccessNum = 0;
+        int batchRequestNum = 0, batchRequestSuccessNum = 0, tradeNum = 0, tradeInfoGetSuccessNum = 0, tradeHandleSuccessNum = 0;
 
         TradesSoldIncrementGetRequest request = new TradesSoldIncrementGetRequest();
         request.setStartModified(startModified);
         request.setEndModified(endModified);
         request.setUseHasNext(true);
-        request.setFields(IMPORT_FIELDS);
+        //批量同步获取订单号和创建时间
+        request.setFields(TID_AND_CREATED);
         request.setPageSize(PAGES_SIZE);
         long pageNo = 1L;
 
         //分页同步
         while (true) {
-            requestNum++;
+            batchRequestNum++;
             request.setPageNo(pageNo++);
             logger.info("startTime:{}, endTime:{}, pageNo:{}", request.getStartModified(), request.getEndModified(), request.getPageNo());
             TradesSoldIncrementGetResponse response = tbAPIServiceImpl.tradesSoldIncrementGet(request, sessionKey);
@@ -248,8 +257,9 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             }
             if (!response.isSuccess()) {
                 logger.error("failed to get response, response:{}", JSON.toJSONString(response));
+                continue;
             }
-            requestSuccessNum++;
+            batchRequestSuccessNum++;
             if (!CollectionUtils.isEmpty(response.getTrades())) {
                 for (Trade trade : response.getTrades()) {
                     //增量同步限制下单时间不早于开始同步时间
@@ -257,7 +267,14 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                         continue;
                     }
                     tradeNum++;
-                    ResultData resultData = tbOrderServiceImpl.handleTrade(trade);
+                    //获取订单详情
+                    Trade fullInfoTrade = importFullInfoByTid(trade.getTid(), sessionKey);
+                    if (fullInfoTrade == null) {
+                        continue;
+                    } else {
+                        tradeInfoGetSuccessNum++;
+                    }
+                    ResultData resultData = tbOrderServiceImpl.handleTrade(fullInfoTrade);
                     if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
                         logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
                     } else {
@@ -270,18 +287,41 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                 break;
             }
         }
-        return new ImportResult(requestNum, requestSuccessNum, tradeNum, tradeHandleSuccessNum);
+        return new ImportResult(batchRequestNum, batchRequestSuccessNum, tradeNum, tradeInfoGetSuccessNum, tradeHandleSuccessNum);
+    }
+
+    private Trade importFullInfoByTid(Long tid, String sessionKey) {
+        TradeFullinfoGetRequest request = new TradeFullinfoGetRequest();
+        request.setTid(tid);
+        request.setFields(IMPORT_FIELDS);
+        TradeFullinfoGetResponse response = tbAPIServiceImpl.tradeFullInfoGet(request, sessionKey);
+        //重试
+        for (int i = 0; i < RETRY_TIMES && !response.isSuccess(); i++) {
+            response = tbAPIServiceImpl.tradeFullInfoGet(request, sessionKey);
+        }
+        if (!response.isSuccess()) {
+            logger.error("failed to get response, response:{}", JSON.toJSONString(response));
+            return null;
+        }
+        return response.getTrade();
     }
 
     @Data
     @AllArgsConstructor
     private static class ImportResult {
-        private int requestNum;
+        //批量请求数
+        private int batchRequestNum;
 
-        private int requestSuccessNum;
+        //批量请求成功数
+        private int batchRequestSuccessNum;
 
+        //批量请求获得订单数
         private int tradeNum;
 
+        //订单详情请求成功数
+        private int tradeInfoGetSuccessNum;
+
+        //订单处理成功数
         private int tradeHandleSuccessNum;
     }
 }
