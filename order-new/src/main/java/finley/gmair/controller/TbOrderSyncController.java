@@ -49,8 +49,9 @@ public class TbOrderSyncController {
     }
 
     @PostMapping("/import/manualByModified")
-    public ResultData manualImportByModified(@RequestParam Date startModified, @RequestParam Date endModified) {
-        return tbOrderSyncService.manualImportByModified(startModified, endModified);
+    public ResultData manualImportByModified(@RequestParam Date startModified, @RequestParam Date endModified,
+                                             @RequestParam(required = false) Date startCreated) {
+        return tbOrderSyncService.manualImportByModified(startModified, endModified, startCreated);
     }
 
     @PostMapping("/import/manualByTid")

@@ -147,7 +147,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
     }
 
     @Override
-    public ResultData manualImportByModified(Date startModified, Date endModified) {
+    public ResultData manualImportByModified(Date startModified, Date endModified, Date startCreated) {
         ResultData resultData = new ResultData();
         List<TbUser> tbUserList = tbUserMapper.selectAll();
         if (CollectionUtils.isEmpty(tbUserList)) {
@@ -156,7 +156,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             return resultData;
         }
         String sessionKey = tbUserList.get(0).getSessionKey();
-        ImportResult importResult = importByModifiedByPage(null, startModified, endModified, sessionKey);
+        ImportResult importResult = importByModifiedByPage(startCreated, startModified, endModified, sessionKey);
         resultData.setData(importResult);
         return resultData;
     }
