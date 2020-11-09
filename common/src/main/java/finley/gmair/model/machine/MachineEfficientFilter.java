@@ -5,7 +5,7 @@ import finley.gmair.model.Entity;
 /**
  * @author: Bright Chan
  * @date: 2020/7/25 15:24
- * @description: TODO
+ * @description: MachineEfficientFilter
  */
 public class MachineEfficientFilter extends Entity {
 
