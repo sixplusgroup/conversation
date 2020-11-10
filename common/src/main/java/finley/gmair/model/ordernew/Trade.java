@@ -140,6 +140,21 @@ public class Trade {
     private Date endTime;
 
     /**
+     * 判断订单是否有买家留言，有买家留言返回true，否则返回false
+     */
+    private Boolean hasBuyerMessage;
+
+    /**
+     * 买家留言
+     */
+    private String buyerMessage;
+
+    /**
+     * 卖家备注
+     */
+    private String sellerMemo;
+
+    /**
      * 收货人的姓名
      */
     private String receiverName;
