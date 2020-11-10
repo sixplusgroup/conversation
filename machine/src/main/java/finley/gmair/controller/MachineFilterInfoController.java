@@ -10,7 +10,9 @@ import finley.gmair.util.ResultData;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: Bright Chan
@@ -28,6 +30,7 @@ public class MachineFilterInfoController {
     @PostMapping("/query")
     public ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query) {
         ResultData res = new ResultData();
+        Map<String, Object> resData = new HashMap<>();
 
         if (!checkParams(query)) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -38,12 +41,16 @@ public class MachineFilterInfoController {
             if (type.equals(MachineFilterType.PRIMARY)) {
                 List<MachinePrimaryFilterInfo> store =
                         machineFilterInfoService.queryMachinePrimaryFilterInfo(query);
-                res.setData(store);
+                resData.put("size", store.size());
+                resData.put("list", store);
+                res.setData(resData);
             }
             else if (type.equals(MachineFilterType.EFFICIENT)) {
                 List<MachineEfficientFilterInfo> store =
                         machineFilterInfoService.queryMachineEfficientFilterInfo(query);
-                res.setData(store);
+                resData.put("size", store.size());
+                resData.put("list", store);
+                res.setData(resData);
             }
         }
         return res;
