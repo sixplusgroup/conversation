@@ -31,7 +31,7 @@ public class PhysicalOrderTrans implements TbStatusTransStrategy {
             case SELLER_CONSIGNED_PART:
             case WAIT_BUYER_CONFIRM_GOODS:
                 if(invoiceNo == null || invoiceNo.equals("")){
-                    // 实物订单的订单号为空的 ->已勘测，客户要求延迟发货
+                    // 实物订单的订单号为空的 -> 已勘测，客户要求延迟发货
                     crmRes = CrmOrderStatus.SURVEYED_REQUEST_DELIVERY_DELAY;
                 }else{
                     // 部分发货、等待买家确认收货 -> 已发货运输中

@@ -136,6 +136,19 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             newCrmOrder.setDq(interTrade.getReceiverCity());
             // 地址
             newCrmOrder.setDz(interTrade.getReceiverAddress());
+            // 买家留言
+            if(interTrade.getHasBuyerMessage()){
+                newCrmOrder.setBuyermes(interTrade.getBuyerMessage());
+            }else{
+                newCrmOrder.setBuyermes("");
+            }
+            // 卖家备注
+            String sellerMes = interTrade.getSellerMemo();
+            if(sellerMes == null){
+                newCrmOrder.setSellermes("");
+            }else{
+                newCrmOrder.setSellermes(interTrade.getSellerMemo());
+            }
             // 根据实物和虚拟订单选择不同的订单状态转换策略
             CrmOrderStatus billStatus = selectStatusTransStrategy(tmpOrder);
             if (billStatus == null) {
