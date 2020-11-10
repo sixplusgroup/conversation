@@ -38,7 +38,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             "buyer_rate,created,modified,pay_time,consign_time,end_time,receiver_name,receiver_state,receiver_address,receiver_zip," +
             "receiver_mobile,receiver_phone,receiver_country,receiver_city,receiver_district,receiver_town,tmall_delivery,cn_service," +
             "delivery_cps,cutoff_minutes,delivery_time,collect_time,dispatch_time,sign_time,es_time,price,total_fee,payment,adjust_fee," +
-            "received_payment,discount_fee,post_fee,credit_card_fee,step_paid_fee";
+            "received_payment,discount_fee,post_fee,credit_card_fee,step_paid_fee,buyer_message,seller_memo";
 
     private static final String TID = "tid";
 
