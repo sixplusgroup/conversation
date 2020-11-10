@@ -1,8 +1,8 @@
 package finley.gmair.service;
 
 import finley.gmair.dto.MachineEfficientFilterInfo;
-import finley.gmair.dto.MachineFilterInfoQuery;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
+import finley.gmair.form.machine.MachineFilterInfoQuery;
 
 import java.util.List;
 

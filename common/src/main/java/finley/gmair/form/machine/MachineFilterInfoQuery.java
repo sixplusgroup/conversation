@@ -1,4 +1,4 @@
-package finley.gmair.dto;
+package finley.gmair.form.machine;
 
 import finley.gmair.model.machine.MachineFilterType;
 import lombok.AllArgsConstructor;

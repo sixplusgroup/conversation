@@ -1,16 +1,13 @@
 package finley.gmair.controller;
 
 import finley.gmair.dto.MachineEfficientFilterInfo;
-import finley.gmair.dto.MachineFilterInfoQuery;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
+import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.model.machine.MachineFilterType;
 import finley.gmair.service.MachineFilterInfoService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -28,7 +25,7 @@ public class MachineFilterInfoController {
     @Resource
     private MachineFilterInfoService machineFilterInfoService;
 
-    @GetMapping("/query")
+    @PostMapping("/query")
     public ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query) {
         ResultData res = new ResultData();
 

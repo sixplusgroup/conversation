@@ -2,8 +2,8 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.MachineFilterInfoDao;
 import finley.gmair.dto.MachineEfficientFilterInfo;
-import finley.gmair.dto.MachineFilterInfoQuery;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
+import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.service.MachineFilterInfoService;
 import org.springframework.stereotype.Service;
 
