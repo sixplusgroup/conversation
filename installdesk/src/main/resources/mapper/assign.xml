@@ -182,24 +182,10 @@
             AND block_flag = #{blockFlag}
         </if>
         <if test='sortType == "CREATE"'>
-            <choose>
-                <when test="reverse != null">
-                    ORDER BY create_time ${reverse}
-                </when>
-                <otherwise>
-                    ORDER BY create_time desc
-                </otherwise>
-            </choose>
+            ORDER BY create_time desc
         </if>
         <if test='sortType == "FINISH"'>
-            <choose>
-                <when test="reverse != null">
-                    ORDER BY assign_date ${reverse}
-                </when>
-                <otherwise>
-                    ORDER BY assign_date desc
-                </otherwise>
-            </choose>
+            ORDER BY assign_date desc
         </if>
         <if test='start != null and length != null'>
             LIMIT #{start},#{length}
