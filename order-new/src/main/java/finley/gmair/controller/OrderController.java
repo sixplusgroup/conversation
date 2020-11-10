@@ -57,6 +57,7 @@ public class OrderController {
 
     /**
      * 上传Excel表格，读取数据并更新数据库
+     *
      * @return 上传和更新结果，成功与否
      */
     @PostMapping("/uploadAndSync")
@@ -90,13 +91,22 @@ public class OrderController {
                 ResultData response = tbOrderPartInfoService.getTbOrderPartInfo(filePath, password);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     List<TbOrderPartInfo> store = (List<TbOrderPartInfo>) response.getData();
+                    store.sort((o1, o2) -> {
+                        if (o1.getCreateTime() == null || o2.getCreateTime() == null) {
+                            return 0;
+                        }
+                        if (o1.getCreateTime().after(o2.getCreateTime())) {
+                            return 1;
+                        } else if (o1.getCreateTime().before(o2.getCreateTime())) {
+                            return -1;
+                        }
+                        return 0;
+                    });
                     tbOrderService.handlePartInfo(store);
-                }
-                else {
+                } else {
                     res = response;
                 }
-            }
-            else {
+            } else {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("save file " + filename + " failed!");
             }

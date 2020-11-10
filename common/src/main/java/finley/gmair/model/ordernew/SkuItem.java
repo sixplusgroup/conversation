@@ -10,7 +10,6 @@ import java.util.Date;
  * @date ：Created in 2020/10/19 15:43
  * @description ：商品项表
  */
-
 @Data
 public class SkuItem extends Entity {
     /**
@@ -32,6 +31,11 @@ public class SkuItem extends Entity {
      * 机器型号
      */
     private String machineModel;
+
+    /**
+     * 是否为虚拟产品(默认为false)
+     */
+    private Boolean fictitious;
 
     /**
      * 商品标题,不能超过60字节

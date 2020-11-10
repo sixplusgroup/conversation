@@ -1965,6 +1965,10 @@ public class OrderController {
         }
         //orderId已存在，更新订单，创建或更新物流信息
         else if (fetchOrderResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            //不更新地址、收件人、联系方式,模糊字段只由模糊字段更新接口更新
+            order.setAddress(null);
+            order.setPhone(null);
+            order.setConsignee(null);
             ResultData updateResponse = orderService.updateDriftOrder(order);
             if (updateResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 return updateResponse;

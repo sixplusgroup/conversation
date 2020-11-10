@@ -1,7 +1,10 @@
 package finley.gmair.model.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.format.DateTimeFormat;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author: Bright Chan
@@ -24,4 +27,7 @@ public class TbOrderPartInfo {
     @ExcelProperty("联系手机")
     private String phone;
 
+    @ExcelProperty("订单创建时间")
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 }

@@ -33,4 +33,9 @@ public interface SkuItemMapper {
      */
     List<String> selectMachineModelByNumIid(
             @Param("numIid") String numIid);
+
+    List<Boolean> selectFictitiousByNumIidAndSkuId(
+            @Param("numIid")String numIid,@Param("skuId")String skuId);
+
+    List<Boolean> selectFictitiousByNumIid(@Param("numIid")String numIid);
 }

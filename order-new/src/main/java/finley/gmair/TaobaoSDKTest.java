@@ -28,7 +28,7 @@ public class TaobaoSDKTest {
             "discount_fee,post_fee,credit_card_fee,step_paid_fee";
 
     public static void main(String[] args) throws ApiException {
-        getTradeFullInfo();
+        getRefund();
     }
 
     private static void getTrades() {
@@ -95,10 +95,12 @@ public class TaobaoSDKTest {
         System.out.println(rsp.getBody());
     }
 
-    private static void addUser() throws ApiException{
+    private static void getRefund() throws ApiException {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
-        JushitaJdpUsersGetRequest req=new JushitaJdpUsersGetRequest();
-        JushitaJdpUsersGetResponse rsp = client.execute(req, sessionKey);
+        RefundGetRequest request = new RefundGetRequest();
+        request.setRefundId(84854052037325798L);
+        request.setFields("refund_id, alipay_no, tid, oid, buyer_nick, seller_nick, total_fee, status, created, refund_fee, good_status, has_good_return, payment, reason, desc, num_iid, title, price, num, good_return_time, company_name, sid, address, shipping_type, refund_remind_timeout, refund_phase, refund_version, operation_contraint, attribute, outer_id, sku");
+        RefundGetResponse rsp = client.execute(request, sessionKey);
         System.out.println(rsp.getBody());
     }
 }
