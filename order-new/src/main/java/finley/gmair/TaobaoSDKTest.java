@@ -28,7 +28,7 @@ public class TaobaoSDKTest {
             "discount_fee,post_fee,credit_card_fee,step_paid_fee";
 
     public static void main(String[] args) throws ApiException {
-        getRefund();
+        getTradeFullInfo();
     }
 
     private static void getTrades() {
@@ -90,7 +90,7 @@ public class TaobaoSDKTest {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         TradeFullinfoGetRequest req = new TradeFullinfoGetRequest();
         req.setFields(fields);
-        req.setTid(1346713200762976580L);
+        req.setTid(1356180230433354951L);
         TradeFullinfoGetResponse rsp = client.execute(req, sessionKey);
         System.out.println(rsp.getBody());
     }

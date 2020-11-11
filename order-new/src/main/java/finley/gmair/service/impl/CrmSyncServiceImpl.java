@@ -57,13 +57,21 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             res.setDescription("交易模糊字段状态错误");
             return res;
         }
+
+        // 如果状态不是TRADE_CLOSED禁止推送到CRM
+        if (!TbTradeStatus.valueOf(interTrade.getStatus()).judgeCrmUpdate()) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("交易状态错误");
+            return res;
+        }
+
         List<Order> orders = orderMapper.selectAllByTradeId(interTrade.getTradeId());
         for (Order tmpOrder : orders) {
             // 甲醛检测仪租赁和检测试纸不同步到CRM
             if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
             CrmStatusDTO newCrmStatus = new CrmStatusDTO();
             // （子订单）订单号：
-            newCrmStatus.setDdh(String.valueOf(tmpOrder.getOid()));
+            newCrmStatus.setDdh(String.valueOf(interTrade.getTid())+ String.valueOf(tmpOrder.getOid()));
             // 联系方式：
             newCrmStatus.setLxfs(interTrade.getReceiverMobile());
             // 根据实物和虚拟订单选择不同的订单状态转换策略
@@ -125,7 +133,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             String property = skuPropertyName != null && skuPropertyName.length() > 5 ? skuPropertyName.substring(5) : "";
             newCrmOrder.setJqxh(machineModel + property);
             // 订单号
-            newCrmOrder.setDdh(String.valueOf(tmpOrder.getOid()));
+            newCrmOrder.setDdh(String.valueOf(interTrade.getTid())+ String.valueOf(tmpOrder.getOid()));
             // 数量
             newCrmOrder.setSl(String.valueOf(tmpOrder.getNum()));
             // 实收金额
