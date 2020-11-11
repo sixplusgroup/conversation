@@ -2,6 +2,7 @@ package finley.gmair.dao;
 
 import finley.gmair.dto.MachineEfficientFilterInfo;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
+import finley.gmair.dto.MachineTypeInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -16,4 +17,6 @@ public interface MachineFilterInfoDao {
     List<MachinePrimaryFilterInfo> fetchMachinePrimaryFilterInfo(Map<String, Object> condition);
 
     List<MachineEfficientFilterInfo> fetchMachineEfficientFilterInfo(Map<String, Object> condition);
+
+    List<MachineTypeInfo> fetchMachineTypeInfo();
 }

@@ -37,7 +37,12 @@ public class MachineFilterInfoQuery {
     private MachineFilterType machineFilterType;
 
     /**
-     * 设备型号，对应数据库表goods_model中的model_name字段，选填
+     * 设备型号名，对应数据库表goods_model中的model_name字段，选填
      */
-    private String machineType;
+    private String machineModelName;
+
+    /**
+     * 设备型号code，对应数据库表goods_model中的model_code字段，选填
+     */
+    private String machineModelCode;
 }

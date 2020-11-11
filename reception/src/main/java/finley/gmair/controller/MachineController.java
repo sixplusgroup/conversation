@@ -482,6 +482,15 @@ public class MachineController {
         return machineService.queryMachineFilterInfo(query);
     }
 
+    /**
+     * 查询设备型号信息
+     * @return 设备型号结果集合
+     */
+    @GetMapping("/filter/info/query/type")
+    public ResultData queryMachineTypeInfo() {
+        return machineService.queryMachineTypeInfo();
+    }
+
 
     /**
      * @Description: TODO

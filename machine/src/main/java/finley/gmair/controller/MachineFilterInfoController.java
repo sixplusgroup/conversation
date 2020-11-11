@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import finley.gmair.dto.MachineEfficientFilterInfo;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
+import finley.gmair.dto.MachineTypeInfo;
 import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.model.machine.MachineFilterType;
 import finley.gmair.service.MachineFilterInfoService;
@@ -53,6 +54,14 @@ public class MachineFilterInfoController {
                 res.setData(resData);
             }
         }
+        return res;
+    }
+
+    @GetMapping("/query/type")
+    public ResultData queryMachineTypeInfo() {
+        ResultData res = new ResultData();
+        List<MachineTypeInfo> store = machineFilterInfoService.queryMachineTypeInfo();
+        res.setData(store);
         return res;
     }
 

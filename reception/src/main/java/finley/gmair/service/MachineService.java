@@ -194,4 +194,7 @@ public interface MachineService {
 
     @PostMapping("/machine/filter/info/query")
     ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query);
+
+    @GetMapping("/machine/filter/info/query/type")
+    ResultData queryMachineTypeInfo();
 }
