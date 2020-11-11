@@ -1947,64 +1947,68 @@ public class OrderController {
         }
         //orderId不存在,创建订单以及物流信息
         else if (fetchOrderResponse.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            ResultData createResponse = orderService.createDriftOrderWithId(order);
-            if (createResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                return createResponse;
-            }
-            //如果订单状态为已发货或已完成，创建物流信息
-            if (order.getStatus() == DriftOrderStatus.DELIVERED || order.getStatus() == DriftOrderStatus.FINISHED) {
-                ResultData createExpressResponse = expressService.createExpress(express);
-                if (createExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    return createExpressResponse;
+            if (order.getStatus() != DriftOrderStatus.CANCELED) {
+                ResultData createResponse = orderService.createDriftOrderWithId(order);
+                if (createResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    return createResponse;
                 }
-            }
-            //写入操作记录表
-            String message = "一条订单被同步创建：订单来源:" + order.getTradeFrom().name() + ",订单状态:" + order.getStatus().name();
-            DriftOrderAction action = new DriftOrderAction(order.getOrderId(), message, order.getTradeFrom().name());
-            driftOrderActionService.create(action);
-        }
-        //orderId已存在，更新订单，创建或更新物流信息
-        else if (fetchOrderResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            //不更新地址、收件人、联系方式,模糊字段只由模糊字段更新接口更新
-            order.setAddress(null);
-            order.setPhone(null);
-            order.setConsignee(null);
-            ResultData updateResponse = orderService.updateDriftOrder(order);
-            if (updateResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                return updateResponse;
-            }
-            //如果订单状态为已发货或已完成，创建或更新物流信息
-            if (order.getStatus() == DriftOrderStatus.DELIVERED || order.getStatus() == DriftOrderStatus.FINISHED) {
-                condition.clear();
-                condition.put("blockFlag", false);
-                condition.put("orderId", express.getOrderId());
-                ResultData fetchExpressResponse = expressService.fetchExpress(condition);
-                if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                    return fetchExpressResponse;
-                } else if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                    //express不存在则创建
+                //如果订单状态为已发货或已完成，创建物流信息
+                if (order.getStatus() == DriftOrderStatus.DELIVERED || order.getStatus() == DriftOrderStatus.FINISHED) {
                     ResultData createExpressResponse = expressService.createExpress(express);
                     if (createExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
                         return createExpressResponse;
                     }
-                } else if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    //express已存在则进行修改
-                    condition.clear();
-                    condition.put("expressId", express.getExpressId());
-                    condition.put("expressNum", express.getExpressNum());
-                    condition.put("company", express.getCompany());
-                    ResultData updateExpressResponse = expressService.updateExpress(condition);
-                    if (updateExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                        logger.info("error4");
-                        return updateExpressResponse;
-                    }
                 }
+                //写入操作记录表
+                String message = "一条订单被同步创建：订单来源:" + order.getTradeFrom().name() + ",订单状态:" + order.getStatus().name();
+                DriftOrderAction action = new DriftOrderAction(order.getOrderId(), message, order.getTradeFrom().name());
+                driftOrderActionService.create(action);
             }
-            //写入操作记录表
-            String message = "一条订单被同步更新：订单来源:" + order.getTradeFrom().name() + ",订单状态:" + order.getStatus().name();
-            DriftOrderAction action = new DriftOrderAction(order.getOrderId(), message, order.getTradeFrom().name());
-            driftOrderActionService.create(action);
         }
+        //orderId已存在，更新订单，创建或更新物流信息
+//        else if (fetchOrderResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//            if (order.getStatus() == DriftOrderStatus.CANCELED) {
+//                //不更新地址、收件人、联系方式,模糊字段只由模糊字段更新接口更新
+//                order.setAddress(null);
+//                order.setPhone(null);
+//                order.setConsignee(null);
+//                ResultData updateResponse = orderService.updateDriftOrder(order);
+//                if (updateResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                    return updateResponse;
+//                }
+//            //如果订单状态为已发货或已完成，创建或更新物流信息
+//            if (order.getStatus() == DriftOrderStatus.DELIVERED || order.getStatus() == DriftOrderStatus.FINISHED) {
+//                condition.clear();
+//                condition.put("blockFlag", false);
+//                condition.put("orderId", express.getOrderId());
+//                ResultData fetchExpressResponse = expressService.fetchExpress(condition);
+//                if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+//                    return fetchExpressResponse;
+//                } else if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+//                    //express不存在则创建
+//                    ResultData createExpressResponse = expressService.createExpress(express);
+//                    if (createExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                        return createExpressResponse;
+//                    }
+//                } else if (fetchExpressResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                    //express已存在则进行修改
+//                    condition.clear();
+//                    condition.put("expressId", express.getExpressId());
+//                    condition.put("expressNum", express.getExpressNum());
+//                    condition.put("company", express.getCompany());
+//                    ResultData updateExpressResponse = expressService.updateExpress(condition);
+//                    if (updateExpressResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
+//                        logger.info("error4");
+//                        return updateExpressResponse;
+//                    }
+//                }
+//            }
+//                //写入操作记录表
+//                String message = "一条订单被同步更新：订单来源:" + order.getTradeFrom().name() + ",订单状态:" + order.getStatus().name();
+//                DriftOrderAction action = new DriftOrderAction(order.getOrderId(), message, order.getTradeFrom().name());
+//                driftOrderActionService.create(action);
+//            }
+//        }
         return result;
     }
 
@@ -2020,7 +2024,7 @@ public class OrderController {
      */
     @PostMapping("/sync/partInfo")
     public ResultData syncOrderPartInfo(@RequestParam String orderId, @RequestParam String consignee,
-                                @RequestParam String phone, @RequestParam String address) {
+                                        @RequestParam String phone, @RequestParam String address) {
         ResultData resultData = new ResultData();
         if (StringUtils.isEmpty(orderId)) {
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);

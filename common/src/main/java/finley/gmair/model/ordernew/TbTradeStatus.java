@@ -76,4 +76,11 @@ public enum TbTradeStatus implements EnumValue {
     public boolean judgeCrmAdd() {
         return !(this == TRADE_CLOSED_BY_TAOBAO || this == WAIT_BUYER_PAY);
     }
+
+    /**
+     * 判断是否将状态更新到crm系统
+     */
+    public boolean judgeCrmUpdate() {
+        return this == TRADE_CLOSED;
+    }
 }

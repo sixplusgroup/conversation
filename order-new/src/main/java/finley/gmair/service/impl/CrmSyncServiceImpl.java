@@ -57,21 +57,25 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             res.setDescription("交易模糊字段状态错误");
             return res;
         }
+
+        // 如果状态不是TRADE_CLOSED禁止推送到CRM
+        if (!TbTradeStatus.valueOf(interTrade.getStatus()).judgeCrmUpdate()) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("交易状态错误");
+            return res;
+        }
+
         List<Order> orders = orderMapper.selectAllByTradeId(interTrade.getTradeId());
         for (Order tmpOrder : orders) {
             // 甲醛检测仪租赁和检测试纸不同步到CRM
             if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
             CrmStatusDTO newCrmStatus = new CrmStatusDTO();
             // （子订单）订单号：
-            newCrmStatus.setDdh(String.valueOf(tmpOrder.getOid()));
+            newCrmStatus.setDdh(String.valueOf(interTrade.getTid())+ String.valueOf(tmpOrder.getOid()));
             // 联系方式：
             newCrmStatus.setLxfs(interTrade.getReceiverMobile());
             // 根据实物和虚拟订单选择不同的订单状态转换策略
-            TbStatusTransStrategy strategy;
-            if (isVirtualOrder(tmpOrder)) strategy = new VirtualOrderTrans();
-            else strategy = new PhysicalOrderTrans();
-            // 订单状态：
-            CrmOrderStatus billStatus = strategy.transTbOrderStatus(tmpOrder);
+            CrmOrderStatus billStatus = selectStatusTransStrategy(tmpOrder);
             if (billStatus == null) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("交易状态转换失败");
@@ -125,7 +129,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             String property = skuPropertyName != null && skuPropertyName.length() > 5 ? skuPropertyName.substring(5) : "";
             newCrmOrder.setJqxh(machineModel + property);
             // 订单号
-            newCrmOrder.setDdh(String.valueOf(tmpOrder.getOid()));
+            newCrmOrder.setDdh(String.valueOf(interTrade.getTid())+ String.valueOf(tmpOrder.getOid()));
             // 数量
             newCrmOrder.setSl(String.valueOf(tmpOrder.getNum()));
             // 实收金额
@@ -140,12 +144,22 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             newCrmOrder.setDq(interTrade.getReceiverCity());
             // 地址
             newCrmOrder.setDz(interTrade.getReceiverAddress());
+            // 买家留言
+            String buyerMes = interTrade.getBuyerMessage();
+            if(buyerMes == null){
+                newCrmOrder.setBuyermes("");
+            }else{
+                newCrmOrder.setBuyermes(buyerMes);
+            }
+            // 卖家备注
+            String sellerMemo = interTrade.getSellerMemo();
+            if(sellerMemo == null){
+                newCrmOrder.setSellermes("");
+            }else{
+                newCrmOrder.setSellermes(sellerMemo);
+            }
             // 根据实物和虚拟订单选择不同的订单状态转换策略
-            TbStatusTransStrategy strategy;
-            if (isVirtualOrder(tmpOrder)) strategy = new VirtualOrderTrans();
-            else strategy = new PhysicalOrderTrans();
-            // 订单状态
-            CrmOrderStatus billStatus = strategy.transTbOrderStatus(tmpOrder);
+            CrmOrderStatus billStatus = selectStatusTransStrategy(tmpOrder);
             if (billStatus == null) {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("交易状态转换失败");
@@ -168,7 +182,8 @@ public class CrmSyncServiceImpl implements CrmSyncService {
     }
 
     /**
-     * @param order finley.gmair.model.ordernew.Order
+     * @param order 中台订单
+     * @return 返回订单中商品的机器型号，如不存在则返回“该机器型号未录入”
      * @author zm
      * @date 2020/11/02 14:29
      * @description 查询机器型号
@@ -193,10 +208,11 @@ public class CrmSyncServiceImpl implements CrmSyncService {
     }
 
     /**
-     * @param order finley.gmair.model.ordernew.Order
+     * @param order 中台订单
+     * @return 是虚拟订单则返回true
      * @author zm
      * @date 2020/11/05 20:20
-     * @description 判断是不是虚拟订单，是则返回true
+     * @description 判断是不是虚拟订单
      */
     private boolean isVirtualOrder(Order order) {
         List<Boolean> resList;
@@ -215,5 +231,23 @@ public class CrmSyncServiceImpl implements CrmSyncService {
         } else {
             return resList.get(0);
         }
+    }
+
+    /**
+     * @param interOrder 中台订单
+     * @return 返回根据策略转换后的Crm订单状态
+     * @author zm
+     * @date 2020/11/10 10:26
+     * @description 根据实物或者虚拟订单选择不同订单状态转换策略
+     **/
+    private CrmOrderStatus selectStatusTransStrategy(Order interOrder) {
+        TbStatusTransStrategy transStrategy;
+        // 判断是否为虚拟订单：
+        if (isVirtualOrder(interOrder)) {
+            transStrategy = new VirtualOrderTrans();
+        } else {
+            transStrategy = new PhysicalOrderTrans();
+        }
+        return transStrategy.transTbOrderStatus(interOrder);
     }
 }

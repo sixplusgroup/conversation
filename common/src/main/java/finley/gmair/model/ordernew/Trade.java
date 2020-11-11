@@ -140,6 +140,16 @@ public class Trade {
     private Date endTime;
 
     /**
+     * 买家留言
+     */
+    private String buyerMessage;
+
+    /**
+     * 卖家备注
+     */
+    private String sellerMemo;
+
+    /**
      * 收货人的姓名
      */
     private String receiverName;
