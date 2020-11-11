@@ -128,7 +128,8 @@ public class TbOrderServiceImpl implements TbOrderService {
             SyncResult syncResult = new SyncResult();
             logger.info("handlePartInfo, tid:{}", partInfo.getOrderId());
             //step1:update to db
-            List<finley.gmair.model.ordernew.Trade> tradeList = tradeMapper.selectByTid(Long.parseLong(partInfo.getOrderId()));
+            List<finley.gmair.model.ordernew.Trade> tradeList =
+                    tradeMapper.selectByTid(Long.parseLong(partInfo.getOrderId()));
             if (CollectionUtils.isEmpty(tradeList)) {
                 logger.error("handlePartInfo error, failed to find by tid:{}", partInfo.getOrderId());
                 //数据库中没有则不同步
