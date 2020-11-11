@@ -1,6 +1,5 @@
 package finley.gmair.service.impl;
 
-import com.alibaba.excel.util.CollectionUtils;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.SkuItemMapper;
@@ -71,7 +70,9 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
             CrmStatusDTO newCrmStatus = new CrmStatusDTO();
             // （子订单）订单号：
-            newCrmStatus.setDdh(String.valueOf(interTrade.getTid())+ String.valueOf(tmpOrder.getOid()));
+            String ddh = interTrade.getTid().equals(tmpOrder.getOid()) ? String.valueOf(tmpOrder.getOid()) :
+                    String.valueOf(interTrade.getTid()) +"-"+ String.valueOf(tmpOrder.getOid());
+            newCrmStatus.setDdh(ddh);
             // 联系方式：
             newCrmStatus.setLxfs(interTrade.getReceiverMobile());
             // 根据实物和虚拟订单选择不同的订单状态转换策略
@@ -129,7 +130,9 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             String property = skuPropertyName != null && skuPropertyName.length() > 5 ? skuPropertyName.substring(5) : "";
             newCrmOrder.setJqxh(machineModel + property);
             // 订单号
-            newCrmOrder.setDdh(String.valueOf(interTrade.getTid())+ String.valueOf(tmpOrder.getOid()));
+            String ddh = interTrade.getTid().equals(tmpOrder.getOid()) ? String.valueOf(tmpOrder.getOid()) :
+                    String.valueOf(interTrade.getTid()) +"-"+ String.valueOf(tmpOrder.getOid());
+            newCrmOrder.setDdh(ddh);
             // 数量
             newCrmOrder.setSl(String.valueOf(tmpOrder.getNum()));
             // 实收金额
@@ -146,16 +149,16 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             newCrmOrder.setDz(interTrade.getReceiverAddress());
             // 买家留言
             String buyerMes = interTrade.getBuyerMessage();
-            if(buyerMes == null){
+            if (buyerMes == null) {
                 newCrmOrder.setBuyermes("");
-            }else{
+            } else {
                 newCrmOrder.setBuyermes(buyerMes);
             }
             // 卖家备注
             String sellerMemo = interTrade.getSellerMemo();
-            if(sellerMemo == null){
+            if (sellerMemo == null) {
                 newCrmOrder.setSellermes("");
-            }else{
+            } else {
                 newCrmOrder.setSellermes(sellerMemo);
             }
             // 根据实物和虚拟订单选择不同的订单状态转换策略
