@@ -483,12 +483,22 @@ public class MachineController {
     }
 
     /**
-     * 查询设备型号信息
-     * @return 设备型号结果集合
+     * 查询设备型号名，如GM420
+     * @return 设备型号名集合
      */
-    @GetMapping("/filter/info/query/type")
-    public ResultData queryMachineTypeInfo() {
-        return machineService.queryMachineTypeInfo();
+    @GetMapping("/filter/info/modelName")
+    public ResultData queryMachineModelName() {
+        return machineService.queryMachineModelName();
+    }
+
+    /**
+     * 查询设备型号code，即子型号，如GM420-42A中的42A即为所求
+     * @param modelName 设备型号名，如GM420
+     * @return 设备型号code，如42A
+     */
+    @GetMapping("/filter/info/modelCode")
+    public ResultData queryMachineModelCode(String modelName) {
+        return machineService.queryMachineModelCode(modelName);
     }
 
 

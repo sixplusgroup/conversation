@@ -19,11 +19,6 @@
         <result property="lastConfirmTime" column="last_confirm_time"/>
     </resultMap>
 
-    <resultMap id="machine_type_info" type="finley.gmair.dto.MachineTypeInfo">
-        <result property="modelCode" column="model_code"/>
-        <result property="modelName" column="model_name"/>
-    </resultMap>
-
     <select id="query_primary" parameterType="java.util.Map" resultMap="machine_primary_filter_info">
         SELECT m.qr_code, m.is_need_clean, m.clean_remind_status, m.is_reminded, m.last_confirm_time
         FROM gmair_machine.machine_filter_clean m, gmair_machine.goods_model g, gmair_machine.qrcode q
@@ -65,8 +60,15 @@
         order by m.create_time desc LIMIT #{offset}, #{pageSize}
     </select>
 
-    <select id="query_machine_type" parameterType="java.util.Map" resultMap="machine_type_info">
-        SELECT model_code, model_name FROM gmair_machine.goods_model where block_flag = 0
+    <select id="query_model_name" resultType="java.lang.String">
+        SELECT distinct(model_name) FROM gmair_machine.goods_model where block_flag = 0
+    </select>
+
+    <select id="query_model_code" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT model_code FROM gmair_machine.goods_model where block_flag = 0
+        <if test="_parameter != null">
+            AND model_name = #{modelName}
+        </if>
     </select>
 
 </mapper>

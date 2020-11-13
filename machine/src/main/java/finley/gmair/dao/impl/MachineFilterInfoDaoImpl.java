@@ -4,7 +4,6 @@ import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.MachineFilterInfoDao;
 import finley.gmair.dto.MachineEfficientFilterInfo;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
-import finley.gmair.dto.MachineTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -45,11 +44,21 @@ public class MachineFilterInfoDaoImpl extends BaseDao implements MachineFilterIn
     }
 
     @Override
-    public List<MachineTypeInfo> fetchMachineTypeInfo() {
+    public List<String> fetchMachineModelName() {
         try {
-            return sqlSession.selectList("gmair.machine.machine_filter_info.query_machine_type");
+            return sqlSession.selectList("gmair.machine.machine_filter_info.query_model_name");
         } catch (Exception e) {
-            logger.error("fetchMachineTypeInfo failed: " + e.getMessage());
+            logger.error("fetchMachineModelName failed: " + e.getMessage());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<String> fetchMachineModelCode(String modelName) {
+        try {
+            return sqlSession.selectList("gmair.machine.machine_filter_info.query_model_code", modelName);
+        } catch (Exception e) {
+            logger.error("fetchMachineModelCode failed: " + e.getMessage());
         }
         return new ArrayList<>();
     }

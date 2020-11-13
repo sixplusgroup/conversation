@@ -2,7 +2,6 @@ package finley.gmair.service;
 
 import finley.gmair.dto.MachineEfficientFilterInfo;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
-import finley.gmair.dto.MachineTypeInfo;
 import finley.gmair.form.machine.MachineFilterInfoQuery;
 
 import java.util.List;
@@ -18,6 +17,8 @@ public interface MachineFilterInfoService {
 
     List<MachineEfficientFilterInfo> queryMachineEfficientFilterInfo(MachineFilterInfoQuery query);
 
-    List<MachineTypeInfo> queryMachineTypeInfo();
+    List<String> queryMachineModelName();
+
+    List<String> queryMachineModelCode(String modelName);
 
 }

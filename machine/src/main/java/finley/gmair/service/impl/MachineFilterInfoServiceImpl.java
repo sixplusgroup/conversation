@@ -3,7 +3,6 @@ package finley.gmair.service.impl;
 import finley.gmair.dao.MachineFilterInfoDao;
 import finley.gmair.dto.MachineEfficientFilterInfo;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
-import finley.gmair.dto.MachineTypeInfo;
 import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.service.MachineFilterInfoService;
 import org.springframework.stereotype.Service;
@@ -36,8 +35,13 @@ public class MachineFilterInfoServiceImpl implements MachineFilterInfoService {
     }
 
     @Override
-    public List<MachineTypeInfo> queryMachineTypeInfo() {
-        return machineFilterInfoDao.fetchMachineTypeInfo();
+    public List<String> queryMachineModelName() {
+        return machineFilterInfoDao.fetchMachineModelName();
+    }
+
+    @Override
+    public List<String> queryMachineModelCode(String modelName) {
+        return machineFilterInfoDao.fetchMachineModelCode(modelName);
     }
 
     private Map<String, Object> getQueryCondition(MachineFilterInfoQuery query) {
