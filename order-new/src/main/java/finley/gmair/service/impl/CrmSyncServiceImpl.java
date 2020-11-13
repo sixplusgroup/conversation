@@ -109,13 +109,15 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             return res;
         }
 
-        // 如果状态是TRADE_CLOSED_BY_TAOBAO或者是WAIT_BUYER_PAY都禁止推送到CRM
+        // 如果状态是 TRADE_CLOSED_BY_TAOBAO 或者是 WAIT_BUYER_PAY 都禁止推送到CRM
         if (!TbTradeStatus.valueOf(interTrade.getStatus()).judgeCrmAdd()) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("交易状态错误");
             return res;
         }
         List<Order> orders = orderMapper.selectAllByTradeId(interTrade.getTradeId());
+        // 判断是否是多子订单交易
+        boolean isMultiOrders = orders.size() > 1;
         for (Order tmpOrder : orders) {
             // 甲醛检测仪租赁和检测试纸不同步到CRM
             if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
@@ -131,12 +133,24 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             newCrmOrder.setJqxh(machineModel + property);
             // 订单号
             String ddh = interTrade.getTid().equals(tmpOrder.getOid()) ? String.valueOf(tmpOrder.getOid()) :
-                    String.valueOf(interTrade.getTid()) +"-"+ String.valueOf(tmpOrder.getOid());
+                    interTrade.getTid() + "-" + tmpOrder.getOid();
             newCrmOrder.setDdh(ddh);
             // 数量
             newCrmOrder.setSl(String.valueOf(tmpOrder.getNum()));
             // 实收金额
-            newCrmOrder.setSsje(String.valueOf(tmpOrder.getPayment()));
+            Double ssje;
+            if (tmpOrder.getDivideOrderFee() != null) {
+                ssje = tmpOrder.getDivideOrderFee();
+            }else{
+                if (isMultiOrders && tmpOrder.getPartMjzDiscount() != null){
+                    // 多子订单且part_mjz_discount（优惠分摊）不为空
+                    ssje = tmpOrder.getNum() * tmpOrder.getPrice() + tmpOrder.getAdjustFee()
+                            - tmpOrder.getDiscountFee() - tmpOrder.getPartMjzDiscount();
+                }else{
+                    ssje = tmpOrder.getPayment();
+                }
+            }
+            newCrmOrder.setSsje(String.valueOf(ssje));
             // 付款日期（格式为：年-月-日）
             newCrmOrder.setXdrq(interTrade.getPayTimeStr());
             // 用户姓名
