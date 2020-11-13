@@ -2058,9 +2058,19 @@ public class OrderController {
             return response;
         }
         DriftOrder driftOrder = ((List<DriftOrder>) response.getData()).get(0);
-        driftOrder.setConsignee(consignee);
-        driftOrder.setPhone(phone);
-        driftOrder.setAddress(address);
+        //如果敏感信息字段已经去模糊化，则不更新
+        if (StringUtils.isEmpty(driftOrder.getConsignee()) || driftOrder.getConsignee().contains("*")) {
+            System.out.println("ok1");
+            driftOrder.setConsignee(consignee);
+        }
+        if (StringUtils.isEmpty(driftOrder.getPhone()) || driftOrder.getPhone().contains("*")) {
+            System.out.println("ok2");
+            driftOrder.setPhone(phone);
+        }
+        if (StringUtils.isEmpty(driftOrder.getAddress()) || driftOrder.getAddress().contains("*")) {
+            System.out.println("ok3");
+            driftOrder.setAddress(address);
+        }
         response = orderService.updateDriftOrder(driftOrder);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             response.setData(orderId);

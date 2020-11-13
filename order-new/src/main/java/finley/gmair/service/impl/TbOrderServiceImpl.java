@@ -324,6 +324,8 @@ public class TbOrderServiceImpl implements TbOrderService {
                 interOrder.setShippingType(tmpOrder.getShippingType());
                 interOrder.setLogisticsCompany(tmpOrder.getLogisticsCompany());
                 interOrder.setInvoiceNo(tmpOrder.getInvoiceNo());
+                interOrder.setDivideOrderFee(Double.valueOf(tmpOrder.getDivideOrderFee()));
+                interOrder.setPayment(Double.valueOf(tmpOrder.getPayment()));
                 if (tmpOrder.getConsignTime() != null) {
                     interOrder.setConsignTime(TimeUtil.formatTimeToDatetime(tmpOrder.getConsignTime()));
                 }
