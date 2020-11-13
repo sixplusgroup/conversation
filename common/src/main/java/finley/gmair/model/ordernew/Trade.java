@@ -311,7 +311,7 @@ public class Trade {
      * 获取买家付款时间
      */
     public String getPayTimeStr() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(this.payTime);
     }
 }
