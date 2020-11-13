@@ -316,6 +316,8 @@ public class TbOrderServiceImpl implements TbOrderService {
             resultData.setDescription("子订单为空");
             return resultData;
         } else {
+            // 判断是否是多子订单交易
+            boolean multiSubOrders = tbOrders.size() > 1;
             for (Order tmpOrder : tbOrders) {
                 finley.gmair.model.ordernew.Order interOrder = new finley.gmair.model.ordernew.Order();
                 interOrder.setOid(tmpOrder.getOid());
@@ -324,6 +326,10 @@ public class TbOrderServiceImpl implements TbOrderService {
                 interOrder.setShippingType(tmpOrder.getShippingType());
                 interOrder.setLogisticsCompany(tmpOrder.getLogisticsCompany());
                 interOrder.setInvoiceNo(tmpOrder.getInvoiceNo());
+                if (multiSubOrders){
+                    // 多子订单项，可能下单后未付款，divide_order_fee为空，之后付款后需要更新这个字段
+                    interOrder.setDivideOrderFee(Double.valueOf(tmpOrder.getDivideOrderFee()));
+                }
                 if (tmpOrder.getConsignTime() != null) {
                     interOrder.setConsignTime(TimeUtil.formatTimeToDatetime(tmpOrder.getConsignTime()));
                 }
