@@ -144,8 +144,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             }else{
                 if (isMultiOrders && tmpOrder.getPartMjzDiscount() != null){
                     // 多子订单且part_mjz_discount（优惠分摊）不为空
-                    ssje = tmpOrder.getNum() * tmpOrder.getPrice() + tmpOrder.getAdjustFee()
-                            - tmpOrder.getDiscountFee() - tmpOrder.getPartMjzDiscount();
+                    ssje = tmpOrder.getPayment() - tmpOrder.getPartMjzDiscount();
                 }else{
                     ssje = tmpOrder.getPayment();
                 }
