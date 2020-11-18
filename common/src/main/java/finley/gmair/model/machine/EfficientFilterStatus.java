@@ -5,7 +5,7 @@ import finley.gmair.model.EnumValue;
 /**
  * @author: Bright Chan
  * @date: 2020/7/25 15:31
- * @description: TODO
+ * @description: EfficientFilterStatus
  */
 public enum EfficientFilterStatus implements EnumValue {
 

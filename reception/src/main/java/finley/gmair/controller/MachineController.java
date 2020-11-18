@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.model.machine.Ownership;
 import finley.gmair.pool.ReceptionPool;
 import finley.gmair.service.*;
@@ -469,6 +470,35 @@ public class MachineController {
     @GetMapping("/text")
     public ResultData getText(String textType) {
         return machineService.getText(textType);
+    }
+
+    /**
+     * 查询设备滤网信息
+     * @param query 查询条件
+     * @return 结果集合
+     */
+    @PostMapping("/filter/info/query")
+    public ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query) {
+        return machineService.queryMachineFilterInfo(query);
+    }
+
+    /**
+     * 查询设备型号名，如GM420
+     * @return 设备型号名集合
+     */
+    @GetMapping("/filter/info/modelName")
+    public ResultData queryMachineModelName() {
+        return machineService.queryMachineModelName();
+    }
+
+    /**
+     * 查询设备型号code，即子型号，如GM420-42A中的42A即为所求
+     * @param modelName 设备型号名，如GM420
+     * @return 设备型号code，如42A
+     */
+    @GetMapping("/filter/info/modelCode")
+    public ResultData queryMachineModelCode(String modelName) {
+        return machineService.queryMachineModelCode(modelName);
     }
 
 
