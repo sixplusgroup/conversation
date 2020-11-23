@@ -52,6 +52,8 @@ public class ConsumerQRcodeController {
     @Autowired
     private MachineEfficientInfoService machineEfficientInfoService;
 
+    private Object lock = new Object();
+
     @RequestMapping(value = "/check/consumerid/accessto/qrcode", method = RequestMethod.POST)
     public ResultData checkConsumerAccesstoQRcode(String consumerId, String qrcode) {
         ResultData result = new ResultData();
@@ -192,20 +194,21 @@ public class ConsumerQRcodeController {
         condition.put("consumerId", consumerId);
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
-        ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to get consumer code bind");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("not find consumer code bind");
-            return result;
-        }
-        ConsumerQRcodeBind consumerQRcodeBind = ((List<ConsumerQRcodeBind>) response.getData()).get(0);
-        //according to the onwership,update the  consumer_qrcode_bind and qrcode table and code_machine_bind table
-        if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
-            new Thread(() -> {
+        synchronized (lock) {
+            ResultData response = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("fail to get consumer code bind");
+                return result;
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("not find consumer code bind");
+                return result;
+            }
+            ConsumerQRcodeBind consumerQRcodeBind = ((List<ConsumerQRcodeBind>) response.getData()).get(0);
+            //according to the onwership,update the  consumer_qrcode_bind and qrcode table and code_machine_bind table
+            if (consumerQRcodeBind.getOwnership() == Ownership.OWNER) {
+//            new Thread(() -> {
                 condition.clear();
                 condition.put("codeValue", qrcode);
                 condition.put("status", QRCodeStatus.ASSIGNED.getValue());
@@ -256,47 +259,54 @@ public class ConsumerQRcodeController {
                         }
                     }
                 }
-            }).start();
-            condition.clear();
-            condition.put("codeValue", qrcode);
-            condition.put("blockFlag", false);
-            ResultData temp = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
-            if (temp.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                List<ConsumerQRcodeBind> list = (List<ConsumerQRcodeBind>) temp.getData();
-                for (ConsumerQRcodeBind cqb : list) {
-                    condition.put("bindId", cqb.getBindId());
-                    condition.put("blockFlag", true);
-                    response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
-                    if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+//            }).start();
+                condition.clear();
+                condition.put("codeValue", qrcode);
+                condition.put("blockFlag", false);
+
+                ResultData temp = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+                if (temp.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    List<ConsumerQRcodeBind> list = (List<ConsumerQRcodeBind>) temp.getData();
+                    if (list.size() > 10) {
+                        logger.error("Current operation will change " + list.size() + " records in the system, operation aborted.");
                         result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                        result.setDescription("fail to set the bindId " + cqb.getBindId() + "'s block flag = true");
+                        result.setDescription("当前操作未被系统允许，请重新尝试");
                         return result;
                     }
+                    for (ConsumerQRcodeBind cqb : list) {
+                        condition.put("bindId", cqb.getBindId());
+                        condition.put("blockFlag", true);
+                        response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
+                        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                            result.setDescription("fail to set the bindId " + cqb.getBindId() + "'s block flag = true");
+                            return result;
+                        }
+                    }
+                } else if (temp.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("fail to unbind the consumer list with qrcode");
+                    return result;
+                } else if (temp.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                    result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                    result.setDescription("not find the consumer list with qrcode");
+                    return result;
                 }
-            } else if (temp.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("fail to unbind the consumer list with qrcode");
-                return result;
-            } else if (temp.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                result.setResponseCode(ResponseCode.RESPONSE_NULL);
-                result.setDescription("not find the consumer list with qrcode");
-                return result;
+            } else {
+                condition.put("bindId", consumerQRcodeBind.getBindId());
+                condition.put("blockFlag", true);
+                response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription("fail to unbind the consumer with the qrcode");
+                    return result;
+                } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    result.setResponseCode(ResponseCode.RESPONSE_OK);
+                    result.setDescription("success to unbind the consumer with the qrcode");
+                }
             }
-        } else {
-            condition.put("bindId", consumerQRcodeBind.getBindId());
-            condition.put("blockFlag", true);
-            response = consumerQRcodeBindService.modifyConsumerQRcodeBind(condition);
-            if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                result.setDescription("fail to unbind the consumer with the qrcode");
-                return result;
-            } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                result.setResponseCode(ResponseCode.RESPONSE_OK);
-                result.setDescription("success to unbind the consumer with the qrcode");
-            }
+            return result;
         }
-
-        return result;
     }
 
     @RequestMapping(value = "/check/device/binded", method = RequestMethod.GET)
