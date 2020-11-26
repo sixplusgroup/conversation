@@ -46,6 +46,12 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
     @Autowired
     private MachineEfficientInformationDao machineEfficientInformationDao;
 
+    @Autowired
+    private AuthConsumerService authConsumerService;
+
+    @Autowired
+    private ConsumerQRcodeBindService consumerQRcodeBindService;
+
     @Transactional
     @Override
     public ResultData createConsumerQRcodeBind(ConsumerQRcodeBind consumerQRcodeBind){
@@ -345,4 +351,46 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             }
         });
     }
+
+    @Override
+    public ResultData queryShare(String codeValue) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("codeValue", codeValue);
+        //只查看分享的列表 不包括自己
+        condition.put("ownership", 1);
+        ResultData resultData = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        List<ConsumerQRcodeBind> consumerQRcodeBindList = (List<ConsumerQRcodeBind>) resultData.getData();
+        if(consumerQRcodeBindList==null){
+            result.setData(null);
+            result.setDescription("没有分享给他人的设备");
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
+        }
+        Map<String,Object> lastMap= new HashMap<>();
+        List<Map<String,Object>> infoList= new ArrayList<>();
+        for(ConsumerQRcodeBind cb:consumerQRcodeBindList){
+            ResultData resultConsumer = authConsumerService.profile(cb.getConsumerId());
+            if(resultConsumer.getData()==null){
+                result.setData(null);
+                result.setDescription("没有对应的用户信息，请重试");
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                return result;
+            }
+            Map<String,Object> consumerVo = (Map<String,Object>)resultConsumer.getData();
+            Map<String,Object> neededInfo= new HashMap<>();
+            neededInfo.put("bindId",cb.getConsumerId());
+            neededInfo.put("name", consumerVo.get("name"));
+            neededInfo.put("createAt", consumerVo.get("createAt"));
+            infoList.add(neededInfo);
+        }
+        lastMap.put("size",infoList.size());
+        lastMap.put("userList",infoList);
+        result.setData(lastMap);
+        result.setDescription("查询成功");
+        return result;
+    }
+
+
 }
