@@ -486,7 +486,7 @@ public class MachineController {
      * 查询设备型号名，如GM420
      * @return 设备型号名集合
      */
-    @GetMapping("/filter/info/modelName")
+    @GetMapping("/filter/info/model/name")
     public ResultData queryMachineModelName() {
         return machineService.queryMachineModelName();
     }
@@ -496,7 +496,7 @@ public class MachineController {
      * @param modelName 设备型号名，如GM420
      * @return 设备型号code，如42A
      */
-    @GetMapping("/filter/info/modelCode")
+    @GetMapping("/filter/info/model/code")
     public ResultData queryMachineModelCode(String modelName) {
         return machineService.queryMachineModelCode(modelName);
     }

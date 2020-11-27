@@ -5,8 +5,10 @@ import finley.gmair.dto.MachinePrimaryFilterInfo;
 import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.model.machine.MachineFilterType;
 import finley.gmair.service.MachineFilterInfoService;
+import finley.gmair.service.ModelEfficientConfigService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.FilterUpdByMQTTConfig;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -26,6 +28,9 @@ public class MachineFilterInfoController {
 
     @Resource
     private MachineFilterInfoService machineFilterInfoService;
+
+    @Resource
+    private ModelEfficientConfigService modelEfficientConfigService;
 
     @PostMapping("/query")
     public ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query) {
@@ -56,7 +61,7 @@ public class MachineFilterInfoController {
         return res;
     }
 
-    @GetMapping("/modelName")
+    @GetMapping("/model/name")
     public ResultData queryMachineModelName() {
         ResultData res = new ResultData();
         List<String> store = machineFilterInfoService.queryMachineModelName();
@@ -64,12 +69,33 @@ public class MachineFilterInfoController {
         return res;
     }
 
-    @GetMapping("/modelCode")
+    @GetMapping("/model/code")
     public ResultData queryMachineModelCode(@RequestParam String modelName) {
         ResultData res = new ResultData();
         List<String> store = machineFilterInfoService.queryMachineModelCode(modelName);
         res.setData(store);
         return res;
+    }
+
+    /**
+     * 获取所有具有高效滤网且是通过MQTT获取Remain来更新滤网状态的设备的滤网提醒配置
+     * @return {@link FilterUpdByMQTTConfig}数组
+     */
+    @GetMapping("/config/updatedByMQTT")
+    public ResultData queryConfigUpdatedByMQTT() {
+        ResultData res = new ResultData();
+        List<FilterUpdByMQTTConfig> store = modelEfficientConfigService.fetchHasFirstRemind();
+        res.setData(store);
+        return res;
+    }
+
+    /**
+     * 获取所有具有高效滤网且是通过公式来更新滤网状态的设备的滤网提醒配置
+     * @return {@link finley.gmair.vo.machine.FilterUpdByFormulaConfig}数组
+     */
+    @GetMapping("/config/updatedByFormula")
+    public ResultData queryConfigUpdatedByFormula() {
+        return null;
     }
 
     private boolean checkParams(MachineFilterInfoQuery query) {

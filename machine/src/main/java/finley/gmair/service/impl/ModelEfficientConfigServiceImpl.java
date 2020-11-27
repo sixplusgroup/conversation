@@ -5,9 +5,11 @@ import finley.gmair.model.machine.ModelEfficientConfig;
 import finley.gmair.service.ModelEfficientConfigService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.FilterUpdByMQTTConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -45,6 +47,11 @@ public class ModelEfficientConfigServiceImpl implements ModelEfficientConfigServ
         result.setData(response.getData());
         result.setDescription("success to find model efficient config");
         return result;
+    }
+
+    @Override
+    public List<FilterUpdByMQTTConfig> fetchHasFirstRemind() {
+        return modelEfficientConfigDao.queryHasFirstRemind();
     }
 
     @Override
