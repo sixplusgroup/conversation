@@ -12,6 +12,8 @@ public class MachineEfficientFilterConfig extends Entity {
 
     private String configId;
 
+    private String modelId;
+
     private boolean tRun;
 
     private int totalTime;
@@ -28,11 +30,11 @@ public class MachineEfficientFilterConfig extends Entity {
         super();
     }
 
-    public MachineEfficientFilterConfig(String configId, boolean tRun, int totalTime,
+    public MachineEfficientFilterConfig(String configId, String modelId, boolean tRun, int totalTime,
                                         double paramOne, double paramTwo,
                                         double firstRemindThreshold, double secondRemindThreshold) {
-        super();
         this.configId = configId;
+        this.modelId = modelId;
         this.tRun = tRun;
         this.totalTime = totalTime;
         this.paramOne = paramOne;
@@ -47,6 +49,14 @@ public class MachineEfficientFilterConfig extends Entity {
 
     public void setConfigId(String configId) {
         this.configId = configId;
+    }
+
+    public String getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(String modelId) {
+        this.modelId = modelId;
     }
 
     public boolean istRun() {

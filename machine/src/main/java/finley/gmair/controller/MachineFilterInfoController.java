@@ -4,10 +4,12 @@ import finley.gmair.dto.MachineEfficientFilterInfo;
 import finley.gmair.dto.MachinePrimaryFilterInfo;
 import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.model.machine.MachineFilterType;
+import finley.gmair.service.MachineEfficientFilterConfigService;
 import finley.gmair.service.MachineFilterInfoService;
 import finley.gmair.service.ModelEfficientConfigService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.FilterUpdByFormulaConfig;
 import finley.gmair.vo.machine.FilterUpdByMQTTConfig;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +34,14 @@ public class MachineFilterInfoController {
     @Resource
     private ModelEfficientConfigService modelEfficientConfigService;
 
+    @Resource
+    private MachineEfficientFilterConfigService machineEfficientFilterConfigService;
+
+    /**
+     * 获取设备滤网信息
+     * @param query 查询条件
+     * @return {@link MachinePrimaryFilterInfo} or {@link MachineEfficientFilterInfo}数组
+     */
     @PostMapping("/query")
     public ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query) {
         ResultData res = new ResultData();
@@ -91,11 +101,14 @@ public class MachineFilterInfoController {
 
     /**
      * 获取所有具有高效滤网且是通过公式来更新滤网状态的设备的滤网提醒配置
-     * @return {@link finley.gmair.vo.machine.FilterUpdByFormulaConfig}数组
+     * @return {@link FilterUpdByFormulaConfig}数组
      */
     @GetMapping("/config/updatedByFormula")
     public ResultData queryConfigUpdatedByFormula() {
-        return null;
+        ResultData res = new ResultData();
+        List<FilterUpdByFormulaConfig> store = machineEfficientFilterConfigService.fetchConfigList();
+        res.setData(store);
+        return res;
     }
 
     private boolean checkParams(MachineFilterInfoQuery query) {
