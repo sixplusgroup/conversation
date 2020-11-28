@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,20 @@ public class MachineEfficientFilterConfigDaoImpl extends BaseDao
         }catch (Exception e) {
             logger.error("insert MachineEfficientFilterConfig failed: " + e.getMessage());
         }
+    }
+
+    @Override
+    public List<MachineEfficientFilterConfig> queryByModelId(String modelId) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("modelId", modelId);
+        try {
+            return sqlSession.selectList
+                    ("gmair.machine.machine_efficient_filter_config.queryByModelId", condition);
+        } catch (Exception e) {
+            logger.error("queryByModelId failed: " + e.getMessage());
+        }
+        return new ArrayList<>();
     }
 
     @Override

@@ -34,6 +34,20 @@
         #{firstRemindThreshold}, #{secondRemindThreshold}, #{blockFlag}, #{createAt})
     </insert>
 
+    <select id="queryByModelId" parameterType="java.util.Map" resultMap="MachineEfficientFilterConfig">
+        SELECT config_id, model_id, t_run, total_time, param_one, param_two,
+        first_remind_threshold, second_remind_threshold,
+        block_flag, create_time
+        FROM gmair_machine.machine_efficient_filter_config
+        WHERE 1 = 1
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test="modelId!= null">
+            AND model_id = #{modelId}
+        </if>
+    </select>
+
     <select id="queryConfigList" resultMap="FilterUpdByFormulaConfig">
         SELECT c.model_id, m.model_name, m.model_code, c.t_run, c.total_time, c.param_one, c.param_two,
         c.first_remind_threshold, c.second_remind_threshold

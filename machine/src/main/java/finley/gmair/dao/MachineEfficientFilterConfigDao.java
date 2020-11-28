@@ -15,6 +15,8 @@ public interface MachineEfficientFilterConfigDao {
 
     void insert(MachineEfficientFilterConfig config);
 
+    List<MachineEfficientFilterConfig> queryByModelId(String modelId);
+
     List<FilterUpdByFormulaConfig> queryConfigList();
 
     void update(Map<String, Object> condition);

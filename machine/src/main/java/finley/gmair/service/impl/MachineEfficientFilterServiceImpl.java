@@ -1,10 +1,7 @@
 package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.dao.MachineEfficientFilterDao;
-import finley.gmair.dao.MachineEfficientInformationDao;
-import finley.gmair.dao.MachineQrcodeBindDao;
-import finley.gmair.dao.ModelEfficientConfigDao;
+import finley.gmair.dao.*;
 import finley.gmair.model.machine.*;
 import finley.gmair.service.*;
 import finley.gmair.util.CalendarUtil;
@@ -17,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -29,8 +27,6 @@ import java.util.*;
 public class MachineEfficientFilterServiceImpl implements MachineEfficientFilterService {
 
     private Logger logger = LoggerFactory.getLogger(MachineEfficientFilterServiceImpl.class);
-
-    private static final int TOTAL_TIME = 2160;
 
     @Autowired
     private MachineEfficientFilterDao machineEfficientFilterDao;
@@ -61,6 +57,9 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
 
     @Autowired
     private MachineEfficientInformationDao machineEfficientInformationDao;
+
+    @Resource
+    private MachineEfficientFilterConfigDao machineEfficientFilterConfigDao;
 
     @Override
     public ResultData fetch(Map<String, Object> condition) {
@@ -458,6 +457,38 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
      * @return 滤网状态
      */
     private EfficientFilterStatus checkSpecifiedFilterStatus(MachineEfficientInformation information) {
+        // 根据qrcode得到modelId
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("codeValue", information.getQrcode());
+        ResultData response = qrCodeService.fetch(condition);
+        String modelId = null;
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            QRCode code = ((List<QRCode>) response.getData()).get(0);
+            modelId = code.getModelId();
+        }
+        if (modelId == null) return EfficientFilterStatus.NO_NEED;
+
+        // 通过modelId得到公式的参数对象集合
+        // 通常会有两个对象，一个是t_run为0时的参数对象，一个是t_run不为0时的参数对象
+        List<MachineEfficientFilterConfig> paramList =
+                machineEfficientFilterConfigDao.queryByModelId(modelId);
+
+        if (paramList.size() < 2) return EfficientFilterStatus.NO_NEED;
+
+        MachineEfficientFilterConfig paramsWithTRun, paramsWithoutTRun;
+        if (paramList.get(0).istRun()) {
+            paramsWithTRun = paramList.get(0);
+            paramsWithoutTRun = paramList.get(1);
+        }
+        else {
+            paramsWithoutTRun = paramList.get(0);
+            paramsWithTRun = paramList.get(1);
+        }
+        if (paramsWithTRun == null || paramsWithoutTRun == null) return EfficientFilterStatus.NO_NEED;
+
+        // 设备滤网总使用寿命
+        int totalTime = paramsWithTRun.getTotalTime();
         // 自上次确认更换到当前的时间（小时）
         int substi = (int) CalendarUtil.hoursBetween(information.getLastConfirmTime(), new Date());
         // 设备在线的运行时间
@@ -467,32 +498,40 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         // 设备所处城市PM2.5在当前周期内大于75的天数
         int abnormal = information.getAbnormal();
         // 剩余可用时间
-        int tAvail = TOTAL_TIME - substi - abnormal * 24 - conti * 24;
+        int tAvail = totalTime - substi - abnormal * 24 - conti * 24;
         // 剩余可运行时间
-        int tRun = TOTAL_TIME - running;
+        int tRun = totalTime - running;
 
         if (tAvail < 0 || tRun < 0) {
             if (tRun == 0) {
-                double res = 0.8 * (1 + Math.abs(tAvail) / (double) TOTAL_TIME);
-                if (res >= 1) {
-                    return EfficientFilterStatus.URGENT_NEED;
-                } else if (res >= 0.8) {
-                    return EfficientFilterStatus.NEED;
-                } else
-                    return EfficientFilterStatus.NO_NEED;
+                return formula(paramsWithoutTRun, tAvail, totalTime, running);
             } else {
-                double res = 0.5 * (1 + Math.abs(tAvail) / (double) TOTAL_TIME) +
-                        0.3 * (1 + Math.abs(running - TOTAL_TIME) / (double) TOTAL_TIME);
-                if (res >= 1) {
-                    return EfficientFilterStatus.URGENT_NEED;
-                } else if (res >= 0.8) {
-                    return EfficientFilterStatus.NEED;
-                } else
-                    return EfficientFilterStatus.NO_NEED;
+                return formula(paramsWithTRun, tAvail, totalTime, running);
             }
         }
         else {
             return EfficientFilterStatus.NO_NEED;
         }
+    }
+
+    /**
+     * 针对非GM280和GM420S类型且具有高效滤网的设备，通过此方法中的公式判断设备滤网处于什么状态
+     * @param config 公式参数
+     * @param tAvail tAvail
+     * @param totalTime totalTime
+     * @param running running
+     * @return 设备滤网状态
+     */
+    private EfficientFilterStatus formula(MachineEfficientFilterConfig config, int tAvail,
+                                          int totalTime, int running) {
+        double res = config.getParamOne() * (1 + Math.abs(tAvail) / (double) totalTime) +
+                config.getParamTwo() *
+                        (1 + Math.abs(running - totalTime) / (double) totalTime);
+        if (res >= config.getSecondRemindThreshold()) {
+            return EfficientFilterStatus.URGENT_NEED;
+        } else if (res >= config.getFirstRemindThreshold()) {
+            return EfficientFilterStatus.NEED;
+        } else
+            return EfficientFilterStatus.NO_NEED;
     }
 }
