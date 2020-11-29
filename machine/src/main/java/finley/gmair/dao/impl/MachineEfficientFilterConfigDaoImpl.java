@@ -62,12 +62,14 @@ public class MachineEfficientFilterConfigDaoImpl extends BaseDao
     }
 
     @Override
-    public void update(Map<String, Object> condition) {
+    public boolean update(Map<String, Object> condition) {
+        int res = 0;
         try{
-            sqlSession.update("gmair.machine.machine_efficient_filter_config.update",
+            res = sqlSession.update("gmair.machine.machine_efficient_filter_config.update",
                                         condition);
         }catch (Exception e){
             logger.error("update failed: " + e.getMessage());
         }
+        return res > 0;
     }
 }

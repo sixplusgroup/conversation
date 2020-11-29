@@ -100,6 +100,21 @@ public class MachineFilterInfoController {
     }
 
     /**
+     * 更新通过MQTT获取Remain来更新滤网状态的设备的滤网提醒配置
+     * @param config 更新值对象
+     * @return 是否成功
+     */
+    @PostMapping("/update/config/updatedByMQTT")
+    public ResultData updateConfigUpdatedByMQTT(@RequestBody FilterUpdByMQTTConfig config) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("modelId", config.getModelId());
+        condition.put("firstRemind", config.getFirstRemind());
+        condition.put("secondRemind", config.getSecondRemind());
+        condition.put("resetHour", config.getResetHour());
+        return modelEfficientConfigService.updateByModelId(condition);
+    }
+
+    /**
      * 获取所有具有高效滤网且是通过公式来更新滤网状态的设备的滤网提醒配置
      * @return {@link FilterUpdByFormulaConfig}数组
      */
@@ -108,6 +123,27 @@ public class MachineFilterInfoController {
         ResultData res = new ResultData();
         List<FilterUpdByFormulaConfig> store = machineEfficientFilterConfigService.fetchConfigList();
         res.setData(store);
+        return res;
+    }
+
+    /**
+     * 更新通过公式来更新滤网状态的设备的滤网提醒配置
+     * @param config 更新值对象
+     * @return 是否成功
+     */
+    @PostMapping("/update/config/updatedByFormula")
+    public ResultData updateConfigUpdatedByFormula(@RequestBody FilterUpdByFormulaConfig config) {
+        ResultData res = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("totalTime", config.getTotalTime());
+        condition.put("paramOne", config.getParamOne());
+        condition.put("paramTwo", config.getParamTwo());
+        condition.put("firstRemindThreshold", config.getFirstRemindThreshold());
+        condition.put("secondRemindThreshold", config.getSecondRemindThreshold());
+        condition.put("modelId", config.getModelId());
+        condition.put("tRun", config.isTRun());
+        boolean updRes = machineEfficientFilterConfigService.update(condition);
+        if (!updRes) res.setResponseCode(ResponseCode.RESPONSE_ERROR);
         return res;
     }
 

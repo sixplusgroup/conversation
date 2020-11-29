@@ -19,5 +19,5 @@ public interface MachineEfficientFilterConfigDao {
 
     List<FilterUpdByFormulaConfig> queryConfigList();
 
-    void update(Map<String, Object> condition);
+    boolean update(Map<String, Object> condition);
 }

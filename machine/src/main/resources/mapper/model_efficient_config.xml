@@ -54,7 +54,7 @@
     </select>
 
     <update id="updateByModelId" parameterType="java.util.Map">
-        UPDATE gmair_machine.model_light_config
+        UPDATE gmair_machine.model_efficient_config
         <set>
             <if test="modelId != null">
                 model_id = #{modelId},

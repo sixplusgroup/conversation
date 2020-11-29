@@ -33,7 +33,7 @@ public class MachineEfficientFilterConfigServiceImpl implements MachineEfficient
     }
 
     @Override
-    public void update(Map<String, Object> condition) {
-        machineEfficientFilterConfigDao.update(condition);
+    public boolean update(Map<String, Object> condition) {
+        return machineEfficientFilterConfigDao.update(condition);
     }
 }

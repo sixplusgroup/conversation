@@ -8,6 +8,8 @@ import finley.gmair.model.machine.Ownership;
 import finley.gmair.pool.ReceptionPool;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
+import finley.gmair.vo.machine.FilterUpdByFormulaConfig;
+import finley.gmair.vo.machine.FilterUpdByMQTTConfig;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -499,6 +501,44 @@ public class MachineController {
     @GetMapping("/filter/info/model/code")
     public ResultData queryMachineModelCode(String modelName) {
         return machineService.queryMachineModelCode(modelName);
+    }
+
+    /**
+     * 获取所有具有高效滤网且是通过MQTT获取Remain来更新滤网状态的设备的滤网提醒配置
+     * @return {@link FilterUpdByMQTTConfig}数组
+     */
+    @GetMapping("/filter/info/config/updatedByMQTT")
+    public ResultData queryConfigUpdatedByMQTT() {
+        return machineService.queryConfigUpdatedByMQTT();
+    }
+
+    /**
+     * 更新通过MQTT获取Remain来更新滤网状态的设备的滤网提醒配置
+     * @param config 更新值对象
+     * @return 是否成功
+     */
+    @PostMapping("/filter/info/update/config/updatedByMQTT")
+    public ResultData updateConfigUpdatedByMQTT(@RequestBody FilterUpdByMQTTConfig config) {
+        return machineService.updateConfigUpdatedByMQTT(config);
+    }
+
+    /**
+     * 获取所有具有高效滤网且是通过公式来更新滤网状态的设备的滤网提醒配置
+     * @return {@link FilterUpdByFormulaConfig}数组
+     */
+    @GetMapping("/filter/info/config/updatedByFormula")
+    public ResultData queryConfigUpdatedByFormula() {
+        return machineService.queryConfigUpdatedByFormula();
+    }
+
+    /**
+     * 更新通过公式来更新滤网状态的设备的滤网提醒配置
+     * @param config 更新值对象
+     * @return 是否成功
+     */
+    @PostMapping("/filter/info/update/config/updatedByFormula")
+    public ResultData updateConfigUpdatedByFormula(@RequestBody FilterUpdByFormulaConfig config) {
+        return machineService.updateConfigUpdatedByFormula(config);
     }
 
 

@@ -17,5 +17,5 @@ public interface MachineEfficientFilterConfigService {
 
     List<FilterUpdByFormulaConfig> fetchConfigList();
 
-    void update(Map<String, Object> condition);
+    boolean update(Map<String, Object> condition);
 }
