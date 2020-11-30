@@ -44,7 +44,7 @@ public class FilterUpdByFormulaConfig {
     private boolean tRun;
 
     /**
-     * 设备滤网总使用寿命
+     * 设备滤网总使用寿命，单位小时
      */
     private int totalTime;
 
