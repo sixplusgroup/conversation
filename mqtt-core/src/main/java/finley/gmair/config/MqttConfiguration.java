@@ -318,7 +318,7 @@ public class MqttConfiguration {
             new Thread(() -> {
                 machineController.updateAlert(machineId, code);
             }).start();
-        }w
+        }
     }
 
     /**

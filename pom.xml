@@ -55,6 +55,7 @@
         <module>fancore</module>
         <module>mqtt-logger</module>
         <module>tmall-genie</module>
+        <module>mqtt-management</module>
     </modules>
 
     <parent>
