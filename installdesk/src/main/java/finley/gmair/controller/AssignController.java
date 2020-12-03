@@ -792,7 +792,6 @@ public class AssignController {
         }
         condition.put("blockFlag", false);
         ResultData response = null;
-        System.out.println(page+" "+pageLength);
         if (page != null && pageLength != null){
             response = assignService.report_fetch(condition , (page-1)*pageLength, pageLength);
         }
