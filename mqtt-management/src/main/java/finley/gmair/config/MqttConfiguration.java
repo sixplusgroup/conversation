@@ -20,6 +20,8 @@ import org.springframework.messaging.MessageHandler;
 import javax.annotation.Resource;
 
 /**
+ * mqtt配置管理类
+ *
  * @author lycheeshell
  * @date 2020/12/3 15:23
  */
@@ -27,14 +29,14 @@ import javax.annotation.Resource;
 @Configuration
 public class MqttConfiguration {
 
-    @Value("${inbound_url}")
-    private String ip;
-
     @Value("${username}")
     private String username;
 
     @Value("${password}")
     private String password;
+
+    @Value("${inbound_url}")
+    private String ip;
 
     @Value("${replica}")
     private boolean isReplica;
@@ -82,8 +84,8 @@ public class MqttConfiguration {
 
     @Bean
     public MessageProducer inbound() {
-        String[] inboundTopic = topicDetail();
-        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopic);
+        String[] inboundTopics = getInboundTopics();
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopics);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(0);
@@ -102,7 +104,7 @@ public class MqttConfiguration {
         };
     }
 
-    private String[] topicDetail() {
+    private String[] getInboundTopics() {
         return null;
     }
 

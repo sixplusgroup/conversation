@@ -1,6 +1,8 @@
 package finley.gmair.model.mqttManagement;
 
-import lombok.Data;
+import finley.gmair.model.Entity;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 消息内容的一条条的属性
@@ -8,8 +10,9 @@ import lombok.Data;
  * @author lycheeshell
  * @date 2020/12/3 22:43
  */
-@Data
-public class Attribute {
+@Getter
+@Setter
+public class Attribute extends Entity {
 
     /**
      * 属性id
@@ -30,4 +33,8 @@ public class Attribute {
      * 该属性是否必须有
      */
     private Boolean required;
+
+    public Attribute() {
+        super();
+    }
 }

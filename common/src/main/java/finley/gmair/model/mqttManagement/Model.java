@@ -7,36 +7,36 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * 消息请求的行为
+ * 机器的型号
  *
  * @author lycheeshell
- * @date 2020/12/3 22:28
+ * @date 2020/12/4 23:35
  */
 @Getter
 @Setter
-public class Action extends Entity {
+public class Model extends Entity {
 
     /**
-     * 行为id
+     * 型号id
      */
-    private String actionId;
+    private String modelId;
 
     /**
-     * 行为标识名称的英文字符串
+     * 型号标识名称的英文字符串
      */
     private String name;
 
     /**
-     * 行为描述说明
+     * 型号描述说明
      */
     private String description;
 
     /**
-     * 行为可以包含哪些属性
+     * 该型号机器的消息可以包含哪些行为
      */
-    private List<Attribute> attributes;
+    private List<Action> actions;
 
-    public Action() {
+    public Model() {
         super();
     }
 
