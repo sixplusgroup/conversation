@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @TableName(value = "scene")
 public class SceneDO {
     @TableId(value = "scene_id", type = IdType.ASSIGN_ID)
-    private Long sceneId;
+    private Long id;
 
     @TableField(value = "consumer_id")
     // 场景所属对象即命令的执行人

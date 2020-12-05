@@ -1,6 +1,5 @@
 package finley.gmair.scene.utils;
 
-import finley.gmair.scene.dto.ErrorCode;
 import finley.gmair.scene.vo.ApiResult;
 
 /**

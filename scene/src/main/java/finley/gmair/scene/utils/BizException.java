@@ -1,4 +1,4 @@
-package finley.gmair.scene.dto;
+package finley.gmair.scene.utils;
 
 /**
  * @author lyy

@@ -1,8 +1,8 @@
 package finley.gmair.scene.config;
 
 
-import finley.gmair.scene.dto.BizException;
-import finley.gmair.scene.dto.ErrorCode;
+import finley.gmair.scene.utils.BizException;
+import finley.gmair.scene.utils.ErrorCode;
 import finley.gmair.scene.utils.ResultUtil;
 import finley.gmair.scene.vo.ApiResult;
 import lombok.extern.slf4j.Slf4j;
