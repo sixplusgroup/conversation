@@ -7,5 +7,7 @@
         <mapper resource="mapper/topic.xml"></mapper>
         <mapper resource="mapper/firmware.xml"></mapper>
         <mapper resource="mapper/machinealert.xml"></mapper>
+        <mapper resource="mapper/model.xml"></mapper>
+        <mapper resource="mapper/action.xml"></mapper>
     </mappers>
 </configuration>

@@ -44,14 +44,4 @@ public class ActionChecker {
 
     }
 
-    /**
-     * 在内存中删除行为可以包含的属性
-     *
-     * @param actionName  行为名称
-     * @param attribute 属性
-     */
-    public void removeAttribute(String actionName, Attribute attribute) {
-
-    }
-
 }
