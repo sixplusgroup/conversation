@@ -1,7 +1,6 @@
 package finley.gmair.scene.service;
 
 import finley.gmair.scene.dto.SceneDTO;
-import finley.gmair.scene.vo.ApiResult;
 
 import java.util.List;
 
@@ -26,8 +25,11 @@ public interface SceneService {
     SceneDTO getSceneBySceneId(long sceneId);
 
     // 启动场景（运行场景内的所有设备）
-    ApiResult startScene();
+    void startScene(long sceneId);
 
     // 结束场景（关闭场景内的所有设备）
-    ApiResult stopScene();
+    void stopScene(long sceneId);
+
+    // 根据场景ID获取场景内的所有设备二维码
+    List<String> getSceneQrCodesBySceneId(long sceneId);
 }

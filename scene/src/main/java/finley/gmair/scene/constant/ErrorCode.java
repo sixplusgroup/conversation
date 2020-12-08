@@ -1,4 +1,4 @@
-package finley.gmair.scene.utils;
+package finley.gmair.scene.constant;
 
 /**
  * @author lyy

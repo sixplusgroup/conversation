@@ -1,5 +1,7 @@
 package finley.gmair.scene.utils;
 
+import finley.gmair.scene.constant.ErrorCode;
+
 /**
  * @author lyy
  * @date 2020-07-05 11:18 下午

@@ -1,13 +1,13 @@
 package finley.gmair.scene.service.impl;
 
-import finley.gmair.scene.client.MachineControlClient;
+import finley.gmair.scene.client.MachineClient;
 import finley.gmair.scene.dao.SceneOperationDAO;
 import finley.gmair.scene.dto.SceneOperationDTO;
 import finley.gmair.scene.entity.SceneOperationCommand;
 import finley.gmair.scene.entity.SceneOperationDO;
 import finley.gmair.scene.service.SceneOperationService;
 import finley.gmair.scene.utils.BizException;
-import finley.gmair.scene.utils.ErrorCode;
+import finley.gmair.scene.constant.ErrorCode;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.BeanUtils;
@@ -28,7 +28,7 @@ public class SceneOperationServiceImpl implements SceneOperationService {
     private SceneOperationDAO sceneOperationDAO;
 
     @Resource
-    private MachineControlClient machineControlClient;
+    private MachineClient machineClient;
 
     @Override
     public boolean createSceneOperation(SceneOperationDTO sceneOperationDTO) {
@@ -84,7 +84,7 @@ public class SceneOperationServiceImpl implements SceneOperationService {
         sceneOperationDTO.getCommands().forEach(command -> {
             String component = command.getCommandComponent();
             String operation = command.getCommandOperation();
-            ResultData resultData = machineControlClient.chooseComponent(command.getQrCode(), component, operation);
+            ResultData resultData = machineClient.chooseComponent(command.getQrCode(), component, operation);
             if (!resultData.getResponseCode().equals(ResponseCode.RESPONSE_OK)) {
                 // todo 打日志记录下来
                 System.out.println("日志记录某设备操作失败");

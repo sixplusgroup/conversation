@@ -30,10 +30,18 @@ public class SceneController {
         return ResultUtil.success();
     }
 
+    // 根据用户ID获取该用户所包含的全部场景信息
     @GetMapping("/list/cid")
     public ApiResult getScenesByConsumerId(String consumerId) {
         List<SceneDTO> result = sceneService.getScenesByConsumerId(consumerId);
         return ResultUtil.success("场景查询成功", result);
+    }
+
+    // 根据场景ID获取场景信息
+    @GetMapping("/{sid}")
+    public ApiResult getSceneBySid(@PathVariable(value = "sid") long sceneId) {
+        SceneDTO sceneDTO = sceneService.getSceneBySceneId(sceneId);
+        return ResultUtil.success("场景获取成功", sceneDTO);
     }
 
     @GetMapping("/sid")
