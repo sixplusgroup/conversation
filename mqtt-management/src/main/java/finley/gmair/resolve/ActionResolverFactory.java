@@ -1,6 +1,4 @@
-package finley.gmair.factory;
-
-import finley.gmair.resolve.ActionResolver;
+package finley.gmair.resolve;
 
 import java.util.HashMap;
 import java.util.Map;
