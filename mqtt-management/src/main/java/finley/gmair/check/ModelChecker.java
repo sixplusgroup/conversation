@@ -73,5 +73,14 @@ public class ModelChecker {
         }
     }
 
+    /**
+     * 在内存中删除某型号机器消息可以包含的行为
+     *
+     * 该方法废弃，方法没有实现，因为可能会造成之前售出的设备发出的消息所含有的行为无法通过校验
+     */
+    @Deprecated
+    public void removeAction() {
+    }
+
 }
 

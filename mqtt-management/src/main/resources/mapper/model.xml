@@ -55,18 +55,18 @@
     </insert>
 
     <select id="queryModelsWithAction" resultMap="collectionMap">
-        SELECT
+        select
         m.model_id, m.name, m.description, m.block_flag, m.create_time,
         a.action_id as action_id, a.name as action_name, a.description as action_description, a.block_flag as action_block_flag, a.create_time as action_create_time
-        FROM
+        from
         gmair_mqtt_management.model m
-        LEFT JOIN
+        left join
         gmair_mqtt_management.model_action_relate r
-        ON
+        on
         m.model_id = r.model_id
-        LEFT JOIN
+        left join
         gmair_mqtt_management.action a
-        ON
+        on
         a.action_id = r.action_id
     </select>
 
