@@ -10,8 +10,10 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
+ * 机器型号服务
+ *
  * @author lycheeshell
- * @date 2020/12/9 01:28
+ * @date 2020/12/10 19:02
  */
 @Service
 public class ModelServiceImpl implements ModelService {
