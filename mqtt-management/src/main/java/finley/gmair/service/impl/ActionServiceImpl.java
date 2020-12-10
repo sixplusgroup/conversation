@@ -41,7 +41,7 @@ public class ActionServiceImpl implements ActionService {
         Action action = new Action();
         if (null == existActions || existActions.size() == 0) {
             //不存在则新增行为
-            action.setActionId(IDGenerator.generate("ACTN"));
+            action.setActionId(IDGenerator.generate("ACTI"));
             action.setName(name);
             action.setDescription(description);
             affectedLines = actionDao.insertAction(action);

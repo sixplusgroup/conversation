@@ -43,7 +43,7 @@ public class ModelServiceImpl implements ModelService {
         Model model = new Model();
         if (null == existModels || existModels.size() == 0) {
             //不存在则新增机器
-            model.setModelId(IDGenerator.generate("MODL"));
+            model.setModelId(IDGenerator.generate("MODE"));
             model.setName(name);
             model.setDescription(description);
             affectedLines = modelDao.insertModel(model);
