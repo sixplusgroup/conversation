@@ -24,6 +24,14 @@ public interface ActionDao {
     int insertAction(Action action);
 
     /**
+     * 更新行为
+     *
+     * @param action 行为信息
+     * @return 更新条数
+     */
+    int updateAction(Action action);
+
+    /**
      * 根据行为id查询不包含其属性的行为信息
      *
      * @param actionId 行为id
@@ -42,7 +50,7 @@ public interface ActionDao {
     /**
      * 新增行为与属性的对应关系
      *
-     * @param actionId 行为id
+     * @param actionId    行为id
      * @param attributeId 属性id
      * @return 新增条数
      */

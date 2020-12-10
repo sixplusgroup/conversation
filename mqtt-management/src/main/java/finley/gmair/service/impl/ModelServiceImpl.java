@@ -26,7 +26,7 @@ public class ModelServiceImpl implements ModelService {
      *
      * @param name        型号标识名称的英文字符串
      * @param description 机器型号的描述说明
-     * @return 新增条数
+     * @return 影响条数
      */
     @Override
     public int saveModel(String name, String description) throws Exception {

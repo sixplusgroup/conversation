@@ -17,7 +17,7 @@ public interface ModelService {
      *
      * @param name        型号标识名称的英文字符串
      * @param description 机器型号的描述说明
-     * @return 新增条数
+     * @return 影响条数
      * @throws Exception 异常
      */
     int saveModel(String name, String description) throws Exception;

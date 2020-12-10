@@ -24,7 +24,7 @@
         values(#{modelId}, #{name}, #{description}, #{blockFlag}, #{createAt})
     </insert>
 
-    <update id="update" parameterType="finley.gmair.model.mqttManagement.Model">
+    <update id="updateModel" parameterType="finley.gmair.model.mqttManagement.Model">
         update gmair_mqtt_management.model
         <set>
             <if test="description != null">
