@@ -13,14 +13,14 @@ import java.util.List;
 public interface ModelService {
 
     /**
-     * 新增机器型号
+     * 保存机器型号
      *
      * @param name        型号标识名称的英文字符串
      * @param description 机器型号的描述说明
      * @return 新增条数
      * @throws Exception 异常
      */
-    int insertModel(String name, String description) throws Exception;
+    int saveModel(String name, String description) throws Exception;
 
     /**
      * 根据型号id查询不包含其行为的型号信息

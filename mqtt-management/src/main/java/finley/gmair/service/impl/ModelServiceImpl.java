@@ -20,14 +20,14 @@ public class ModelServiceImpl implements ModelService {
     private ModelDao modelDao;
 
     /**
-     * 新增机器型号
+     * 保存机器型号
      *
      * @param name        型号标识名称的英文字符串
      * @param description 机器型号的描述说明
      * @return 新增条数
      */
     @Override
-    public int insertModel(String name, String description) throws Exception {
+    public int saveModel(String name, String description) throws Exception {
         //检查该机器型号是否已经存在
         Model queryModel = new Model();
         queryModel.setName(name);
