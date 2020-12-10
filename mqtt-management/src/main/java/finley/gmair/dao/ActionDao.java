@@ -4,7 +4,6 @@ import finley.gmair.model.mqttManagement.Action;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public interface ActionDao {
      * @param actionId 行为id
      * @return 行为
      */
-    Action queryOneWithoutAttribute(@NotNull String actionId);
+    Action queryOneWithoutAttribute(String actionId);
 
     /**
      * 查询不包含其属性的行为信息
@@ -62,6 +61,6 @@ public interface ActionDao {
      * @param modelId 型号id
      * @return 行为列表
      */
-    List<Action> queryActionsByModel(@NotNull String modelId);
+    List<Action> queryActionsByModel(String modelId);
 
 }

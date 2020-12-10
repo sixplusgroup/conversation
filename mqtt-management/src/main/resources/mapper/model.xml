@@ -24,6 +24,17 @@
         values(#{modelId}, #{name}, #{description}, #{blockFlag}, #{createAt})
     </insert>
 
+    <update id="update" parameterType="finley.gmair.model.mqttManagement.Model">
+        update gmair_mqtt_management.model
+        <set>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            model_id = #{modelId}
+        </set>
+        where model_id = #{modelId}
+    </update>
+
     <select id="queryOneWithoutAction" resultMap="modelMap" parameterType="java.lang.String">
         select model_id, name, description, block_flag, create_time
         from gmair_mqtt_management.model

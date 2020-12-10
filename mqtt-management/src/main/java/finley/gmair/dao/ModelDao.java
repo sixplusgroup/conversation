@@ -4,7 +4,6 @@ import finley.gmair.model.mqttManagement.Model;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -25,12 +24,20 @@ public interface ModelDao {
     int insertModel(Model model);
 
     /**
+     * 更新机器信息
+     *
+     * @param model 机器型号信息
+     * @return  更新行数
+     */
+    int updateModel(Model model);
+
+    /**
      * 根据型号id查询不包含其行为的型号信息
      *
      * @param modelId 型号id
      * @return 型号
      */
-    Model queryOneWithoutAction(@NotNull String modelId);
+    Model queryOneWithoutAction(String modelId);
 
     /**
      * 查询不包含其行为的型号信息

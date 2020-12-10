@@ -3,7 +3,6 @@ package finley.gmair.dao;
 import finley.gmair.model.mqttManagement.Attribute;
 import org.apache.ibatis.annotations.Mapper;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -29,7 +28,7 @@ public interface AttributeDao {
      * @param attributeId 属性id
      * @return 属性
      */
-    Attribute queryOne(@NotNull String attributeId);
+    Attribute queryOne(String attributeId);
 
     /**
      * 查询属性信息
@@ -45,6 +44,6 @@ public interface AttributeDao {
      * @param actionId 行为id
      * @return 属性列表
      */
-    List<Attribute> queryAttributesByAction(@NotNull String actionId);
+    List<Attribute> queryAttributesByAction(String actionId);
 
 }
