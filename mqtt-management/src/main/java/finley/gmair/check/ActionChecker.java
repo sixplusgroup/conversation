@@ -72,7 +72,7 @@ public class ActionChecker {
 
         // 2.检查必传属性在json中是否含有
         for (Attribute normalAttribute : checkAttributes) {
-            if (normalAttribute.isRequired() && (!payload.containsKey(normalAttribute.getName()))) {
+            if (normalAttribute.getRequired() && (!payload.containsKey(normalAttribute.getName()))) {
                 return false;
             }
         }

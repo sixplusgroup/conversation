@@ -32,7 +32,7 @@ public class Attribute extends Entity {
     /**
      * 该属性是否必须有
      */
-    private boolean required;
+    private Boolean required;
 
     public Attribute() {
         super();

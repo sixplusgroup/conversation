@@ -23,6 +23,14 @@ public interface AttributeDao {
     int insertAttribute(Attribute attribute);
 
     /**
+     * 更新属性
+     *
+     * @param attribute 属性信息
+     * @return 更新条数
+     */
+    int updateAttribute(Attribute attribute);
+
+    /**
      * 根据属性id查询属性信息
      *
      * @param attributeId 属性id

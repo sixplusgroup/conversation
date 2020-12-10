@@ -15,6 +15,20 @@
         values(#{attributeId}, #{name}, #{description}, #{required}, #{blockFlag}, #{createAt})
     </insert>
 
+    <update id="updateAttribute" parameterType="finley.gmair.model.mqttManagement.Attribute">
+        update gmair_mqtt_management.attribute
+        <set>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="required != null">
+                required = #{required},
+            </if>
+            attribute_id = #{attributeId}
+        </set>
+        where attribute_id = #{attributeId}
+    </update>
+
     <select id="queryOne" resultMap="attributeMap" parameterType="java.lang.String">
         select attribute_id, name, description, required, block_flag, create_time
         from gmair_mqtt_management.attribute
