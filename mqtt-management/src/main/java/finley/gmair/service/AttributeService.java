@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.exception.MqttBusinessException;
 import finley.gmair.model.mqttManagement.Action;
 import finley.gmair.model.mqttManagement.Attribute;
 
@@ -20,9 +21,9 @@ public interface AttributeService {
      * @param description 属性描述
      * @param required    该属性是否必须有
      * @return 新增条数
-     * @throws Exception 异常
+     * @throws MqttBusinessException 异常
      */
-    int saveAttribute(String name, String description, Boolean required) throws Exception;
+    int saveAttribute(String name, String description, Boolean required) throws MqttBusinessException;
 
     /**
      * 根据属性id查询属性信息

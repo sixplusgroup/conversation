@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ActionDao;
+import finley.gmair.exception.MqttBusinessException;
 import finley.gmair.model.mqttManagement.Action;
 import finley.gmair.service.ActionService;
 import finley.gmair.util.IDGenerator;
@@ -25,16 +26,16 @@ public class ActionServiceImpl implements ActionService {
      * @param name        行为标识名称的英文字符串
      * @param description 行为描述说明
      * @return 新增条数
-     * @throws Exception 异常
+     * @throws MqttBusinessException 异常
      */
     @Override
-    public int saveAction(String name, String description) throws Exception {
+    public int saveAction(String name, String description) throws MqttBusinessException {
         //检查该行为是否已经存在
         Action queryAction = new Action();
         queryAction.setName(name);
         List<Action> existActions = actionDao.queryActionsWithoutAttribute(queryAction);
         if (existActions != null && existActions.size() > 1) {
-            throw new Exception("该名称的行为数量超过一个");
+            throw new MqttBusinessException("该名称的行为数量超过一个");
         }
 
         int affectedLines;

@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.AttributeDao;
+import finley.gmair.exception.MqttBusinessException;
 import finley.gmair.model.mqttManagement.Attribute;
 import finley.gmair.service.AttributeService;
 import finley.gmair.util.IDGenerator;
@@ -26,16 +27,16 @@ public class AttributeServiceImpl implements AttributeService {
      * @param description 属性描述
      * @param required    该属性是否必须有
      * @return 新增条数
-     * @throws Exception 异常
+     * @throws MqttBusinessException 异常
      */
     @Override
-    public int saveAttribute(String name, String description, Boolean required) throws Exception {
+    public int saveAttribute(String name, String description, Boolean required) throws MqttBusinessException {
         //检查该属性是否已经存在
         Attribute queryAttribute = new Attribute();
         queryAttribute.setName(name);
         List<Attribute> existAttributes = attributeDao.queryAttributes(queryAttribute);
         if (existAttributes != null && existAttributes.size() > 1) {
-            throw new Exception("该名称的属性数量超过一个");
+            throw new MqttBusinessException("该名称的属性数量超过一个");
         }
 
         int affectedLines;

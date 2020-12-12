@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.exception.MqttBusinessException;
 import finley.gmair.model.mqttManagement.Action;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,9 +20,9 @@ public interface ActionService {
      * @param name        行为标识名称的英文字符串
      * @param description 行为描述说明
      * @return 新增条数
-     * @throws Exception 异常
+     * @throws MqttBusinessException 异常
      */
-    int saveAction(String name, String description) throws Exception;
+    int saveAction(String name, String description) throws MqttBusinessException;
 
     /**
      * 根据行为id查询不包含其属性的行为信息
