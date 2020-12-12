@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.ModelDao;
+import finley.gmair.exception.MqttBusinessException;
 import finley.gmair.model.mqttManagement.Model;
 import finley.gmair.service.ModelService;
 import finley.gmair.util.IDGenerator;
@@ -27,15 +28,16 @@ public class ModelServiceImpl implements ModelService {
      * @param name        型号标识名称的英文字符串
      * @param description 机器型号的描述说明
      * @return 影响条数
+     * @throws MqttBusinessException 异常
      */
     @Override
-    public int saveModel(String name, String description) throws Exception {
+    public int saveModel(String name, String description) throws MqttBusinessException {
         //检查该机器型号是否已经存在
         Model queryModel = new Model();
         queryModel.setName(name);
         List<Model> existModels = modelDao.queryModelsWithoutAction(queryModel);
         if (existModels != null && existModels.size() > 1) {
-            throw new Exception("该名称的机器型号数量超过一个");
+            throw new MqttBusinessException("该名称的机器型号数量超过一个");
         }
 
         int affectedLines;

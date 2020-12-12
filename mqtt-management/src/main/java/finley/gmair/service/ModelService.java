@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.exception.MqttBusinessException;
 import finley.gmair.model.mqttManagement.Model;
 
 import java.util.List;
@@ -18,9 +19,9 @@ public interface ModelService {
      * @param name        型号标识名称的英文字符串
      * @param description 机器型号的描述说明
      * @return 影响条数
-     * @throws Exception 异常
+     * @throws MqttBusinessException 异常
      */
-    int saveModel(String name, String description) throws Exception;
+    int saveModel(String name, String description) throws MqttBusinessException;
 
     /**
      * 根据型号id查询不包含其行为的型号信息
