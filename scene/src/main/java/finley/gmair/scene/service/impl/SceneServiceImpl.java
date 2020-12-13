@@ -15,6 +15,7 @@ import finley.gmair.scene.service.SceneService;
 import finley.gmair.scene.utils.BizException;
 import finley.gmair.scene.utils.RedisUtil;
 import finley.gmair.util.ResultData;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -25,6 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class SceneServiceImpl implements SceneService {
 
     @Resource

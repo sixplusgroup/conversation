@@ -10,6 +10,7 @@ import finley.gmair.scene.utils.BizException;
 import finley.gmair.scene.constant.ErrorCode;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
  * @create : 2020-12-04 17:37
  **/
 @Service
+@Slf4j
 public class SceneOperationServiceImpl implements SceneOperationService {
 
     @Resource
@@ -40,6 +42,7 @@ public class SceneOperationServiceImpl implements SceneOperationService {
         if (tmp.getId().isEmpty()) {
             // 场景命令写入失败
             // todo 打日志
+            log.error("create scene operations failed");
             throw new BizException(ErrorCode.UNKNOWN_ERROR);
         }
         return true;
@@ -87,6 +90,7 @@ public class SceneOperationServiceImpl implements SceneOperationService {
             ResultData resultData = machineClient.chooseComponent(command.getQrCode(), component, operation);
             if (!resultData.getResponseCode().equals(ResponseCode.RESPONSE_OK)) {
                 // todo 打日志记录下来
+                log.error("command execute failed, qrCode:{}", command.getQrCode());
                 System.out.println("日志记录某设备操作失败");
             }
         });
