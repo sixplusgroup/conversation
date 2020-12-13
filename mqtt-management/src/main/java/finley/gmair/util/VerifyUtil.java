@@ -15,14 +15,12 @@ public class VerifyUtil {
      *
      * @param condition 校验条件
      * @param message   异常的信息
-     * @return 校验成功返回true
-     * @throws MqttBusinessException 业务逻辑异常
+     * @throws MqttBusinessException 校验条件不成立,抛出异常
      */
-    public static boolean verify(boolean condition, String message) throws MqttBusinessException {
-        if (condition) {
+    public static void verify(boolean condition, String message) throws MqttBusinessException {
+        if (!condition) {
             throw new MqttBusinessException(message);
         }
-        return true;
     }
 
 }

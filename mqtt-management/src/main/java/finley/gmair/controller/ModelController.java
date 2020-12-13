@@ -62,7 +62,7 @@ public class ModelController {
      * @return 型号列表
      * @throws MqttBusinessException 异常
      */
-    @GetMapping(value = "queryModels")
+    @GetMapping(value = "/queryModels")
     public ResultData queryModels(String name) throws MqttBusinessException {
         VerifyUtil.verify(StringUtils.isNotEmpty(name), "型号标示名称为空");
 
