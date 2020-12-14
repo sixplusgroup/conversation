@@ -30,6 +30,10 @@ import java.util.Objects;
 @Service
 public class CrmSyncServiceImpl implements CrmSyncService {
     private static final Long DRIFT_NUM_IID = 618391118089L;
+
+    @Value("${crm.qdly.tmall}")
+    private String QDLY;
+
     @Autowired
     private SkuItemMapper skuItemMapper;
 
@@ -123,7 +127,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
             CrmOrderDTO newCrmOrder = new CrmOrderDTO();
             // 渠道来源
-            newCrmOrder.setQdly("58");
+             newCrmOrder.setQdly(QDLY);
             // 机器型号（根据sku_id和num_iid去获取）
             String machineModel = getMachineModel(tmpOrder);
             // 属性名称
