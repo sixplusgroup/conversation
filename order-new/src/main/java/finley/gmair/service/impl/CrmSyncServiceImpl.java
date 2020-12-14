@@ -123,8 +123,8 @@ public class CrmSyncServiceImpl implements CrmSyncService {
         // 判断是否是多子订单交易
         boolean isMultiOrders = orders.size() > 1;
         for (Order tmpOrder : orders) {
-            // 甲醛检测仪租赁和检测试纸不同步到CRM
-            if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
+            // 甲醛检测仪租赁和检测试纸也同步到CRM
+            // if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
             CrmOrderDTO newCrmOrder = new CrmOrderDTO();
             // 渠道来源
              newCrmOrder.setQdly(QDLY);
