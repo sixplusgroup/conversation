@@ -1,6 +1,8 @@
 package finley.gmair.config;
 
+import finley.gmair.model.mqttManagement.Topic;
 import finley.gmair.mqtt.MqttProperties;
+import finley.gmair.service.TopicService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * mqtt配置管理类
@@ -43,6 +46,9 @@ public class MqttConfiguration {
 
     @Resource
     private MqttProperties mqttProperties;
+
+    @Resource
+    private TopicService topicService;
 
     /**
      * 实现MqttOutbound
@@ -104,8 +110,18 @@ public class MqttConfiguration {
         };
     }
 
+    /**
+     * 获取当前需订阅的所有topic
+     *
+     * @return 订阅的主题组成的数组
+     */
     private String[] getInboundTopics() {
-        return null;
+        List<Topic> topics = topicService.queryTopics(null, null, null);
+        String[] result = new String[topics.size()];
+        for (int i = 0; i < topics.size(); i++) {
+            result[i] = topics.get(i).getTopicDetail();
+        }
+        return result;
     }
 
 }
