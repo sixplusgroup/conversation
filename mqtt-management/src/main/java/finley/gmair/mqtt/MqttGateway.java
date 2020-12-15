@@ -34,7 +34,7 @@ public interface MqttGateway {
      * 向指定主题发送消息，并指定服务质量
      *
      * @param topic   主题
-     * @param qos     服务质量
+     * @param qos     服务质量（0 最多一次，数据可能丢失; 1 至少一次，数据可能重复; 2 只有一次，有且只有一次;最耗性能）
      * @param payload 发送的内容
      */
     void sendToMqtt(@Header(MqttHeaders.TOPIC) String topic, @Header(MqttHeaders.QOS) int qos, String payload);

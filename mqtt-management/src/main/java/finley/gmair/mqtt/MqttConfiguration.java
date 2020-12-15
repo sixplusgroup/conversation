@@ -1,4 +1,4 @@
-package finley.gmair.config;
+package finley.gmair.mqtt;
 
 import finley.gmair.model.mqttManagement.Topic;
 import finley.gmair.mqtt.MqttProperties;
@@ -50,9 +50,6 @@ public class MqttConfiguration {
     @Resource
     private TopicService topicService;
 
-    /**
-     * 实现MqttOutbound
-     */
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
         String[] serverUrls = mqttProperties.getOutbound().getUrls().split(",");
@@ -66,6 +63,15 @@ public class MqttConfiguration {
         return factory;
     }
 
+    /**
+     * ----------------------------- 实现MqttOutbound start -----------------------------
+     */
+
+    @Bean
+    public MessageChannel mqttOutboundChannel() {
+        return new DirectChannel();
+    }
+
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler mqttOutbound() {
@@ -75,14 +81,14 @@ public class MqttConfiguration {
         return messageHandler;
     }
 
-    @Bean
-    public MessageChannel mqttOutboundChannel() {
-        return new DirectChannel();
-    }
+    /**
+     * ----------------------------- 实现MqttOutbound end -----------------------------
+     */
 
     /**
-     * 实现MqttInbound
+     * ----------------------------- 实现MqttInbound start -----------------------------
      */
+
     @Bean
     public MessageChannel mqttInputChannel() {
         return new DirectChannel();
@@ -98,6 +104,10 @@ public class MqttConfiguration {
         adapter.setOutputChannel(mqttInputChannel());
         return adapter;
     }
+
+    /**
+     * ----------------------------- 实现MqttInbound end -----------------------------
+     */
 
     @Bean
     @ServiceActivator(inputChannel = "mqttInputChannel")
