@@ -117,11 +117,15 @@ public class MqttConfiguration {
      */
     private String[] getInboundTopics() {
         List<Topic> topics = topicService.queryTopics(null, null, null);
-        String[] result = new String[topics.size()];
-        for (int i = 0; i < topics.size(); i++) {
-            result[i] = topics.get(i).getTopicDetail();
+        if (topics != null && topics.size() > 0) {
+            String[] result = new String[topics.size()];
+            for (int i = 0; i < topics.size(); i++) {
+                result[i] = topics.get(i).getTopicDetail();
+            }
+            return result;
+        } else {
+            throw new RuntimeException("数据库里订阅的topic数量为0");
         }
-        return result;
     }
 
 }
