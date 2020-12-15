@@ -71,7 +71,7 @@ public class MqttConfiguration {
     public MessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttProperties.getOutbound().getClientId(), mqttClientFactory());
         messageHandler.setAsync(true);
-        //messageHandler.setDefaultTopic(mqttProperties.getOutbound().getTopic());
+        messageHandler.setDefaultTopic(mqttProperties.getOutbound().getTopic());
         return messageHandler;
     }
 

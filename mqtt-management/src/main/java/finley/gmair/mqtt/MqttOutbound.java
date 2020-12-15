@@ -17,17 +17,12 @@ public class MqttOutbound {
     private String urls;
 
     /**
-     * 连接的用户名
-     */
-    private String username;
-
-    /**
-     * 连接的密码
-     */
-    private String password;
-
-    /**
      * clientId
      */
     private String clientId;
+
+    /**
+     * 默认主题
+     */
+    private String topic;
 }
