@@ -1,7 +1,6 @@
 package finley.gmair.mqtt;
 
 import finley.gmair.model.mqttManagement.Topic;
-import finley.gmair.mqtt.MqttProperties;
 import finley.gmair.service.TopicService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -63,9 +62,7 @@ public class MqttConfiguration {
         return factory;
     }
 
-    /**
-     * ----------------------------- 实现MqttOutbound start -----------------------------
-     */
+//    ----------------------------- 实现MqttOutbound start -----------------------------
 
     @Bean
     public MessageChannel mqttOutboundChannel() {
@@ -81,13 +78,9 @@ public class MqttConfiguration {
         return messageHandler;
     }
 
-    /**
-     * ----------------------------- 实现MqttOutbound end -----------------------------
-     */
+//     ----------------------------- 实现MqttOutbound end -----------------------------
 
-    /**
-     * ----------------------------- 实现MqttInbound start -----------------------------
-     */
+//     ----------------------------- 实现MqttInbound start -----------------------------
 
     @Bean
     public MessageChannel mqttInputChannel() {
@@ -105,9 +98,7 @@ public class MqttConfiguration {
         return adapter;
     }
 
-    /**
-     * ----------------------------- 实现MqttInbound end -----------------------------
-     */
+//     ----------------------------- 实现MqttInbound end -----------------------------
 
     @Bean
     @ServiceActivator(inputChannel = "mqttInputChannel")
