@@ -1,4 +1,4 @@
-package finley.gmair.util;
+package finley.gmair.mqtt;
 
 /**
  * mqtt工具类
