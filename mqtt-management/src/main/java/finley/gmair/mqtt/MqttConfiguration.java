@@ -2,6 +2,7 @@ package finley.gmair.mqtt;
 
 import finley.gmair.model.mqttManagement.Topic;
 import finley.gmair.service.TopicService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,6 +50,8 @@ public class MqttConfiguration {
     @Resource
     private TopicService topicService;
 
+    private MqttPahoMessageDrivenChannelAdapter adapter;
+
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
         String[] serverUrls = mqttProperties.getOutbound().getUrls().split(",");
@@ -90,7 +93,7 @@ public class MqttConfiguration {
     @Bean
     public MessageProducer inbound() {
         String[] inboundTopics = getInboundTopics();
-        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopics);
+        adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopics);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(0);
@@ -126,6 +129,48 @@ public class MqttConfiguration {
             return result;
         } else {
             throw new RuntimeException("数据库里订阅的topic数量为0");
+        }
+    }
+
+    /**
+     * 添加订阅的主题
+     *
+     * @param topics 新加的主题
+     */
+    public void addInboundTopic(String[] topics) {
+        checkAndInitAdapter();
+        if (topics != null) {
+            for (String topic : topics) {
+                if (StringUtils.isNotEmpty(topic)) {
+                    adapter.addTopic(topic, 0);
+                }
+            }
+        }
+    }
+
+    /**
+     * 取消主题的订阅
+     *
+     * @param topics 取消订阅的主题
+     */
+    public void removeInboundTopic(String[] topics) {
+        checkAndInitAdapter();
+        if (topics != null) {
+            adapter.removeTopic(topics);
+        }
+    }
+
+    /**
+     * 检查adapter是否没有初始化，如果没有初始化则进行初始化
+     */
+    private void checkAndInitAdapter() {
+        if (adapter == null) {
+            String[] inboundTopics = getInboundTopics();
+            adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopics);
+            adapter.setCompletionTimeout(5000);
+            adapter.setConverter(new DefaultPahoMessageConverter());
+            adapter.setQos(0);
+            adapter.setOutputChannel(mqttInputChannel());
         }
     }
 

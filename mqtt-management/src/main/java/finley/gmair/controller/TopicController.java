@@ -42,6 +42,20 @@ public class TopicController {
     }
 
     /**
+     * 删除主题
+     *
+     * @param topicId 主题id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    @PostMapping(value = "/delete")
+    public ResultData deleteTopic(String topicId) throws MqttBusinessException {
+        VerifyUtil.verify(StringUtils.isNotEmpty(topicId), "主题id为空");
+
+        return ResultData.ok(topicService.deleteTopic(topicId));
+    }
+
+    /**
      * 查询主题列表
      *
      * @return 主题列表

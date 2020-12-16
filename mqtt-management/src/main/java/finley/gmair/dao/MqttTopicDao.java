@@ -23,6 +23,14 @@ public interface MqttTopicDao {
     int insert(Topic topic);
 
     /**
+     * 删除主题
+     *
+     * @param topicId 主题id
+     * @return 删除行数
+     */
+    int delete(String topicId);
+
+    /**
      * 更新主题
      *
      * @param topic 更新信息

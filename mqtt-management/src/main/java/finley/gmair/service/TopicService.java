@@ -22,13 +22,23 @@ public interface TopicService {
     int addTopic(String topicDetail, String topicDescription);
 
     /**
+     * 删除主题
+     *
+     * @param topicId 主题id
+     * @return 删除行数
+     */
+    int deleteTopic(String topicId);
+
+    /**
      * 更新主题
+     * 设计已运行时的订阅主题，删除主题并新增代替本方法
      *
      * @param topicId          主题id
      * @param topicDetail      主题格式
      * @param topicDescription 主题描述
      * @return 更新行数
      */
+    @Deprecated
     int modifyTopic(String topicId, String topicDetail, String topicDescription);
 
     /**

@@ -2,8 +2,11 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.MqttTopicDao;
 import finley.gmair.model.mqttManagement.Topic;
+import finley.gmair.mqtt.MqttConfiguration;
 import finley.gmair.service.TopicService;
 import finley.gmair.util.IDGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -17,6 +20,11 @@ import java.util.List;
  */
 @Service
 public class TopicServiceImpl implements TopicService {
+
+    private final Logger logger = LoggerFactory.getLogger(TopicServiceImpl.class);
+
+    @Resource
+    private MqttConfiguration mqttConfiguration;
 
     @Resource
     private MqttTopicDao mqttTopicDao;
@@ -32,7 +40,40 @@ public class TopicServiceImpl implements TopicService {
     public int addTopic(String topicDetail, String topicDescription) {
         Topic topic = new Topic(topicDetail, topicDescription);
         topic.setTopicId(IDGenerator.generate("MTI"));
-        return mqttTopicDao.insert(topic);
+
+        // 1.数据库新增主题
+        int line = mqttTopicDao.insert(topic);
+
+        // 2.运行中动态新增订阅的主题
+        mqttConfiguration.addInboundTopic(new String[]{topicDetail});
+
+        return line;
+    }
+
+    /**
+     * 删除主题
+     *
+     * @param topicId 主题id
+     * @return 删除行数
+     */
+    @Override
+    public int deleteTopic(String topicId) {
+        Topic queryTopic = new Topic();
+        queryTopic.setTopicId(topicId);
+        List<Topic> topicResult = mqttTopicDao.query(queryTopic);
+        if (topicResult == null || topicResult.size() == 0) {
+            logger.warn("database do not exist topicId " + topicId);
+            return 0;
+        }
+        String topicDetail = topicResult.get(0).getTopicDetail();
+
+        // 1.数据库删除主题
+        int line = mqttTopicDao.delete(topicId);
+
+        // 2.运行中动态删除订阅的主题
+        mqttConfiguration.removeInboundTopic(new String[]{topicDetail});
+
+        return line;
     }
 
     /**
@@ -60,8 +101,8 @@ public class TopicServiceImpl implements TopicService {
      */
     @Override
     public List<Topic> queryTopics(String topicId, String topicDetail, String topicDescription) {
-        Topic topic = new Topic(topicDetail, topicDescription);
-        topic.setTopicId(topicId);
-        return mqttTopicDao.query(topic);
+        Topic queryTopic = new Topic(topicDetail, topicDescription);
+        queryTopic.setTopicId(topicId);
+        return mqttTopicDao.query(queryTopic);
     }
 }

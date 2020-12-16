@@ -14,6 +14,11 @@
         values(#{topicId}, #{topicDetail}, #{topicDescription}, #{blockFlag}, #{createAt})
     </insert>
 
+    <delete id="delete" parameterType="java.lang.String">
+        delete from gmair_mqtt_management.mqtt_topic
+        where topic_id = #{topicId}
+    </delete>
+
     <update id="update" parameterType="finley.gmair.model.mqttManagement.Topic">
         update gmair_mqtt_management.mqtt_topic
         <set>
