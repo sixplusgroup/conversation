@@ -1,6 +1,7 @@
 package finley.gmair.mqtt;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * mqtt订阅配置类
@@ -8,7 +9,8 @@ import lombok.Data;
  * @author liuzongkan
  * @date 2020/12/3 15:35
  */
-@Data
+@Getter
+@Setter
 public class MqttInbound {
 
     /**
