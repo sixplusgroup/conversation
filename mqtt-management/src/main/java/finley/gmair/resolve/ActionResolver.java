@@ -13,7 +13,7 @@ public interface ActionResolver {
     /**
      * 处理行为
      *
-     * @param topic mqtt主题topic
+     * @param topic mqtt主题topic，topic的第一个"/"已经删除
      * @param json  mqtt消息内容payload的json
      */
     void resolve(String topic, JSONObject json);

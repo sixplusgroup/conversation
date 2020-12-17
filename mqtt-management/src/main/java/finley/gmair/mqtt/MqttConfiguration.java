@@ -1,8 +1,17 @@
 package finley.gmair.mqtt;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import finley.gmair.check.ActionChecker;
+import finley.gmair.check.ModelChecker;
 import finley.gmair.model.mqttManagement.Topic;
+import finley.gmair.pool.CorePool;
+import finley.gmair.resolve.ActionResolverFactory;
 import finley.gmair.service.TopicService;
+import finley.gmair.util.TimeUtil;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +24,9 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.MessageHeaders;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -32,6 +41,8 @@ import java.util.List;
 @Configuration
 public class MqttConfiguration {
 
+    private Logger logger = LoggerFactory.getLogger(MqttConfiguration.class);
+
     @Value("${username}")
     private String username;
 
@@ -44,8 +55,20 @@ public class MqttConfiguration {
     @Value("${replica}")
     private boolean isReplica;
 
+    @Value("${open_check}")
+    private boolean isCheckOpen;
+
     @Resource
     private MqttProperties mqttProperties;
+
+    @Resource
+    private MqttGateway mqttGateway;
+
+    @Resource
+    private ModelChecker modelChecker;
+
+    @Resource
+    private ActionChecker actionChecker;
 
     @Resource
     private TopicService topicService;
@@ -106,12 +129,66 @@ public class MqttConfiguration {
     @Bean
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public MessageHandler handler() {
-        return new MessageHandler() {
-            @Override
-            public void handleMessage(Message<?> message) {
-                //todo
+        return message -> CorePool.getHandlePool().execute(() -> {
+            if (message == null) {
+                logger.error("[Error] illegal message received.");
+                return;
             }
-        };
+            MessageHeaders headers = message.getHeaders();
+            if (headers == null) {
+                return;
+            }
+
+            //消息主题
+            String topic = headers.get("mqtt_topic").toString();
+            if (topic == null) {
+                return;
+            }
+            String[] topicArray = topic.split("/");
+            if (topicArray.length < 6) {
+                return;
+            }
+
+            //判断是否要丢弃报文
+            if (TimeUtil.exceed(headers.getTimestamp(), System.currentTimeMillis(), 300)) {
+                logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
+                //根据定义的topic格式，获取message对应的machineId
+                String machineId = topicArray[2];
+                MqttUtil.publishTimeSyncTopic(mqttGateway, machineId);
+                return;
+            }
+            if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate")) {
+                return;
+            }
+
+            //消息内容
+            String payload = ((String) message.getPayload());
+
+            //检查消息格式及内容的正确性，抛弃恶意攻击的消息报文
+            if (isCheckOpen && (!isMessageNormative(topic, payload))) {
+                return;
+            }
+
+            //将payload转换为json数据格式，进行进一步处理
+            String action = topicArray[5];
+            ActionResolverFactory.getActionResolver(action).resolve(topic, JSON.parseObject(payload));
+        });
+    }
+
+    /**
+     * 检查消息格式及内容的正确性，抛弃恶意攻击的消息
+     *
+     * @param topic 消息主题
+     * @param payload 消息内容
+     * @return 消息是否正确
+     */
+    private boolean isMessageNormative(String topic, String payload) {
+        String[] topicArray = topic.split("/");
+
+        String model = topicArray[1];
+        String action = topicArray[5];
+
+        return modelChecker.isModelHaveAction(model, action) && actionChecker.isJsonCorrectInAction(action, payload);
     }
 
     /**
