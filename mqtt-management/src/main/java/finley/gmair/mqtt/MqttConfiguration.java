@@ -151,10 +151,11 @@ public class MqttConfiguration {
 
             //判断是否要丢弃报文
             if (TimeUtil.exceed(headers.getTimestamp(), System.currentTimeMillis(), 300)) {
-                logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted.");
                 //根据定义的topic格式，获取message对应的machineId
                 String machineId = topicArray[2];
                 MqttUtil.publishTimeSyncTopic(mqttGateway, machineId);
+                logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted. Topic: " + topic);
+                logger.info("send message to sync time for client: " + machineId);
                 return;
             }
             if (headers.containsKey("mqtt_duplicate") && (Boolean) headers.get("mqtt_duplicate")) {
@@ -170,15 +171,39 @@ public class MqttConfiguration {
             }
 
             //将payload转换为json数据格式，进行进一步处理
-            String action = topicArray[5];
-            ActionResolverFactory.getActionResolver(action).resolve(topic, JSON.parseObject(payload));
+            handleMessage(topic, JSON.parseObject(payload));
         });
+    }
+
+    /**
+     * 处理消息
+     *
+     * @param topic 消息主题
+     * @param payload 消息内容
+     */
+    private void handleMessage(String topic, JSONObject payload) {
+        String[] topicArray = topic.split("/");
+
+        //统一处理时间超出的情况
+        if (payload.containsKey("time")) {
+            if (TimeUtil.exceed(payload.getLong("time") * 1000, System.currentTimeMillis(), 300)) {
+                //同步时间
+                String machineId = topicArray[2];
+                MqttUtil.publishTimeSyncTopic(mqttGateway, machineId);
+                logger.info("Timestamp of the received package elapsed the duration, thus the package is aborted. Topic: " + topic + ", payload: " + payload);
+                logger.info("send message to sync time for client: " + machineId);
+                return;
+            }
+        }
+
+        String action = topicArray[5];
+        ActionResolverFactory.getActionResolver(action).resolve(topic, payload);
     }
 
     /**
      * 检查消息格式及内容的正确性，抛弃恶意攻击的消息
      *
-     * @param topic 消息主题
+     * @param topic   消息主题
      * @param payload 消息内容
      * @return 消息是否正确
      */
