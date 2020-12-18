@@ -49,9 +49,6 @@ public class MqttConfiguration {
     @Value("${password}")
     private String password;
 
-    @Value("${inbound_url}")
-    private String ip;
-
     @Value("${replica}")
     private boolean isReplica;
 
