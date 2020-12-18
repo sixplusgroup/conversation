@@ -603,10 +603,17 @@ public class CityAQIServiceImpl implements CityAQIService {
         if (candidate.size() > 1) {
             for (MojiRecord record : candidate) {
                 logger.info("record: " + JSON.toJSONString(record) + ", cityName: " + cityName);
+                //包含城市名称的return有城市名称的
                 if (record.getName().contains(cityName)) {
                     return record;
                 }
+                //完全相同的直接return
+                if (record.getName().equals(district)){
+                    return record;
+                }
             }
+            //全部不匹配则return第一个
+            return candidate.get(0);
         }
         return null;
     }
