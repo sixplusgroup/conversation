@@ -18,10 +18,6 @@ import javax.annotation.Resource;
 @Component
 public class ActionAlertResolver implements ActionResolver, InitializingBean {
 
-    private final String PUB_ALERT = "pub";
-
-    private final String RM_ALERT = "rm";
-
     @Resource
     private MachineAlertService machineAlertService;
 
@@ -42,13 +38,15 @@ public class ActionAlertResolver implements ActionResolver, InitializingBean {
         String machineId = topicArray[2];
         String furtherAction = topicArray[6];
         AlertPayload alert = new AlertPayload(machineId, json);
-
         int code = alert.getCode();
         String msg = alert.getMsg();
-        if (PUB_ALERT.equals(furtherAction)) {
+
+        String pubAlert = "pub";
+        if (pubAlert.equals(furtherAction)) {
             CorePool.getLogPool().execute(() -> machineAlertService.createMachineAlert(machineId, code, msg));
         }
-        if (RM_ALERT.equals(furtherAction)) {
+        String rmAlert = "rm";
+        if (rmAlert.equals(furtherAction)) {
             CorePool.getLogPool().execute(() -> machineAlertService.updateMachineAlert(machineId, code));
         }
     }
