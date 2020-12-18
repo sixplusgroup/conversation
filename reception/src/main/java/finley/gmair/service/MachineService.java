@@ -200,4 +200,22 @@ public interface MachineService {
 
     @GetMapping("/machine/filter/info/modelCode")
     ResultData queryMachineModelCode(@RequestParam("modelName") String modelName);
+
+    /**
+     * 设备拥有者查看目前设备的权限分享用户列表
+     * qrcode=codeValue
+     * @param qrcode
+     * @return
+     */
+    @GetMapping("/machine/consumer/share/list")
+    ResultData queryShare(@RequestParam("qrcode") String qrcode);
+
+    /**
+     * 设备拥有者可撤销目前设备的分享权限
+     * @param bindId
+     * @return
+     */
+    @PostMapping("/machine/consumer/share/withdraw")
+    ResultData withdrawShare(@RequestParam("bindId")String bindId,@RequestParam("qrcode")String qrcode);
+
 }
