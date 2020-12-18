@@ -9,5 +9,6 @@
         <mapper resource="mapper/machinealert.xml"></mapper>
         <mapper resource="mapper/model.xml"></mapper>
         <mapper resource="mapper/action.xml"></mapper>
+        <mapper resource="mapper/attribute.xml"></mapper>
     </mappers>
 </configuration>
