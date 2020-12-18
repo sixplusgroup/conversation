@@ -13,6 +13,8 @@ public class CorePool {
 
     private static final ExecutorService LOG_POOL = new ThreadPoolExecutor(3, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
+    private static final ExecutorService ALERT_POOL = new ThreadPoolExecutor(3, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+
     private static final ExecutorService COM_POOL = new ThreadPoolExecutor(3, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     private static final ExecutorService HANDLE_POOL = new ThreadPoolExecutor(10, 20, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
@@ -21,6 +23,10 @@ public class CorePool {
 
     public static ExecutorService getLogPool() {
         return LOG_POOL;
+    }
+
+    public static ExecutorService getAlertPool() {
+        return ALERT_POOL;
     }
 
     public static ExecutorService getComPool() {

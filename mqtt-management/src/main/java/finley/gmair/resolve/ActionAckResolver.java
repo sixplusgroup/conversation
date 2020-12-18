@@ -1,7 +1,7 @@
 package finley.gmair.resolve;
 
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.mqtt.AckPayload;
+import finley.gmair.model.mqttManagement.payload.AckPayload;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.LogService;
 import org.springframework.beans.factory.InitializingBean;
@@ -29,7 +29,7 @@ public class ActionAckResolver implements ActionResolver, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        ActionResolverFactory.register("ack", this);
+        ActionResolverFactory.register("ACK", this);
     }
 
     /**

@@ -49,9 +49,6 @@ public class MqttConfiguration {
     @Value("${password}")
     private String password;
 
-    @Value("${replica}")
-    private boolean isReplica;
-
     @Value("${open_check}")
     private boolean isCheckOpen;
 
@@ -193,7 +190,7 @@ public class MqttConfiguration {
             }
         }
 
-        String action = topicArray[5];
+        String action = topicArray[5].toUpperCase();
         ActionResolverFactory.getActionResolver(action).resolve(topic, payload);
     }
 
