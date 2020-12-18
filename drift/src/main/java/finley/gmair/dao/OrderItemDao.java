@@ -11,6 +11,8 @@ public interface OrderItemDao {
 
     ResultData insertOrderItem(DriftOrderItem item);
 
+    ResultData insertOrderItemWithId(DriftOrderItem item);
+
     ResultData updateOrderItem(DriftOrderItem item);
 
     ResultData deleteOrderItem(String itemId);

@@ -1,5 +1,7 @@
 package finley.gmair.model.drift;
 
+import finley.gmair.model.ordernew.TradeFrom;
+
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +51,8 @@ public class DriftOrderPanel extends AbstractDriftOrder {
 
     private DriftOrderStatus status;
 
+    private TradeFrom tradeFrom;
+
     private List<DriftOrderItem> list;
 
     public DriftOrderPanel() {
@@ -56,8 +60,8 @@ public class DriftOrderPanel extends AbstractDriftOrder {
         this.status = DriftOrderStatus.APPLIED;
     }
 
-    public DriftOrderPanel(String equipName,String activityName,String expressAddress,int quantity, String consumerId, String equipId, String consignee, String phone, String address, String province,
-                      String city, String district, String description, String activityId, Date expectedDate, int intervalDate,String expressOutCompany,String expressOutNum,String expressBackNum,String expressBackCompany,String itemRealPrice,String itemTotalPrice,String itemPrice) {
+    public DriftOrderPanel(String equipName, String activityName, String expressAddress, int quantity, String consumerId, String equipId, String consignee, String phone, String address, String province,
+                           String city, String district, String description, String activityId, Date expectedDate, int intervalDate, String expressOutCompany, String expressOutNum, String expressBackNum, String expressBackCompany, String itemRealPrice, String itemTotalPrice, String itemPrice, TradeFrom from) {
         super(consumerId, consignee, phone, address, expectedDate, intervalDate);
         this.equipName = equipName;
         this.activityName = activityName;
@@ -78,7 +82,7 @@ public class DriftOrderPanel extends AbstractDriftOrder {
         this.itemTotalPrice = itemTotalPrice;
         this.itemPrice = itemPrice;
         this.status = DriftOrderStatus.APPLIED;
-
+        this.tradeFrom = from;
     }
 
     public String getExpressBackCompany() {
@@ -263,5 +267,13 @@ public class DriftOrderPanel extends AbstractDriftOrder {
 
     public void setMachineOrderNo(String machineOrderNo) {
         this.machineOrderNo = machineOrderNo;
+    }
+
+    public TradeFrom getTradeFrom() {
+        return tradeFrom;
+    }
+
+    public void setTradeFrom(TradeFrom tradeFrom) {
+        this.tradeFrom = tradeFrom;
     }
 }
