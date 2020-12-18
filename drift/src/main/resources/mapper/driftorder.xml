@@ -21,6 +21,8 @@
         <result property="description" column="description"></result>
         <result property="status" column="order_status"
                 typeHandler="finley.gmair.mybatis.handler.DriftOrderStatusHandler"></result>
+        <result property="tradeFrom" column="trade_from"
+                typeHandler="finley.gmair.mybatis.handler.TradeFromHandler"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
         <collection property="list" select="queryDriftItem" column="order_id"></collection>
@@ -34,7 +36,7 @@
         <result property="expressBackNum" column="express_back_num"></result>
         <result property="expressOutCompany" column="express_out_company"></result>
         <result property="expressOutNum" column="express_out_num"></result>
-<!--        <result property="expressStatus" column="express_status"></result>-->
+        <!--        <result property="expressStatus" column="express_status"></result>-->
         <result property="activityName" column="activity_name"></result>
         <result property="equipName" column="equip_name"></result>
         <result property="expressAddress" column="express_address"></result>
@@ -58,6 +60,8 @@
         <result property="description" column="description"></result>
         <result property="status" column="order_status"
                 typeHandler="finley.gmair.mybatis.handler.DriftOrderStatusHandler"></result>
+        <result property="tradeFrom" column="trade_from"
+                typeHandler="finley.gmair.mybatis.handler.TradeFromHandler"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createTime" column="create_time"></result>
         <!--<collection property="list" select="queryDriftItem" column="order_id"></collection>-->
@@ -80,8 +84,10 @@
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="orderVo">
-        select order_id, activity_id, equip_id, consumer_id, consignee, phone, address, province, city, district,machine_orderNo,
-        expected_date, interval_date, total_price, real_pay, excode, description, order_status, block_flag, create_time
+        select order_id, activity_id, equip_id, consumer_id, consignee, phone, address, province, city,
+        district,machine_orderNo,
+        expected_date, interval_date, total_price, real_pay, excode, description, order_status, block_flag, create_time,
+        trade_from
         from gmair_drift.drift_order
         where 1 = 1
         <if test="orderId != null">
@@ -174,8 +180,10 @@
     </select>
 
     <select id="querydashboard" parameterType="java.util.Map" resultMap="orderDashboardVo">
-        select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, order_status,consignee, phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,item_price,item_total_price,item_real_price,
-        expected_date, interval_date,excode, block_flag,create_time,express_out_num,express_out_company,express_back_num,express_back_company
+        select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, order_status,consignee,
+        phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,item_price,item_total_price,item_real_price,
+        expected_date, interval_date,excode,
+        block_flag,create_time,express_out_num,express_out_company,express_back_num,express_back_company,trade_from
         from order_activity_equipment_item_express_view
         where 1 = 1
         <if test="orderId != null">
@@ -217,37 +225,37 @@
     </select>
 
 
-
-
     <select id="queryDriftItem" parameterType="java.lang.String" resultMap="orderItemVo">
-        SELECT
-            item_id,
-            order_id,
-            item_name,
-            single_num,
-            item_price,
-            quantity,
-            ex_quantity,
-            total_price,
-            real_price,
-            text,
-            url,
-            block_flag,
-            create_time
+        SELECT item_id,
+               order_id,
+               item_name,
+               single_num,
+               item_price,
+               quantity,
+               ex_quantity,
+               total_price,
+               real_price,
+               text,
+               url,
+               block_flag,
+               create_time
         FROM gmair_drift.drift_order_item
         WHERE drift_order_item.order_id = #{order_id}
         ORDER BY item_name ASC
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.drift.DriftOrder" useGeneratedKeys="false">
-        INSERT INTO gmair_drift.drift_order (order_id, consumer_id, activity_id, equip_id, consignee, phone, address, expected_date, interval_date, province, city, district, total_price, real_pay,
-                                             excode, description, order_status, block_flag, create_time)
+        INSERT INTO gmair_drift.drift_order (order_id, consumer_id, activity_id, equip_id, consignee, phone, address,
+                                             expected_date, interval_date, province, city, district, total_price,
+                                             real_pay,
+                                             excode, description, order_status, block_flag, create_time, trade_from)
         VALUES (#{orderId}, #{consumerId}, #{activityId}, #{equipId}, #{consignee}, #{phone}, #{address},
-                            #{expectedDate}, #{intervalDate}, #{province}, #{city}, #{district}, #{totalPrice},
+                #{expectedDate}, #{intervalDate}, #{province}, #{city}, #{district}, #{totalPrice},
                 #{realPay},
                 #{excode}, #{description},
                 #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
-                #{blockFlag}, #{createAt})
+                #{blockFlag}, #{createAt},
+                #{tradeFrom, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler})
     </insert>
 
     <update id="update" parameterType="finley.gmair.model.drift.DriftOrder">
@@ -295,7 +303,8 @@
     </update>
 
     <delete id="delete" parameterType="java.lang.String">
-        DELETE FROM gmair_drift.drift_order
+        DELETE
+        FROM gmair_drift.drift_order
         WHERE order_id = #{orderId}
     </delete>
 </mapper>

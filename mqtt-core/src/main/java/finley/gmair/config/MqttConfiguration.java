@@ -134,7 +134,7 @@ public class MqttConfiguration {
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopic);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
-        adapter.setQos(1);
+        adapter.setQos(0);
         adapter.setOutputChannel(mqttInputChannel());
         return adapter;
     }
@@ -279,11 +279,11 @@ public class MqttConfiguration {
                     CorePool.getSurplusPool().execute(() -> {
                         try {
                             machineFeignService.updateByRemain(surplus.getRemain(), surplus.getMachineId());
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                             logger.error(e.getMessage());
                         }
-                            });
+                    });
 //                    logger.info("surplus: " + JSON.toJSONString(surplus));
                     break;
                 case "VER":
@@ -318,7 +318,7 @@ public class MqttConfiguration {
             new Thread(() -> {
                 machineController.updateAlert(machineId, code);
             }).start();
-        }
+        }w
     }
 
     /**

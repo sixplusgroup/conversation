@@ -52,6 +52,12 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
     @Autowired
     private QRCodeService qrCodeService;
 
+    @Resource
+    private CoreV2Service coreV2Service;
+
+    @Resource
+    private BoardVersionDao boardVersionDao;
+
     @Autowired
     private ModelEfficientConfigDao modelEfficientConfigDao;
 
@@ -83,8 +89,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         if (fetchRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
             List<MachineEfficientFilter> tmpStore = (List<MachineEfficientFilter>) fetchRes.getData();
             res.setData(tmpStore.get(0));
-        }
-        else {
+        } else {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
         return res;
@@ -130,7 +135,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
 
     @Override
     public ResultData sendWeChatMessage(String qrcode, int number) {
-        ResultData res=new ResultData();
+        ResultData res = new ResultData();
 
         //检测参数
         if (StringUtils.isEmpty(qrcode)) {
@@ -141,25 +146,24 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         //得到绑定用户
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         ResultData resultData = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
         List<ConsumerQRcodeBind> consumerQRcodeBindList = (List<ConsumerQRcodeBind>) resultData.getData();
 
         //无绑定用户
-        if(resultData.getResponseCode()==ResponseCode.RESPONSE_NULL){
+        if (resultData.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             res.setResponseCode(ResponseCode.RESPONSE_NULL);
             return res;
         }
 
         //得到地址
         ResultData location = machineDefaultLocationService.fetch(condition);
-        String locationName="";
-        if(location.getResponseCode()==ResponseCode.RESPONSE_OK) {
+        String locationName = "";
+        if (location.getResponseCode() == ResponseCode.RESPONSE_OK) {
             MachineDefaultLocation machineDefaultLocation = ((List<MachineDefaultLocation>) location.getData()).get(0);
-            if ("null".equals(machineDefaultLocation.getCityId())){
+            if ("null".equals(machineDefaultLocation.getCityId())) {
                 locationName = "地址暂未绑定";
-            }
-            else {
+            } else {
                 try {
                     ResultData resultConsumer = locationService.idProfile(machineDefaultLocation.getCityId());
                     if (resultConsumer.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -173,21 +177,21 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
             }
         }
 
-        for (ConsumerQRcodeBind consumerQRcodeBind:consumerQRcodeBindList){
-            String name = qrcode+"("+consumerQRcodeBind.getBindName()+")";
+        for (ConsumerQRcodeBind consumerQRcodeBind : consumerQRcodeBindList) {
+            String name = qrcode + "(" + consumerQRcodeBind.getBindName() + ")";
             try {
                 ResultData resultConsumer = authConsumerService.profile(consumerQRcodeBind.getConsumerId());
-                Map<String,Object> consumerVo = (Map<String,Object>)resultConsumer.getData();
+                Map<String, Object> consumerVo = (Map<String, Object>) resultConsumer.getData();
 
                 //未绑定微信
-                if ((resultConsumer.getResponseCode()!=ResponseCode.RESPONSE_OK)||(StringUtils.isEmpty((String)consumerVo.get("wechat")))||
-                        ("null".equals(consumerVo.get("wechat")))){
+                if ((resultConsumer.getResponseCode() != ResponseCode.RESPONSE_OK) || (StringUtils.isEmpty((String) consumerVo.get("wechat"))) ||
+                        ("null".equals(consumerVo.get("wechat")))) {
                     continue;
                 }
 
                 //构造json
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("touser", (String)consumerVo.get("wechat"));   // openid
+                jsonObject.put("touser", (String) consumerVo.get("wechat"));   // openid
 
                 JSONObject data = new JSONObject();
                 JSONObject keyword1 = new JSONObject();
@@ -198,21 +202,20 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
                 keyword2.put("color", "#173177");
                 JSONObject keyword3 = new JSONObject();
                 //判断第几次
-                if(number == 1){
+                if (number == 1) {
                     keyword3.put("value", "主滤网（高效滤网）快要到期了，需更换");
-                }
-                else {
+                } else {
                     keyword3.put("value", "主滤网（高效滤网）快要到期了，急需更换");
                 }
                 keyword3.put("color", "#173177");
 
-                data.put("keyword1",keyword1);
-                data.put("keyword2",keyword2);
+                data.put("keyword1", keyword1);
+                data.put("keyword2", keyword2);
 
                 jsonObject.put("data", data);
                 String jsonString = jsonObject.toJSONString();
 
-                ResultData resultWeChat = weChatService.sendFilterReplaceMessage(jsonString,2, number);
+                ResultData resultWeChat = weChatService.sendFilterReplaceMessage(jsonString, 2, number);
             } catch (Exception ex) {
                 logger.error("得到用户或发送消息错误");
                 continue;
@@ -240,7 +243,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
         ResultData allMachinesRes = fetch(condition);
         if (allMachinesRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
             List<MachineEfficientFilter> allMachinesList =
-                                                (List<MachineEfficientFilter>) allMachinesRes.getData();
+                    (List<MachineEfficientFilter>) allMachinesRes.getData();
             for (MachineEfficientFilter one : allMachinesList) {
                 String oneQrcode = one.getQrcode();
                 if (isSpecifiedMachine(oneQrcode)) {
@@ -254,20 +257,18 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
                         EfficientFilterStatus updatedStatus = checkSpecifiedFilterStatus(oneInfo);
 
                         condition.clear();
-                        condition.put("qrcode",oneQrcode);
-                        condition.put("replaceStatus",updatedStatus.getValue());
+                        condition.put("qrcode", oneQrcode);
+                        condition.put("replaceStatus", updatedStatus.getValue());
                         ResultData updateRes = machineEfficientFilterDao.update(condition);
                         if (updateRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
                             logger.error("update specified machine efficient filter status failed!");
                             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                         }
-                    }
-                    else
+                    } else
                         res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 }
             }
-        }
-        else
+        } else
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
         return res;
     }
@@ -275,41 +276,39 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
     @Override
     public ResultData updateByRemain(int remain, String uid) {
         ResultData resultData = new ResultData();
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("machineId",uid);
-        condition.put("blockFlag",0);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("machineId", uid);
+        condition.put("blockFlag", 0);
         ResultData machineQRcodeResult = machineQrcodeBindDao.select(condition);
         String qrcode = "";
         String modelId = "";
-        if (machineQRcodeResult.getResponseCode() == ResponseCode.RESPONSE_OK){
-            MachineQrcodeBindVo machineQrcodeBindVo = ((List<MachineQrcodeBindVo>)machineQRcodeResult.getData()).get(0);
+        if (machineQRcodeResult.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            MachineQrcodeBindVo machineQrcodeBindVo = ((List<MachineQrcodeBindVo>) machineQRcodeResult.getData()).get(0);
             qrcode = machineQrcodeBindVo.getCodeValue();
             if (!isGM280OrGM420S(qrcode)) {
                 resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 resultData.setDescription("wrong model");
                 return resultData;
-            }else {
+            } else {
                 //得到modelId
                 condition.clear();
                 condition.put("codeValue", qrcode);
-                condition.put("blockFlag",false);
+                condition.put("blockFlag", false);
                 ResultData response = qrCodeService.fetch(condition);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     QRCode code = ((List<QRCode>) response.getData()).get(0);
                     modelId = code.getModelId();
                 }
             }
-        }
-        else {
+        } else {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
             return resultData;
         }
 
-
         EfficientFilterStatus status = checkEfficientFilterStatus(remain, modelId);
         condition.clear();
-        condition.put("qrcode",qrcode);
-        condition.put("replaceStatus",status.getValue());
+        condition.put("qrcode", qrcode);
+        condition.put("replaceStatus", status.getValue());
         resultData = machineEfficientFilterDao.update(condition);
         return resultData;
     }
@@ -320,7 +319,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
 
         Map<String, Object> condition = new HashMap<>();
         condition.put("codeValue", qrcode);
-        condition.put("blockFlag",false);
+        condition.put("blockFlag", false);
         ResultData response = qrCodeService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             QRCode code = ((List<QRCode>) response.getData()).get(0);
@@ -328,10 +327,9 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
             //查看是否符合
             condition.clear();
             condition.put("modelId", modelId);
-            condition.put("blockFlag",false);
+            condition.put("blockFlag", false);
             res = modelEfficientConfigDao.query(condition);
-        }
-        else {
+        } else {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
         return res;
@@ -339,6 +337,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
 
     /**
      * 检查设备是否具有高效滤网，且不是GM280和GM420S类型
+     *
      * @param qrcode 设备二维码
      * @return 判断结果
      */
@@ -355,6 +354,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
      * 检查设备是否具有高效滤网，且是GM280和GM420S类型
      * 注意：此方法不是上一个方法(isSpecifiedMachine)的简单取反，需要考虑到设备是否具有高效滤网
      * 当设备不具有高效滤网时，两个方法都返回false.
+     *
      * @param qrcode 设备二维码
      * @return 判断结果
      */
@@ -382,15 +382,40 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
             ResultData sendRes = sendWeChatMessage(oneQRCode, 1);
             if (sendRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 logger.error(oneQRCode + ": send first remind failed");
+                continue;
             }
-            else {
-                Map<String, Object> modification = new HashMap<>();
-                modification.put("qrcode", oneQRCode);
-                modification.put("isRemindedStatus", 1);
-                ResultData modifyRes = modify(modification);
-                if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                    logger.error(oneQRCode + ": modify isRemindedStatus failed");
-                }
+            Map<String, Object> modification = new HashMap<>();
+            modification.put("qrcode", oneQRCode);
+            modification.put("isRemindedStatus", 1);
+            ResultData modifyRes = modify(modification);
+
+            Map<String, Object> condition = new HashMap<>();
+            if (modifyRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error(oneQRCode + ": modify isRemindedStatus failed");
+            }
+
+            String qrcode = one.getQrcode();
+            condition.put("codeValue", qrcode);
+            condition.put("blockFlag", false);
+            ResultData res = machineQrcodeBindDao.select(condition);
+
+            if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("[Error] fail to find qrcode uid bind record for: " + qrcode);
+                continue;
+            }
+            String machineId = ((List<MachineQrcodeBind>) res.getData()).get(0).getMachineId();
+            condition.clear();
+            condition.put("machineId", machineId);
+            condition.put("blockFlag", false);
+            res = boardVersionDao.queryBoardVersion(condition);
+
+            if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("[Error] fail to find board version record for machine: " + machineId);
+            }
+
+            if (((List<BoardVersion>) res.getData()).get(0).getVersion() == 2) {
+                coreV2Service.configScreen(machineId, 1);
+                logger.info("config screen for qrcode: " + qrcode + " with uid:  " + machineId + " screen to on");
             }
         }
     }
@@ -410,8 +435,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
             ResultData sendRes = sendWeChatMessage(oneQRCode, 2);
             if (sendRes.getResponseCode() != ResponseCode.RESPONSE_OK) {
                 logger.error(oneQRCode + ": send second remind failed");
-            }
-            else {
+            } else {
                 Map<String, Object> modification = new HashMap<>();
                 modification.put("isRemindedStatus", 2);
                 modification.put("qrcode", oneQRCode);
@@ -425,34 +449,34 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
 
     /**
      * 针对GM280和GM420S设备，通过当前滤芯剩余寿命判断设备滤网处于什么状态
+     *
      * @param remain 滤芯剩余寿命
      * @return 滤芯状态
      */
     private EfficientFilterStatus checkEfficientFilterStatus(int remain, String modelId) {
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("modelId",modelId);
-        condition.put("blockFlag",false);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("modelId", modelId);
+        condition.put("blockFlag", false);
         ResultData resultData = modelEfficientConfigDao.query(condition);
-        if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK){
-            ModelEfficientConfig modelEfficientConfig = ((List<ModelEfficientConfig>)resultData.getData()).get(0);
+        if (resultData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            ModelEfficientConfig modelEfficientConfig = ((List<ModelEfficientConfig>) resultData.getData()).get(0);
             int firstRemind = modelEfficientConfig.getFirstRemind();
             int secondRemind = modelEfficientConfig.getSecondRemind();
             if (remain >= firstRemind) {
                 return EfficientFilterStatus.NO_NEED;
-            }
-            else if (remain >= secondRemind) {
+            } else if (remain >= secondRemind) {
                 return EfficientFilterStatus.NEED;
             } else {
                 return EfficientFilterStatus.URGENT_NEED;
             }
-        }
-        else {
+        } else {
             return EfficientFilterStatus.NO_NEED;
         }
     }
 
     /**
      * 针对非GM280和GM420S类型且具有高效滤网的设备，通过给定的逻辑(见machine模块文档)判断设备滤网处于什么状态
+     *
      * @param information 该设备的相关信息
      * @return 滤网状态
      */
@@ -508,8 +532,7 @@ public class MachineEfficientFilterServiceImpl implements MachineEfficientFilter
             } else {
                 return formula(paramsWithTRun, tAvail, totalTime, running);
             }
-        }
-        else {
+        } else {
             return EfficientFilterStatus.NO_NEED;
         }
     }

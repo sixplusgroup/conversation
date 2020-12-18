@@ -51,4 +51,23 @@ public class TimeUtil {
         }
         return date;
     }
+
+    /**
+     * 将String类型的时间进行转化：年月日 时分秒
+     *
+     * @param strDateTime 字符串格式的时间，例：2020-10-12 17:28:01
+     * @return java.util.Date
+     * @author zm
+     * @date 2020/10/21 0021 12:47
+     **/
+    public static Date formatTimeToDatetime(String strDateTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        try {
+            date = sdf.parse(strDateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
 }

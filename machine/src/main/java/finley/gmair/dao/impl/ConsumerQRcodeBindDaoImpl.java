@@ -87,9 +87,11 @@ public class ConsumerQRcodeBindDaoImpl extends BaseDao implements ConsumerQRcode
     public ResultData remove(String bindId) {
         ResultData result = new ResultData();
         try {
-
+            sqlSession.update("gmair.machine.consumer_qrcode_bind.remove", bindId);
         } catch (Exception e) {
-
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
         }
         return result;
     }

@@ -10,6 +10,8 @@ public interface OrderDao {
 
     ResultData insertOrder(DriftOrder order);
 
+    ResultData insertOrderWithId(DriftOrder order);
+
     ResultData queryOrder(Map<String, Object> condition);
 
     ResultData queryOrderSize(Map<String, Object> condition);

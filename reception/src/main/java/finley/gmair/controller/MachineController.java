@@ -695,4 +695,15 @@ public class MachineController {
             }
         });
     }
+
+    @GetMapping("/consumer/share/list")
+    public ResultData queryShare(String qrcode){
+        return machineService.queryShare(qrcode);
+    }
+
+    @PostMapping("/consumer/share/withdraw")
+    public ResultData withdrawShare(String bindId,String qrcode){
+        return machineService.withdrawShare(bindId,qrcode);
+    }
+
 }
