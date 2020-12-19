@@ -6,6 +6,7 @@ import finley.gmair.check.ActionChecker;
 import finley.gmair.check.ModelChecker;
 import finley.gmair.model.mqttManagement.Topic;
 import finley.gmair.pool.CorePool;
+import finley.gmair.resolve.ActionResolver;
 import finley.gmair.resolve.ActionResolverFactory;
 import finley.gmair.service.TopicService;
 import finley.gmair.util.TimeUtil;
@@ -41,7 +42,7 @@ import java.util.List;
 @Configuration
 public class MqttConfiguration {
 
-    private Logger logger = LoggerFactory.getLogger(MqttConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(MqttConfiguration.class);
 
     @Value("${username}")
     private String username;
@@ -191,7 +192,12 @@ public class MqttConfiguration {
         }
 
         String action = topicArray[5].toUpperCase();
-        ActionResolverFactory.getActionResolver(action).resolve(topic, payload);
+        ActionResolver actionResolver = ActionResolverFactory.getActionResolver(action);
+        if (actionResolver != null) {
+            actionResolver.resolve(topic, payload);
+        } else {
+            logger.error("[Error] resolver of action [" + action + "] cannot be found");
+        }
     }
 
     /**
