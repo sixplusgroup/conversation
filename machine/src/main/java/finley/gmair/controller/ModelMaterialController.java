@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -34,10 +35,10 @@ public class ModelMaterialController {
      * @return finley.gmair.util.result
      * @date 2020/7/29 0029 13:32
      **/
-    public ResultData getMaterial(String modelId) {
-
+    public ResultData getMaterial(
+            @RequestParam("modelId") String modelId
+    ) {
         ResultData result = new ResultData();
-
         //check empty
         if (StringUtils.isEmpty(modelId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
