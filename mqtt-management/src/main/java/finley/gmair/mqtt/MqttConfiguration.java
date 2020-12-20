@@ -196,7 +196,7 @@ public class MqttConfiguration {
         if (actionResolver != null) {
             actionResolver.resolve(topic, payload);
         } else {
-            logger.warn("can not find the resolver of action : " + action);
+            logger.info("can not find the resolver of action : " + action);
         }
     }
 
