@@ -166,7 +166,11 @@ public class MqttConfiguration {
             }
 
             //将payload转换为json数据格式，进行进一步处理
-            handleMessage(topic, JSON.parseObject(payload));
+            try {
+                handleMessage(topic, JSON.parseObject(payload));
+            } catch (Exception e) {
+                logger.error("[Error ] " + e.getMessage());
+            }
         });
     }
 
