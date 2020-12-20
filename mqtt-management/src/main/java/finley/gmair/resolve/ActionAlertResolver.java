@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.mqttManagement.payload.AlertPayload;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.MachineAlertService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,8 @@ import javax.annotation.Resource;
  */
 @Component
 public class ActionAlertResolver implements ActionResolver, InitializingBean {
+
+    private final Logger logger = LoggerFactory.getLogger(ActionAlertResolver.class);
 
     @Resource
     private MachineAlertService machineAlertService;
@@ -36,6 +40,10 @@ public class ActionAlertResolver implements ActionResolver, InitializingBean {
     public void resolve(String topic, JSONObject json) {
         String[] topicArray = topic.split("/");
         String machineId = topicArray[2];
+        if (topicArray.length < 7) {
+            logger.error("[Error] alert action, topicArray length is " + topicArray.length);
+            return;
+        }
         String furtherAction = topicArray[6];
         AlertPayload alert = new AlertPayload(machineId, json);
         int code = alert.getCode();

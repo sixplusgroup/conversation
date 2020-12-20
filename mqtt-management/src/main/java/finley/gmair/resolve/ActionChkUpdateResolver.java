@@ -1,13 +1,8 @@
 package finley.gmair.resolve;
 
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.mqttManagement.payload.AlertPayload;
-import finley.gmair.pool.CorePool;
-import finley.gmair.service.MachineAlertService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * chk_update行为的处理器
