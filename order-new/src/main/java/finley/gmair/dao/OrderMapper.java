@@ -30,7 +30,8 @@ public interface OrderMapper {
 
     int updateByPrimaryKey(Order record);
 
-    List<OrderInfo> selectOrderInfOrderByPayTime();
+    List<OrderInfo> selectOrderInfOrderByPayTime(@Param("beginTime") Date beginTime,
+                                                 @Param("endTime") Date endTime);
 
     /**
      * 将淘宝方的单个订单导入Order表中

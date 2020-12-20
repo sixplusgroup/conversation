@@ -672,6 +672,16 @@
         from `order` o,`trade` t
         where o.trade_id=t.trade_id
         and t.pay_time is not null
+        <if test="beginTime!=null">
+            <![CDATA[
+                and pay_time >= #{beginTime,jdbcType=TIMESTAMP}
+            ]]>
+        </if>
+        <if test="endTime!=null">
+            <![CDATA[
+                and pay_time <= #{endTime,jdbcType=TIMESTAMP}
+            ]]>
+        </if>
         order by t.pay_time
     </select>
 
