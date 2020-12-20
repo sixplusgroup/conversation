@@ -41,7 +41,7 @@ public class ActionAlertResolver implements ActionResolver, InitializingBean {
         String[] topicArray = topic.split("/");
         String machineId = topicArray[2];
         if (topicArray.length < 7) {
-            logger.error("[Error] alert action, topicArray length is " + topicArray.length);
+            logger.error("[Error] alert action, topicArray length is " + topicArray.length + " , topic is " + topic);
             return;
         }
         String furtherAction = topicArray[6];

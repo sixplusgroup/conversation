@@ -3,6 +3,8 @@ package finley.gmair.resolve;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.mqtt.MqttUtil;
 import finley.gmair.service.RedisService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,8 @@ import javax.annotation.Resource;
  */
 @Component
 public class ActionSensorResolver implements ActionResolver, InitializingBean {
+
+    private final Logger logger = LoggerFactory.getLogger(ActionSensorResolver.class);
 
     @Resource
     private RedisService redisService;
@@ -36,20 +40,20 @@ public class ActionSensorResolver implements ActionResolver, InitializingBean {
         String[] topicArray = topic.split("/");
         String machineId = topicArray[2];
         String furtherAction;
-        if (topicArray.length == 6) { //7
+        if (topicArray.length == 7) {
             //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
             furtherAction = topicArray[6];
             int value = (json.containsKey("value")) ? json.getIntValue("value") : Integer.MIN_VALUE;
             dealSingleSensor(furtherAction, value);
-        } else if (topicArray.length == 7) { //6
+        } else if (topicArray.length == 6) {
             MqttUtil.partial(redisService, machineId, json);
         } else {
-
+            logger.error("[Error] sensor action, topicArray length is " + topicArray.length + " , topic is " + topic);
         }
     }
 
     /**
-     * 处理单个传感器数据消息publish
+     * 处理单个传感器数据消息publish，暂不处理
      */
     private void dealSingleSensor(String detail_action, int value) {
         if (detail_action.equals("pm2.5a")) {
