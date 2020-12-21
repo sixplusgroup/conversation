@@ -11,7 +11,7 @@
 
     <select id="query" parameterType="java.util.Map" resultMap="firmwareVo">
         select firmware_id, firmware_version, firmware_link, block_flag, create_time
-        from gmair_mqtt.mqtt_firmware
+        from gmair_mqtt_management.mqtt_firmware
         where 1 = 1
         <if test="firmwareId != null">
             and firmware_id = #{firmwareId}
@@ -29,12 +29,12 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.mqttManagement.Firmware" useGeneratedKeys="false">
-        insert into gmair_mqtt.mqtt_firmware(firmware_id, firmware_version, firmware_link, block_flag, create_time)
+        insert into gmair_mqtt_management.mqtt_firmware(firmware_id, firmware_version, firmware_link, block_flag, create_time)
         values (#{firmwareId}, #{firmwareVersion}, #{firmwareLink}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">
-        update gmair_mqtt.mqtt_firmware
+        update gmair_mqtt_management.mqtt_firmware
         <set>
             <if test="firmwareVersion != null">
                 firmware_version = #{firmwareVersion},

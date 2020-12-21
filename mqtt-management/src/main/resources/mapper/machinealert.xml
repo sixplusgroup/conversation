@@ -33,7 +33,7 @@
 
     <select id="query" parameterType="java.util.Map" resultMap="alertVo">
         select alert_id, machine_id, alert_code, alert_msg, alert_status, block_flag, create_time
-        from gmair_mqtt.machine_alert
+        from gmair_mqtt_management.machine_alert
         where 1 = 1
         <if test="alertId != null">
             and alert_id = #{alertId}
