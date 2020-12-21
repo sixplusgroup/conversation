@@ -4,7 +4,6 @@ import finley.gmair.dao.MachineAlertDao;
 import finley.gmair.model.mqttManagement.MachineAlert;
 import finley.gmair.service.MachineAlertService;
 import finley.gmair.util.IDGenerator;
-import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +33,11 @@ public class MachineAlertServiceImpl implements MachineAlertService {
      * @return 新增条数
      */
     @Override
-    public int createMachineAlert(String machineId, int code, String msg) {
+    public MachineAlert createMachineAlert(String machineId, int code, String msg) {
         MachineAlert alert = new MachineAlert(machineId, code, msg);
         alert.setAlertId(IDGenerator.generate("MAI"));
-        return machineAlertDao.insert(alert);
+        machineAlertDao.insert(alert);
+        return alert;
     }
 
     /**
@@ -79,7 +79,7 @@ public class MachineAlertServiceImpl implements MachineAlertService {
      * @return 设备警报列表
      */
     @Override
-    public List<MachineAlert> queryMachine(String machineId, Integer code, Boolean alertStatus) {
+    public List<MachineAlert> queryMachineAlert(String machineId, Integer code, Boolean alertStatus) {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
         if (StringUtils.isNotEmpty(machineId)) {

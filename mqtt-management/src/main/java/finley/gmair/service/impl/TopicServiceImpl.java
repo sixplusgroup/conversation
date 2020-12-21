@@ -37,17 +37,17 @@ public class TopicServiceImpl implements TopicService {
      * @return 新增行数
      */
     @Override
-    public int addTopic(String topicDetail, String topicDescription) {
+    public Topic addTopic(String topicDetail, String topicDescription) {
         Topic topic = new Topic(topicDetail, topicDescription);
         topic.setTopicId(IDGenerator.generate("MTI"));
 
         // 1.数据库新增主题
-        int line = mqttTopicDao.insert(topic);
+        mqttTopicDao.insert(topic);
 
         // 2.运行中动态新增订阅的主题
         mqttConfiguration.addInboundTopic(new String[]{topicDetail});
 
-        return line;
+        return topic;
     }
 
     /**

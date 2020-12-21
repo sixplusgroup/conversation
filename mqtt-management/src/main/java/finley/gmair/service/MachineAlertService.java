@@ -20,7 +20,7 @@ public interface MachineAlertService {
      * @param msg       警报信息
      * @return 新增条数
      */
-    int createMachineAlert(String machineId, int code, String msg);
+    MachineAlert createMachineAlert(String machineId, int code, String msg);
 
     /**
      * 更新设备警报
@@ -39,6 +39,6 @@ public interface MachineAlertService {
      * @param alertStatus 警报状态
      * @return 设备警报列表
      */
-    List<MachineAlert> queryMachine(String machineId, Integer code, Boolean alertStatus);
+    List<MachineAlert> queryMachineAlert(String machineId, Integer code, Boolean alertStatus);
 
 }

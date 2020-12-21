@@ -19,7 +19,7 @@ public interface TopicService {
      * @param topicDescription 主题描述
      * @return 新增行数
      */
-    int addTopic(String topicDetail, String topicDescription);
+    Topic addTopic(String topicDetail, String topicDescription);
 
     /**
      * 删除主题

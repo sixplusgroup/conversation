@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="gmair.mqtt.firmware">
-    <resultMap id="firmwareVo" type="finley.gmair.model.mqtt.Firmware">
-        <result property="firmwareId" column="firmware_id"></result>
-        <result property="firmwareVersion" column="firmware_version"></result>
-        <result property="firmwareLink" column="firmware_link"></result>
-        <result property="blockFlag" column="block_flag"></result>
-        <result property="createAt" column="create_time"></result>
+<mapper namespace="finley.gmair.dao.MqttFirmwareDao">
+    <resultMap id="firmwareVo" type="finley.gmair.model.mqttManagement.Firmware">
+        <result property="firmwareId" column="firmware_id"/>
+        <result property="firmwareVersion" column="firmware_version"/>
+        <result property="firmwareLink" column="firmware_link"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="firmwareVo">
@@ -28,7 +28,7 @@
         order by create_time desc
     </select>
 
-    <insert id="insert" parameterType="finley.gmair.model.mqtt.Firmware" useGeneratedKeys="false">
+    <insert id="insert" parameterType="finley.gmair.model.mqttManagement.Firmware" useGeneratedKeys="false">
         insert into gmair_mqtt.mqtt_firmware(firmware_id, firmware_version, firmware_link, block_flag, create_time)
         values (#{firmwareId}, #{firmwareVersion}, #{firmwareLink}, #{blockFlag}, #{createAt})
     </insert>
