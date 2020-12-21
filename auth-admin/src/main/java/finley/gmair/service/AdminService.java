@@ -1,8 +1,11 @@
 package finley.gmair.service;
 
+import finley.gmair.form.admin.AdminPartInfoQuery;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.admin.AdminPartInfoVo;
 
+import java.util.List;
 import java.util.Map;
 
 public interface AdminService {
@@ -13,6 +16,13 @@ public interface AdminService {
      * @return
      */
     ResultData fetchAdmin(Map<String, Object> condition);
+
+    /**
+     * 根据query给出的条件查询符合条件的账户信息
+     * @param query 查询条件对象
+     * @return 查询结果
+     */
+    List<AdminPartInfoVo> fetchAdminAccounts(AdminPartInfoQuery query);
 
     /**
      * method to create an administrator account, used by backend system

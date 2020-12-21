@@ -14,6 +14,17 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="consumerPartInfoVo" type="finley.gmair.vo.consumer.ConsumerPartInfoVo">
+        <result property="consumerId" column="consumer_id"/>
+        <result property="name" column="consumer_name"/>
+        <result property="username" column="consumer_username"/>
+        <result property="address" column="address_detail"/>
+        <result property="province" column="address_province"/>
+        <result property="city" column="address_city"/>
+        <result property="district" column="address_district"/>
+        <result property="phone" column="phone_number"/>
+    </resultMap>
+
     <select id="query" parameterType="java.util.Map" resultMap="consumerVo">
         SELECT consumer_id, consumer_name, consumer_username, consumer_wechat, phone_number, address_detail, address_province, address_city, address_district, block_flag, create_time
         FROM gmair_userinfo.view_consumer_info
@@ -31,6 +42,31 @@
             AND block_flag = #{blockFlag}
         </if>
         ORDER BY create_time DESC
+    </select>
+
+    <select id="queryConsumerAccounts" parameterType="finley.gmair.form.consumer.ConsumerPartInfoQuery"
+            resultMap="consumerPartInfoVo">
+        <bind name="offset" value="(pageIndex - 1) * pageSize"></bind>
+        SELECT consumer_id, consumer_name, consumer_username, phone_number,
+        address_detail, address_province, address_city, address_district
+        FROM gmair_userinfo.view_consumer_info
+        WHERE block_flag = false
+        <if test="name != null">
+            AND consumer_name = #{name}
+        </if>
+        <if test="username != null">
+            AND consumer_username = #{username}
+        </if>
+        <if test="province != null">
+            AND address_province = #{province}
+        </if>
+        <if test="city != null">
+            AND address_city = #{city}
+        </if>
+        <if test="district != null">
+            AND address_district = #{district}
+        </if>
+        ORDER BY create_time DESC LIMIT #{offset}, #{pageSize}
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.consumer.Consumer">

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class MachineFilterInfoQuery {
 
     /**
-     * 当前页，必填
+     * 当前页，从1开始，必填
      */
     private int pageIndex;
 

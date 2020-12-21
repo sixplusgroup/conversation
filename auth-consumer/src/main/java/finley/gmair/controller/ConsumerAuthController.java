@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.consumer.ConsumerForm;
+import finley.gmair.form.consumer.ConsumerPartInfoQuery;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.form.consumer.LoginForm;
 import finley.gmair.model.auth.VerificationCode;
@@ -15,6 +16,7 @@ import finley.gmair.service.SerialService;
 import finley.gmair.service.WechatService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.consumer.ConsumerPartInfoVo;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -498,5 +500,29 @@ public class ConsumerAuthController {
             result.setDescription("success to find consumer info by phone");
             return result;
         }
+    }
+
+    /**
+     * 根据query给出的条件查询符合条件的账户信息
+     * @param query 查询条件对象
+     * @return 查询结果
+     */
+    @GetMapping("/consumer/accounts")
+    public ResultData queryConsumerAccounts(@RequestBody ConsumerPartInfoQuery query) {
+        ResultData res = new ResultData();
+
+        if (query == null || query.getPageIndex() <= 0 || query.getPageSize() <= 0) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("error params");
+            return res;
+        }
+
+        Map<String, Object> resData = new HashMap<>();
+        List<ConsumerPartInfoVo> store = consumerService.fetchConsumerAccounts(query);
+        resData.put("size", store.size());
+        resData.put("list", store);
+
+        res.setData(resData);
+        return res;
     }
 }
