@@ -83,6 +83,19 @@ public class MqttConfiguration {
         return factory;
     }
 
+    @Bean
+    public MqttPahoClientFactory mqttOutClientFactory() {
+        String[] serverUrls = mqttProperties.getOutbound().getUrls().split(",");
+        DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
+        //factory.setUserName(username);
+        //factory.setPassword(password);
+        factory.setServerURIs(serverUrls);
+        factory.setCleanSession(false);
+        factory.setConnectionTimeout(10);
+        factory.setKeepAliveInterval(30);
+        return factory;
+    }
+
 //    ----------------------------- 实现MqttOutbound start -----------------------------
 
     @Bean
@@ -93,7 +106,7 @@ public class MqttConfiguration {
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler mqttOutbound() {
-        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttProperties.getOutbound().getClientId(), mqttClientFactory());
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttProperties.getOutbound().getClientId(), mqttOutClientFactory());
         messageHandler.setAsync(true);
         messageHandler.setDefaultTopic(mqttProperties.getOutbound().getTopic());
         return messageHandler;
