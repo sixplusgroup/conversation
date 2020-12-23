@@ -1,41 +1,37 @@
 package finley.gmair.controller;
 
-import finley.gmair.service.MapModelMaterialService;
+import finley.gmair.service.impl.ModeFilterServiceImpl;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Resource;
 
 /**
+ * @author zm
  * @Description 设备型号-耗材控制器
- * @Author zm
  * @Date 2020/7/28 0028 15:45
  **/
 @RestController
 @RequestMapping("/machine/model")
-public class ModelMaterialController {
+public class ModelFilterController {
 
-    @Autowired
-    private MapModelMaterialService modelMaterialService;
+    @Resource
+    private ModeFilterServiceImpl modeFilterService;
 
 
-    @GetMapping(value = "/getMaterials")
     /**
-     * 返回设别型号对应的购买链接
-     *
-     * @author zm
-     * @param [modelId] 设备型号
+     * @param [modelId] 机器型号
      * @return finley.gmair.util.result
+     * @author zm
      * @date 2020/7/29 0029 13:32
-     **/
-    public ResultData getMaterial(
+     */
+    @GetMapping(value = "/filterLinks")
+    public ResultData getFilterLinks(
             @RequestParam("modelId") String modelId
     ) {
         ResultData result = new ResultData();
@@ -46,20 +42,17 @@ public class ModelMaterialController {
             return result;
         }
 
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("modelId", modelId);
-        ResultData response = modelMaterialService.fetch(condition);
-
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+        ResultData response = modeFilterService.fetch(modelId);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
-            result.setDescription(response.getDescription());
-            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
         }
+
+        result.setDescription(response.getDescription());
         return result;
     }
 }
