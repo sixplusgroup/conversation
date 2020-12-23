@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -191,31 +190,4 @@ public interface MachineService {
 
     @GetMapping("/machine/text")
     ResultData getText(@RequestParam("textType") String textType);
-
-    @PostMapping("/machine/filter/info/query")
-    ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query);
-
-    @GetMapping("/machine/filter/info/modelName")
-    ResultData queryMachineModelName();
-
-    @GetMapping("/machine/filter/info/modelCode")
-    ResultData queryMachineModelCode(@RequestParam("modelName") String modelName);
-
-    /**
-     * 设备拥有者查看目前设备的权限分享用户列表
-     * qrcode=codeValue
-     * @param qrcode
-     * @return
-     */
-    @GetMapping("/machine/consumer/share/list")
-    ResultData queryShare(@RequestParam("qrcode") String qrcode);
-
-    /**
-     * 设备拥有者可撤销目前设备的分享权限
-     * @param bindId
-     * @return
-     */
-    @PostMapping("/machine/consumer/share/withdraw")
-    ResultData withdrawShare(@RequestParam("bindId")String bindId,@RequestParam("qrcode")String qrcode);
-
 }
