@@ -14,8 +14,8 @@ public class ResultUtil {
 
     public static ApiResult success(String msg, Object data) {
         ApiResult apiResult = new ApiResult();
-        apiResult.setCode(200);
-        apiResult.setMsg(msg);
+        apiResult.setResponseCode("RESPONSE_OK");
+        apiResult.setDescription(msg);
         apiResult.setData(data);
         return apiResult;
     }
@@ -24,17 +24,17 @@ public class ResultUtil {
         return success(msg, null);
     }
 
-    public static ApiResult error(Integer code, String msg) {
+    public static ApiResult error(String code, String msg) {
         ApiResult apiResult = new ApiResult();
-        apiResult.setCode(code);
-        apiResult.setMsg(msg);
+        apiResult.setResponseCode(code);
+        apiResult.setDescription(msg);
         return apiResult;
     }
 
     public static ApiResult error(ErrorCode codeEnum) {
         ApiResult apiResult = new ApiResult();
-        apiResult.setCode(codeEnum.getCode());
-        apiResult.setMsg(codeEnum.getMsg());
+        apiResult.setResponseCode(codeEnum.getResponseCode());
+        apiResult.setDescription(codeEnum.getDescription());
         return apiResult;
     }
 }

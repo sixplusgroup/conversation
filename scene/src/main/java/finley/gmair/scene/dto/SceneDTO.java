@@ -19,6 +19,7 @@ public class SceneDTO implements Serializable {
     @JSONField(name = "consumer_id")
     private String consumerId;
     // 场景名称
+    @JSONField(name = "scene_name")
     private String name;
 
     // 场景内的相关数值

@@ -19,15 +19,15 @@ public class SceneController {
     // 前端传json
     @PostMapping("/create")
     public ApiResult createScene(@RequestBody SceneDTO sceneDTO) {
-        boolean flag = sceneService.createScene(sceneDTO);
-        return ResultUtil.success();
+        SceneDTO scene = sceneService.createScene(sceneDTO);
+        return ResultUtil.success("创建成功", scene);
     }
 
     // 前端传json
     @PostMapping("/update")
     public ApiResult updateScene(@RequestBody SceneDTO sceneDTO) {
-        boolean flag = sceneService.updateScene(sceneDTO);
-        return ResultUtil.success();
+        SceneDTO scene = sceneService.updateScene(sceneDTO);
+        return ResultUtil.success("更新成功", scene);
     }
 
     // 根据用户ID获取该用户所包含的全部场景信息

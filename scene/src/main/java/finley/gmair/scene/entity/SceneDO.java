@@ -12,8 +12,8 @@ public class SceneDO {
     @TableId(value = "scene_id", type = IdType.ASSIGN_ID)
     private Long id;
 
-    @TableField(value = "consumer_id")
     // 场景所属对象即命令的执行人
+    @TableField(value = "consumer_id")
     private String consumerId;
     // 场景名称
     private String name;
@@ -23,6 +23,7 @@ public class SceneDO {
     private double humidity;
     private double co2;
     // 当前场景所处状态
+    @TableField()
     private String status;
 
     // 创建日期

@@ -50,8 +50,10 @@ public class SceneOperationServiceImpl implements SceneOperationService {
 
     @Override
     public boolean updateSceneOperation(SceneOperationDTO sceneOperationDTO) {
-        SceneOperationDO sceneOperationDO = new SceneOperationDO();
-        BeanUtils.copyProperties(sceneOperationDO, sceneOperationDTO);
+        SceneOperationDO sceneOperationDO = sceneOperationDAO.selectSceneOperationBySceneId(sceneOperationDTO.getSceneId());
+        sceneOperationDO.setSceneName(sceneOperationDTO.getSceneName());
+        sceneOperationDO.setCommands(sceneOperationDTO.getCommands());
+        sceneOperationDO.setConsumerId(sceneOperationDTO.getConsumerId());
         // todo 校验下这里是不是真的更新
         SceneOperationDO tmp = sceneOperationDAO.updateSceneOperation(sceneOperationDO);
         if (tmp.getId().isEmpty()) {

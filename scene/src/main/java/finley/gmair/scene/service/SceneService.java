@@ -7,7 +7,7 @@ import java.util.List;
 public interface SceneService {
 
     // 添加场景
-    boolean createScene(SceneDTO sceneDTO);
+    SceneDTO createScene(SceneDTO sceneDTO);
 
     // 根据ID移除场景
     boolean removeSceneBySceneId(long sceneId);
@@ -16,7 +16,7 @@ public interface SceneService {
     boolean removeScenesByConsumerId(String consumerId);
 
     // 更新场景
-    boolean updateScene(SceneDTO sceneDTO);
+    SceneDTO updateScene(SceneDTO sceneDTO);
 
     // 根据用户id获取所有场景
     List<SceneDTO> getScenesByConsumerId(String consumerId);

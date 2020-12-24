@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class ApiResult {
-    private int code;
-    private String msg;
+    private String responseCode;
+    private String description;
     private Object data;
 }

@@ -7,18 +7,18 @@ import finley.gmair.scene.constant.ErrorCode;
  * @date 2020-07-05 11:18 下午
  */
 public class BizException extends RuntimeException {
-    private int code;
+    private String responseCode;
 
-    public int getCode() {
-        return code;
+    public String getResponseCode() {
+        return responseCode;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
     }
 
     public BizException(ErrorCode errorCode) {
-        super(errorCode.getMsg());
-        this.code = errorCode.getCode();
+        super(errorCode.getDescription());
+        this.responseCode = errorCode.getResponseCode();
     }
 }

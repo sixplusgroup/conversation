@@ -8,28 +8,21 @@ public enum ErrorCode {
     /**
      * 结果返回状态
      */
-    UNAUTHORIZED(401, "Unauthorized"),
-    UNKNOWN_ERROR(500, "未知错误"),
-    SUCCESS(200, "成功"),
-    APP_ID_NOT_AVAILABLE(500, "检查appid合法性失败"),
-    APP_ID_IS_NULL(500, "请提供正确的appid"),
-    QR_CODE_IS_NULL(500, "请提供正确的qrcode"),
-    QR_CODE_NOT_SUBSCRIBE(500, "未订阅该设备"),
-    QR_CODE_SUBSCRIBE_FAILED(500, "查询与该设备的订阅关系失败");
+    UNKNOWN_ERROR("RESPONSE_ERROR", "未知错误");
 
-    private final int code;
-    private final String msg;
+    private final String responseCode;
+    private final String description;
 
-    ErrorCode(int code, String msg) {
-        this.code = code;
-        this.msg = msg;
+    ErrorCode(String responseCode, String description) {
+        this.responseCode = responseCode;
+        this.description = description;
     }
 
-    public int getCode() {
-        return code;
+    public String getResponseCode() {
+        return responseCode;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getDescription() {
+        return description;
     }
 }

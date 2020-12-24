@@ -24,10 +24,10 @@ public class MyExceptionConfig {
         if (e instanceof BizException) {
             BizException exception = (BizException) e;
             log.error(exception.getMessage());
-            return ResultUtil.error(exception.getCode(), exception.getMessage());
+            return ResultUtil.error(exception.getResponseCode(), exception.getMessage());
         } else {
             log.error("【系统异常】", e);
-            return ResultUtil.error(ErrorCode.UNKNOWN_ERROR.getCode(), e.getMessage());
+            return ResultUtil.error(ErrorCode.UNKNOWN_ERROR.getResponseCode(), e.getMessage());
         }
     }
 }

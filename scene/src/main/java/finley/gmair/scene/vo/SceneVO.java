@@ -1,6 +1,8 @@
 package finley.gmair.scene.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import finley.gmair.scene.dto.SceneOperationDTO;
+import finley.gmair.scene.entity.SceneOperationCommand;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -13,8 +15,8 @@ public class SceneVO {
     private String consumerId;
     // 场景名称
     private String name;
-    // 场景内的所有设备
-    private List<String> qrCodes;
+    // 场景内的所有设备及其可执行操作
+    private SceneOperationDTO sceneOperation;
     // 场景内的相关数值
     private double pm25;
     private double temperature;

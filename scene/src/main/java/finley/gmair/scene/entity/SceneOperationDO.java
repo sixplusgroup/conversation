@@ -1,5 +1,6 @@
 package finley.gmair.scene.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,8 +18,14 @@ import java.util.List;
 public class SceneOperationDO {
     @Id
     private String id;
-    @Field(value = "sid")
+    @Field(value = "scene_id")
     private Long sceneId;
+
+    @Field(value = "scene_name")
+    private String sceneName;
+
+    @Field(value = "consumer_id")
+    private String consumerId;
 
     @Field("commands")
     private List<SceneOperationCommand> commands;

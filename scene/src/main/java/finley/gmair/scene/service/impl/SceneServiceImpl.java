@@ -42,7 +42,8 @@ public class SceneServiceImpl implements SceneService {
     private RedisUtil redisUtil;
 
     @Override
-    public boolean createScene(SceneDTO sceneDTO) {
+    public SceneDTO createScene(SceneDTO sceneDTO) {
+        log.info("sceneDTO is: {}", JSON.toJSONString(sceneDTO));
         SceneDO sceneDO = new SceneDO();
         BeanUtils.copyProperties(sceneDTO, sceneDO);
 
@@ -60,7 +61,29 @@ public class SceneServiceImpl implements SceneService {
             // 场景内操作写入失败
             throw new BizException(ErrorCode.UNKNOWN_ERROR);
         }
-        return true;
+        sceneDTO.setSceneOperation(sceneOperationDTO);
+        return sceneDTO;
+    }
+
+    @Override
+    public SceneDTO updateScene(SceneDTO sceneDTO) {
+        SceneDO sceneDO = new SceneDO();
+        BeanUtils.copyProperties(sceneDTO,sceneDO);
+        boolean flag = sceneDAO.updateSceneDO(sceneDO);
+        if (!flag) {
+            // 场景更新失败
+            throw new BizException(ErrorCode.UNKNOWN_ERROR);
+        }
+
+        // 更新场景内的操作
+        SceneOperationDTO sceneOperationDTO = sceneDTO.getSceneOperation();
+        flag = sceneOperationService.updateSceneOperation(sceneOperationDTO);
+        if (!flag) {
+            // 场景内操作更新失败
+            throw new BizException(ErrorCode.UNKNOWN_ERROR);
+        }
+        sceneDTO.setSceneOperation(sceneOperationDTO);
+        return sceneDTO;
     }
 
     @Override
@@ -85,25 +108,6 @@ public class SceneServiceImpl implements SceneService {
         return true;
     }
 
-    @Override
-    public boolean updateScene(SceneDTO sceneDTO) {
-        SceneDO sceneDO = new SceneDO();
-        BeanUtils.copyProperties(sceneDO, sceneDTO);
-        boolean flag = sceneDAO.updateSceneDO(sceneDO);
-        if (!flag) {
-            // 场景更新失败
-            throw new BizException(ErrorCode.UNKNOWN_ERROR);
-        }
-
-        // 更新场景内的操作
-        SceneOperationDTO sceneOperationDTO = sceneDTO.getSceneOperation();
-        flag = sceneOperationService.updateSceneOperation(sceneOperationDTO);
-        if (!flag) {
-            // 场景内操作更新失败
-            throw new BizException(ErrorCode.UNKNOWN_ERROR);
-        }
-        return true;
-    }
 
     @Override
     public List<SceneDTO> getScenesByConsumerId(String consumerId) {
@@ -141,26 +145,26 @@ public class SceneServiceImpl implements SceneService {
         List<String> qrCodes = getSceneQrCodesBySceneId(sceneId);
         sceneDTO.setQrCodes(qrCodes);
         // 获取场景内数据指标
-        if (sceneDTO.getCo2() == 0 || sceneDTO.getHumidity() == 0 || sceneDTO.getPm25() == 0) {
-            //todo 获取场景内数据指标
-            double co2 = 0;
-            double humidity = 0;
-            double pm25 = 0;
-            double temperature = 0;
-            for (String qrCode : qrCodes) {
-                // 没有批量接口，只能for循环依次获取设备状态
-                ResultData data = machineClient.runningStatus(qrCode);
-                JSONObject object = JSON.parseObject(JSON.toJSONString(data.getData()));
-                co2 += object.getDoubleValue("co2");
-                humidity += object.getDoubleValue("humidity");
-                temperature += object.getDoubleValue("temperature");
-                pm25 += object.getDoubleValue("pm2_5");
-            }
-            sceneDTO.setTemperature(temperature / qrCodes.size());
-            sceneDTO.setCo2(co2 / qrCodes.size());
-            sceneDTO.setHumidity(humidity / qrCodes.size());
-            sceneDTO.setPm25(pm25 / qrCodes.size());
-        }
+//        if (sceneDTO.getCo2() == 0 || sceneDTO.getHumidity() == 0 || sceneDTO.getPm25() == 0) {
+//            //todo 获取场景内数据指标
+//            double co2 = 0;
+//            double humidity = 0;
+//            double pm25 = 0;
+//            double temperature = 0;
+//            for (String qrCode : qrCodes) {
+//                // 没有批量接口，只能for循环依次获取设备状态
+//                ResultData data = machineClient.runningStatus(qrCode);
+//                JSONObject object = JSON.parseObject(JSON.toJSONString(data.getData()));
+//                co2 += object.getDoubleValue("co2");
+//                humidity += object.getDoubleValue("humidity");
+//                temperature += object.getDoubleValue("temperature");
+//                pm25 += object.getDoubleValue("pm2_5");
+//            }
+//            sceneDTO.setTemperature(temperature / qrCodes.size());
+//            sceneDTO.setCo2(co2 / qrCodes.size());
+//            sceneDTO.setHumidity(humidity / qrCodes.size());
+//            sceneDTO.setPm25(pm25 / qrCodes.size());
+//        }
         return sceneDTO;
     }
 
