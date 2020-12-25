@@ -41,7 +41,6 @@ public class ConsumerAuthController {
     @Autowired
     private WechatService wechatService;
 
-
     /**
      * register user information
      *
@@ -127,9 +126,6 @@ public class ConsumerAuthController {
         VerificationCode code = serialService.generate(phone);
         // call message agent to send the text to corresponding phone number
         // retrieve message template from database
-        System.out.println(JSON.toJSONString(code));
-        //下句打印出来已经是JSON形式
-        System.out.println(code);
         ResultData response = messageService.template(String.valueOf(action.toUpperCase()));
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

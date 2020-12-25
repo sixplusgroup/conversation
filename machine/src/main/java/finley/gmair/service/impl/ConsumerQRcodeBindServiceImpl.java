@@ -46,6 +46,12 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
     @Autowired
     private MachineEfficientInformationDao machineEfficientInformationDao;
 
+    @Autowired
+    private AuthConsumerService authConsumerService;
+
+    @Autowired
+    private ConsumerQRcodeBindService consumerQRcodeBindService;
+
     @Transactional
     @Override
     public ResultData createConsumerQRcodeBind(ConsumerQRcodeBind consumerQRcodeBind){
@@ -211,9 +217,25 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
                 //重新绑定
                 else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     condition.clear();
-                    condition.put("qrcode",newBindQRCode);
-                    condition.put("blockFlag",false);
-                    machineFilterCleanService.modify(condition);
+                    condition.put("codeValue",newBindQRCode);
+                    condition.put("consumerId",consumerQRcodeBind.getConsumerId());
+                    //判断是否曾经绑定
+                    ResultData consumer = consumerQRcodeBindDao.query(condition);
+                    //新绑定，更新时间
+                    if (consumer.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                        condition.clear();
+                        condition.put("qrcode", newBindQRCode);
+                        condition.put("blockFlag", false);
+                        condition.put("lastConfirmTime",new Date());
+                        machineFilterCleanService.modify(condition);
+                    }
+                    //曾经绑定，不更新时间
+                    else {
+                        condition.clear();
+                        condition.put("qrcode", newBindQRCode);
+                        condition.put("blockFlag", false);
+                        machineFilterCleanService.modify(condition);
+                    }
                 }
             }
         });
@@ -264,7 +286,7 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
                     MachineEfficientInformation oneInfo = new MachineEfficientInformation(
                             newBindQRCode, new Date(), 0, 0, 0);
 
-                    updateMachineEfficientInformation(oneInfo);
+                    updateMachineEfficientInformation(oneInfo, consumerQRcodeBind);
                 }
                 // 判断machine_efficient_filter表中是否已存在对应字段
                 Map<String,Object> condition = new HashMap<>(1);
@@ -290,7 +312,7 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
 
     //update table: machine_efficient_information
     @Override
-    public void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation) {
+    public void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation, ConsumerQRcodeBind consumerQRcodeBind) {
         MachinePool.getMachinePool().execute(() ->{
             String newBindQRCode = machineEfficientInformation.getQrcode();
             // 判断是否存在
@@ -307,10 +329,68 @@ public class ConsumerQRcodeBindServiceImpl implements ConsumerQRcodeBindService 
             // 如果存在则重新绑定
             else if(isExist.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 condition.clear();
-                condition.put("qrcode", newBindQRCode);
-                condition.put("blockFlag", false);
-                machineEfficientInformationDao.update(condition);
+                condition.put("codeValue",newBindQRCode);
+                condition.put("consumerId",consumerQRcodeBind.getConsumerId());
+                //判断是否曾经绑定
+                ResultData consumer = consumerQRcodeBindDao.query(condition);
+                //新绑定，更新时间
+                if (consumer.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                    condition.clear();
+                    condition.put("qrcode", newBindQRCode);
+                    condition.put("blockFlag", false);
+                    condition.put("lastConfirmTime",new Date());
+                    machineEfficientInformationDao.update(condition);
+                }
+                //曾经绑定，不更新时间
+                else {
+                    condition.clear();
+                    condition.put("qrcode", newBindQRCode);
+                    condition.put("blockFlag", false);
+                    machineEfficientInformationDao.update(condition);
+                }
             }
         });
     }
+
+    @Override
+    public ResultData queryShare(String codeValue) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("codeValue", codeValue);
+        //只查看分享的列表 不包括自己
+        condition.put("ownership", 1);
+        ResultData resultData = consumerQRcodeBindService.fetchConsumerQRcodeBind(condition);
+        List<ConsumerQRcodeBind> consumerQRcodeBindList = (List<ConsumerQRcodeBind>) resultData.getData();
+        if(consumerQRcodeBindList==null){
+            result.setData(null);
+            result.setDescription("没有分享给他人的设备");
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            return result;
+        }
+        Map<String,Object> lastMap= new HashMap<>();
+        List<Map<String,Object>> infoList= new ArrayList<>();
+        for(ConsumerQRcodeBind cb:consumerQRcodeBindList){
+            ResultData resultConsumer = authConsumerService.profile(cb.getConsumerId());
+            if(resultConsumer.getData()==null){
+                result.setData(null);
+                result.setDescription("没有对应的用户信息，请重试");
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                return result;
+            }
+            Map<String,Object> consumerVo = (Map<String,Object>)resultConsumer.getData();
+            Map<String,Object> neededInfo= new HashMap<>();
+            neededInfo.put("bindId",cb.getConsumerId());
+            neededInfo.put("name", consumerVo.get("name"));
+            neededInfo.put("createAt", consumerVo.get("createAt"));
+            infoList.add(neededInfo);
+        }
+        lastMap.put("size",infoList.size());
+        lastMap.put("userList",infoList);
+        result.setData(lastMap);
+        result.setDescription("查询成功");
+        return result;
+    }
+
+
 }

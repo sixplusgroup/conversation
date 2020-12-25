@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ExcelUtil {
 
-    public final static String[] HEADER = {"收货人", "联系方式", "收货地址", "数量", "发货内容", "备注", "订单来源"};
+    public final static String[] HEADER = {"收货人", "联系方式", "收货地址", "数量", "发货内容", "备注", "订单来源","工单类型"};
 
     public final static String[] ORDERHEADER = {
             "订单编号",
@@ -64,6 +64,7 @@ public class ExcelUtil {
             String model = getCellValue(current.getCell(index[4]));
             String description = getCellValue(current.getCell(index[5]), Integer.class);
             String source = getCellValue(current.getCell(index[6]));
+            String assignType = getCellValue(current.getCell(index[7]));
             for (int j = 0; j < Integer.parseInt(quantity); j++) {
                 JSONObject item = new JSONObject();
                 item.put("name", name);
@@ -72,6 +73,7 @@ public class ExcelUtil {
                 item.put("model", model);
                 item.put("description", description);
                 item.put("source", source);
+                item.put("assignType",assignType);
                 result.add(item);
             }
         }

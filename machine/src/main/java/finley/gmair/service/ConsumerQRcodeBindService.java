@@ -25,5 +25,12 @@ public interface ConsumerQRcodeBindService {
 
     void updateMachineEfficientFilter(ConsumerQRcodeBind consumerQRcodeBind);
 
-    void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation);
+    void updateMachineEfficientInformation(MachineEfficientInformation machineEfficientInformation, ConsumerQRcodeBind consumerQRcodeBind);
+
+    /**
+     *  设备拥有者查看目前设备的权限分享用户列表 调用其他微服务
+     * @param codeValue
+     * @return
+     */
+    ResultData queryShare(String codeValue);
 }

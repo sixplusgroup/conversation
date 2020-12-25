@@ -2,18 +2,18 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.service.CoreService;
 import finley.gmair.service.MachineService;
 import finley.gmair.service.MqttLoggerService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.FilterUpdByFormulaConfig;
+import finley.gmair.vo.machine.FilterUpdByMQTTConfig;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * This method is responsible to fetch response from machine-agent
@@ -156,6 +156,73 @@ public class MachineController {
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
         return result;
+    }
+
+    /**
+     * 查询设备滤网信息
+     * @param query 查询条件
+     * @return 结果集合
+     */
+    @PostMapping("/filter/info/query")
+    public ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query) {
+        return machineService.queryMachineFilterInfo(query);
+    }
+
+    /**
+     * 查询设备型号名，如GM420
+     * @return 设备型号名集合
+     */
+    @GetMapping("/filter/info/model/name")
+    public ResultData queryMachineModelName() {
+        return machineService.queryMachineModelName();
+    }
+
+    /**
+     * 查询设备型号code，即子型号，如GM420-42A中的42A即为所求
+     * @param modelName 设备型号名，如GM420
+     * @return 设备型号code，如42A
+     */
+    @GetMapping("/filter/info/model/code")
+    public ResultData queryMachineModelCode(String modelName) {
+        return machineService.queryMachineModelCode(modelName);
+    }
+
+    /**
+     * 获取所有具有高效滤网且是通过MQTT获取Remain来更新滤网状态的设备的滤网提醒配置
+     * @return {@link FilterUpdByMQTTConfig}数组
+     */
+    @GetMapping("/filter/info/config/updatedByMQTT")
+    public ResultData queryConfigUpdatedByMQTT() {
+        return machineService.queryConfigUpdatedByMQTT();
+    }
+
+    /**
+     * 更新通过MQTT获取Remain来更新滤网状态的设备的滤网提醒配置
+     * @param config 更新值对象
+     * @return 是否成功
+     */
+    @PostMapping("/filter/info/update/config/updatedByMQTT")
+    public ResultData updateConfigUpdatedByMQTT(@RequestBody FilterUpdByMQTTConfig config) {
+        return machineService.updateConfigUpdatedByMQTT(config);
+    }
+
+    /**
+     * 获取所有具有高效滤网且是通过公式来更新滤网状态的设备的滤网提醒配置
+     * @return {@link FilterUpdByFormulaConfig}数组
+     */
+    @GetMapping("/filter/info/config/updatedByFormula")
+    public ResultData queryConfigUpdatedByFormula() {
+        return machineService.queryConfigUpdatedByFormula();
+    }
+
+    /**
+     * 更新通过公式来更新滤网状态的设备的滤网提醒配置
+     * @param config 更新值对象
+     * @return 是否成功
+     */
+    @PostMapping("/filter/info/update/config/updatedByFormula")
+    public ResultData updateConfigUpdatedByFormula(@RequestBody FilterUpdByFormulaConfig config) {
+        return machineService.updateConfigUpdatedByFormula(config);
     }
 
 }

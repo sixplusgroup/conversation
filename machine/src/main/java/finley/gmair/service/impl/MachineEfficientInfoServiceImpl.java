@@ -200,10 +200,14 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     // 设备在线的运行时间，从data-analysis模块进行获取，用Running表示
     private int getRunning(String qrcode) {
         long powerOnTime = 0;
-
-        ResultData response =
-                dataAnalysisAgent.fetchLastNDayData(qrcode, getLastNDay(qrcode), STATUS_TYPE_POWER);
-
+        ResultData response = new ResultData();
+        try {
+            response = dataAnalysisAgent.fetchLastNDayData(qrcode, getLastNDay(qrcode), STATUS_TYPE_POWER);
+        }
+        catch (Exception e){
+            logger.error("feign exception while getting running");
+            return 0;
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             JSONArray dataList = JSON.parseArray(JSON.toJSONString(response.getData()));
             for (int i = 0; i < dataList.size(); i++) {
@@ -220,7 +224,7 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     }
 
     // 设备所处城市PM2.5在当前周期内大于75的天数，用Abnormal表示
-    private int getAbnormal(String qrcode) {
+    public int getAbnormal(String qrcode) {
         int lastNday = 0;
         int result = 0;
         Map<String, Object> condition = new HashMap<>();
@@ -241,11 +245,17 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
         Date now = new Date();
         Date lastConfirmDate = getLastConfirmDate(qrcode);
         if (lastConfirmDate != null){
-            lastNday = (int) ((now.getTime() - lastConfirmDate.getTime()) / (1000 * 60 * 60 * 24));
+            lastNday = (int) ((now.getTime() - lastConfirmDate.getTime()) / ((long)1000 * 60 * 60 * 24));
         }
 
         //得到上次
-        response = airqualityAgent.fetchLastNDayData(cityId, lastNday);
+        try {
+            response = airqualityAgent.fetchLastNDayData(cityId, lastNday);
+        }
+        catch (Exception e){
+            logger.error("feign exception while getting abnormal");
+            return 0;
+        }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             return 0;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
@@ -269,9 +279,9 @@ public class MachineEfficientInfoServiceImpl implements MachineEfficientInfoServ
     }
 
     //得到上次的confirm时间
-    private Date getLastConfirmDate(String qrcode){
+    public Date getLastConfirmDate(String qrcode){
         Map<String, Object> condition = new HashMap<>();
-        condition.put("codeValue", qrcode);
+        condition.put("qrcode", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineEfficientInformationDao.query(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {

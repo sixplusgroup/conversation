@@ -34,4 +34,6 @@ public class AssignReport extends Entity {
     private String memberId;
 
     private String memberName;
+
+    private String assignType;
 }

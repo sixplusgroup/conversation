@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,6 +45,8 @@ import java.io.File;
 @PropertySource("classpath:management.properties")
 public class InstallController {
     private Logger logger = LoggerFactory.getLogger(InstallController.class);
+
+    private static String CREATE_TEMPLATE_NAME = "果麦新风安装任务模板";
 
     @Autowired
     private InstallService installService;
@@ -110,12 +113,13 @@ public class InstallController {
         String consumerAddress = form.getConsumerAddress();
         String model = form.getModel();
         String source = form.getSource();
+        String type = form.getType();
         if (StringUtils.isEmpty(form.getDescription())&&StringUtils.isEmpty(form.getCompany())) {
-            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source);
+            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, type);
         } else if(StringUtils.isEmpty(form.getCompany())){
-            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription());
+            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription(), type);
         }else {
-            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription(),form.getCompany());
+            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription(),form.getCompany(),type);
         }
         return result;
     }
@@ -133,12 +137,12 @@ public class InstallController {
     }
 
     @GetMapping("/assign/list")
-    public ResultData assigns(String status, String teamId, Integer curPage, Integer length,String search) {
+    public ResultData assigns(String status, String teamId, Integer curPage, Integer length,String search, String sortType) {
         ResultData result;
         if (curPage == null || length == null) {
-            result = installService.fetchAssign(status, teamId , search);
+            result = installService.fetchAssign(status, teamId , search, sortType);
         } else {
-            result = installService.fetchAssignByPage(status, teamId, curPage, length,search);
+            result = installService.fetchAssignByPage(status, teamId, curPage, length,search, sortType);
         }
         return result;
     }
@@ -415,32 +419,32 @@ public class InstallController {
      * @return
      */
     @GetMapping("/assign/report")
-    public ResultData report_query(String assignId,String teamId,String memberId,String beginTime,String endTime){
+    public ResultData report_query(String assignId,String teamId,String memberId,String beginTime,String endTime, String sortType, Integer page, Integer pageLength){
         ResultData result=new ResultData();
         if(!StringUtils.isEmpty(assignId)){
-            result=installService.reportQueryByAssignId(assignId,beginTime,endTime);
+            result=installService.reportQueryByAssignId(assignId,beginTime,endTime,sortType,page,pageLength);
         }else if(!StringUtils.isEmpty(memberId)){
-            result=installService.reportQueryByMemberId(memberId,beginTime,endTime);
+            result=installService.reportQueryByMemberId(memberId,beginTime,endTime,sortType,page,pageLength);
         }else if(!StringUtils.isEmpty(teamId)){
-            result=installService.reportQueryByTeamId(teamId,beginTime,endTime);
+            result=installService.reportQueryByTeamId(teamId,beginTime,endTime,sortType,page,pageLength);
         }else{
-            result=installService.reportQueryByMemberTime(beginTime,endTime);
+            result=installService.reportQueryByMemberTime(beginTime,endTime,sortType,page,pageLength);
         }
         return result;
     }
 
 
     @GetMapping("/assign/report/download")
-    public String report_download(String assignId,String teamId,String memberId,String beginTime,String endTime,HttpServletResponse response){
+    public String report_download(String assignId,String teamId,String memberId,String beginTime,String endTime,HttpServletResponse response, String sortType){
         ResultData result=new ResultData();
         if(!StringUtils.isEmpty(assignId)){
-            result=installService.reportQueryByAssignId(assignId,beginTime,endTime);
+            result=installService.reportQueryByAssignId(assignId,beginTime,endTime,sortType,null,null);
         }else if(!StringUtils.isEmpty(memberId)){
-            result=installService.reportQueryByMemberId(memberId,beginTime,endTime);
+            result=installService.reportQueryByMemberId(memberId,beginTime,endTime,sortType,null,null);
         }else if(!StringUtils.isEmpty(teamId)){
-            result=installService.reportQueryByTeamId(teamId,beginTime,endTime);
+            result=installService.reportQueryByTeamId(teamId,beginTime,endTime,sortType,null,null);
         }else{
-            result=installService.reportQueryByMemberTime(beginTime,endTime);
+            result=installService.reportQueryByMemberTime(beginTime,endTime,sortType,null,null);
         }
         String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".xls";
         try {
@@ -617,5 +621,67 @@ public class InstallController {
     @GetMapping("/assign/company/list")
     ResultData getCompanyList(){
         return installService.getCompanyList();
+    }
+
+    /**
+     *
+     * @description:下载创建工单模板
+     * @param: HttpServletResponse[response]
+     * @return: ResultData
+     * @auther: CK
+     * @date: 2020/11/8 15:13
+     */
+    @GetMapping("/assign/create/template/download")
+    public ResultData templateDownloadCreate(HttpServletResponse response) throws IOException {
+        ResultData resultData = new ResultData();
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 这里URLEncoder.encode可以防止中文乱码
+        String fileName = URLEncoder.encode(CREATE_TEMPLATE_NAME, "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+
+        String filePath = "/template/" + CREATE_TEMPLATE_NAME + ".xlsx";
+//        String filePath = "E://"+"test.xlsx";
+        File file = new File(filePath);
+        //判断文件存在
+        if (!file.exists()){
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("文件不存在");
+            logger.error("创建工单模板文件不存在");
+            return resultData;
+        }
+
+        BufferedInputStream inputStream = null;
+        BufferedOutputStream outputStream = null;
+        try {
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+            outputStream = new BufferedOutputStream(response.getOutputStream());
+            byte[] buffer = new byte[2048];
+            int bytesRead;
+            while (-1 != (bytesRead = inputStream.read(buffer, 0, buffer.length))) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return resultData;
+    }
+
+    @GetMapping("assign/order")
+    ResultData overviewNow(String memberId, String assignStatus,String duration, Integer curPage, Integer length){
+        return installService.overviewNow(memberId, assignStatus, duration, curPage, length);
     }
 }

@@ -492,7 +492,6 @@ insert ignore into machine_efficient_information (qr_code,last_confirm_time,crea
     and q.model_id in (select model_id from model_efficient_config where reset_hour = 0)
     group by cmb.code_value;
 
-
 # 2020年12月23日
 DROP TABLE IF EXISTS `filter`;
 CREATE TABLE `filter`  (
@@ -594,3 +593,14 @@ INSERT INTO `map_model_filter` VALUES ('MMM00000046', 'MOD201903054zaw270', 'FL0
 INSERT INTO `map_model_filter` VALUES ('MMM00000047', 'MOD20190527vy5xr321', 'FL00000012', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
 INSERT INTO `map_model_filter` VALUES ('MMM00000048', 'MOD20190527vy5xr321', 'FL00000016', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
 INSERT INTO `map_model_filter` VALUES ('MMM00000049', 'MOD20190527vy5xr321', 'FL00000020', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+    
+#2020-10-29
+CREATE TABLE `machine_filter_text` (
+    `text_id`                 VARCHAR(255) NOT NULL,
+    `text_content`            VARCHAR(255) NOT NULL,
+    `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
+    `create_time`             DATETIME NOT NULL,
+    PRIMARY KEY (`qr_code`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
