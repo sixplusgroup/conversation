@@ -15,6 +15,7 @@ import finley.gmair.service.strategy.impl.VirtualOrderTrans;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,10 @@ import java.util.Objects;
 @Service
 public class CrmSyncServiceImpl implements CrmSyncService {
     private static final Long DRIFT_NUM_IID = 618391118089L;
+
+    @Value("${crm.qdly.tmall}")
+    private String QDLY;
+
     @Autowired
     private SkuItemMapper skuItemMapper;
 
@@ -119,11 +124,11 @@ public class CrmSyncServiceImpl implements CrmSyncService {
         // 判断是否是多子订单交易
         boolean isMultiOrders = orders.size() > 1;
         for (Order tmpOrder : orders) {
-            // 甲醛检测仪租赁和检测试纸不同步到CRM
-            if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
+            // 甲醛检测仪租赁和检测试纸也同步到CRM
+            // if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
             CrmOrderDTO newCrmOrder = new CrmOrderDTO();
             // 渠道来源
-            newCrmOrder.setQdly("58");
+             newCrmOrder.setQdly(QDLY);
             // 机器型号（根据sku_id和num_iid去获取）
             String machineModel = getMachineModel(tmpOrder);
             // 属性名称
@@ -144,8 +149,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             }else{
                 if (isMultiOrders && tmpOrder.getPartMjzDiscount() != null){
                     // 多子订单且part_mjz_discount（优惠分摊）不为空
-                    ssje = tmpOrder.getNum() * tmpOrder.getPrice() + tmpOrder.getAdjustFee()
-                            - tmpOrder.getDiscountFee() - tmpOrder.getPartMjzDiscount();
+                    ssje = tmpOrder.getPayment() - tmpOrder.getPartMjzDiscount();
                 }else{
                     ssje = tmpOrder.getPayment();
                 }

@@ -8,6 +8,7 @@ import finley.gmair.service.TbOrderService;
 import finley.gmair.service.TradeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +46,16 @@ public class OrderController {
     private TbOrderService tbOrderService;
 
     @GetMapping("/download")
-    public void download(HttpServletResponse response) throws IOException {
+    public void download(@RequestParam(required = false) String beginTime, @RequestParam(required = false) String endTime, HttpServletResponse response) throws IOException {
+        Date beginDate = StringUtils.isEmpty(beginTime) ? null : TimeUtil.formatTimeToDate(beginTime);
+        Date endDate = StringUtils.isEmpty(endTime) ? null : TimeUtil.formatTimeToDate(endTime);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");
         // 这里URLEncoder.encode可以防止中文乱码
         String fileName = URLEncoder.encode("果麦订单汇总", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), TbOrderExcel.class)
-                .sheet("订单汇总表").doWrite(tradeServiceImpl.selectAllTradeExcel());
+                .sheet("订单汇总表").doWrite(tradeServiceImpl.selectTradeExcel(beginDate, endDate));
     }
 
     /**

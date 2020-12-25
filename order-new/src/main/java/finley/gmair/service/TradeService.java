@@ -3,6 +3,7 @@ package finley.gmair.service;
 import finley.gmair.model.dto.TbOrderExcel;
 import finley.gmair.model.ordernew.Trade;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,5 +15,5 @@ import java.util.List;
 public interface TradeService {
     List<Trade> selectAll();
 
-    List<TbOrderExcel> selectAllTradeExcel();
+    List<TbOrderExcel> selectTradeExcel(Date beginDate, Date endDate);
 }
