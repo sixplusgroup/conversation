@@ -15,7 +15,7 @@ public class SceneOperationCommand implements Serializable {
     private static final long serialVersionUID = -1542262857541608015L;
     @Field(value = "cid")
     @JSONField(name = "cid")
-    private Integer commandId;
+    private Long commandId;
 
 
     @Field(value = "mid")

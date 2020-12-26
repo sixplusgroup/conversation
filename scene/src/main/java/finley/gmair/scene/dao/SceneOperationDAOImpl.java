@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author : Lyy
@@ -18,14 +19,30 @@ public class SceneOperationDAOImpl implements SceneOperationDAO {
 
     @Override
     public SceneOperationDO insertSceneOperation(SceneOperationDO sceneOperationDO) {
+        sceneOperationDO.setDeleted(false);
         sceneOperationDO.setCreateTime(LocalDateTime.now());
         sceneOperationDO.setUpdateTime(LocalDateTime.now());
         return sceneOperationRepository.save(sceneOperationDO);
     }
 
+    // 逻辑删除
     @Override
-    public SceneOperationDO deleteSceneOperation() {
-        return null;
+    public SceneOperationDO deleteSceneOperation(long sceneId) {
+        SceneOperationDO sceneOperationDO = selectSceneOperationBySceneId(sceneId);
+        sceneOperationDO.setDeleted(true);
+        return updateSceneOperation(sceneOperationDO);
+    }
+
+    // 批量逻辑删除
+    @Override
+    public int deleteSceneOperationsByConsumerId(String consumerId) {
+        List<SceneOperationDO> sceneOperationDOS = sceneOperationRepository.findAllByConsumerIdAndDeletedFalse(consumerId);
+        for (SceneOperationDO operationDO : sceneOperationDOS) {
+            operationDO.setDeleted(true);
+            operationDO.setUpdateTime(LocalDateTime.now());
+        }
+        sceneOperationRepository.save(sceneOperationDOS);
+        return sceneOperationDOS.size();
     }
 
     @Override
@@ -36,6 +53,6 @@ public class SceneOperationDAOImpl implements SceneOperationDAO {
 
     @Override
     public SceneOperationDO selectSceneOperationBySceneId(long sceneId) {
-        return sceneOperationRepository.findBySceneId(sceneId);
+        return sceneOperationRepository.findBySceneIdAndDeletedFalse(sceneId);
     }
 }

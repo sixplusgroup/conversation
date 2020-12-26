@@ -58,13 +58,30 @@ public class SceneOperationServiceImpl implements SceneOperationService {
         SceneOperationDO tmp = sceneOperationDAO.updateSceneOperation(sceneOperationDO);
         if (tmp.getId().isEmpty()) {
             // 更新失败
+            log.error("update scene operations failed");
             throw new BizException(ErrorCode.UNKNOWN_ERROR);
         }
         return true;
     }
 
     @Override
-    public SceneOperationDTO getOperationsBySceneId(long sceneId) {
+    public boolean deleteSceneOperationBySceneId(long sceneId) {
+        SceneOperationDO sceneOperationDO = sceneOperationDAO.deleteSceneOperation(sceneId);
+        if (!sceneOperationDO.isDeleted()) {
+            // 删除失败
+            log.error("delete scene operations failed");
+            throw new BizException(ErrorCode.UNKNOWN_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public int deleteScenesOperationsByConsumerId(String consumerId) {
+        return sceneOperationDAO.deleteSceneOperationsByConsumerId(consumerId);
+    }
+
+    @Override
+    public SceneOperationDTO getOperationBySceneId(long sceneId) {
         SceneOperationDO sceneOperationDO = sceneOperationDAO.selectSceneOperationBySceneId(sceneId);
         SceneOperationDTO sceneOperationDTO = new SceneOperationDTO();
         BeanUtils.copyProperties(sceneOperationDO, sceneOperationDTO);
@@ -73,7 +90,7 @@ public class SceneOperationServiceImpl implements SceneOperationService {
 
     @Override
     public List<String> getQrCodesBySceneId(long sceneId) {
-        SceneOperationDTO sceneOperationDTO = getOperationsBySceneId(sceneId);
+        SceneOperationDTO sceneOperationDTO = getOperationBySceneId(sceneId);
         return getQrCodesBySceneId(sceneOperationDTO);
     }
 

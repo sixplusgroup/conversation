@@ -14,7 +14,11 @@ public interface SceneOperationService {
 
     boolean updateSceneOperation(SceneOperationDTO sceneOperationDTO);
 
-    SceneOperationDTO getOperationsBySceneId(long sceneId);
+    boolean deleteSceneOperationBySceneId(long sceneId);
+
+    int deleteScenesOperationsByConsumerId(String consumerId);
+
+    SceneOperationDTO getOperationBySceneId(long sceneId);
 
     List<String> getQrCodesBySceneId(long sceneId);
 

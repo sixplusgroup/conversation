@@ -10,7 +10,9 @@ import finley.gmair.scene.entity.SceneOperationDO;
 public interface SceneOperationDAO {
     SceneOperationDO insertSceneOperation(SceneOperationDO sceneOperationDO);
 
-    SceneOperationDO deleteSceneOperation();
+    SceneOperationDO deleteSceneOperation(long sceneId);
+
+    int deleteSceneOperationsByConsumerId(String consumerId);
 
     SceneOperationDO updateSceneOperation(SceneOperationDO sceneOperationDO);
 

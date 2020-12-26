@@ -3,6 +3,7 @@ package finley.gmair.scene.dao;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import finley.gmair.scene.dao.repository.SceneMapper;
 import finley.gmair.scene.entity.SceneDO;
+import finley.gmair.scene.utils.RedisUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -17,6 +18,9 @@ public class SceneDAOImpl implements SceneDAO {
 
     @Resource
     private SceneMapper sceneMapper;
+
+    @Resource
+    private RedisUtil redisUtil;
 
     @Override
     public long insertSceneDO(SceneDO sceneDO) {

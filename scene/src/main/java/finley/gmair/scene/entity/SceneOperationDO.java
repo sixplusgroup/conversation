@@ -1,8 +1,8 @@
 package finley.gmair.scene.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -15,6 +15,7 @@ import java.util.List;
  **/
 @Data
 @Document(collection = "scene_operation")
+
 public class SceneOperationDO {
     @Id
     private String id;
@@ -34,4 +35,7 @@ public class SceneOperationDO {
     private LocalDateTime createTime;
     @Field("update_time")
     private LocalDateTime updateTime;
+
+    @Field("deleted")
+    private boolean deleted;
 }

@@ -32,4 +32,9 @@ public interface MachineClient {
                                  @RequestParam("endHour") int endHour,
                                  @RequestParam("endMinute") int endMinute,
                                  @RequestParam("status") boolean status);
+
+
+    // 根据用户ID获取设备列表
+    @GetMapping("/machine/consumer/machine/list")
+    ResultData obtainMachineList(@RequestParam("consumerId") String consumerId);
 }

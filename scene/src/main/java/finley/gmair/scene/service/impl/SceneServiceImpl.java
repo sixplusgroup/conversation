@@ -1,7 +1,6 @@
 package finley.gmair.scene.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import finley.gmair.scene.client.MachineClient;
 import finley.gmair.scene.constant.ErrorCode;
@@ -14,7 +13,6 @@ import finley.gmair.scene.service.SceneOperationService;
 import finley.gmair.scene.service.SceneService;
 import finley.gmair.scene.utils.BizException;
 import finley.gmair.scene.utils.RedisUtil;
-import finley.gmair.util.ResultData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,7 +65,7 @@ public class SceneServiceImpl implements SceneService {
     @Override
     public SceneDTO updateScene(SceneDTO sceneDTO) {
         SceneDO sceneDO = new SceneDO();
-        BeanUtils.copyProperties(sceneDTO,sceneDO);
+        BeanUtils.copyProperties(sceneDTO, sceneDO);
         boolean flag = sceneDAO.updateSceneDO(sceneDO);
         if (!flag) {
             // 场景更新失败
@@ -93,7 +90,11 @@ public class SceneServiceImpl implements SceneService {
             // 场景删除失败
             throw new BizException(ErrorCode.UNKNOWN_ERROR);
         }
-        // todo 删除场景时是否需要删除场景内的命令（不删的理由，该部分数据可以作为数据分析）
+        flag = sceneOperationService.deleteSceneOperationBySceneId(sceneId);
+        if (!flag) {
+            // 场景删除失败
+            throw new BizException(ErrorCode.UNKNOWN_ERROR);
+        }
         return true;
     }
 
@@ -104,13 +105,21 @@ public class SceneServiceImpl implements SceneService {
             // 场景删除失败
             throw new BizException(ErrorCode.UNKNOWN_ERROR);
         }
+
         // todo 删除场景时是否需要删除场景内的命令（不删的理由，该部分数据可以作为数据分析）
         return true;
     }
 
 
+    /**
+     * 通过用户ID获取当前用户设置的所有场景
+     *
+     * @param consumerId 用户ID
+     * @return List<SceneDTO>
+     */
     @Override
     public List<SceneDTO> getScenesByConsumerId(String consumerId) {
+        //todo 调用频繁，考虑加一层缓存来优化
         List<SceneDO> sceneDOS = sceneDAO.selectScenesByConsumerId(consumerId);
         // 获取场景内包含的操作
         List<SceneDTO> sceneDTOS = sceneDOS.stream().map(this::sceneDO2DTO).collect(Collectors.toList());
@@ -139,7 +148,7 @@ public class SceneServiceImpl implements SceneService {
         BeanUtils.copyProperties(sceneDO, sceneDTO);
 
         // 获取场景内操作
-        SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationsBySceneId(sceneId);
+        SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
         sceneDTO.setSceneOperation(sceneOperationDTO);
         // 获取场景内包含的设备（从redis中获取）
         List<String> qrCodes = getSceneQrCodesBySceneId(sceneId);
@@ -170,7 +179,7 @@ public class SceneServiceImpl implements SceneService {
 
     @Override
     public void startScene(long sceneId) {
-        SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationsBySceneId(sceneId);
+        SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
         sceneOperationService.executeOperation(sceneOperationDTO);
     }
 
@@ -186,24 +195,33 @@ public class SceneServiceImpl implements SceneService {
     @Override
     public List<String> getSceneQrCodesBySceneId(long sceneId) {
 
+        // todo 考虑如何使用 redis 做缓存
         List<String> qrCodes;
 
-        // 用redis存储这部分信息
-        List<Object> objects = redisUtil.lGet(Long.toString(sceneId), 0, -1);
-        if (CollectionUtils.isEmpty(objects)) {
-            // 获取场景内操作
-            SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationsBySceneId(sceneId);
-            // 获取场景内包含的设备
-            qrCodes = sceneOperationService.getQrCodesBySceneId(sceneOperationDTO);
-            if (CollectionUtils.isEmpty(qrCodes)) {
-                return Lists.newArrayList();
-            }
-        } else {
-            qrCodes = objects.stream()
-                    .map(Objects::toString)
-                    .collect(Collectors.toList());
+        // 获取场景内操作
+        SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
+        // 获取场景内包含的设备
+        qrCodes = sceneOperationService.getQrCodesBySceneId(sceneOperationDTO);
+        if (CollectionUtils.isEmpty(qrCodes)) {
+            return Lists.newArrayList();
         }
-        redisUtil.lSet(Long.toString(sceneId), qrCodes);
+
+//        // 用redis存储这部分信息
+//        List<Object> objects = redisUtil.lGet(Long.toString(sceneId), 0, -1);
+//        if (CollectionUtils.isEmpty(objects)) {
+//            // 获取场景内操作
+//            SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
+//            // 获取场景内包含的设备
+//            qrCodes = sceneOperationService.getQrCodesBySceneId(sceneOperationDTO);
+//            if (CollectionUtils.isEmpty(qrCodes)) {
+//                return Lists.newArrayList();
+//            }
+//        } else {
+//            qrCodes = objects.stream()
+//                    .map(Objects::toString)
+//                    .collect(Collectors.toList());
+//        }
+//        redisUtil.lSet(Long.toString(sceneId), qrCodes);
         return qrCodes;
     }
 }
