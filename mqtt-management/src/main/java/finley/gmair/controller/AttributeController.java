@@ -19,7 +19,7 @@ import javax.annotation.Resource;
  * @date 2020/12/13 16:13
  */
 @RestController
-@RequestMapping("/mqttManagement/attribute")
+@RequestMapping("/mqtt/attribute")
 public class AttributeController {
 
     @Resource
