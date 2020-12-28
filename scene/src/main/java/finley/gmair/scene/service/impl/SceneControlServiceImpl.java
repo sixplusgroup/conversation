@@ -3,12 +3,16 @@ package finley.gmair.scene.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import finley.gmair.scene.client.MachineClient;
+import finley.gmair.scene.constant.OperateType;
 import finley.gmair.scene.dao.SceneCommandDAO;
-import finley.gmair.scene.dto.Device;
+import finley.gmair.scene.dto.DeviceDTO;
 import finley.gmair.scene.dto.SceneDeviceControlOptionDTO;
+import finley.gmair.scene.dto.SceneOperationDTO;
 import finley.gmair.scene.entity.SceneCommandDO;
 import finley.gmair.scene.entity.SceneOperationCommand;
 import finley.gmair.scene.service.SceneControlService;
+import finley.gmair.scene.service.SceneOperationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
  * @create : 2020-12-26 16:11
  **/
 @Service
+@Slf4j
 public class SceneControlServiceImpl implements SceneControlService {
 
     @Resource
@@ -27,6 +32,9 @@ public class SceneControlServiceImpl implements SceneControlService {
 
     @Resource
     private SceneCommandDAO sceneCommandDAO;
+
+    @Resource
+    private SceneOperationService sceneOperationService;
 
     /**
      * 根据用户 ID 获取可操作设备及其控制选项
@@ -48,16 +56,16 @@ public class SceneControlServiceImpl implements SceneControlService {
         // ---------------插桩------------------//
         String device1JSON = "{\"modelName\":\" GM-WY100\", \"bindName\": \"风扇\", \"ownership\": \"OWNER\", \"modelId\": \"MOD20191210iu8h6y78\", \"goodsId\": \"GUO20191208249y7f32\", \"modelCode\": \"10C\", \"modelThumbnail\": \"https://console.gmair.net/image/reception/wind.png\", \"goodsName\": \"果麦冷暖风扇\", \"bindId\": \"CQB2020121796ghxx9\", \"codeValue\": \"10C111A586542\", \"modelBg\": \"https://console.gmair.net/image/reception/wind_bg.png\"}";
         String device2JSON = "{\"modelName\": \"GM420\", \"bindName\": \"ISE2\", \"ownership\": \"SHARE\", \"modelId\": \"MOD20180717nuya5y40\", \"goodsId\": \"GUO20180607ggxi8a96\", \"modelCode\": \"42A\", \"modelThumbnail\": \"https://console.gmair.net/image/reception/420.png\", \"goodsName\": \"果麦新风机\", \"bindId\": \"CQB20201104lxz9zh47\", \"codeValue\": \"42A112A629267\", \"modelBg\": null}";
-        Device device1 = JSON.parseObject(device1JSON, Device.class);
-        Device device2 = JSON.parseObject(device2JSON, Device.class);
-        List<Device> devices = Lists.newArrayList();
+        DeviceDTO device1 = JSON.parseObject(device1JSON, DeviceDTO.class);
+        DeviceDTO device2 = JSON.parseObject(device2JSON, DeviceDTO.class);
+        List<DeviceDTO> devices = Lists.newArrayList();
         devices.add(device1);
         devices.add(device2);
         // ---------------插桩------------------//
 
 
         List<SceneDeviceControlOptionDTO> result = Lists.newArrayList();
-        for (Device device : devices) {
+        for (DeviceDTO device : devices) {
             SceneDeviceControlOptionDTO sceneDeviceControlOption = new SceneDeviceControlOptionDTO();
             sceneDeviceControlOption.setConsumerId(consumerId);
             sceneDeviceControlOption.setDevice(device);
@@ -68,6 +76,7 @@ public class SceneControlServiceImpl implements SceneControlService {
                 SceneOperationCommand operationCommand = new SceneOperationCommand();
                 operationCommand.setCommandId(sceneCommandDO.getCommandId());
                 operationCommand.setQrCode(device.getCodeValue());
+                operationCommand.setDeviceName(device.getBindName());
                 operationCommand.setCommandOperation(sceneCommandDO.getCommandOperation());
                 operationCommand.setCommandComponent(sceneCommandDO.getCommandComponent());
                 operationCommand.setCommandName(sceneCommandDO.getCommandName());
@@ -84,5 +93,21 @@ public class SceneControlServiceImpl implements SceneControlService {
 
     private List<SceneCommandDO> getSceneCommandByGoodsID(String goodsId) {
         return sceneCommandDAO.getSceneCommandByGoodsID(goodsId);
+    }
+
+    @Override
+    public void startScene(long sceneId) {
+        SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
+        log.info("sceneId is: {}, sceneOperationDTO is: {}", sceneId, sceneOperationDTO);
+        sceneOperationService.executeOperation(sceneOperationDTO);
+    }
+
+    @Override
+    public void stopScene(long sceneId) {
+//        List<String> qrCodes = getSceneQrCodesBySceneId(sceneId);
+//        for (String qrcode : qrCodes) {
+//            // 关闭所有设备
+//            machineClient.chooseComponent(qrcode, OperateType.POWER.getOperate(), "off");
+//        }
     }
 }

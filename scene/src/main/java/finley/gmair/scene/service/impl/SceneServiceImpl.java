@@ -178,21 +178,6 @@ public class SceneServiceImpl implements SceneService {
     }
 
     @Override
-    public void startScene(long sceneId) {
-        SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
-        sceneOperationService.executeOperation(sceneOperationDTO);
-    }
-
-    @Override
-    public void stopScene(long sceneId) {
-        List<String> qrCodes = getSceneQrCodesBySceneId(sceneId);
-        for (String qrcode : qrCodes) {
-            // 关闭所有设备
-            machineClient.chooseComponent(qrcode, OperateType.POWER.getOperate(), "off");
-        }
-    }
-
-    @Override
     public List<String> getSceneQrCodesBySceneId(long sceneId) {
 
         // todo 考虑如何使用 redis 做缓存

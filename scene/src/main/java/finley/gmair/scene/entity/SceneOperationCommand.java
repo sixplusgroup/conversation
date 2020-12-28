@@ -27,6 +27,10 @@ public class SceneOperationCommand implements Serializable {
     @JSONField(name = "qr_code")
     private String qrCode;
 
+    @Field(value = "device_name")
+    @JSONField(name = "device_name")
+    private String deviceName;
+
     @Field(value = "seq")
     @JSONField(name = "seq")
     private Integer sequence;

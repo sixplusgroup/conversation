@@ -7,7 +7,7 @@ import lombok.Data;
  * @create : 2020-12-26 17:03
  **/
 @Data
-public class Device {
+public class DeviceDTO {
     String modelName;
     String bindName;
     String ownership;

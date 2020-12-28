@@ -18,7 +18,7 @@ public class SceneDeviceControlOptionDTO {
     @JSONField(name = "consumer_id")
     private String consumerId;
 
-    private Device device;
+    private DeviceDTO device;
 
     @JSONField(name = "commands")
     private List<SceneOperationCommand> commands;

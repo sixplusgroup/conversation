@@ -6,6 +6,7 @@ import finley.gmair.scene.service.SceneControlService;
 import finley.gmair.scene.utils.ResultUtil;
 import finley.gmair.scene.vo.ApiResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +29,12 @@ public class SceneCtlController {
     public ApiResult getSceneDeviceControlOption(String consumerId) {
         List<SceneDeviceControlOptionDTO> sceneDeviceControlOptionList = sceneControlService.getSceneDeviceControlOptions(consumerId);
         return ResultUtil.success("场景控制列表获取成功", sceneDeviceControlOptionList);
+    }
+
+    @PostMapping("/execute")
+    public ApiResult executeScene(long sceneId) {
+        sceneControlService.startScene(sceneId);
+        return ResultUtil.success();
     }
 
 }

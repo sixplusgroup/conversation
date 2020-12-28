@@ -25,8 +25,13 @@ public class SceneCommandDO {
     @TableField(value = "command_name")
     private String commandName;
 
+    // 发送指令时需携带的参数
     @TableField(value = "command_component")
     private String commandComponent;
+
+    // 前端展示时的组件名
+    @TableField(value = "component_name")
+    private String componentName;
 
     @TableField(value = "command_operation")
     private String commandOperation;
