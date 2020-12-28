@@ -172,6 +172,8 @@ public class MqttConfiguration {
 
             //消息内容
             String payload = ((String) message.getPayload());
+//todo 删除打印
+System.out.println("mqtt message received: " + topic + ", " + payload);
 
             //检查消息格式及内容的正确性，抛弃恶意攻击的消息报文
             if (isCheckOpen && (!isMessageNormative(topic, payload))) {

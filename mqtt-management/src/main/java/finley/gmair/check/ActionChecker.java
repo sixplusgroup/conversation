@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import finley.gmair.model.mqttManagement.Action;
 import finley.gmair.model.mqttManagement.Attribute;
 import finley.gmair.service.ActionService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -54,27 +55,46 @@ public class ActionChecker {
             return false;
         }
         List<Attribute> checkAttributes = actionAttributeMap.get(actionName);
-        JSONObject payload = JSON.parseObject(json);
 
-        // 1.检查json里面的属性都是规定的
-        for (String payloadAttribute : payload.keySet()) {
-            boolean isCorrect = false;
-            for (Attribute normalAttribute : checkAttributes) {
-                if (normalAttribute.getName().equals(payloadAttribute)) {
-                    isCorrect = true;
-                    break;
+        //json不为空
+        if(StringUtils.isNotEmpty(json)) {
+            JSONObject payload;
+            try {
+                payload = JSON.parseObject(json);
+            } catch (Exception e) {
+                return false;
+            }
+
+            // 1.检查json里面的属性都是规定的
+            for (String payloadAttribute : payload.keySet()) {
+                boolean isCorrect = false;
+                for (Attribute normalAttribute : checkAttributes) {
+                    if (normalAttribute.getName().equals(payloadAttribute)) {
+                        isCorrect = true;
+                        break;
+                    }
+                }
+                if (!isCorrect) {
+                    return false;
                 }
             }
-            if (!isCorrect) {
-                return false;
-            }
-        }
 
-        // 2.检查必传属性在json中是否含有
-        for (Attribute normalAttribute : checkAttributes) {
-            if (normalAttribute.getRequired() && (!payload.containsKey(normalAttribute.getName()))) {
-                return false;
+            // 2.检查必传属性在json中是否含有
+            for (Attribute normalAttribute : checkAttributes) {
+                if (normalAttribute.getRequired() && (!payload.containsKey(normalAttribute.getName()))) {
+                    return false;
+                }
             }
+
+        } else {
+
+            //json字符串为空，检查是否有必传属性
+            for (Attribute normalAttribute : checkAttributes) {
+                if (normalAttribute.getRequired()) {
+                    return false;
+                }
+            }
+
         }
 
         return true;
