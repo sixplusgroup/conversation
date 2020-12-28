@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author: Bright Chan
  * @date: 2020/12/21 19:02
@@ -19,12 +22,16 @@ public class AdminPartInfoQuery {
      * 当前页，从1开始
      * 必填
      */
+    @NotNull
+    @Min(1)
     private int pageIndex;
 
     /**
      * 页大小
      * 必填
      */
+    @NotNull
+    @Min(1)
     private int pageSize;
 
     /**

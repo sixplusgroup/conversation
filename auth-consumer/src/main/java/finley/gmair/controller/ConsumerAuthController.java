@@ -507,15 +507,9 @@ public class ConsumerAuthController {
      * @param query 查询条件对象
      * @return 查询结果
      */
-    @GetMapping("/consumer/accounts")
+    @PostMapping("/consumer/accounts")
     public ResultData queryConsumerAccounts(@RequestBody ConsumerPartInfoQuery query) {
         ResultData res = new ResultData();
-
-        if (query == null || query.getPageIndex() <= 0 || query.getPageSize() <= 0) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("error params");
-            return res;
-        }
 
         Map<String, Object> resData = new HashMap<>();
         List<ConsumerPartInfoVo> store = consumerService.fetchConsumerAccounts(query);

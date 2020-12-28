@@ -108,15 +108,9 @@ public class AdminAuthController {
      * @param query 查询条件对象
      * @return 查询结果
      */
-    @GetMapping("/admin/accounts")
-    public ResultData getAdminAccounts(@RequestBody AdminPartInfoQuery query) {
+    @PostMapping("/admin/accounts")
+    public ResultData queryAdminAccounts(@RequestBody AdminPartInfoQuery query) {
         ResultData res = new ResultData();
-
-        if (query == null || query.getPageIndex() <= 0 || query.getPageSize() <= 0) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("error params");
-            return res;
-        }
 
         Map<String, Object> resData = new HashMap<>();
         List<AdminPartInfoVo> store = adminService.fetchAdminAccounts(query);

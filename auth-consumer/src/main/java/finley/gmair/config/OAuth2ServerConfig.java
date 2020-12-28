@@ -46,6 +46,7 @@ public class OAuth2ServerConfig {
                     .antMatchers("/auth/consumer/request").permitAll()
                     .antMatchers("/auth/consumer/register").permitAll()
                     .antMatchers("/auth/consumer/profile").permitAll()
+                    .antMatchers("/auth/consumer/accounts").permitAll()
                     .antMatchers("/auth/probe/consumerid/by/openid").permitAll()
                     .antMatchers("/auth/user/**").authenticated();
             // @formatter:on
