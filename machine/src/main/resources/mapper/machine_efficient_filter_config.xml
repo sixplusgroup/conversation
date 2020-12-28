@@ -15,6 +15,7 @@
     </resultMap>
 
     <resultMap id="FilterUpdByFormulaConfig" type="finley.gmair.vo.machine.FilterUpdByFormulaConfig">
+        <result property="configId" column="config_id"/>
         <result property="modelId" column="model_id"/>
         <result property="modelName" column="model_name"/>
         <result property="modelCode" column="model_code"/>
@@ -49,8 +50,8 @@
     </select>
 
     <select id="queryConfigList" resultMap="FilterUpdByFormulaConfig">
-        SELECT c.model_id, m.model_name, m.model_code, c.t_run, c.total_time, c.param_one, c.param_two,
-        c.first_remind_threshold, c.second_remind_threshold
+        SELECT c.config_id, c.model_id, m.model_name, m.model_code, c.t_run, c.total_time,
+        c.param_one, c.param_two, c.first_remind_threshold, c.second_remind_threshold
         FROM gmair_machine.machine_efficient_filter_config c inner join gmair_machine.goods_model m
         on c.model_id = m.model_id
         WHERE c.block_flag = 0 AND m.block_flag = 0;

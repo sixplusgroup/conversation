@@ -17,6 +17,11 @@ import lombok.NoArgsConstructor;
 public class FilterUpdByFormulaConfig {
 
     /**
+     * 唯一标识
+     */
+    private String configId;
+
+    /**
      * 设备类型编号
      */
     private String modelId;
