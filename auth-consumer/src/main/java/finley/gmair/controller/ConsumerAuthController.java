@@ -16,7 +16,6 @@ import finley.gmair.service.SerialService;
 import finley.gmair.service.WechatService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.consumer.ConsumerPartInfoVo;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -512,9 +511,8 @@ public class ConsumerAuthController {
         ResultData res = new ResultData();
 
         Map<String, Object> resData = new HashMap<>();
-        List<ConsumerPartInfoVo> store = consumerService.fetchConsumerAccounts(query);
-        resData.put("size", store.size());
-        resData.put("list", store);
+        resData.put("size", consumerService.fetchConsumerAccountsSize(query));
+        resData.put("list", consumerService.fetchConsumerAccounts(query));
 
         res.setData(resData);
         return res;

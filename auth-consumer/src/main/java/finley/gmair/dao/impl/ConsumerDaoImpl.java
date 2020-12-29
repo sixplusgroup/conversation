@@ -57,11 +57,21 @@ public class ConsumerDaoImpl extends BaseDao implements ConsumerDao {
     @Override
     public List<ConsumerPartInfoVo> queryConsumerAccounts(ConsumerPartInfoQuery query) {
         try {
-            return sqlSession.selectList("gmair.consumer.queryConsumerAccounts", query);
+            return sqlSession.selectList("gmair.consumer.query_consumer_accounts", query);
         } catch (Exception e) {
             logger.error("query consumer accounts failed: " + e.getMessage());
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public long queryConsumerAccountsSize(ConsumerPartInfoQuery query) {
+        try {
+            return sqlSession.selectOne("gmair.consumer.query_consumer_accounts_size", query);
+        } catch (Exception e) {
+            logger.error("query consumer accounts size failed: " + e.getMessage());
+        }
+        return 0;
     }
 
     @Override

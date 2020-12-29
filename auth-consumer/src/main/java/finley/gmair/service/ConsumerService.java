@@ -24,6 +24,13 @@ public interface ConsumerService {
      */
     List<ConsumerPartInfoVo> fetchConsumerAccounts(ConsumerPartInfoQuery query);
 
+    /**
+     * 根据query给出的条件查询符合条件的账户总数
+     * @param query 查询条件对象
+     * @return 查询结果
+     */
+    long fetchConsumerAccountsSize(ConsumerPartInfoQuery query);
+
     ResultData modifyConsumer(Map<String, Object> condition);
 
     ResultData fetchConsumerAddress(Map<String, Object> condition);

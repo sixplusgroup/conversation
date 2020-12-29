@@ -25,6 +25,13 @@ public interface AdminService {
     List<AdminPartInfoVo> fetchAdminAccounts(AdminPartInfoQuery query);
 
     /**
+     * 根据query给出的条件查询符合条件的账户总数
+     * @param query 查询条件对象
+     * @return 查询结果
+     */
+    long fetchAdminAccountsSize(AdminPartInfoQuery query);
+
+    /**
      * method to create an administrator account, used by backend system
      *
      * @param admin

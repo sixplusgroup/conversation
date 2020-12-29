@@ -15,5 +15,7 @@ public interface AdminDao {
 
     List<AdminPartInfoVo> queryAdminAccounts(AdminPartInfoQuery query);
 
+    long queryAdminAccountsSize(AdminPartInfoQuery query);
+
     ResultData update(Admin admin);
 }

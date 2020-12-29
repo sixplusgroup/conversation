@@ -56,11 +56,21 @@ public class AdminDaoImpl extends BaseDao implements AdminDao {
     @Override
     public List<AdminPartInfoVo> queryAdminAccounts(AdminPartInfoQuery query) {
         try {
-            return sqlSession.selectList("gmair.admin.queryAdminAccounts", query);
+            return sqlSession.selectList("gmair.admin.query_admin_accounts", query);
         } catch (Exception e) {
             logger.error("query admin accounts failed: " + e.getMessage());
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public long queryAdminAccountsSize(AdminPartInfoQuery query) {
+        try {
+            return sqlSession.selectOne("gmair.admin.query_admin_accounts_size", query);
+        } catch (Exception e) {
+            logger.error("query admin accounts size failed: " + e.getMessage());
+        }
+        return 0;
     }
 
     @Override

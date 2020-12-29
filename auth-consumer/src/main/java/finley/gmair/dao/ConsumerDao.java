@@ -17,5 +17,7 @@ public interface ConsumerDao {
 
     List<ConsumerPartInfoVo> queryConsumerAccounts(ConsumerPartInfoQuery query);
 
+    long queryConsumerAccountsSize(ConsumerPartInfoQuery query);
+
     ResultData update(Map<String, Object> condition);
 }

@@ -90,6 +90,11 @@ public class ConsumerServiceImpl implements ConsumerService {
     }
 
     @Override
+    public long fetchConsumerAccountsSize(ConsumerPartInfoQuery query) {
+        return consumerDao.queryConsumerAccountsSize(query);
+    }
+
+    @Override
     public ResultData modifyConsumer(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = consumerDao.update(condition);

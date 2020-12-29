@@ -9,14 +9,12 @@ import finley.gmair.service.AdminService;
 import finley.gmair.util.Encryption;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.admin.AdminPartInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -113,9 +111,8 @@ public class AdminAuthController {
         ResultData res = new ResultData();
 
         Map<String, Object> resData = new HashMap<>();
-        List<AdminPartInfoVo> store = adminService.fetchAdminAccounts(query);
-        resData.put("size", store.size());
-        resData.put("list", store);
+        resData.put("size", adminService.fetchAdminAccountsSize(query));
+        resData.put("list", adminService.fetchAdminAccounts(query));
 
         res.setData(resData);
         return res;

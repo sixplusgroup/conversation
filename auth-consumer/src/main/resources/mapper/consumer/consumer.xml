@@ -44,7 +44,7 @@
         ORDER BY create_time DESC
     </select>
 
-    <select id="queryConsumerAccounts" parameterType="finley.gmair.form.consumer.ConsumerPartInfoQuery"
+    <select id="query_consumer_accounts" parameterType="finley.gmair.form.consumer.ConsumerPartInfoQuery"
             resultMap="consumerPartInfoVo">
         <bind name="offset" value="(pageIndex - 1) * pageSize"></bind>
         SELECT consumer_id, consumer_name, consumer_username, phone_number,
@@ -67,6 +67,28 @@
             AND address_district = #{district}
         </if>
         ORDER BY create_time DESC LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="query_consumer_accounts_size" parameterType="finley.gmair.form.consumer.ConsumerPartInfoQuery"
+            resultType="long">
+        SELECT count(*)
+        FROM gmair_userinfo.view_consumer_info
+        WHERE block_flag = false
+        <if test="name != null">
+            AND consumer_name = #{name}
+        </if>
+        <if test="username != null">
+            AND consumer_username = #{username}
+        </if>
+        <if test="province != null">
+            AND address_province = #{province}
+        </if>
+        <if test="city != null">
+            AND address_city = #{city}
+        </if>
+        <if test="district != null">
+            AND address_district = #{district}
+        </if>
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.consumer.Consumer">

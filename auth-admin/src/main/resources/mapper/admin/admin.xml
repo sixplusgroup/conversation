@@ -48,7 +48,7 @@
         </if>
     </select>
 
-    <select id="queryAdminAccounts" parameterType="finley.gmair.form.admin.AdminPartInfoQuery"
+    <select id="query_admin_accounts" parameterType="finley.gmair.form.admin.AdminPartInfoQuery"
             resultMap="adminPartInfoVo">
         <bind name="offset" value="(pageIndex - 1) * pageSize"></bind>
         SELECT admin_id, admin_email, admin_name, create_time
@@ -58,6 +58,16 @@
             AND admin_name = #{name}
         </if>
         ORDER BY create_time DESC LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="query_admin_accounts_size" parameterType="finley.gmair.form.admin.AdminPartInfoQuery"
+            resultType="long">
+        SELECT count(*)
+        FROM gmair_admininfo.admin_info
+        WHERE block_flag = false
+        <if test="name != null">
+            AND admin_name = #{name}
+        </if>
     </select>
 
     <update id="update" parameterType="finley.gmair.model.admin.Admin">

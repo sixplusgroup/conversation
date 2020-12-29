@@ -44,6 +44,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public long fetchAdminAccountsSize(AdminPartInfoQuery query) {
+        return adminDao.queryAdminAccountsSize(query);
+    }
+
+    @Override
     public ResultData createAdmin(Admin admin) {
         ResultData result = new ResultData();
         ResultData response = adminDao.insert(admin);
