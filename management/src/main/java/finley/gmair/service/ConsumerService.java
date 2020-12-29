@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @description: ConsumerService
  */
 
-@FeignClient("consumer-auth-agent")
+@FeignClient(value = "consumer-auth-agent", configuration = MachineService.RequestBodySupportConfig.class)
 public interface ConsumerService {
 
     @PostMapping("/auth/consumer/accounts")

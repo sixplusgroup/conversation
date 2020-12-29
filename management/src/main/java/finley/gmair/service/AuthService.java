@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("admin-auth-agent")
+@FeignClient(value = "admin-auth-agent", configuration = MachineService.RequestBodySupportConfig.class)
 public interface AuthService {
 
     @GetMapping("/auth/getAdmin/byAccount")
