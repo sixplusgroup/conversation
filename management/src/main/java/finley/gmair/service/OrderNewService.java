@@ -6,6 +6,7 @@ import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +28,7 @@ public interface OrderNewService {
     @Configuration
     class MultipartSupportConfig {
         @Bean
+        @Primary
         public Encoder feignFormEncoder() {
             return new SpringFormEncoder();
         }

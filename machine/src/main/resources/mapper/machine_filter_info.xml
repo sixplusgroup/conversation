@@ -19,6 +19,24 @@
         <result property="lastConfirmTime" column="last_confirm_time"/>
     </resultMap>
 
+    <select id="query_primary_size" parameterType="java.util.Map" resultType="long">
+        SELECT count(*)
+        FROM gmair_machine.machine_filter_clean m, gmair_machine.goods_model g, gmair_machine.qrcode q
+        WHERE m.qr_code = q.code_value AND q.model_id = g.model_id
+        <if test="qrcode != null">
+            AND m.qr_code = #{qrcode}
+        </if>
+        <if test="machineModelName != null">
+            AND g.model_name = #{machineModelName}
+        </if>
+        <if test="machineModelCode != null">
+            AND g.model_code = #{machineModelCode}
+        </if>
+        <if test="blockFlag != null">
+            AND m.block_flag = #{blockFlag}
+        </if>
+    </select>
+
     <select id="query_primary" parameterType="java.util.Map" resultMap="machine_primary_filter_info">
         SELECT m.qr_code, m.is_need_clean, m.clean_remind_status, m.is_reminded, m.last_confirm_time
         FROM gmair_machine.machine_filter_clean m, gmair_machine.goods_model g, gmair_machine.qrcode q
@@ -36,6 +54,27 @@
             AND m.block_flag = #{blockFlag}
         </if>
         order by m.create_time desc LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="query_efficient_size" parameterType="java.util.Map" resultType="long">
+        SELECT count(*)
+        FROM gmair_machine.machine_efficient_filter m
+        left join gmair_machine.machine_efficient_information me on m.qr_code = me.qr_code
+        inner join gmair_machine.qrcode q on m.qr_code = q.code_value
+        inner join gmair_machine.goods_model g on q.model_id = g.model_id
+        where 1 = 1
+        <if test="qrcode != null">
+            AND m.qr_code = #{qrcode}
+        </if>
+        <if test="machineModelName != null">
+            AND g.model_name = #{machineModelName}
+        </if>
+        <if test="machineModelCode != null">
+            AND g.model_code = #{machineModelCode}
+        </if>
+        <if test="blockFlag != null">
+            AND m.block_flag = #{blockFlag}
+        </if>
     </select>
 
     <select id="query_efficient" parameterType="java.util.Map" resultMap="machine_efficient_filter_info">

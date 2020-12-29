@@ -15,7 +15,11 @@ public interface MachineFilterInfoService {
 
     List<MachinePrimaryFilterInfo> queryMachinePrimaryFilterInfo(MachineFilterInfoQuery query);
 
+    long queryMachinePrimaryFilterInfoSize(MachineFilterInfoQuery query);
+
     List<MachineEfficientFilterInfo> queryMachineEfficientFilterInfo(MachineFilterInfoQuery query);
+
+    long queryMachineEfficientFilterInfoSize(MachineFilterInfoQuery query);
 
     List<String> queryMachineModelName();
 
