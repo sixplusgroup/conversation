@@ -152,6 +152,11 @@ public class MqttConfiguration {
             if (topic == null) {
                 return;
             }
+            if (topic.startsWith("/")) {
+                topic = topic.substring(1);
+            } else {
+                return;
+            }
             String[] topicArray = topic.split("/");
             if (topicArray.length < 6) {
                 return;
