@@ -36,8 +36,8 @@ public class ModelChecker {
         List<Model> modelList = modelService.queryModelsWithAction();
         for (Model model: modelList) {
             List<String> actions = Lists.newArrayList();
-            model.getActions().forEach(action -> actions.add(action.getName()));
-            modelActionsMap.put(model.getName(), actions);
+            model.getActions().forEach(action -> actions.add(action.getName().toUpperCase()));
+            modelActionsMap.put(model.getName().toUpperCase(), actions);
         }
     }
 
@@ -49,6 +49,8 @@ public class ModelChecker {
      * @return 含有返回true，非法不含有返回false
      */
     public boolean isModelHaveAction(String modelName, String actionNome) {
+        modelName = modelName.toUpperCase();
+        actionNome = actionNome.toUpperCase();
         if (!modelActionsMap.containsKey(modelName)) {
             return false;
         }

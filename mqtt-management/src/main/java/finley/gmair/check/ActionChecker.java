@@ -39,7 +39,7 @@ public class ActionChecker {
         actionAttributeMap = new ConcurrentHashMap<>(20);
         List<Action> actionList = actionService.queryActionsWithAttribute();
         for (Action action : actionList) {
-            actionAttributeMap.put(action.getName(), action.getAttributes());
+            actionAttributeMap.put(action.getName().toUpperCase(), action.getAttributes());
         }
     }
 
@@ -51,6 +51,7 @@ public class ActionChecker {
      * @return 规范返回true，不规范返回false
      */
     public boolean isJsonCorrectInAction(String actionName, String json) {
+        actionName = actionName.toUpperCase();
         if (!actionAttributeMap.containsKey(actionName)) {
             return false;
         }
