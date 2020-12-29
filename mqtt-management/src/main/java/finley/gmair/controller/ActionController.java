@@ -64,9 +64,9 @@ public class ActionController {
      */
     @GetMapping(value = "/queryActions")
     public  ResultData queryActions(String name) throws MqttBusinessException {
-        VerifyUtil.verify(StringUtils.isNotEmpty(name), "行为名称为空");
+        VerifyUtil.verify(StringUtils.isNotEmpty(name.trim()), "行为名称为空");
 
-        return ResultData.ok(actionService.queryActionsWithoutAttribute(name));
+        return ResultData.ok(actionService.queryActionsWithoutAttribute(name.trim()));
     }
 
     /**

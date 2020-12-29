@@ -64,9 +64,9 @@ public class ModelController {
      */
     @GetMapping(value = "/queryModels")
     public ResultData queryModels(String name) throws MqttBusinessException {
-        VerifyUtil.verify(StringUtils.isNotEmpty(name), "型号标示名称为空");
+        VerifyUtil.verify(StringUtils.isNotEmpty(name.trim()), "型号标示名称为空");
 
-        return ResultData.ok(modelService.queryModelsWithoutAction(name));
+        return ResultData.ok(modelService.queryModelsWithoutAction(name.trim()));
     }
 
     /**

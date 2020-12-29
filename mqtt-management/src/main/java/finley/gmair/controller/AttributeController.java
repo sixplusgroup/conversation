@@ -5,10 +5,7 @@ import finley.gmair.service.AttributeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.VerifyUtil;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -66,9 +63,9 @@ public class AttributeController {
      */
     @GetMapping(value = "/queryAttributes")
     public ResultData queryAttributes(String name) throws MqttBusinessException {
-        VerifyUtil.verify(StringUtils.isNotEmpty(name), "属性名称为空");
+        VerifyUtil.verify(StringUtils.isNotEmpty(name.trim()), "属性名称为空");
 
-        return ResultData.ok(attributeService.queryAttributes(name));
+        return ResultData.ok(attributeService.queryAttributes(name.trim()));
     }
 
     /**
