@@ -25,7 +25,8 @@
         <mapper resource="mapper/out_pm2_5_hourly.xml"/>
         <mapper resource="mapper/modelvolume.xml"/>
         <mapper resource="mapper/modellight.xml"/>
-        <mapper resource="mapper/modelMaterial.xml"/>
+        <mapper resource="mapper/modelfilter.xml"/>
+        <mapper resource="mapper/filter.xml"/>
         <mapper resource="mapper/model_enabled_component.xml"/>
         <mapper resource="mapper/consumer_code_machine_view.xml"/>
         <mapper resource="mapper/out_pm2_5_daily.xml"/>

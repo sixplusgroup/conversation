@@ -444,6 +444,7 @@ public class CityAQIServiceImpl implements CityAQIService {
             logger.info("district aqi complete");
             List<CityAirQuality> data = map.values().stream().collect(Collectors.toList());
             insertCityAqiDetail(data);
+            logger.info("update data complete");
         }).start();
     }
 
@@ -578,7 +579,7 @@ public class CityAQIServiceImpl implements CityAQIService {
                 airQualityCacheService.generate(cityAirQuality);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("update cache failure");
         }
         // step 2: update database
         if (airQualityList.isEmpty())
@@ -603,12 +604,12 @@ public class CityAQIServiceImpl implements CityAQIService {
         if (candidate.size() > 1) {
             for (MojiRecord record : candidate) {
                 logger.info("record: " + JSON.toJSONString(record) + ", cityName: " + cityName);
-                //包含城市名称的return有城市名称的
-                if (record.getName().contains(cityName)) {
+                //完全相同的直接return
+                if (record.getName().equals(district)) {
                     return record;
                 }
-                //完全相同的直接return
-                if (record.getName().equals(district)){
+                //包含城市名称的return有城市名称的
+                if (record.getName().contains(cityName)) {
                     return record;
                 }
             }
