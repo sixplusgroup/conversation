@@ -54,17 +54,13 @@ public class MachineFilterInfoController {
         else {
             MachineFilterType type = query.getMachineFilterType();
             if (type.equals(MachineFilterType.PRIMARY)) {
-                List<MachinePrimaryFilterInfo> store =
-                        machineFilterInfoService.queryMachinePrimaryFilterInfo(query);
-                resData.put("size", store.size());
-                resData.put("list", store);
+                resData.put("size", machineFilterInfoService.queryMachinePrimaryFilterInfoSize(query));
+                resData.put("list", machineFilterInfoService.queryMachinePrimaryFilterInfo(query));
                 res.setData(resData);
             }
             else if (type.equals(MachineFilterType.EFFICIENT)) {
-                List<MachineEfficientFilterInfo> store =
-                        machineFilterInfoService.queryMachineEfficientFilterInfo(query);
-                resData.put("size", store.size());
-                resData.put("list", store);
+                resData.put("size", machineFilterInfoService.queryMachineEfficientFilterInfoSize(query));
+                resData.put("list", machineFilterInfoService.queryMachineEfficientFilterInfo(query));
                 res.setData(resData);
             }
         }
@@ -150,6 +146,7 @@ public class MachineFilterInfoController {
     private boolean checkParams(MachineFilterInfoQuery query) {
         if (query != null) {
             MachineFilterType type = query.getMachineFilterType();
+            if (type == null) return false;
             if (type.equals(MachineFilterType.PRIMARY)
                     || type.equals(MachineFilterType.EFFICIENT)) {
                 return query.getPageIndex() >= 1 && query.getPageSize() >= 1;
