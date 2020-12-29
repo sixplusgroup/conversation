@@ -100,7 +100,7 @@ public class ModelServiceImpl implements ModelService {
     public int insertModelActionRelation(String modelId, String actionId) throws MqttBusinessException {
         Model model = queryOneWithoutAction(modelId);
         if (model == null) {
-            throw new MqttBusinessException("没有型号id为" + actionId + "的数据");
+            throw new MqttBusinessException("没有型号id为" + modelId + "的数据");
         }
         Action action = actionService.queryOneWithoutAttribute(actionId);
         if (action == null) {

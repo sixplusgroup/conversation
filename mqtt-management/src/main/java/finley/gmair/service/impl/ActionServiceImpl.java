@@ -101,7 +101,7 @@ public class ActionServiceImpl implements ActionService {
         }
         Attribute attribute = attributeService.queryOne(attributeId);
         if (attribute == null) {
-            throw new MqttBusinessException("没有属性id为" + actionId + "的数据");
+            throw new MqttBusinessException("没有属性id为" + attributeId + "的数据");
         }
         return actionDao.insertActionAttributeRelation(actionId, attributeId);
     }
