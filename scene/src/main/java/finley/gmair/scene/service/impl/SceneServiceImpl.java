@@ -1,10 +1,8 @@
 package finley.gmair.scene.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import finley.gmair.scene.client.MachineClient;
 import finley.gmair.scene.constant.ErrorCode;
-import finley.gmair.scene.constant.OperateType;
 import finley.gmair.scene.dao.SceneDAO;
 import finley.gmair.scene.dto.SceneDTO;
 import finley.gmair.scene.dto.SceneOperationDTO;
@@ -12,11 +10,10 @@ import finley.gmair.scene.entity.SceneDO;
 import finley.gmair.scene.service.SceneOperationService;
 import finley.gmair.scene.service.SceneService;
 import finley.gmair.scene.utils.BizException;
-import finley.gmair.scene.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -35,12 +32,9 @@ public class SceneServiceImpl implements SceneService {
     @Resource
     private MachineClient machineClient;
 
-    @Resource
-    private RedisUtil redisUtil;
-
     @Override
     public SceneDTO createScene(SceneDTO sceneDTO) {
-        log.info("sceneDTO is: {}", JSON.toJSONString(sceneDTO));
+
         SceneDO sceneDO = new SceneDO();
         BeanUtils.copyProperties(sceneDTO, sceneDO);
 
@@ -59,6 +53,7 @@ public class SceneServiceImpl implements SceneService {
             throw new BizException(ErrorCode.UNKNOWN_ERROR);
         }
         sceneDTO.setSceneOperation(sceneOperationDTO);
+
         return sceneDTO;
     }
 
@@ -119,7 +114,6 @@ public class SceneServiceImpl implements SceneService {
      */
     @Override
     public List<SceneDTO> getScenesByConsumerId(String consumerId) {
-        //todo 调用频繁，考虑加一层缓存来优化
         List<SceneDO> sceneDOS = sceneDAO.selectScenesByConsumerId(consumerId);
         // 获取场景内包含的操作
         List<SceneDTO> sceneDTOS = sceneDOS.stream().map(this::sceneDO2DTO).collect(Collectors.toList());
@@ -180,7 +174,6 @@ public class SceneServiceImpl implements SceneService {
     @Override
     public List<String> getSceneQrCodesBySceneId(long sceneId) {
 
-        // todo 考虑如何使用 redis 做缓存
         List<String> qrCodes;
 
         // 获取场景内操作
@@ -190,23 +183,6 @@ public class SceneServiceImpl implements SceneService {
         if (CollectionUtils.isEmpty(qrCodes)) {
             return Lists.newArrayList();
         }
-
-//        // 用redis存储这部分信息
-//        List<Object> objects = redisUtil.lGet(Long.toString(sceneId), 0, -1);
-//        if (CollectionUtils.isEmpty(objects)) {
-//            // 获取场景内操作
-//            SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
-//            // 获取场景内包含的设备
-//            qrCodes = sceneOperationService.getQrCodesBySceneId(sceneOperationDTO);
-//            if (CollectionUtils.isEmpty(qrCodes)) {
-//                return Lists.newArrayList();
-//            }
-//        } else {
-//            qrCodes = objects.stream()
-//                    .map(Objects::toString)
-//                    .collect(Collectors.toList());
-//        }
-//        redisUtil.lSet(Long.toString(sceneId), qrCodes);
         return qrCodes;
     }
 }

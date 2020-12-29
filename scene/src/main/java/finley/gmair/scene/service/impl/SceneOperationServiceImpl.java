@@ -1,6 +1,7 @@
 package finley.gmair.scene.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import finley.gmair.scene.client.MachineClient;
 import finley.gmair.scene.constant.ErrorCode;
 import finley.gmair.scene.dao.SceneOperationDAO;
@@ -11,6 +12,7 @@ import finley.gmair.scene.service.SceneOperationService;
 import finley.gmair.scene.utils.BizException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.BeanUtils;
@@ -88,6 +90,9 @@ public class SceneOperationServiceImpl implements SceneOperationService {
     @Override
     public SceneOperationDTO getOperationBySceneId(long sceneId) {
         SceneOperationDO sceneOperationDO = sceneOperationDAO.selectSceneOperationBySceneId(sceneId);
+        if (ObjectUtils.isEmpty(sceneOperationDO)) {
+            return null;
+        }
         SceneOperationDTO sceneOperationDTO = new SceneOperationDTO();
         BeanUtils.copyProperties(sceneOperationDO, sceneOperationDTO);
         return sceneOperationDTO;
@@ -101,6 +106,9 @@ public class SceneOperationServiceImpl implements SceneOperationService {
 
     @Override
     public List<String> getQrCodesBySceneId(SceneOperationDTO sceneOperationDTO) {
+        if (ObjectUtils.isEmpty(sceneOperationDTO)) {
+            return Lists.newArrayList();
+        }
         List<SceneOperationCommand> commands = sceneOperationDTO.getCommands();
         return commands.stream().map(SceneOperationCommand::getQrCode).distinct().collect(Collectors.toList());
     }
