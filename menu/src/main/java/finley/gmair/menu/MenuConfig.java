@@ -25,6 +25,8 @@ public class MenuConfig {
             e.printStackTrace();
         }
 
+        //test by czg
+
         //产品目录
         JSONObject product_list = new JSONObject();
         product_list.put("name", "产品目录");
