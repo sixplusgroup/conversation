@@ -2,7 +2,9 @@ package finley.gmair.service.impl;
 
 import finley.gmair.dao.ModelDao;
 import finley.gmair.exception.MqttBusinessException;
+import finley.gmair.model.mqttManagement.Action;
 import finley.gmair.model.mqttManagement.Model;
+import finley.gmair.service.ActionService;
 import finley.gmair.service.ModelService;
 import finley.gmair.util.IDGenerator;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class ModelServiceImpl implements ModelService {
 
     @Resource
     private ModelDao modelDao;
+
+    @Resource
+    private ActionService actionService;
 
     /**
      * 保存机器型号
@@ -89,9 +94,18 @@ public class ModelServiceImpl implements ModelService {
      * @param modelId  型号id
      * @param actionId 行为id
      * @return 新增条数
+     * @throws MqttBusinessException 异常
      */
     @Override
-    public int insertModelActionRelation(String modelId, String actionId) {
+    public int insertModelActionRelation(String modelId, String actionId) throws MqttBusinessException {
+        Model model = queryOneWithoutAction(modelId);
+        if (model == null) {
+            throw new MqttBusinessException("没有型号id为" + actionId + "的数据");
+        }
+        Action action = actionService.queryOneWithoutAttribute(actionId);
+        if (action == null) {
+            throw new MqttBusinessException("没有行为id为" + actionId + "的数据");
+        }
         return modelDao.insertModelActionRelation(modelId, actionId);
     }
 

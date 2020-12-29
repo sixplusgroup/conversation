@@ -3,7 +3,9 @@ package finley.gmair.service.impl;
 import finley.gmair.dao.ActionDao;
 import finley.gmair.exception.MqttBusinessException;
 import finley.gmair.model.mqttManagement.Action;
+import finley.gmair.model.mqttManagement.Attribute;
 import finley.gmair.service.ActionService;
+import finley.gmair.service.AttributeService;
 import finley.gmair.util.IDGenerator;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class ActionServiceImpl implements ActionService {
 
     @Resource
     private ActionDao actionDao;
+
+    @Resource
+    private AttributeService attributeService;
 
     /**
      * 新增行为
@@ -86,9 +91,18 @@ public class ActionServiceImpl implements ActionService {
      * @param actionId    行为id
      * @param attributeId 属性id
      * @return 新增条数
+     * @throws MqttBusinessException 异常
      */
     @Override
-    public int insertActionAttributeRelation(String actionId, String attributeId) {
+    public int insertActionAttributeRelation(String actionId, String attributeId) throws MqttBusinessException {
+        Action action = queryOneWithoutAttribute(actionId);
+        if (action == null) {
+            throw new MqttBusinessException("没有行为id为" + actionId + "的数据");
+        }
+        Attribute attribute = attributeService.queryOne(attributeId);
+        if (attribute == null) {
+            throw new MqttBusinessException("没有属性id为" + actionId + "的数据");
+        }
         return actionDao.insertActionAttributeRelation(actionId, attributeId);
     }
 

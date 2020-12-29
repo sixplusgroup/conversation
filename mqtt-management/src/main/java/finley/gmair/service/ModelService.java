@@ -45,8 +45,9 @@ public interface ModelService {
      * @param modelId  型号id
      * @param actionId 行为id
      * @return 新增条数
+     * @throws MqttBusinessException 异常
      */
-    int insertModelActionRelation(String modelId, String actionId);
+    int insertModelActionRelation(String modelId, String actionId) throws MqttBusinessException;
 
     /**
      * 查询所有型号，包含其行为

@@ -46,8 +46,9 @@ public interface ActionService {
      * @param actionId    行为id
      * @param attributeId 属性id
      * @return 新增条数
+     * @throws MqttBusinessException 异常
      */
-    int insertActionAttributeRelation(String actionId, String attributeId);
+    int insertActionAttributeRelation(String actionId, String attributeId) throws MqttBusinessException;
 
     /**
      * 查询所有行为，包含其属性
