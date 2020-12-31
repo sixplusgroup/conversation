@@ -180,6 +180,7 @@ public class MqttConfiguration {
 
             //检查消息格式及内容的正确性，抛弃恶意攻击的消息报文
             if (isCheckOpen && (!isMessageNormative(topic, payload))) {
+                logger.info("message dropped, topic is [" + topic + "] , payload is [" + payload + "]");
                 return;
             }
 
