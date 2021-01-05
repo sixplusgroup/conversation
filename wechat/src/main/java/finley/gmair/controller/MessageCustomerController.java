@@ -3,10 +3,6 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.wechat.AccessToken;
-import finley.gmair.model.wechat.MessageTemplate;
-import finley.gmair.model.wechat.TextTemplate;
-import finley.gmair.service.MessageTemplateService;
-import finley.gmair.service.TextTemplateService;
 import finley.gmair.util.HttpClientUtils;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -20,9 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author ：CK
@@ -34,16 +27,10 @@ import java.util.Map;
 @RequestMapping("/wechat/message")
 @PropertySource("classpath:wechat.properties")
 public class MessageCustomerController {
-    private Logger logger = LoggerFactory.getLogger(MessageTemplateController.class);
-
-    @Autowired
-    private MessageTemplateService messageTemplateService;
+    private Logger logger = LoggerFactory.getLogger(MessageCustomerController.class);
 
     @Autowired
     private AccessTokenController accessTokenController;
-
-    @Autowired
-    private TextTemplateService textTemplateService;
 
     @Value("${wechat_appid}")
     private String wechatAppId;
@@ -110,6 +97,5 @@ public class MessageCustomerController {
             vo.setDescription("失败");
         }
         return vo;
-
     }
 }
