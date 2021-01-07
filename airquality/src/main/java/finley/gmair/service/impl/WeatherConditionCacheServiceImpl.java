@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class WeatherConditionCacheServiceImpl implements WeatherConditionCacheService {
 
-    @Cacheable(value = {"weatherConditionMap"}, key = "#cityId", unless = "#result == null ")
+    @Cacheable(value = {"weatherConditionMap"}, key = "'weatherconditon' + #cityId", unless = "#result == null ")
     @Override
     public CityWeatherCondition fetch(String cityId) {
         return null;
