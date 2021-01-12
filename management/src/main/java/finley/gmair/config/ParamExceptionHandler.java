@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+
 /**
  * @author: Bright Chan
  * @date: 2021/1/11 16:38
@@ -25,7 +27,18 @@ public class ParamExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResultData handleParamException(MethodArgumentNotValidException e) {
+    public ResultData handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return handleParamException(e);
+    }
+
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResultData handleConstraintViolationException(ConstraintViolationException e) {
+        return handleParamException(e);
+    }
+
+    private ResultData handleParamException(Exception e) {
         logger.error("[ERROR]: method argument not valid: " + e.getMessage());
         ResultData res = new ResultData();
         res.setResponseCode(ResponseCode.RESPONSE_ERROR);
