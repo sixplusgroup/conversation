@@ -8,7 +8,8 @@ public enum ErrorCode {
     /**
      * 结果返回状态
      */
-    UNKNOWN_ERROR("RESPONSE_ERROR", "未知错误");
+    UNKNOWN_ERROR("RESPONSE_ERROR", "未知错误"),
+    SCENE_NAME_DUPLICATE("RESPONSE_ERROR", "场景名重复");
 
     private final String responseCode;
     private final String description;

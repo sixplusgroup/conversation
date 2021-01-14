@@ -20,5 +20,7 @@ public interface SceneDAO {
 
     SceneDO selectSceneById(long sceneId);
 
+    SceneDO selectSceneByName(String sceneName);
+
     List<SceneDO> selectScenesByConsumerId(String consumerId);
 }

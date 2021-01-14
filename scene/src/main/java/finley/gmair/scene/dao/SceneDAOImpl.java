@@ -105,6 +105,13 @@ public class SceneDAOImpl implements SceneDAO {
     }
 
     @Override
+    public SceneDO selectSceneByName(String sceneName) {
+        QueryWrapper<SceneDO> wrapper = new QueryWrapper<>();
+        wrapper.eq("name", sceneName);
+        return sceneMapper.selectOne(wrapper);
+    }
+
+    @Override
     public List<SceneDO> selectScenesByConsumerId(String consumerId) {
         // 先查redis
         Object obj = redisUtil.get(consumerId);

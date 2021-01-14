@@ -159,11 +159,19 @@
             <version>4.0</version>
         </dependency>
 
-
+        <!--  fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.73</version>
+        </dependency>
+
+        <!--  rocketmq -->
+        <!--  官方starter不支持Spring1.5，因此采用第三方starter -->
+        <dependency>
+            <groupId>com.maihaoche</groupId>
+            <artifactId>spring-boot-starter-rocketmq</artifactId>
+            <version>0.1.0</version>
         </dependency>
 
     </dependencies>

@@ -1,5 +1,6 @@
 package finley.gmair.scene;
 
+import com.maihaoche.starter.mq.annotation.EnableMQConfiguration;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +11,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 @SpringBootApplication
 @EnableEurekaClient
 @EnableFeignClients
+@EnableMQConfiguration
 @MapperScan("finley.gmair.scene.dao.repository")
 public class SceneApplication {
 

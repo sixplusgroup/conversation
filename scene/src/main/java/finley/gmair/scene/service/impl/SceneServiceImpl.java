@@ -1,5 +1,7 @@
 package finley.gmair.scene.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import finley.gmair.scene.client.MachineClient;
 import finley.gmair.scene.constant.ErrorCode;
@@ -10,8 +12,10 @@ import finley.gmair.scene.entity.SceneDO;
 import finley.gmair.scene.service.SceneOperationService;
 import finley.gmair.scene.service.SceneService;
 import finley.gmair.scene.utils.BizException;
+import finley.gmair.util.ResultData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +38,13 @@ public class SceneServiceImpl implements SceneService {
 
     @Override
     public SceneDTO createScene(SceneDTO sceneDTO) {
+
+        SceneDO tmp = sceneDAO.selectSceneByName(sceneDTO.getName());
+        if (ObjectUtils.isNotEmpty(tmp)) {
+            // 场景名重复
+            log.error("scene name duplicate，sceneDO is: {}", JSON.toJSONString(sceneDTO));
+            throw new BizException(ErrorCode.SCENE_NAME_DUPLICATE);
+        }
 
         SceneDO sceneDO = new SceneDO();
         BeanUtils.copyProperties(sceneDTO, sceneDO);
@@ -100,8 +111,6 @@ public class SceneServiceImpl implements SceneService {
             // 场景删除失败
             throw new BizException(ErrorCode.UNKNOWN_ERROR);
         }
-
-        // todo 删除场景时是否需要删除场景内的命令（不删的理由，该部分数据可以作为数据分析）
         return true;
     }
 
@@ -148,26 +157,26 @@ public class SceneServiceImpl implements SceneService {
         List<String> qrCodes = getSceneQrCodesBySceneId(sceneId);
         sceneDTO.setQrCodes(qrCodes);
         // 获取场景内数据指标
-//        if (sceneDTO.getCo2() == 0 || sceneDTO.getHumidity() == 0 || sceneDTO.getPm25() == 0) {
-//            //todo 获取场景内数据指标
-//            double co2 = 0;
-//            double humidity = 0;
-//            double pm25 = 0;
-//            double temperature = 0;
-//            for (String qrCode : qrCodes) {
-//                // 没有批量接口，只能for循环依次获取设备状态
-//                ResultData data = machineClient.runningStatus(qrCode);
-//                JSONObject object = JSON.parseObject(JSON.toJSONString(data.getData()));
-//                co2 += object.getDoubleValue("co2");
-//                humidity += object.getDoubleValue("humidity");
-//                temperature += object.getDoubleValue("temperature");
-//                pm25 += object.getDoubleValue("pm2_5");
-//            }
-//            sceneDTO.setTemperature(temperature / qrCodes.size());
-//            sceneDTO.setCo2(co2 / qrCodes.size());
-//            sceneDTO.setHumidity(humidity / qrCodes.size());
-//            sceneDTO.setPm25(pm25 / qrCodes.size());
-//        }
+        if (sceneDTO.getCo2() == 0 || sceneDTO.getHumidity() == 0 || sceneDTO.getPm25() == 0) {
+            //todo 获取场景内数据指标
+            double co2 = 0;
+            double humidity = 0;
+            double pm25 = 0;
+            double temperature = 0;
+            for (String qrCode : qrCodes) {
+                // 没有批量接口，只能for循环依次获取设备状态
+                ResultData data = machineClient.runningStatus(qrCode);
+                JSONObject object = JSON.parseObject(JSON.toJSONString(data.getData()));
+                co2 += object.getDoubleValue("co2");
+                humidity += object.getDoubleValue("humidity");
+                temperature += object.getDoubleValue("temperature");
+                pm25 += object.getDoubleValue("pm2_5");
+            }
+            sceneDTO.setTemperature(temperature / qrCodes.size());
+            sceneDTO.setCo2(co2 / qrCodes.size());
+            sceneDTO.setHumidity(humidity / qrCodes.size());
+            sceneDTO.setPm25(pm25 / qrCodes.size());
+        }
         return sceneDTO;
     }
 
