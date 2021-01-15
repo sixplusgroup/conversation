@@ -15,7 +15,6 @@ import java.util.List;
  **/
 @Data
 @Document(collection = "scene_operation")
-
 public class SceneOperationDO {
     @Id
     private String id;

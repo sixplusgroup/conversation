@@ -30,8 +30,20 @@
         </encoder>
     </appender>
 
+    <appender name="MONGO" class="finley.gmair.scene.config.MongoDBAppender">
+    </appender>
+    <!-- 测试环境+开发环境. 多个使用逗号隔开. -->
+    <springProfile name="dev">
+
+        <logger name="scene.operation.log" level="debug">
+            <appender-ref ref="MONGO"/>
+        </logger>
+
+    </springProfile>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="TIME_FILE"/>
     </root>
+
 </configuration>

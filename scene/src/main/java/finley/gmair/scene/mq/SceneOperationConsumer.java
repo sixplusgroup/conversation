@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +31,9 @@ public class SceneOperationConsumer extends AbstractMQPushConsumer<SceneOperatio
 
     @Resource
     private MachineClient machineClient;
+
+    // 执行场景时，用这个logger记录执行结果，会自动保存到mongodb中
+    private final Logger logger = LoggerFactory.getLogger("scene.operation.log");
 
     @Override
     public boolean process(SceneOperationDTO sceneOperationDTO, Map<String, Object> map) {

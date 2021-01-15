@@ -31,6 +31,13 @@ public class ResultUtil {
         return apiResult;
     }
 
+    public static ApiResult error(String msg) {
+        ApiResult apiResult = new ApiResult();
+        apiResult.setResponseCode("RESPONSE_ERROR");
+        apiResult.setDescription(msg);
+        return apiResult;
+    }
+
     public static ApiResult error(ErrorCode codeEnum) {
         ApiResult apiResult = new ApiResult();
         apiResult.setResponseCode(codeEnum.getResponseCode());

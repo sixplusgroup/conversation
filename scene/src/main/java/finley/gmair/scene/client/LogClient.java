@@ -2,16 +2,19 @@ package finley.gmair.scene.client;
 
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author : Lyy
  * @create : 2021-01-13 20:35
  **/
 @FeignClient("log-agent")
+@RequestMapping("/log")
 public interface LogClient {
 
-    @GetMapping(value = "/log/machinecom/query/{uid}")
-    ResultData queryLogByUid(@PathVariable("uid") String uid);
+    @GetMapping(value = "/machinecom/query/{uid}")
+    ResultData queryMachineComLog(@PathVariable("uid") String uid);
+
+    @PostMapping(value = "/userlog/query")
+    ResultData queryUserLog(@RequestParam(value = "userId") String userId);
 }

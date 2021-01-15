@@ -21,9 +21,16 @@ public class LogServiceImpl implements LogService {
     LogClient logClient;
 
     @Override
-    public ResultData queryLogByUid(String uid) {
-        ResultData data = logClient.queryLogByUid(uid);
-        log.info("user log is: {}", JSON.toJSONString(data));
+    public ResultData queryMachineComLog(String uid) {
+        ResultData data = logClient.queryMachineComLog(uid);
+        log.info("LogService | machine com log is: {}", JSON.toJSONString(data));
+        return data;
+    }
+
+    @Override
+    public ResultData queryUserLog(String uid) {
+        ResultData data = logClient.queryUserLog(uid);
+        log.info("LogService | user log is: {}", JSON.toJSONString(data));
         return data;
     }
 }

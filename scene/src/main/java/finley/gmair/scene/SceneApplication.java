@@ -7,11 +7,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableEurekaClient
 @EnableFeignClients
 @EnableMQConfiguration
+@EnableScheduling
 @MapperScan("finley.gmair.scene.dao.repository")
 public class SceneApplication {
 

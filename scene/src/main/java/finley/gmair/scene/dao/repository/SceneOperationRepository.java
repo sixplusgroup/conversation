@@ -14,5 +14,9 @@ import java.util.List;
 public interface SceneOperationRepository extends MongoRepository<SceneOperationDO, String> {
     SceneOperationDO findBySceneIdAndDeletedFalse(Long sceneId);
 
+    // 根据用户ID获取场景控制信息
     List<SceneOperationDO> findAllByConsumerIdAndDeletedFalse(String consumerId);
+
+    // 查询所有的场景控制记录
+    List<SceneOperationDO> findAllByDeletedFalse();
 }
