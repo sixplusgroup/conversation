@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.consumer.ConsumerForm;
+import finley.gmair.form.consumer.ConsumerPartInfoQuery;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.form.consumer.LoginForm;
 import finley.gmair.model.auth.VerificationCode;
@@ -498,5 +499,22 @@ public class ConsumerAuthController {
             result.setDescription("success to find consumer info by phone");
             return result;
         }
+    }
+
+    /**
+     * 根据query给出的条件查询符合条件的账户信息
+     * @param query 查询条件对象
+     * @return 查询结果
+     */
+    @PostMapping("/consumer/accounts")
+    public ResultData queryConsumerAccounts(@RequestBody ConsumerPartInfoQuery query) {
+        ResultData res = new ResultData();
+
+        Map<String, Object> resData = new HashMap<>();
+        resData.put("size", consumerService.fetchConsumerAccountsSize(query));
+        resData.put("list", consumerService.fetchConsumerAccounts(query));
+
+        res.setData(resData);
+        return res;
     }
 }

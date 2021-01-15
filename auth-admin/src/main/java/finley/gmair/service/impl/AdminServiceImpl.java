@@ -2,13 +2,16 @@ package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import finley.gmair.dao.AdminDao;
+import finley.gmair.form.admin.AdminPartInfoQuery;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.service.AdminService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.admin.AdminPartInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -33,6 +36,16 @@ public class AdminServiceImpl implements AdminService {
             result.setDescription("Fail to fetch admin information from database");
         }
         return result;
+    }
+
+    @Override
+    public List<AdminPartInfoVo> fetchAdminAccounts(AdminPartInfoQuery query) {
+        return adminDao.queryAdminAccounts(query);
+    }
+
+    @Override
+    public long fetchAdminAccountsSize(AdminPartInfoQuery query) {
+        return adminDao.queryAdminAccountsSize(query);
     }
 
     @Override

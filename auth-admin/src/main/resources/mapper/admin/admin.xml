@@ -10,6 +10,13 @@
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
+    <resultMap id="adminPartInfoVo" type="finley.gmair.vo.admin.AdminPartInfoVo">
+        <result property="adminId" column="admin_id"/>
+        <result property="email" column="admin_email"/>
+        <result property="name" column="admin_name"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
     <insert id="insert" parameterType="finley.gmair.model.admin.Admin" useGeneratedKeys="false">
         INSERT INTO gmair_admininfo.admin_info (admin_id, admin_email, admin_name, admin_password, admin_role, block_flag, create_time)
         VALUES (#{adminId}, #{email}, #{username}, #{password},
@@ -38,6 +45,28 @@
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
+        </if>
+    </select>
+
+    <select id="query_admin_accounts" parameterType="finley.gmair.form.admin.AdminPartInfoQuery"
+            resultMap="adminPartInfoVo">
+        <bind name="offset" value="(pageIndex - 1) * pageSize"></bind>
+        SELECT admin_id, admin_email, admin_name, create_time
+        FROM gmair_admininfo.admin_info
+        WHERE block_flag = false
+        <if test="name != null">
+            AND admin_name = #{name}
+        </if>
+        ORDER BY create_time DESC LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="query_admin_accounts_size" parameterType="finley.gmair.form.admin.AdminPartInfoQuery"
+            resultType="long">
+        SELECT count(*)
+        FROM gmair_admininfo.admin_info
+        WHERE block_flag = false
+        <if test="name != null">
+            AND admin_name = #{name}
         </if>
     </select>
 
