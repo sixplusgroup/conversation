@@ -33,4 +33,13 @@ public interface MachineService {
     @GetMapping("/machine/power/onoff/get/record/by/code")
     ResultData getRecord(@RequestParam("qrcode") String qrcode);
 
+    /**
+     * 根据二维码查询machineId
+     *
+     * @param codeValue 二维码
+     * @return machineId列表
+     */
+    @GetMapping("/machine/qrcode/findbyqrcode/consumer")
+    ResultData findMachineIdByCodeValueFacetoConsumer(@RequestParam("codeValue") String codeValue);
+
 }

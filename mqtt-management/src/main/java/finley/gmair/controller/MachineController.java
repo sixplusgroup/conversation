@@ -41,13 +41,9 @@ public class MachineController {
         }
     }
 
-    @GetMapping(value = "/alert/queryOne")
-    public ResultData getMachineAlert(String qrcode) {
-        // 1.根据qrcode查询machineId
-        String machineId = null;  // todo
-
-        // 2.根据machineId查询设备的警报
-        List<MachineAlert> machineAlertList = machineAlertService.queryMachineAlert(machineId, null, null);
+    @GetMapping(value = "/alert/getExistingAlert")
+    public ResultData getExistingAlert(String machineId) {
+        List<MachineAlert> machineAlertList = machineAlertService.queryMachineAlert(machineId, null, false);
         if (machineAlertList == null || machineAlertList.size() == 0) {
             return ResultData.empty("No machine alert found");
         } else {

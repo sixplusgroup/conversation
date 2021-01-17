@@ -6,6 +6,7 @@ import finley.gmair.service.MachineAlertService;
 import finley.gmair.util.IDGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ public class MachineAlertServiceImpl implements MachineAlertService {
      * @return 更新条数
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int updateMachineAlert(String machineId, int code) {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);

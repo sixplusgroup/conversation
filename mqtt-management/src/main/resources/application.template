@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: mqtt-management-agent
+    name: corev3-agent
   mqtt:
     inbound:
       url: tcp://127.0.0.1:61613
