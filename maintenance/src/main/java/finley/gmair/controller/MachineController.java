@@ -30,7 +30,7 @@ public class MachineController {
      */
     @GetMapping(value = "/getLatestStatus")
     public ResultData getLatestStatus(String qrcode) {
-        if (StringUtils.isNotEmpty(qrcode)) {
+        if (StringUtils.isEmpty(qrcode)) {
             return ResultData.error("qrcode为空");
         }
 
@@ -45,7 +45,7 @@ public class MachineController {
      */
     @GetMapping(value = "/getTimingSetting")
     public ResultData getTimingSetting(String qrcode) {
-        if (StringUtils.isNotEmpty(qrcode)) {
+        if (StringUtils.isEmpty(qrcode)) {
             return ResultData.error("qrcode为空");
         }
 

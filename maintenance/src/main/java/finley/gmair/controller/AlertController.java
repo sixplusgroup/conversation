@@ -39,7 +39,7 @@ public class AlertController {
      */
     @GetMapping(value = "/getAlertList")
     public ResultData getAlertList(String qrcode) {
-        if (StringUtils.isNotEmpty(qrcode)) {
+        if (StringUtils.isEmpty(qrcode)) {
             return ResultData.error("qrcode为空");
         }
 
@@ -64,7 +64,7 @@ public class AlertController {
      */
     @PostMapping(value = "/removeAlert")
     public ResultData removeAlert(String machineId, Integer code) {
-        if (StringUtils.isNotEmpty(machineId)) {
+        if (StringUtils.isEmpty(machineId)) {
             return ResultData.error("qrcode为空");
         }
         if (code == null) {
