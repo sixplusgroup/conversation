@@ -9,6 +9,7 @@ import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,6 +53,25 @@ public class AlertController {
 
         // 2.根据machineId查询告警信息
         return mqttService.getExistingAlert(machineId);
+    }
+
+    /**
+     * 消除警报
+     *
+     * @param machineId 设备mac
+     * @param code 告警码
+     * @return 消除操作的结果
+     */
+    @PostMapping(value = "/removeAlert")
+    public ResultData removeAlert(String machineId, Integer code) {
+        if (StringUtils.isNotEmpty(machineId)) {
+            return ResultData.error("qrcode为空");
+        }
+        if (code == null) {
+            return ResultData.error("code为空");
+        }
+
+        return mqttService.updateAlert(machineId, code);
     }
 
 }
