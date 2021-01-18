@@ -17,9 +17,9 @@ public interface LogService {
     /**
      * 查询用户操作设备的历史记录
      *
-     * @param userId 用户id
+     * @param userId       用户id
      * @param machineValue 二维码
-     * @return
+     * @return 用户操作设备的历史记录
      */
     @PostMapping("/log/useraction/query")
     ResultData getUserActionLog(@RequestParam("userId") String userId, @RequestParam("machineValue") String machineValue);
