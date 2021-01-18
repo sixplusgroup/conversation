@@ -40,7 +40,7 @@ public class HistoryController {
 
         // 1.根据用户电话获取用户id todo
         String userId = null;
-yo
+
         // 2.查询用户设备操作历史
         return logService.getUserActionLog(userId, qrcode);
     }
