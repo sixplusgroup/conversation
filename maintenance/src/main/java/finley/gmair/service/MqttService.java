@@ -34,4 +34,13 @@ public interface MqttService {
     @PostMapping("/mqtt/alert/update")
     ResultData updateAlert(@RequestParam("machineId") String machineId, @RequestParam("code") int code);
 
+    /**
+     * 服务端要求即刻上报数据命令
+     *
+     * @param uid 设备mac
+     * @return 操作结果
+     */
+    @PostMapping("/core/com/demand/report")
+    ResultData demandReport(@RequestParam("uid") String uid);
+
 }

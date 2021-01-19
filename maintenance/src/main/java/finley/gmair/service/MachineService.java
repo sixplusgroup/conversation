@@ -42,4 +42,13 @@ public interface MachineService {
     @GetMapping("/machine/qrcode/findbyqrcode/consumer")
     ResultData findMachineIdByCodeValueFacetoConsumer(@RequestParam("codeValue") String codeValue);
 
+    /**
+     * 查看板子的版本
+     *
+     * @param qrcode 二维码
+     * @return 板子的版本
+     */
+    @GetMapping("/machine/board/by/qrcode")
+    ResultData findBoardVersionByQRcode(@RequestParam("qrcode") String qrcode);
+
 }
