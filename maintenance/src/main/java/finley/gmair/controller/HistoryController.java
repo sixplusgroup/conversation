@@ -25,24 +25,20 @@ public class HistoryController {
     /**
      * 查询用户设备的操作历史
      *
-     * @param phone 用户电话
-     * @param qrcode 设备二维码
+     * @param consumerId 用户电话
+     * @param qrcode     设备二维码
      * @return 用户设备操作历史
      */
     @GetMapping(value = "/getOperationHistory")
-    public ResultData getOperationHistory(String phone, String qrcode) {
-        if (StringUtils.isEmpty(phone)) {
-            return ResultData.error("phone不合法");
+    public ResultData getOperationHistory(String consumerId, String qrcode) {
+        if (StringUtils.isEmpty(consumerId)) {
+            return ResultData.error("consumerId为空");
         }
         if (StringUtils.isEmpty(qrcode)) {
             return ResultData.error("qrcode为空");
         }
 
-        // 1.根据用户电话获取用户id todo
-        String userId = null;
-
-        // 2.查询用户设备操作历史
-        return logService.getUserActionLog(userId, qrcode);
+        return logService.getUserActionLog(consumerId, qrcode);
     }
 
 }
