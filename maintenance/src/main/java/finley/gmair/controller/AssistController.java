@@ -9,7 +9,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,8 +38,8 @@ public class AssistController {
      * @param qrcode 二维码
      * @return 刷新的结果
      */
-    @GetMapping(value = "/refreshStatus")
-    public ResultData getAlertList(String qrcode) {
+    @PostMapping(value = "/refreshStatus")
+    public ResultData refreshStatus(String qrcode) {
         if (StringUtils.isEmpty(qrcode)) {
             return ResultData.error("qrcode为空");
         }
@@ -67,6 +67,22 @@ public class AssistController {
 
         // 2.刷新设备状态
         return mqttService.demandReport(machineId);
+    }
+
+    /**
+     * 配置设备的定时
+     *
+     * @param qrcode 设备二维码
+     * @param startHour 开始时间，小时
+     * @param startMinute 开始时间，分钟
+     * @param endHour 结束时间，小时
+     * @param endMinute 结束时间，分钟
+     * @param status 开启和关闭的状态
+     * @return 配置结果
+     */
+    @PostMapping(value = "/setTiming")
+    public ResultData setTiming(String qrcode, int startHour, int startMinute, int endHour, int endMinute, boolean status) {
+        return machineService.configConfirm(qrcode, startHour, startMinute, endHour, endMinute, status);
     }
 
 }
