@@ -85,4 +85,42 @@ public class AssistController {
         return machineService.configConfirm(qrcode, startHour, startMinute, endHour, endMinute, status);
     }
 
+    /**
+     * 设置设备初效滤网清洗提醒开启状态
+     *
+     * @param qrcode            二维码
+     * @param cleanRemindStatus 是否开启提醒
+     * @return 操作结果
+     */
+    @PostMapping(value = "/setCleanRemindStatus")
+    public ResultData setCleanRemindStatus(String qrcode, Boolean cleanRemindStatus) {
+        if (StringUtils.isEmpty(qrcode)) {
+            return ResultData.error("qrcode为空");
+        }
+        if (cleanRemindStatus == null) {
+            return ResultData.error("提醒状态为空");
+        }
+
+        return machineService.changeFilterCleanRemindStatus(qrcode, cleanRemindStatus);
+    }
+
+    /**
+     * 设置设备高效滤网清洗提醒开启状态
+     *
+     * @param qrcode 二维码
+     * @param replaceRemindStatus 是否开启提醒
+     * @return 操作结果
+     */
+    @PostMapping(value = "/setReplaceRemindStatus")
+    public ResultData setReplaceRemindStatus(String qrcode, Boolean replaceRemindStatus) {
+        if (StringUtils.isEmpty(qrcode)) {
+            return ResultData.error("qrcode为空");
+        }
+        if (replaceRemindStatus == null) {
+            return ResultData.error("提醒状态为空");
+        }
+
+        return machineService.changeReplaceRemindStatus(qrcode, replaceRemindStatus);
+    }
+
 }

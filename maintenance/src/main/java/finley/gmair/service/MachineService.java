@@ -37,12 +37,12 @@ public interface MachineService {
     /**
      * 配置设备的定时
      *
-     * @param qrcode 设备二维码
-     * @param startHour 开始时间，小时
+     * @param qrcode      设备二维码
+     * @param startHour   开始时间，小时
      * @param startMinute 开始时间，分钟
-     * @param endHour 结束时间，小时
-     * @param endMinute 结束时间，分钟
-     * @param status 开启和关闭的状态
+     * @param endHour     结束时间，小时
+     * @param endMinute   结束时间，分钟
+     * @param status      开启和关闭的状态
      * @return 配置结果
      */
     @PostMapping("/machine/power/onoff/confirm")
@@ -68,5 +68,28 @@ public interface MachineService {
      */
     @GetMapping("/machine/board/by/qrcode")
     ResultData findBoardVersionByQRcode(@RequestParam("qrcode") String qrcode);
+
+    /**
+     * 改变设备初效滤网清洗提醒开启状态
+     *
+     * @param qrcode            二维码
+     * @param cleanRemindStatus 是否开启提醒
+     * @return 操作结果
+     */
+    @PostMapping("/machine/filter/clean/change")
+    ResultData changeFilterCleanRemindStatus(@RequestParam("qrcode") String qrcode,
+                                             @RequestParam("cleanRemindStatus") boolean cleanRemindStatus);
+
+    /**
+     * 改变设备高效滤网清洗提醒开启状态
+     *
+     * @param qrcode 二维码
+     * @param replaceRemindStatus 是否开启提醒
+     * @return 操作结果
+     */
+    @PostMapping("/machine/efficientFilter/replaceRemind/status/change")
+    ResultData changeReplaceRemindStatus(@RequestParam("qrcode") String qrcode,
+                                         @RequestParam("replaceRemindStatus") boolean replaceRemindStatus);
+
 
 }
