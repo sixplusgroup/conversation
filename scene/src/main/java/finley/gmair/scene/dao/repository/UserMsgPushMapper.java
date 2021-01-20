@@ -1,7 +1,6 @@
 package finley.gmair.scene.dao.repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import finley.gmair.scene.entity.SceneDO;
 import finley.gmair.scene.entity.UserMsgPushDO;
 
 /**

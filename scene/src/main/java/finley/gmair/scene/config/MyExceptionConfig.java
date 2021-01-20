@@ -1,8 +1,8 @@
 package finley.gmair.scene.config;
 
 
-import finley.gmair.scene.utils.BizException;
 import finley.gmair.scene.constant.ErrorCode;
+import finley.gmair.scene.utils.BizException;
 import finley.gmair.scene.utils.ResultUtil;
 import finley.gmair.scene.vo.ApiResult;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author lyy
  * @date 2020-07-05 11:19 下午
  */
-@ControllerAdvice
 @Slf4j
+@ControllerAdvice
 public class MyExceptionConfig {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody

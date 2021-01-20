@@ -114,7 +114,6 @@ public class SceneServiceImpl implements SceneService {
         return true;
     }
 
-
     /**
      * 通过用户ID获取当前用户设置的所有场景
      *
@@ -139,11 +138,7 @@ public class SceneServiceImpl implements SceneService {
     }
 
     /**
-     * SceneDO -> SceneDTO
-     * 需要经历的步骤：
-     * 1。获取场景内包含的设备
-     * 2。获取场景内操作
-     * 3。获取场景内数据指标
+     * SceneDO -> SceneDTO 需要经历的步骤： 1。获取场景内包含的设备 2。获取场景内操作 3。获取场景内数据指标
      */
     public SceneDTO sceneDO2DTO(SceneDO sceneDO) {
         long sceneId = sceneDO.getId();
@@ -156,28 +151,33 @@ public class SceneServiceImpl implements SceneService {
         // 获取场景内包含的设备（从redis中获取）
         List<String> qrCodes = getSceneQrCodesBySceneId(sceneId);
         sceneDTO.setQrCodes(qrCodes);
-        // 获取场景内数据指标
-        if (sceneDTO.getCo2() == 0 || sceneDTO.getHumidity() == 0 || sceneDTO.getPm25() == 0) {
-            //todo 获取场景内数据指标
-            double co2 = 0;
-            double humidity = 0;
-            double pm25 = 0;
-            double temperature = 0;
-            for (String qrCode : qrCodes) {
-                // 没有批量接口，只能for循环依次获取设备状态
-                ResultData data = machineClient.runningStatus(qrCode);
-                JSONObject object = JSON.parseObject(JSON.toJSONString(data.getData()));
-                co2 += object.getDoubleValue("co2");
-                humidity += object.getDoubleValue("humidity");
-                temperature += object.getDoubleValue("temperature");
-                pm25 += object.getDoubleValue("pm2_5");
-            }
-            sceneDTO.setTemperature(temperature / qrCodes.size());
-            sceneDTO.setCo2(co2 / qrCodes.size());
-            sceneDTO.setHumidity(humidity / qrCodes.size());
-            sceneDTO.setPm25(pm25 / qrCodes.size());
-        }
+        setData2Scene(sceneDTO, qrCodes);
         return sceneDTO;
+    }
+
+    /**
+     * 获取场景内数据指标 以场景内所有机器相关数值的最大值作为指标 之后可以考虑增加衡量维度
+     */
+    public void setData2Scene(SceneDTO sceneDTO, List<String> qrCodes) {
+        double co2 = 0;
+        double humidity = 0;
+        double pm25 = 0;
+        double temperature = 0;
+        for (String qrCode : qrCodes) {
+            // 没有批量接口，只能for循环依次获取设备状态
+            ResultData data = machineClient.runningStatus(qrCode);
+            JSONObject object = JSON.parseObject(JSON.toJSONString(data.getData()));
+
+            co2 = Math.max(co2, object.getDoubleValue("co2"));
+            humidity = Math.max(humidity, object.getDoubleValue("humidity"));
+            temperature = Math.max(temperature, object.getDoubleValue("temperature"));
+            pm25 = Math.max(pm25, object.getDoubleValue("pm2_5"));
+
+        }
+        sceneDTO.setTemperature(temperature);
+        sceneDTO.setCo2(co2);
+        sceneDTO.setHumidity(humidity);
+        sceneDTO.setPm25(pm25);
     }
 
     @Override
@@ -189,6 +189,7 @@ public class SceneServiceImpl implements SceneService {
         SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
         // 获取场景内包含的设备
         qrCodes = sceneOperationService.getQrCodesBySceneId(sceneOperationDTO);
+        log.info("qrCodes is:{}", JSON.toJSONString(qrCodes));
         if (CollectionUtils.isEmpty(qrCodes)) {
             return Lists.newArrayList();
         }

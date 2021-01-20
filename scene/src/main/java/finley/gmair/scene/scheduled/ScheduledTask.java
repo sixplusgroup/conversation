@@ -1,9 +1,6 @@
 package finley.gmair.scene.scheduled;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import finley.gmair.scene.dao.repository.UserMsgPushMapper;
 import finley.gmair.scene.dto.AppMsgPushDTO;
-import finley.gmair.scene.entity.UserMsgPushDO;
 import finley.gmair.scene.service.AppMsgPushService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,8 +8,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author : Lyy
@@ -41,5 +36,4 @@ public class ScheduledTask {
         service.sendPush(appMsgPush);
         log.info("推送结束：{}", LocalDateTime.now());
     }
-
 }

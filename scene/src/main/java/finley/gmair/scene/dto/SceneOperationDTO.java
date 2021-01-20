@@ -1,7 +1,6 @@
 package finley.gmair.scene.dto;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import finley.gmair.scene.entity.SceneOperationCommand;
 import lombok.Data;
 

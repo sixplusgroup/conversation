@@ -1,10 +1,10 @@
 package finley.gmair.scene.mq;
 
-import com.alibaba.fastjson.JSON;
 import com.maihaoche.starter.mq.annotation.MQConsumer;
 import com.maihaoche.starter.mq.base.AbstractMQPushConsumer;
 import finley.gmair.scene.client.MachineClient;
 import finley.gmair.scene.dto.SceneOperationDTO;
+import finley.gmair.scene.entity.SceneOperationCommand;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author : Lyy
@@ -37,34 +39,46 @@ public class SceneOperationConsumer extends AbstractMQPushConsumer<SceneOperatio
 
     @Override
     public boolean process(SceneOperationDTO sceneOperationDTO, Map<String, Object> map) {
-        log.info("msg receive,sceneOperationDTO is: {}", JSON.toJSONString(sceneOperationDTO));
         String[] configArr = {"speed", "light", "timing", "temp"};
-        sceneOperationDTO.getCommands().forEach(command -> {
+        // 先根据sequence对指令顺序进行排序
+        List<SceneOperationCommand> commands = sceneOperationDTO.getCommands().stream()
+                .sorted(Comparator.comparing(SceneOperationCommand::getSequence)).collect(Collectors.toList());
+        for (SceneOperationCommand command : commands) {
+            String device = command.getDeviceName();
             String component = command.getCommandComponent();
             String operation = command.getCommandOperation();
-            log.info("component is: {}, operation is: {}", component, operation);
-
+            log.info("device is:{},component is: {}, operation is: {}", device, component, operation);
             ResultData resultData = null;
             if (ArrayUtils.contains(configArr, component)) {
                 if (!StringUtils.isNumeric(operation)) {
-                    return;
+                    continue;
                 }
-                Map<String, Integer> queryMap = new HashMap<>();
-                queryMap.put(component, NumberUtils.toInt(operation));
-                resultData = machineClient.config(command.getQrCode(), component, queryMap);
+                int value = NumberUtils.toInt(operation);
+                switch (component) {
+                    case "speed":
+                        resultData = machineClient.configSpeed(command.getQrCode(), value);
+                        break;
+                    case "light":
+                        resultData = machineClient.configLight(command.getQrCode(), value);
+                        break;
+                    case "timing":
+                        resultData = machineClient.configTiming(command.getQrCode(), value);
+                        break;
+                    case "temp":
+                        resultData = machineClient.configTemp(command.getQrCode(), value);
+                        break;
+                }
             } else {
                 resultData = machineClient.operate(command.getQrCode(), component, operation);
             }
             if (!resultData.getResponseCode().equals(ResponseCode.RESPONSE_OK)) {
                 // todo 命令执行失败打日志记录下来
-                log.error("command execute failed, qrCode:{}", command.getQrCode());
-                System.out.println("日志记录某设备操作失败");
+                logger.error("command execute failed, device:{}", device);
             } else {
                 // todo 命令执行成功，日志记录
-                log.info("command success,component is: {}", component);
+                logger.info("command success,the device is: {}", device);
             }
-        });
+        }
         return true;
     }
-
 }

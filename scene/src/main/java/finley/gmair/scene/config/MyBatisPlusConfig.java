@@ -2,7 +2,6 @@ package finley.gmair.scene.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

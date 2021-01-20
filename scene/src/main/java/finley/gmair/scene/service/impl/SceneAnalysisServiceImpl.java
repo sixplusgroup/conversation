@@ -6,8 +6,6 @@ import finley.gmair.scene.entity.SceneOperationCommand;
 import finley.gmair.scene.entity.SceneOperationDO;
 import finley.gmair.scene.service.SceneAnalysisService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,9 +21,6 @@ import java.util.Map;
 @Service
 public class SceneAnalysisServiceImpl implements SceneAnalysisService {
 
-
-
-
     @Resource
     SceneOperationRepository sceneOperationRepository;
 
@@ -37,7 +32,8 @@ public class SceneAnalysisServiceImpl implements SceneAnalysisService {
         sceneOperationDOS.forEach(sceneOperationDO -> {
             List<SceneOperationCommand> commands = sceneOperationDO.getCommands();
             commands.forEach(command -> {
-                componentMap.put(command.getCommandComponent(), componentMap.getOrDefault(command.getCommandComponent(), 0) + 1);
+                componentMap.put(command.getCommandComponent(),
+                        componentMap.getOrDefault(command.getCommandComponent(), 0) + 1);
             });
         });
         componentMap.forEach((k, v) -> {
@@ -48,12 +44,14 @@ public class SceneAnalysisServiceImpl implements SceneAnalysisService {
 
     @Override
     public void commandComponentDistribution(String consumerId) {
-        List<SceneOperationDO> sceneOperationDOS = sceneOperationRepository.findAllByConsumerIdAndDeletedFalse(consumerId);
+        List<SceneOperationDO> sceneOperationDOS = sceneOperationRepository
+                .findAllByConsumerIdAndDeletedFalse(consumerId);
         Map<String, Integer> componentMap = Maps.newHashMap();
         sceneOperationDOS.forEach(sceneOperationDO -> {
             List<SceneOperationCommand> commands = sceneOperationDO.getCommands();
             commands.forEach(command -> {
-                componentMap.put(command.getCommandComponent(), componentMap.getOrDefault(command.getCommandComponent(), 0) + 1);
+                componentMap.put(command.getCommandComponent(),
+                        componentMap.getOrDefault(command.getCommandComponent(), 0) + 1);
             });
         });
         componentMap.forEach((k, v) -> {

@@ -4,7 +4,10 @@ import finley.gmair.scene.client.MachineClient;
 import finley.gmair.scene.service.LogService;
 import finley.gmair.scene.utils.ResultUtil;
 import finley.gmair.scene.vo.ApiResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 

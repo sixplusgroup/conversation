@@ -3,6 +3,7 @@ package finley.gmair.scene.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.maihaoche.starter.mq.base.MessageBuilder;
+import finley.gmair.scene.client.MachineClient;
 import finley.gmair.scene.constant.ErrorCode;
 import finley.gmair.scene.dao.SceneOperationDAO;
 import finley.gmair.scene.dto.SceneOperationDTO;
@@ -11,15 +12,25 @@ import finley.gmair.scene.entity.SceneOperationDO;
 import finley.gmair.scene.mq.SceneOperationProducer;
 import finley.gmair.scene.service.SceneOperationService;
 import finley.gmair.scene.utils.BizException;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.rocketmq.common.message.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -115,9 +126,8 @@ public class SceneOperationServiceImpl implements SceneOperationService {
     // 执行操作
     @Override
     public void executeOperation(SceneOperationDTO sceneOperationDTO) {
-        // todo 用消息队列发送指令
+        // 用消息队列发送指令
         Message msg = MessageBuilder.of(sceneOperationDTO).topic("scene-operation").build();
         sceneOperationProducer.syncSend(msg);
     }
-
 }

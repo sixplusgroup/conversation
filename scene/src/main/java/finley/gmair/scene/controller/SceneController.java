@@ -61,12 +61,12 @@ public class SceneController {
     /**
      * 根据场景ID获取场景信息
      *
-     * @param sceneId 场景ID
+     * @param sid 场景ID
      * @return sceneDTO
      */
-    @GetMapping("/{sid}")
-    public ApiResult getSceneBySid(@PathVariable(value = "sid") long sceneId) {
-        SceneDTO sceneDTO = sceneService.getSceneBySceneId(sceneId);
+    @GetMapping("/")
+    public ApiResult getSceneBySid(long sid) {
+        SceneDTO sceneDTO = sceneService.getSceneBySceneId(sid);
         return ResultUtil.success("场景获取成功", sceneDTO);
     }
 

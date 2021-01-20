@@ -103,8 +103,6 @@ public class SceneControlServiceImpl implements SceneControlService {
     @Override
     public void startScene(long sceneId) {
         SceneOperationDTO sceneOperationDTO = sceneOperationService.getOperationBySceneId(sceneId);
-        log.info("sceneId is: {}, sceneOperationDTO is: {}", sceneId, sceneOperationDTO);
-        logger.info("sceneId is: {}, sceneOperationDTO is: {}", sceneId, sceneOperationDTO);
         sceneOperationService.executeOperation(sceneOperationDTO);
     }
 

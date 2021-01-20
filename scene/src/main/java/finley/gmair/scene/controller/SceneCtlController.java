@@ -1,6 +1,5 @@
 package finley.gmair.scene.controller;
 
-import com.google.common.collect.Lists;
 import finley.gmair.scene.dto.SceneDeviceControlOptionDTO;
 import finley.gmair.scene.service.SceneControlService;
 import finley.gmair.scene.utils.ResultUtil;
@@ -27,7 +26,8 @@ public class SceneCtlController {
 
     @GetMapping("/options")
     public ApiResult getSceneDeviceControlOption(String consumerId) {
-        List<SceneDeviceControlOptionDTO> sceneDeviceControlOptionList = sceneControlService.getSceneDeviceControlOptions(consumerId);
+        List<SceneDeviceControlOptionDTO> sceneDeviceControlOptionList = sceneControlService
+                .getSceneDeviceControlOptions(consumerId);
         return ResultUtil.success("场景控制列表获取成功", sceneDeviceControlOptionList);
     }
 
