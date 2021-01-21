@@ -130,12 +130,6 @@ public class MaintenanceController {
     /**
      * 创建设备上门检修
      *
-     * @param form 检修预约信息
-     * @return 创建结果
-     */
-    /**
-     * 创建设备上门检修
-     *
      * @param consumerConsignee 客户姓名
      * @param consumerPhone     客户电话
      * @param consumerAddress   客户地址
