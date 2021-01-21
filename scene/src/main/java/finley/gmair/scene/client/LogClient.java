@@ -12,9 +12,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/log")
 public interface LogClient {
 
-    @GetMapping(value = "/machinecom/query/{uid}")
-    ResultData queryMachineComLog(@PathVariable("uid") String uid);
+    /**
+     * 用户获取操作设备的日志
+     *
+     * @param userId 用户ID（即consumerId）
+     * @param qrcode 设备
+     * @return 结果
+     */
+    @PostMapping(value = "/useraction/query")
+    public ResultData getUserActionLog(@RequestParam(value = "userId") String userId,
+                                       @RequestParam(value = "qrcode") String qrcode);
 
-    @PostMapping(value = "/userlog/query")
-    ResultData queryUserLog(@RequestParam(value = "userId") String userId);
 }
