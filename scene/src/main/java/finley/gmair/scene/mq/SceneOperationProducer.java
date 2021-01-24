@@ -2,6 +2,7 @@ package finley.gmair.scene.mq;
 
 import com.maihaoche.starter.mq.annotation.MQProducer;
 import com.maihaoche.starter.mq.base.AbstractMQProducer;
+
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 

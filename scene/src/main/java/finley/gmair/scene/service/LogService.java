@@ -8,5 +8,5 @@ import finley.gmair.util.ResultData;
  **/
 public interface LogService {
 
-    ResultData getUserActionLog(String uid, String qrCode);
+    ResultData getUserActionLog(String uid, String qrCode, int pageIndex, int pageSize);
 }

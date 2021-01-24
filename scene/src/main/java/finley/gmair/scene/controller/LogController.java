@@ -21,7 +21,6 @@ public class LogController {
     @Resource
     LogService logService;
 
-
     /**
      * 获取用户控制设备的日志
      *
@@ -30,7 +29,8 @@ public class LogController {
      * @return 结果
      */
     @GetMapping("/user/action")
-    public ApiResult getUserActionLog(@RequestParam(value = "uid") String uid, @RequestParam(value = "qrcode") String qrCode) {
-        return ResultUtil.success("用户日志获取成功", logService.getUserActionLog(uid, qrCode).getData());
+    public ApiResult getUserActionLog(@RequestParam(value = "uid") String uid,
+                                      @RequestParam(value = "qrcode", required = false) String qrCode, int pageIndex, int pageSize) {
+        return ResultUtil.success("用户日志获取成功", logService.getUserActionLog(uid, qrCode, pageIndex, pageSize).getData());
     }
 }

@@ -39,7 +39,7 @@ public class SceneOperationConsumer extends AbstractMQPushConsumer<SceneOperatio
 
     @Override
     public boolean process(SceneOperationDTO sceneOperationDTO, Map<String, Object> map) {
-        String[] configArr = {"speed", "light", "timing", "temp"};
+        String[] configArr = { "speed", "light", "timing", "temp" };
         // 先根据sequence对指令顺序进行排序
         List<SceneOperationCommand> commands = sceneOperationDTO.getCommands().stream()
                 .sorted(Comparator.comparing(SceneOperationCommand::getSequence)).collect(Collectors.toList());

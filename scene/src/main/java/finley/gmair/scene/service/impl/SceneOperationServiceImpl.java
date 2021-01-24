@@ -48,6 +48,12 @@ public class SceneOperationServiceImpl implements SceneOperationService {
     @Resource
     private SceneOperationProducer sceneOperationProducer;
 
+    @Resource
+    private MachineClient machineClient;
+
+    private final Logger logger = LoggerFactory.getLogger("scene.operation.log");
+
+
     @Override
     public boolean createSceneOperation(SceneOperationDTO sceneOperationDTO) {
         SceneOperationDO sceneOperationDO = new SceneOperationDO();

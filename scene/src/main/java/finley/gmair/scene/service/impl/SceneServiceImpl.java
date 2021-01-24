@@ -12,6 +12,7 @@ import finley.gmair.scene.entity.SceneDO;
 import finley.gmair.scene.service.SceneOperationService;
 import finley.gmair.scene.service.SceneService;
 import finley.gmair.scene.utils.BizException;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -166,13 +167,14 @@ public class SceneServiceImpl implements SceneService {
         for (String qrCode : qrCodes) {
             // 没有批量接口，只能for循环依次获取设备状态
             ResultData data = machineClient.runningStatus(qrCode);
-            JSONObject object = JSON.parseObject(JSON.toJSONString(data.getData()));
-
-            co2 = Math.max(co2, object.getDoubleValue("co2"));
-            humidity = Math.max(humidity, object.getDoubleValue("humidity"));
-            temperature = Math.max(temperature, object.getDoubleValue("temperature"));
-            pm25 = Math.max(pm25, object.getDoubleValue("pm2_5"));
-
+            if (data.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                JSONObject object = JSON.parseObject(JSON.toJSONString(data.getData()));
+                log.info("json data is:{}", JSON.toJSONString(object));
+                co2 = Math.max(co2, object.getDoubleValue("co2"));
+                humidity = Math.max(humidity, object.getDoubleValue("humidity"));
+                temperature = Math.max(temperature, object.getDoubleValue("temperature"));
+                pm25 = Math.max(pm25, object.getDoubleValue("pm2_5"));
+            }
         }
         sceneDTO.setTemperature(temperature);
         sceneDTO.setCo2(co2);

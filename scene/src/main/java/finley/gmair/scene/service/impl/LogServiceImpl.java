@@ -31,9 +31,12 @@ public class LogServiceImpl implements LogService {
      * @return 结果
      */
     @Override
-    public ResultData getUserActionLog(String uid, String qrCode) {
-        ResultData data = logClient.getUserActionLog(uid, qrCode);
-        log.info("LogService | machine com log is: {}", JSON.toJSONString(data));
+    public ResultData getUserActionLog(String uid, String qrCode, int pageIndex, int pageSize) {
+        if (pageIndex == 0 && pageSize == 0) {
+            pageSize = 15;
+        }
+        ResultData data = logClient.getUserActionLog(uid, pageIndex, pageSize);
+        // log.info("LogService | machine com log is: {}", JSON.toJSONString(data));
         if (ObjectUtils.isEmpty(data.getData())) {
             throw new BizException(ErrorCode.USER_ACTION_LOG_ERROR);
         }
