@@ -45,11 +45,12 @@ public class MaintenanceController {
      * 查询v3版本的设备现存告警信息
      *
      * @param qrcode 二维码
+     * @param code   告警码
      * @return 设备告警列表
      */
     @GetMapping(value = "/getAlertList")
-    public ResultData getAlertList(String qrcode) {
-        return maintenanceService.getAlertList(qrcode);
+    public ResultData getAlertList(String qrcode, Integer code) {
+        return maintenanceService.getAlertList(qrcode, code);
     }
 
     /**

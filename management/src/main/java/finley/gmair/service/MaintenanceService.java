@@ -37,10 +37,11 @@ public interface MaintenanceService {
      * 查询v3版本的设备现存告警信息
      *
      * @param qrcode 二维码
+     * @param code   告警码
      * @return 设备告警列表
      */
     @GetMapping("/maintenance/alert/getAlertList")
-    ResultData getAlertList(@RequestParam("qrcode") String qrcode);
+    ResultData getAlertList(@RequestParam("qrcode") String qrcode, @RequestParam("code") Integer code);
 
     /**
      * 消除v3设备的警报

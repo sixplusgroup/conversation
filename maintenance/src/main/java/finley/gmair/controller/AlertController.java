@@ -37,16 +37,17 @@ public class AlertController {
      * 查询v3版本的设备现存告警信息
      *
      * @param qrcode 二维码
+     * @param code   告警码
      * @return 设备告警列表
      */
     @GetMapping(value = "/getAlertList")
-    public ResultData getAlertList(String qrcode) {
+    public ResultData getAlertList(String qrcode, Integer code) {
         if (StringUtils.isEmpty(qrcode)) {
             return ResultData.error("qrcode为空");
         }
 
         // 检查二维码是不是v3版本
-        ResultData boardVersionResponse= machineService.findBoardVersionByQRcode(qrcode);
+        ResultData boardVersionResponse = machineService.findBoardVersionByQRcode(qrcode);
         if (boardVersionResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return ResultData.error("根据二维码查找设备版本失败");
         }
@@ -60,21 +61,21 @@ public class AlertController {
 
         // 1.根据二维码查询机器MAC
         ResultData response = machineService.findMachineIdByCodeValueFacetoConsumer(qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return ResultData.error("根据二维码查找机器MAC失败");
         }
-        MachineQrcodeBindVo machineQrcodeBindVo = JSONArray.parseArray(JSONObject.toJSONString(response.getData()),MachineQrcodeBindVo.class).get(0);
+        MachineQrcodeBindVo machineQrcodeBindVo = JSONArray.parseArray(JSONObject.toJSONString(response.getData()), MachineQrcodeBindVo.class).get(0);
         String machineId = machineQrcodeBindVo.getMachineId();
 
         // 2.根据machineId查询告警信息
-        return mqttService.getExistingAlert(machineId);
+        return mqttService.getExistingAlert(machineId, code);
     }
 
     /**
      * 消除v3设备的警报
      *
      * @param machineId 设备mac
-     * @param code 告警码
+     * @param code      告警码
      * @return 消除操作的结果
      */
     @PostMapping(value = "/removeAlert")

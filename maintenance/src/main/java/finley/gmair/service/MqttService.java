@@ -19,10 +19,11 @@ public interface MqttService {
      * 查询v3版本的设备当前存在的警报列表
      *
      * @param machineId 设备mac
+     * @param code   告警码
      * @return 设备当前存在的警报列表
      */
     @GetMapping("/mqtt/alert/getExistingAlert")
-    ResultData getExistingAlert(@RequestParam("machineId") String machineId);
+    ResultData getExistingAlert(@RequestParam("machineId") String machineId, @RequestParam("code") Integer code);
 
     /**
      * 消除设备告警

@@ -42,8 +42,8 @@ public class MachineController {
     }
 
     @GetMapping(value = "/alert/getExistingAlert")
-    public ResultData getExistingAlert(String machineId) {
-        List<MachineAlert> machineAlertList = machineAlertService.queryMachineAlert(machineId, null, false);
+    public ResultData getExistingAlert(String machineId, Integer code) {
+        List<MachineAlert> machineAlertList = machineAlertService.queryMachineAlert(machineId, code, false);
         if (machineAlertList == null || machineAlertList.size() == 0) {
             return ResultData.empty("No machine alert found");
         } else {
