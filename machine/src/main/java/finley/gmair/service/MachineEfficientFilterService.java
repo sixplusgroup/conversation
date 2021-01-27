@@ -56,8 +56,8 @@ public interface MachineEfficientFilterService {
     ResultData efficientFilterHourlyCheck();
 
     /**
-     * 每小时更新除了GM280和GM420S的其他新风设备的高效滤网的replace_status字段
-     * 更新GM280和GM420S的replace_status字段的方法
+     * 每天更新除了GM280和GM420S的其他新风设备的高效滤网的replace_status字段
+     * 更新GM280和GM420S的replace_status字段的方法：
      * {@link MachineEfficientFilterService#updateByRemain(int, String)}
      * @return 执行结果
      */

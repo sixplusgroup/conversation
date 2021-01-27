@@ -12,8 +12,10 @@ import finley.gmair.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 /**
  * @author ：tsl
@@ -36,9 +38,8 @@ public class TradeServiceImpl implements TradeService {
     }
 
     @Override
-    public List<TbOrderExcel> selectAllTradeExcel() {
-        List<OrderInfo> orderList = orderMapper.selectOrderInfOrderByPayTime();
-
+    public List<TbOrderExcel> selectTradeExcel(Date startDate, Date endDate) {
+        List<OrderInfo> orderList = orderMapper.selectOrderInfOrderByPayTime(startDate, endDate);
         return orderList.stream().map(o -> {
             TbOrderExcel excel = new TbOrderExcel();
             excel.setTradeFrom(TradeFrom.TMALL.getDesc());

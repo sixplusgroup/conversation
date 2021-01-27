@@ -30,8 +30,18 @@ public class MachineFilterInfoServiceImpl implements MachineFilterInfoService {
     }
 
     @Override
+    public long queryMachinePrimaryFilterInfoSize(MachineFilterInfoQuery query) {
+        return machineFilterInfoDao.fetchMachinePrimaryFilterInfoSize(getQueryCondition(query));
+    }
+
+    @Override
     public List<MachineEfficientFilterInfo> queryMachineEfficientFilterInfo(MachineFilterInfoQuery query) {
         return machineFilterInfoDao.fetchMachineEfficientFilterInfo(getQueryCondition(query));
+    }
+
+    @Override
+    public long queryMachineEfficientFilterInfoSize(MachineFilterInfoQuery query) {
+        return machineFilterInfoDao.fetchMachineEfficientFilterInfoSize(getQueryCondition(query));
     }
 
     @Override

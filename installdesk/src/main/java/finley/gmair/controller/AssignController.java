@@ -1422,4 +1422,43 @@ public class AssignController {
         result.setDescription("换机任务完成");
         return result;
     }
+
+    /**
+     * 查看选中工人所有订单情况 可按时间筛选，可按订单状态分类
+     */
+    @GetMapping("/order")
+    public ResultData overviewNow(String memberId, String assignStatus,String duration, Integer curPage, Integer length) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供安装工人的信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("memberId", memberId);
+        //assignStatus:TODOASSIGN(0)待分派, ASSIGNED(1)已分派, PROCESSING(2)处理中, FINISHED(3)已完成, CLOSED(4)已关闭, EVALUATED(5)已评价, RECEIVED(6)已签收（待安装）;
+        if (!StringUtils.isEmpty(assignStatus)) {
+            condition.put("assignStatus", assignStatus);
+        }
+        //duration:lastWeek 近7天,thisMonth 本月,thisYear 本年;
+        if(duration!=null){
+            condition.put("duration", duration);
+        }
+        int start = (curPage - 1) * length;
+        ResultData response = assignService.principal(condition, start, length);
+        result.setDescription("查询成功");
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询失败，请稍后尝试");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("没有符合条件的订单，请稍后尝试");
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
 }

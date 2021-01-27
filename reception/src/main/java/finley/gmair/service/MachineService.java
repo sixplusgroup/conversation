@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -191,13 +190,4 @@ public interface MachineService {
 
     @GetMapping("/machine/text")
     ResultData getText(@RequestParam("textType") String textType);
-
-    @PostMapping("/machine/filter/info/query")
-    ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query);
-
-    @GetMapping("/machine/filter/info/modelName")
-    ResultData queryMachineModelName();
-
-    @GetMapping("/machine/filter/info/modelCode")
-    ResultData queryMachineModelCode(@RequestParam("modelName") String modelName);
 }
