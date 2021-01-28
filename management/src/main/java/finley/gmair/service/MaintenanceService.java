@@ -58,10 +58,13 @@ public interface MaintenanceService {
      *
      * @param consumerId 用户电话
      * @param qrcode     设备二维码
+     * @param pageIndex    第几页
+     * @param pageSize     页大小
      * @return 用户设备操作历史
      */
     @GetMapping("/maintenance/history/getOperationHistory")
-    ResultData getOperationHistory(@RequestParam("consumerId") String consumerId, @RequestParam("qrcode") String qrcode);
+    ResultData getOperationHistory(@RequestParam("consumerId") String consumerId, @RequestParam("qrcode") String qrcode,
+                                   @RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize);
 
     /**
      * 刷新设备状态

@@ -70,11 +70,13 @@ public class MaintenanceController {
      *
      * @param consumerId 用户电话
      * @param qrcode     设备二维码
+     * @param pageIndex    第几页
+     * @param pageSize     页大小
      * @return 用户设备操作历史
      */
     @GetMapping(value = "/getOperationHistory")
-    public ResultData getOperationHistory(String consumerId, String qrcode) {
-        return maintenanceService.getOperationHistory(consumerId, qrcode);
+    public ResultData getOperationHistory(String consumerId, String qrcode, Integer pageIndex, Integer pageSize) {
+        return maintenanceService.getOperationHistory(consumerId, qrcode, pageIndex, pageSize);
     }
 
     /**

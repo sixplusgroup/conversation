@@ -27,18 +27,26 @@ public class HistoryController {
      *
      * @param consumerId 用户电话
      * @param qrcode     设备二维码
+     * @param pageIndex    第几页
+     * @param pageSize     页大小
      * @return 用户设备操作历史
      */
     @GetMapping(value = "/getOperationHistory")
-    public ResultData getOperationHistory(String consumerId, String qrcode) {
+    public ResultData getOperationHistory(String consumerId, String qrcode, Integer pageIndex, Integer pageSize) {
         if (StringUtils.isEmpty(consumerId)) {
             return ResultData.error("consumerId为空");
         }
         if (StringUtils.isEmpty(qrcode)) {
             return ResultData.error("qrcode为空");
         }
+        if (pageIndex == null || pageIndex < 0) {
+            return ResultData.error("pageIndex为非法");
+        }
+        if (pageSize == null || pageSize < 0) {
+            return ResultData.error("pageSize为非法");
+        }
 
-        return logService.getUserActionLog(consumerId, qrcode);
+        return logService.getUserActionLog(consumerId, qrcode, pageIndex, pageSize);
     }
 
 }

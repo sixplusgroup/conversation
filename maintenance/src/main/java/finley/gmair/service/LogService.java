@@ -19,9 +19,12 @@ public interface LogService {
      *
      * @param userId       用户id
      * @param machineValue 二维码
+     * @param pageIndex    第几页
+     * @param pageSize     页大小
      * @return 用户操作设备的历史记录
      */
     @PostMapping("/log/useraction/query")
-    ResultData getUserActionLog(@RequestParam("userId") String userId, @RequestParam("machineValue") String machineValue);
+    ResultData getUserActionLog(@RequestParam("userId") String userId, @RequestParam("machineValue") String machineValue,
+                                @RequestParam("pageIndex") int pageIndex, @RequestParam("pageSize") int pageSize);
 
 }
