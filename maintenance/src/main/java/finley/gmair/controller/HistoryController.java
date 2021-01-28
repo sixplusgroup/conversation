@@ -1,6 +1,9 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.log.UserMachineOperationLog;
+import finley.gmair.model.maintenance.UserActionHistoryDTO;
 import finley.gmair.service.LogService;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 用户操作历史的交互接口
@@ -46,7 +50,32 @@ public class HistoryController {
             return ResultData.error("pageSize为非法");
         }
 
-        return logService.getUserActionLog(consumerId, qrcode, pageIndex, pageSize);
+        ResultData result = new ResultData();
+
+        ResultData response = logService.getUserActionLog(consumerId, qrcode, pageIndex, pageSize);
+
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            UserActionHistoryDTO userActionHistoryDTO = new UserActionHistoryDTO();
+            List<UserMachineOperationLog> actions = (List<UserMachineOperationLog>) response.getData();
+            userActionHistoryDTO.setHistory(actions);
+
+            ResultData totalResponse = logService.getUserActionLog(consumerId, qrcode, 1, Integer.MAX_VALUE);
+            if (totalResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                List<UserMachineOperationLog> totalActions = (List<UserMachineOperationLog>) totalResponse.getData();
+                userActionHistoryDTO.setTotal(totalActions.size());
+
+                result.setData(userActionHistoryDTO);
+            } else {
+                result.setResponseCode(totalResponse.getResponseCode());
+                result.setDescription(totalResponse.getDescription());
+                return result;
+            }
+        }
+
+        result.setResponseCode(response.getResponseCode());
+        result.setDescription(response.getDescription());
+
+        return result;
     }
 
 }
