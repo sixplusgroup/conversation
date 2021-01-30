@@ -5,29 +5,26 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * modelId对应的耗材信息
+ * @author zm
+ * @description 机器型号-滤网购买链接
+ * @date 2020/12/23 14:33
  */
 @Data
-public class MapModelMaterial {
+public class MapModelFilter {
     /**
      * 主键id
      */
-    private Integer mmmId;
+    private String mmmId;
 
     /**
-     * 设备型号
+     * 机器型号ID
      */
     private String modelId;
 
     /**
-     * 耗材名称
+     * 滤网主键ID
      */
-    private String materialName;
-
-    /**
-     * 耗材购买链接
-     */
-    private String materialLink;
+    private String filterId;
 
     /**
      * 数据行创建时间

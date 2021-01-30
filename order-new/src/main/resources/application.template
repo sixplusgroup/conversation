@@ -25,6 +25,8 @@ crm.url=http://gmair.net/crm/billapi
 crm.url.update=http://gmair.net/crm/billapi/update
 # crm系统新增订单接口
 crm.url.add=http://d.net/crm/billapi/add
+# crm系统渠道来源（天猫接口测试：61，天猫接口同步：58）
+crm.qdly.tmall=61
 
 # 上传的单个文件大小限制
 spring.http.multipart.maxFileSize=10MB

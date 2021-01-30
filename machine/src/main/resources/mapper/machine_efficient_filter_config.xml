@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.machine_efficient_filter_config">
+    <resultMap id="MachineEfficientFilterConfig" type="finley.gmair.model.machine.MachineEfficientFilterConfig">
+        <result property="configId" column="config_id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="tRun" column="t_run"/>
+        <result property="totalTime" column="total_time"/>
+        <result property="paramOne" column="param_one"/>
+        <result property="paramTwo" column="param_two"/>
+        <result property="firstRemindThreshold" column="first_remind_threshold"/>
+        <result property="secondRemindThreshold" column="second_remind_threshold"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="FilterUpdByFormulaConfig" type="finley.gmair.vo.machine.FilterUpdByFormulaConfig">
+        <result property="configId" column="config_id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="modelName" column="model_name"/>
+        <result property="modelCode" column="model_code"/>
+        <result property="tRun" column="t_run"/>
+        <result property="totalTime" column="total_time"/>
+        <result property="paramOne" column="param_one"/>
+        <result property="paramTwo" column="param_two"/>
+        <result property="firstRemindThreshold" column="first_remind_threshold"/>
+        <result property="secondRemindThreshold" column="second_remind_threshold"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.machine.MachineEfficientFilterConfig" useGeneratedKeys="false">
+        INSERT INTO gmair_machine.machine_efficient_filter_config
+        (config_id, model_id, t_run, total_time, param_one, param_two,
+        first_remind_threshold, second_remind_threshold, block_flag, create_time)
+        VALUES (#{configId}, #{modelId}, #{tRun}, #{totalTime},  #{paramOne}, #{paramTwo},
+        #{firstRemindThreshold}, #{secondRemindThreshold}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <select id="queryByModelId" parameterType="java.util.Map" resultMap="MachineEfficientFilterConfig">
+        SELECT config_id, model_id, t_run, total_time, param_one, param_two,
+        first_remind_threshold, second_remind_threshold,
+        block_flag, create_time
+        FROM gmair_machine.machine_efficient_filter_config
+        WHERE 1 = 1
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+        <if test="modelId!= null">
+            AND model_id = #{modelId}
+        </if>
+    </select>
+
+    <select id="queryConfigList" resultMap="FilterUpdByFormulaConfig">
+        SELECT c.config_id, c.model_id, m.model_name, m.model_code, c.t_run, c.total_time,
+        c.param_one, c.param_two, c.first_remind_threshold, c.second_remind_threshold
+        FROM gmair_machine.machine_efficient_filter_config c inner join gmair_machine.goods_model m
+        on c.model_id = m.model_id
+        WHERE c.block_flag = 0 AND m.block_flag = 0;
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE gmair_machine.machine_efficient_filter_config
+        <set>
+            <if test="totalTime != null">
+                total_time = #{totalTime},
+            </if>
+            <if test="paramOne != null">
+                param_one = #{paramOne},
+            </if>
+            <if test="paramTwo != null">
+                param_two = #{paramTwo},
+            </if>
+            <if test="firstRemindThreshold != null">
+                first_remind_threshold = #{firstRemindThreshold},
+            </if>
+            <if test="secondRemindThreshold != null">
+                second_remind_threshold = #{secondRemindThreshold},
+            </if>
+            model_id = #{modelId}
+        </set>
+        WHERE model_id = #{modelId} AND t_run = #{tRun}
+    </update>
+</mapper>

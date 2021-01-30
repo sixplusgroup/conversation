@@ -211,93 +211,101 @@ public class MachinePartialStatusController {
     }
 
 
+    /**
+     * @return
+     * @Deprecated 本方法已弃用
+     */
     //每日12点调用,根据mysql中的数据来点亮滤网警戒灯.
     @PostMapping("/screen/on/daily")
     public ResultData turnOnScreenDaily() {
         ResultData result = new ResultData();
-        new Thread(() -> {
-            //找出需要被点亮的警戒灯对应的机器列表
-            ResultData response = probeScreenShouldOn();
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                //点亮这些灯
-                List<OutPm25Daily> opds = (List<OutPm25Daily>) response.getData();
-                for (OutPm25Daily opd : opds) {
-                    String machineId = opd.getMachineId();
-                    try {
-                        if (coreV2Service.isOnline(machineId).getResponseCode() == ResponseCode.RESPONSE_OK) {
-                            Map<String, Object> condition = new HashMap<>();
-                            condition.put("machineId", machineId);
-                            condition.put("blockFlag", false);
-                            response = filterLightService.fetch(condition);
-                            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                condition.put("lightStatus", true);
-                                condition.put("createAt", new Timestamp(System.currentTimeMillis()));
-                                filterLightService.update(condition);
-                            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                                filterLightService.create(new FilterLight(machineId, true));
-                            }
-                            coreV2Service.configScreen(machineId, 1);
-                        }
-                        Thread.sleep(50);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
+//        new Thread(() -> {
+//            //找出需要被点亮的警戒灯对应的机器列表
+//            ResultData response = probeScreenShouldOn();
+//            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                //点亮这些灯
+//                List<OutPm25Daily> opds = (List<OutPm25Daily>) response.getData();
+//                for (OutPm25Daily opd : opds) {
+//                    String machineId = opd.getMachineId();
+//                    try {
+//                        if (coreV2Service.isOnline(machineId).getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                            Map<String, Object> condition = new HashMap<>();
+//                            condition.put("machineId", machineId);
+//                            condition.put("blockFlag", false);
+//                            response = filterLightService.fetch(condition);
+//                            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                                condition.put("lightStatus", true);
+//                                condition.put("createAt", new Timestamp(System.currentTimeMillis()));
+//                                filterLightService.update(condition);
+//                            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+//                                filterLightService.create(new FilterLight(machineId, true));
+//                            }
+//                            coreV2Service.configScreen(machineId, 1);
+//                        }
+//                        Thread.sleep(50);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }).start();
         return result;
     }
 
+    /**
+     * @return
+     * @Deprecated 已弃用
+     */
     //每小时调用,根据mysql中的数据来关闭滤网灯.
     @PostMapping("/screen/off/hourly")
     public ResultData turnOffScreenHourly() {
         ResultData result = new ResultData();
-        new Thread(() -> {
-            //获取pm25上限
-            ResultData response = filterLimitConfigService.fetch(new HashMap<>());
-            int overPm25Limit = 25;
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                overPm25Limit = ((List<FilterLimitConfig>) response.getData()).get(0).getOverPm25Limit();
-            }
-
-            //获取前一个小时的所有机器滤网pm2.5数据
-            long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
-            long currentHour = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
-            Map<String, Object> condition = new HashMap<>();
-            condition.put("blockFalse", false);
-            condition.put("lastHour", new Timestamp(lastHour));
-            condition.put("currentHour", new Timestamp(currentHour));
-            response = outPm25HourlyService.fetch(condition);
-
-            //关灯
-            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                List<OutPm25Hourly> ophs = (List<OutPm25Hourly>) response.getData();
-                for (OutPm25Hourly oph : ophs) {
-                    String machineId = oph.getMachineId();
-                    if (oph.getPm2_5() >= overPm25Limit)
-                        continue;
-                    try {
-                        if (coreV2Service.isOnline(machineId).getResponseCode() == ResponseCode.RESPONSE_OK) {
-                            condition.clear();
-                            condition.put("machineId", machineId);
-                            condition.put("blockFlag", false);
-                            response = filterLightService.fetch(condition);
-                            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                                condition.put("lightStatus", false);
-                                condition.put("createAt", new Timestamp(System.currentTimeMillis()));
-                                filterLightService.update(condition);
-                            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-                                filterLightService.create(new FilterLight(machineId, false));
-                            }
-                            coreV2Service.configScreen(machineId, 0);
-                        }
-                        Thread.sleep(50);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
+//        new Thread(() -> {
+//            //获取pm25上限
+//            ResultData response = filterLimitConfigService.fetch(new HashMap<>());
+//            int overPm25Limit = 25;
+//            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                overPm25Limit = ((List<FilterLimitConfig>) response.getData()).get(0).getOverPm25Limit();
+//            }
+//
+//            //获取前一个小时的所有机器滤网pm2.5数据
+//            long lastHour = (System.currentTimeMillis() - 1000 * 60 * 60) / (1000 * 60 * 60) * (1000 * 60 * 60);
+//            long currentHour = (System.currentTimeMillis() / (1000 * 60 * 60) * (1000 * 60 * 60));
+//            Map<String, Object> condition = new HashMap<>();
+//            condition.put("blockFalse", false);
+//            condition.put("lastHour", new Timestamp(lastHour));
+//            condition.put("currentHour", new Timestamp(currentHour));
+//            response = outPm25HourlyService.fetch(condition);
+//
+//            //关灯
+//            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                List<OutPm25Hourly> ophs = (List<OutPm25Hourly>) response.getData();
+//                for (OutPm25Hourly oph : ophs) {
+//                    String machineId = oph.getMachineId();
+//                    if (oph.getPm2_5() >= overPm25Limit)
+//                        continue;
+//                    try {
+//                        if (coreV2Service.isOnline(machineId).getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                            condition.clear();
+//                            condition.put("machineId", machineId);
+//                            condition.put("blockFlag", false);
+//                            response = filterLightService.fetch(condition);
+//                            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+//                                condition.put("lightStatus", false);
+//                                condition.put("createAt", new Timestamp(System.currentTimeMillis()));
+//                                filterLightService.update(condition);
+//                            } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+//                                filterLightService.create(new FilterLight(machineId, false));
+//                            }
+//                            coreV2Service.configScreen(machineId, 0);
+//                        }
+//                        Thread.sleep(50);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }).start();
         return result;
     }
 }

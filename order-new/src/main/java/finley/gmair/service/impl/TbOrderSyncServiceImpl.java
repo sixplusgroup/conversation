@@ -48,6 +48,8 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
 
     private static final int RETRY_TIMES = 3;
 
+    private static final long MAX_TIME_INTERVAL = 24 * 60 * 60 * 1000L;
+
     private Logger logger = LoggerFactory.getLogger(TbOrderSyncServiceImpl.class);
 
     @Autowired
@@ -182,6 +184,10 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
     }
 
     private ImportResult importByCreatedByPage(Date startCreated, Date endCreated, String sessionKey) {
+        if (endCreated.getTime() - startCreated.getTime() > MAX_TIME_INTERVAL) {
+            logger.error("importByCreatedByPage fail, timeInterval exceed 24 hour, start:{}, end{}", startCreated, endCreated);
+            return new ImportResult(0, 0, 0, 0, 0);
+        }
         int batchRequestNum = 0, batchRequestSuccessNum = 0, tradeNum = 0, tradeInfoGetSuccessNum = 0, tradeHandleSuccessNum = 0;
 
         TradesSoldGetRequest request = new TradesSoldGetRequest();
@@ -204,7 +210,8 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             }
             if (!response.isSuccess()) {
                 logger.error("failed to get response, response:{}", JSON.toJSONString(response));
-                continue;
+                //如果分页请求失败，则不继续执行后面的分页
+                break;
             }
             batchRequestSuccessNum++;
             if (!CollectionUtils.isEmpty(response.getTrades())) {
@@ -234,6 +241,10 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
     }
 
     private ImportResult importByModifiedByPage(Date startSyncTime, Date startModified, Date endModified, String sessionKey) {
+        if (endModified.getTime() - startModified.getTime() > MAX_TIME_INTERVAL) {
+            logger.error("importByModifiedByPage fail, timeInterval exceed 24 hour, start:{}, end{}", startModified, endModified);
+            return new ImportResult(0, 0, 0, 0, 0);
+        }
         int batchRequestNum = 0, batchRequestSuccessNum = 0, tradeNum = 0, tradeInfoGetSuccessNum = 0, tradeHandleSuccessNum = 0;
 
         TradesSoldIncrementGetRequest request = new TradesSoldIncrementGetRequest();
@@ -257,7 +268,8 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             }
             if (!response.isSuccess()) {
                 logger.error("failed to get response, response:{}", JSON.toJSONString(response));
-                continue;
+                //如果分页请求失败，则不继续执行后面的分页
+                break;
             }
             batchRequestSuccessNum++;
             if (!CollectionUtils.isEmpty(response.getTrades())) {

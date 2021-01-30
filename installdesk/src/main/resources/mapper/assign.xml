@@ -187,6 +187,21 @@
         <if test='sortType == "FINISH"'>
             ORDER BY assign_date desc
         </if>
+        <if test="duration =='lastWeek' ">
+            <![CDATA[
+                AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(create_time)
+			]]>
+        </if>
+        <if test="duration =='thisMonth' ">
+            <![CDATA[
+                AND DATE_FORMAT(create_time, '%Y%m')= DATE_FORMAT(CURDATE(), '%Y%m')
+			]]>
+        </if>
+        <if test="duration =='thisYear' ">
+            <![CDATA[
+                AND YEAR(create_time)=YEAR(NOW())
+			]]>
+        </if>
         <if test='start != null and length != null'>
             LIMIT #{start},#{length}
         </if>
@@ -236,6 +251,21 @@
         </if>
         <if test="blockFlag != null">
             AND block_flag = #{blockFlag}
+        </if>
+        <if test="duration =='lastWeek' ">
+            <![CDATA[
+                AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(create_time)
+			]]>
+        </if>
+        <if test="duration =='thisMonth' ">
+            <![CDATA[
+                AND DATE_FORMAT(create_time, '%Y%m')= DATE_FORMAT(CURDATE(), '%Y%m')
+			]]>
+        </if>
+        <if test="duration =='thisYear' ">
+            <![CDATA[
+                AND YEAR(create_time)=YEAR(NOW())
+			]]>
         </if>
     </select>
 

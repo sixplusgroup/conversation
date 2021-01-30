@@ -2,18 +2,25 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.AdminDao;
 import finley.gmair.dao.BaseDao;
+import finley.gmair.form.admin.AdminPartInfoQuery;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.admin.AdminPartInfoVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Repository
 public class AdminDaoImpl extends BaseDao implements AdminDao {
+
+    private Logger logger = LoggerFactory.getLogger(AdminDaoImpl.class);
 
     @Override
     @Transactional
@@ -44,6 +51,26 @@ public class AdminDaoImpl extends BaseDao implements AdminDao {
             result.setDescription(e.getMessage());
         }
         return result;
+    }
+
+    @Override
+    public List<AdminPartInfoVo> queryAdminAccounts(AdminPartInfoQuery query) {
+        try {
+            return sqlSession.selectList("gmair.admin.query_admin_accounts", query);
+        } catch (Exception e) {
+            logger.error("query admin accounts failed: " + e.getMessage());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public long queryAdminAccountsSize(AdminPartInfoQuery query) {
+        try {
+            return sqlSession.selectOne("gmair.admin.query_admin_accounts_size", query);
+        } catch (Exception e) {
+            logger.error("query admin accounts size failed: " + e.getMessage());
+        }
+        return 0;
     }
 
     @Override

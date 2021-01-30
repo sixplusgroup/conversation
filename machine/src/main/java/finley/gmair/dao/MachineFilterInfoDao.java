@@ -15,7 +15,11 @@ public interface MachineFilterInfoDao {
 
     List<MachinePrimaryFilterInfo> fetchMachinePrimaryFilterInfo(Map<String, Object> condition);
 
+    long fetchMachinePrimaryFilterInfoSize(Map<String, Object> condition);
+
     List<MachineEfficientFilterInfo> fetchMachineEfficientFilterInfo(Map<String, Object> condition);
+
+    long fetchMachineEfficientFilterInfoSize(Map<String, Object> condition);
 
     List<String> fetchMachineModelName();
 

@@ -7,6 +7,8 @@ import finley.gmair.model.air.CityAqiFull;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.air.CityAirPm25Vo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.Map;
 
 @Repository
 public class CityAirQualityDaoImpl extends BaseDao implements CityAirQualityDao {
+    private Logger logger = LoggerFactory.getLogger(CityAirQualityDaoImpl.class);
 
     @Override
     public ResultData insert(CityAirQuality airQuality) {
@@ -52,7 +55,7 @@ public class CityAirQualityDaoImpl extends BaseDao implements CityAirQualityDao 
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
-            e.printStackTrace();
+            logger.error("city air quality batch insertion error " + e.getMessage());
         }
         return result;
     }
