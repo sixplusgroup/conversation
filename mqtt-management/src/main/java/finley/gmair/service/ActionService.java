@@ -33,12 +33,12 @@ public interface ActionService {
     Action queryOneWithoutAttribute(String actionId);
 
     /**
-     * 查询不包含其属性的行为信息
+     * 模糊查询，查询不包含其属性的行为信息
      *
      * @param name 行为标识名称的英文字符串
      * @return 行为列表
      */
-    List<Action> queryActionsWithoutAttribute(String name);
+    List<Action> queryActionsWithoutAttributeByName(String name);
 
     /**
      * 新增行为与属性的对应关系

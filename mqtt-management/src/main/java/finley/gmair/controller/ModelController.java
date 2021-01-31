@@ -56,17 +56,17 @@ public class ModelController {
     }
 
     /**
-     * 查询不包含其行为的型号信息
+     * 模糊查询，查询不包含其行为的型号信息
      *
      * @param name 型号标识名称的英文字符串
      * @return 型号列表
-     * @throws MqttBusinessException 异常
      */
-    @GetMapping(value = "/queryModels")
-    public ResultData queryModels(String name) throws MqttBusinessException {
-        VerifyUtil.verify(StringUtils.isNotEmpty(name.trim()), "型号标示名称为空");
-
-        return ResultData.ok(modelService.queryModelsWithoutAction(name.trim()));
+    @GetMapping(value = "/queryModelsByName")
+    public ResultData queryModelsByName(String name) {
+        if (StringUtils.isEmpty(name.trim())) {
+            name = "";
+        }
+        return ResultData.ok(modelService.queryModelsWithoutActionByName(name.trim()));
     }
 
     /**

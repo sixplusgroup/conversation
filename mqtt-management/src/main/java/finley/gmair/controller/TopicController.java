@@ -65,4 +65,19 @@ public class TopicController {
         return ResultData.ok(topicService.queryTopics(null, null, null));
     }
 
+    /**
+     * 模糊查询，查询主题列表
+     *
+     * @param topicDetail 主题格式
+     * @return 主题列表
+     */
+    @GetMapping ("/getTopicByDetail")
+    public ResultData getTopicByDetail(String topicDetail) {
+        if (StringUtils.isEmpty(topicDetail.trim())) {
+            topicDetail = "";
+        }
+        return ResultData.ok(topicService.queryTopicsByDetail(topicDetail.trim()));
+    }
+
+
 }

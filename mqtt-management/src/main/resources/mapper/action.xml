@@ -61,6 +61,14 @@
         order by create_time desc
     </select>
 
+    <select id="queryActionsWithoutAttributeByName" resultMap="actionMap" parameterType="java.lang.String">
+        select action_id, name, description, block_flag, create_time
+        from gmair_mqtt_management.action
+        where
+        name like CONCAT('%',#{name},'%')
+        order by create_time desc
+    </select>
+
     <insert id="insertActionAttributeRelation" keyProperty="action_attribute_id" useGeneratedKeys="true">
         insert into gmair_mqtt_management.action_attribute_relate(action_id, attribute_id)
         values(#{actionId}, #{attributeId})

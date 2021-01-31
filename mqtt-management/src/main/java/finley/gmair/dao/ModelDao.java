@@ -48,6 +48,14 @@ public interface ModelDao {
     List<Model> queryModelsWithoutAction(Model model);
 
     /**
+     * 模糊查询，查询不包含其行为的型号信息
+     *
+     * @param name 型号标识名称的英文字符串
+     * @return 型号列表
+     */
+    List<Model> queryModelsWithoutActionByName(String name);
+
+    /**
      * 新增型号与行为的对应关系
      *
      * @param modelId 型号id

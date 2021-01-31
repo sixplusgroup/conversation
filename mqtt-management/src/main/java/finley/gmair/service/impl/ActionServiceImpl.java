@@ -73,16 +73,14 @@ public class ActionServiceImpl implements ActionService {
     }
 
     /**
-     * 查询不包含其属性的行为信息
+     * 模糊查询，查询不包含其属性的行为信息
      *
      * @param name 行为标识名称的英文字符串
      * @return 行为列表
      */
     @Override
-    public List<Action> queryActionsWithoutAttribute(String name) {
-        Action queryAction = new Action();
-        queryAction.setName(name);
-        return actionDao.queryActionsWithoutAttribute(queryAction);
+    public List<Action> queryActionsWithoutAttributeByName(String name) {
+        return actionDao.queryActionsWithoutAttributeByName(name);
     }
 
     /**

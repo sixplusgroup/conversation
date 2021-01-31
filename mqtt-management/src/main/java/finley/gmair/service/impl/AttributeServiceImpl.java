@@ -71,16 +71,14 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     /**
-     * 查询属性信息
+     * 模糊查询属性信息
      *
-     * @param name 属性描述
+     * @param name 属性标示名称英文字符串
      * @return 属性列表
      */
     @Override
-    public List<Attribute> queryAttributes(String name) {
-        Attribute queryAttribute = new Attribute();
-        queryAttribute.setName(name);
-        return attributeDao.queryAttributes(queryAttribute);
+    public List<Attribute> queryAttributesByName(String name) {
+        return attributeDao.queryAttributesByName(name);
     }
 
     /**

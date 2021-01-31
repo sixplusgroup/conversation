@@ -48,6 +48,14 @@ public interface ActionDao {
     List<Action> queryActionsWithoutAttribute(Action action);
 
     /**
+     * 模糊查询，查询不包含其属性的行为信息
+     *
+     * @param name 行为的查询条件
+     * @return 行为列表
+     */
+    List<Action> queryActionsWithoutAttributeByName(String name);
+
+    /**
      * 新增行为与属性的对应关系
      *
      * @param actionId    行为id

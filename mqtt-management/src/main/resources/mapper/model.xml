@@ -60,6 +60,14 @@
         order by create_time desc
     </select>
 
+    <select id="queryModelsWithoutActionByName" resultMap="modelMap" parameterType="java.lang.String">
+        select model_id, name, description, block_flag, create_time
+        from gmair_mqtt_management.model
+        where
+        name like CONCAT('%',#{name},'%')
+        order by create_time desc
+    </select>
+
     <insert id="insertModelActionRelation" keyProperty="model_action_id" useGeneratedKeys="true">
         insert into gmair_mqtt_management.model_action_relate(model_id, action_id)
         values(#{modelId}, #{actionId})

@@ -56,17 +56,17 @@ public class ActionController {
     }
 
     /**
-     * 查询不包含其属性的行为信息
+     * 模糊查询，查询不包含其属性的行为信息
      *
      * @param name 行为标识名称的英文字符串
      * @return 行为列表
-     * @throws MqttBusinessException 异常
      */
-    @GetMapping(value = "/queryActions")
-    public  ResultData queryActions(String name) throws MqttBusinessException {
-        VerifyUtil.verify(StringUtils.isNotEmpty(name.trim()), "行为名称为空");
-
-        return ResultData.ok(actionService.queryActionsWithoutAttribute(name.trim()));
+    @GetMapping(value = "/queryActionsByName")
+    public  ResultData queryActionsByName(String name) {
+        if (StringUtils.isEmpty(name.trim())) {
+            name = "";
+        }
+        return ResultData.ok(actionService.queryActionsWithoutAttributeByName(name.trim()));
     }
 
     /**

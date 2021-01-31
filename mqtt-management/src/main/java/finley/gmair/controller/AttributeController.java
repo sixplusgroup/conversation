@@ -55,17 +55,18 @@ public class AttributeController {
     }
 
     /**
-     * 查询属性信息
+     * 模糊查询，查询属性信息
      *
-     * @param name 属性描述
+     * @param name 名称
      * @return 属性列表
-     * @throws MqttBusinessException 异常
      */
-    @GetMapping(value = "/queryAttributes")
-    public ResultData queryAttributes(String name) throws MqttBusinessException {
-        VerifyUtil.verify(StringUtils.isNotEmpty(name.trim()), "属性名称为空");
+    @GetMapping(value = "/queryAttributesByName")
+    public ResultData queryAttributesByName(String name) {
+        if (StringUtils.isEmpty(name.trim())) {
+            name = "";
+        }
 
-        return ResultData.ok(attributeService.queryAttributes(name.trim()));
+        return ResultData.ok(attributeService.queryAttributesByName(name.trim()));
     }
 
     /**

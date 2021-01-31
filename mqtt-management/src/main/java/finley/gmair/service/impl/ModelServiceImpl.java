@@ -76,16 +76,14 @@ public class ModelServiceImpl implements ModelService {
     }
 
     /**
-     * 查询不包含其行为的型号信息
+     * 模糊查询，查询不包含其行为的型号信息
      *
      * @param name 型号标识名称的英文字符串
      * @return 型号列表
      */
     @Override
-    public List<Model> queryModelsWithoutAction(String name) {
-        Model queryModel = new Model();
-        queryModel.setName(name);
-        return modelDao.queryModelsWithoutAction(queryModel);
+    public List<Model> queryModelsWithoutActionByName(String name) {
+        return modelDao.queryModelsWithoutActionByName(name);
     }
 
     /**

@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * @ClassName: RepositoryController
- * @Description: TODO
- * @Author fan
- * @Date 2019/6/13 11:30 AM
+ * @author fan
+ * @date 2019/6/13 11:30 AM
  */
 @RestController
 @RequestMapping("/core/repo")

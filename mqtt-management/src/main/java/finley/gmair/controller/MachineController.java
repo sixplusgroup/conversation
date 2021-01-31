@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
+/**
+ * 设备警报处理
+ *
+ * @author lycheeshell
+ */
 @RestController
 @RequestMapping("/mqtt")
 public class MachineController {

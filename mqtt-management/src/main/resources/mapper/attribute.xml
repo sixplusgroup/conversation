@@ -57,6 +57,14 @@
         order by create_time desc
     </select>
 
+    <select id="queryAttributesByName" resultMap="attributeMap" parameterType="java.lang.String">
+        select attribute_id, name, description, required, block_flag, create_time
+        from gmair_mqtt_management.attribute
+        where
+        name like CONCAT('%',#{name},'%')
+        order by create_time desc
+    </select>
+
     <select id="queryAttributesByAction" resultMap="attributeMap" parameterType="java.lang.String">
         select
         a.attribute_id, a.name, a.description, a.required, a.block_flag, a.create_time

@@ -47,6 +47,14 @@ public interface AttributeDao {
     List<Attribute> queryAttributes(Attribute attribute);
 
     /**
+     * 模糊查询属性信息
+     *
+     * @param name 属性标示名称英文字符串
+     * @return 属性列表
+     */
+    List<Attribute> queryAttributesByName(String name);
+
+    /**
      * 根据行为id查询该行为所有的属性
      *
      * @param actionId 行为id

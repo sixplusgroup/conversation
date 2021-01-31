@@ -51,4 +51,12 @@ public interface TopicService {
      */
     List<Topic> queryTopics(String topicId, String topicDetail, String topicDescription);
 
+    /**
+     * 模糊查询, 查询主题列表
+     *
+     * @param topicDetail 主题格式
+     * @return 主题列表
+     */
+    List<Topic> queryTopicsByDetail(String topicDetail);
+
 }
