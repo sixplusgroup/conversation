@@ -62,4 +62,19 @@ public interface AttributeDao {
      */
     List<Attribute> queryAttributesByAction(String actionId);
 
+    /**
+     * 获得该属性与行为绑定的数量
+     *
+     * @param attributeId 属性id
+     * @return 该属性与行为绑定的数量
+     */
+    int getAttributeUsedNumber(String attributeId);
+
+    /**
+     * 删除属性
+     *
+     * @param attributeId 属性id
+     * @return 删除行数
+     */
+    int deleteAttribute(String attributeId);
 }

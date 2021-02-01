@@ -1,7 +1,6 @@
 package finley.gmair.service;
 
 import finley.gmair.exception.MqttBusinessException;
-import finley.gmair.model.mqttManagement.Action;
 import finley.gmair.model.mqttManagement.Attribute;
 
 import java.util.List;
@@ -49,4 +48,12 @@ public interface AttributeService {
      */
     List<Attribute> queryAttributesByAction(String actionId);
 
+    /**
+     * 删除属性
+     *
+     * @param attributeId 属性id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    int deleteAttribute(String attributeId) throws MqttBusinessException;
 }

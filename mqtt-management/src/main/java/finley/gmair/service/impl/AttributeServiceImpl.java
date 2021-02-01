@@ -91,4 +91,23 @@ public class AttributeServiceImpl implements AttributeService {
     public List<Attribute> queryAttributesByAction(String actionId) {
         return attributeDao.queryAttributesByAction(actionId);
     }
+
+    /**
+     * 删除属性
+     *
+     * @param attributeId 属性id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    @Override
+    public int deleteAttribute(String attributeId) throws MqttBusinessException {
+
+        int usedNum = attributeDao.getAttributeUsedNumber(attributeId);
+
+        if (usedNum == 0) {
+            return attributeDao.deleteAttribute(attributeId);
+        } else {
+            throw new MqttBusinessException("该属性已被使用，无法删除");
+        }
+    }
 }

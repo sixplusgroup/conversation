@@ -70,6 +70,20 @@ public class AttributeController {
     }
 
     /**
+     * 删除属性
+     *
+     * @param attributeId 属性id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    @PostMapping(value = "/delete")
+    public ResultData deleteAttribute(String attributeId) throws MqttBusinessException {
+        VerifyUtil.verify(StringUtils.isNotEmpty(attributeId), "属性id为空");
+
+        return ResultData.ok(attributeService.deleteAttribute(attributeId));
+    }
+
+    /**
      * 根据行为id查询该行为所有的属性
      *
      * @param actionId 行为id

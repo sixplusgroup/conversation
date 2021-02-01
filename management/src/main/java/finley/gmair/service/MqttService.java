@@ -36,6 +36,15 @@ public interface MqttService {
     ResultData saveAttribute(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("required") Boolean required);
 
     /**
+     * 删除属性
+     *
+     * @param attributeId 属性id
+     * @return 删除行数
+     */
+    @PostMapping("/mqtt/attribute/delete")
+    ResultData deleteAttribute(@RequestParam("attributeId") String attributeId);
+
+    /**
      * 模糊查询，查询不包含其属性的行为信息
      *
      * @param name 行为标识名称的英文字符串

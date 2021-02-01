@@ -44,6 +44,17 @@ public class MqttController {
     }
 
     /**
+     * 删除属性
+     *
+     * @param attributeId 属性id
+     * @return 删除行数
+     */
+    @PostMapping(value = "/deleteAttribute")
+    public ResultData deleteAttribute(String attributeId) {
+        return mqttService.deleteAttribute(attributeId);
+    }
+
+    /**
      * 模糊查询，查询不包含其属性的行为信息
      *
      * @param name 行为标识名称的英文字符串
