@@ -18,7 +18,7 @@ public interface MqttService {
     /**
      * 模糊查询，查询属性信息
      *
-     * @param name 名称
+     * @param name 属性标识名称英文字符串
      * @return 属性列表
      */
     @GetMapping("/mqtt/attribute/queryAttributesByName")

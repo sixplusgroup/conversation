@@ -20,7 +20,7 @@ public class Attribute extends Entity {
     private String attributeId;
 
     /**
-     * 属性标示名称英文字符串
+     * 属性标识名称英文字符串
      */
     private String name;
 

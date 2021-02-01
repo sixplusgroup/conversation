@@ -73,7 +73,7 @@ public class AttributeServiceImpl implements AttributeService {
     /**
      * 模糊查询属性信息
      *
-     * @param name 属性标示名称英文字符串
+     * @param name 属性标识名称英文字符串
      * @return 属性列表
      */
     @Override
