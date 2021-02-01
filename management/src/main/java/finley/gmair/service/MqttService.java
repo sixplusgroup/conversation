@@ -111,6 +111,15 @@ public interface MqttService {
     ResultData saveModel(@RequestParam("name") String name, @RequestParam("description") String description);
 
     /**
+     * 删除型号
+     *
+     * @param modelId 型号id
+     * @return 删除行数
+     */
+    @PostMapping("/mqtt/model/delete")
+    ResultData deleteModel(@RequestParam("modelId") String modelId);
+
+    /**
      * 根据型号id查询该型号所有的行为
      *
      * @param modelId 型号id

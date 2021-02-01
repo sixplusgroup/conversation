@@ -91,4 +91,19 @@
         a.action_id = r.action_id
     </select>
 
+    <select id="getModelUsedNumber" resultType="int" parameterType="java.lang.String">
+        select
+        count(action_id)
+        from
+        gmair_mqtt_management.model_action_relate
+        where
+        model_id = #{modelId}
+    </select>
+
+    <update id="deleteModel" parameterType="java.lang.String">
+        update gmair_mqtt_management.model
+        set block_flag = true
+        where model_id = #{modelId}
+    </update>
+
 </mapper>

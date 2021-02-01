@@ -70,6 +70,20 @@ public class ModelController {
     }
 
     /**
+     * 删除型号
+     *
+     * @param modelId 型号id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    @PostMapping(value = "/delete")
+    public ResultData deleteModel(String modelId) throws MqttBusinessException {
+        VerifyUtil.verify(StringUtils.isNotEmpty(modelId), "型号id为空");
+
+        return ResultData.ok(modelService.deleteModel(modelId));
+    }
+
+    /**
      * 新增型号与行为的对应关系
      *
      * @param modelId  型号id

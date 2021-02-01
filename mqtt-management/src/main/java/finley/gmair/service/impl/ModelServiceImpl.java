@@ -117,4 +117,22 @@ public class ModelServiceImpl implements ModelService {
         return modelDao.queryModelsWithAction();
     }
 
+    /**
+     * 删除型号
+     *
+     * @param modelId 型号id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    @Override
+    public int deleteModel(String modelId) throws MqttBusinessException {
+        int modelUsedNum = modelDao.getModelUsedNumber(modelId);
+
+        if (modelUsedNum != 0) {
+            throw new MqttBusinessException("该型号已被使用，无法删除");
+        }
+
+        return modelDao.deleteModel(modelId);
+    }
+
 }

@@ -71,4 +71,19 @@ public interface ModelDao {
      */
     List<Model> queryModelsWithAction();
 
+    /**
+     * 获得该型号与行为绑定的数量
+     *
+     * @param modelId 型号id
+     * @return 该型号与行为绑定的数量
+     */
+    int getModelUsedNumber(String modelId);
+
+    /**
+     * 删除型号
+     *
+     * @param modelId 型号id
+     * @return 删除行数
+     */
+    int deleteModel(String modelId);
 }

@@ -135,6 +135,17 @@ public class MqttController {
     }
 
     /**
+     * 删除型号
+     *
+     * @param modelId 型号id
+     * @return 删除行数
+     */
+    @PostMapping(value = "/deleteModel")
+    public ResultData deleteModel(String modelId) {
+        return mqttService.deleteModel(modelId);
+    }
+
+    /**
      * 根据型号id查询该型号所有的行为
      *
      * @param modelId 型号id

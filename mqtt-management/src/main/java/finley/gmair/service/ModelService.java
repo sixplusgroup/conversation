@@ -56,4 +56,12 @@ public interface ModelService {
      */
     List<Model> queryModelsWithAction();
 
+    /**
+     * 删除型号
+     *
+     * @param modelId 型号id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    int deleteModel(String modelId) throws MqttBusinessException;
 }
