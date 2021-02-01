@@ -55,6 +55,8 @@
     <select id="queryTopicsByDetail" parameterType="java.lang.String" resultMap="topicVo">
         select topic_id, topic_detail, topic_description, block_flag, create_time
         from gmair_mqtt_management.mqtt_topic
+        block_flag = false
+        and
         topic_detail like CONCAT('%',#{topicDetail},'%')
         order by create_time desc
     </select>

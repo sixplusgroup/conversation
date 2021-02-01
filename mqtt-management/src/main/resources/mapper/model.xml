@@ -64,6 +64,8 @@
         select model_id, name, description, block_flag, create_time
         from gmair_mqtt_management.model
         where
+        block_flag = false
+        and
         name like CONCAT('%',#{name},'%')
         order by create_time desc
     </select>
