@@ -70,6 +70,20 @@ public class ActionController {
     }
 
     /**
+     * 删除行为
+     *
+     * @param actionId 行为id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    @PostMapping(value = "/delete")
+    public ResultData deleteAction(String actionId) throws MqttBusinessException {
+        VerifyUtil.verify(StringUtils.isNotEmpty(actionId), "行为id为空");
+
+        return ResultData.ok(actionService.deleteAction(actionId));
+    }
+
+    /**
      * 新增行为与属性的对应关系
      *
      * @param actionId    行为id

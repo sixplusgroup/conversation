@@ -64,6 +64,15 @@ public interface MqttService {
     ResultData saveAction(@RequestParam("name") String name, @RequestParam("description") String description);
 
     /**
+     * 删除行为
+     *
+     * @param actionId 行为id
+     * @return 删除行数
+     */
+    @PostMapping("/mqtt/action/delete")
+    ResultData deleteAction(@RequestParam("actionId") String actionId);
+
+    /**
      * 根据行为id查询该行为所有的属性
      *
      * @param actionId 行为id

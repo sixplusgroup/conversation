@@ -78,6 +78,17 @@ public class MqttController {
     }
 
     /**
+     * 删除行为
+     *
+     * @param actionId 行为id
+     * @return 删除行数
+     */
+    @PostMapping(value = "/deleteAction")
+    public ResultData deleteAction(String actionId) {
+        return mqttService.deleteAction(actionId);
+    }
+
+    /**
      * 根据行为id查询该行为所有的属性
      *
      * @param actionId 行为id

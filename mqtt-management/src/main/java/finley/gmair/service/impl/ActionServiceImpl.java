@@ -124,4 +124,28 @@ public class ActionServiceImpl implements ActionService {
     public List<Action> queryActionsByModel(String modelId) {
         return actionDao.queryActionsByModel(modelId);
     }
+
+    /**
+     * 删除行为
+     *
+     * @param actionId 行为id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    @Override
+    public int deleteAction(String actionId) throws MqttBusinessException {
+        int attributeUsedNum = actionDao.getAttributeUsedNumber(actionId);
+
+        if (attributeUsedNum != 0) {
+            throw new MqttBusinessException("该行为已被使用，无法删除");
+        }
+
+        int modelUsedNum = actionDao.getModelUsedNumber(actionId);
+
+        if (modelUsedNum != 0) {
+            throw new MqttBusinessException("该行为已被使用，无法删除");
+        }
+
+        return actionDao.deleteAction(actionId);
+    }
 }

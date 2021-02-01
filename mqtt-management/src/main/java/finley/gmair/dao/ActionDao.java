@@ -79,4 +79,27 @@ public interface ActionDao {
      */
     List<Action> queryActionsByModel(String modelId);
 
+    /**
+     * 获得该行为与属性绑定的数量
+     *
+     * @param actionId 行为id
+     * @return 该行为与属性绑定的数量
+     */
+    int getAttributeUsedNumber(String actionId);
+
+    /**
+     * 获得该行为与型号绑定的数量
+     *
+     * @param actionId 行为id
+     * @return 该行为与型号绑定的数量
+     */
+    int getModelUsedNumber(String actionId);
+
+    /**
+     * 删除行为
+     *
+     * @param actionId 行为id
+     * @return 删除行数
+     */
+    int deleteAction(String actionId);
 }

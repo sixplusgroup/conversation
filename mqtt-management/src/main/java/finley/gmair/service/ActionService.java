@@ -2,7 +2,6 @@ package finley.gmair.service;
 
 import finley.gmair.exception.MqttBusinessException;
 import finley.gmair.model.mqttManagement.Action;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -65,4 +64,12 @@ public interface ActionService {
      */
     List<Action> queryActionsByModel(String modelId);
 
+    /**
+     * 删除行为
+     *
+     * @param actionId 行为id
+     * @return 删除行数
+     * @throws MqttBusinessException 异常
+     */
+    int deleteAction(String actionId) throws MqttBusinessException;
 }
