@@ -72,7 +72,11 @@
 
     <insert id="insertModelActionRelation" keyProperty="model_action_id" useGeneratedKeys="true">
         insert into gmair_mqtt_management.model_action_relate(model_id, action_id)
-        values(#{modelId}, #{actionId})
+        select #{modelId}, #{actionId} from dual
+        WHERE not exists (
+        select model_id, action_id from model_action_relate
+        where model_id = #{modelId} and action_id = #{actionId}
+        )
     </insert>
 
     <select id="queryModelsWithAction" resultMap="collectionMap">

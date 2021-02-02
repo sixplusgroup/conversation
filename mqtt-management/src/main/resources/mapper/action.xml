@@ -73,7 +73,11 @@
 
     <insert id="insertActionAttributeRelation" keyProperty="action_attribute_id" useGeneratedKeys="true">
         insert into gmair_mqtt_management.action_attribute_relate(action_id, attribute_id)
-        values(#{actionId}, #{attributeId})
+        select #{actionId}, #{attributeId} from dual
+        WHERE not exists (
+        select action_id, attribute_id from action_attribute_relate
+        where action_id = #{actionId} and attribute_id = #{attributeId}
+        )
     </insert>
 
     <select id="queryActionsWithAttribute" resultMap="collectionMap">
