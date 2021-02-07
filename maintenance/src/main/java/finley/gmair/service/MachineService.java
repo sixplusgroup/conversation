@@ -70,6 +70,24 @@ public interface MachineService {
     ResultData findBoardVersionByQRcode(@RequestParam("qrcode") String qrcode);
 
     /**
+     * 检查初效滤网是否需要清洗
+     *
+     * @param qrcode 二维码
+     * @return 初效滤网是否需要清洗
+     */
+    @GetMapping("/machine/filter/clean")
+    ResultData filterNeedCleanOrNot(@RequestParam("qrcode") String qrcode);
+
+    /**
+     * 初效滤网清洗提醒是否开启
+     *
+     * @param qrcode 二维码
+     * @return 提醒是否开启
+     */
+    @GetMapping("/machine/filter/clean/isOpen")
+    ResultData filterCleanRemindIsOpen(@RequestParam("qrcode") String qrcode);
+
+    /**
      * 改变设备初效滤网清洗提醒开启状态
      *
      * @param qrcode            二维码
@@ -81,7 +99,25 @@ public interface MachineService {
                                              @RequestParam("cleanRemindStatus") boolean cleanRemindStatus);
 
     /**
-     * 改变设备高效滤网清洗提醒开启状态
+     * 高效滤网是否需要更换
+     *
+     * @param qrcode 二维码
+     * @return 是否需要更换
+     */
+    @GetMapping("/machine/efficientFilter/replaceStatus")
+    ResultData getReplaceStatus(@RequestParam("qrcode") String qrcode);
+
+    /**
+     * 高效滤网更换提醒是否开启
+     *
+     * @param qrcode 二维码
+     * @return 提醒是否开启
+     */
+    @GetMapping("/machine/efficientFilter/replaceRemind/isOpen")
+    ResultData replaceRemindIsOpen(@RequestParam("qrcode") String qrcode);
+
+    /**
+     * 改变设备高效滤网更换提醒开启状态
      *
      * @param qrcode 二维码
      * @param replaceRemindStatus 是否开启提醒

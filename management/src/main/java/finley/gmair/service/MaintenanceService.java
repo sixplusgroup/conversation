@@ -92,6 +92,24 @@ public interface MaintenanceService {
                          @RequestParam("endMinute") int endMinute, @RequestParam("status") boolean status);
 
     /**
+     * 检查初效滤网是否需要清洗
+     *
+     * @param qrcode 二维码
+     * @return 初效滤网是否需要清洗
+     */
+    @GetMapping("/maintenance/assist/isCleanNeed")
+    ResultData isCleanNeed(@RequestParam("qrcode") String qrcode);
+
+    /**
+     * 初效滤网清洗提醒是否开启
+     *
+     * @param qrcode 二维码
+     * @return 提醒是否开启
+     */
+    @GetMapping("/maintenance/assist/isCleanRemindOpen")
+    ResultData isCleanRemindOpen(@RequestParam("qrcode") String qrcode);
+
+    /**
      * 设置设备初效滤网清洗提醒开启状态
      *
      * @param qrcode            二维码
@@ -100,6 +118,24 @@ public interface MaintenanceService {
      */
     @PostMapping("/maintenance/assist/setCleanRemindStatus")
     ResultData setCleanRemindStatus(@RequestParam("qrcode") String qrcode, @RequestParam("cleanRemindStatus") Boolean cleanRemindStatus);
+
+    /**
+     * 高效滤网是否需要更换
+     *
+     * @param qrcode 二维码
+     * @return 是否需要更换
+     */
+    @GetMapping("/maintenance/assist/isReplaceNeed")
+    ResultData isReplaceNeed(@RequestParam("qrcode") String qrcode);
+
+    /**
+     * 高效滤网更换提醒是否开启
+     *
+     * @param qrcode 二维码
+     * @return 提醒是否开启
+     */
+    @GetMapping("/maintenance/assist/isReplaceRemindOpen")
+    ResultData isReplaceRemindOpen(@RequestParam("qrcode") String qrcode);
 
     /**
      * 设置设备高效滤网清洗提醒开启状态

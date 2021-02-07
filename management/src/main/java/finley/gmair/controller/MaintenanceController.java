@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import finley.gmair.service.MaintenanceService;
 import finley.gmair.util.ResultData;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,6 +108,36 @@ public class MaintenanceController {
     }
 
     /**
+     * 检查初效滤网是否需要清洗
+     *
+     * @param qrcode 二维码
+     * @return 初效滤网是否需要清洗
+     */
+    @GetMapping(value = "/isCleanNeed")
+    public ResultData isCleanNeed(String qrcode) {
+        if (StringUtils.isEmpty(qrcode)) {
+            return ResultData.error("qrcode为空");
+        }
+
+        return maintenanceService.isCleanNeed(qrcode);
+    }
+
+    /**
+     * 初效滤网清洗提醒是否开启
+     *
+     * @param qrcode 二维码
+     * @return 提醒是否开启
+     */
+    @GetMapping(value = "/isCleanRemindOpen")
+    public ResultData isCleanRemindOpen(String qrcode) {
+        if (StringUtils.isEmpty(qrcode)) {
+            return ResultData.error("qrcode为空");
+        }
+
+        return maintenanceService.isCleanRemindOpen(qrcode);
+    }
+
+    /**
      * 设置设备初效滤网清洗提醒开启状态
      *
      * @param qrcode            二维码
@@ -116,6 +147,36 @@ public class MaintenanceController {
     @PostMapping(value = "/setCleanRemindStatus")
     public ResultData setCleanRemindStatus(String qrcode, Boolean cleanRemindStatus) {
         return maintenanceService.setCleanRemindStatus(qrcode, cleanRemindStatus);
+    }
+
+    /**
+     * 高效滤网是否需要更换
+     *
+     * @param qrcode 二维码
+     * @return 是否需要更换
+     */
+    @GetMapping(value = "/isReplaceNeed")
+    public ResultData isReplaceNeed(String qrcode) {
+        if (StringUtils.isEmpty(qrcode)) {
+            return ResultData.error("qrcode为空");
+        }
+
+        return maintenanceService.isReplaceNeed(qrcode);
+    }
+
+    /**
+     * 高效滤网更换提醒是否开启
+     *
+     * @param qrcode 二维码
+     * @return 提醒是否开启
+     */
+    @GetMapping(value = "/isReplaceRemindOpen")
+    public ResultData isReplaceRemindOpen(String qrcode) {
+        if (StringUtils.isEmpty(qrcode)) {
+            return ResultData.error("qrcode为空");
+        }
+
+        return maintenanceService.isReplaceRemindOpen(qrcode);
     }
 
     /**
