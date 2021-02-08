@@ -35,7 +35,7 @@ public class FirmwareController {
     @PostMapping(value = "/create")
     public ResultData createFirmware(String version, String link, String model) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(version) || StringUtils.isEmpty(link)) {
+        if (StringUtils.isEmpty(version) || StringUtils.isEmpty(link) || StringUtils.isEmpty(model)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
