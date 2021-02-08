@@ -166,4 +166,24 @@ public interface MqttService {
     @PostMapping("/mqtt/topic/delete")
     ResultData deleteTopic(@RequestParam("topicId") String topicId);
 
+    /**
+     * 新增固件版本信息
+     *
+     * @param version 版本号
+     * @param link    下载链接
+     * @param model   设备型号
+     * @return 新增的固件
+     */
+    @PostMapping("/core/firmware/create")
+    ResultData createFirmware(@RequestParam("version") String version, @RequestParam("link") String link, @RequestParam("model") String model);
+
+    /**
+     * 查询固件
+     *
+     * @param version 版本号
+     * @param model   设备型号
+     * @return 固件列表
+     */
+    @GetMapping("/core/firmware/query")
+    ResultData getFirmware(@RequestParam("version") String version, @RequestParam("version") String model);
 }

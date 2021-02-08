@@ -207,4 +207,15 @@ public class MaintenanceController {
         return maintenanceService.createInspectTask(consumerConsignee, consumerPhone, consumerAddress, model, description);
     }
 
+    /**
+     * 根据二维码查看设备型号
+     *
+     * @param qrcode 二维码
+     * @return 设备型号
+     */
+    @GetMapping(value = "/getModelByQrcode")
+    public ResultData getModelByQrcode(String qrcode) {
+        return maintenanceService.getModelByQrcode(qrcode);
+    }
+
 }

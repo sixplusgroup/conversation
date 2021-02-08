@@ -202,4 +202,29 @@ public class MqttController {
         return mqttService.deleteTopic(topicId);
     }
 
+    /**
+     * 新增固件版本信息
+     *
+     * @param version 版本号
+     * @param link    下载链接
+     * @param model   设备型号
+     * @return 新增的固件
+     */
+    @PostMapping(value = "/createFirmware")
+    public ResultData createFirmware(String version, String link, String model) {
+        return mqttService.createFirmware(version, link, model);
+    }
+
+    /**
+     * 查询固件
+     *
+     * @param version 版本号
+     * @param model   设备型号
+     * @return 固件列表
+     */
+    @GetMapping(value = "/queryFirmware")
+    public ResultData queryFirmware(String version, String model) {
+        return mqttService.getFirmware(version, model);
+    }
+
 }

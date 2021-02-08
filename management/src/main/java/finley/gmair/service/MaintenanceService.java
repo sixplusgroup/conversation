@@ -164,4 +164,12 @@ public interface MaintenanceService {
                                  @RequestParam(value = "model") String model,
                                  @RequestParam(value = "description", required = false) String description);
 
+    /**
+     * 根据二维码查看设备型号
+     *
+     * @param qrcode 二维码
+     * @return 设备型号
+     */
+    @GetMapping("/maintenance/assist/getModelByQrcode")
+    ResultData getModelByQrcode(@RequestParam("qrcode")String qrcode);
 }

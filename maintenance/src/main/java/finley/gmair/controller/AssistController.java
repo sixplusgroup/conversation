@@ -46,7 +46,7 @@ public class AssistController {
         }
 
         // 检查二维码是不是v3版本
-        ResultData boardVersionResponse= machineService.findBoardVersionByQRcode(qrcode);
+        ResultData boardVersionResponse = machineService.findBoardVersionByQRcode(qrcode);
         if (boardVersionResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return ResultData.error("根据二维码查找设备版本失败");
         }
@@ -60,10 +60,10 @@ public class AssistController {
 
         // 1.根据二维码查询机器MAC
         ResultData response = machineService.findMachineIdByCodeValueFacetoConsumer(qrcode);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return ResultData.error("根据二维码查找机器MAC失败");
         }
-        MachineQrcodeBindVo machineQrcodeBindVo = JSONArray.parseArray(JSONObject.toJSONString(response.getData()),MachineQrcodeBindVo.class).get(0);
+        MachineQrcodeBindVo machineQrcodeBindVo = JSONArray.parseArray(JSONObject.toJSONString(response.getData()), MachineQrcodeBindVo.class).get(0);
         String machineId = machineQrcodeBindVo.getMachineId();
 
         // 2.刷新设备状态
@@ -73,12 +73,12 @@ public class AssistController {
     /**
      * 配置设备的定时
      *
-     * @param qrcode 设备二维码
-     * @param startHour 开始时间，小时
+     * @param qrcode      设备二维码
+     * @param startHour   开始时间，小时
      * @param startMinute 开始时间，分钟
-     * @param endHour 结束时间，小时
-     * @param endMinute 结束时间，分钟
-     * @param status 开启和关闭的状态
+     * @param endHour     结束时间，小时
+     * @param endMinute   结束时间，分钟
+     * @param status      开启和关闭的状态
      * @return 配置结果
      */
     @PostMapping(value = "/setTiming")
@@ -168,7 +168,7 @@ public class AssistController {
     /**
      * 设置设备高效滤网清洗提醒开启状态
      *
-     * @param qrcode 二维码
+     * @param qrcode              二维码
      * @param replaceRemindStatus 是否开启提醒
      * @return 操作结果
      */
@@ -182,6 +182,21 @@ public class AssistController {
         }
 
         return machineService.changeReplaceRemindStatus(qrcode, replaceRemindStatus);
+    }
+
+    /**
+     * 根据二维码查看设备型号
+     *
+     * @param qrcode 二维码
+     * @return 设备型号
+     */
+    @GetMapping(value = "/getModelByQrcode")
+    public ResultData getModelByQrcode(String qrcode) {
+        if (StringUtils.isEmpty(qrcode)) {
+            return ResultData.error("qrcode为空");
+        }
+
+        return machineService.getModel(qrcode);
     }
 
 }

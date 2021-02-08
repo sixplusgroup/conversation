@@ -28,8 +28,8 @@ public class FirmwareController {
      * 新增固件版本信息
      *
      * @param version 版本号
-     * @param link 下载链接
-     * @param model 设备型号
+     * @param link    下载链接
+     * @param model   设备型号
      * @return 新增的固件
      */
     @PostMapping(value = "/create")
@@ -56,7 +56,7 @@ public class FirmwareController {
      * 查询固件
      *
      * @param version 版本号
-     * @param model 设备型号
+     * @param model   设备型号
      * @return 固件列表
      */
     @GetMapping(value = "/query")

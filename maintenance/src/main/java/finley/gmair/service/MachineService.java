@@ -119,7 +119,7 @@ public interface MachineService {
     /**
      * 改变设备高效滤网更换提醒开启状态
      *
-     * @param qrcode 二维码
+     * @param qrcode              二维码
      * @param replaceRemindStatus 是否开启提醒
      * @return 操作结果
      */
@@ -127,5 +127,12 @@ public interface MachineService {
     ResultData changeReplaceRemindStatus(@RequestParam("qrcode") String qrcode,
                                          @RequestParam("replaceRemindStatus") boolean replaceRemindStatus);
 
-
+    /**
+     * 根据二维码查看设备型号
+     *
+     * @param codeValue 二维码
+     * @return 设备型号
+     */
+    @GetMapping("/machine/qrcode/model")
+    ResultData getModel(@RequestParam("codeValue") String codeValue);
 }
