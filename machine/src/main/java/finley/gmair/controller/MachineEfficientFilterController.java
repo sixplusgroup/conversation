@@ -225,6 +225,14 @@ public class MachineEfficientFilterController {
                 coreV2Service.configScreen(machineId, 0);
                 logger.info("request to config sreeen for machine: " + machineId + " with value 0");
             }
+
+            //version=1
+            if (version.getVersion() == 1) {
+                con.clear();
+                con.put("qrcode", qrcode);
+                con.put("lastConfirmTime", new Date());
+                machineEfficientInfoService.modify(con);
+            }
         });
         data.put("qrcode", qrcode);
         result.setData(data);
