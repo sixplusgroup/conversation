@@ -5,10 +5,7 @@ import finley.gmair.service.TopicService;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.VerifyUtil;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 

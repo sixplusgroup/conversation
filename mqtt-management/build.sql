@@ -99,6 +99,7 @@ CREATE TABLE `mqtt_firmware` (
   `firmware_id` varchar(20) NOT NULL,
   `firmware_version` varchar(20) NOT NULL,
   `firmware_link` varchar(50) NOT NULL,
+  `firmware_model` varchar(20) NOT NULL,
   `block_flag` tinyint(1) NOT NULL,
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`firmware_id`)

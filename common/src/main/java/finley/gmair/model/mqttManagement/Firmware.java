@@ -6,15 +6,17 @@ public class Firmware extends Entity {
     private String firmwareId;
     private String firmwareVersion;
     private String firmwareLink;
+    private String firmwareModel;
 
     public Firmware() {
         super();
     }
 
-    public Firmware(String firmwareVersion, String firmwareLink) {
+    public Firmware(String firmwareVersion, String firmwareLink, String firmwareModel) {
         this();
         this.firmwareVersion = firmwareVersion;
         this.firmwareLink = firmwareLink;
+        this.firmwareModel = firmwareModel;
     }
 
     public String getFirmwareId() {
@@ -39,5 +41,13 @@ public class Firmware extends Entity {
 
     public void setFirmwareLink(String firmwareLink) {
         this.firmwareLink = firmwareLink;
+    }
+
+    public String getFirmwareModel() {
+        return firmwareModel;
+    }
+
+    public void setFirmwareModel(String firmwareModel) {
+        this.firmwareModel = firmwareModel;
     }
 }

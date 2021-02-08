@@ -5,12 +5,13 @@
         <result property="firmwareId" column="firmware_id"/>
         <result property="firmwareVersion" column="firmware_version"/>
         <result property="firmwareLink" column="firmware_link"/>
+        <result property="firmwareModel" column="firmware_model"/>
         <result property="blockFlag" column="block_flag"/>
         <result property="createAt" column="create_time"/>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="firmwareVo">
-        select firmware_id, firmware_version, firmware_link, block_flag, create_time
+        select firmware_id, firmware_version, firmware_link, firmware_model, block_flag, create_time
         from gmair_mqtt_management.mqtt_firmware
         where 1 = 1
         <if test="firmwareId != null">
@@ -22,6 +23,9 @@
         <if test="firmwareLink != null">
             and firmware_link = #{firmwareLink}
         </if>
+        <if test="firmwareModel != null">
+            and firmware_model = #{firmwareModel}
+        </if>
         <if test="blockFlag != null">
             and block_flag = #{blockFlag}
         </if>
@@ -29,8 +33,8 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.mqttManagement.Firmware" useGeneratedKeys="false">
-        insert into gmair_mqtt_management.mqtt_firmware(firmware_id, firmware_version, firmware_link, block_flag, create_time)
-        values (#{firmwareId}, #{firmwareVersion}, #{firmwareLink}, #{blockFlag}, #{createAt})
+        insert into gmair_mqtt_management.mqtt_firmware(firmware_id, firmware_version, firmware_link, firmware_model, block_flag, create_time)
+        values (#{firmwareId}, #{firmwareVersion}, #{firmwareLink},#{firmwareModel}, #{blockFlag}, #{createAt})
     </insert>
 
     <update id="update" parameterType="java.util.Map">
@@ -41,6 +45,9 @@
             </if>
             <if test="firmwareLink != null">
                 firmware_link = #{firmwareLink},
+            </if>
+            <if test="firmwareModel != null">
+                firmware_model = #{firmwareModel},
             </if>
             firmware_id = #{firmwareId}
         </set>
