@@ -62,7 +62,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             return res;
         }
 
-        // 如果状态不是TRADE_CLOSED禁止推送到CRM
+        // 判断是否需要将状态更新到CRM
         if (!TbTradeStatus.valueOf(interTrade.getStatus()).judgeCrmUpdate()) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("交易状态错误");
@@ -76,7 +76,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             CrmStatusDTO newCrmStatus = new CrmStatusDTO();
             // （子订单）订单号：
             String ddh = interTrade.getTid().equals(tmpOrder.getOid()) ? String.valueOf(tmpOrder.getOid()) :
-                    String.valueOf(interTrade.getTid()) +"-"+ String.valueOf(tmpOrder.getOid());
+                    interTrade.getTid() +"-"+ tmpOrder.getOid();
             newCrmStatus.setDdh(ddh);
             // 联系方式：
             newCrmStatus.setLxfs(interTrade.getReceiverMobile());
