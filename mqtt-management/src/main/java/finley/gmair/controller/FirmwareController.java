@@ -4,7 +4,7 @@ import finley.gmair.model.mqttManagement.Firmware;
 import finley.gmair.service.FirmwareService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -62,10 +62,16 @@ public class FirmwareController {
     @GetMapping(value = "/query")
     public ResultData getFirmware(String version, String model) {
         ResultData result = new ResultData();
+        version = version.trim();
+        model = model.trim();
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        condition.put("firmwareVersion", version);
-        condition.put("firmwareModel", model);
+        if (StringUtils.isNotEmpty(version)) {
+            condition.put("firmwareVersion", version);
+        }
+        if (StringUtils.isNotEmpty(model)) {
+            condition.put("firmwareModel", model);
+        }
         ResultData response = firmwareService.fetch(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
