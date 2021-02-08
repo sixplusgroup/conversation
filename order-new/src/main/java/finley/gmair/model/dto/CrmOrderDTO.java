@@ -70,8 +70,14 @@ public class CrmOrderDTO {
      */
     private String buyermes;
 
+    /**
+     * 账单
+     */
+    private String billentry;
+
     public CrmOrderDTO() {
         this.messagestat = "0";
         this.initflag = "1";
+        this.billentry = "";
     }
 }
