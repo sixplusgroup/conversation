@@ -324,6 +324,8 @@ public class TbOrderServiceImpl implements TbOrderService {
                 finley.gmair.model.ordernew.Order interOrder = new finley.gmair.model.ordernew.Order();
                 interOrder.setOid(tmpOrder.getOid());
                 interOrder.setStatus(updatedStatus.name());
+                // 更新退款状态
+                interOrder.setRefundStatus(tmpOrder.getRefundStatus());
                 interOrder.setStoreCode(tmpOrder.getStoreCode());
                 interOrder.setShippingType(tmpOrder.getShippingType());
                 interOrder.setLogisticsCompany(tmpOrder.getLogisticsCompany());
