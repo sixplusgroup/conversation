@@ -276,6 +276,10 @@ public class TbOrderServiceImpl implements TbOrderService {
         interTrade.setTid(tbTrade.getTid());
         // 更新状态
         interTrade.setStatus(updatedStatus.name());
+        // 更新卖家留言
+        interTrade.setSellerMemo(tbTrade.getSellerMemo());
+        // 更新收到付款
+        interTrade.setReceivedPayment(Double.valueOf(tbTrade.getReceivedPayment()));
         // 更新交易修改时间
         interTrade.setModified(tbTrade.getModified());
         // 更新付款时间
