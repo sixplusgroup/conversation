@@ -38,6 +38,11 @@ public class TopicServiceImpl implements TopicService {
      */
     @Override
     public Topic addTopic(String topicDetail, String topicDescription) {
+        List<Topic> existTopics = queryTopics(null, topicDetail, null);
+        if (existTopics != null && existTopics.size() > 0) {
+            return null;
+        }
+
         Topic topic = new Topic(topicDetail, topicDescription);
         topic.setTopicId(IDGenerator.generate("MTI"));
 
