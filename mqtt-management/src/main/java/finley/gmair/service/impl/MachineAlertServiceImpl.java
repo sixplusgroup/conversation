@@ -49,7 +49,6 @@ public class MachineAlertServiceImpl implements MachineAlertService {
      * @return 更新条数
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public int updateMachineAlert(String machineId, int code) {
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
