@@ -5,55 +5,62 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.thoughtworks.xstream.XStream;
 import finley.gmair.model.wechat.*;
-import finley.gmair.model.wechat.Article;
-//import finley.gmair.scheduler.wechat.WechatScheduler;
 import finley.gmair.service.*;
 import finley.gmair.util.*;
 import finley.gmair.vo.wechat.ArticleReplyVo;
-import finley.gmair.model.wechat.Image;
 import finley.gmair.vo.wechat.PictureReplyVo;
 import finley.gmair.vo.wechat.TextReplyVo;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+
+//import finley.gmair.scheduler.wechat.WechatScheduler;
 
 @SpringBootApplication
 @EnableFeignClients({"finley.gmair.service"})
 @RestController
 @ComponentScan({"finley.gmair.scheduler", "finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
 public class WechatApplication {
+    private Logger logger = LoggerFactory.getLogger(WechatApplication.class);
 
-    @Autowired
+    @Resource
     private TextTemplateService textTemplateService;
 
-    @Autowired
+    @Resource
     private WechatUserService wechatUserService;
 
-    @Autowired
+    @Resource
     private AutoReplyService autoReplyService;
 
-    @Autowired
+    @Resource
     private PictureTemplateService pictureTemplateService;
 
-    @Autowired
+    @Resource
     private ArticleTemplateService articleTemplateService;
 
-    @Autowired
+    @Resource
     private AuthConsumerService authConsumerService;
 
-    @Autowired
+    @Resource
     private MachineService machineService;
 
-    @Autowired
+    @Resource
     private VideoTemplateService videoTemplateService;
+
+    @Resource
+    private ReplyRecordService replyRecordService;
 
 //    @Autowired
 //    private WechatScheduler wechatScheduler;
@@ -93,6 +100,7 @@ public class WechatApplication {
 
             int start = input.indexOf("<MsgType>");
             int end = input.indexOf("</MsgType>");
+            String xml;
 
             String type = input.substring(start + "<MsgType>".length(), end).replace("<![CDATA[", "").replace("]]>", "");
             switch (type) {
@@ -105,41 +113,32 @@ public class WechatApplication {
                     condition.put("keyword", tmessage.getContent());
                     condition.put("blockFlag", false);
                     ResultData response = autoReplyService.fetch(condition);
-                    if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    xml = process(response, tmessage);
+                    if (!StringUtils.isEmpty(xml)) {
+                        return xml;
+                    } else {
+                        condition = new HashMap<>();
+                        condition.put("messageType", "text");
+                        condition.put("keyword", "默认回复");
+                        condition.put("blockFlag", false);
+                        response = autoReplyService.fetch(condition);
+                        xml = process(response, tmessage);
+                        //检查今日是否已经回复过此消息
                         AutoReply reply = ((List<AutoReply>) response.getData()).get(0);
-                        if (reply.getTemplateId().startsWith("TTE")) {
-                            //clear & set the new filter condition
-                            condition.clear();
-                            condition.put("templateId", reply.getTemplateId());
-                            TextOutMessage result = initialize(textResponse(condition), tmessage);
-                            content.alias("xml", TextOutMessage.class);
-                            String xml = content.toXML(result);
-                            return xml;
-                        }
-                        if (reply.getTemplateId().startsWith("PTI")) {
-                            condition.clear();
-                            condition.put("templateId", reply.getTemplateId());
-                            PictureOutMessage result = init(pictureUrl(condition), tmessage);
-                            content.alias("xml", PictureOutMessage.class);
-                            content.alias("Image", Image.class);
-                            String xml = content.toXML(result);
-                            return xml;
-                        }
-                        if (reply.getTemplateId().startsWith("ATI")) {
-                            condition.clear();
-                            condition.put("templateId", reply.getTemplateId());
-                            ArticleReplyVo vo = getArticle(condition);
-                            String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), tmessage);
-                            return xml;
-                        }
-                        if (reply.getTemplateId().startsWith("VTI")) {
-                            condition.clear();
-                            condition.put("templateId", reply.getTemplateId());
-                            VideoOutMessage result = initVideo(getVideo(condition), tmessage);
-                            content.alias("xml", VideoOutMessage.class);
-                            content.alias("Video", Video.class);
-                            String xml = content.toXML(result);
-                            return xml;
+                        condition.clear();
+                        condition.put("userId", tmessage.getFromUserName());
+                        condition.put("templateId", reply.getTemplateId());
+                        condition.put("blockFlag", false);
+                        condition.put("today", true);
+                        response = replyRecordService.fetch(condition);
+                        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                            ReplyRecord record = new ReplyRecord(tmessage.getFromUserName(), reply.getTemplateId(), xml);
+                            replyRecordService.create(record);
+                            if (!StringUtils.isEmpty(xml)) {
+                                return xml;
+                            }
+                        } else {
+                            logger.info("Skip replying the customer because system already replied " + tmessage.getFromUserName() + " today.");
                         }
                     }
                     break;
@@ -153,7 +152,7 @@ public class WechatApplication {
                         map.put("keyword", "subscribe");
                         TextOutMessage result = initialize(textResponse(map), emessage);
                         content.alias("xml", TextOutMessage.class);
-                        String xml = content.toXML(result);
+                        xml = content.toXML(result);
                         //start thread to store or update user information
                         new Thread(() -> {
                             String openId = emessage.getFromUserName();
@@ -182,7 +181,7 @@ public class WechatApplication {
                             map.put("messageType", "event");
                             map.put("keyword", "register");
                             ArticleReplyVo vo = getArticle(map);
-                            String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), emessage);
+                            xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), emessage);
                             return xml;
                         }
 
@@ -195,7 +194,7 @@ public class WechatApplication {
                             map.put("messageType", "event");
                             map.put("keyword", "machine");
                             ArticleReplyVo vo = getArticle(map);
-                            String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), emessage);
+                            xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), emessage);
                             return xml;
                         }
                         //如果machine不空，遍历机器，提取机器相关信息
@@ -204,7 +203,7 @@ public class WechatApplication {
                         map.put("messageType", "event");
                         map.put("keyword", "machineList");
                         ArticleReplyVo vo = getArticle(map);
-                        String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), getDescription(array), emessage);
+                        xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), getDescription(array), emessage);
                         return xml;
                     }
                     break;
@@ -240,7 +239,7 @@ public class WechatApplication {
         result.setFromUserName(message.getToUserName());
         result.setToUserName(message.getFromUserName());
         result.setCreateTime(new Date().getTime());
-        Video video = new Video(template.getVideoUrl(),template.getVideoTitle(),template.getVideoDesc());
+        Video video = new Video(template.getVideoUrl(), template.getVideoTitle(), template.getVideoDesc());
         result.setVideo(video);
         return result;
     }
@@ -346,5 +345,48 @@ public class WechatApplication {
         content.alias("item", Article.class);
         String xml = content.toXML(result);
         return xml;
+    }
+
+    private String process(ResultData response, InMessage message) {
+        Map<String, Object> condition = new HashMap<>();
+        XStream content = XStreamFactory.init(false);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            AutoReply reply = ((List<AutoReply>) response.getData()).get(0);
+            if (reply.getTemplateId().startsWith("TTE")) {
+                //clear & set the new filter condition
+                condition.clear();
+                condition.put("templateId", reply.getTemplateId());
+                TextOutMessage result = initialize(textResponse(condition), message);
+                content.alias("xml", TextOutMessage.class);
+                String xml = content.toXML(result);
+                return xml;
+            }
+            if (reply.getTemplateId().startsWith("PTI")) {
+                condition.clear();
+                condition.put("templateId", reply.getTemplateId());
+                PictureOutMessage result = init(pictureUrl(condition), message);
+                content.alias("xml", PictureOutMessage.class);
+                content.alias("Image", Image.class);
+                String xml = content.toXML(result);
+                return xml;
+            }
+            if (reply.getTemplateId().startsWith("ATI")) {
+                condition.clear();
+                condition.put("templateId", reply.getTemplateId());
+                ArticleReplyVo vo = getArticle(condition);
+                String xml = getXml(vo.getArticleUrl(), vo.getPictureUrl(), vo.getArticleTitle(), vo.getDescriptionContent(), message);
+                return xml;
+            }
+            if (reply.getTemplateId().startsWith("VTI")) {
+                condition.clear();
+                condition.put("templateId", reply.getTemplateId());
+                VideoOutMessage result = initVideo(getVideo(condition), message);
+                content.alias("xml", VideoOutMessage.class);
+                content.alias("Video", Video.class);
+                String xml = content.toXML(result);
+                return xml;
+            }
+        }
+        return "";
     }
 }

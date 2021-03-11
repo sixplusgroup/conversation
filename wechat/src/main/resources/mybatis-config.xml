@@ -13,5 +13,6 @@
         <mapper resource="mapper/wechat/videotemplate.xml"></mapper>
         <mapper resource="mapper/wechat/texttemplate.xml"></mapper>
         <mapper resource="mapper/wechat/wechatresource.xml"></mapper>
+        <mapper resource="mapper/wechat/replyrecord.xml"></mapper>
     </mappers>
 </configuration>

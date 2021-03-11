@@ -2,17 +2,15 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.mysql.cj.protocol.Message;
 import finley.gmair.model.wechat.AccessToken;
 import finley.gmair.model.wechat.MessageTemplate;
 import finley.gmair.model.wechat.TextTemplate;
-import finley.gmair.model.wechat.WechatUser;
-import finley.gmair.service.AccessTokenService;
 import finley.gmair.service.MessageTemplateService;
 import finley.gmair.service.TextTemplateService;
-import finley.gmair.service.WechatUserService;
-import finley.gmair.util.*;
-import org.apache.commons.lang.StringUtils;
+import finley.gmair.util.HttpClientUtils;
+import finley.gmair.util.HttpDeal;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -262,19 +257,19 @@ public class MessageTemplateController {
         //设置内容
         JSONObject data = js.getJSONObject("data");
         JSONObject first = new JSONObject();
-        first.put("value","新风设备滤网清洗提醒");
-        first.put("color","#173177");
+        first.put("value", "新风设备滤网清洗提醒");
+        first.put("color", "#173177");
 
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("messageType","remind");
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("messageType", "remind");
         ResultData resultData = textTemplateService.fetch(condition);
-        String remarkValue = ((List<TextTemplate>)resultData.getData()).get(0).getResponse();
+        String remarkValue = ((List<TextTemplate>) resultData.getData()).get(0).getResponse();
         JSONObject remark = new JSONObject();
-        remark.put("value",remarkValue);
-        remark.put("color","#173177");
+        remark.put("value", remarkValue);
+        remark.put("color", "#173177");
 
-        data.put("first",first);
-        data.put("remark",remark);
+        data.put("first", first);
+        data.put("remark", remark);
 
         String string = HttpClientUtils.sendPostJsonStr(url, js.toJSONString());
         System.out.println(string);
@@ -335,34 +330,33 @@ public class MessageTemplateController {
         //设置内容
         JSONObject data = js.getJSONObject("data");
         JSONObject first = new JSONObject();
-        first.put("value","新风设备滤网更换提醒");
-        first.put("color","#173177");
+        first.put("value", "新风设备滤网更换提醒");
+        first.put("color", "#173177");
 
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("messageType","replace");
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("messageType", "replace");
         ResultData resultData = textTemplateService.fetch(condition);
-        String remarkValue = ((List<TextTemplate>)resultData.getData()).get(0).getResponse();
+        String remarkValue = ((List<TextTemplate>) resultData.getData()).get(0).getResponse();
 
         //title
         condition.clear();
-        if(number == 1){
-            condition.put("messageType","replace_title1");
-        }
-        else {
-            condition.put("messageType","replace_title2");
+        if (number == 1) {
+            condition.put("messageType", "replace_title1");
+        } else {
+            condition.put("messageType", "replace_title2");
         }
         ResultData resultDataTitle = textTemplateService.fetch(condition);
-        String title = ((List<TextTemplate>)resultDataTitle.getData()).get(0).getResponse();
+        String title = ((List<TextTemplate>) resultDataTitle.getData()).get(0).getResponse();
 
         JSONObject remark = new JSONObject();
-        remark.put("value",remarkValue);
-        remark.put("color","#173177");
+        remark.put("value", remarkValue);
+        remark.put("color", "#173177");
         JSONObject keyword3 = new JSONObject();
         keyword3.put("value", title);
         keyword3.put("color", "#173177");
-        data.put("first",first);
-        data.put("remark",remark);
-        data.put("keyword3",keyword3);
+        data.put("first", first);
+        data.put("remark", remark);
+        data.put("keyword3", keyword3);
 
         String string = HttpClientUtils.sendPostJsonStr(url, js.toJSONString());
         System.out.println(string);
