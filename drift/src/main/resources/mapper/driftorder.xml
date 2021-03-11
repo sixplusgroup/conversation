@@ -180,7 +180,7 @@
     </select>
 
     <select id="querydashboard" parameterType="java.util.Map" resultMap="orderDashboardVo">
-        select order_id, activity_name,activity_id, equip_name, equip_id,consumer_id, order_status,consignee,
+        select order_id, activity_name, activity_id, equip_name, equip_id,consumer_id, order_status,consignee,
         phone,province,address,city,district,express_address,total_price,real_pay,description,buy_machine,machine_orderNo,quantity,item_price,item_total_price,item_real_price,
         expected_date, interval_date,excode,
         block_flag,create_time,express_out_num,express_out_company,express_back_num,express_back_company,trade_from
@@ -226,19 +226,20 @@
 
 
     <select id="queryDriftItem" parameterType="java.lang.String" resultMap="orderItemVo">
-        SELECT item_id,
-               order_id,
-               item_name,
-               single_num,
-               item_price,
-               quantity,
-               ex_quantity,
-               total_price,
-               real_price,
-               text,
-               url,
-               block_flag,
-               create_time
+        SELECT
+            item_id,
+            order_id,
+            item_name,
+            single_num,
+            item_price,
+            quantity,
+            ex_quantity,
+            total_price,
+            real_price,
+            text,
+            url,
+            block_flag,
+            create_time
         FROM gmair_drift.drift_order_item
         WHERE drift_order_item.order_id = #{order_id}
         ORDER BY item_name ASC
@@ -250,7 +251,7 @@
                                              real_pay,
                                              excode, description, order_status, block_flag, create_time, trade_from)
         VALUES (#{orderId}, #{consumerId}, #{activityId}, #{equipId}, #{consignee}, #{phone}, #{address},
-                #{expectedDate}, #{intervalDate}, #{province}, #{city}, #{district}, #{totalPrice},
+                            #{expectedDate}, #{intervalDate}, #{province}, #{city}, #{district}, #{totalPrice},
                 #{realPay},
                 #{excode}, #{description},
                 #{status, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
