@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +33,14 @@ public class MachineEfficientFilterController {
     @Autowired
     private MachineEfficientFilterService machineEfficientFilterService;
 
+    @Resource
+    private BoardVersionService boardVersionService;
+
     @Autowired
     private CoreV3Service coreV3Service;
+
+    @Resource
+    private CoreV2Service coreV2Service;
 
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
@@ -139,14 +146,14 @@ public class MachineEfficientFilterController {
 
     @GetMapping("/replace/confirm")
     public ResultData confirmReplace(@RequestParam String qrcode) {
-        ResultData res = new ResultData();
-        Map<String, Object> resData = new HashMap<>();
+        ResultData result = new ResultData();
+        Map<String, Object> data = new HashMap<>();
 
         //检测参数
         if (StringUtils.isEmpty(qrcode)) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("qrcode cannot be empty");
-            return res;
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("qrcode cannot be empty");
+            return result;
         }
 
         //将replaceStatus字段修改为0，将isRemindedStatus字段修改为0
@@ -156,65 +163,91 @@ public class MachineEfficientFilterController {
         condition.put("isRemindedStatus", EfficientFilterRemindStatus.REMIND_ZERO.getValue());
         ResultData response = machineEfficientFilterService.modify(condition);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("modify machineFilterClean failed");
-            return res;
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("modify machineFilterClean failed");
+            return result;
         }
-        else {
-            //调用core服务中的方法重置该设备高效滤网的使用时间计时
-            MachinePool.getMachinePool().execute(() -> {
-                condition.clear();
-                condition.put("codeValue", qrcode);
-                condition.put("blockFlag", false);
-                ResultData machineQRCodeRes = machineQrcodeBindService.fetch(condition);
-                //得到uid
-                if (machineQRCodeRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
-                    List<MachineQrcodeBindVo> tmpStore = (List<MachineQrcodeBindVo>) machineQRCodeRes.getData();
-                    String machineId = tmpStore.get(0).getMachineId();
-                    condition.clear();
-                    condition.put("codeValue", qrcode);
-                    condition.put("blockFlag", false);
-                    machineQRCodeRes = qrCodeService.fetch(condition);
-                    //得到qrcode
-                    if (machineQRCodeRes.getResponseCode() == ResponseCode.RESPONSE_OK){
-                        String modelId = ((List<QRCode>)machineQRCodeRes.getData()).get(0).getModelId();
-                        condition.clear();
-                        condition.put("modelId", modelId);
-                        condition.put("blockFlag", false);
-                        ResultData modelEfficientRes = modelEfficientConfigService.fetch(condition);
-                        //得到重置时间
-                        if (modelEfficientRes.getResponseCode() == ResponseCode.RESPONSE_OK){
-                            int resetHour = ((List<ModelEfficientConfig>)modelEfficientRes.getData()).get(0).getResetHour();
-                            //非208/420S
-                            if (resetHour == 0){
-                                condition.clear();
-                                condition.put("qrcode", qrcode);
-                                condition.put("lastConfirmTime", new Date());
-                                machineEfficientInfoService.modify(condition);
-                            }
-                            else {
-                                //发消息
-                                coreV3Service.resetSurplus(machineId, resetHour);
-                            }
-                        }
-                    }
 
+        //调用core服务中的方法重置该设备高效滤网的使用时间计时
+        MachinePool.getMachinePool().execute(() -> {
+            Map<String, Object> con = new HashMap<>();
+            con.put("codeValue", qrcode);
+            con.put("blockFlag", false);
+            ResultData temp = machineQrcodeBindService.fetch(con);
+
+            if (temp.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("[Error] fail to find qrcode bind record for: " + qrcode);
+                return;
+            }
+
+            //得到uid
+            List<MachineQrcodeBindVo> tmpStore = (List<MachineQrcodeBindVo>) temp.getData();
+            String machineId = tmpStore.get(0).getMachineId();
+
+            //获取machineId对应的版本
+            con.clear();
+            con.put("machineId", machineId);
+            con.put("blockFlag", false);
+            temp = boardVersionService.fetchBoardVersion(con);
+            if (temp.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                logger.error("[Error] fail to find board version record for : " + qrcode);
+                return;
+            }
+            BoardVersion version = ((List<BoardVersion>) temp.getData()).get(0);
+            //威霖设备处理方法
+            if (version.getVersion() == 3) {
+                con.clear();
+                con.put("codeValue", qrcode);
+                con.put("blockFlag", false);
+                temp = qrCodeService.fetch(con);
+
+                //得到resetHour
+                if (temp.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    String modelId = ((List<QRCode>) temp.getData()).get(0).getModelId();
+                    con.clear();
+                    con.put("modelId", modelId);
+                    con.put("blockFlag", false);
+                    ResultData modelEfficientRes = modelEfficientConfigService.fetch(con);
+                    //得到重置时间
+                    if (modelEfficientRes.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        int resetHour = ((List<ModelEfficientConfig>) modelEfficientRes.getData()).get(0).getResetHour();
+                        //发消息
+                        coreV3Service.resetSurplus(machineId, resetHour);
+                    }
                 }
-            });
-            resData.put("qrcode", qrcode);
-            res.setData(resData);
-        }
-        return res;
+            }
+            //锐竹设备处理方法
+            if (version.getVersion() == 2) {
+                con.clear();
+                con.put("qrcode", qrcode);
+                con.put("lastConfirmTime", new Date());
+                machineEfficientInfoService.modify(con);
+                coreV2Service.configScreen(machineId, 0);
+                logger.info("request to config sreeen for machine: " + machineId + " with value 0");
+            }
+
+            //version=1
+            if (version.getVersion() == 1) {
+                con.clear();
+                con.put("qrcode", qrcode);
+                con.put("lastConfirmTime", new Date());
+                machineEfficientInfoService.modify(con);
+            }
+        });
+        data.put("qrcode", qrcode);
+        result.setData(data);
+        return result;
     }
 
     /**
      * 由mqtt-core服务调用，用于更新replace_status字段
+     *
      * @param remain mqtt-core传来的设备剩余可用时间
-     * @param uid 设备uid
+     * @param uid    设备uid
      * @return 执行结果
      */
     @GetMapping("/updateByRemain")
-    public ResultData updateByRemain(@RequestParam int remain,@RequestParam String uid) {
+    public ResultData updateByRemain(@RequestParam int remain, @RequestParam String uid) {
         ResultData res = new ResultData();
         //检测参数
         if (StringUtils.isEmpty(uid)) {
@@ -222,7 +255,7 @@ public class MachineEfficientFilterController {
             res.setDescription("qrcode cannot be empty");
             return res;
         }
-        ResultData response = machineEfficientFilterService.updateByRemain(remain,uid);
+        ResultData response = machineEfficientFilterService.updateByRemain(remain, uid);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("updateByRemain failed");

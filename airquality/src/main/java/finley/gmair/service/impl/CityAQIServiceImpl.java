@@ -271,6 +271,8 @@ import finley.gmair.model.district.Province;
 import finley.gmair.service.*;
 import finley.gmair.service.feign.LocationFeign;
 import finley.gmair.util.*;
+import finley.gmair.vo.DistrictDetailVo;
+import finley.gmair.vo.location.DistrictCityVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -284,10 +286,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -328,7 +327,7 @@ public class CityAQIServiceImpl implements CityAQIService {
 
     private Map<String, City> cities;
 
-    private Map<String, District> districts;
+    private Map<String, DistrictDetailVo> districts;
 
     private MojiToken mojiToken;
 
@@ -384,7 +383,7 @@ public class CityAQIServiceImpl implements CityAQIService {
                     item = districtArr.getJSONObject(k);
                     String districtId = item.getString("districtId");
                     String districtName = item.getString("districtName");
-                    District district = new District(districtId, districtName);
+                    DistrictDetailVo district = new DistrictDetailVo(districtId, districtName, cityId, cityName, cityPinyin);
                     districts.put(districtId, district);
                 }
             }
@@ -403,6 +402,11 @@ public class CityAQIServiceImpl implements CityAQIService {
                 if (quality == null) continue;
                 logger.info("Province aqi: " + JSON.toJSONString(quality));
                 map.put(provinceId, quality);
+                try {
+                    Thread.sleep(50);
+                } catch (Exception e) {
+                    continue;
+                }
             }
             logger.info("province aqi complete");
             for (Map.Entry<String, City> entry : cities.entrySet()) {
@@ -412,13 +416,18 @@ public class CityAQIServiceImpl implements CityAQIService {
                 if (quality == null) continue;
                 logger.info("City aqi: " + JSON.toJSONString(quality));
                 map.put(cityId, quality);
+                try {
+                    Thread.sleep(50);
+                } catch (Exception e) {
+                    continue;
+                }
             }
             logger.info("city aqi complete");
             try {
-                for (Map.Entry<String, District> entry : districts.entrySet()) {
+                for (Map.Entry<String, DistrictDetailVo> entry : districts.entrySet()) {
                     String districtId = entry.getKey();
-                    District district = entry.getValue();
-                    MojiRecord record = locate(district.getDistrictName());
+                    DistrictDetailVo district = entry.getValue();
+                    MojiRecord record = locate(district.getCityName(), district.getDistrictName());
                     if (record == null) {
                         logger.info("Fail to find district: " + districtId);
                         continue;
@@ -435,6 +444,7 @@ public class CityAQIServiceImpl implements CityAQIService {
             logger.info("district aqi complete");
             List<CityAirQuality> data = map.values().stream().collect(Collectors.toList());
             insertCityAqiDetail(data);
+            logger.info("update data complete");
         }).start();
     }
 
@@ -569,7 +579,7 @@ public class CityAQIServiceImpl implements CityAQIService {
                 airQualityCacheService.generate(cityAirQuality);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("update cache failure");
         }
         // step 2: update database
         if (airQualityList.isEmpty())
@@ -584,11 +594,27 @@ public class CityAQIServiceImpl implements CityAQIService {
         }
     }
 
-    private MojiRecord locate(String district) {
-        logger.info("district: " + district + ", size: " + list.size());
+    private MojiRecord locate(String cityName, String district) {
+        List<MojiRecord> candidate = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             MojiRecord record = list.get(i);
-            if (record.getName().contains(district)) return record;
+            if (record.getName().contains(district)) candidate.add(record);
+        }
+        if (candidate.size() == 1) return candidate.get(0);
+        if (candidate.size() > 1) {
+            for (MojiRecord record : candidate) {
+                logger.info("record: " + JSON.toJSONString(record) + ", cityName: " + cityName);
+                //完全相同的直接return
+                if (record.getName().equals(district)) {
+                    return record;
+                }
+                //包含城市名称的return有城市名称的
+                if (record.getName().contains(cityName)) {
+                    return record;
+                }
+            }
+            //全部不匹配则return第一个
+            return candidate.get(0);
         }
         return null;
     }

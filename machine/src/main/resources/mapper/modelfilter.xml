@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.modelfilter">
+    <resultMap id="materialVo" type="finley.gmair.model.machine.MapModelFilter">
+        <!--@Table gmair_machine.map_model_filter-->
+        <id column="mmm_id" property="mmmId"/>
+        <result column="model_id" property="modelId"/>
+        <result column="filter_id" property="filterId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <select id="selectFilerIdByModelId" parameterType="java.util.Map" resultType="java.lang.String">
+        select filter_id
+        from gmair_machine.map_model_filter
+        <where>
+            <if test="modelId != null">
+                model_id = #{modelId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

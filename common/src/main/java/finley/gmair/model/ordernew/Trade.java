@@ -140,6 +140,16 @@ public class Trade {
     private Date endTime;
 
     /**
+     * 买家留言
+     */
+    private String buyerMessage;
+
+    /**
+     * 卖家备注
+     */
+    private String sellerMemo;
+
+    /**
      * 收货人的姓名
      */
     private String receiverName;
@@ -301,7 +311,7 @@ public class Trade {
      * 获取买家付款时间
      */
     public String getPayTimeStr() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(this.payTime);
     }
 }

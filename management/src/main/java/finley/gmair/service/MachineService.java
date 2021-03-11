@@ -1,11 +1,20 @@
 package finley.gmair.service;
 
-import finley.gmair.form.machine.ControlOptionForm;
+import feign.codec.Encoder;
+import finley.gmair.form.machine.MachineFilterInfoQuery;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.FilterUpdByFormulaConfig;
+import finley.gmair.vo.machine.FilterUpdByMQTTConfig;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.netflix.feign.support.SpringEncoder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient("machine-agent")
+@FeignClient(value = "machine-agent", configuration = MachineService.RequestBodySupportConfig.class)
 public interface MachineService {
 
     @GetMapping("/machine/goods/model/list")
@@ -91,4 +100,41 @@ public interface MachineService {
 
     @GetMapping("/machine/qrcode/findbyqrcode/consumer")
     ResultData qrcodeGetMachineId(@RequestParam("codeValue") String codeValue);
+
+    @PostMapping("/machine/filter/info/query")
+    ResultData queryMachineFilterInfo(@RequestBody MachineFilterInfoQuery query);
+
+    @GetMapping("/machine/filter/info/model/name")
+    ResultData queryMachineModelName();
+
+    @GetMapping("/machine/filter/info/model/code")
+    ResultData queryMachineModelCode(@RequestParam("modelName") String modelName);
+
+    @GetMapping("/machine/filter/info/config/updatedByMQTT")
+    ResultData queryConfigUpdatedByMQTT();
+
+    @PostMapping("/machine/filter/info/update/config/updatedByMQTT")
+    ResultData updateConfigUpdatedByMQTT(@RequestBody FilterUpdByMQTTConfig config);
+
+    @GetMapping("/machine/filter/info/config/updatedByFormula")
+    ResultData queryConfigUpdatedByFormula();
+
+    @PostMapping("/machine/filter/info/update/config/updatedByFormula")
+    ResultData updateConfigUpdatedByFormula(@RequestBody FilterUpdByFormulaConfig config);
+
+    /**
+     * 当方法参数中有 @RequestBody 注解的时候，需要使用SpringEncoder而不是SpringFormEncoder，
+     * 或者是SpringFormEncoder(new SpringEncoder)，由于在OrderNewService中初始化了SpringFormEncoder，
+     * 所以在这里需要另外初始化一个SpringEncoder。
+     */
+    @Configuration
+    class RequestBodySupportConfig {
+        @Autowired
+        private ObjectFactory<HttpMessageConverters> messageConverters;
+
+        @Bean
+        public Encoder feignEncoder() {
+            return new SpringEncoder(this.messageConverters);
+        }
+    }
 }

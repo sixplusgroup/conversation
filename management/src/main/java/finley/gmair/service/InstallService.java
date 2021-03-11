@@ -1,8 +1,13 @@
 package finley.gmair.service;
 
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @FeignClient(value = "install-agent")
 public interface InstallService {
@@ -140,4 +145,8 @@ public interface InstallService {
 
     @GetMapping("/install/assign/company/list")
     ResultData getCompanyList();
+
+    @GetMapping("/install/assign/order")
+    ResultData overviewNow(@RequestParam("memberId")String memberId, @RequestParam("assignStatus")String assignStatus,@RequestParam("duration")String duration, @RequestParam("curPage")Integer curPage, @RequestParam("length")Integer length);
+
 }

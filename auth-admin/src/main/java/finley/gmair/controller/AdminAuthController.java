@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import finley.gmair.form.admin.AdminForm;
+import finley.gmair.form.admin.AdminPartInfoQuery;
 import finley.gmair.form.admin.LoginForm;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.service.AdminService;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -99,5 +99,22 @@ public class AdminAuthController {
         }
         result.setData(response.getData());
         return result;
+    }
+
+    /**
+     * 根据query给出的条件查询符合条件的账户信息
+     * @param query 查询条件对象
+     * @return 查询结果
+     */
+    @PostMapping("/admin/accounts")
+    public ResultData queryAdminAccounts(@RequestBody AdminPartInfoQuery query) {
+        ResultData res = new ResultData();
+
+        Map<String, Object> resData = new HashMap<>();
+        resData.put("size", adminService.fetchAdminAccountsSize(query));
+        resData.put("list", adminService.fetchAdminAccounts(query));
+
+        res.setData(resData);
+        return res;
     }
 }

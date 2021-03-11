@@ -679,4 +679,9 @@ public class InstallController {
         }
         return resultData;
     }
+
+    @GetMapping("assign/order")
+    ResultData overviewNow(String memberId, String assignStatus,String duration, Integer curPage, Integer length){
+        return installService.overviewNow(memberId, assignStatus, duration, curPage, length);
+    }
 }

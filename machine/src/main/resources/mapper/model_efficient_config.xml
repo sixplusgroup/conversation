@@ -2,13 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.machine.model_efficient_config">
     <resultMap id="ModelEfficientConfig" type="finley.gmair.model.machine.ModelEfficientConfig">
-        <result property="configId" column="config_id"></result>
-        <result property="modelId" column="model_id"></result>
-        <result property="firstRemind" column="first_remind"></result>
-        <result property="secondRemind" column="second_remind"></result>
-        <result property="resetHour" column="reset_hour"></result>
-        <result property="blockFlag" column="block_flag"></result>
-        <result property="createAt" column="create_time"></result>
+        <result property="configId" column="config_id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="firstRemind" column="first_remind"/>
+        <result property="secondRemind" column="second_remind"/>
+        <result property="resetHour" column="reset_hour"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="FilterUpdByMQTTConfig" type="finley.gmair.vo.machine.FilterUpdByMQTTConfig">
+        <result property="modelId" column="model_id"/>
+        <result property="modelName" column="model_name"/>
+        <result property="modelCode" column="model_code"/>
+        <result property="firstRemind" column="first_remind"/>
+        <result property="secondRemind" column="second_remind"/>
+        <result property="resetHour" column="reset_hour"/>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.machine.ModelEfficientConfig" useGeneratedKeys="false">
@@ -37,8 +46,15 @@
         </if>
     </select>
 
+    <select id="queryHasFirstRemind" resultMap="FilterUpdByMQTTConfig">
+        SELECT c.model_id, m.model_name, m.model_code, c.first_remind, c.second_remind, c.reset_hour
+        FROM gmair_machine.model_efficient_config c inner join gmair_machine.goods_model m
+        on c.model_id = m.model_id
+        WHERE c.first_remind > 0 AND c.block_flag = 0 AND m.block_flag = 0;
+    </select>
+
     <update id="updateByModelId" parameterType="java.util.Map">
-        UPDATE gmair_machine.model_light_config
+        UPDATE gmair_machine.model_efficient_config
         <set>
             <if test="modelId != null">
                 model_id = #{modelId},

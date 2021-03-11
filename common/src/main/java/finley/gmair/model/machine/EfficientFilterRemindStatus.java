@@ -5,7 +5,7 @@ import finley.gmair.model.EnumValue;
 /**
  * @author: Bright Chan
  * @date: 2020/7/25 15:45
- * @description: TODO
+ * @description: EfficientFilterRemindStatus
  */
 public enum EfficientFilterRemindStatus implements EnumValue {
     REMIND_ZERO(0), REMIND_ONCE(1), REMIND_TWICE(2);
