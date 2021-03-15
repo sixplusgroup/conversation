@@ -23,5 +23,6 @@
         <mapper resource="mapper/surveysnapshot.xml"/>
         <mapper resource="mapper/changemachinesnapshot.xml"/>
         <mapper resource="mapper/disassemblesnapshot.xml"/>
+        <mapper resource="mapper/assign_type_info.xml"/>
     </mappers>
 </configuration>

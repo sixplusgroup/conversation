@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.install.assign_type_info">
+
+    <resultMap id="assignTypeInfo" type="finley.gmair.model.installation.AssignTypeInfo">
+        <result property="assignTypeInfoId" column="assign_type_info_id"/>
+        <result property="assignType" column="assign_type"/>
+        <result property="pictureNumLimit" column="picture_num_limit"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.installation.AssignTypeInfo" useGeneratedKeys="false">
+        INSERT INTO gmair_install.install_assign_type_info (assign_type_info_id, assign_type,
+                                                            picture_num_limit, block_flag, create_time)
+        VALUES (#{assignTypeInfoId}, #{assignType}, #{pictureNumLimit}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="update" parameterType="finley.gmair.model.installation.AssignTypeInfo">
+        UPDATE gmair_install.install_assign_type_info
+        <set>
+            <if test="assignType != null">
+                assign_type = #{assignType},
+            </if>
+            <if test="pictureNumLimit != null">
+                picture_num_limit = #{pictureNumLimit},
+            </if>
+            <if test="blockFlag != null">
+                block_flag = #{blockFlag},
+            </if>
+            assign_type_info_id = #{assignTypeInfoId}
+        </set>
+        WHERE assign_type_info_id = #{assignTypeInfoId}
+    </update>
+
+    <select id="query_size_by_assign_type" parameterType="java.lang.String" resultType="int">
+        SELECT count(*) FROM gmair_install.install_assign_type_info where block_flag = false
+        <if test="_parameter != null">
+            AND assign_type = #{_parameter}
+        </if>
+    </select>
+
+    <select id="query_all" resultMap="assignTypeInfo">
+        SELECT assign_type_info_id, assign_type, picture_num_limit, block_flag, create_time
+        FROM gmair_install.install_assign_type_info
+        WHERE block_flag = false
+    </select>
+
+    <select id="query_by_assign_type" parameterType="java.lang.String" resultMap="assignTypeInfo">
+        SELECT assign_type_info_id, assign_type, picture_num_limit, block_flag, create_time
+        FROM gmair_install.install_assign_type_info
+        WHERE block_flag = false
+        <if test="_parameter != null">
+            AND assign_type = #{_parameter}
+        </if>
+    </select>
+</mapper>
