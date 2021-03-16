@@ -98,7 +98,7 @@ public class AssignController {
         String detail = form.getModel().trim();
         String source = form.getSource().trim();
         String type = form.getType();
-        if ((!type.equals("换机")) && (!type.equals("检修"))){
+        if (!type.equals("换机")){
             type = "安裝";
         }
         Assign assign;
