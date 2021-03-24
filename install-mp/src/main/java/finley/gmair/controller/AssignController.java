@@ -9,10 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -232,5 +229,15 @@ public class AssignController {
         }
         result = assignService.receive(assignId);
         return result;
+    }
+
+    /**
+     * 由安装类型得到上传图片数量
+     * @param assignType
+     * @return
+     */
+    @GetMapping("/assignTypeInfo/one")
+    public ResultData queryAssignTypeInfoByType(@RequestParam String assignType) {
+        return assignService.queryAssignTypeInfoByType(assignType);
     }
 }
