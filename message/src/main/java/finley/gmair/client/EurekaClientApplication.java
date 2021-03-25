@@ -56,9 +56,9 @@ public class EurekaClientApplication {
     public ResultData sendOne(MessageForm form) {
         ResultData result = new ResultData();
         String text;
-        if(StringUtils.isEmpty(form.getSignature())){
+        if (StringUtils.isEmpty(form.getSignature())) {
             text = new StringBuffer(form.getText()).append(MessageProperties.getValue("message_signature")).toString();
-        }else {
+        } else {
             text = new StringBuffer(form.getText()).append(form.getSignature()).toString();
         }
         MessageUtil.sendOne(form.getPhone().trim(), text.trim());
@@ -80,9 +80,9 @@ public class EurekaClientApplication {
     public ResultData sendGroup(MessageForm form) {
         ResultData result = new ResultData();
         String text;
-        if(StringUtils.isEmpty(form.getSignature())){
+        if (StringUtils.isEmpty(form.getSignature())) {
             text = new StringBuffer(form.getText()).append(MessageProperties.getValue("message_signature")).toString();
-        }else {
+        } else {
             text = new StringBuffer(form.getText()).append(form.getSignature()).toString();
         }
         MessageUtil.sendGroup(form.getPhone().trim(), text.trim());
