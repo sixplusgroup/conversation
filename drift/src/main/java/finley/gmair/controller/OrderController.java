@@ -157,6 +157,10 @@ public class OrderController {
         String district = form.getDistrict();
         String expectedDate = form.getExpectedDate();
         String description = form.getDescription();
+        TradeFrom tradeFrom = TradeFrom.WECHAT;
+        if (form.getTradeFrom() != null){
+            tradeFrom = form.getTradeFrom();
+        }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date expected = sdf.parse(expectedDate);
@@ -231,7 +235,7 @@ public class OrderController {
             }
         }
 
-        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate, TradeFrom.WECHAT);
+        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate, tradeFrom);
         driftOrder.setTotalPrice(price);
         driftOrder.setRealPay(price);
         driftOrder.setList(list);

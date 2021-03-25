@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ChangeOrderStatusForm;
+import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.form.drift.EXCodeCreateForm;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.admin.Admin;
@@ -687,5 +688,17 @@ public class DriftController {
             logger.error(e.getMessage());
         }
         return "";
+    }
+
+    /**
+     * 管理员创建免费甲醛检测订单
+     * @param form
+     * @return
+     */
+    @PostMapping("/order/create")
+    public ResultData createOrder(DriftOrderForm form) {
+        return driftService.createDriftOrder(form.getConsumerId(), form.getActivityId(), form.getEquipId(), form.getConsignee(),
+                form.getPhone(), form.getAddress(), form.getProvince(), form.getCity(), form.getDistrict(), form.getDescription(),
+                form.getExpectedDate(), form.getIntervalDate(), form.getAttachItem(), form.getTradeFrom());
     }
 }

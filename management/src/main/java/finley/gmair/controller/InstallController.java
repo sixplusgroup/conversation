@@ -694,4 +694,14 @@ public class InstallController {
     public ResultData overviewNow(String memberId, String assignStatus, String duration, Integer curPage, Integer length) {
         return installService.overviewNow(memberId, assignStatus, duration, curPage, length);
     }
+
+    @GetMapping("/assign/assignTypeInfo/all")
+    public ResultData queryAllAssignTypeInfo() {
+        return installService.queryAllAssignTypeInfo();
+    }
+
+    @GetMapping("/assign/assignTypeInfo/one")
+    public ResultData queryAssignTypeInfoByType(@RequestParam String assignType) {
+        return installService.queryAssignTypeInfoByType(assignType);
+    }
 }
