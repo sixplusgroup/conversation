@@ -15,6 +15,8 @@ public interface AssignDao {
 
     ResultData report_query(Map<String,Object> condition);
 
+    ResultData report_query(Map<String,Object> condition, int start, int length);
+
     ResultData principal(Map<String, Object> condition);
 
     ResultData principal(Map<String, Object> condition,int start,int length);

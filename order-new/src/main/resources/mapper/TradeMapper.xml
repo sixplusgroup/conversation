@@ -19,6 +19,8 @@
         <result column="pay_time" jdbcType="TIMESTAMP" property="payTime"/>
         <result column="consign_time" jdbcType="TIMESTAMP" property="consignTime"/>
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="buyer_message" jdbcType="VARCHAR" property="buyerMessage"/>
+        <result column="seller_memo" jdbcType="VARCHAR" property="sellerMemo"/>
         <result column="receiver_name" jdbcType="VARCHAR" property="receiverName"/>
         <result column="receiver_state" jdbcType="VARCHAR" property="receiverState"/>
         <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress"/>
@@ -52,12 +54,12 @@
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
         trade_id, tid, num_iid, num, `status`, `type`, shipping_type, trade_from, step_trade_status,
-        buyer_rate, created, modified, pay_time, consign_time, end_time, receiver_name, receiver_state,
-        receiver_address, receiver_zip, receiver_mobile, receiver_phone, receiver_country,
-        receiver_city, receiver_district, receiver_town, tmall_delivery, cn_service, delivery_cps,
-        cutoff_minutes, delivery_time, collect_time, dispatch_time, sign_time, es_time, price,
-        total_fee, payment, adjust_fee, received_payment, discount_fee, post_fee, credit_card_fee,
-        step_paid_fee, `mode`
+        buyer_rate, created, modified, pay_time, consign_time, end_time,
+        buyer_message, seller_memo, receiver_name, receiver_state, receiver_address, receiver_zip,
+        receiver_mobile, receiver_phone, receiver_country, receiver_city, receiver_district,
+        receiver_town, tmall_delivery, cn_service, delivery_cps, cutoff_minutes, delivery_time,
+        collect_time, dispatch_time, sign_time, es_time, price, total_fee, payment, adjust_fee,
+        received_payment, discount_fee, post_fee, credit_card_fee, step_paid_fee, `mode`
     </sql>
     <select
             id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -79,7 +81,8 @@
                            num, `status`, `type`, shipping_type,
                            trade_from, step_trade_status, buyer_rate,
                            created, modified, pay_time,
-                           consign_time, end_time, receiver_name,
+                           consign_time, end_time,
+                           buyer_message, seller_memo, receiver_name,
                            receiver_state, receiver_address, receiver_zip,
                            receiver_mobile, receiver_phone, receiver_country,
                            receiver_city, receiver_district, receiver_town,
@@ -95,7 +98,8 @@
                 #{shippingType,jdbcType=VARCHAR},
                 #{tradeFrom,jdbcType=VARCHAR}, #{stepTradeStatus,jdbcType=VARCHAR}, #{buyerRate,jdbcType=BOOLEAN},
                 #{created,jdbcType=TIMESTAMP}, #{modified,jdbcType=TIMESTAMP}, #{payTime,jdbcType=TIMESTAMP},
-                #{consignTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{receiverName,jdbcType=VARCHAR},
+                #{consignTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
+                #{buyerMessage,jdbcType=VARCHAR}, #{sellerMemo,jdbcType=VARCHAR}, #{receiverName,jdbcType=VARCHAR},
                 #{receiverState,jdbcType=VARCHAR}, #{receiverAddress,jdbcType=VARCHAR}, #{receiverZip,jdbcType=VARCHAR},
                 #{receiverMobile,jdbcType=VARCHAR}, #{receiverPhone,jdbcType=VARCHAR},
                 #{receiverCountry,jdbcType=VARCHAR},
@@ -158,6 +162,12 @@
             </if>
             <if test="endTime != null">
                 end_time,
+            </if>
+            <if test="buyerMessage != null">
+                buyer_message,
+            </if>
+            <if test="sellerMemo != null">
+                seller_memo,
             </if>
             <if test="receiverName != null">
                 receiver_name,
@@ -293,6 +303,12 @@
             <if test="endTime != null">
                 #{endTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="buyerMessage != null">
+                #{buyerMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMemo != null">
+                #{sellerMemo,jdbcType=VARCHAR},
+            </if>
             <if test="receiverName != null">
                 #{receiverName,jdbcType=VARCHAR},
             </if>
@@ -427,6 +443,12 @@
             </if>
             <if test="endTime != null">
                 end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyerMessage != null">
+                buyer_message = #{buyerMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMemo != null">
+                seller_memo = #{sellerMemo,jdbcType=VARCHAR},
             </if>
             <if test="receiverName != null">
                 receiver_name = #{receiverName,jdbcType=VARCHAR},
@@ -564,6 +586,12 @@
             <if test="endTime != null">
                 end_time = #{endTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="buyerMessage != null">
+                buyer_message = #{buyerMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMemo != null">
+                seller_memo = #{sellerMemo,jdbcType=VARCHAR},
+            </if>
             <if test="receiverName != null">
                 receiver_name = #{receiverName,jdbcType=VARCHAR},
             </if>
@@ -671,6 +699,8 @@
             pay_time          = #{payTime,jdbcType=TIMESTAMP},
             consign_time      = #{consignTime,jdbcType=TIMESTAMP},
             end_time          = #{endTime,jdbcType=TIMESTAMP},
+            buyer_message     = #{buyerMessage,jdbcType=VARCHAR},
+            seller_memo       = #{sellerMemo,jdbcType=VARCHAR},
             receiver_name     = #{receiverName,jdbcType=VARCHAR},
             receiver_state    = #{receiverState,jdbcType=VARCHAR},
             receiver_address  = #{receiverAddress,jdbcType=VARCHAR},
@@ -785,6 +815,12 @@
             </if>
             <if test="tbTrade.endTime != null">
                 end_time,
+            </if>
+            <if test="tbTrade.buyerMessage != null">
+                buyer_message,
+            </if>
+            <if test="tbTrade.sellerMemo != null">
+                seller_memo,
             </if>
             <if test="tbTrade.receiverName != null">
                 receiver_name,
@@ -917,6 +953,12 @@
             <if test="tbTrade.endTime != null">
                 #{tbTrade.endTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="tbTrade.buyerMessage != null">
+                #{tbTrade.buyerMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="tbTrade.sellerMemo != null">
+                #{tbTrade.sellerMemo,jdbcType=VARCHAR},
+            </if>
             <if test="tbTrade.receiverName != null">
                 #{tbTrade.receiverName,jdbcType=VARCHAR},
             </if>
@@ -1003,4 +1045,11 @@
             </if>
         </trim>
     </insert>
+
+    <!--auto generated by MybatisCodeHelper on 2020-11-06-->
+    <update id="updateModeByTid">
+        update trade
+        set `mode`=#{updatedMode,jdbcType=INTEGER}
+        where tid = #{tid,jdbcType=BIGINT}
+    </update>
 </mapper>

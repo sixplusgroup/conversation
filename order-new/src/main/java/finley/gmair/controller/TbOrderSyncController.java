@@ -7,7 +7,10 @@ import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 
@@ -19,7 +22,7 @@ import java.util.Date;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/order-new/tbOrderSync")
+@RequestMapping("/order/tbOrderSync")
 public class TbOrderSyncController {
 
     private Logger logger = LoggerFactory.getLogger(TbOrderSyncController.class);
@@ -39,7 +42,16 @@ public class TbOrderSyncController {
         return new ResultData();
     }
 
-    @GetMapping("/import/full")
+    @PostMapping("/import/manualIncremental")
+    public ResultData manualIncrementalImport() {
+        ResultData res = tbOrderSyncService.incrementalImport();
+        if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error("manualIncrementalImport. failed!");
+        }
+        return res;
+    }
+
+    @PostMapping("/import/full")
     public ResultData fullImport() {
         return tbOrderSyncService.fullImport();
     }
@@ -50,8 +62,9 @@ public class TbOrderSyncController {
     }
 
     @PostMapping("/import/manualByModified")
-    public ResultData manualImportByModified(@RequestParam Date startModified, @RequestParam Date endModified) {
-        return tbOrderSyncService.manualImportByModified(startModified, endModified);
+    public ResultData manualImportByModified(@RequestParam Date startModified, @RequestParam Date endModified,
+                                             @RequestParam(required = false) Date startCreated) {
+        return tbOrderSyncService.manualImportByModified(startModified, endModified, startCreated);
     }
 
     @PostMapping("/import/manualByTid")

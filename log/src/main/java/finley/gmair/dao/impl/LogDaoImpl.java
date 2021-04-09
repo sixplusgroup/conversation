@@ -6,6 +6,11 @@ import finley.gmair.model.log.*;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -119,20 +124,41 @@ public class LogDaoImpl extends BaseDao implements LogDao {
     @Override
     public ResultData queryUserActionLog(Map<String, Object> condition) {
         ResultData result = new ResultData();
-        try {
-            List<UserMachineOperationLog> list;
-            if (condition.containsKey("userId") && condition.containsKey("machineValue")) {
-                list = mongoTemplate.find(new Query(Criteria.where("userId").is(condition.get("userId"))
-                        .and("machineValue").is(condition.get("machineValue"))), UserMachineOperationLog.class, Collection_UserActionLog);
-            } else if (condition.containsKey("userId")) {
-                list = mongoTemplate.find(new Query(Criteria.where("userId").is(condition.get("userId"))), UserMachineOperationLog.class, Collection_UserActionLog);
-            } else if (condition.containsKey("machineValue")) {
-                list = mongoTemplate.find(new Query(Criteria.where("machineValue").is(condition.get("machineValue"))), UserMachineOperationLog.class, Collection_UserActionLog);
-            } else {
-                list = mongoTemplate.findAll(UserMachineOperationLog.class, Collection_UserActionLog);
-            }
 
-            if (list.isEmpty()) {
+
+        try {
+//            List<UserMachineOperationLog> list;
+            Criteria where = new Criteria();
+            if (condition.containsKey("userId")) {
+                where.and("userId").is(MapUtils.getString(condition, "userId"));
+            }
+            if (condition.containsKey("qrcode")) {
+                where.and("qrcode").is(MapUtils.getString(condition, "qrcode"));
+            }
+            Query query = new Query(where);
+
+            int pageIndex = MapUtils.getIntValue(condition, "pageIndex", 0);
+            int pageSize = MapUtils.getIntValue(condition, "pageSize", 15);
+
+            Pageable pageable = new PageRequest(pageIndex, pageSize);
+            query.with(pageable).with(new Sort(new Sort.Order(Sort.Direction.DESC, "createAt")));
+
+            List<UserMachineOperationLog> list = mongoTemplate.find(query, UserMachineOperationLog.class, Collection_UserActionLog);
+
+//            if (condition.containsKey("userId") && condition.containsKey("qrcode")) {
+//                Criteria where = new Criteria();
+//                where.and("userId").is(condition.get("userId"));
+//                where.and("qrcode").is(condition.get("qrcode"));
+//
+//            } else if (condition.containsKey("userId")) {
+//                list = mongoTemplate.find(new Query(Criteria.where("userId").is(condition.get("userId"))), UserMachineOperationLog.class, Collection_UserActionLog);
+//            } else if (condition.containsKey("qrcode")) {
+//                list = mongoTemplate.find(new Query(Criteria.where("qrcode").is(condition.get("qrcode"))), UserMachineOperationLog.class, Collection_UserActionLog);
+//            } else {
+//                list = mongoTemplate.findAll(UserMachineOperationLog.class, Collection_UserActionLog);
+//            }
+
+            if (CollectionUtils.isEmpty(list)) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             }
             result.setData(list);
@@ -242,7 +268,7 @@ public class LogDaoImpl extends BaseDao implements LogDao {
             List<MqttAckLog> list;
             if (condition.containsKey("machineId") && condition.containsKey("ackId")) {
                 list = mongoTemplate.find(new Query(Criteria.where("machineId").is(condition.get("machineId"))
-                .and("ackId").is(condition.get("ackId"))), MqttAckLog.class, Collection_MqttAckLog);
+                        .and("ackId").is(condition.get("ackId"))), MqttAckLog.class, Collection_MqttAckLog);
             } else if (condition.containsKey("machineId")) {
                 list = mongoTemplate.find(new Query(Criteria.where("machineId").is(condition.get("machineId"))), MqttAckLog.class, Collection_MqttAckLog);
             } else if (condition.containsKey("ackId")) {

@@ -4,9 +4,6 @@ import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.Path;
-import javax.xml.transform.Result;
-
 @FeignClient("machine-agent")
 public interface MachineService {
 
@@ -190,4 +187,7 @@ public interface MachineService {
 
     @GetMapping("/machine/model/getMaterials")
     ResultData getMaterials(@RequestParam("modelId") String modelId);
+
+    @GetMapping("/machine/text")
+    ResultData getText(@RequestParam("textType") String textType);
 }

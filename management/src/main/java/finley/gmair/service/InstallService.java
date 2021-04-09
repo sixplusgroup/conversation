@@ -1,8 +1,13 @@
 package finley.gmair.service;
 
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @FeignClient(value = "install-agent")
 public interface InstallService {
@@ -16,7 +21,7 @@ public interface InstallService {
      * @return
      */
     @PostMapping("/install/assign/create")
-    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source);
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source,  @RequestParam("type") String type);
 
 
     /**
@@ -30,21 +35,21 @@ public interface InstallService {
      * @return
      */
     @PostMapping("/install/assign/create")
-    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source, @RequestParam(value = "description", required = false) String description);
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source, @RequestParam(value = "description", required = false) String description,  @RequestParam("type") String type);
 
 
     @PostMapping("/install/assign/create")
-    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source, @RequestParam(value = "description", required = false) String description,@RequestParam(value = "company", required = false) String company);
+    ResultData createAssign(@RequestParam("consumerConsignee") String consumerConsignee, @RequestParam("consumerPhone") String consumerPhone, @RequestParam("consumerAddress") String consumerAddress, @RequestParam(value = "model") String model, @RequestParam("source") String source, @RequestParam(value = "description", required = false) String description,@RequestParam(value = "company", required = false) String company,  @RequestParam("type") String type);
 
     //调度人员查看已有的安装任务
     @GetMapping("/install/assign/{assignId}/info")
     ResultData fetchAssign(@PathVariable("assignId") String assignId);
 
     @GetMapping("/install/assign/list")
-    ResultData fetchAssign(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId,@RequestParam(value = "search", required = false) String search);
+    ResultData fetchAssign(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId,@RequestParam(value = "search", required = false) String search, @RequestParam(value = "sortType", required = false) String sortType);
 
     @GetMapping("/install/assign/list")
-    ResultData fetchAssignByPage(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId, @RequestParam(value = "curPage", required = false) int curPage, @RequestParam(value = "length", required = false) int length,@RequestParam("search") String search);
+    ResultData fetchAssignByPage(@RequestParam(value = "status", required = false) String status, @RequestParam(value = "teamId", required = false) String teamId, @RequestParam(value = "curPage", required = false) int curPage, @RequestParam(value = "length", required = false) int length,@RequestParam("search") String search, @RequestParam(value = "sortType", required = false) String sortType);
 
     //调度人员撤销安装任务
     @PostMapping("/install/assign/cancel")
@@ -103,16 +108,16 @@ public interface InstallService {
     ResultData submitAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode, @RequestParam("picture") String picture, @RequestParam("wifi") Boolean wifi, @RequestParam("method") String method, @RequestParam(value = "description", required = false) String description,@RequestParam("date") String date);
 
     @PostMapping("/install/assign/report")
-    ResultData reportQueryByAssignId(@RequestParam("assignId") String assignId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime);
+    ResultData reportQueryByAssignId(@RequestParam("assignId") String assignId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType, @RequestParam("page")  Integer page, @RequestParam("pageLength") Integer pageLength);
 
     @GetMapping("/install/assign/report")
-    ResultData reportQueryByTeamId(@RequestParam("teamId") String teamId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime);
+    ResultData reportQueryByTeamId(@RequestParam("teamId") String teamId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType, @RequestParam("page")  Integer page, @RequestParam("pageLength") Integer pageLength);
 
     @GetMapping("/install/assign/report")
-    ResultData reportQueryByMemberId(@RequestParam("memberId") String memberId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime);
+    ResultData reportQueryByMemberId(@RequestParam("memberId") String memberId,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType, @RequestParam("page")  Integer page, @RequestParam("pageLength") Integer pageLength);
 
     @GetMapping("/install/assign/report")
-    ResultData reportQueryByMemberTime(@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime);
+    ResultData reportQueryByMemberTime(@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime,@RequestParam("sortType") String sortType, @RequestParam("page")  Integer page, @RequestParam("pageLength") Integer pageLength);
 
     @PostMapping("/install/assign/init")
     ResultData initAssign(@RequestParam("assignId") String assignId, @RequestParam("qrcode") String qrcode);
@@ -140,4 +145,8 @@ public interface InstallService {
 
     @GetMapping("/install/assign/company/list")
     ResultData getCompanyList();
+
+    @GetMapping("/install/assign/order")
+    ResultData overviewNow(@RequestParam("memberId")String memberId, @RequestParam("assignStatus")String assignStatus,@RequestParam("duration")String duration, @RequestParam("curPage")Integer curPage, @RequestParam("length")Integer length);
+
 }

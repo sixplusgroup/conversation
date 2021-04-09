@@ -1,19 +1,21 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.OrderMapper;
-import finley.gmair.dao.SkuItemMapper;
 import finley.gmair.dao.TradeMapper;
+import finley.gmair.model.dto.OrderInfo;
 import finley.gmair.model.dto.TbOrderExcel;
-import finley.gmair.model.ordernew.Order;
+import finley.gmair.model.ordernew.TbTradeStatus;
 import finley.gmair.model.ordernew.Trade;
 import finley.gmair.model.ordernew.TradeFrom;
+import finley.gmair.service.SkuItemService;
 import finley.gmair.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 /**
  * @author ：tsl
@@ -28,7 +30,7 @@ public class TradeServiceImpl implements TradeService {
     @Autowired
     OrderMapper orderMapper;
     @Autowired
-    SkuItemMapper skuItemMapper;
+    SkuItemService skuItemService;
 
     @Override
     public List<Trade> selectAll() {
@@ -36,28 +38,28 @@ public class TradeServiceImpl implements TradeService {
     }
 
     @Override
-    public List<TbOrderExcel> selectAllTradeExcel() {
-        List<Order> orderList = orderMapper.selectAll();
-        
-        return orderList.stream().map(order -> {
-            Trade trade = tradeMapper.selectByPrimaryKey(order.getTradeId());
-            String numIid = order.getNumIid() == null ? "" : order.getNumIid().toString();
-            String skuId = order.getSkuId() == null ? "" : order.getSkuId().toString();
-            List<String> modelList = skuItemMapper.selectMachineModelByNumIidAndSkuId(numIid, skuId);
-            String machineModel = CollectionUtils.isEmpty(modelList) ? "" : modelList.get(0);
+    public List<TbOrderExcel> selectTradeExcel(Date startDate, Date endDate) {
+        List<OrderInfo> orderList = orderMapper.selectOrderInfOrderByPayTime(startDate, endDate);
+        return orderList.stream().map(o -> {
             TbOrderExcel excel = new TbOrderExcel();
-            excel.setTradeFrom(TradeFrom.TMALL.name());
-            excel.setTid(trade.getTid());
+            excel.setTradeFrom(TradeFrom.TMALL.getDesc());
+            excel.setTid(o.getTid().toString());
+            String skuPropertiesName = o.getSkuPropertiesName();
+            String property = skuPropertiesName != null && skuPropertiesName.length() > 5 ? skuPropertiesName.substring(5) : "";
+            String numIid = o.getNumIid() == null ? "" : o.getNumIid().toString();
+            String skuId = o.getSkuId() == null ? "" : o.getSkuId().toString();
+            String machineModel = skuItemService.selectMachineModelByNumIidAndSkuId(numIid, skuId);
             excel.setMachineModel(machineModel);
-            excel.setNum(order.getNum());
-            excel.setPayment(order.getPayment());
-            excel.setCreated(trade.getCreated());
-            excel.setStatus(order.getStatus());
-            excel.setReceiverName(trade.getReceiverName());
-            excel.setReceiverMobile(trade.getReceiverAddress());
-            excel.setReceiverCity(trade.getReceiverCity());
-            excel.setReceiverAddress(trade.getReceiverState() + trade.getReceiverCity()
-                    + trade.getReceiverDistrict() + trade.getReceiverAddress());
+            excel.setPropertyName(property);
+            excel.setNum(o.getNum());
+            excel.setPayment(o.getPayment());
+            excel.setCreated(o.getPayTime());
+            excel.setStatus(TbTradeStatus.valueOf(o.getStatus()).getDesc());
+            excel.setReceiverName(o.getReceiverName());
+            excel.setReceiverMobile(o.getReceiverMobile());
+            excel.setReceiverCity(o.getReceiverCity());
+            excel.setReceiverAddress(o.getReceiverState() + o.getReceiverCity()
+                    + o.getReceiverDistrict() + o.getReceiverAddress());
             return excel;
         }).collect(Collectors.toList());
     }

@@ -61,9 +61,23 @@ public class CrmOrderDTO {
      * 初始化状态（默认是1）
      */
     private String initflag;
+    /**
+     * 卖家留言
+     */
+    private String sellermes;
+    /**
+     * 买家留言
+     */
+    private String buyermes;
+
+    /**
+     * 账单
+     */
+    private String billentry;
 
     public CrmOrderDTO() {
         this.messagestat = "0";
         this.initflag = "1";
+        this.billentry = "";
     }
 }

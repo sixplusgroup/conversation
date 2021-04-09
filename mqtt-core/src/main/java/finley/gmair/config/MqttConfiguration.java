@@ -134,7 +134,7 @@ public class MqttConfiguration {
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getInbound().getClientId(), mqttClientFactory(), inboundTopic);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
-        adapter.setQos(1);
+        adapter.setQos(0);
         adapter.setOutputChannel(mqttInputChannel());
         return adapter;
     }
@@ -254,12 +254,12 @@ public class MqttConfiguration {
                 case "CHK_UPDATE":
                     break;
                 case "SENSOR":
-                    if (array.length == 6) {
+                    if (array.length == 7) {
                         //获取传感器数值类型（pm2.5, co2, temp, temp_out, humidity）其中之一
                         furtherAction = array[6];
                         int value = (json.containsKey("value")) ? json.getIntValue("value") : Integer.MIN_VALUE;
                         dealSingleSensor(furtherAction, value);
-                    } else if (array.length == 7) {
+                    } else if (array.length == 6) {
                         MQTTUtil.partial(redisService, machineId, json);
                     } else {
 
@@ -279,11 +279,11 @@ public class MqttConfiguration {
                     CorePool.getSurplusPool().execute(() -> {
                         try {
                             machineFeignService.updateByRemain(surplus.getRemain(), surplus.getMachineId());
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                             logger.error(e.getMessage());
                         }
-                            });
+                    });
 //                    logger.info("surplus: " + JSON.toJSONString(surplus));
                     break;
                 case "VER":

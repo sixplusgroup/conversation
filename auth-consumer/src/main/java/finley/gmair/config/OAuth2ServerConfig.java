@@ -45,6 +45,8 @@ public class OAuth2ServerConfig {
                     .authorizeRequests()
                     .antMatchers("/auth/consumer/request").permitAll()
                     .antMatchers("/auth/consumer/register").permitAll()
+                    .antMatchers("/auth/consumer/profile").permitAll()
+                    .antMatchers("/auth/consumer/accounts").permitAll()
                     .antMatchers("/auth/probe/consumerid/by/openid").permitAll()
                     .antMatchers("/auth/user/**").authenticated();
             // @formatter:on
@@ -101,7 +103,7 @@ public class OAuth2ServerConfig {
             DefaultTokenServices services = new DefaultTokenServices();
             services.setSupportRefreshToken(true);
             services.setAccessTokenValiditySeconds(60 * 60 * 48);//设置token的过期时间
-            services.setRefreshTokenValiditySeconds(60 * 60 * 48);
+            services.setRefreshTokenValiditySeconds(60 * 60 * 168);  // refresh_token时间设置的时间要大于access_token，这里设置成7天
             services.setTokenStore(tokenStore());
             return services;
         }

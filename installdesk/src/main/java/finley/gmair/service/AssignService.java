@@ -14,6 +14,8 @@ public interface AssignService {
 
     ResultData report_fetch(Map<String,Object> condition);
 
+    ResultData report_fetch(Map<String,Object> condition, int start, int length);
+
     ResultData update(Map<String, Object> condition);
 
     ResultData block(String assignId);

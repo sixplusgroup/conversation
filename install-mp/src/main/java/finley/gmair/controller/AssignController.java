@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.installation.Assign;
 import finley.gmair.service.AssignService;
 import finley.gmair.service.ResourceService;
 import finley.gmair.util.ResponseCode;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -41,7 +43,7 @@ public class AssignController {
      * @return
      */
     @GetMapping("/tasks")
-    public ResultData assigns(String memberId, Integer status, String search,String page,String pageLength,String reverse) {
+    public ResultData assigns(String memberId, Integer status, String search,String page,String pageLength,String reverse, String sortType) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -49,9 +51,9 @@ public class AssignController {
             return result;
         }
         if(!StringUtils.isEmpty(page)&&!StringUtils.isEmpty(pageLength)){
-            result=assignService.fetchAssign(memberId, status, search,page,pageLength,reverse);
+            result=assignService.fetchAssign(memberId, status, search,page,pageLength,reverse, sortType);
         }else {
-            result = assignService.fetchAssign(memberId, status, search,reverse);
+            result = assignService.fetchAssign(memberId, status, search,reverse, sortType);
         }
         return result;
     }
@@ -70,14 +72,14 @@ public class AssignController {
     }
 
     @GetMapping("/own")
-    public ResultData overview(String memberId, Integer status, String search) {
+    public ResultData overview(String memberId, Integer status, String search, String sortType) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装工人的信息");
             return result;
         }
-        result = assignService.fetchOwnAssign(memberId, status, search);
+        result = assignService.fetchOwnAssign(memberId, status, search, sortType);
         return result;
     }
 

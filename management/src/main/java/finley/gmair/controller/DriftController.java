@@ -1,6 +1,7 @@
 package finley.gmair.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ChangeOrderStatusForm;
@@ -68,19 +69,19 @@ public class DriftController {
     private String baseDir;
 
     @GetMapping("/order/list")
-    ResultData driftOrderList(String startTime,String endTime,String status,String search,String type){
-        return driftService.driftOrderList(startTime,endTime,status,search,type);
+    ResultData driftOrderList(String startTime, String endTime, String status, String search, String type) {
+        return driftService.driftOrderList(startTime, endTime, status, search, type);
     }
 
     @GetMapping("/order/listByPage")
-    ResultData driftOrderListByPage(int curPage , int pageSize , String startTime,String endTime,String status,String search,String type){
-        return driftService.driftOrderListByPage(curPage,pageSize,startTime,endTime,status,search,type);
+    ResultData driftOrderListByPage(int curPage, int pageSize, String startTime, String endTime, String status, String search, String type) {
+        return driftService.driftOrderListByPage(curPage, pageSize, startTime, endTime, status, search, type);
     }
 
     @GetMapping("/order/{orderId}")
-    ResultData selectByOrderId(@PathVariable("orderId") String orderId){
+    ResultData selectByOrderId(@PathVariable("orderId") String orderId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)){
+        if (StringUtils.isEmpty(orderId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供orderId");
             return result;
@@ -90,35 +91,35 @@ public class DriftController {
     }
 
     @PostMapping("/order/express/submit")
-    ResultData submitMachineCode(String orderId,String machineCode,String expressNo, int expressFlag, String company){
+    ResultData submitMachineCode(String orderId, String machineCode, String expressNo, int expressFlag, String company) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)||StringUtils.isEmpty(machineCode)||StringUtils.isEmpty(expressNo)||StringUtils.isEmpty(company)){
+        if (StringUtils.isEmpty(orderId) || StringUtils.isEmpty(machineCode) || StringUtils.isEmpty(expressNo) || StringUtils.isEmpty(company)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供正确的参数");
             return result;
         }
-        ResultData response = driftService.updateMachineCode(orderId,machineCode);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        ResultData response = driftService.updateMachineCode(orderId, machineCode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription("更新机器码失败");
             return result;
         }
-        response = driftService.createOrderExpress(orderId,expressNo,expressFlag,company);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        response = driftService.createOrderExpress(orderId, expressNo, expressFlag, company);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription("物流信息创建失败");
             return result;
         }
         String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
-        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
+        Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()), Admin.class).get(0);
         String message = admin.getUsername();
-        if(expressFlag==0){
-            message+="更新了寄出快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
-        }else {
-            message+="更新了寄回快递单号："+expressNo+"，快递公司："+company+"，机器码："+machineCode;
+        if (expressFlag == 0) {
+            message += "更新了寄出快递单号：" + expressNo + "，快递公司：" + company + "，机器码：" + machineCode;
+        } else {
+            message += "更新了寄回快递单号：" + expressNo + "，快递公司：" + company + "，机器码：" + machineCode;
         }
-        driftService.createAction(orderId,message,admin.getAdminId());
+        driftService.createAction(orderId, message, admin.getAdminId());
         result.setResponseCode(response.getResponseCode());
         result.setData(response.getData());
         result.setDescription(response.getDescription());
@@ -127,45 +128,49 @@ public class DriftController {
 
     /**
      * 根据activityId查询活动详情
+     *
      * @param activityId
      * @return
      */
     @GetMapping("/activity/{activityId}/profile")
-    ResultData getActivityDetail(@PathVariable("activityId") String activityId){
+    ResultData getActivityDetail(@PathVariable("activityId") String activityId) {
         return driftService.getActivityDetail(activityId);
     }
 
     /**
      * 取消订单
+     *
      * @param orderId
      * @return
      */
     @PostMapping("/order/cancel")
-    ResultData cancelOrder(String orderId){
+    ResultData cancelOrder(String orderId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)){
+        if (StringUtils.isEmpty(orderId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供订单编号");
             return result;
         }
         String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        result = driftService.cancelOrder(orderId,account);
+        result = driftService.cancelOrder(orderId, account);
         return result;
     }
 
     /**
      * 获取快递详情信息
+     *
      * @param orderId
      * @param status
      * @return
      */
     @GetMapping("/order/express/select")
-    ResultData getExpressDetail(String orderId,int status){
-        return driftService.getExpressDetail(orderId,status);
+    ResultData getExpressDetail(String orderId, int status) {
+        return driftService.getExpressDetail(orderId, status);
     }
 
     /**
      * 更新订单信息
+     *
      * @param orderId
      * @param consignee
      * @param phone
@@ -177,25 +182,26 @@ public class DriftController {
      * @return
      */
     @PostMapping("/order/update")
-    ResultData updateOrder(String orderId,String consignee,String phone,String province,String city,String district,String address,String status,String expectedDate){
+    ResultData updateOrder(String orderId, String consignee, String phone, String province, String city, String district, String address, String status, String expectedDate) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)){
+        if (StringUtils.isEmpty(orderId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供orderId");
             return result;
         }
-        result = driftService.updateOrder(orderId,consignee,phone,province,city,district,address,status,expectedDate);
-        if(result.getResponseCode()==ResponseCode.RESPONSE_OK){
+        result = driftService.updateOrder(orderId, consignee, phone, province, city, district, address, status, expectedDate);
+        if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
             String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
-            String message = admin.getUsername()+"更新了订单："+DriftUtil.updateMessage(consignee,phone,province,city,district,address,status,expectedDate);
-            driftService.createAction(orderId,message,admin.getAdminId());
+            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()), Admin.class).get(0);
+            String message = admin.getUsername() + "更新了订单：" + DriftUtil.updateMessage(consignee, phone, province, city, district, address, status, expectedDate);
+            driftService.createAction(orderId, message, admin.getAdminId());
         }
         return result;
     }
 
     /**
      * 下载当前搜索到的订单
+     *
      * @param startTime
      * @param endTime
      * @param status
@@ -205,14 +211,15 @@ public class DriftController {
      * @return
      */
     @GetMapping("/order/download")
-    String order_download(String startTime,String endTime,String status,String search,HttpServletResponse response,String type){
-        ResultData result=new ResultData();
-        result = driftService.driftOrderList(startTime,endTime,status,search,type);
-        String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".xls";
+    String order_download(String startTime, String endTime, String status, String search, HttpServletResponse response, String type) {
+        ResultData result;
+        result = driftService.driftOrderList(startTime, endTime, status, search, type);
+        logger.info("download info: " + JSON.toJSONString(result));
+        String fileName = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xls";
         try {
             //查询数据库中所有的数据
-            String data= JSONObject.toJSONString(result.getData());
-            List<DriftOrderPanel> list= JSONArray.parseArray(data,DriftOrderPanel.class);
+            String data = JSONObject.toJSONString(result.getData());
+            List<DriftOrderPanel> list = JSONArray.parseArray(data, DriftOrderPanel.class);
 //            logger.info(result.getData().toString());
             HSSFWorkbook wb = new HSSFWorkbook();
             HSSFSheet sheet = wb.createSheet("sheet1");
@@ -254,25 +261,25 @@ public class DriftController {
                 value[i + 1][5] = list.get(i).getPhone();
                 value[i + 1][6] = list.get(i).getExpressAddress();
                 value[i + 1][7] = list.get(i).getQuantity();
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getItemPrice())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getItemPrice())) {
                     value[i + 1][8] = "无";
-                }else {
+                } else {
                     value[i + 1][8] = list.get(i).getItemPrice();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getItemTotalPrice())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getItemTotalPrice())) {
                     value[i + 1][9] = "无";
-                }else {
+                } else {
                     value[i + 1][9] = list.get(i).getItemTotalPrice();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getItemRealPrice())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getItemRealPrice())) {
                     value[i + 1][10] = "无";
-                }else {
+                } else {
                     value[i + 1][10] = list.get(i).getItemRealPrice();
                 }
                 value[i + 1][11] = new SimpleDateFormat("yyyy-MM-dd").format(list.get(i).getExpectedDate());
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExcode())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getExcode())) {
                     value[i + 1][12] = "无";
-                }else {
+                } else {
                     value[i + 1][12] = list.get(i).getExcode();
                 }
                 if (!org.springframework.util.StringUtils.isEmpty(list.get(i).getStatus())) {
@@ -304,56 +311,56 @@ public class DriftController {
                             break;
                     }
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getMachineOrderNo())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getMachineOrderNo())) {
                     value[i + 1][14] = "无";
-                }else {
+                } else {
                     value[i + 1][14] = list.get(i).getMachineOrderNo();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutNum())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutNum())) {
                     value[i + 1][15] = "无";
-                }else {
+                } else {
                     value[i + 1][15] = list.get(i).getExpressOutNum();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutCompany())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressOutCompany())) {
                     value[i + 1][16] = "无";
-                }else {
+                } else {
                     value[i + 1][16] = list.get(i).getExpressOutCompany();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackNum())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackNum())) {
                     value[i + 1][17] = "无";
-                }else {
+                } else {
                     value[i + 1][17] = list.get(i).getExpressBackNum();
                 }
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackCompany())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getExpressBackCompany())) {
                     value[i + 1][18] = "无";
-                }else {
+                } else {
                     value[i + 1][18] = list.get(i).getExpressBackCompany();
                 }
                 value[i + 1][19] = list.get(i).getTotalPrice();
                 value[i + 1][20] = list.get(i).getRealPay();
                 value[i + 1][21] = list.get(i).getIntervalDate();
-                if(org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())){
+                if (org.springframework.util.StringUtils.isEmpty(list.get(i).getDescription())) {
                     value[i + 1][22] = "无";
-                }else {
+                } else {
                     value[i + 1][22] = list.get(i).getDescription();
                 }
                 value[i + 1][23] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateTime());
             }
-            HSSFRow row[]=new HSSFRow[list.size()+1];
-            HSSFCell cell[]=new HSSFCell[n.length];
-            for(int i=0;i<row.length;i++){
-                row[i]=sheet.createRow(i);
-                for(int j=0;j<cell.length;j++){
-                    cell[j]=row[i].createCell(j);
+            HSSFRow row[] = new HSSFRow[list.size() + 1];
+            HSSFCell cell[] = new HSSFCell[n.length];
+            for (int i = 0; i < row.length; i++) {
+                row[i] = sheet.createRow(i);
+                for (int j = 0; j < cell.length; j++) {
+                    cell[j] = row[i].createCell(j);
                     cell[j].setCellValue(value[i][j].toString());
                 }
             }
             OutputStream os = response.getOutputStream();
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
             wb.write(os);
             os.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         File file = new File(baseDir);
@@ -365,7 +372,7 @@ public class DriftController {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             book.write(byteArrayOutputStream);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
             response.setContentLength(byteArrayOutputStream.size());
             ServletOutputStream outputstream = response.getOutputStream();
             byteArrayOutputStream.writeTo(outputstream);
@@ -380,6 +387,7 @@ public class DriftController {
 
     /**
      * 上传文件进行存储和解析
+     *
      * @param request
      * @return
      */
@@ -396,7 +404,7 @@ public class DriftController {
         } catch (Exception e) {
             if (base != null) base.mkdirs();
         }
-        File target = new File( "d:/Test" + File.separator + name);
+        File target = new File("d:/Test" + File.separator + name);
         try {
             file.transferTo(target);
         } catch (Exception e) {
@@ -427,6 +435,7 @@ public class DriftController {
 
     /**
      * 根据上传excel表格更新数据库drift_order和order_express表
+     *
      * @param form
      * @return
      */
@@ -434,7 +443,7 @@ public class DriftController {
     public ResultData changeStatus(ChangeOrderStatusForm form) {
         ResultData result = new ResultData();
         if (org.springframework.util.StringUtils.isEmpty(form.getExpressNum()) || org.springframework.util.StringUtils.isEmpty(form.getMachineOrderNo())
-                || org.springframework.util.StringUtils.isEmpty(form.getOrderId()) || org.springframework.util.StringUtils.isEmpty(form.getCompany()) ) {
+                || org.springframework.util.StringUtils.isEmpty(form.getOrderId()) || org.springframework.util.StringUtils.isEmpty(form.getCompany())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请输入所有的安装任务用户相关的信息，如果为空填无");
             return result;
@@ -444,20 +453,20 @@ public class DriftController {
         String orderId = form.getOrderId().trim();
         String company = form.getCompany().trim();
         String description = form.getDescription().trim();
-        if(expressNum.equals("无")){//将“无”转换为空值
+        if (expressNum.equals("无")) {//将“无”转换为空值
             expressNum = null;
         }
-        if(machineOrderNo.equals("无")){
+        if (machineOrderNo.equals("无")) {
             machineOrderNo = "";
         }
-        if(company.equals("无")){
+        if (company.equals("无")) {
             company = null;
         }
-        if(description.equals("无")){
+        if (description.equals("无")) {
             description = "";
         }
         String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        result = driftService.changeStatus(orderId,machineOrderNo,expressNum,company,description,account);
+        result = driftService.changeStatus(orderId, machineOrderNo, expressNum, company, description, account);
 //        String message = "管理员通过上传excel更新了订单,快递单号："+expressNum+"、快递公司："+company+"、机器码："+machineOrderNo;
 //        driftService.createAction(orderId,message,"admin");
         return result;
@@ -465,13 +474,14 @@ public class DriftController {
 
     /**
      * 根据orderId查询订单操作日志
+     *
      * @param orderId
      * @return
      */
     @GetMapping("/action/selectByOrderId")
-    ResultData actionSelect(String orderId){
+    ResultData actionSelect(String orderId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(orderId)){
+        if (StringUtils.isEmpty(orderId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供orderId");
             return result;
@@ -482,13 +492,14 @@ public class DriftController {
 
     /**
      * 获取订单取消记录用于退款
+     *
      * @param status
      * @return
      */
     @GetMapping("/cancel/record/select")
-    ResultData selectCancelRecord(String status){
+    ResultData selectCancelRecord(String status) {
         ResultData result = new ResultData();
-        if(org.springframework.util.StringUtils.isEmpty(status)){
+        if (org.springframework.util.StringUtils.isEmpty(status)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供查询条件");
             return result;
@@ -499,32 +510,33 @@ public class DriftController {
 
     /**
      * 根据orderId更新取消的订单为已完成
+     *
      * @param orderId
      * @return
      */
     @PostMapping("/cancel/record/update")
-    ResultData updateCancelRecord(String orderId){
+    ResultData updateCancelRecord(String orderId) {
         ResultData result = new ResultData();
-        if(org.springframework.util.StringUtils.isEmpty(orderId)){
+        if (org.springframework.util.StringUtils.isEmpty(orderId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供orderId");
             return result;
         }
         result = driftService.updateCancelRecord(orderId);
-        if(result.getResponseCode()==ResponseCode.RESPONSE_OK){
+        if (result.getResponseCode() == ResponseCode.RESPONSE_OK) {
             String account = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //            Admin admin = JSONObject.parseObject(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class);
-            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()),Admin.class).get(0);
-            String message = admin.getUsername()+"将退款订单标记为退款成功";
-            driftService.createAction(orderId,message,admin.getAdminId());
+            Admin admin = JSONArray.parseArray(JSONObject.toJSONString(authService.getAdmin(account).getData()), Admin.class).get(0);
+            String message = admin.getUsername() + "将退款订单标记为退款成功";
+            driftService.createAction(orderId, message, admin.getAdminId());
         }
         return result;
     }
 
     @GetMapping("/{activityId}/available")
-    public ResultData available(@PathVariable("activityId") String activityId){
+    public ResultData available(@PathVariable("activityId") String activityId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(activityId)){
+        if (StringUtils.isEmpty(activityId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供activityId");
             return result;
@@ -535,28 +547,31 @@ public class DriftController {
 
     /**
      * 获取活动列表
+     *
      * @return
      */
     @GetMapping("/activity/list")
-    public ResultData getActivityList(){
+    public ResultData getActivityList() {
         return driftService.getActivityList();
     }
 
     /**
      * 批量创建优惠码
+     *
      * @param form
      * @param request
      * @return
      */
     @PostMapping("/excode/create")
-    public ResultData createExcode(EXCodeCreateForm form, HttpServletRequest request){
+    public ResultData createExcode(EXCodeCreateForm form, HttpServletRequest request) {
         String adminId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         logService.createAdminAccountOperationLog(adminId, "drift", new StringBuffer("User:").append(adminId).append(" create ").append(form.getNum()).append(" excode with price: ").append(form.getPrice()).toString(), IPUtil.getIP(request));
-        return driftService.createExcode(form.getActivityId(),form.getNum(),form.getPrice(),form.getStatus(),form.getLabel());
+        return driftService.createExcode(form.getActivityId(), form.getNum(), form.getPrice(), form.getStatus(), form.getLabel());
     }
 
     /**
      * 创建单个优惠码
+     *
      * @param activityId
      * @param codeValue
      * @param price
@@ -565,51 +580,53 @@ public class DriftController {
      * @return
      */
     @GetMapping("/excode/one/create")
-    public ResultData createOneExcode(String activityId,String codeValue,double price,int status,String label,HttpServletRequest request){
+    public ResultData createOneExcode(String activityId, String codeValue, double price, int status, String label, HttpServletRequest request) {
         String adminId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         logService.createAdminAccountOperationLog(adminId, "drift", new StringBuffer("User:").append(adminId).append(" create one excode with price: ").append(price).append(" code: ").append(codeValue).toString(), IPUtil.getIP(request));
-        return driftService.createOneExcode(activityId,codeValue,price,status,label);
+        return driftService.createOneExcode(activityId, codeValue, price, status, label);
     }
 
     /**
      * 根据label查询优惠码
+     *
      * @param label
      * @param request
      * @return
      */
     @GetMapping("/excode/search")
-    public ResultData getExcodeByLabel(String activityId,String label,HttpServletRequest request){
+    public ResultData getExcodeByLabel(String activityId, String label, HttpServletRequest request) {
         String adminId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         logService.createAdminAccountOperationLog(adminId, "drift", new StringBuffer("User:").append(adminId).append(" query excode with label: ").append(label).append(" for ").append(activityId).toString(), IPUtil.getIP(request));
-        return driftService.getExcodeByLabel(activityId,label);
+        return driftService.getExcodeByLabel(activityId, label);
     }
 
     /**
      * 根据活动ID获取标签列表
+     *
      * @param activityId
      * @return
      */
     @GetMapping("/excode/query/label")
-    public ResultData getExcodeLabels(String activityId){
+    public ResultData getExcodeLabels(String activityId) {
         return driftService.getExcodeLabels(activityId);
     }
 
     @GetMapping("/excode/download")
-    String excodeDownload(String activityId,String label,HttpServletResponse response,HttpServletRequest request){
-        ResultData result=new ResultData();
-        if(StringUtils.isEmpty(label)||StringUtils.isEmpty(activityId)){
+    String excodeDownload(String activityId, String label, HttpServletResponse response, HttpServletRequest request) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(label) || StringUtils.isEmpty(activityId)) {
             return "请提供相应条件查询";
         }
-        result = driftService.getExcodeByLabel(activityId,label);
-        if(result.getResponseCode()!=ResponseCode.RESPONSE_OK){
+        result = driftService.getExcodeByLabel(activityId, label);
+        if (result.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return "查询失败";
         }
         String activityName = JSONObject.parseObject(JSONObject.toJSONString(driftService.getActivityDetail(activityId).getData()), Activity.class).getActivityName();
-        String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"-excode.xls";
+        String fileName = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-excode.xls";
         try {
             //查询数据库中所有的数据
-            String data= JSONObject.toJSONString(result.getData());
-            List<EXCode> list= JSONArray.parseArray(data,EXCode.class);
+            String data = JSONObject.toJSONString(result.getData());
+            List<EXCode> list = JSONArray.parseArray(data, EXCode.class);
             String adminId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             logService.createAdminAccountOperationLog(adminId, "drift", new StringBuffer("User:").append(adminId).append(" download ").append(list.size()).append(" excode with label: ").append(label).append(" for ").append(activityId).toString(), IPUtil.getIP(request));
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -633,21 +650,21 @@ public class DriftController {
                 value[i + 1][4] = DriftUtil.setExcodeStatus(list.get(i).getStatus().toString());
                 value[i + 1][5] = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(list.get(i).getCreateAt());
             }
-            HSSFRow row[]=new HSSFRow[list.size()+1];
-            HSSFCell cell[]=new HSSFCell[n.length];
-            for(int i=0;i<row.length;i++){
-                row[i]=sheet.createRow(i);
-                for(int j=0;j<cell.length;j++){
-                    cell[j]=row[i].createCell(j);
+            HSSFRow row[] = new HSSFRow[list.size() + 1];
+            HSSFCell cell[] = new HSSFCell[n.length];
+            for (int i = 0; i < row.length; i++) {
+                row[i] = sheet.createRow(i);
+                for (int j = 0; j < cell.length; j++) {
+                    cell[j] = row[i].createCell(j);
                     cell[j].setCellValue(value[i][j].toString());
                 }
             }
             OutputStream os = response.getOutputStream();
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
             wb.write(os);
             os.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         File file = new File(baseDir);
@@ -659,7 +676,7 @@ public class DriftController {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             book.write(byteArrayOutputStream);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
             response.setContentLength(byteArrayOutputStream.size());
             ServletOutputStream outputstream = response.getOutputStream();
             byteArrayOutputStream.writeTo(outputstream);

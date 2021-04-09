@@ -39,9 +39,10 @@ public interface TbOrderSyncService {
      *
      * @param startModified
      * @param endModified
+     * @param startCreated
      * @return
      */
-    ResultData manualImportByModified(Date startModified, Date endModified);
+    ResultData manualImportByModified(Date startModified, Date endModified, Date startCreated);
 
     /**
      * 手动同步订单,根据主订单id

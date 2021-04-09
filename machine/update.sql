@@ -491,3 +491,116 @@ insert ignore into machine_efficient_information (qr_code,last_confirm_time,crea
     and cmb.block_flag = 0 and q.block_flag = 0 
     and q.model_id in (select model_id from model_efficient_config where reset_hour = 0)
     group by cmb.code_value;
+
+# 2020年12月23日
+DROP TABLE IF EXISTS `filter`;
+CREATE TABLE `filter`  (
+                           `filter_id` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '主键id',
+                           `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '滤网名称',
+                           `link` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '滤网链接',
+                           `remarks` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+                           PRIMARY KEY (`filter_id`) USING BTREE,
+                           UNIQUE INDEX `filter_filter_id_uindex`(`filter_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '滤网链接表' ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of filter
+-- ----------------------------
+INSERT INTO `filter` VALUES ('FL00000001', '420抗菌滤芯', 'https://item.jd.com/66405474940.html', '同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000002', '420活性炭滤芯', 'https://item.jd.com/66405474941.html', '同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000003', '420标准HEPA滤芯', 'https://item.jd.com/66405474939.html', '同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000004', '420滤网套餐', 'https://item.jd.com/10022943605015.html', '同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000005', '280滤芯单片', 'https://item.jd.com/10021647370757.html', '同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000006', '280滤芯套餐', 'https://item.jd.com/10021647370758.htm', '同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000007', '280滤芯套餐', 'https://item.jd.com/10022944513072.html', '和280在同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000008', '500玻纤滤网', 'https://item.jd.com/10020146162562.html', NULL);
+INSERT INTO `filter` VALUES ('FL00000009', '抗菌滤网适用320', 'https://item.jd.com/32252756483.html', '抗菌滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000010', '抗菌滤网适用320PRO', 'https://item.jd.com/65526149226.html', '抗菌滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000011', '抗菌滤网适用420', 'https://item.jd.com/32252756484.html', '抗菌滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000012', '抗菌滤网适用520/500', 'https://item.jd.com/49011804478.html', '抗菌滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000013', 'HEPA滤网 适用GM320', 'https://item.jd.com/32252410937.html', 'HEPA滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000014', 'HEPA滤网 适用GM320Pro', 'https://item.jd.com/65526137321.html', 'HEPA滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000015', 'HEPA滤网 适用GM420', 'https://item.jd.com/32252410938.html', 'HEPA滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000016', 'HEPA滤网 适用GM500/520', 'https://item.jd.com/49010639259.html', 'HEPA滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000017', '活性炭滤网 适用GM320', 'https://item.jd.com/32252195714.html', '活性炭滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000018', '活性炭滤网 适用GM320Pro', 'https://item.jd.com/65526108894.htm', '活性炭滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000019', '活性炭滤网 适用GM420', 'https://item.jd.com/32252195715.html', '活性炭滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000020', '活性炭滤网 适用GM520/GM500', 'https://item.jd.com/49007895093.html', '活性炭滤网：同一个SPU中');
+INSERT INTO `filter` VALUES ('FL00000021', '无叶风扇除霾滤芯', 'https://item.jd.com/71801924241.html', NULL);
+INSERT INTO `filter` VALUES ('FL00000022', '无叶风扇除醛滤芯', 'https://item.jd.com/71798815450.html', NULL);
+
+DROP TABLE IF EXISTS `map_model_material`;
+DROP TABLE IF EXISTS `map_model_filter`;
+CREATE TABLE `map_model_filter`  (
+                                     `mmm_id` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '主键id',
+                                     `model_id` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '机器型号ID',
+                                     `filter_id` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '滤网主键ID',
+                                     `create_time` datetime NULL DEFAULT NULL COMMENT '数据行创建时间',
+                                     `modify_time` datetime NULL DEFAULT NULL COMMENT '数据行修改时间',
+                                     PRIMARY KEY (`mmm_id`) USING BTREE,
+                                     UNIQUE INDEX `map_model_filter_mmm_id_uindex`(`mmm_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '不同型号机器对应的滤网信息' ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of map_model_filter
+-- ----------------------------
+INSERT INTO `map_model_filter` VALUES ('MMM00000001', 'MOD20191210iu8h6y78', 'FL00000021', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000002', 'MOD20191210iu8h6y78', 'FL00000022', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000003', 'MOD202005114la9yn31', 'FL00000021', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000004', 'MOD202005114la9yn31', 'FL00000022', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000005', 'MOD20200511ia34nv24', 'FL00000021', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000006', 'MOD20200511ia34nv24', 'FL00000022', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000007', 'MOD20200718g4l9xy79', 'FL00000005', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000008', 'MOD20200718g4l9xy79', 'FL00000006', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000009', 'MOD20200718g4l9xy79', 'FL00000007', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000010', 'MODxyyirx74', 'FL00000009', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000011', 'MODxyyirx74', 'FL00000013', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000012', 'MODxyyirx74', 'FL00000017', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000013', 'MODxyyirx75', 'FL00000009', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000014', 'MODxyyirx75', 'FL00000013', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000015', 'MODxyyirx75', 'FL00000017', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000016', 'MOD20191019luv3ov78', 'FL00000010', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000017', 'MOD20191019luv3ov78', 'FL00000014', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000018', 'MOD20191019luv3ov78', 'FL00000018', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000019', 'MOD20180717nuya5y40', 'FL00000001', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000020', 'MOD20180717nuya5y40', 'FL00000002', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000021', 'MOD20180717nuya5y40', 'FL00000003', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000022', 'MOD20180717nuya5y40', 'FL00000004', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000023', 'MOD20180717nuya5y40', 'FL00000011', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000024', 'MOD20180717nuya5y40', 'FL00000015', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000025', 'MOD20180717nuya5y40', 'FL00000019', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000026', 'MOD20180717nuya5y41', 'FL00000001', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000027', 'MOD20180717nuya5y41', 'FL00000002', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000028', 'MOD20180717nuya5y41', 'FL00000003', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000029', 'MOD20180717nuya5y41', 'FL00000004', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000030', 'MOD20180717nuya5y41', 'FL00000011', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000031', 'MOD20180717nuya5y41', 'FL00000015', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000032', 'MOD20180717nuya5y41', 'FL00000019', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000033', 'MOD20190521n283i850', 'FL00000001', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000034', 'MOD20190521n283i850', 'FL00000002', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000035', 'MOD20190521n283i850', 'FL00000003', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000036', 'MOD20190521n283i850', 'FL00000004', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000037', 'MOD20190521n283i850', 'FL00000011', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000038', 'MOD20190521n283i850', 'FL00000015', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000039', 'MOD20190521n283i850', 'FL00000019', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000040', 'MOD20191019or6ze589', 'FL00000008', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000041', 'MOD20191019or6ze589', 'FL00000012', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000042', 'MOD20191019or6ze589', 'FL00000016', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000043', 'MOD20191019or6ze589', 'FL00000020', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000044', 'MOD201903054zaw270', 'FL00000012', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000045', 'MOD201903054zaw270', 'FL00000016', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000046', 'MOD201903054zaw270', 'FL00000020', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000047', 'MOD20190527vy5xr321', 'FL00000012', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000048', 'MOD20190527vy5xr321', 'FL00000016', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+INSERT INTO `map_model_filter` VALUES ('MMM00000049', 'MOD20190527vy5xr321', 'FL00000020', '2020-12-23 14:02:08', '2020-12-23 14:02:08');
+    
+#2020-10-29
+CREATE TABLE `machine_filter_text` (
+    `text_id`                 VARCHAR(255) NOT NULL,
+    `text_content`            VARCHAR(255) NOT NULL,
+    `block_flag`              BOOLEAN NOT NULL DEFAULT FALSE,
+    `create_time`             DATETIME NOT NULL,
+    PRIMARY KEY (`qr_code`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;

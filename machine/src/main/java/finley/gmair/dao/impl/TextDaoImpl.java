@@ -1,7 +1,8 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.MapModelMaterialDao;
+import finley.gmair.dao.TextDao;
+import finley.gmair.model.machine.Text;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
@@ -10,28 +11,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Description TODO
- * @Author Administrator
- * @Date 2020/7/29 0029 15:07
- **/
+ * @author ：CK
+ * @date ：Created in 2020/11/2 11:30
+ * @description：
+ */
 @Repository
-public class MapModelMaterialDaoImpl extends BaseDao implements MapModelMaterialDao {
+public class TextDaoImpl extends BaseDao implements TextDao {
 
     @Override
     public ResultData query(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<String> list = sqlSession.selectList(
-                    "gmair.machine.modelMaterial.query", condition);
-            if (list.isEmpty()) {
+            Text text = sqlSession.selectOne("gmair.machine.text.query", condition);
+            if (text==null) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            } else {
-                result.setData(list.get(0));
             }
+            result.setData(text);
         } catch (Exception e) {
-            e.printStackTrace();
-            result.setDescription(e.getMessage());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
         }
         return result;
     }

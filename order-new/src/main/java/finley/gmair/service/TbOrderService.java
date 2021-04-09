@@ -14,14 +14,16 @@ import java.util.List;
 
 public interface TbOrderService {
     /**
-     * @param trade from com.taobao.api.domain.Trade
+     * @param trade 淘宝交易类
      * @return ResultData
+     * @description 全量/增量导入时处理单个Trade
      */
     ResultData handleTrade(Trade trade);
 
     /**
      * @param list
-     * @return
+     * @return ResultData
+     * @description Excel去模糊化时处理Trade集合
      */
     ResultData handlePartInfo(List<TbOrderPartInfo> list);
 }

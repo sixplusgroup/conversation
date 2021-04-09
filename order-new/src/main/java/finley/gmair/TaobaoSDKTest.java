@@ -28,7 +28,7 @@ public class TaobaoSDKTest {
             "discount_fee,post_fee,credit_card_fee,step_paid_fee";
 
     public static void main(String[] args) throws ApiException {
-        getIncrementTrades();
+        getTradeFullInfo();
     }
 
     private static void getTrades() {
@@ -36,8 +36,8 @@ public class TaobaoSDKTest {
         TradesSoldGetRequest req = new TradesSoldGetRequest();
         //req.setFields("tid,type,status,payment,orders,rx_audit_status,created,modified");
         req.setFields(fields);
-        req.setStartCreated(StringUtils.parseDateTime("2020-08-02 00:00:00"));
-        req.setEndCreated(StringUtils.parseDateTime("2020-08-02 23:59:59"));
+        req.setStartCreated(StringUtils.parseDateTime("2020-11-04 19:20:00"));
+        req.setEndCreated(StringUtils.parseDateTime("2020-11-04 23:59:59"));
         req.setPageNo(1L);
         req.setPageSize(40L);
         req.setUseHasNext(true);
@@ -73,7 +73,6 @@ public class TaobaoSDKTest {
     private static void getItemsOnSale() {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         ItemsOnsaleGetRequest req = new ItemsOnsaleGetRequest();
-        req.setHasShowcase(true);
         req.setFields("num_iid,cid,props,title,price,num,list_time,delist_time");
         ItemsOnsaleGetResponse rsp = null;
         try {
@@ -90,17 +89,18 @@ public class TaobaoSDKTest {
     private static void getTradeFullInfo() throws ApiException {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         TradeFullinfoGetRequest req = new TradeFullinfoGetRequest();
-        req.setFields("tid,type,status,payment,receiver_name,receiver_state,receiver_address," +
-                "receiver_zip,receiver_mobile,receiver_phone,consign_time,orders,promotion_details");
-        req.setTid(1298285822245193333L);
+        req.setFields(fields);
+        req.setTid(1356180230433354951L);
         TradeFullinfoGetResponse rsp = client.execute(req, sessionKey);
         System.out.println(rsp.getBody());
     }
 
-    private static void addUser() throws ApiException{
+    private static void getRefund() throws ApiException {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
-        JushitaJdpUsersGetRequest req=new JushitaJdpUsersGetRequest();
-        JushitaJdpUsersGetResponse rsp = client.execute(req, sessionKey);
+        RefundGetRequest request = new RefundGetRequest();
+        request.setRefundId(84854052037325798L);
+        request.setFields("refund_id, alipay_no, tid, oid, buyer_nick, seller_nick, total_fee, status, created, refund_fee, good_status, has_good_return, payment, reason, desc, num_iid, title, price, num, good_return_time, company_name, sid, address, shipping_type, refund_remind_timeout, refund_phase, refund_version, operation_contraint, attribute, outer_id, sku");
+        RefundGetResponse rsp = client.execute(request, sessionKey);
         System.out.println(rsp.getBody());
     }
 }

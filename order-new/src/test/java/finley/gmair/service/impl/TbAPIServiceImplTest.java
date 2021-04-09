@@ -89,7 +89,6 @@ public class TbAPIServiceImplTest {
     public void mapperTest() {
         System.out.println(orderMapper == null);
         System.out.println(orderMapper.selectByPrimaryKey(""));
-        System.out.println(orderMapper.selectAll().size());
     }
 
     @Test

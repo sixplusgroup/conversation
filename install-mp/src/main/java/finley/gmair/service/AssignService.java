@@ -13,11 +13,11 @@ public interface AssignService {
     ResultData fetchAssign(@RequestParam("memberId") String memberId);
 
     @GetMapping("/install/assign/tasks")
-    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,@RequestParam("reverse") String reverse);
+    ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,@RequestParam("reverse") String reverse, @RequestParam(value = "sortType") String sortType);
 
     @GetMapping("/install/assign/tasks")
     ResultData fetchAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,
-                           @RequestParam("page") String page,@RequestParam("pageLength") String pageLength,@RequestParam("reverse") String reverse);
+                           @RequestParam("page") String page,@RequestParam("pageLength") String pageLength,@RequestParam("reverse") String reverse, @RequestParam(value = "sortType") String sortType);
 
     @PostMapping("/install/assign/assign")
     ResultData dispatchAssign(@RequestParam("assignId") String assignId, @RequestParam("memberId") String memberId);
@@ -26,7 +26,7 @@ public interface AssignService {
     ResultData fetchOwnAssign(@RequestParam("memberId") String memberId);
 
     @GetMapping("/install/assign/overview")
-    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search);
+    ResultData fetchOwnAssign(@RequestParam("memberId") String memberId, @RequestParam(value = "status", required = true) Integer status, @RequestParam(value = "search", required = true) String search,  @RequestParam(value = "sortType", required = true) String sortType);
 
     @PostMapping("/install/assign/recall")
     ResultData recallAssign(@RequestParam("assignId") String assignId, @RequestParam("message") String message);

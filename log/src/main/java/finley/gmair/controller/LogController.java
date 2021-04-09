@@ -6,8 +6,9 @@ import finley.gmair.model.log.*;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class LogController {
     public ResultData queryMachineComLog(@PathVariable(required = false) String uid) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if(uid != null){
+        if (uid != null) {
             condition.put("uid", uid);
         }
         ResultData response = logService.fetchMachineComLog(condition);
@@ -62,7 +63,7 @@ public class LogController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             return result;
-        }else{
+        } else {
             return response;
         }
 
@@ -162,14 +163,20 @@ public class LogController {
      * @return
      */
     @PostMapping("/useraction/query")
-    public ResultData getUserActionLog(String userId, String machineValue) {
+    public ResultData getUserActionLog(String userId, String machineValue, int pageIndex, int pageSize) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if (!StringUtils.isEmpty(userId)) {
+        if (StringUtils.isNotEmpty(userId)) {
             condition.put("userId", userId);
         }
-        if (!StringUtils.isEmpty(machineValue)) {
-            condition.put("machineValue", machineValue);
+        if (StringUtils.isNotEmpty(machineValue)) {
+            condition.put("qrcode", machineValue);
+        }
+        if (ObjectUtils.isNotEmpty(pageIndex)) {
+            condition.put("pageIndex", pageIndex);
+        }
+        if (ObjectUtils.isNotEmpty(pageSize)) {
+            condition.put("pageSize", pageSize);
         }
         ResultData response = logService.fetchUserActionLog(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -285,7 +292,7 @@ public class LogController {
     @PostMapping("/mqtt/ack/create")
     public ResultData createMqttAckLog(MqttAckLogForm form) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(form.getAckId()) || StringUtils.isEmpty(form.getCode())
+        if (StringUtils.isEmpty(form.getAckId()) || ObjectUtils.isEmpty(form.getCode())
                 || StringUtils.isEmpty(form.getComponent()) || StringUtils.isEmpty(form.getMachineId())
                 || StringUtils.isEmpty(form.getIp()) || StringUtils.isEmpty(form.getLogDetail())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);

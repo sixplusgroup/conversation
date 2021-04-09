@@ -3,17 +3,20 @@ package finley.gmair.service.impl;
 import finley.gmair.dao.AddressDao;
 import finley.gmair.dao.ConsumerDao;
 import finley.gmair.dao.PhoneDao;
+import finley.gmair.form.consumer.ConsumerPartInfoQuery;
 import finley.gmair.model.consumer.Address;
 import finley.gmair.model.consumer.Consumer;
 import finley.gmair.model.consumer.Phone;
 import finley.gmair.service.ConsumerService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.consumer.ConsumerPartInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -79,6 +82,16 @@ public class ConsumerServiceImpl implements ConsumerService {
         }
         result.setData(response.getData());
         return result;
+    }
+
+    @Override
+    public List<ConsumerPartInfoVo> fetchConsumerAccounts(ConsumerPartInfoQuery query) {
+        return consumerDao.queryConsumerAccounts(query);
+    }
+
+    @Override
+    public long fetchConsumerAccountsSize(ConsumerPartInfoQuery query) {
+        return consumerDao.queryConsumerAccountsSize(query);
     }
 
     @Override

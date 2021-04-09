@@ -8,6 +8,7 @@ import finley.gmair.service.TbOrderService;
 import finley.gmair.service.TradeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/order-new")
+@RequestMapping("/order")
 public class OrderController {
 
     private Logger logger = LoggerFactory.getLogger(OrderController.class);
@@ -46,18 +47,21 @@ public class OrderController {
     private TbOrderService tbOrderService;
 
     @GetMapping("/download")
-    public void download(HttpServletResponse response) throws IOException {
+    public void download(@RequestParam(required = false) String beginTime, @RequestParam(required = false) String endTime, HttpServletResponse response) throws IOException {
+        Date beginDate = StringUtils.isEmpty(beginTime) ? null : TimeUtil.formatTimeToDate(beginTime);
+        Date endDate = StringUtils.isEmpty(endTime) ? null : TimeUtil.formatTimeToDate(endTime);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");
         // 这里URLEncoder.encode可以防止中文乱码
         String fileName = URLEncoder.encode("果麦订单汇总", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), TbOrderExcel.class)
-                .sheet("订单汇总表").doWrite(tradeServiceImpl.selectAllTradeExcel());
+                .sheet("订单汇总表").doWrite(tradeServiceImpl.selectTradeExcel(beginDate, endDate));
     }
 
     /**
      * 上传Excel表格，读取数据并更新数据库
+     *
      * @return 上传和更新结果，成功与否
      */
     @PostMapping("/uploadAndSync")
@@ -91,13 +95,22 @@ public class OrderController {
                 ResultData response = tbOrderPartInfoService.getTbOrderPartInfo(filePath, password);
                 if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                     List<TbOrderPartInfo> store = (List<TbOrderPartInfo>) response.getData();
+                    store.sort((o1, o2) -> {
+                        if (o1.getCreateTime() == null || o2.getCreateTime() == null) {
+                            return 0;
+                        }
+                        if (o1.getCreateTime().after(o2.getCreateTime())) {
+                            return 1;
+                        } else if (o1.getCreateTime().before(o2.getCreateTime())) {
+                            return -1;
+                        }
+                        return 0;
+                    });
                     tbOrderService.handlePartInfo(store);
-                }
-                else {
+                } else {
                     res = response;
                 }
-            }
-            else {
+            } else {
                 res.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 res.setDescription("save file " + filename + " failed!");
             }
