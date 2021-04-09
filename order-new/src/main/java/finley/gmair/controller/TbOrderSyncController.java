@@ -17,6 +17,7 @@ import java.util.Date;
  * @description: TbOrderSyncController
  */
 
+@CrossOrigin
 @RestController
 @RequestMapping("/order-new/tbOrderSync")
 public class TbOrderSyncController {
