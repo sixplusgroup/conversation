@@ -330,10 +330,10 @@ public class TbOrderServiceImpl implements TbOrderService {
                 interOrder.setShippingType(tmpOrder.getShippingType());
                 interOrder.setLogisticsCompany(tmpOrder.getLogisticsCompany());
                 interOrder.setInvoiceNo(tmpOrder.getInvoiceNo());
-                if(tmpOrder.getDivideOrderFee() != null){
+                if (tmpOrder.getDivideOrderFee() != null) {
                     interOrder.setDivideOrderFee(Double.valueOf(tmpOrder.getDivideOrderFee()));
                 }
-                if(tmpOrder.getPayment() != null){
+                if (tmpOrder.getPayment() != null) {
                     interOrder.setPayment(Double.valueOf(tmpOrder.getPayment()));
                 }
                 if (tmpOrder.getConsignTime() != null) {
@@ -377,8 +377,11 @@ public class TbOrderServiceImpl implements TbOrderService {
         driftOrder.setExpectedDate(trade.getPayTime());
         driftOrder.setTradeFrom(TradeFrom.TMALL);
 
-        double totalPrice = Double.parseDouble(trade.getPostFee());
-        double realPrice = 0;
+        //如果有邮费订单总价和订单实付加上邮费
+        Double postFee = Double.parseDouble(trade.getPostFee());
+        double totalPrice = postFee;
+        double realPrice = postFee;
+        int orderNum = trade.getOrders().size();
         //构造DriftOrderItem
         List<DriftOrderItem> itemList = new ArrayList<>();
         for (Order order : trade.getOrders()) {
@@ -401,7 +404,10 @@ public class TbOrderServiceImpl implements TbOrderService {
             item.setExQuantity(order.getNum().intValue());
             item.setItemPrice(Double.parseDouble(order.getPrice()));
             item.setTotalPrice(Double.parseDouble(order.getTotalFee()));
-            item.setRealPrice(Double.parseDouble(order.getPayment()));
+            Double orderPayment = Double.parseDouble(order.getPayment());
+            //获取到的Order中的payment字段在单笔子订单时包含物流费用，多笔子订单时不包含物流费用
+            double orderRealPrice = orderNum == 1 ? orderPayment - postFee : orderPayment;
+            item.setRealPrice(orderRealPrice);
             itemList.add(item);
             totalPrice += item.getTotalPrice();
             realPrice += item.getRealPrice();
