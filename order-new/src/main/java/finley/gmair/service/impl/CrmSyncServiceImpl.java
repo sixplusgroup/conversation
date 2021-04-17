@@ -54,49 +54,6 @@ public class CrmSyncServiceImpl implements CrmSyncService {
     @Transactional(rollbackFor = Exception.class)
     public ResultData updateOrderStatus(Trade interTrade) {
         ResultData res = new ResultData();
-
-        // 只有mode==2（交易之前已推给CRM新增过）才能更新状态并推给CRM
-        if (interTrade.getMode() != TradeMode.PUSHED_TO_CRM.getValue()) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("交易模糊字段状态错误");
-            return res;
-        }
-
-        // 判断是否需要将状态更新到CRM
-        if (!TbTradeStatus.valueOf(interTrade.getStatus()).judgeCrmUpdate()) {
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("交易状态错误");
-            return res;
-        }
-
-        List<Order> orders = orderMapper.selectAllByTradeId(interTrade.getTradeId());
-        for (Order tmpOrder : orders) {
-            // 甲醛检测仪租赁和检测试纸不同步到CRM
-            if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
-            CrmStatusDTO newCrmStatus = new CrmStatusDTO();
-            // （子订单）订单号：
-            String ddh = interTrade.getTid().equals(tmpOrder.getOid()) ? String.valueOf(tmpOrder.getOid()) :
-                    interTrade.getTid() +"-"+ tmpOrder.getOid();
-            newCrmStatus.setDdh(ddh);
-            // 联系方式：
-            newCrmStatus.setLxfs(interTrade.getReceiverMobile());
-            // 根据实物和虚拟订单选择不同的订单状态转换策略
-            CrmOrderStatus billStatus = selectStatusTransStrategy(tmpOrder);
-            if (billStatus == null) {
-                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                res.setDescription("交易状态转换失败");
-                return res;
-            }
-            newCrmStatus.setBillstat(String.valueOf(billStatus.getValue()));
-            JSONObject ans = crmAPIService.updateOrderStatus(
-                    JSONObject.toJSON(newCrmStatus).toString());
-            if (Objects.equals(ans.get("ResponseCode").toString(),
-                    ResponseCode.RESPONSE_ERROR.toString())) {
-                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                res.setDescription("更新交易状态到CRM失败");
-                return res;
-            }
-        }
         res.setResponseCode(ResponseCode.RESPONSE_OK);
         res.setDescription("交易同步到CRM成功");
         return res;
