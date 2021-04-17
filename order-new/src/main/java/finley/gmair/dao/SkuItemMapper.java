@@ -35,7 +35,11 @@ public interface SkuItemMapper {
             @Param("numIid") String numIid);
 
     List<Boolean> selectFictitiousByNumIidAndSkuId(
-            @Param("numIid")String numIid,@Param("skuId")String skuId);
+            @Param("numIid") String numIid, @Param("skuId") String skuId);
 
-    List<Boolean> selectFictitiousByNumIid(@Param("numIid")String numIid);
+    List<Boolean> selectFictitiousByNumIid(@Param("numIid") String numIid);
+
+    List<SkuItem> selectAllByNumIidAndSkuId(@Param("numIid") String numIid, @Param("skuId") String skuId);
+
+    void truncateTable();
 }

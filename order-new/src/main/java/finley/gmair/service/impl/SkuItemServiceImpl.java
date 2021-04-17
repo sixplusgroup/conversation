@@ -1,6 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.SkuItemMapper;
+import finley.gmair.model.ordernew.SkuItem;
 import finley.gmair.service.SkuItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,4 +28,20 @@ public class SkuItemServiceImpl implements SkuItemService {
         }
         return CollectionUtils.isEmpty(modelList) ? "" : modelList.get(0);
     }
+
+    @Override
+    public List<SkuItem> selectAll() {
+        return skuItemMapper.selectAll();
+    }
+
+    @Override
+    public void updateMachineModelAndFictitious(String itemId, String machineModel, boolean fictitious) {
+        SkuItem skuItem = new SkuItem();
+        skuItem.setCreateAt(null);
+        skuItem.setItemId(itemId);
+        skuItem.setMachineModel(machineModel);
+        skuItem.setFictitious(fictitious);
+        skuItemMapper.updateByPrimaryKeySelective(skuItem);
+    }
+
 }
