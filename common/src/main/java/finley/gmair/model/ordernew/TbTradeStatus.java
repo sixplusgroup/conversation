@@ -86,9 +86,9 @@ public enum TbTradeStatus implements EnumValue {
     }
 
     /**
-     * 判断是否能够推送给CRM系统（原则是：如果买家已经付款就需要推送给CRM系统）
+     * 判断是否能够推送给CRM系统和drift系统（原则是：如果买家已经付款就需要推送）
      */
-    public boolean judgeCrmAdd() {
+    public boolean paid() {
         return !(this == TRADE_CLOSED_BY_TAOBAO || this == WAIT_BUYER_PAY ||
                 this == TRADE_NO_CREATE_PAY || this == PAY_PENDING);
     }
