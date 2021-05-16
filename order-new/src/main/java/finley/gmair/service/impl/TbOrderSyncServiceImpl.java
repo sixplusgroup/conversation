@@ -226,9 +226,9 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                     }
                     ResultData resultData = tbOrderServiceImpl.handleTrade(fullInfoTrade);
                     if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                        logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
+                        logger.error("failed to handle trade, tid:{}, response:{}", trade.getTid(), JSON.toJSONString(resultData));
                     } else {
-                        logger.info("handle trade success, response:{}", JSON.toJSONString(resultData));
+                        logger.info("handle trade success, tid:{}, response:{}", trade.getTid(), JSON.toJSONString(resultData));
                         tradeHandleSuccessNum++;
                     }
                 }
@@ -286,12 +286,17 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
                     } else {
                         tradeInfoGetSuccessNum++;
                     }
-                    ResultData resultData = tbOrderServiceImpl.handleTrade(fullInfoTrade);
-                    if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
-                        logger.error("failed to handle trade, response:{}", JSON.toJSONString(resultData));
-                    } else {
-                        logger.info("handle trade success, response:{}", JSON.toJSONString(resultData));
-                        tradeHandleSuccessNum++;
+                    //防止出现异常导致漏单
+                    try {
+                        ResultData resultData = tbOrderServiceImpl.handleTrade(fullInfoTrade);
+                        if (resultData.getResponseCode() != ResponseCode.RESPONSE_OK) {
+                            logger.error("failed to handle trade, tid:{}, response:{}", trade.getTid(), JSON.toJSONString(resultData));
+                        } else {
+                            logger.info("handle trade success, tid:{}, response:{}", trade.getTid(), JSON.toJSONString(resultData));
+                            tradeHandleSuccessNum++;
+                        }
+                    } catch (Exception e) {
+                        logger.error("exception occur when handling trade, tid:{}, exception:{}", trade.getTid(), JSON.toJSONString(e));
                     }
                 }
             }
@@ -312,7 +317,7 @@ public class TbOrderSyncServiceImpl implements TbOrderSyncService {
             response = tbAPIServiceImpl.tradeFullInfoGet(request, sessionKey);
         }
         if (!response.isSuccess()) {
-            logger.error("failed to get response, response:{}", JSON.toJSONString(response));
+            logger.error("failed to get response, tid:{}, response:{}", tid, JSON.toJSONString(response));
             return null;
         }
         return response.getTrade();

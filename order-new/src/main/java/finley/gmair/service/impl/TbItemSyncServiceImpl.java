@@ -12,9 +12,13 @@ import finley.gmair.model.ordernew.SkuItem;
 import finley.gmair.model.ordernew.TbUser;
 import finley.gmair.service.TbItemSyncService;
 import finley.gmair.util.IDGenerator;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,14 +42,25 @@ public class TbItemSyncServiceImpl implements TbItemSyncService {
     TbAPIServiceImpl tbAPIServiceImpl;
 
     @Override
-    public void fullImport() {
+    public ResultData fullImport() {
+        ResultData resultData = new ResultData();
         List<TbUser> tbUserList = tbUserMapper.selectAll();
         for (TbUser tbUser : tbUserList) {
             String sessionKey = tbUser.getSessionKey();
             ItemsOnsaleGetRequest request = new ItemsOnsaleGetRequest();
             request.setFields(IMPORT_FIELDS);
             ItemsOnsaleGetResponse response = tbAPIServiceImpl.itemsOnSaleGet(request, sessionKey);
+            if (!response.isSuccess()) {
+                resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                resultData.setDescription("tbAPI itemsOnSaleGet error");
+                return resultData;
+            }
             List<Item> itemList = response.getItems();
+            if (CollectionUtils.isEmpty(itemList)) {
+                return resultData;
+            }
+            //通过API获取skuItemList
+            List<SkuItem> skuItemList = new ArrayList<>();
             for (Item item : itemList) {
                 Long numIid = item.getNumIid();
                 ItemSellerGetRequest req = new ItemSellerGetRequest();
@@ -61,8 +76,7 @@ public class TbItemSyncServiceImpl implements TbItemSyncService {
                     skuItem.setSkuId(null);
                     skuItem.setPrice(Double.parseDouble(completeItem.getPrice()));
                     skuItem.setPropertiesName(null);
-                    System.out.println(skuItem.toString());
-                    skuItemMapper.insert(skuItem);
+                    skuItemList.add(skuItem);
                 } else {
                     for (Sku sku : completeItem.getSkus()) {
                         SkuItem skuItem = new SkuItem();
@@ -72,12 +86,28 @@ public class TbItemSyncServiceImpl implements TbItemSyncService {
                         skuItem.setSkuId(sku.getSkuId().toString());
                         skuItem.setPrice(Double.parseDouble(sku.getPrice()));
                         skuItem.setPropertiesName(getCNProperties(sku.getPropertiesName()));
-                        System.out.println(skuItem.toString());
-                        skuItemMapper.insert(skuItem);
+                        skuItemList.add(skuItem);
                     }
                 }
             }
+            for (SkuItem skuItem : skuItemList) {
+                List<SkuItem> skuItemDbList = skuItemMapper.selectAllByNumIidAndSkuId(skuItem.getNumIid(), skuItem.getSkuId());
+                //根据numIid和skuId判断是否存在，存在则替换字段：是否虚拟、商品的型号
+                if (!CollectionUtils.isEmpty(skuItemDbList)) {
+                    SkuItem skuItemDb = skuItemDbList.get(0);
+                    //替换是否虚拟、商品型号
+                    skuItem.setFictitious(skuItemDb.getFictitious());
+                    skuItem.setMachineModel(skuItemDb.getMachineModel());
+                }
+            }
+            //清除原数据
+            skuItemMapper.truncateTable();
+            //插入新数据
+            for (SkuItem skuItem : skuItemList) {
+                skuItemMapper.insert(skuItem);
+            }
         }
+        return resultData;
     }
 
     /**
@@ -86,7 +116,7 @@ public class TbItemSyncServiceImpl implements TbItemSyncService {
      * @param propertiesStr pid1:vid1:pid_name1:vid_name1;pid2:vid2:pid_name2:vid_name2……
      * @return pid_name1:vid_name1;pid_name2:vid_name2……
      */
-    private static String getCNProperties(String propertiesStr) {
+    private String getCNProperties(String propertiesStr) {
         String[] properties = propertiesStr.split(";");
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < properties.length; i++) {

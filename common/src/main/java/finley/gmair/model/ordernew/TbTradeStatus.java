@@ -29,7 +29,17 @@ public enum TbTradeStatus implements EnumValue {
     TRADE_FINISHED(5, "交易成功"),
 
     /*交易关闭（申请退款流程的最终状态）*/
-    TRADE_CLOSED(6, "交易关闭");
+    TRADE_CLOSED(6, "付款以后用户退款成功，交易自动关闭"),
+
+    TRADE_BUYER_SIGNED(7, "买家已签收，货到付款专用"),
+
+    TRADE_NO_CREATE_PAY(8, "没有创建支付宝交易"),
+
+    WAIT_PRE_AUTH_CONFIRM(9, "余额宝0元购合约中"),
+
+    PAY_PENDING(10, "国际信用卡支付付款确认中"),
+
+    PAID_FORBID_CONSIGN(11, "该状态代表订单已付款但是处于禁止发货状态");
 
     private int value;
 
@@ -54,14 +64,19 @@ public enum TbTradeStatus implements EnumValue {
             case TRADE_CLOSED_BY_TAOBAO:
                 return null;
             case WAIT_BUYER_PAY:
+            case TRADE_NO_CREATE_PAY:
+            case PAY_PENDING:
+            case WAIT_PRE_AUTH_CONFIRM:
                 return DriftOrderStatus.APPLIED;
             case WAIT_SELLER_SEND_GOODS:
+            case PAID_FORBID_CONSIGN:
                 return DriftOrderStatus.PAYED;
             case SELLER_CONSIGNED_PART:
                 return DriftOrderStatus.CONFIRMED;
             case WAIT_BUYER_CONFIRM_GOODS:
                 return DriftOrderStatus.DELIVERED;
             case TRADE_FINISHED:
+            case TRADE_BUYER_SIGNED:
                 return DriftOrderStatus.FINISHED;
             case TRADE_CLOSED:
                 return DriftOrderStatus.CANCELED;
@@ -71,16 +86,10 @@ public enum TbTradeStatus implements EnumValue {
     }
 
     /**
-     * 判断是否能够推送给CRM系统（如果是被taobao关闭或者未支付 -> 返回false）
+     * 判断是否能够推送给CRM系统和drift系统（原则是：如果买家已经付款就需要推送）
      */
-    public boolean judgeCrmAdd() {
-        return !(this == TRADE_CLOSED_BY_TAOBAO || this == WAIT_BUYER_PAY);
-    }
-
-    /**
-     * 判断是否将状态更新到crm系统
-     */
-    public boolean judgeCrmUpdate() {
-        return this == TRADE_CLOSED;
+    public boolean paid() {
+        return !(this == TRADE_CLOSED_BY_TAOBAO || this == WAIT_BUYER_PAY ||
+                this == TRADE_NO_CREATE_PAY || this == PAY_PENDING);
     }
 }

@@ -45,6 +45,7 @@ public interface CrmAPIService {
      *      "initflag": "1",
      *      "sellermes": "卖家留言",
      *      "buyermes": "买家留言",
+     *      "billentry":""
      *  }
      * @return 返回数据: {
      *      "ResponseCode": "RESPONSE_ERROR",
