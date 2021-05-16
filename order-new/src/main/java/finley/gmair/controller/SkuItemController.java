@@ -39,6 +39,8 @@ public class SkuItemController {
         ResultData res = tbItemSyncServiceImpl.fullImport();
         if (res.getResponseCode() != ResponseCode.RESPONSE_OK) {
             logger.error("skuItem import error:{}", res.getDescription());
+            res.setDescription("同步请求淘宝API失败");
+            return res;
         }
         return new ResultData();
     }
@@ -67,7 +69,13 @@ public class SkuItemController {
     public ResultData update(@RequestParam String itemId,
                              @RequestParam String machineModel,
                              @RequestParam boolean fictitious) {
+        ResultData res = new ResultData();
+        if (skuItemServiceImpl.selectByPrimaryKey(itemId) == null) {
+            logger.error("cannot find skuItem by itemId:{}", itemId);
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("itemId不存在");
+        }
         skuItemServiceImpl.updateMachineModelAndFictitious(itemId, machineModel, fictitious);
-        return new ResultData();
+        return res;
     }
 }

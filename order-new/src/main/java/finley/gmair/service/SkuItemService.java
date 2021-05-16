@@ -36,4 +36,12 @@ public interface SkuItemService {
      * @param fictitious
      */
     void updateMachineModelAndFictitious(String itemId, String machineModel, boolean fictitious);
+
+    /**
+     * 根据主键itemId查询SkuItem
+     *
+     * @param itemId
+     * @return SkuItem
+     */
+    SkuItem selectByPrimaryKey(String itemId);
 }

@@ -36,8 +36,9 @@ public class TaobaoSDKTest {
         TradesSoldGetRequest req = new TradesSoldGetRequest();
         //req.setFields("tid,type,status,payment,orders,rx_audit_status,created,modified");
         req.setFields(fields);
-        req.setStartCreated(StringUtils.parseDateTime("2020-11-04 19:20:00"));
-        req.setEndCreated(StringUtils.parseDateTime("2020-11-04 23:59:59"));
+        //req.setStartCreated(StringUtils.parseDateTime("2020-11-04 19:20:00"));
+        //req.setEndCreated(StringUtils.parseDateTime("2020-11-04 23:59:59"));
+        req.setStatus("TRADE_NO_CREATE_PAY");
         req.setPageNo(1L);
         req.setPageSize(40L);
         req.setUseHasNext(true);
@@ -90,7 +91,7 @@ public class TaobaoSDKTest {
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         TradeFullinfoGetRequest req = new TradeFullinfoGetRequest();
         req.setFields(fields);
-        req.setTid(1356180230433354951L);
+        req.setTid(1730232757751787570L);
         TradeFullinfoGetResponse rsp = client.execute(req, sessionKey);
         System.out.println(rsp.getBody());
     }

@@ -44,4 +44,8 @@ public class SkuItemServiceImpl implements SkuItemService {
         skuItemMapper.updateByPrimaryKeySelective(skuItem);
     }
 
+    @Override
+    public SkuItem selectByPrimaryKey(String itemId) {
+        return skuItemMapper.selectByPrimaryKey(itemId);
+    }
 }
