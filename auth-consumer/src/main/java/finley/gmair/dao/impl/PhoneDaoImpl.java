@@ -6,14 +6,12 @@ import finley.gmair.model.consumer.Phone;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 @Repository
 public class PhoneDaoImpl extends BaseDao implements PhoneDao {
@@ -53,13 +51,13 @@ public class PhoneDaoImpl extends BaseDao implements PhoneDao {
     }
 
     @Override
-    public ResultData update(Map<String, Object> condition){
+    public ResultData update(Map<String, Object> condition) {
         ResultData result = new ResultData();
 
-        try{
+        try {
             sqlSession.update("gmair.consumer.phone.update", condition);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
-        }catch(Exception e){
+        } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription(e.getMessage());
         }
