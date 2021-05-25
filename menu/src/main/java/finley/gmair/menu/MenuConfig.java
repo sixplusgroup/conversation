@@ -208,7 +208,7 @@ public class MenuConfig {
     }
 
     public static void main(String[] args) {
-        String token = "45_xbVNX6i4UyvGyOCdPMSkylxxMMFjMc57HaGiKEDMXYB94MWy_kGUwZ_g142RYFLjSQDnh9d18TYFdIAST0rmxmTIT1VeQifIKTbCNwNlONHbpbMFcVzZLIsNdx55wMF9TOZVHkPtSx0rBuYIRSUhAFACDF";
+        String token = "";
         String deleteMessage = MenuConfig.deleteMenu(token);
         System.out.println("删除操作: " + deleteMessage);
         String createMessage = MenuConfig.createMenu(token);
