@@ -38,7 +38,6 @@ public class MenuConfig {
         }
 
 
-
         JSONObject assessment = new JSONObject();
         assessment.put("name", "新风机评测");
         assessment.put("type", "view");
@@ -100,7 +99,6 @@ public class MenuConfig {
         }
 
 
-
         //试用申请
         JSONObject applicant = new JSONObject();
         applicant.put("name", "试用申请");
@@ -111,7 +109,17 @@ public class MenuConfig {
             e.printStackTrace();
         }
 
+        //检测预约
+        JSONObject reservation = new JSONObject();
+        reservation.put("name", "检测预约");
+        reservation.put("type", "miniprogram");
+        reservation.put("url", "https://mp.weixin.qq.com/s/h8MxaTEKHKbP5y7wA3AYZg");
+        reservation.put("appid", "wx61f6301fde5d4f57");
+        reservation.put("pagepath", "pages/activity_detail/activity_detail");
+
+
         JSONArray after_support = new JSONArray();
+        after_support.add(reservation);
         after_support.add(applicant);
         after_support.add(contact_us);
 
