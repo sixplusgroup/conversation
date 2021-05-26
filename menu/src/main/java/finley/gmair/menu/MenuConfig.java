@@ -41,28 +41,10 @@ public class MenuConfig {
 
 
         JSONObject assessment = new JSONObject();
-        assessment.put("name", "新风机评测");
+        assessment.put("name", "产品评测");
         assessment.put("type", "view");
         try {
-            assessment.put("url", "https://mp.weixin.qq.com/mp/homepage?__biz=MzI5MjczMDk4Mw==&hid=1&sn=7a8c06e9f97688699c622d6cc9c623b0");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-//        JSONObject purifier = new JSONObject();
-//        purifier.put("name", "净水机评测");
-//        purifier.put("type", "view");
-//        try {
-//            purifier.put("url", "https://mp.weixin.qq.com/mp/homepage?__biz=MzI5MjczMDk4Mw==&hid=5&sn=1e5a19826b2d37bd308a91467bdf7a08");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        JSONObject detector_assessment = new JSONObject();
-        detector_assessment.put("name", "甲醛检测仪评测");
-        detector_assessment.put("type", "view");
-        try {
-            detector_assessment.put("url", "https://mp.weixin.qq.com/mp/homepage?__biz=MzI5MjczMDk4Mw==&hid=2&sn=17c8285f24eb6d8ef91e1183f0364eb3");
+            assessment.put("url", "https://mp.weixin.qq.com/s/aXhmPqOCFA9HGgfGj8ksYA");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,9 +61,7 @@ public class MenuConfig {
         JSONArray gm = new JSONArray();
         gm.add(gm_introduction);
         gm.add(product_list);
-//        gm.add(purifier);
         gm.add(assessment);
-        gm.add(detector_assessment);
         gm.add(cases);
 
         JSONObject gm_menu = new JSONObject();
