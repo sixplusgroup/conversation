@@ -158,7 +158,7 @@ public class OrderController {
         String expectedDate = form.getExpectedDate();
         String description = form.getDescription();
         TradeFrom tradeFrom = TradeFrom.WECHAT;
-        if (form.getTradeFrom() != null){
+        if (form.getTradeFrom() != null) {
             tradeFrom = form.getTradeFrom();
         }
 
@@ -2084,7 +2084,7 @@ public class OrderController {
     }
 
     /**
-     * 根据手机号查询订单（模糊查询）
+     * 根据手机号查询订单
      * 小程序调用
      *
      * @param phone 手机号
@@ -2100,9 +2100,11 @@ public class OrderController {
         }
         Map<String, Object> condition = new HashMap<>();
         condition.put("blockFlag", false);
-        String fuzzyPhone = phone.trim();
-        condition.put("phone", fuzzyPhone);
-        ResultData response = orderService.fetchDriftOrderPanel(condition);
+        condition.put("phone", phone);
+        int[] statusList = new int[]{DriftOrderStatus.APPLIED.getValue(), DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(),
+                DriftOrderStatus.DELIVERED.getValue(), DriftOrderStatus.BACK.getValue(), DriftOrderStatus.FINISHED.getValue()};
+        condition.put("statusList", statusList);
+        ResultData response = orderService.fetchDriftOrder(condition);
         switch (response.getResponseCode()) {
             case RESPONSE_NULL:
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -2124,7 +2126,7 @@ public class OrderController {
      * 根据orderId更新expectedDate
      * 小程序调用
      *
-     * @param orderId 订单号
+     * @param orderId      订单号
      * @param expectedDate 预约日期
      * @return ResultData 更新结果
      */
