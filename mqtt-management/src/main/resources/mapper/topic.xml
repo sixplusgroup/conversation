@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.MqttTopicDao">
+    <resultMap id="topicVo" type="finley.gmair.model.mqttManagement.Topic">
+        <result property="topicId" column="topic_id"/>
+        <result property="topicDetail" column="topic_detail"/>
+        <result property="topicDescription" column="topic_description"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.mqttManagement.Topic" useGeneratedKeys="false">
+        insert into gmair_mqtt_management.mqtt_topic(topic_id, topic_detail, topic_description, block_flag, create_time)
+        values(#{topicId}, #{topicDetail}, #{topicDescription}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <delete id="delete" parameterType="java.lang.String">
+        update gmair_mqtt_management.mqtt_topic
+        set block_flag = true
+        where topic_id = #{topicId}
+    </delete>
+
+    <update id="update" parameterType="finley.gmair.model.mqttManagement.Topic">
+        update gmair_mqtt_management.mqtt_topic
+        <set>
+            <if test="topicDetail != null">
+                topic_detail = #{topicDetail},
+            </if>
+            <if test="topicDescription != null">
+                topic_description = #{topicDescription},
+            </if>
+            topic_id = #{topicId}
+        </set>
+        where topic_id = #{topicId}
+    </update>
+
+    <select id="query" parameterType="finley.gmair.model.mqttManagement.Topic" resultMap="topicVo">
+        select topic_id, topic_detail, topic_description, block_flag, create_time
+        from gmair_mqtt_management.mqtt_topic
+        where 1 = 1
+        <if test="topicId != null">
+            and topic_id = #{topicId}
+        </if>
+        <if test="topicDetail != null">
+            and topic_detail = #{topicDetail}
+        </if>
+        <if test="topicDescription != null">
+            and topic_description = #{topicDescription}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="queryTopicsByDetail" parameterType="java.lang.String" resultMap="topicVo">
+        select topic_id, topic_detail, topic_description, block_flag, create_time
+        from gmair_mqtt_management.mqtt_topic
+        where
+        block_flag = false
+        and
+        topic_detail like CONCAT('%',#{topicDetail},'%')
+        order by create_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.MachineAlertDao">
+    <resultMap id="alertVo" type="finley.gmair.model.mqttManagement.MachineAlert">
+        <result property="alertId" column="alert_id"/>
+        <result property="machineId" column="machine_id"/>
+        <result property="alertCode" column="alert_code"/>
+        <result property="alertMsg" column="alert_msg"/>
+        <result property="alertStatus" column="alert_status"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.mqttManagement.MachineAlert" useGeneratedKeys="false">
+        insert into gmair_mqtt_management.machine_alert(alert_id, machine_id, alert_code, alert_msg, alert_status, block_flag, create_time)
+        values(#{alertId}, #{machineId}, #{alertCode}, #{alertMsg}, #{alertStatus}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="updateSingle" parameterType="java.util.Map">
+        update gmair_mqtt_management.machine_alert
+        set alert_status = #{alertStatus}
+        where alert_id = #{alertId}
+    </update>
+
+    <update id="updateBatch" parameterType="java.util.Map">
+        update gmair_mqtt_management.machine_alert
+        set alert_status = #{alertStatus}
+        where alert_id in
+        <foreach collection="list" index="index" item="MachineAlert" open="(" separator="," close=")">
+            #{MachineAlert.alertId}
+        </foreach>
+    </update>
+
+    <select id="query" parameterType="java.util.Map" resultMap="alertVo">
+        select alert_id, machine_id, alert_code, alert_msg, alert_status, block_flag, create_time
+        from gmair_mqtt_management.machine_alert
+        where 1 = 1
+        <if test="alertId != null">
+            and alert_id = #{alertId}
+        </if>
+        <if test="machineId != null">
+            and machine_id = #{machineId}
+        </if>
+        <if test="alertCode != null">
+            and alert_code = #{alertCode}
+        </if>
+        <if test="alertMsg != null">
+            and alert_msg = #{alertMsg}
+        </if>
+        <if test="alertStatus != null">
+            and alert_status = #{alertStatus}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by create_time desc
+    </select>
+
+</mapper>
