@@ -75,7 +75,7 @@ public class TbOrderServiceImpl implements TbOrderService {
                     tradeMapper.selectByTid(trade.getTid()).get(0);
             // 去模糊化的交易mode==1则同步新订单到crm
             if (crmTrade.getMode() == TradeMode.DEBLUR.getValue()
-                    && TbTradeStatus.valueOf(trade.getStatus()).judgeCrmAdd()) {
+                    && TbTradeStatus.valueOf(trade.getStatus()).paid()) {
                 syncResult.setSyncToCRM(true);
                 ResultData rsp1 = crmSyncService.createNewOrder(crmTrade);
                 if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -85,21 +85,11 @@ public class TbOrderServiceImpl implements TbOrderService {
                     syncResult.setSyncToCRMSuccess(true);
                 }
             }
-            // 已经推送到crm的交易mode==2则更新订单状态到crm
-//            else if (crmTrade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()
-//                    && TbTradeStatus.valueOf(trade.getStatus()).judgeCrmUpdate()) {
-//                syncResult.setSyncToCRM(true);
-//                ResultData rsp1 = crmSyncService.updateOrderStatus(crmTrade);
-//                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
-//                    logger.error("syncOrderStatusToCrm error, response:{}", rsp1);
-//                } else {
-//                    syncResult.setSyncToCRMSuccess(true);
-//                }
-//            }
+            // 已经推送到crm的交易mode==2则更新订单状态到crm(暂省略该流程)
         }
 
         //2.2 同步到drift
-        if (isSyncToDriftTrade(trade)) {
+        if (isSyncToDrift(trade)) {
             syncResult.setSyncToDrift(true);
             DriftOrderExpress driftOrder = toDriftOrderExpress(trade);
             ResultData rsp2 = driftOrderSyncService.syncOrderToDrift(driftOrder);
@@ -151,7 +141,7 @@ public class TbOrderServiceImpl implements TbOrderService {
             //step2:sync to crm
             //如果订单已去模糊化且未同步，则向crm同步新订单
             if (trade.getMode() == TradeMode.DEBLUR.getValue()
-                    && TbTradeStatus.valueOf(trade.getStatus()).judgeCrmAdd()) {
+                    && TbTradeStatus.valueOf(trade.getStatus()).paid()) {
                 syncResult.setSyncToCRM(true);
                 ResultData resultData1 = crmSyncService.createNewOrder(trade);
                 if (resultData1.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -161,35 +151,12 @@ public class TbOrderServiceImpl implements TbOrderService {
                 } else {
                     logger.error("syncNewOrderToCrm error, response:{}", resultData1);
                 }
-                //如果订单已同步至crm, 则向crm更新订单状态
             }
-//            else if (trade.getMode() == TradeMode.PUSHED_TO_CRM.getValue()
-//                    && TbTradeStatus.valueOf(trade.getStatus()).judgeCrmUpdate()) {
-//                syncResult.setSyncToCRM(true);
-//                ResultData rsp1 = crmSyncService.updateOrderStatus(trade);
-//                if (rsp1.getResponseCode() != ResponseCode.RESPONSE_OK) {
-//                    logger.error("syncOrderStatusToCrm error, response:{}", rsp1);
-//                } else {
-//                    syncResult.setSyncToCRMSuccess(true);
-//                }
-//            }
+            //如果订单已同步至crm, 则向crm更新订单状态(暂省略该流程)
 
             //step3:sync to drift
             List<finley.gmair.model.ordernew.Order> orderList2 = orderMapper.selectAllByTradeId(trade.getTradeId());
-            boolean syncToDrift = false;
-            if (DRIFT_NUM_IID.equals(trade.getNumIid())) {
-                syncToDrift = true;
-            }
-            for (finley.gmair.model.ordernew.Order tempOrder : orderList2) {
-                if (DRIFT_NUM_IID.equals(tempOrder.getNumIid())) {
-                    syncToDrift = true;
-                    break;
-                }
-            }
-            if (TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(TbTradeStatus.valueOf(trade.getStatus()))
-                    || TbTradeStatus.WAIT_BUYER_PAY.equals(TbTradeStatus.valueOf(trade.getStatus()))) {
-                syncToDrift = false;
-            }
+            boolean syncToDrift = isSyncToDrift(trade, orderList2);
             if (syncToDrift) {
                 syncResult.setSyncToDrift(true);
                 ResultData resultData2 = driftOrderSyncService.syncOrderPartInfoToDrift(trade.getTid().toString(), trade.getReceiverName(),
@@ -204,6 +171,7 @@ public class TbOrderServiceImpl implements TbOrderService {
         }
         return new ResultData();
     }
+
 
     /**
      * tb单笔Trade新增到中台
@@ -276,6 +244,10 @@ public class TbOrderServiceImpl implements TbOrderService {
         interTrade.setTid(tbTrade.getTid());
         // 更新状态
         interTrade.setStatus(updatedStatus.name());
+        // 更新卖家留言
+        interTrade.setSellerMemo(tbTrade.getSellerMemo());
+        // 更新收到付款
+        interTrade.setReceivedPayment(Double.valueOf(tbTrade.getReceivedPayment()));
         // 更新交易修改时间
         interTrade.setModified(tbTrade.getModified());
         // 更新付款时间
@@ -320,14 +292,16 @@ public class TbOrderServiceImpl implements TbOrderService {
                 finley.gmair.model.ordernew.Order interOrder = new finley.gmair.model.ordernew.Order();
                 interOrder.setOid(tmpOrder.getOid());
                 interOrder.setStatus(updatedStatus.name());
+                // 更新退款状态
+                interOrder.setRefundStatus(tmpOrder.getRefundStatus());
                 interOrder.setStoreCode(tmpOrder.getStoreCode());
                 interOrder.setShippingType(tmpOrder.getShippingType());
                 interOrder.setLogisticsCompany(tmpOrder.getLogisticsCompany());
                 interOrder.setInvoiceNo(tmpOrder.getInvoiceNo());
-                if(tmpOrder.getDivideOrderFee() != null){
+                if (tmpOrder.getDivideOrderFee() != null) {
                     interOrder.setDivideOrderFee(Double.valueOf(tmpOrder.getDivideOrderFee()));
                 }
-                if(tmpOrder.getPayment() != null){
+                if (tmpOrder.getPayment() != null) {
                     interOrder.setPayment(Double.valueOf(tmpOrder.getPayment()));
                 }
                 if (tmpOrder.getConsignTime() != null) {
@@ -371,8 +345,11 @@ public class TbOrderServiceImpl implements TbOrderService {
         driftOrder.setExpectedDate(trade.getPayTime());
         driftOrder.setTradeFrom(TradeFrom.TMALL);
 
-        double totalPrice = Double.parseDouble(trade.getPostFee());
-        double realPrice = 0;
+        //如果有邮费订单总价和订单实付加上邮费
+        Double postFee = Double.parseDouble(trade.getPostFee());
+        double totalPrice = postFee;
+        double realPrice = postFee;
+        int orderNum = trade.getOrders().size();
         //构造DriftOrderItem
         List<DriftOrderItem> itemList = new ArrayList<>();
         for (Order order : trade.getOrders()) {
@@ -395,7 +372,10 @@ public class TbOrderServiceImpl implements TbOrderService {
             item.setExQuantity(order.getNum().intValue());
             item.setItemPrice(Double.parseDouble(order.getPrice()));
             item.setTotalPrice(Double.parseDouble(order.getTotalFee()));
-            item.setRealPrice(Double.parseDouble(order.getPayment()));
+            Double orderPayment = Double.parseDouble(order.getPayment());
+            //获取到的Order中的payment字段在单笔子订单时包含物流费用，多笔子订单时不包含物流费用
+            double orderRealPrice = orderNum == 1 ? orderPayment - postFee : orderPayment;
+            item.setRealPrice(orderRealPrice);
             itemList.add(item);
             totalPrice += item.getTotalPrice();
             realPrice += item.getRealPrice();
@@ -429,14 +409,14 @@ public class TbOrderServiceImpl implements TbOrderService {
     }
 
     /**
-     * 判断是否同步到drift,trade.num_iid=x or trade.orders[*].num_iid=x
+     * 判断是否同步到drift
+     * (trade.num_iid=x or trade.orders[*].num_iid=x) and isPaid
      *
-     * @param trade
-     * @return
+     * @param trade(淘宝API)
+     * @return boolean
      */
-    private boolean isSyncToDriftTrade(Trade trade) {
-        if (TbTradeStatus.TRADE_CLOSED_BY_TAOBAO.equals(TbTradeStatus.valueOf(trade.getStatus()))
-                || TbTradeStatus.WAIT_BUYER_PAY.equals(TbTradeStatus.valueOf(trade.getStatus()))) {
+    private boolean isSyncToDrift(Trade trade) {
+        if (!TbTradeStatus.valueOf(trade.getStatus()).paid()) {
             return false;
         }
         if (DRIFT_NUM_IID.equals(trade.getNumIid())) {
@@ -447,6 +427,34 @@ public class TbOrderServiceImpl implements TbOrderService {
             }
             for (Order order : trade.getOrders()) {
                 if (DRIFT_NUM_IID.equals(order.getNumIid())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断是否同步到drift
+     * (trade.num_iid=x or trade.orders[*].num_iid=x) and isPaid
+     *
+     * @param trade(Domain Object)
+     * @param orderList2(Domain Object List)
+     * @return
+     */
+    private boolean isSyncToDrift(finley.gmair.model.ordernew.Trade trade,
+                                  List<finley.gmair.model.ordernew.Order> orderList2) {
+        if (!TbTradeStatus.valueOf(trade.getStatus()).paid()) {
+            return false;
+        }
+        if (DRIFT_NUM_IID.equals(trade.getNumIid())) {
+            return true;
+        } else if (trade.getNumIid() == null) {
+            if (orderList2 == null) {
+                return false;
+            }
+            for (finley.gmair.model.ordernew.Order tempOrder : orderList2) {
+                if (DRIFT_NUM_IID.equals(tempOrder.getNumIid())) {
                     return true;
                 }
             }

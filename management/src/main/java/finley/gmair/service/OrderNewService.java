@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,4 +34,15 @@ public interface OrderNewService {
             return new SpringFormEncoder();
         }
     }
+
+    @GetMapping(value="/order/skuItem/list")
+    ResultData list();
+
+    @PostMapping(value="/order/skuItem/update")
+    ResultData update(@RequestParam("itemId") String itemId,
+                      @RequestParam("machineModel") String machineModel,
+                      @RequestParam("fictitious") boolean fictitious);
+
+    @PostMapping(value="/order/skuItem/import")
+    ResultData manualImport();
 }

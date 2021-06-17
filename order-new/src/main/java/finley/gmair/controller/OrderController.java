@@ -28,6 +28,7 @@ import java.util.List;
  * @description ：
  */
 
+@CrossOrigin
 @RestController
 @RequestMapping("/order")
 public class OrderController {

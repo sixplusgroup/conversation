@@ -12,5 +12,6 @@
         <mapper resource="mapper/obscurecity.xml"/>
         <mapper resource="mapper/provinceairquality.xml"/>
         <mapper resource="mapper/mojitoken.xml"/>
+        <mapper resource="mapper/cityweathercondition.xml"/>
     </mappers>
 </configuration>

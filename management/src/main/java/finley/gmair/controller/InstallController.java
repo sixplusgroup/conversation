@@ -114,12 +114,12 @@ public class InstallController {
         String model = form.getModel();
         String source = form.getSource();
         String type = form.getType();
-        if (StringUtils.isEmpty(form.getDescription())&&StringUtils.isEmpty(form.getCompany())) {
+        if (StringUtils.isEmpty(form.getDescription()) && StringUtils.isEmpty(form.getCompany())) {
             result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, type);
-        } else if(StringUtils.isEmpty(form.getCompany())){
+        } else if (StringUtils.isEmpty(form.getCompany())) {
             result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription(), type);
-        }else {
-            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription(),form.getCompany(),type);
+        } else {
+            result = installService.createAssign(consumerConsignee, consumerPhone, consumerAddress, model, source, form.getDescription(), form.getCompany(), type);
         }
         return result;
     }
@@ -137,12 +137,12 @@ public class InstallController {
     }
 
     @GetMapping("/assign/list")
-    public ResultData assigns(String status, String teamId, Integer curPage, Integer length,String search, String sortType) {
+    public ResultData assigns(String status, String teamId, Integer curPage, Integer length, String search, String sortType) {
         ResultData result;
         if (curPage == null || length == null) {
-            result = installService.fetchAssign(status, teamId , search, sortType);
+            result = installService.fetchAssign(status, teamId, search, sortType);
         } else {
-            result = installService.fetchAssignByPage(status, teamId, curPage, length,search, sortType);
+            result = installService.fetchAssignByPage(status, teamId, curPage, length, search, sortType);
         }
         return result;
     }
@@ -279,6 +279,7 @@ public class InstallController {
         result = installService.fetchTeamMember(teamId);
         return result;
     }
+
     /**
      * 创建团队成员
      *
@@ -290,90 +291,94 @@ public class InstallController {
      */
 
     @PostMapping("/member/create")
-    public ResultData createTeamMember(String teamId,String memberPhone,String memberName,int memberRole) {
+    public ResultData createTeamMember(String teamId, String memberPhone, String memberName, int memberRole) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(teamId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确保团队ID信息已提供");
             return result;
         }
-        result = installService.createTeamMember(teamId,memberPhone,memberName,memberRole);
+        result = installService.createTeamMember(teamId, memberPhone, memberName, memberRole);
         return result;
     }
 
     /**
      * 修改成员信息
+     *
      * @param memberPhone
      * @param memberId
      * @return
      */
 
     @PostMapping("/member/update")
-    public ResultData updatePhone(String memberPhone,String memberId,String memberName,String teamId){
-        ResultData result=new ResultData();
-        if(StringUtils.isEmpty(memberId)){
+    public ResultData updatePhone(String memberPhone, String memberId, String memberName, String teamId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确保输入了正确的memberId");
             return result;
         }
-        if(StringUtils.isEmpty(memberName)&&StringUtils.isEmpty(memberPhone)&&StringUtils.isEmpty(teamId)){
+        if (StringUtils.isEmpty(memberName) && StringUtils.isEmpty(memberPhone) && StringUtils.isEmpty(teamId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供更新的信息");
             return result;
         }
-        result=installService.updatePhone(memberPhone,memberId,teamId,memberName);
+        result = installService.updatePhone(memberPhone, memberId, teamId, memberName);
         return result;
     }
 
     /**
      * 根据memberId删除成员
+     *
      * @param memberId
      * @return
      */
 
     @GetMapping("/member/block")
-    public ResultData deleteMember(String memberId){
-        ResultData result=new ResultData();
-        if(StringUtils.isEmpty(memberId)){
+    public ResultData deleteMember(String memberId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请输入成员ID");
             return result;
         }
-        result=installService.deleteMember(memberId);
+        result = installService.deleteMember(memberId);
         return result;
     }
 
     /**
      * 管理员获取任务快照
+     *
      * @param assignId
      * @return
      */
     @GetMapping("/assign/snapshot")
-    public ResultData snapshot(String assignId){
-        ResultData result=new ResultData();
-        if(StringUtils.isEmpty(assignId)){
+    public ResultData snapshot(String assignId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(assignId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请输入任务ID");
             return result;
         }
-        result=installService.snapshot(assignId);
+        result = installService.snapshot(assignId);
         return result;
     }
 
     @GetMapping("/team/block")
-    public ResultData deleteTeam(String teamId){
-        ResultData result=new ResultData();
-        if(StringUtils.isEmpty(teamId)){
+    public ResultData deleteTeam(String teamId) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(teamId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供团队ID");
             return result;
         }
-        result=installService.deleteTeam(teamId);
+        result = installService.deleteTeam(teamId);
         return result;
     }
 
     /**
      * 管理员提交安装快照
+     *
      * @param assignId
      * @param qrcode
      * @param picture
@@ -384,7 +389,7 @@ public class InstallController {
      */
 
     @PostMapping("/assign/submit")
-    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description,String date) {
+    public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description, String date) {
         ResultData result = new ResultData();
         if (org.apache.commons.lang.StringUtils.isEmpty(assignId) || org.apache.commons.lang.StringUtils.isEmpty(qrcode) || org.apache.commons.lang.StringUtils.isEmpty(picture) || wifi == null || org.apache.commons.lang.StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -392,8 +397,8 @@ public class InstallController {
             return result;
         }
         //存储二维码
-        result=installService.initAssign(assignId,qrcode);
-        if(result.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        result = installService.initAssign(assignId, qrcode);
+        if (result.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             return result;
         }
         //提交安装图片资源
@@ -402,15 +407,16 @@ public class InstallController {
             return result;
         }
         if (org.apache.commons.lang.StringUtils.isEmpty(description)) {
-            result = installService.submitAssign(assignId, qrcode, picture, wifi, method,date);
+            result = installService.submitAssign(assignId, qrcode, picture, wifi, method, date);
         } else {
-            result = installService.submitAssign(assignId, qrcode, picture, wifi, method, description,date);
+            result = installService.submitAssign(assignId, qrcode, picture, wifi, method, description, date);
         }
         return result;
     }
 
     /**
      * 查询安装报告
+     *
      * @param assignId
      * @param teamId
      * @param memberId
@@ -419,42 +425,42 @@ public class InstallController {
      * @return
      */
     @GetMapping("/assign/report")
-    public ResultData report_query(String assignId,String teamId,String memberId,String beginTime,String endTime, String sortType, Integer page, Integer pageLength){
-        ResultData result=new ResultData();
-        if(!StringUtils.isEmpty(assignId)){
-            result=installService.reportQueryByAssignId(assignId,beginTime,endTime,sortType,page,pageLength);
-        }else if(!StringUtils.isEmpty(memberId)){
-            result=installService.reportQueryByMemberId(memberId,beginTime,endTime,sortType,page,pageLength);
-        }else if(!StringUtils.isEmpty(teamId)){
-            result=installService.reportQueryByTeamId(teamId,beginTime,endTime,sortType,page,pageLength);
-        }else{
-            result=installService.reportQueryByMemberTime(beginTime,endTime,sortType,page,pageLength);
+    public ResultData report_query(String assignId, String teamId, String memberId, String beginTime, String endTime, String sortType, Integer page, Integer pageLength) {
+        ResultData result = new ResultData();
+        if (!StringUtils.isEmpty(assignId)) {
+            result = installService.reportQueryByAssignId(assignId, beginTime, endTime, sortType, page, pageLength);
+        } else if (!StringUtils.isEmpty(memberId)) {
+            result = installService.reportQueryByMemberId(memberId, beginTime, endTime, sortType, page, pageLength);
+        } else if (!StringUtils.isEmpty(teamId)) {
+            result = installService.reportQueryByTeamId(teamId, beginTime, endTime, sortType, page, pageLength);
+        } else {
+            result = installService.reportQueryByMemberTime(beginTime, endTime, sortType, page, pageLength);
         }
         return result;
     }
 
 
     @GetMapping("/assign/report/download")
-    public String report_download(String assignId,String teamId,String memberId,String beginTime,String endTime,HttpServletResponse response, String sortType){
-        ResultData result=new ResultData();
-        if(!StringUtils.isEmpty(assignId)){
-            result=installService.reportQueryByAssignId(assignId,beginTime,endTime,sortType,null,null);
-        }else if(!StringUtils.isEmpty(memberId)){
-            result=installService.reportQueryByMemberId(memberId,beginTime,endTime,sortType,null,null);
-        }else if(!StringUtils.isEmpty(teamId)){
-            result=installService.reportQueryByTeamId(teamId,beginTime,endTime,sortType,null,null);
-        }else{
-            result=installService.reportQueryByMemberTime(beginTime,endTime,sortType,null,null);
+    public String report_download(String assignId, String teamId, String memberId, String beginTime, String endTime, HttpServletResponse response, String sortType) {
+        ResultData result = new ResultData();
+        if (!StringUtils.isEmpty(assignId)) {
+            result = installService.reportQueryByAssignId(assignId, beginTime, endTime, sortType, null, null);
+        } else if (!StringUtils.isEmpty(memberId)) {
+            result = installService.reportQueryByMemberId(memberId, beginTime, endTime, sortType, null, null);
+        } else if (!StringUtils.isEmpty(teamId)) {
+            result = installService.reportQueryByTeamId(teamId, beginTime, endTime, sortType, null, null);
+        } else {
+            result = installService.reportQueryByMemberTime(beginTime, endTime, sortType, null, null);
         }
-        String fileName=new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".xls";
+        String fileName = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xls";
         try {
             //查询数据库中所有的数据
-            String data=JSONObject.toJSONString(result.getData());
-            List<AssignReport> list=JSONArray.parseArray(data,AssignReport.class);
+            String data = JSONObject.toJSONString(result.getData());
+            List<AssignReport> list = JSONArray.parseArray(data, AssignReport.class);
 //            logger.info(result.getData().toString());
             HSSFWorkbook wb = new HSSFWorkbook();
             HSSFSheet sheet = wb.createSheet("sheet1");
-            String[] n = { "编号", "二维码", "型号", "用户" ,"联系方式","联系地址","来源","团队","安装工人","完成时间"};
+            String[] n = {"编号", "二维码", "型号", "用户", "联系方式", "联系地址", "来源", "团队", "安装工人", "完成时间"};
             Object[][] value = new Object[list.size() + 1][n.length];
             for (int m = 0; m < n.length; m++) {
                 value[0][m] = n[m];
@@ -466,30 +472,30 @@ public class InstallController {
                 value[i + 1][3] = list.get(i).getConsumerConsignee();
                 value[i + 1][4] = list.get(i).getConsumerPhone();
                 value[i + 1][5] = list.get(i).getConsumerAddress();
-                if(StringUtils.isEmpty(list.get(i).getAssignSource())){
+                if (StringUtils.isEmpty(list.get(i).getAssignSource())) {
                     value[i + 1][6] = "无";
-                }else {
+                } else {
                     value[i + 1][6] = list.get(i).getAssignSource();
                 }
                 value[i + 1][7] = list.get(i).getTeamName();
                 value[i + 1][8] = list.get(i).getMemberName();
                 value[i + 1][9] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getCreateAt());
             }
-            HSSFRow row[]=new HSSFRow[list.size()+1];
-            HSSFCell cell[]=new HSSFCell[n.length];
-            for(int i=0;i<row.length;i++){
-                row[i]=sheet.createRow(i);
-                for(int j=0;j<cell.length;j++){
-                    cell[j]=row[i].createCell(j);
+            HSSFRow row[] = new HSSFRow[list.size() + 1];
+            HSSFCell cell[] = new HSSFCell[n.length];
+            for (int i = 0; i < row.length; i++) {
+                row[i] = sheet.createRow(i);
+                for (int j = 0; j < cell.length; j++) {
+                    cell[j] = row[i].createCell(j);
                     cell[j].setCellValue(value[i][j].toString());
                 }
             }
             OutputStream os = response.getOutputStream();
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
             wb.write(os);
             os.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         File file = new File(baseDir);
@@ -501,7 +507,7 @@ public class InstallController {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             book.write(byteArrayOutputStream);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Content-Disposition", "attachment;filename="+fileName);
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
             response.setContentLength(byteArrayOutputStream.size());
             ServletOutputStream outputstream = response.getOutputStream();
             byteArrayOutputStream.writeTo(outputstream);
@@ -516,46 +522,49 @@ public class InstallController {
 
     /**
      * 安装负责人查看自己负责的团队列表
+     *
      * @param memberId
      * @return
      */
     @GetMapping("/teamwatch/watch/teamList")
-    public ResultData queryWatchTeam(String memberId){
+    public ResultData queryWatchTeam(String memberId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供成员的信息");
             return result;
         }
-        result=installService.queryWatchTeam(memberId);
+        result = installService.queryWatchTeam(memberId);
         return result;
     }
 
     /**
      * 通过memberId和teamId伪删除关注团队
+     *
      * @param memberId
      * @param teamId
      * @return
      */
     @PostMapping("/teamwatch/block")
-    public ResultData blockWatchTeam(String memberId, String teamId){
+    public ResultData blockWatchTeam(String memberId, String teamId) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(memberId)||StringUtils.isEmpty(teamId)) {
+        if (StringUtils.isEmpty(memberId) || StringUtils.isEmpty(teamId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请确认memberId和teamId均已提供");
             return result;
         }
-        result=installService.blockWatchTeam(memberId, teamId);
+        result = installService.blockWatchTeam(memberId, teamId);
         return result;
     }
 
     /**
      * 根据团队id查看所有相关负责人
+     *
      * @param teamId
      * @return
      */
     @GetMapping("/teamwatch/list")
-    public ResultData getLeaderListByTeamid(String teamId){
+    public ResultData getLeaderListByTeamid(String teamId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(teamId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -568,10 +577,11 @@ public class InstallController {
 
     /**
      * 获取负责人列表
+     *
      * @return
      */
     @GetMapping("/member/leader/list")
-    public ResultData getLeaderList(){
+    public ResultData getLeaderList() {
         ResultData result = new ResultData();
         result = installService.getLeaderList();
         return result;
@@ -579,11 +589,12 @@ public class InstallController {
 
     /**
      * 将安装任务状态改为已签收（待安装）等待安装人员安装
+     *
      * @param assignId
      * @return
      */
     @PostMapping("/assign/receive")
-    public ResultData receive(String assignId){
+    public ResultData receive(String assignId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(assignId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -595,9 +606,9 @@ public class InstallController {
     }
 
     @GetMapping("/member/profile")
-    ResultData getMember(String memberId){
+    public ResultData getMember(String memberId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(memberId)){
+        if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供memberId");
             return result;
@@ -607,9 +618,9 @@ public class InstallController {
     }
 
     @PostMapping("/assign/restore")
-    ResultData restore(String assignId){
+    public ResultData restore(String assignId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(assignId)){
+        if (StringUtils.isEmpty(assignId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供assignId");
             return result;
@@ -619,12 +630,11 @@ public class InstallController {
     }
 
     @GetMapping("/assign/company/list")
-    ResultData getCompanyList(){
+    public ResultData getCompanyList() {
         return installService.getCompanyList();
     }
 
     /**
-     *
      * @description:下载创建工单模板
      * @param: HttpServletResponse[response]
      * @return: ResultData
@@ -644,7 +654,7 @@ public class InstallController {
 //        String filePath = "E://"+"test.xlsx";
         File file = new File(filePath);
         //判断文件存在
-        if (!file.exists()){
+        if (!file.exists()) {
             resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
             resultData.setDescription("文件不存在");
             logger.error("创建工单模板文件不存在");
@@ -680,8 +690,18 @@ public class InstallController {
         return resultData;
     }
 
-    @GetMapping("assign/order")
-    ResultData overviewNow(String memberId, String assignStatus,String duration, Integer curPage, Integer length){
+    @GetMapping("/assign/order")
+    public ResultData overviewNow(String memberId, String assignStatus, String duration, Integer curPage, Integer length) {
         return installService.overviewNow(memberId, assignStatus, duration, curPage, length);
+    }
+
+    @GetMapping("/assign/assignTypeInfo/all")
+    public ResultData queryAllAssignTypeInfo() {
+        return installService.queryAllAssignTypeInfo();
+    }
+
+    @GetMapping("/assign/assignTypeInfo/one")
+    public ResultData queryAssignTypeInfoByType(@RequestParam String assignType) {
+        return installService.queryAssignTypeInfoByType(assignType);
     }
 }

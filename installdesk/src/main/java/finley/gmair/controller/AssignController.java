@@ -4,20 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.CompanyForm;
-import finley.gmair.model.Entity;
 import finley.gmair.model.installation.*;
-import finley.gmair.model.resource.FileMap;
 import finley.gmair.pool.InstallPool;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
-import org.bouncycastle.math.ec.ScaleYPointMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -77,6 +75,9 @@ public class AssignController {
     @Autowired
     private DisassembleSnapshotService disassembleSnapshotService;
 
+    @Resource
+    private AssignTypeInfoService assignTypeInfoService;
+
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
      *
@@ -91,6 +92,12 @@ public class AssignController {
             result.setDescription("请确保安装客户的信息录入完整");
             return result;
         }
+        // 检查前端传入的工单类型是否合法
+        if (!assignTypeInfoService.isValidType(form.getType())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请确保工单类型填写正确");
+            return result;
+        }
         //根据表单内容构建安装任务
         String consignee = form.getConsumerConsignee().trim();
         String phone = form.getConsumerPhone().trim();
@@ -98,9 +105,7 @@ public class AssignController {
         String detail = form.getModel().trim();
         String source = form.getSource().trim();
         String type = form.getType();
-        if (!type.equals("换机")){
-            type = "安裝";
-        }
+
         Assign assign;
         if (!StringUtils.isEmpty(form.getCompany())) {
             assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim(),type);
@@ -1461,4 +1466,25 @@ public class AssignController {
         return result;
     }
 
+    @GetMapping("/assignTypeInfo/all")
+    public ResultData queryAllAssignTypeInfo() {
+        ResultData res = new ResultData();
+        res.setData(assignTypeInfoService.queryAll());
+        return res;
+    }
+
+    @GetMapping("/assignTypeInfo/one")
+    public ResultData queryAssignTypeInfoByType(@RequestParam String assignType) {
+        ResultData res = new ResultData();
+        AssignTypeInfo one = assignTypeInfoService.queryByAssignType(assignType);
+
+        if (one == null || !assignType.equals(one.getAssignType())) {
+            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            res.setDescription("无此工单类型！");
+        }
+        else {
+            res.setData(one);
+        }
+        return res;
+    }
 }

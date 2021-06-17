@@ -157,6 +157,10 @@ public class OrderController {
         String district = form.getDistrict();
         String expectedDate = form.getExpectedDate();
         String description = form.getDescription();
+        TradeFrom tradeFrom = TradeFrom.WECHAT;
+        if (form.getTradeFrom() != null) {
+            tradeFrom = form.getTradeFrom();
+        }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date expected = sdf.parse(expectedDate);
@@ -231,7 +235,7 @@ public class OrderController {
             }
         }
 
-        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate, TradeFrom.WECHAT);
+        DriftOrder driftOrder = new DriftOrder(consumerId, equipId, consignee, phone, address, province, city, district, description, activityId, expected, intervalDate, tradeFrom);
         driftOrder.setTotalPrice(price);
         driftOrder.setRealPay(price);
         driftOrder.setList(list);
@@ -2077,5 +2081,104 @@ public class OrderController {
             return response;
         }
         return resultData;
+    }
+
+    /**
+     * 根据手机号查询订单
+     * 小程序调用
+     *
+     * @param phone 手机号
+     * @return List<DriftOrderPanel> 订单List
+     */
+    @GetMapping(value = "/findByPhone")
+    public ResultData findByPhone(String phone) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(phone)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("phone不能为空");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("blockFlag", false);
+        condition.put("phone", phone);
+        int[] statusList = new int[]{DriftOrderStatus.APPLIED.getValue(), DriftOrderStatus.PAYED.getValue(), DriftOrderStatus.CONFIRMED.getValue(),
+                DriftOrderStatus.DELIVERED.getValue(), DriftOrderStatus.BACK.getValue(), DriftOrderStatus.FINISHED.getValue()};
+        condition.put("statusList", statusList);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No drift order");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Query error, please try again later");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+                break;
+        }
+        return result;
+    }
+
+    /**
+     * 根据orderId更新expectedDate
+     * 小程序调用
+     *
+     * @param orderId      订单号
+     * @param expectedDate 预约日期
+     * @return ResultData 更新结果
+     */
+    @PostMapping("/updateExpectedDate")
+    public ResultData updateExpectedDate(String orderId, String expectedDate) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(orderId)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供orderId");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        condition.put("blockFlag", false);
+        ResultData response = orderService.fetchDriftOrder(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("订单查找失败");
+            return result;
+        }
+        DriftOrder driftOrder = ((List<DriftOrder>) response.getData()).get(0);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date expected;
+        try {
+            expected = sdf.parse(expectedDate);
+        } catch (ParseException e) {
+            logger.error("parse expectedDate error:{}", e);
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("预约日期解析失败");
+            return result;
+        }
+        if (DateUtils.isSameDay(expected, driftOrder.getExpectedDate())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("预约日期不能与原预约日期相同");
+            return result;
+        }
+        //检查当天是否可以继续借出设备
+        if (!available(driftOrder.getActivityId(), expected)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("该日期仪器无法预约使用，请重新选择日期");
+            return result;
+        } else {
+            driftOrder.setExpectedDate(expected);
+        }
+        response = orderService.updateDriftOrder(driftOrder);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("更新失败");
+            return result;
+        }
+        result.setResponseCode(response.getResponseCode());
+        result.setData(response.getData());
+        return result;
     }
 }

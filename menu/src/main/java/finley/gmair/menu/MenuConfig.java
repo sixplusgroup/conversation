@@ -25,6 +25,7 @@ public class MenuConfig {
             e.printStackTrace();
         }
 
+
         //test by czg
 
         //产品目录
@@ -40,19 +41,10 @@ public class MenuConfig {
 
 
         JSONObject assessment = new JSONObject();
-        assessment.put("name", "新风机评测");
+        assessment.put("name", "产品评测");
         assessment.put("type", "view");
         try {
-            assessment.put("url", "https://mp.weixin.qq.com/mp/homepage?__biz=MzI5MjczMDk4Mw==&hid=1&sn=7a8c06e9f97688699c622d6cc9c623b0");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        JSONObject detector_assessment = new JSONObject();
-        detector_assessment.put("name", "甲醛检测仪评测");
-        detector_assessment.put("type", "view");
-        try {
-            detector_assessment.put("url", "https://mp.weixin.qq.com/mp/homepage?__biz=MzI5MjczMDk4Mw==&hid=2&sn=17c8285f24eb6d8ef91e1183f0364eb3");
+            assessment.put("url", "https://mp.weixin.qq.com/s/aXhmPqOCFA9HGgfGj8ksYA");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,7 +62,6 @@ public class MenuConfig {
         gm.add(gm_introduction);
         gm.add(product_list);
         gm.add(assessment);
-        gm.add(detector_assessment);
         gm.add(cases);
 
         JSONObject gm_menu = new JSONObject();
@@ -100,7 +91,6 @@ public class MenuConfig {
         }
 
 
-
         //试用申请
         JSONObject applicant = new JSONObject();
         applicant.put("name", "试用申请");
@@ -111,7 +101,17 @@ public class MenuConfig {
             e.printStackTrace();
         }
 
+        //检测预约
+        JSONObject reservation = new JSONObject();
+        reservation.put("name", "检测预约");
+        reservation.put("type", "miniprogram");
+        reservation.put("url", "https://mp.weixin.qq.com/s/h8MxaTEKHKbP5y7wA3AYZg");
+        reservation.put("appid", "wx61f6301fde5d4f57");
+        reservation.put("pagepath", "pages/activity_detail/activity_detail");
+
+
         JSONArray after_support = new JSONArray();
+        after_support.add(reservation);
         after_support.add(applicant);
         after_support.add(contact_us);
 

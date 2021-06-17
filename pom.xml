@@ -57,6 +57,7 @@
         <module>tmall-genie</module>
         <module>mqtt-management</module>
         <module>maintenance</module>
+        <module>scene</module>
     </modules>
 
     <parent>

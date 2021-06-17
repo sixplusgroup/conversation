@@ -1,5 +1,7 @@
 package finley.gmair.form.drift;
 
+import finley.gmair.model.ordernew.TradeFrom;
+
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,8 @@ public class DriftOrderForm {
     private String excode;
 
     private String attachItem;
+
+    private TradeFrom tradeFrom;
 
     public String getConsumerId() {
         return consumerId;
@@ -142,5 +146,13 @@ public class DriftOrderForm {
 
     public void setAttachItem(String attachItem) {
         this.attachItem = attachItem;
+    }
+
+    public TradeFrom getTradeFrom() {
+        return tradeFrom;
+    }
+
+    public void setTradeFrom(TradeFrom tradeFrom) {
+        this.tradeFrom = tradeFrom;
     }
 }

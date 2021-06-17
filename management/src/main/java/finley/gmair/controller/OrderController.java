@@ -21,8 +21,24 @@ public class OrderController {
     private OrderNewService orderNewService;
 
     @PostMapping("/uploadAndSync")
-    public ResultData uploadAndSync(@RequestParam MultipartFile file, @RequestParam String password){
+    public ResultData uploadAndSync(@RequestParam MultipartFile file, @RequestParam String password) {
         return orderNewService.uploadAndSync(file, password);
     }
 
+    @GetMapping(value = "/skuItem/list")
+    public ResultData list() {
+        return orderNewService.list();
+    }
+
+    @PostMapping(value = "/skuItem/update")
+    public ResultData update(@RequestParam String itemId,
+                             @RequestParam String machineModel,
+                             @RequestParam boolean fictitious) {
+        return orderNewService.update(itemId, machineModel, fictitious);
+    }
+
+    @PostMapping(value = "/skuItem/import")
+    public ResultData manualImport() {
+        return orderNewService.manualImport();
+    }
 }

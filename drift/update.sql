@@ -584,3 +584,6 @@ update `gmair_drift`.`drift_order`
 set drift_order.`trade_from`=1
 where true;
 
+#2021-04-14 取消天猫同步订单open_id为null
+alter table `gmair_drift`.`drift_cancel_order`
+    modify open_id varchar(45) null;

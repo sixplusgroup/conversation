@@ -54,4 +54,7 @@ public interface AssignService {
 
     @PostMapping("/install/assign/receive")
     ResultData receive(@RequestParam("assignId")String assignId);
+
+    @GetMapping("/install/assign/assignTypeInfo/one")
+    ResultData queryAssignTypeInfoByType(@RequestParam("assignType") String assignType);
 }

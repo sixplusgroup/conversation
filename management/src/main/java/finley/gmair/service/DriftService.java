@@ -1,11 +1,20 @@
 package finley.gmair.service;
 
+import feign.codec.Encoder;
+import feign.form.spring.SpringFormEncoder;
+import finley.gmair.form.drift.DriftOrderForm;
+import finley.gmair.model.ordernew.TradeFrom;
 import finley.gmair.util.ResultData;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.cloud.netflix.feign.support.SpringEncoder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @FeignClient("drift-agent")
 public interface DriftService {
@@ -73,4 +82,12 @@ public interface DriftService {
 
     @GetMapping("/drift/activity/excode/query/label")
     ResultData getExcodeLabels(@RequestParam("activityId") String activityId);
+
+    @PostMapping(value = "/drift/order/create")
+    ResultData createDriftOrder(@RequestParam("consumerId") String consumerId, @RequestParam("activityId") String activityId,
+                                @RequestParam("equipId") String equipId, @RequestParam("consignee") String consignee,
+                                @RequestParam("phone") String phone, @RequestParam("address") String address, @RequestParam("province") String province,
+                                @RequestParam("city") String city, @RequestParam("district") String district, @RequestParam("description") String description,
+                                @RequestParam("expectedDate") String expectedDate, @RequestParam("intervalDate") int intervalDate,
+                                @RequestParam("attachItem") String attachItem, @RequestParam("tradeFrom") TradeFrom tradeFrom);
 }
