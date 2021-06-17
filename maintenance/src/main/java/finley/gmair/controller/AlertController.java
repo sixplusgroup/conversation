@@ -1,8 +1,8 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.machine.BoardVersion;
 import finley.gmair.service.MachineService;
 import finley.gmair.service.MqttService;
 import finley.gmair.util.ResponseCode;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * 设备告警相关的交互接口
@@ -51,11 +50,15 @@ public class AlertController {
         if (boardVersionResponse.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return ResultData.error("根据二维码查找设备版本失败");
         }
-        List<BoardVersion> list = (List<BoardVersion>) boardVersionResponse.getData();
-        if (list == null || list.size() == 0) {
+
+        JSONArray versionArray = (JSONArray) JSONArray.toJSON(boardVersionResponse.getData());
+        if (versionArray.size() == 0) {
             return ResultData.error("根据二维码查找设备版本失败");
         }
-        if (list.get(0).getVersion() < 3) {
+        String versionString = versionArray.get(0) + "";
+        JSONObject versionJson = JSON.parseObject(versionString);
+        int version = versionJson.getInteger("version");
+        if (version < 3) {
             return ResultData.empty("设备版本过低，暂时无法查询告警信息");
         }
 
