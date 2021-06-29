@@ -692,13 +692,32 @@ public class DriftController {
 
     /**
      * 管理员创建免费甲醛检测订单
+     *
      * @param form
      * @return
      */
     @PostMapping("/order/create")
     public ResultData createOrder(DriftOrderForm form) {
-        return driftService.createDriftOrder(form.getConsumerId(), form.getActivityId(), form.getEquipId(), form.getConsignee(),
+        String activityId = form.getActivityId();
+        if (StringUtils.isEmpty(activityId)) {
+            activityId = "ACT20190723a545nr39";
+        }
+        ResultData response = driftService.createDriftOrder(activityId, form.getEquipId(), form.getConsignee(),
                 form.getPhone(), form.getAddress(), form.getProvince(), form.getCity(), form.getDistrict(), form.getDescription(),
                 form.getExpectedDate(), form.getIntervalDate(), form.getAttachItem(), form.getTradeFrom());
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error("[Error] fail to create drift order");
+            return response;
+        }
+        JSONObject drift = JSON.parseObject(JSON.toJSONString(response.getData()));
+        logger.info(JSON.toJSONString(drift));
+        String orderId = drift.getString("orderId");
+        logger.info("[Info] orderId: " + orderId);
+        ResultData payment = driftService.payDriftOrder(drift.getString(orderId));
+        if (payment.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error("[Error] fail to update drift order status to payed for orderId: " + orderId);
+        }
+        logger.info(JSON.toJSONString(payment));
+        return response;
     }
 }
