@@ -11,7 +11,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>mqtt-management</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>3.6.1-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
@@ -172,5 +172,12 @@
         </dependency>
     </dependencies>
 
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

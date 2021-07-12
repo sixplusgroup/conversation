@@ -707,17 +707,8 @@ public class DriftController {
                 form.getExpectedDate(), form.getIntervalDate(), form.getAttachItem(), form.getTradeFrom());
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             logger.error("[Error] fail to create drift order");
-            return response;
         }
-        JSONObject drift = JSON.parseObject(JSON.toJSONString(response.getData()));
-        logger.info(JSON.toJSONString(drift));
-        String orderId = drift.getString("orderId");
-        logger.info("[Info] orderId: " + orderId);
-        ResultData payment = driftService.payDriftOrder(drift.getString(orderId));
-        if (payment.getResponseCode() != ResponseCode.RESPONSE_OK) {
-            logger.error("[Error] fail to update drift order status to payed for orderId: " + orderId);
-        }
-        logger.info(JSON.toJSONString(payment));
+        logger.info("[Info] response: " + JSON.toJSONString(response));
         return response;
     }
 }

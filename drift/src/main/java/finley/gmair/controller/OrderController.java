@@ -248,18 +248,20 @@ public class OrderController {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("服务器正忙，请稍后再试");
+            return result;
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("无相关数据，请仔细检查");
-        } else {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            return result;
+        }
+        if (tradeFrom == TradeFrom.FREE) {
+            orderPayed(driftOrder.getOrderId());
+        }
 //            if ((int) (driftOrder.getRealPay() * 100) == 0) {
 //                //todo 若订单金额为0，则自动更新订单状态为已付款
 //            } else {
 //                new Thread(() -> paymentService.createPay(driftOrder.getOrderId(), consumerId, (int) (driftOrder.getRealPay() * 100), activityName, ip)).start();
 //            }
-            result.setData(response.getData());
-        }
         String orderId = driftOrder.getOrderId();
         String message = consignee + "创建了该订单,期望使用日期为：" + new SimpleDateFormat("yyyy-MM-dd").format(driftOrder.getExpectedDate());
         if (!StringUtil.isEmpty(consumerId)) {
@@ -267,7 +269,7 @@ public class OrderController {
         } else {
             driftOrderActionService.create(new DriftOrderAction(orderId, message, "系统"));
         }
-        return result;
+        return response;
     }
 
     private boolean available(String activityId, Date date) {
@@ -488,27 +490,27 @@ public class OrderController {
      * @return
      */
     @PostMapping(value = "/payed")
-    public ResultData orderPayed(OrderPayForm form, HttpServletRequest request) throws Exception {
-        logger.info("process payed request for order: " + JSON.toJSONString(form));
+    public ResultData orderPayed(String orderId) throws Exception {
+        logger.info("process payed request for order: " + orderId);
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if (StringUtil.isEmpty(form.getOrderId())) {
+        if (StringUtil.isEmpty(orderId)) {
             logger.error("[Error] empty parameter orderId");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Required request param orderId is empty");
             return result;
         }
-        condition.put("orderId", form.getOrderId());
+        condition.put("orderId", orderId);
         condition.put("blockFlag", false);
         ResultData response = orderService.fetchDriftOrder(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(new StringBuffer("Fail to retrieve drift order with orderId: ").append(form.getOrderId()).toString());
+            result.setDescription(new StringBuffer("Fail to retrieve drift order with orderId: ").append(orderId).toString());
             return result;
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription(new StringBuffer("The drift order with orderId: ").append(form.getOrderId()).append(" doesn't exist").toString());
+            result.setDescription(new StringBuffer("The drift order with orderId: ").append(orderId).append(" doesn't exist").toString());
             return result;
         }
 
