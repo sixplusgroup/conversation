@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.netflix.discovery.converters.Auto;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.CompanyForm;
 import finley.gmair.model.installation.*;
@@ -75,8 +76,17 @@ public class AssignController {
     @Autowired
     private DisassembleSnapshotService disassembleSnapshotService;
 
+    @Autowired
+    private UserassignService userassignService;
+
     @Resource
     private AssignTypeInfoService assignTypeInfoService;
+
+//    @RequestMapping("/test")
+//    public String test(){
+//        return "ok";
+//    }
+
 
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
@@ -1486,5 +1496,171 @@ public class AssignController {
             res.setData(one);
         }
         return res;
+    }
+    /**
+     * 用户查询自己所有assign的状态
+     */
+    @PostMapping("/queryAssignState")
+    public ResultData queryAssignState(@RequestParam String consumerPhone){
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(consumerPhone)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请输入电话号码");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("consumerPhone", consumerPhone);
+        condition.put("blockFlag", false);
+        ResultData response = assignService.fetch(condition);
+
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前没有符合条件的安装任务");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询安装任务失败，请稍后尝试");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(((List) response.getData()));
+        }
+        return result;
+    }
+
+    /**
+     * 保存预约信息
+     */
+    @PostMapping("/reservation/save")
+    public ResultData saveReservations(@RequestBody Userassign userassign){
+        ResultData resultData = new ResultData();
+        ResultData response = userassignService.insert(userassign);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL||userassign==null) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
+            resultData.setDescription("数据不可为空");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            resultData.setDescription("保存失败，请稍后尝试");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            resultData.setResponseCode(ResponseCode.RESPONSE_OK);
+//            resultData.setData(((Userassign) response.getData()));
+            resultData.setDescription("预约信息保存成功");
+        }
+
+        return resultData;
+    }
+    /**
+     * 获取预约信息
+     */
+    @GetMapping("/reservation/list")
+    public ResultData reservationList(String status,  Integer curPage, Integer length, String search, String sortType){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(status)) {
+            condition.put("userassignStatus", status);
+        }
+        condition.put("blockFlag", false);
+        ResultData response;
+        if (!StringUtils.isEmpty(search)) {
+            //删除对于订单状态的选择
+            condition.remove("userassignStatus");
+            String fuzzysearch = "%" + search + "%";
+            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+            //如果搜索内容为数字
+            if (pattern.matcher(search).matches()) {
+                condition.put("consumerPhone", fuzzysearch);
+            } else {
+                condition.put("consumerConsignee", fuzzysearch);
+            }
+        }
+
+        if (!StringUtils.isEmpty(sortType)) {
+            condition.put("sortType", sortType);
+        }
+        if (curPage == null || length == null) {
+            response = userassignService.principal(condition);
+        } else {
+            int start = (curPage - 1) * length;
+            response = userassignService.principal(condition, start, length);
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前没有符合条件的安装预约");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询安装预约失败，请稍后尝试");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+
+        return result;
+    }
+
+    /**
+     * 预约确认
+     */
+    @PostMapping("/reservation/confirm")
+    public ResultData reservationConfirm(@RequestParam String userassignId){
+        ResultData result = new ResultData();
+        ResultData response;
+        if (!StringUtils.isEmpty(userassignId)) {
+            response = userassignService.confirmReservation(userassignId);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("请提供需要确认的预约ID");
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("确认安装预约失败，请稍后尝试");
+            }
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("userassignId",userassignId);
+            response = userassignService.fetch(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("确认安装预约失败，请稍后尝试");
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("确认安装预约失败，请稍后尝试");
+            }
+            Userassign userassign = (Userassign)((List)response.getData()).get(0);
+            Assign assign = new Assign(userassign.getConsumerConsignee(),userassign.getConsumerPhone(),userassign.getConsumerAddress(),userassign.getUserassignDetail());
+            assign.setType(userassign.getUserassignType());
+            assign.setDescription(userassign.getRemarks());
+            response = assignService.create(assign);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("确认安装预约失败，请稍后尝试");
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("确认安装预约失败，请稍后尝试");
+            }
+
+        }else{
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("请提供需要确认的预约ID");
+        }
+        return result;
+
+    }
+    /**
+     * 预约修改
+     */
+    @PostMapping("/reservation/adjust")
+    public ResultData reservationAdjust(@RequestBody Userassign userassign){
+        ResultData result = new ResultData();
+        ResultData response;
+        if (!StringUtils.isEmpty(userassign.getUserassignId())) {
+            response = userassignService.adjust(userassign);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("修改安装预约失败，请稍后尝试");
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("修改安装预约失败，请稍后尝试");
+        }
+        }else{
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("请提供需要修改的预约ID");
+        }
+        return result;
     }
 }

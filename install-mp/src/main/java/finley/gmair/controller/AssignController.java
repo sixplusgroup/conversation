@@ -1,6 +1,7 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.installation.Assign;
+import finley.gmair.model.installation.Userassign;
 import finley.gmair.service.AssignService;
 import finley.gmair.service.ResourceService;
 import finley.gmair.util.ResponseCode;
@@ -32,6 +33,11 @@ public class AssignController {
 
     @Autowired
     private ResourceService resourceService;
+
+//    @RequestMapping("/test")
+//    public String test(){
+//        return assignService.test();
+//    }
 
     /**
      * 安装负责人查看安装任务
@@ -240,4 +246,19 @@ public class AssignController {
     public ResultData queryAssignTypeInfoByType(@RequestParam String assignType) {
         return assignService.queryAssignTypeInfoByType(assignType);
     }
+    @PostMapping("/queryAssignState")
+    public ResultData queryAssignState(@RequestParam String consumerPhone){
+        return assignService.queryAssignState(consumerPhone);
+    }
+    @GetMapping("/assignTypeInfo/all")
+    public ResultData queryAllAssignTypeInfo() {
+        return assignService.queryAllAssignTypeInfo();
+    }
+
+    @PostMapping("/reservation/save")
+    public ResultData saveReservations(@RequestBody Userassign userassign){
+        return assignService.saveReservations(userassign);
+    }
 }
+
+
