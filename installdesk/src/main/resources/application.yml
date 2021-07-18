@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: install-agent
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/gmair_install?useLegacyDatetimeCode=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+server:
+  port: 8006
+
+eureka:
+  client:
+    healthcheck: true
+    service-url:
+      defaultZone: http://127.0.0.1:8000/eureka/
+
+mybatis:
+  config-location: classpath:/mybatis-config.xml
+
+ribbon:
+  eager-load:
+    enabled: true
