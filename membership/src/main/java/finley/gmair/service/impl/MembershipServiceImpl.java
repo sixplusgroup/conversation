@@ -1,8 +1,10 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.MembershipDao;
+import finley.gmair.model.membership.IntegralAdd;
 import finley.gmair.model.membership.MembershipConsumer;
 import finley.gmair.service.MembershipService;
+import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,5 +23,15 @@ public class MembershipServiceImpl implements MembershipService {
     public ResultData create(String consumerId) {
         MembershipConsumer member = new MembershipConsumer(consumerId);
         return membershipDao.insert(member);
+    }
+
+    @Override
+    public boolean checkMemberIsValid(String consumerId) {
+        ResultData response = membershipDao.getOneById(consumerId);
+        if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR||response.getData()==null){
+            return false;
+        }
+
+        return true;
     }
 }

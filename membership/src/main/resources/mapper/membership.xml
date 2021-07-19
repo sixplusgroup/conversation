@@ -5,4 +5,18 @@
         insert into gmair_membership.membership_consumer (consumer_id,first_integral,second_integral,create_time)
         value(#{consumerId},#{firstIntegral},#{secondIntegral},#{createAt})
     </insert>
+    <select id="selectOne" resultType="finley.gmair.model.membership.MembershipConsumer">
+        select * from gmair_membership.membership_consumer where consumer_id = #{consumerId}
+    </select>
+    <update id="update" parameterType="java.util.Map">
+        update gmair_membership.membership_consumer
+        <set>
+            <if test="firstIntegral !=null ">
+                first_integral = #{firstIntegral},
+            </if>
+            <if test="secondIntegral !=null ">
+                second_integral = #{secondIntegral},
+            </if>
+        </set>
+    </update>
 </mapper>

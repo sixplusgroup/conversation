@@ -27,16 +27,16 @@ create table `integral_product`(
 
 
 -- table: integral_record
-drop table if exists `integral_record`;
-create table `integral_record`(
-    `record_id` varchar(20) not null,
+drop table if exists `integral_add`;
+create table `integral_add`(
+    `add_id` varchar(20) not null,
     `consumer_id` varchar(20) not null,
     `product_id` varchar(20) not null,
     `integral_value` int not null default 0,
     `is_confirmed` tinyint(1) not null default 0,
     `confirmed_time` datetime(0),
     `create_time` datetime(0) NOT NULL,
-    primary key (`record_id`) using btree,
+    primary key (`add_id`) using btree,
     foreign key (`consumer_id`) references `membership_consumer` (consumer_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     foreign key (`product_id`) references `integral_product` (product_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
