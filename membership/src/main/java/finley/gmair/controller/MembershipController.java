@@ -42,9 +42,7 @@ public class MembershipController {
             return result;
         }
         ResultData response = membershipService.create(consumerId);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-        }else{
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("the operation of adding membership failed");
         }
@@ -69,9 +67,7 @@ public class MembershipController {
         }
         IntegralAdd integralAdd = new IntegralAdd(consumerId,integral,productId);
         ResultData response = integralService.addIntegral(integralAdd);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-        }else{
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("add the integral failed");
         }
@@ -104,7 +100,7 @@ public class MembershipController {
             return result;
         }
         ResultData response = integralService.confirmIntegral(addId,consumerId);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
             result.setDescription("integral confirmation failed");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
@@ -125,7 +121,22 @@ public class MembershipController {
     @PostMapping(value = "/withdraw")
     public ResultData withdraw(String consumerId, Integer integral) {
         ResultData result = new ResultData();
-
+        if(StringUtils.isEmpty(consumerId)||integral<0){
+            result.setDescription("parameters are not valid");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        if(!membershipService.checkMemberIsValid(consumerId)){
+            result.setDescription("the member is not exist");
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        ResultData response = membershipService.withdrawIntegral(consumerId,integral);
+        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+            result.setDescription(response.getDescription());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
         return result;
     }
 

@@ -68,4 +68,17 @@ public class MembershipDaoImpl extends BaseDao implements MembershipDao {
         return result;
     }
 
+    @Override
+    public ResultData setEventScheduler() {
+        ResultData result = new ResultData();
+        try{
+            sqlSession.update("gmair.membership.membership.setEventScheduler");
+        }catch(Exception e){
+            logger.error(e.getMessage());
+            result.setDescription(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        return result;
+    }
 }

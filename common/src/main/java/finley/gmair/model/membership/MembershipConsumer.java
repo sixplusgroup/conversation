@@ -50,4 +50,8 @@ public class MembershipConsumer extends Entity {
     public void setSecondIntegral(Integer secondIntegral) {
         this.secondIntegral = secondIntegral;
     }
+
+    public Integer getAllIntegral(){
+        return this.firstIntegral+this.secondIntegral;
+    }
 }

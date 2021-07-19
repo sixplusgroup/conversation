@@ -9,6 +9,6 @@
         select * from gmair_membership.integral_add where add_id = #{addId}
     </select>
     <update id="updateConfirm">
-        update gmair_membership.integral_add set is_confirmed = true where add_id = #{addId}
+        update gmair_membership.integral_add set is_confirmed = true , confirmed_time = now() where add_id = #{addId}
     </update>
 </mapper>

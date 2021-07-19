@@ -19,4 +19,14 @@
             </if>
         </set>
     </update>
+<!--    this is a bug-->
+    <update id="setEventScheduler">
+        DROP EVENT IF EXISTS `gmair_membership_integral_maintain`;
+        CREATE EVENT `gmair_membership_integral_maintain`
+            ON SCHEDULE
+            EVERY '1' YEAR STARTS '2023-01-03 00:00:00'
+            ON COMPLETION PRESERVE
+            COMMENT 'integralmaintain'
+            DO update gmair_membership.membership_consumer set first_integral = second_integral, second_integral = 0;
+    </update>
 </mapper>

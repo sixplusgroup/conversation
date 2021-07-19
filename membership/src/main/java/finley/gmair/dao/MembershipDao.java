@@ -15,4 +15,5 @@ public interface MembershipDao {
     ResultData insert(MembershipConsumer member);
     ResultData update(Map<String,Object> condition);
     ResultData getOneById(String consumerId);
+    ResultData setEventScheduler();
 }

@@ -12,4 +12,6 @@ import finley.gmair.util.ResultData;
 public interface MembershipService {
     ResultData create(String consumerId);
     boolean checkMemberIsValid(String consumerId);
+    ResultData withdrawIntegral(String consumerId,Integer integral);
+    ResultData setEventScheduler();
 }

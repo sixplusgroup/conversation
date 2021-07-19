@@ -40,3 +40,15 @@ create table `integral_add`(
     foreign key (`consumer_id`) references `membership_consumer` (consumer_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     foreign key (`product_id`) references `integral_product` (product_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- event gmair_membership_integral_maintain
+-- show variables like '%event%'; 查看event_scheduler如果为OFF或0就表示关闭
+-- SET GLOBAL event_scheduler = ON; 开启event
+
+DROP EVENT IF EXISTS `gmair_membership_integral_maintain`;
+CREATE EVENT `gmair_membership_integral_maintain`
+    ON SCHEDULE
+    EVERY '1' YEAR STARTS '2023-01-03 00:00:00'
+    ON COMPLETION PRESERVE
+    COMMENT 'integralmaintain'
+    DO update gmair_membership.membership_consumer set first_integral = second_integral, second_integral = 0;
