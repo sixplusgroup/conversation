@@ -1,11 +1,7 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.LogDao;
-import finley.gmair.model.express.ExpressCompany;
-import finley.gmair.model.log.MachineComLog;
-import finley.gmair.model.log.Server2MachineLog;
-import finley.gmair.model.log.SystemEventLog;
-import finley.gmair.model.log.UserActionLog;
+import finley.gmair.model.log.*;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -87,7 +83,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public ResultData createUserActionLog(UserActionLog userActionLog) {
+    public ResultData createUserActionLog(UserMachineOperationLog userActionLog) {
         ResultData result = new ResultData();
         ResultData response = logDao.insertUserActionLog(userActionLog);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -148,6 +144,105 @@ public class LogServiceImpl implements LogService {
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to retrieve server-machine log");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createUserLog(UserAccountOperationLog userLog) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.insertUserLog(userLog);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to store user log");
+        return result;
+    }
+
+    @Override
+    public ResultData fetchUserLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryUserLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No user log found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve user log");
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createMqttAckLog(MqttAckLog mqttAckLog) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.insertMqttAckLog(mqttAckLog);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store mqtt ack log to mongo");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @Override
+    public ResultData fetchMqttAckLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryMqttAckLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No mqtt ack log found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve mqtt ack log");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @Override
+    public ResultData createAdminLog(AdminAccountOperationLog adminAccountOperationLog) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.insertAdminLog(adminAccountOperationLog);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("Fail to store admin log");
+        return result;
+    }
+
+    @Override
+    public ResultData fetchAdminLog(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        ResultData response = logDao.queryAdminLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No user log found");
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to retrieve admin log");
         }
         return result;
     }

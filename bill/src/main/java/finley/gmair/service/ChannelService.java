@@ -13,5 +13,5 @@ public interface ChannelService {
 
     ResultData updateChannel(Channel channel);
 
-    ResultData deleteChannel(String channelID);
+    ResultData deleteChannel(String channelId);
 }

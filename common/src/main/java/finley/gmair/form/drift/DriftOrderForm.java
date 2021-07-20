@@ -1,11 +1,12 @@
 package finley.gmair.form.drift;
 
+import finley.gmair.model.ordernew.TradeFrom;
+
+import java.util.List;
+import java.util.Map;
+
 public class DriftOrderForm {
-    private String orderNo;
-
     private String consumerId;
-
-    private String orderDate;
 
     private String activityId;
 
@@ -29,19 +30,11 @@ public class DriftOrderForm {
 
     private int intervalDate;
 
-    private String testTarget;
-
     private String excode;
 
-    private int itemQuantity;
+    private String attachItem;
 
-    public String getOrderNo() {
-        return orderNo;
-    }
-
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
-    }
+    private TradeFrom tradeFrom;
 
     public String getConsumerId() {
         return consumerId;
@@ -49,14 +42,6 @@ public class DriftOrderForm {
 
     public void setConsumerId(String consumerId) {
         this.consumerId = consumerId;
-    }
-
-    public String getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
     }
 
     public String getActivityId() {
@@ -147,14 +132,6 @@ public class DriftOrderForm {
         this.intervalDate = intervalDate;
     }
 
-    public String getTestTarget() {
-        return testTarget;
-    }
-
-    public void setTestTarget(String testTarget) {
-        this.testTarget = testTarget;
-    }
-
     public String getExcode() {
         return excode;
     }
@@ -163,11 +140,19 @@ public class DriftOrderForm {
         this.excode = excode;
     }
 
-    public int getItemQuantity() {
-        return itemQuantity;
+    public String getAttachItem() {
+        return attachItem;
     }
 
-    public void setItemQuantity(int itemQuantity) {
-        this.itemQuantity = itemQuantity;
+    public void setAttachItem(String attachItem) {
+        this.attachItem = attachItem;
+    }
+
+    public TradeFrom getTradeFrom() {
+        return tradeFrom;
+    }
+
+    public void setTradeFrom(TradeFrom tradeFrom) {
+        this.tradeFrom = tradeFrom;
     }
 }

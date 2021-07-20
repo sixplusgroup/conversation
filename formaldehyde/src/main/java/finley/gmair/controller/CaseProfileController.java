@@ -45,11 +45,11 @@ public class CaseProfileController {
         }
         //TODO 检查是否插入过这条记录
 
-        SimpleDateFormat sDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         try {
             date = sDateFormat.parse(checkDate);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         //创建case
@@ -69,10 +69,10 @@ public class CaseProfileController {
         double longitude = -1, latitude = -1;
         if (locResponse.getResponseCode() == ResponseCode.RESPONSE_OK) {
             List<LinkedHashMap> cityList = (ArrayList<LinkedHashMap>) locResponse.getData();
-            try{
-                longitude = (Double)cityList.get(0).get("longitude");
-                latitude = (Double)cityList.get(0).get("latitude");
-            }catch (Exception e){
+            try {
+                longitude = (Double) cityList.get(0).get("longitude");
+                latitude = (Double) cityList.get(0).get("latitude");
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -109,9 +109,9 @@ public class CaseProfileController {
             result.setDescription("not find");
             return result;
         }
-        CaseProfile caseProfile = ((List<CaseProfile>)response.getData()).get(0);
-        CaseProfileData caseProfileData = new CaseProfileData(caseProfile.getCaseId(),caseProfile.getCaseHolder(),caseProfile.getEquipmentId(),caseProfile.getCheckDuration(),caseProfile.getCheckDate(),caseProfile.getCaseCityId(),caseProfile.getCaseCityName(),caseProfile.getCaseLocation(),
-                JSON.parseArray(caseProfile.getCheckTrace()),caseProfile.getCaseStatus(),caseProfile.getVideoId());
+        CaseProfile caseProfile = ((List<CaseProfile>) response.getData()).get(0);
+        CaseProfileData caseProfileData = new CaseProfileData(caseProfile.getCaseId(), caseProfile.getCaseHolder(), caseProfile.getEquipmentId(), caseProfile.getCheckDuration(), caseProfile.getCheckDate(), caseProfile.getCaseCityId(), caseProfile.getCaseCityName(), caseProfile.getCaseLocation(),
+                JSON.parseArray(caseProfile.getCheckTrace()), caseProfile.getCaseStatus(), caseProfile.getVideoId());
         result.setData(caseProfileData);
         result.setDescription("success to fetch");
         return result;

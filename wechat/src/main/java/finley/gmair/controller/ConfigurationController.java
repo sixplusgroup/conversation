@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/wechat/config")
 public class ConfigurationController {
 
-    @CrossOrigin({"https://reception.gmair.net"})
+    @CrossOrigin({"https://reception.gmair.net", "https://console.gmair.net"})
     @PostMapping("/init")
     public ResultData config(String url) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(url) || StringUtils.isEmpty(url.split("#")[0])) {
+        if (StringUtils.isEmpty(url) || StringUtils.isEmpty(url.split("#")[0])) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure the url is valid.");
             return result;

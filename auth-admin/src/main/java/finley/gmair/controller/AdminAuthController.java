@@ -2,6 +2,7 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import finley.gmair.form.admin.AdminForm;
+import finley.gmair.form.admin.AdminPartInfoQuery;
 import finley.gmair.form.admin.LoginForm;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.service.AdminService;
@@ -36,6 +37,7 @@ public class AdminAuthController {
             ResultData response = adminService.fetchAdmin(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
             }
             if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -55,8 +57,8 @@ public class AdminAuthController {
     @RequestMapping(method = RequestMethod.POST, value = "/admin/create")
     public ResultData create(AdminForm form) {
         ResultData result = new ResultData();
-        if (!StringUtils.isEmpty(form.getEmail()) && !StringUtils.isEmpty(form.getName()) && !StringUtils.isEmpty(form.getPassword())) {
-            Admin admin = new Admin(form.getEmail(), form.getName(), Encryption.md5(form.getPassword()));
+        if (!StringUtils.isEmpty(form.getEmail()) && !StringUtils.isEmpty(form.getName()) && !StringUtils.isEmpty(form.getPassword())&& !StringUtils.isEmpty(form.getRole())) {
+            Admin admin = new Admin(form.getEmail(), form.getName(), Encryption.md5(form.getPassword()), form.getRole());
             ResultData response = adminService.createAdmin(admin);
             if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
                 result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -72,5 +74,47 @@ public class AdminAuthController {
     @RequestMapping(method = RequestMethod.GET, value = "/admin")
     public Principal user(Principal user) {
         return user;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getAdmin/byAccount")
+    ResultData getAdminByAccount(String account){
+        ResultData result = new ResultData();
+        if(StringUtils.isEmpty(account)){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please submit account");
+            return result;
+        }
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("blockFlag",false);
+        condition.put("email",account);
+        ResultData response = adminService.fetchAdmin(condition);
+        if(response.getResponseCode()==ResponseCode.RESPONSE_NULL){
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("account is null");
+            return result;
+        }else if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("query error");
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 根据query给出的条件查询符合条件的账户信息
+     * @param query 查询条件对象
+     * @return 查询结果
+     */
+    @PostMapping("/admin/accounts")
+    public ResultData queryAdminAccounts(@RequestBody AdminPartInfoQuery query) {
+        ResultData res = new ResultData();
+
+        Map<String, Object> resData = new HashMap<>();
+        resData.put("size", adminService.fetchAdminAccountsSize(query));
+        resData.put("list", adminService.fetchAdminAccounts(query));
+
+        res.setData(resData);
+        return res;
     }
 }

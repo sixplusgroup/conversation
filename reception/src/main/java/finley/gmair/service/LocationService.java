@@ -6,11 +6,8 @@ import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "location-agent")
 public interface LocationService {
-
-
     @RequestMapping(method = RequestMethod.POST, value = "/location/ip/resolve")
     ResultData ip2address(@RequestParam("ip") String ip);
-
 
     @RequestMapping(method = RequestMethod.GET, value = "/location/province/list")
     ResultData province();
@@ -26,4 +23,13 @@ public interface LocationService {
 
     @GetMapping("/location/probe/code/city")
     ResultData probeCityId(@RequestParam("code") String code);
+
+    @GetMapping("/location/city/profile")
+    ResultData profile(@RequestParam("cityId") String cityId);
+
+    @GetMapping("/location/district/profile")
+    ResultData getDistrict(@RequestParam("districtId") String districtId);
+
+    @GetMapping("/location/id/profile")
+    ResultData nameProfile(@RequestParam("id") String id);
 }

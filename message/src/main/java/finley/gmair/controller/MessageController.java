@@ -1,15 +1,17 @@
 package finley.gmair.controller;
 
+import finley.gmair.model.message.MessageCatalog;
 import finley.gmair.model.message.TextMessage;
+import finley.gmair.pagination.DataTablePage;
+import finley.gmair.pagination.DataTableParam;
 import finley.gmair.service.MessageService;
+import finley.gmair.service.MessageTemplateService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.jboss.logging.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,9 @@ public class MessageController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private MessageTemplateService messageTemplateService;
 
     @GetMapping("/receive")
     public ResultData receive(String message, String mobile) {
@@ -78,6 +83,47 @@ public class MessageController {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to retrieve received message list");
         }
+        return result;
+    }
+
+    /**
+     * @return
+     */
+    @GetMapping("/template/{key}")
+    public ResultData template(@PathVariable("key") String key) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        switch (key.toUpperCase()) {
+            case "REGISTRATION":
+                condition.put("catalog", MessageCatalog.REGISTRATION.getCode());
+                break;
+            case "AUTHENTICATION":
+                condition.put("catalog", MessageCatalog.AUTHENTICATION.getCode());
+                break;
+            case "NOTIFICATION_DISPATCHED":
+                condition.put("catalog", MessageCatalog.NOTIFICATION_DISPATCHED.getCode());
+                break;
+            case "NOTIFICATION_INSTALL":
+                condition.put("catalog", MessageCatalog.NOTIFICATION_INSTALL.getCode());
+                break;
+            default:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription(new StringBuffer("Key: ").append(key).append(" not listed").toString());
+                return result;
+        }
+        condition.put("blockFlag", false);
+        ResultData response = messageTemplateService.fetchTemplate(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to get message template.");
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("No message template found.");
+            return result;
+        }
+        result.setData(response.getData());
         return result;
     }
 }

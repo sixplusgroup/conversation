@@ -1,22 +1,22 @@
 package finley.gmair.dao;
 
-import org.apache.ibatis.session.SqlSession;
+
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import javax.annotation.Resource;
 
 /**
- * 该类用于管理持久层与数据库的连接sql session, 所有的Dao需要继承此方法
- * Created by sunshine on 4/18/16.
+ * 该类用于管理持久层与数据库的连接mongo template, 所有的Dao需要继承此方法
  */
 public class BaseDao {
     @Resource
-    protected SqlSession sqlSession;
+    protected MongoTemplate mongoTemplate;
 
-    public SqlSession getSqlSession() {
-        return sqlSession;
+    public MongoTemplate getMongoTemplate() {
+        return mongoTemplate;
     }
 
-    public void setSqlSession(SqlSession sqlSession) {
-        this.sqlSession = sqlSession;
+    public void setMongoTemplate(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
     }
 }

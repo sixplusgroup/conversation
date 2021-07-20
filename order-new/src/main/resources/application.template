@@ -1,0 +1,32 @@
+server.port=8030
+
+spring.application.name=order-agent
+
+eureka.client.healthcheck=true
+eureka.client.service-url.defaultZone=http://localhost:8000/eureka/
+
+mybatis.config-location=classpath:mybatis-config.xml
+
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/gmair_ordercentre?useLegacyDatetimeCode=false&serverTimezone=CTT&useUnicode=true&characterEncoding=UTF-8
+spring.datasource.username=root
+spring.datasource.password=
+
+# feign.oauth2.enabled=true
+# security.oauth2.resource.user-info-uri=http://localhost:8004/auth/admin
+
+taobao.appKey=31404926
+taobao.appSecret=56539bd811035339bf55fe93383ef615
+taobao.url=http://gw.api.taobao.com/router/rest
+
+# crm系统api
+crm.url=http://gmair.net/crm/billapi
+# crm系统修改订单状态接口
+crm.url.update=http://gmair.net/crm/billapi/update
+# crm系统新增订单接口
+crm.url.add=http://d.net/crm/billapi/add
+# crm系统渠道来源（天猫接口测试：61，天猫接口同步：58）
+crm.qdly.tmall=61
+
+# 上传的单个文件大小限制
+spring.http.multipart.maxFileSize=10MB

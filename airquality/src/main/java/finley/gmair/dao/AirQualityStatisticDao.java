@@ -8,6 +8,7 @@ import java.util.Map;
 
 public interface AirQualityStatisticDao {
 
+    // zm
     ResultData insertHourlyData(List<CityAirQualityStatistic> list);
     ResultData insertDailyData(List<CityAirQualityStatistic> list);
     ResultData insertMonthlyData(List<CityAirQualityStatistic> list);

@@ -1,7 +1,9 @@
 package finley.gmair.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +15,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 @Configuration
@@ -41,6 +45,8 @@ public class OAuth2ServerConfig {
                     .authorizeRequests()
                     .antMatchers("/auth/consumer/request").permitAll()
                     .antMatchers("/auth/consumer/register").permitAll()
+                    .antMatchers("/auth/consumer/profile").permitAll()
+                    .antMatchers("/auth/consumer/accounts").permitAll()
                     .antMatchers("/auth/probe/consumerid/by/openid").permitAll()
                     .antMatchers("/auth/user/**").authenticated();
             // @formatter:on
@@ -69,14 +75,50 @@ public class OAuth2ServerConfig {
                     .authorizedGrantTypes("password", "refresh_token")
                     .scopes("select")
                     .authorities("client")
+                    .secret("123456")
+                    .and()
+                    .withClient("client_3")
+                    .resourceIds()
+                    .authorizedGrantTypes("authorization_code", "refresh_token")
+                    .autoApprove(true)//用户自动同意授权
+                    .redirectUris("https://oauth-redirect.api.home.mi.com/r/4453")
+                    .scopes("select")
+                    .authorities("client")
+                    .secret("123456")
+                    .and()
+                    .withClient("client_4")
+                    .resourceIds()
+                    .authorizedGrantTypes("authorization_code", "refresh_token")
+                    .autoApprove(true)//用户自动同意授权
+                    .redirectUris("https://open.bot.tmall.com/oauth/callback")
+                    .scopes("select")
+                    .authorities("client")
                     .secret("123456");
+        }
+
+
+        @Bean
+        @Primary
+        public DefaultTokenServices defaultTokenServices() {
+            DefaultTokenServices services = new DefaultTokenServices();
+            services.setSupportRefreshToken(true);
+            services.setAccessTokenValiditySeconds(60 * 60 * 48);//设置token的过期时间
+            services.setRefreshTokenValiditySeconds(60 * 60 * 168);  // refresh_token时间设置的时间要大于access_token，这里设置成7天
+            services.setTokenStore(tokenStore());
+            return services;
+        }
+
+        @Bean
+        public TokenStore tokenStore() {
+            return new InMemoryTokenStore();
         }
 
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
             endpoints
-                    .tokenStore(new InMemoryTokenStore())
-                    .authenticationManager(authenticationManager);
+                    .tokenStore(tokenStore())
+                    .authenticationManager(authenticationManager)
+                    .tokenServices(defaultTokenServices());
         }
 
         @Override

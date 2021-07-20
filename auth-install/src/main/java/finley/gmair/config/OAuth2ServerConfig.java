@@ -40,8 +40,9 @@ public class OAuth2ServerConfig {
                     .anonymous()
                     .and()
                     .authorizeRequests()
-                    .antMatchers("/auth/openid").permitAll()
-                    .antMatchers("/auth/bind").permitAll()
+                    .antMatchers("/auth/profile/openid").permitAll()
+                    .antMatchers("/auth/user/openid").permitAll()
+                    .antMatchers("/auth/user/decode/phone").permitAll()
                     .antMatchers("/auth/**").authenticated();
             // @formatter:on
         }

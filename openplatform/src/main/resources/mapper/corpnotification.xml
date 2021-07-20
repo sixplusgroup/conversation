@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.openplatform.corp.notification">
+    <resultMap id="notificationVo" type="finley.gmair.model.openplatform.CorpNotification">
+        <result property="notificationId" column="notification_id"></result>
+        <result property="corpId" column="corp_id"></result>
+        <result property="url" column="notification_url"></result>
+        <result property="header" column="header"></result>
+        <result property="param" column="param"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <select id="query" resultMap="notificationVo">
+        SELECT notification_id, corp_id, notification_url, header, param, block_flag, create_time
+        FROM open_platform.corp_notification
+        WHERE 1 = 1
+        <if test="notificationId != null">
+            AND notification_id = #{notificationId}
+        </if>
+        <if test="corpId != null">
+            AND corp_id = #{corpId}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
+    </select>
+</mapper>

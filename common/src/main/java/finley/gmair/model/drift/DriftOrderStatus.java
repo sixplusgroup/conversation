@@ -3,7 +3,7 @@ package finley.gmair.model.drift;
 import finley.gmair.model.EnumValue;
 
 public enum DriftOrderStatus implements EnumValue {
-    APPLIED(0), PAYED(1), CONFIRMED(2), DELIVERED(3), FINISHED(4), CLOSED(5), CANCELED(6);
+    APPLIED(0), PAYED(1), CONFIRMED(2), DELIVERED(3), BACK(4), FINISHED(5), CLOSED(6), CANCELED(7);
 
     private int value;
 

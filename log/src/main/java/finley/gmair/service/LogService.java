@@ -1,9 +1,6 @@
 package finley.gmair.service;
 
-import finley.gmair.model.log.MachineComLog;
-import finley.gmair.model.log.Server2MachineLog;
-import finley.gmair.model.log.SystemEventLog;
-import finley.gmair.model.log.UserActionLog;
+import finley.gmair.model.log.*;
 import finley.gmair.util.ResultData;
 
 import java.util.Map;
@@ -18,7 +15,7 @@ public interface LogService {
 
     ResultData fetchModuleLog(Map<String, Object> condition);
 
-    ResultData createUserActionLog(UserActionLog userActionLog);
+    ResultData createUserActionLog(UserMachineOperationLog userActionLog);
 
     ResultData fetchUserActionLog(Map<String, Object> condition);
 
@@ -26,4 +23,15 @@ public interface LogService {
 
     ResultData fetchServer2MachineLog(Map<String, Object> condition);
 
+    ResultData createUserLog(UserAccountOperationLog userLog);
+
+    ResultData fetchUserLog(Map<String, Object> condition);
+
+    ResultData createMqttAckLog(MqttAckLog mqttAckLog);
+
+    ResultData fetchMqttAckLog(Map<String, Object> condition);
+
+    ResultData createAdminLog(AdminAccountOperationLog adminAccountOperationLog);
+
+    ResultData fetchAdminLog(Map<String, Object> condition);
 }

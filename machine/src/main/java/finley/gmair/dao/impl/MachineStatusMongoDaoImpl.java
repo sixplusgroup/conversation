@@ -10,8 +10,6 @@ import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -21,8 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Repository
 public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
@@ -73,7 +69,7 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         }
 
         List<MachinePm2_5> resultList = new ArrayList<>();
-        if(!machineStatusList.isEmpty()) {
+        if (!machineStatusList.isEmpty()) {
             //group by uid and compute the average pm2.5
             Map<String, List<MachineStatus>> groupByUid =
                     machineStatusList.stream().collect(Collectors.groupingBy(MachineStatus::getUid));
@@ -106,7 +102,7 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         }
 
         //group by uid and compute the average pm2.5
-        if(!machineV1StatusList.isEmpty()) {
+        if (!machineV1StatusList.isEmpty()) {
             Map<String, List<MachineV1Status>> groupByMachineId =
                     machineV1StatusList.stream().collect(Collectors.groupingBy(MachineV1Status::getMachineId));
             Iterator iter2 = groupByMachineId.entrySet().iterator();
@@ -127,7 +123,7 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
             }
         }
 
-        if(resultList.isEmpty()){
+        if (resultList.isEmpty()) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("we can not collect any data in mongo to compute at this time");
             return result;
@@ -202,21 +198,34 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         return result;
     }
 
-    //暂时废弃
-    public ResultData queryMachineV1Status(Map<String, Object> condition){
+
+    public ResultData queryMachineV1Status(Map<String, Object> condition) {
         ResultData result = new ResultData();
         Query query = new Query();
         if (condition.get("machineId") != null) {
-            query.addCriteria(Criteria.where("machineId").is(condition.get("machineId")));
+            query.addCriteria(Criteria.where("uid").is(condition.get("machineId")));
         }
-        if (condition.get("createAtGTE") != null) {
+        if (condition.get("power") != null) {
+            query.addCriteria(Criteria.where("power").is(condition.get("power")));
+        }
+        if (condition.get("createAtGTE") != null && condition.get("createAtLT") != null) {
+            query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")).lt(condition.get("createAtLT")));
+        } else if (condition.get("createAtGTE") != null) {
             query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")));
-            query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "createAt")));
+        } else if (condition.get("createAtLT") != null) {
+            query.addCriteria(Criteria.where("createAt").lt(condition.get("createAtLT")));
         }
+        query.with(new Sort(new Sort.Order(Sort.Direction.ASC, "createAt")));
 
         try {
-            MachineV1Status machineV1Status = mongoTemplate.findOne(query, MachineV1Status.class);
-            result.setData(machineV1Status);
+            List<MachineV1Status> machineStatusList = mongoTemplate.find(query, MachineV1Status.class);
+            if (machineStatusList.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                return result;
+            } else {
+                result.setData(machineStatusList);
+                return result;
+            }
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             e.printStackTrace();
@@ -224,4 +233,37 @@ public class MachineStatusMongoDaoImpl implements MachineStatusMongoDao {
         return result;
     }
 
+    public ResultData queryMachineV2Status(Map<String, Object> condition) {
+        ResultData result = new ResultData();
+        Query query = new Query();
+        if (condition.get("machineId") != null) {
+            query.addCriteria(Criteria.where("uid").is(condition.get("machineId")));
+        }
+        if (condition.get("power") != null) {
+            query.addCriteria(Criteria.where("power").is(condition.get("power")));
+        }
+        if (condition.get("createAtGTE") != null && condition.get("createAtLT") != null) {
+            query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")).lt(condition.get("createAtLT")));
+        } else if (condition.get("createAtGTE") != null) {
+            query.addCriteria(Criteria.where("createAt").gte(condition.get("createAtGTE")));
+        } else if (condition.get("createAtLT") != null) {
+            query.addCriteria(Criteria.where("createAt").lt(condition.get("createAtLT")));
+        }
+        query.with(new Sort(new Sort.Order(Sort.Direction.ASC, "createAt")));
+
+        try {
+            List<MachineStatus> machineStatusList = mongoTemplate.find(query, MachineStatus.class);
+            if (machineStatusList.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                return result;
+            } else {
+                result.setData(machineStatusList);
+                return result;
+            }
+        } catch (Exception e) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

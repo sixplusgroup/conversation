@@ -5,6 +5,8 @@ public class MessageForm {
 
     private String text;
 
+    private String signature;
+
     public MessageForm() {
         super();
     }
@@ -13,6 +15,11 @@ public class MessageForm {
         this();
         this.phone = phone;
         this.text = text;
+    }
+
+    public MessageForm(String phone, String text,String signature) {
+        this(phone,text);
+        this.signature = signature;
     }
 
     public String getPhone() {
@@ -29,5 +36,13 @@ public class MessageForm {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }

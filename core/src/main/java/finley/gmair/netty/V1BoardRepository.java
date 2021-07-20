@@ -14,7 +14,7 @@ public class V1BoardRepository {
 
     public V1BoardRepository() {
         super();
-        board = ExpiringMap.builder().expiration(5, TimeUnit.SECONDS).expirationPolicy(ExpirationPolicy.CREATED).build();
+        board = ExpiringMap.builder().expiration(10, TimeUnit.SECONDS).expirationPolicy(ExpirationPolicy.CREATED).build();
     }
 
     public V1BoardRepository push(String key, String value) {

@@ -1,5 +1,6 @@
 package finley.gmair.model.drift;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import finley.gmair.model.Entity;
 
 import java.util.Date;
@@ -20,6 +21,8 @@ public abstract class AbstractDriftOrder extends Entity {
 
     private Date expectedDate;
 
+    private Date createTime;
+
     private int intervalDate;
 
     public AbstractDriftOrder() {
@@ -28,12 +31,21 @@ public abstract class AbstractDriftOrder extends Entity {
 
     public AbstractDriftOrder(String consumerId, String consignee, String phone, String address, Date expectedDate, int intervalDate) {
         this();
+        this.createTime = super.createAt;
         this.consumerId = consumerId;
         this.consignee = consignee;
         this.phone = phone;
         this.address = address;
         this.expectedDate = expectedDate;
         this.intervalDate = intervalDate;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public String getOrderId() {

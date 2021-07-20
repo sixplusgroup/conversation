@@ -17,6 +17,9 @@ public interface MachineFeignService {
     @PostMapping("/machine/status/schedule/monthly")
     ResultData handleMachineStatusMonthly();
 
+    @GetMapping("/machine/status/power/schedule/daily")
+    ResultData handleMachinePowerDaily();
+
     @GetMapping("/machine/partial/status/pm25/probe/hourly")
     ResultData probePartialPM2_5Hourly();
 
@@ -31,4 +34,22 @@ public interface MachineFeignService {
 
     @GetMapping("/machine/power/onoff/schedule/half/list")
     ResultData powerTurnOnOff();
+
+    @PostMapping("/machine/info/list/daily/schedule/create")
+    ResultData createMachineListDaily();
+
+    @PostMapping("/machine/filter/clean/check/daily")
+    ResultData filterCleanDailyCheck();
+
+    @PostMapping("/machine/efficientFilter/check/hourly")
+    ResultData efficientFilterHourlyCheck();
+
+    @PostMapping("/machine/efficientFilter/update/specifiedMachine/filterStatus/daily")
+    ResultData specifiedMachineFilterStatusDailyUpdate();
+
+    @PostMapping("/machine/efficientInfo/update/daily")
+    ResultData efficientInfoDailyUpdate();
+
+//    @PostMapping("/machine/efficientInfo/update/hourly")
+//    ResultData efficientInfoHourlyUpdate();
 }

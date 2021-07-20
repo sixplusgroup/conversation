@@ -9,6 +9,12 @@ public class Equipment extends Entity {
 
     private double equipPrice;
 
+    private String text;
+
+    private String url;
+
+    private String detailUrl;
+
     public Equipment() {
         super();
     }
@@ -41,5 +47,29 @@ public class Equipment extends Entity {
 
     public void setEquipPrice(double equipPrice) {
         this.equipPrice = equipPrice;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getDetailUrl() {
+        return detailUrl;
+    }
+
+    public void setDetailUrl(String detailUrl) {
+        this.detailUrl = detailUrl;
     }
 }

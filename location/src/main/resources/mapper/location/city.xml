@@ -49,9 +49,9 @@
     </select>
 
     <select id="queryProvinceId" parameterType="java.util.Map" resultMap="CityProvinceVo">
-        SELECT city_id,province_id,city_name,city_pinyin,block_flag,create_time
+        SELECT city_id, province_id, city_name, city_pinyin, block_flag, create_time
         FROM gmair_location.city_list
-        WHERE 1=1
+        WHERE 1 = 1
         <if test="cityId != null">
             AND city_id = #{cityId}
         </if>

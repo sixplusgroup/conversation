@@ -8,6 +8,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -16,7 +17,20 @@ public class BillDaoImpl extends BaseDao implements BillDao {
 
     @Override
     public ResultData query(Map<String, Object> condition) {
-        return null;
+        ResultData result = new ResultData();
+        try{
+            List<BillInfo> list = sqlSession.selectList("gmair.bill.info.query", condition);
+            if (list.isEmpty()) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            }
+            result.setData(list);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
     }
 
     @Override
@@ -36,6 +50,29 @@ public class BillDaoImpl extends BaseDao implements BillDao {
 
     @Override
     public ResultData update(BillInfo billInfo) {
-        return null;
+        ResultData result = new ResultData();
+        try {
+            sqlSession.update("gmair.bill.info.update", billInfo);
+            result.setData(billInfo);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public  ResultData delete(String billId) {
+        ResultData result = new ResultData();
+        try {
+            sqlSession.delete("gmair.bill.info.delete",billId);
+        } catch ( Exception e) {
+            e.printStackTrace();
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+        }
+        return result;
     }
 }

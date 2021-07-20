@@ -6,17 +6,18 @@
         <result property="modelId" column="model_id"></result>
         <result property="minLight" column="min_light"></result>
         <result property="maxLight" column="max_light"></result>
+        <result property="step" column="step"></result>
         <result property="blockFlag" column="block_flag"></result>
         <result property="createAt" column="create_time"></result>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.machine.ModelLight" useGeneratedKeys="false">
-        INSERT INTO gmair_machine.model_light_config(config_id, model_id, min_light,max_light, create_time, block_flag)
-        VALUES(#{configId}, #{modelId}, #{minLight},#{maxLight}, #{createAt}, #{blockFlag})
+        INSERT INTO gmair_machine.model_light_config (config_id, model_id, min_light, max_light, create_time, block_flag)
+        VALUES (#{configId}, #{modelId}, #{minLight}, #{maxLight}, #{createAt}, #{blockFlag})
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultMap="ModelLight">
-        SELECT config_id,model_id,min_light,max_light,block_flag,create_time
+        SELECT config_id, model_id, min_light, max_light, step, block_flag, create_time
         FROM gmair_machine.model_light_config
         WHERE 1 = 1
         <if test="configId != null">
@@ -45,7 +46,10 @@
             <if test="maxLight != null">
                 max_light = #{maxLight},
             </if>
-        model_id = #{modelId}
+            <if test="step != null">
+                step = #{step},
+            </if>
+            model_id = #{modelId}
         </set>
         WHERE model_id = #{modelId}
     </update>

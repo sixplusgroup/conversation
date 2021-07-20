@@ -1,19 +1,22 @@
 package finley.gmair.location;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.model.district.City;
+import finley.gmair.model.district.District;
+import finley.gmair.model.district.Province;
 import finley.gmair.service.LocationService;
 import finley.gmair.util.HttpDeal;
 import finley.gmair.util.LocationProperties;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.location.CityProvinceVo;
 import finley.gmair.vo.location.DistrictCityVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.jca.cci.CciOperationNotSupportedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +27,7 @@ import java.util.Map;
 @RestController
 @SpringBootApplication
 @ComponentScan({"finley.gmair.service", "finley.gmair.dao"})
+@CrossOrigin
 @RequestMapping("/location")
 public class LocationApplication {
     private final static String TENCENT_DISTRICT_URL = "http://apis.map.qq.com/ws/district/v1/list";
@@ -78,7 +82,6 @@ public class LocationApplication {
         return process(response);
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/province/list")
     public ResultData province() {
         ResultData result = new ResultData();
@@ -95,7 +98,6 @@ public class LocationApplication {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/{provinceId}/cities")
     public ResultData city(@PathVariable("provinceId") String province) {
         ResultData result = new ResultData();
@@ -117,7 +119,6 @@ public class LocationApplication {
         return result;
     }
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/{cityId}/districts")
     public ResultData district(@PathVariable("cityId") String city) {
         ResultData result = new ResultData();
@@ -208,7 +209,6 @@ public class LocationApplication {
         return result;
     }
 
-
     @GetMapping("/probe/provinceId")
     public ResultData probeProvinceIdByCityId(String cityId) {
         ResultData result = new ResultData();
@@ -256,6 +256,136 @@ public class LocationApplication {
             City city = ((List<City>) response.getData()).get(0);
             result.setData(city.getCityId());
         }
+        return result;
+    }
+
+    @GetMapping("/overview")
+    public ResultData overview() {
+        ResultData result = new ResultData();
+        JSONArray pdata = new JSONArray();
+        ResultData response = province();
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能够获取到省份的信息");
+            return result;
+        }
+        List<Province> provinces = (List<Province>) response.getData();
+        for (Province pvo : provinces) {
+            JSONObject pitem = new JSONObject();
+            pitem.put("value", pvo.getProvinceId());
+            pitem.put("label", pvo.getProvinceName());
+            response = city(pvo.getProvinceId());
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                JSONArray cdata = new JSONArray();
+                List<City> cities = (List<City>) response.getData();
+                for (City cvo : cities) {
+                    JSONObject citem = new JSONObject();
+                    citem.put("value", cvo.getCityId());
+                    citem.put("label", cvo.getCityName());
+                    response = district(cvo.getCityId());
+                    if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        JSONArray ddata = new JSONArray();
+                        List<District> districts = (List<District>) response.getData();
+                        for (District dvo : districts) {
+                            JSONObject ditem = new JSONObject();
+                            ditem.put("value", dvo.getDistrictId());
+                            ditem.put("label", dvo.getDistrictName());
+                            ddata.add(ditem);
+                        }
+                        citem.put("children", ddata);
+                    }
+                    cdata.add(citem);
+                }
+                pitem.put("children", cdata);
+            }
+            pdata.add(pitem);
+        }
+        result.setData(pdata);
+        return result;
+    }
+
+    //根据districtId获取区详情
+    @GetMapping("/district/profile")
+    public ResultData districtProfile(String districtId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("districtId", districtId);
+        ResultData response = locationService.fetchDistrictWithCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription(new StringBuffer("No city information found for district id: ").append(districtId).toString());
+            return result;
+        }
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    /**
+     * 根据id查相关省市区名字
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/id/profile")
+    public ResultData idProfile(String id) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(id)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供id");
+            return result;
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("districtId", id);
+        ResultData response = locationService.fetchDistrictWithCity(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            DistrictCityVo districtCityVo = ((List<DistrictCityVo>) response.getData()).get(0);
+            String cityId = districtCityVo.getCityId();
+            String districtName = districtCityVo.getDistrictName();
+            condition.clear();
+            condition.put("cityId", cityId);
+            response = locationService.fetchProvinceIdByCityId(condition);
+            CityProvinceVo cityVo = ((List<CityProvinceVo>) response.getData()).get(0);
+            String provinceId = cityVo.getProvinceId();
+            String cityName = cityVo.getCityName();
+            condition.clear();
+            condition.put("provinceId", provinceId);
+            response = locationService.fetchProvince(condition);
+            Province provinceVo = ((List<Province>) response.getData()).get(0);
+            String provinceName = provinceVo.getProvinceName();
+            jsonObject.put("name", provinceName + cityName + districtName);
+            result.setData(jsonObject);
+            return result;
+        }
+        condition.clear();
+        condition.put("cityId", id);
+        response = locationService.fetchProvinceIdByCityId(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            CityProvinceVo cityVo = ((List<CityProvinceVo>) response.getData()).get(0);
+            String provinceId = cityVo.getProvinceId();
+            String cityName = cityVo.getCityName();
+            condition.clear();
+            condition.put("provinceId", provinceId);
+            response = locationService.fetchProvince(condition);
+            Province provinceVo = ((List<Province>) response.getData()).get(0);
+            String provinceName = provinceVo.getProvinceName();
+            jsonObject.put("name", provinceName + cityName);
+            result.setData(jsonObject);
+            return result;
+        }
+        condition.clear();
+        condition.put("provinceId", id);
+        response = locationService.fetchProvince(condition);
+        Province provinceVo = ((List<Province>) response.getData()).get(0);
+        String provinceName = provinceVo.getProvinceName();
+        jsonObject.put("name", provinceName);
+        result.setData(jsonObject);
         return result;
     }
 }

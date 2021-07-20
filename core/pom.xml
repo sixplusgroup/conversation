@@ -11,7 +11,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>core</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
@@ -95,6 +95,27 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>finley.gmair</groupId>
+            <artifactId>mongo-common</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

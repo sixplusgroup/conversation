@@ -15,6 +15,32 @@ public class ResultData {
         this.responseCode = ResponseCode.RESPONSE_OK;
     }
 
+    public static ResultData ok(Object data) {
+        ResultData result = new ResultData();
+        result.data = data;
+        return result;
+    }
+
+    public static ResultData ok(Object data, String description) {
+        ResultData result = ResultData.ok(data);
+        result.description = description;
+        return result;
+    }
+
+    public static ResultData empty(String description) {
+        ResultData result = new ResultData();
+        result.setResponseCode(ResponseCode.RESPONSE_NULL);
+        result.setDescription(description);
+        return result;
+    }
+
+    public static ResultData error(String description) {
+        ResultData result = new ResultData();
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription(description);
+        return result;
+    }
+
     public ResponseCode getResponseCode() {
         return responseCode;
     }

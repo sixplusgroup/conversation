@@ -11,3 +11,8 @@ logs/**
 **.yml
 *.png
 *.jpg
+**.yaml
+**/test/**
+*.pem
+**/logs/**
+**.log

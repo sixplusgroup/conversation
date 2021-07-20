@@ -10,6 +10,13 @@ public class InMessage {
         super();
     }
 
+    public InMessage(String toUserName, String fromUserName, String msgType, long createTime) {
+        ToUserName = toUserName;
+        FromUserName = fromUserName;
+        MsgType = msgType;
+        CreateTime = createTime;
+    }
+
     public String getToUserName() {
         return ToUserName;
     }

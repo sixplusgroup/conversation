@@ -1,17 +1,24 @@
 package finley.gmair.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import finley.gmair.datastructrue.LimitQueue;
-import finley.gmair.service.BoardVersionService;
+import finley.gmair.model.machine.QRCode;
+import finley.gmair.service.ControlOptionService;
 import finley.gmair.service.MachineQrcodeBindService;
+import finley.gmair.service.PreBindService;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.service.impl.RedisService;
+import finley.gmair.util.MachineUtil;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.machine.ControlOptionVo;
+import finley.gmair.vo.machine.GoodsModelDetailVo;
 import finley.gmair.vo.machine.MachineQrcodeBindVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,17 +27,54 @@ import java.util.Map;
 @RestController
 @RequestMapping("/machine")
 public class MachineStatusCacheController {
+    private Logger logger = LoggerFactory.getLogger(MachineStatusCacheController.class);
 
     @Autowired
     private MachineQrcodeBindService machineQrcodeBindService;
 
     @Autowired
+    private QRCodeService qrCodeService;
+
+    @Autowired
     private RedisService redisService;
 
     @Autowired
-    private BoardVersionService boardVersionService;
+    private PreBindService preBindService;
 
-    //通过uid获取缓存中v1或v2的机器状态
+    @Autowired
+    private ControlOptionService controlOptionService;
+
+    @GetMapping("/{qrcode}/isonline")
+    public ResultData isOnline(@PathVariable("qrcode") String qrcode) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供设备的二维码信息");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        ResultData response = machineQrcodeBindService.fetch(condition);
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
+        }
+
+        MachineQrcodeBindVo vo = ((List<MachineQrcodeBindVo>) response.getData()).get(0);
+        String uid = vo.getMachineId();
+        logger.info("uid: " + uid);
+        if (redisService.exists(uid)) {
+            response.setResponseCode(ResponseCode.RESPONSE_OK);
+        } else {
+            response.setResponseCode(ResponseCode.RESPONSE_NULL);
+        }
+        return result;
+    }
+
+    //通过uid获取缓存中v1或v2或v3的机器状态
     @RequestMapping(value = "/status/byuid", method = RequestMethod.GET)
     public ResultData machineStatus(String uid) {
         ResultData result = new ResultData();
@@ -45,12 +89,51 @@ public class MachineStatusCacheController {
             return result;
         }
         LimitQueue<Object> statusQueue = (LimitQueue<Object>) redisService.get(uid);
-        result.setData(statusQueue.getLast());
+        Object last = statusQueue.getLast();
+        JSONObject json = MachineUtil.normalize(last);
+
+        //查看是否需要加上panel
+        if (last instanceof finley.gmair.model.machine.v3.MachineStatusV3){
+            finley.gmair.model.machine.v3.MachineStatusV3 machineStatusV3 = (finley.gmair.model.machine.v3.MachineStatusV3) last;
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("machineId", uid);
+            condition.put("blockFlag", false);
+            ResultData response = machineQrcodeBindService.fetch(condition);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                String qrcode = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getCodeValue();
+                condition.clear();
+                condition.put("codeValue", qrcode);
+                condition.put("blockFlag", false);
+                response = qrCodeService.fetch(condition);
+                if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                    String modelId = ((List<QRCode>) response.getData()).get(0).getModelId();
+                    condition.clear();
+                    condition.put("modelId", modelId);
+                    response = controlOptionService.fetchControlOptionActionByModelId(condition);
+                    if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+                        List<ControlOptionVo> controlOptionVoList = (List<ControlOptionVo>) response.getData();
+                        for (ControlOptionVo controlOptionVo : controlOptionVoList) {
+                            if (controlOptionVo.getOptionComponent().equals("panel")) {
+                                json.put("panel", machineStatusV3.getLed());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        result.setData(json);
         result.setDescription("success to find machine status in redis cache");
         return result;
     }
 
-    //通过qrcode获取缓存中的机器状态
+    /**
+     * 通过设备的二维码获取设备的运行状态
+     *
+     * @param qrcode
+     * @return
+     */
     @RequestMapping(value = "/status/byqrcode", method = RequestMethod.GET)
     public ResultData getMachineStatusByQRcode(String qrcode) {
         ResultData result = new ResultData();
@@ -63,20 +146,49 @@ public class MachineStatusCacheController {
         condition.put("codeValue", qrcode);
         condition.put("blockFlag", false);
         ResultData response = machineQrcodeBindService.fetch(condition);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("fail to find the machineId by qrcode");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
-            result.setResponseCode(ResponseCode.RESPONSE_NULL);
-            result.setDescription("can not find the machineId by qrcode.");
-            return result;
-        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
-            result.setResponseCode(ResponseCode.RESPONSE_OK);
-            result.setData(response.getData());
-            result.setDescription("success to find the machineId by qrcode.");
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
         }
+
         String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
         return machineStatus(machineId);
+    }
+
+    @GetMapping("/{qrcode}/status")
+    public ResultData runningStatus(@PathVariable("qrcode") String qrcode) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(qrcode)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("请提供待查询设备的二维码");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codeValue", qrcode);
+        condition.put("blockFlag", false);
+        //查询设备二维码对应的MAC绑定信息
+        ResultData response = machineQrcodeBindService.fetch(condition);
+
+        // 检查machineId是否已获取，如果没有则进行相应的处理
+        response = preBindService.checkMachineId(response, qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return response;
+        }
+
+        String machineId = ((List<MachineQrcodeBindVo>) response.getData()).get(0).getMachineId();
+        //查询二维码的详细信息
+        condition.clear();
+        condition.put("codeValue", qrcode);
+        response = qrCodeService.profile(qrcode);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("未能查询到设备二维码对应的产品及型号信息");
+            return result;
+        }
+        String goodsId = ((GoodsModelDetailVo) response.getData()).getGoodsId();
+        result = machineStatus(machineId);
+        return result;
     }
 }

@@ -98,6 +98,28 @@ public class TempFileMapController {
         return result;
     }
 
+    //通过url获取图片的md5信息
+    @RequestMapping(method = RequestMethod.GET, value = "/md5path")
+    public ResultData getMd5(String url) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("fileUrl", url);
+        condition.put("blockFlag", false);
+        ResultData response = tempFileMapService.fetchTempFileMap(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("server is busy");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("url is invalid");
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(((List<FileMap>) response.getData()).get(0).getMd5());
+            result.setDescription("success to get the actualPath");
+        }
+        return result;
+    }
+
     //获取TempFileMap表中七天前的无效的Map,以便installation知道要删除哪些url记录
     @RequestMapping(method = RequestMethod.GET, value = "getinvalid")
     public ResultData getInvalidMap() {
@@ -166,7 +188,7 @@ public class TempFileMapController {
         }
 
         //actualPath does not contains file name but picPath does
-        String actualPath = new StringBuffer(STORAGE_PATH)
+        String actualPath = new StringBuffer(STORAGE_PATH + "/picture")
                 .append(File.separator)
                 .append(new SimpleDateFormat("yyyyMMdd").format(new Date()))
                 .toString();

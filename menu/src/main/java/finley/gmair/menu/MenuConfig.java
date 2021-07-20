@@ -13,9 +13,6 @@ import java.net.URL;
 
 public class MenuConfig {
 
-    //private final static String wechat_appid = "wxc23d6a94677bb85f";
-
-    //private final static String wechat_secret = "991f23ba9d364748fe35acbb52d1f68a";
     public static String createMenu(String token) {
 
         //关于果麦
@@ -28,20 +25,26 @@ public class MenuConfig {
             e.printStackTrace();
         }
 
-        JSONObject gm_guidance = new JSONObject();
-        gm_guidance.put("name", "新风指南");
-        gm_guidance.put("type", "view");
+
+        //test by czg
+
+        //产品目录
+        JSONObject product_list = new JSONObject();
+        product_list.put("name", "产品目录");
+        product_list.put("type", "view");
         try {
-            gm_guidance.put("url", "https://mp.weixin.qq.com/s/4G9z1b0d33f17MWcl2ln-w");
+            product_list.put("url", "http://www.gmair.net/wx.html");
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
 
         JSONObject assessment = new JSONObject();
         assessment.put("name", "产品评测");
         assessment.put("type", "view");
         try {
-            assessment.put("url", "https://mp.weixin.qq.com/s/p9hnEQwLxIc5BASZhOhivA");
+            assessment.put("url", "https://mp.weixin.qq.com/s/aXhmPqOCFA9HGgfGj8ksYA");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,14 +53,14 @@ public class MenuConfig {
         cases.put("name", "安装案例");
         cases.put("type", "view");
         try {
-            cases.put("url", "http://mp.weixin.qq.com/s/ezFPKEsdL1dtUc-qUnSICw");
+            cases.put("url", "http://mp.weixin.qq.com/s?__biz=MzI5MjczMDk4Mw==&mid=100002619&idx=1&sn=9984b1d96439da40c6c7ba5e59327b6b&chksm=6c7daa335b0a2325d70d40efd58b538520c0d7e41622ec306806d436022fc32b2179bd26f329#rd");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         JSONArray gm = new JSONArray();
         gm.add(gm_introduction);
-        gm.add(gm_guidance);
+        gm.add(product_list);
         gm.add(assessment);
         gm.add(cases);
 
@@ -68,8 +71,14 @@ public class MenuConfig {
         //我的空气
         JSONObject mine_device = new JSONObject();
         mine_device.put("name", "我的空气");
-        mine_device.put("type", "click");
-        mine_device.put("key", "gmair");
+//        mine_device.put("type", "click");
+//        mine_device.put("key", "gmair");
+        mine_device.put("type", "view");
+        try {
+            mine_device.put("url", "https://reception.gmair.net/machine/list");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //售后服务
         JSONObject contact_us = new JSONObject();
@@ -81,29 +90,30 @@ public class MenuConfig {
             e.printStackTrace();
         }
 
-        JSONObject online_purchase = new JSONObject();
-        online_purchase.put("name", "在线购买");
-        online_purchase.put("type", "view");
+
+        //试用申请
+        JSONObject applicant = new JSONObject();
+        applicant.put("name", "试用申请");
+        applicant.put("type", "view");
         try {
-            online_purchase.put("url", "https://h5.youzan.com/v2/feature/Xe2Ffvvcq6");
+            applicant.put("url", "http://www.gmair.net/acquire.html");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        //卡券兑换
-        JSONObject card_exchange = new JSONObject();
-        card_exchange.put("name", "卡券兑换");
-        card_exchange.put("type", "view");
-        try{
-            card_exchange.put("url", "http://one.fw1860.com/recinzaixiantihuoxitongimages/wxth/njgm/wxth.aspx");
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        //检测预约
+        JSONObject reservation = new JSONObject();
+        reservation.put("name", "检测预约");
+        reservation.put("type", "miniprogram");
+        reservation.put("url", "https://mp.weixin.qq.com/s/h8MxaTEKHKbP5y7wA3AYZg");
+        reservation.put("appid", "wx61f6301fde5d4f57");
+        reservation.put("pagepath", "pages/activity_detail/activity_detail");
+
 
         JSONArray after_support = new JSONArray();
+        after_support.add(reservation);
+        after_support.add(applicant);
         after_support.add(contact_us);
-        after_support.add(online_purchase);
-        after_support.add(card_exchange);
 
         JSONObject as_menu = new JSONObject();
         as_menu.put("name", "购买与服务");

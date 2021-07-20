@@ -25,28 +25,28 @@ public class MonthlyJob implements Job {
     @Autowired
     private MachineFeignService machineFeignService;
 
-    @Autowired
-    private TaskService taskService;
+//    @Autowired
+//    private TaskService taskService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        Map<String, Object> condition = new HashMap<>();
+//        Map<String, Object> condition = new HashMap<>();
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI20181130zxz3li46");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                airQualityFeignService.scheduleMonthly();
-            }
+//            condition.clear();
+//            condition.put("taskId", "GTI20181130zxz3li46");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+            airQualityFeignService.scheduleMonthly();
+//            }
         }));
 
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI20181130uiow9716");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                machineFeignService.handleMachineStatusMonthly();
-            }
+//            condition.clear();
+//            condition.put("taskId", "GTI20181130uiow9716");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+            machineFeignService.handleMachineStatusMonthly();
+//            }
         }));
     }
 }

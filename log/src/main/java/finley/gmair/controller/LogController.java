@@ -1,19 +1,14 @@
 package finley.gmair.controller;
 
 
-import finley.gmair.form.log.MachineComLogForm;
-import finley.gmair.form.log.Server2MachineLogForm;
-import finley.gmair.form.log.SystemEventLogForm;
-import finley.gmair.form.log.UserActionLogForm;
-import finley.gmair.model.log.MachineComLog;
-import finley.gmair.model.log.Server2MachineLog;
-import finley.gmair.model.log.SystemEventLog;
-import finley.gmair.model.log.UserActionLog;
+import finley.gmair.form.log.*;
+import finley.gmair.model.log.*;
 import finley.gmair.service.LogService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -60,7 +55,7 @@ public class LogController {
     public ResultData queryMachineComLog(@PathVariable(required = false) String uid) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if(uid != null){
+        if (uid != null) {
             condition.put("uid", uid);
         }
         ResultData response = logService.fetchMachineComLog(condition);
@@ -68,7 +63,7 @@ public class LogController {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(response.getData());
             return result;
-        }else{
+        } else {
             return response;
         }
 
@@ -134,7 +129,7 @@ public class LogController {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(logForm.getUserId()) || StringUtils.isEmpty(logForm.getMachineValue()) ||
                 StringUtils.isEmpty(logForm.getComponent()) || StringUtils.isEmpty(logForm.getLogDetail())
-                || StringUtils.isEmpty(logForm.getIp())) {
+                || StringUtils.isEmpty(logForm.getIp()) || StringUtils.isEmpty(logForm.getActionValue())) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Please make sure you fill all the required fields");
             return result;
@@ -146,8 +141,9 @@ public class LogController {
         String component = logForm.getComponent().trim();
         String logDetail = logForm.getLogDetail().trim();
         String ip = logForm.getIp().trim();
+        String actionValue = logForm.getActionValue();
 
-        UserActionLog userActionLog = new UserActionLog(userId, machineValue, time, component, logDetail, ip);
+        UserMachineOperationLog userActionLog = new UserMachineOperationLog(userId, machineValue, time, component, logDetail, ip, actionValue);
         ResultData response = logService.createUserActionLog(userActionLog);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
@@ -167,14 +163,20 @@ public class LogController {
      * @return
      */
     @PostMapping("/useraction/query")
-    public ResultData getUserActionLog(String userId, String machineValue) {
+    public ResultData getUserActionLog(String userId, String machineValue, int pageIndex, int pageSize) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
-        if (!StringUtils.isEmpty(userId)) {
+        if (StringUtils.isNotEmpty(userId)) {
             condition.put("userId", userId);
         }
-        if (!StringUtils.isEmpty(machineValue)) {
-            condition.put("machineValue", machineValue);
+        if (StringUtils.isNotEmpty(machineValue)) {
+            condition.put("qrcode", machineValue);
+        }
+        if (ObjectUtils.isNotEmpty(pageIndex)) {
+            condition.put("pageIndex", pageIndex);
+        }
+        if (ObjectUtils.isNotEmpty(pageSize)) {
+            condition.put("pageSize", pageSize);
         }
         ResultData response = logService.fetchUserActionLog(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
@@ -240,6 +242,147 @@ public class LogController {
         } else {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("Fail to query server-machine log");
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/userlog/create")
+    public ResultData createUserLog(UserLogForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getUserId()) || StringUtils.isEmpty(form.getComponent())
+                || StringUtils.isEmpty(form.getLogDetail()) || StringUtils.isEmpty(form.getIp())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        String userId = form.getUserId().trim();
+        String component = form.getComponent().trim();
+        String logDetail = form.getLogDetail().trim();
+        String ip = form.getIp().trim();
+        UserAccountOperationLog log = new UserAccountOperationLog(logDetail, ip, userId, component);
+        ResultData response = logService.createUserLog(log);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store user log");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @PostMapping("/userlog/query")
+    public ResultData getUserLog(String userId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(userId)) {
+            condition.put("userId", userId);
+        }
+        ResultData response = logService.fetchUserLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query user log");
+        }
+        return result;
+    }
+
+    @PostMapping("/mqtt/ack/create")
+    public ResultData createMqttAckLog(MqttAckLogForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getAckId()) || ObjectUtils.isEmpty(form.getCode())
+                || StringUtils.isEmpty(form.getComponent()) || StringUtils.isEmpty(form.getMachineId())
+                || StringUtils.isEmpty(form.getIp()) || StringUtils.isEmpty(form.getLogDetail())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required fields");
+            return result;
+        }
+        String detail = form.getLogDetail().trim();
+        String ip = form.getIp().trim();
+        String ackId = form.getAckId().trim();
+        String machineId = form.getMachineId().trim();
+        int code = form.getCode();
+        String component = form.getComponent().trim();
+        MqttAckLog log = new MqttAckLog(detail, ip, ackId, machineId, code, component);
+        ResultData response = logService.createMqttAckLog(log);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store mqtt ack log");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @PostMapping(value = "/mqtt/ack/query")
+    public ResultData getMqttAckLog(String machineId, String ackId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(machineId)) {
+            condition.put("machineId", machineId);
+        }
+        if (!StringUtils.isEmpty(ackId)) {
+            condition.put("ackId", ackId);
+        }
+        ResultData response = logService.fetchMqttAckLog(condition);
+        switch (response.getResponseCode()) {
+            case RESPONSE_NULL:
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("No mqtt ack log found");
+                break;
+            case RESPONSE_ERROR:
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("Fail to query mqtt ack log");
+                break;
+            case RESPONSE_OK:
+                result.setResponseCode(ResponseCode.RESPONSE_OK);
+                result.setData(response.getData());
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/adminlog/create")
+    public ResultData createAdminLog(UserLogForm form) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(form.getUserId()) || StringUtils.isEmpty(form.getComponent())
+                || StringUtils.isEmpty(form.getLogDetail()) || StringUtils.isEmpty(form.getIp())) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Please make sure you fill all the required");
+            return result;
+        }
+        String userId = form.getUserId().trim();
+        String component = form.getComponent().trim();
+        String logDetail = form.getLogDetail().trim();
+        String ip = form.getIp().trim();
+        AdminAccountOperationLog log = new AdminAccountOperationLog(logDetail, ip, userId, component);
+        ResultData response = logService.createAdminLog(log);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to store admin log");
+            return result;
+        }
+        result.setResponseCode(ResponseCode.RESPONSE_OK);
+        result.setData(response.getData());
+        return result;
+    }
+
+    @PostMapping("/adminlog/query")
+    public ResultData getAdminLog(String userId) {
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+        if (!StringUtils.isEmpty(userId)) {
+            condition.put("userId", userId);
+        }
+        ResultData response = logService.fetchAdminLog(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        } else {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("Fail to query admin log");
         }
         return result;
     }

@@ -50,7 +50,8 @@ public class ScheduledConfiguration {
         quartzScheduler.setQuartzProperties(quartzProperties());
 
         Trigger[] triggers = { processHalfHourlyTrigger().getObject(), processHourlyTrigger().getObject(),
-                processDailyTrigger().getObject(), processMonthlyTrigger().getObject() };
+                processDailyTrigger().getObject(), processDailyNoonTrigger().getObject(),
+                processMonthlyTrigger().getObject() };
         quartzScheduler.setTriggers(triggers);
 
         return quartzScheduler;
@@ -122,7 +123,7 @@ public class ScheduledConfiguration {
     @Bean(value = "dailyNoonTrigger")
     public CronTriggerFactoryBean processDailyNoonTrigger() {
         CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
-        cronTriggerFactoryBean.setJobDetail(processDailyJob().getObject());
+        cronTriggerFactoryBean.setJobDetail(processDailyNoonJob().getObject());
         cronTriggerFactoryBean.setCronExpression("0 0 12 * * ?");
         cronTriggerFactoryBean.setGroup("spring3-quartz");
         return cronTriggerFactoryBean;

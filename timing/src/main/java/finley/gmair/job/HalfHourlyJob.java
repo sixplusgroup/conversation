@@ -1,12 +1,10 @@
 package finley.gmair.job;
 
-import finley.gmair.model.timing.Task;
 import finley.gmair.pool.TimingPool;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.MachineFeignService;
+import finley.gmair.service.OrderNewFeignService;
 import finley.gmair.service.TaskService;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -14,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -28,35 +25,32 @@ public class HalfHourlyJob implements Job {
     private MachineFeignService machineFeignService;
 
     @Autowired
-    private TaskService taskService;
+    private OrderNewFeignService orderNewFeignService;
+
+//    @Autowired
+//    private TaskService taskService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        Map<String, Object> condition = new HashMap<>();
+//        Map<String, Object> condition = new HashMap<>();
+//        TimingPool.getTimingExecutor().execute(new Thread(() -> {
+//            condition.clear();
+//            condition.put("taskId", "GTI20181130gn56nl79");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+//                airQualityFeignService.monitorStationCrawler();
+//            }
+//        }));
         TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI20181130hana2n87");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                airQualityFeignService.cityCrawler();
-            }
+//            condition.clear();
+//            condition.put("taskId", "GTI201811307oaxgf42");
+//            boolean status = taskService.probeTaskStatus(condition);
+//            if (status) {
+            machineFeignService.powerTurnOnOff();
+//            }
         }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI20181130gn56nl79");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                airQualityFeignService.monitorStationCrawler();
-            }
-        }));
-        TimingPool.getTimingExecutor().execute(new Thread(() -> {
-            condition.clear();
-            condition.put("taskId", "GTI201811307oaxgf42");
-            boolean status = taskService.probeTaskStatus(condition);
-            if (status) {
-                machineFeignService.powerTurnOnOff();
-            }
-        }));
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> orderNewFeignService.incrementalImport()));
     }
 
 }

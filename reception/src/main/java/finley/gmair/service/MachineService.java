@@ -10,7 +10,6 @@ public interface MachineService {
     @GetMapping("/machine/qrcode/model")
     ResultData findModel(@RequestParam("codeValue") String codeValue);
 
-
     //ControlOptionController
     @GetMapping("/machine/control/option/create")
     ResultData setControlOption(@RequestParam("optionName") String optionName,
@@ -33,6 +32,12 @@ public interface MachineService {
     @PostMapping("/machine/control/option/config/light")
     ResultData configLight(@RequestParam("qrcode") String qrcode, @RequestParam("light") int light);
 
+    @PostMapping("/machine/control/option/config/temp")
+    ResultData configTemp(@RequestParam("qrcode") String qrcode, @RequestParam("temp") int temp);
+
+    @PostMapping("/machine/control/option/config/timing")
+    ResultData configTiming(@RequestParam("qrcode") String qrcode, @RequestParam("countdown") int countdown);
+
     //QrcodeController
     @GetMapping("/machine/qrcode/findbyqrcode")
     ResultData findMachineIdByCodeValue(@RequestParam("codeValue") String codeValue);
@@ -46,9 +51,8 @@ public interface MachineService {
     @PostMapping("machine/qrcode/probe/byurl")
     ResultData probeQRcodeByUrl(@RequestParam("codeUrl") String codeUrl);
 
-    @GetMapping("/machine/qrcode/checkonline")
-    ResultData checkOnline(@RequestParam("qrcode") String qrcode);
-
+    @GetMapping("/machine/{qrcode}/isonline")
+    ResultData checkOnline(@PathVariable("qrcode") String qrcode);
 
     //ConsumerQRcodeController
     @PostMapping("/machine/consumer/qrcode/bind")
@@ -77,15 +81,26 @@ public interface MachineService {
     @GetMapping("/machine/consumer/machinelist")
     ResultData getMachineListByConsumerId(@RequestParam("consumerId") String consumerId);
 
+    @GetMapping("/machine/consumer/machine/list")
+    ResultData obtainMachineList(@RequestParam("consumerId") String consumerId);
+
     @PostMapping("/machine/consumer/modify/bind/name")
     ResultData modifyBindName(@RequestParam("qrcode") String qrcode, @RequestParam("bindName") String bindName, @RequestParam("consumerId") String consumerId);
 
     @GetMapping("/machine/consumer/probe/by/qrcode")
     ResultData probeBindByQRcode(@RequestParam("qrcode") String qrcode, @RequestParam("consumerId") String consumerId);
 
-    //MachineAirQualityController
+    /**
+     * 获取设备的运行状态信息
+     *
+     * @param qrcode
+     * @return
+     */
     @GetMapping("/machine/status/byqrcode")
     ResultData getMachineStatusByQRcode(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/{qrcode}/status")
+    ResultData runningStatus(@PathVariable("qrcode") String qrcode);
 
     //MachineDefaultLocationController
     @GetMapping("/machine/default/location/probe/cityid")
@@ -133,4 +148,46 @@ public interface MachineService {
 
     @GetMapping("/machine/power/onoff/get/record/by/code")
     ResultData getRecord(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/filter/clean")
+    ResultData filterNeedCleanOrNot(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/filter/clean/isOpen")
+    ResultData filterCleanRemindIsOpen(@RequestParam("qrcode") String qrcode);
+
+    @PostMapping("/machine/filter/clean/change")
+    ResultData changeFilterCleanRemindStatus(@RequestParam("qrcode") String qrcode,
+                                             @RequestParam("cleanRemindStatus") boolean cleanRemindStatus);
+
+    @GetMapping("/machine/filter/clean/confirm")
+    ResultData confirmClean(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/turboVolume/getStatus")
+    ResultData getTurboVolumeStatus(@RequestParam("qrcode") String qrcode);
+
+    @PostMapping("/machine/turboVolume/changeStatus")
+    ResultData changeTurboVolumeStatus(@RequestParam("qrcode") String qrcode,
+                                       @RequestParam("turboVolumeStatus") boolean turboVolumeStatus);
+
+    @GetMapping("/machine/turboVolume/getValue")
+    ResultData showTurboVolumeValue(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/efficientFilter/replaceStatus")
+    ResultData getReplaceStatus(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/efficientFilter/replaceRemind/isOpen")
+    ResultData replaceRemindIsOpen(@RequestParam("qrcode") String qrcode);
+
+    @PostMapping("/machine/efficientFilter/replaceRemind/status/change")
+    ResultData changeReplaceRemindStatus(@RequestParam("qrcode") String qrcode,
+                                         @RequestParam("replaceRemindStatus") boolean replaceRemindStatus);
+
+    @GetMapping("/machine/efficientFilter/replace/confirm")
+    ResultData confirmReplace(@RequestParam("qrcode") String qrcode);
+
+    @GetMapping("/machine/model/getMaterials")
+    ResultData getMaterials(@RequestParam("modelId") String modelId);
+
+    @GetMapping("/machine/text")
+    ResultData getText(@RequestParam("textType") String textType);
 }

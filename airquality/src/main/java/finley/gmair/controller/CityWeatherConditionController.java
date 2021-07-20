@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/WeatherCondition/city")
+@RequestMapping("/weather")
 public class CityWeatherConditionController {
     private Logger Logger = LoggerFactory.getLogger(CityWeatherConditionController.class);
 

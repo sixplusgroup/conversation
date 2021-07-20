@@ -1,26 +1,24 @@
 package finley.gmair.model.log;
 
-import java.sql.Timestamp;
-
 public abstract class AbstractLog {
-    private String logDetail;
+    private String detail;
 
     private String ip;
 
     private long createAt;
 
-    public AbstractLog(String logDetail, String ip) {
-        this.logDetail = logDetail;
+    public AbstractLog(String detail, String ip) {
+        this.detail = detail;
         this.ip = ip;
         this.createAt = System.currentTimeMillis();
     }
 
-    public String getLogDetail() {
-        return logDetail;
+    public String getDetail() {
+        return detail;
     }
 
-    public void setLogDetail(String logDetail) {
-        this.logDetail = logDetail;
+    public void setDetail(String detail) {
+        this.detail = detail;
     }
 
     public String getIp() {

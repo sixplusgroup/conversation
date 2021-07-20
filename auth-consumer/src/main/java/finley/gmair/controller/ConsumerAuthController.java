@@ -3,12 +3,12 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.consumer.ConsumerForm;
+import finley.gmair.form.consumer.ConsumerPartInfoQuery;
 import finley.gmair.form.consumer.LocationForm;
 import finley.gmair.form.consumer.LoginForm;
 import finley.gmair.model.auth.VerificationCode;
 import finley.gmair.model.consumer.Address;
 import finley.gmair.model.consumer.Consumer;
-import finley.gmair.model.message.MessageCatalog;
 import finley.gmair.model.wechat.WechatUser;
 import finley.gmair.service.ConsumerService;
 import finley.gmair.service.MessageService;
@@ -18,10 +18,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +41,6 @@ public class ConsumerAuthController {
 
     @Autowired
     private WechatService wechatService;
-
 
     /**
      * register user information
@@ -113,6 +109,8 @@ public class ConsumerAuthController {
             }
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setData(code);
+        } else {//若Phone或code有空值 应该返回RESPONSE_ERROR
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
         }
         return result;
     }
@@ -125,10 +123,10 @@ public class ConsumerAuthController {
             result.setDescription("Please enter your phone number correctly");
             return result;
         }
+        //todo 如果该手机号目前缓存中有有效的验证码，则直接读取原先的验证码，重新发送一次
         VerificationCode code = serialService.generate(phone);
         // call message agent to send the text to corresponding phone number
         // retrieve message template from database
-        System.out.println(JSON.toJSONString(code));
         ResultData response = messageService.template(String.valueOf(action.toUpperCase()));
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -442,26 +440,26 @@ public class ConsumerAuthController {
     }
 
     @PostMapping("/probe/consumerid/by/openid")
-    public ResultData probeConsumerIdByOpenId(String openid){
+    public ResultData probeConsumerIdByOpenId(String openid) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(openid)){
+        if (StringUtils.isEmpty(openid)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all information");
             return result;
         }
         Map<String, Object> condition = new HashMap<>();
-        condition.put("wechat",openid);
-        condition.put("blockFlag",false);
+        condition.put("wechat", openid);
+        condition.put("blockFlag", false);
         ResultData response = consumerService.fetchConsumer(condition);
-        if(response.getResponseCode()==ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to get consumer info by openid");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find consumer info by openid");
             return result;
-        }else{
+        } else {
             result.setData(response.getData());
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to find consumer info by openid");
@@ -469,4 +467,55 @@ public class ConsumerAuthController {
         }
     }
 
+    /**
+     * 根据手机号获取Wechat
+     *
+     * @param
+     * @return
+     */
+    @GetMapping("/probe/wechat/by/phone")
+    public ResultData probeWechatByPhone(String phone) {
+        ResultData result = new ResultData();
+        if (StringUtils.isEmpty(phone)) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("please provide all information");
+            return result;
+        }
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("phone", phone);
+        condition.put("blockFlag", false);
+        ResultData response = consumerService.fetchConsumer(condition);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("fail to get consumer info by phone");
+            return result;
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("not find consumer info by phone");
+            return result;
+        } else {
+            result.setData(((List<ConsumerVo>) response.getData()).get(0).getWechat());
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setDescription("success to find consumer info by phone");
+            return result;
+        }
+    }
+
+    /**
+     * 根据query给出的条件查询符合条件的账户信息
+     *
+     * @param query 查询条件对象
+     * @return 查询结果
+     */
+    @PostMapping("/consumer/accounts")
+    public ResultData queryConsumerAccounts(@RequestBody ConsumerPartInfoQuery query) {
+        ResultData res = new ResultData();
+
+        Map<String, Object> resData = new HashMap<>();
+        resData.put("size", consumerService.fetchConsumerAccountsSize(query));
+        resData.put("list", consumerService.fetchConsumerAccounts(query));
+
+        res.setData(resData);
+        return res;
+    }
 }

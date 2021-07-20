@@ -14,13 +14,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class MachinePm25ServiceImpl implements MachinePm25Service{
+public class MachinePm25ServiceImpl implements MachinePm25Service {
 
     @Autowired
     private MachineStatusMongoDao machineStatusMongoDao;
@@ -33,7 +34,9 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
 
     @Override
     public ResultData handleHourly() {
-        int lastHour = LocalDateTime.now().getHour() - 1;
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, -1);
+        int lastHour = calendar.get(Calendar.HOUR_OF_DAY);
         ResultData result = new ResultData();
         ResultData response = machineStatusRedisDao.queryHourlyPm25();
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -52,6 +55,7 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
     @Override
     public ResultData handleDaily() {
         ResultData result = new ResultData();
+        Calendar calendar = Calendar.getInstance();
         LocalDate lastDay = LocalDateTime.now().minusDays(1).toLocalDate();
         LocalDate today = LocalDateTime.now().toLocalDate();
         int day = lastDay.getDayOfMonth();
@@ -108,9 +112,9 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
     }
 
     @Override
-    public ResultData fetchPartialLatestPm25(String uid,String name) {
+    public ResultData fetchPartialLatestPm25(String uid, String name) {
         ResultData result = new ResultData();
-        ResultData response = machineStatusMongoDao.queryPartialLatestPm25(uid,name);
+        ResultData response = machineStatusMongoDao.queryPartialLatestPm25(uid, name);
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(response.getResponseCode());
             result.setDescription(response.getDescription());
@@ -123,7 +127,7 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
     }
 
     @Override
-    public ResultData fetchAveragePm25(){
+    public ResultData fetchAveragePm25() {
         ResultData result = new ResultData();
         ResultData response = machineStatusMongoDao.queryPartialAveragePm25();
         if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
@@ -137,14 +141,14 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
     }
 
     @Override
-    public ResultData fetchMachineHourlyPm25(Map<String,Object> condition){
+    public ResultData fetchMachineHourlyPm25(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = machineStatusStatisticsDao.selectHourly(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch hourly pm2.5 in machine_hourly_status table");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find hourly pm2.5 in machine_hourly_status table");
             return result;
@@ -154,14 +158,14 @@ public class MachinePm25ServiceImpl implements MachinePm25Service{
     }
 
     @Override
-    public ResultData fetchMachineDailyPm25(Map<String,Object> condition){
+    public ResultData fetchMachineDailyPm25(Map<String, Object> condition) {
         ResultData result = new ResultData();
         ResultData response = machineStatusStatisticsDao.selectDaily(condition);
-        if(response.getResponseCode() == ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("fail to fetch daily pm2.5 in machine_daily_status table");
             return result;
-        }else if(response.getResponseCode() == ResponseCode.RESPONSE_NULL){
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("not find daily pm2.5 in machine_daily_status table");
             return result;

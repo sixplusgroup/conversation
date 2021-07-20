@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gmair.machine.heat_daily">
+    <resultMap id="heatDaily" type="finley.gmair.model.analysis.HeatHourly">
+        <result property="statusId" column="status_id"></result>
+        <result property="machineId" column="machine_id"></result>
+        <result property="heatOnMinute" column="heat_on_minute"></result>
+        <result property="heatOffMinute" column="heat_off_minute"></result>
+        <result property="blockFlag" column="block_flag"></result>
+        <result property="createAt" column="create_time"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="finley.gmair.model.analysis.HeatHourly" useGeneratedKeys="false">
+        INSERT INTO gmair_data_analysis.heat_daily(status_id, machine_id, heat_on_minute, heat_off_minute, block_flag, create_time)
+        VALUES(#{statusId}, #{machineId}, #{heatOnMinute}, #{heatOffMinute}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO gmair_data_analysis.heat_daily(status_id, machine_id, heat_on_minute, heat_off_minute, block_flag, create_time)
+        VALUES
+        <foreach collection="list" separator="," item="HeatDaily" index="index">
+            (#{HeatDaily.statusId}, #{HeatDaily.machineId},
+            #{HeatDaily.heatOnMinute}, #{HeatDaily.heatOffMinute},
+            #{HeatDaily.blockFlag}, #{HeatDaily.createAt})
+        </foreach>
+    </insert>
+
+    <select id="query" parameterType="java.util.Map" resultMap="heatDaily">
+        SELECT status_id, machine_id, heat_on_minute, heat_off_minute, block_flag, create_time
+        FROM gmair_data_analysis.heat_daily
+        WHERE 1 = 1
+        <if test="statusId != null">
+            AND status_id = #{statusId}
+        </if>
+        <if test="machineId != null">
+            AND machine_id = #{machineId}
+        </if>
+        <if test="createTimeGT != null">
+            AND create_time > #{createTimeGT}
+        </if>
+        <if test="createTimeGTE != null">
+            AND create_time >= #{createTimeGTE}
+        </if>
+        <if test="createTimeLT != null">
+            <![CDATA[
+                AND create_time < #{createTimeLT}
+            ]]>
+        </if>
+        <if test="createTimeLTE != null">
+            <![CDATA[
+                AND create_time <= #{createTimeLTE}
+            ]]>
+        </if>
+        order by create_time asc
+    </select>
+</mapper>

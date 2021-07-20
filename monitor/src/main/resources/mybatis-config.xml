@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <mappers>
-        <!--<mapper resource="mapper/consumer_code_machine_view.xml"></mapper>-->
+        <mapper resource="mapper/advertisement.xml"></mapper>
+        <mapper resource="mapper/profile.xml"></mapper>
     </mappers>
 </configuration>

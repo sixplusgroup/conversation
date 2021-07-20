@@ -6,8 +6,8 @@
                     pattern="%style{%d{UTF-8}}{black} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
         </Console>
 
-        <RollingFile name="RollingFile" fileName="./logs/machine.log"
-                     filePattern="./logs/$${date:yyyy-MM}/machine-%d{-dd-MMMM-yyyy}-%i.log.gz">
+        <RollingFile name="RollingFile" fileName="./logs/wechat.log"
+                     filePattern="./logs/$${date:yyyy-MM}/wechat-%d{-dd-MMMM-yyyy}-%i.log.gz">
             <PatternLayout>
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>

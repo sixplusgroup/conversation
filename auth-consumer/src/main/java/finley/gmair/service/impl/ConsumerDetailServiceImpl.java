@@ -13,14 +13,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 @Service
-public class ConsumerDetailServiceImpl implements UserDetailsService{
+public class ConsumerDetailServiceImpl implements UserDetailsService {
 
     @Autowired
     ConsumerService consumerService;
@@ -31,7 +28,7 @@ public class ConsumerDetailServiceImpl implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Map<String, Object> condition = new HashMap<>();
-        List<GrantedAuthority> grantedAuthorities = List.of();
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         condition.put("phone", s);
         ResultData response = consumerService.fetchConsumer(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {

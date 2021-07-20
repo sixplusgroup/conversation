@@ -9,9 +9,21 @@ public class DriftOrderItem extends Entity {
 
     private String itemName;
 
+    private int singleNum;
+
     private int quantity;
 
+    private int exQuantity;
+
     private double itemPrice;
+
+    private double totalPrice;
+
+    private double realPrice;
+
+    private String text;
+
+    private String url;
 
     public DriftOrderItem() {
         super();
@@ -53,6 +65,14 @@ public class DriftOrderItem extends Entity {
         this.itemName = itemName;
     }
 
+    public int getSingleNum() {
+        return singleNum;
+    }
+
+    public void setSingleNum(int singleNum) {
+        this.singleNum = singleNum;
+    }
+
     public int getQuantity() {
         return quantity;
     }
@@ -67,5 +87,45 @@ public class DriftOrderItem extends Entity {
 
     public void setItemPrice(double itemPrice) {
         this.itemPrice = itemPrice;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public double getRealPrice() {
+        return realPrice;
+    }
+
+    public void setRealPrice(double realPrice) {
+        this.realPrice = realPrice;
+    }
+
+    public int getExQuantity() {
+        return exQuantity;
+    }
+
+    public void setExQuantity(int exQuantity) {
+        this.exQuantity = exQuantity;
     }
 }
