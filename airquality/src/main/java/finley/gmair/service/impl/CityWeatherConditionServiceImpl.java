@@ -1,7 +1,9 @@
 package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
 import finley.gmair.dao.CityWeatherConditionDao;
 import finley.gmair.model.air.CityWeatherCondition;
 import finley.gmair.model.air.MojiRecord;
@@ -9,23 +11,28 @@ import finley.gmair.model.air.MojiToken;
 import finley.gmair.model.district.City;
 import finley.gmair.model.district.District;
 import finley.gmair.model.district.Province;
-import finley.gmair.service.CityWeatherConditionService;
-import finley.gmair.service.MojiTokenService;
-import finley.gmair.service.WeatherConditionCacheService;
-import finley.gmair.util.CityWeatherUtil;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import finley.gmair.service.*;
+import finley.gmair.service.feign.LocationFeign;
+import finley.gmair.util.*;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.Date;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CityWeatherConditionServiceImpl implements CityWeatherConditionService {
@@ -37,6 +44,10 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
     @Autowired
     public CityWeatherUtil cityWeatherUtil;
 
+    @PostConstruct
+    public void init() {
+        cityWeatherUtil.init();
+    }
     @Autowired
     private WeatherConditionCacheService weatherConditionCacheService;
 
@@ -89,6 +100,7 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
                 e.printStackTrace();
             }
             logger.info("district weather condition complete");
+
             List<CityWeatherCondition> data = map.values().stream().collect(Collectors.toList());
             insertCityWeatherConditionDetail(data);
         }).start();
@@ -142,6 +154,23 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
         JSONObject data = json.getJSONObject("data").getJSONObject("condition");
         CityWeatherCondition weatherCondition = new CityWeatherCondition();
         try {
+            String condition = data.getString("value");
+            String conditionId = data.getString("conditionId");
+            String humidity = data.getString("humidity");
+            String icon = data.getString("icon");
+            String pressure = data.getString("pressure");
+            String realFeel = data.getString("realFeel");
+            String sunRise = data.getString("sunRise");
+            String sunSet = data.getString("sunSet");
+            String temp = data.getString("temp");
+            String tips = data.getString("tips");
+            String updatetime = data.getString("updatetime");
+            String uvi = data.getString("uvi");
+            String vis = data.getString("vis");
+            String windDegrees = data.getString("windDegrees");
+            String windDir = data.getString("windDir");
+            String windLevel = data.getString("windLevel");
+            String windSpeed = data.getString("windSpeed");
             String condition = data.getString("condition");
             int conditionId = data.getInteger("conditionId");
             double humidity = data.getDouble("humidity");
@@ -169,6 +198,7 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
             weatherCondition.setSunSet(sunSet);
             weatherCondition.setTemp(temp);
             weatherCondition.setTips(tips);
+            weatherCondition.setUpdatetime(updatetime);
             weatherCondition.setUvi(uvi);
             weatherCondition.setVis(vis);
             weatherCondition.setWindDegrees(windDegrees);
