@@ -82,12 +82,6 @@ public class AssignController {
     @Resource
     private AssignTypeInfoService assignTypeInfoService;
 
-//    @RequestMapping("/test")
-//    public String test(){
-//        return "ok";
-//    }
-
-
     /**
      * 根据表单中的姓名、电话、地址信息创建安装任务
      *
@@ -118,9 +112,9 @@ public class AssignController {
 
         Assign assign;
         if (!StringUtils.isEmpty(form.getCompany())) {
-            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim(),type);
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), form.getCompany().trim(), type);
         } else {
-            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(),null,type);
+            assign = new Assign(consignee, phone, address, detail, source, form.getDescription(), null, type);
         }
 
 
@@ -450,7 +444,7 @@ public class AssignController {
         if (status != null) {
             condition.put("assignStatus", status);
         }
-        if (sortType != null && !sortType.isEmpty()){
+        if (sortType != null && !sortType.isEmpty()) {
             condition.put("sortType", sortType);
         }
         if (!StringUtils.isEmpty(search)) {
@@ -668,23 +662,33 @@ public class AssignController {
             result.setDescription("安装任务状态更改失败，请稍后尝试");
             return result;
         }
+        //获取安装任务详情
+        condition.clear();
+        condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        response = assignService.fetch(condition);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("未能获取到ID为".concat(assignId).concat("的安装任务"));
+            return result;
+        }
+        Assign assign = ((List<Assign>) response.getData()).get(0);
         //记录安装任务操作日志
         InstallPool.getLogExecutor().execute(() -> {
-            AssignAction action = new AssignAction(assignId, "安装完成，使用" + method + ", 网络" + ((wifi) ? "已配置" : "未配置") + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
+            AssignAction action;
+            if (assign.getType().contains("新风")) {
+                action = new AssignAction(assignId, "安装完成，使用" + method + ", 网络" + ((wifi) ? "已配置" : "未配置") + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
+            } else {
+                action = new AssignAction(assignId, "安装完成，" + (StringUtils.isEmpty(description) ? "" : ", 备注信息: " + description));
+            }
             assignActionService.create(action);
-            //获取安装任务信息
-            condition.clear();
-            condition.put("assignId", assignId);
-            condition.put("blockFlag", false);
-            ResultData r = assignService.fetch(condition);
-            if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
-            Assign assign = ((List<Assign>) r.getData()).get(0);
+
             //判断是否要发送短信
-            condition.clear();
-            condition.put("configComp", "message");
-            condition.put("status", true);
-            condition.put("blockFlag", false);
-            r = configService.fetch(condition);
+            HashMap<String, Object> con = new HashMap<>();
+            con.put("configComp", "message");
+            con.put("status", true);
+            con.put("blockFlag", false);
+            ResultData r = configService.fetch(con);
             if (r.getResponseCode() != ResponseCode.RESPONSE_OK) return;
             //获取短信模板
             r = messageService.template("NOTIFICATION_INSTALL");
@@ -705,6 +709,7 @@ public class AssignController {
 //                return;
 //            }
 //            candidate = String.format(candidate, assign.getDetail(), code);
+            candidate = String.format(candidate, assign.getDetail());
             //发送短信
             messageService.send(assign.getConsumerPhone(), candidate);
         });
@@ -807,10 +812,9 @@ public class AssignController {
         }
         condition.put("blockFlag", false);
         ResultData response = null;
-        if (page != null && pageLength != null){
-            response = assignService.report_fetch(condition , (page-1)*pageLength, pageLength);
-        }
-        else {
+        if (page != null && pageLength != null) {
+            response = assignService.report_fetch(condition, (page - 1) * pageLength, pageLength);
+        } else {
             response = assignService.report_fetch(condition);
         }
         if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -1442,7 +1446,7 @@ public class AssignController {
      * 查看选中工人所有订单情况 可按时间筛选，可按订单状态分类
      */
     @GetMapping("/order")
-    public ResultData overviewNow(String memberId, String assignStatus,String duration, Integer curPage, Integer length) {
+    public ResultData overviewNow(String memberId, String assignStatus, String duration, Integer curPage, Integer length) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(memberId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1457,7 +1461,7 @@ public class AssignController {
             condition.put("assignStatus", assignStatus);
         }
         //duration:lastWeek 近7天,thisMonth 本月,thisYear 本年;
-        if(duration!=null){
+        if (duration != null) {
             condition.put("duration", duration);
         }
         int start = (curPage - 1) * length;
@@ -1491,17 +1495,17 @@ public class AssignController {
         if (one == null || !assignType.equals(one.getAssignType())) {
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("无此工单类型！");
-        }
-        else {
+        } else {
             res.setData(one);
         }
         return res;
     }
+
     /**
      * 用户查询自己所有assign的状态
      */
     @PostMapping("/queryAssignState")
-    public ResultData queryAssignState(@RequestParam String consumerPhone){
+    public ResultData queryAssignState(@RequestParam String consumerPhone) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(consumerPhone)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -1530,10 +1534,10 @@ public class AssignController {
      * 保存预约信息
      */
     @PostMapping("/reservation/save")
-    public ResultData saveReservations(@RequestBody Userassign userassign){
+    public ResultData saveReservations(@RequestBody Userassign userassign) {
         ResultData resultData = new ResultData();
         ResultData response = userassignService.insert(userassign);
-        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL||userassign==null) {
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL || userassign == null) {
             resultData.setResponseCode(ResponseCode.RESPONSE_NULL);
             resultData.setDescription("数据不可为空");
         } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
@@ -1547,11 +1551,12 @@ public class AssignController {
 
         return resultData;
     }
+
     /**
      * 获取预约信息
      */
     @GetMapping("/reservation/list")
-    public ResultData reservationList(String status,  Integer curPage, Integer length, String search, String sortType){
+    public ResultData reservationList(String status, Integer curPage, Integer length, String search, String sortType) {
         ResultData result = new ResultData();
         Map<String, Object> condition = new HashMap<>();
         if (!StringUtils.isEmpty(status)) {
@@ -1599,7 +1604,7 @@ public class AssignController {
      * 预约确认
      */
     @PostMapping("/reservation/confirm")
-    public ResultData reservationConfirm(@RequestParam String userassignId){
+    public ResultData reservationConfirm(@RequestParam String userassignId) {
         ResultData result = new ResultData();
         ResultData response;
         if (!StringUtils.isEmpty(userassignId)) {
@@ -1612,7 +1617,7 @@ public class AssignController {
                 result.setDescription("确认安装预约失败，请稍后尝试");
             }
             Map<String, Object> condition = new HashMap<>();
-            condition.put("userassignId",userassignId);
+            condition.put("userassignId", userassignId);
             response = userassignService.fetch(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
@@ -1621,8 +1626,8 @@ public class AssignController {
                 result.setResponseCode(ResponseCode.RESPONSE_ERROR);
                 result.setDescription("确认安装预约失败，请稍后尝试");
             }
-            Userassign userassign = (Userassign)((List)response.getData()).get(0);
-            Assign assign = new Assign(userassign.getConsumerConsignee(),userassign.getConsumerPhone(),userassign.getConsumerAddress(),userassign.getUserassignDetail());
+            Userassign userassign = (Userassign) ((List) response.getData()).get(0);
+            Assign assign = new Assign(userassign.getConsumerConsignee(), userassign.getConsumerPhone(), userassign.getConsumerAddress(), userassign.getUserassignDetail());
             assign.setType(userassign.getUserassignType());
             assign.setDescription(userassign.getRemarks());
             response = assignService.create(assign);
@@ -1634,18 +1639,19 @@ public class AssignController {
                 result.setDescription("确认安装预约失败，请稍后尝试");
             }
 
-        }else{
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("请提供需要确认的预约ID");
         }
         return result;
 
     }
+
     /**
      * 预约修改
      */
     @PostMapping("/reservation/adjust")
-    public ResultData reservationAdjust(@RequestBody Userassign userassign){
+    public ResultData reservationAdjust(@RequestBody Userassign userassign) {
         ResultData result = new ResultData();
         ResultData response;
         if (!StringUtils.isEmpty(userassign.getUserassignId())) {
@@ -1654,10 +1660,10 @@ public class AssignController {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
                 result.setDescription("修改安装预约失败，请稍后尝试");
             } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("修改安装预约失败，请稍后尝试");
-        }
-        }else{
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("修改安装预约失败，请稍后尝试");
+            }
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_NULL);
             result.setDescription("请提供需要修改的预约ID");
         }
