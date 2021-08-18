@@ -1,38 +1,32 @@
 package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
 import finley.gmair.dao.CityWeatherConditionDao;
 import finley.gmair.model.air.CityWeatherCondition;
 import finley.gmair.model.air.MojiRecord;
 import finley.gmair.model.air.MojiToken;
+import finley.gmair.model.air.WeatherCondition;
 import finley.gmair.model.district.City;
 import finley.gmair.model.district.District;
 import finley.gmair.model.district.Province;
-import finley.gmair.service.*;
-import finley.gmair.service.feign.LocationFeign;
-import finley.gmair.util.*;
-
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Date;
-import java.util.stream.Collectors;
-
+import finley.gmair.service.CityWeatherConditionService;
+import finley.gmair.service.MojiLocationService;
+import finley.gmair.service.MojiTokenService;
+import finley.gmair.service.WeatherConditionCacheService;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CityWeatherConditionServiceImpl implements CityWeatherConditionService {
@@ -41,13 +35,9 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
     @Autowired
     private MojiTokenService mojiTokenService;
 
-    @Autowired
-    public CityWeatherUtil cityWeatherUtil;
+    @Resource
+    private MojiLocationService mojiLocationService;
 
-    @PostConstruct
-    public void init() {
-        cityWeatherUtil.init();
-    }
     @Autowired
     private WeatherConditionCacheService weatherConditionCacheService;
 
@@ -57,7 +47,7 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
     private void rank() {
         new Thread(() -> {
             Map<String, CityWeatherCondition> map = new HashMap<>();
-            for (Map.Entry<String, Province> entry : CityWeatherUtil.provinces.entrySet()) {
+            for (Map.Entry<String, Province> entry : mojiLocationService.getProvinces().entrySet()) {
                 String provinceId = entry.getKey();
                 Province province = entry.getValue();
                 CityWeatherCondition weatherCondition = fetch(provinceId, province.getLongitude(), province.getLatitude());
@@ -68,7 +58,7 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
                 map.put(provinceId, weatherCondition);
             }
             logger.info("province weather condition complete");
-            for (Map.Entry<String, City> entry : CityWeatherUtil.cities.entrySet()) {
+            for (Map.Entry<String, City> entry : mojiLocationService.getCities().entrySet()) {
                 String cityId = entry.getKey();
                 City city = entry.getValue();
                 CityWeatherCondition weatherCondition = fetch(cityId, city.getLongitude(), city.getLatitude());
@@ -80,7 +70,7 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
             }
             logger.info("city weather condition complete");
             try {
-                for (Map.Entry<String, District> entry : CityWeatherUtil.districts.entrySet()) {
+                for (Map.Entry<String, District> entry : mojiLocationService.getDistricts().entrySet()) {
                     String districtId = entry.getKey();
                     District district = entry.getValue();
                     MojiRecord record = locate(district.getDistrictName());
@@ -112,19 +102,18 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
         ResultData result = new ResultData();
         MojiToken mojiToken = ((List<MojiToken>) selectToken().getData()).get(0);
         logger.info("Active moji token: " + JSON.toJSONString(mojiToken));
-        CityWeatherUtil.mojiToken = mojiToken;
         rank();
         return result;
     }
 
     private CityWeatherCondition fetch(String lid, int cityId) {
-        String result = cityWeatherUtil.fetch(cityId);
+        String result = mojiLocationService.fetch(cityId);
         CityWeatherCondition weatherCondition = interpret(lid, result);
         return weatherCondition;
     }
 
     private CityWeatherCondition fetch(String lid, double longitude, double latitude) {
-        String result = cityWeatherUtil.fetch(longitude, latitude);
+        String result = mojiLocationService.fetch(longitude, latitude);
         CityWeatherCondition weatherCondition = interpret(lid, result);
         return weatherCondition;
     }
@@ -152,60 +141,26 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
             return null;
         }
         JSONObject data = json.getJSONObject("data").getJSONObject("condition");
-        CityWeatherCondition weatherCondition = new CityWeatherCondition();
+        CityWeatherCondition weatherCondition = null;
         try {
-            String condition = data.getString("value");
-            String conditionId = data.getString("conditionId");
-            String humidity = data.getString("humidity");
-            String icon = data.getString("icon");
-            String pressure = data.getString("pressure");
-            String realFeel = data.getString("realFeel");
-            String sunRise = data.getString("sunRise");
-            String sunSet = data.getString("sunSet");
-            String temp = data.getString("temp");
-            String tips = data.getString("tips");
-            String updatetime = data.getString("updatetime");
-            String uvi = data.getString("uvi");
-            String vis = data.getString("vis");
-            String windDegrees = data.getString("windDegrees");
-            String windDir = data.getString("windDir");
-            String windLevel = data.getString("windLevel");
-            String windSpeed = data.getString("windSpeed");
             String condition = data.getString("condition");
-            int conditionId = data.getInteger("conditionId");
-            double humidity = data.getDouble("humidity");
-            double icon = data.getDouble("icon");
-            double pressure = data.getDouble("pressure");
-            double realFeel = data.getDouble("realFeel");
-            Date sunRise = data.getDate("sunRise");
-            Date sunSet = data.getDate("sunSet");
-            double temp = data.getDouble("temp");
+            int conditionId = data.getIntValue("conditionId");
+            int humidity = data.getIntValue("humidity");
+            int icon = data.getIntValue("icon");
+            int pressure = data.getIntValue("pressure");
+            int realFeel = data.getIntValue("realFeel");
+            Timestamp sunRise = data.getTimestamp("sunRise");
+            Timestamp sunSet = data.getTimestamp("sunSet");
+            int temp = data.getIntValue("temp");
             String tips = data.getString("tips");
-            double uvi = data.getDouble("uvi");
-            double vis = data.getDouble("vis");
-            int windDegrees = data.getInteger("windDegrees");
+            int uvi = data.getIntValue("uvi");
+            int vis = data.getIntValue("vis");
+            int windDegrees = data.getIntValue("windDegrees");
             String windDir = data.getString("windDir");
-            int windLevel = data.getInteger("windLevel");
+            int windLevel = data.getIntValue("windLevel");
             double windSpeed = data.getDouble("windSpeed");
-            weatherCondition.setCityId(id);
-            weatherCondition.setCondition(condition);
-            weatherCondition.setConditionId(conditionId);
-            weatherCondition.setHumidity(humidity);
-            weatherCondition.setIcon(icon);
-            weatherCondition.setPressure(pressure);
-            weatherCondition.setRealFeel(realFeel);
-            weatherCondition.setSunRise(sunRise);
-            weatherCondition.setSunSet(sunSet);
-            weatherCondition.setTemp(temp);
-            weatherCondition.setTips(tips);
-            weatherCondition.setUpdatetime(updatetime);
-            weatherCondition.setUvi(uvi);
-            weatherCondition.setVis(vis);
-            weatherCondition.setWindDegrees(windDegrees);
-            weatherCondition.setWindDir(windDir);
-            weatherCondition.setWindLevel(windLevel);
-            weatherCondition.setWindSpeed(windSpeed);
-            weatherCondition.setRecordTime(new Timestamp(System.currentTimeMillis() / (3600000) * 3600000));
+            Timestamp updateTime = data.getTimestamp("updatetime");
+            weatherCondition = new CityWeatherCondition(id, condition, conditionId, humidity, icon, pressure, realFeel, sunRise, sunSet, temp, tips, uvi, vis, windDegrees, windDir, windLevel, windSpeed, updateTime);
         } catch (Exception e) {
             return null;
         }
@@ -225,9 +180,9 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
         if (weatherConditionList.isEmpty()) {
             return;
         }
-        Timestamp timestamp = weatherConditionList.get(0).getRecordTime();
+        Timestamp timestamp = weatherConditionList.get(0).getUpdateTime();
         Map<String, Object> condition = new HashMap();
-        condition.put("recordTime", timestamp);
+        condition.put("updateTime", timestamp);
         condition.put("blockFlag", false);
         ResultData response = cityWeatherConditionDao.select(condition);
         if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
@@ -236,7 +191,7 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
     }
 
     private MojiRecord locate(String district) {
-        return cityWeatherUtil.locate(district);
+        return mojiLocationService.locate(district);
     }
 
 }

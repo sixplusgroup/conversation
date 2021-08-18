@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.pool.CrawlerPool;
 import finley.gmair.service.CityWeatherConditionService;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class CityWeatherConditionController {
     @GetMapping("/condition/refresh")
     public ResultData refresh() {
         ResultData result = new ResultData();
-        new Thread(() -> cityWeatherConditionService.obtain()).start();
+        CrawlerPool.getCrawlerPool().execute(() -> cityWeatherConditionService.obtain());
         result.setDescription("已开始获取城市天气信息，请稍后");
         return result;
     }

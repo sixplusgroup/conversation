@@ -1,4 +1,4 @@
-package finley.gmair.util;
+package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -8,14 +8,16 @@ import finley.gmair.model.air.MojiToken;
 import finley.gmair.model.district.City;
 import finley.gmair.model.district.District;
 import finley.gmair.model.district.Province;
+import finley.gmair.service.MojiLocationService;
 import finley.gmair.service.MojiTokenService;
 import finley.gmair.service.feign.LocationFeign;
+import finley.gmair.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -26,10 +28,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Component
+/**
+ * @ClassName: MojiLocationServiceImpl
+ * @Description: TODO
+ * @Author fan
+ * @Date 2021/8/18 8:55 PM
+ */
+
+@Service
 @PropertySource("classpath:moji.properties")
-public class CityWeatherUtil {
-    private Logger logger = LoggerFactory.getLogger(CityWeatherUtil.class);
+public class MojiLocationServiceImpl implements MojiLocationService {
+
+    private Logger logger = LoggerFactory.getLogger(MojiLocationServiceImpl.class);
 
     @Value("${base}")
     public String base;
@@ -39,15 +49,15 @@ public class CityWeatherUtil {
 
     public List<MojiRecord> list;
 
-    public static Map<String, Province> provinces;
+    public Map<String, Province> provinces;
 
-    public static Map<String, City> cities;
+    public Map<String, City> cities;
 
-    public static Map<String, District> districts;
+    public Map<String, District> districts;
 
-    public static MojiToken mojiToken;
+    public MojiToken mojiToken;
 
-    public static MojiTokenService mojiTokenService;
+    public MojiTokenService mojiTokenService;
 
     @PostConstruct
     public void init() {
@@ -109,7 +119,8 @@ public class CityWeatherUtil {
         logger.info("province: " + provinces.size() + ", city: " + cities.size() + ", district: " + districts.size());
     }
 
-    public String fetch(int cityId){
+    @Override
+    public String fetch(int cityId) {
         StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?cityId=").append(cityId);
         String url = stringBuffer.toString();
         String subUrl = url.substring("https://api.mojicb.com".length(), url.indexOf("?"));
@@ -128,7 +139,8 @@ public class CityWeatherUtil {
         return result;
     }
 
-    public String fetch(double longitude, double latitude){
+    @Override
+    public String fetch(double longitude, double latitude) {
         StringBuffer stringBuffer = new StringBuffer(mojiToken.getUrl()).append("?lat=").append(latitude).append("&lon=").append(longitude);
         String url = stringBuffer.toString();
         String subUrl = url.substring("https://api.mojicb.com".length(), url.indexOf("?"));
@@ -145,9 +157,9 @@ public class CityWeatherUtil {
         String result = HttpDeal.getResponse(url, map);
         logger.info("Request params: " + JSON.toJSONString(map));
         return result;
-
     }
 
+    @Override
     public MojiRecord locate(String district) {
         logger.info("district: " + district + ", size: " + list.size());
         for (int i = 0; i < list.size(); i++) {
@@ -159,4 +171,15 @@ public class CityWeatherUtil {
         return null;
     }
 
+    public Map<String, Province> getProvinces() {
+        return provinces;
+    }
+
+    public Map<String, City> getCities() {
+        return cities;
+    }
+
+    public Map<String, District> getDistricts() {
+        return districts;
+    }
 }

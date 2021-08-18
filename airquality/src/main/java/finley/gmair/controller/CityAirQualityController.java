@@ -31,9 +31,6 @@ public class CityAirQualityController {
     @Autowired
     private AirQualityStatisticService airQualityStatisticService;
 
-    @Autowired
-    private MojiTokenService mojiTokenService;
-
     @GetMapping(value = "/latest")
     public ResultData getLatestCityAirQuality() {
         return airQualityStatisticService.fetchLatestAirQuality(new HashMap<>());
@@ -307,18 +304,5 @@ public class CityAirQualityController {
         }
         JSONArray jsonArray = JSON.parseArray(JSON.toJSONString(response.getData()));
         return getFormatedData(cityId, jsonArray, lastNhour, 1);
-    }
-
-    @GetMapping("/token/select")
-    ResultData selectToken() {
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("blockFlag", 0);
-        return mojiTokenService.fetch(condition);
-    }
-
-    @PostMapping("/token/create")
-    ResultData createToken(String token, String url, String password, String base) {
-        MojiToken mojiToken = new MojiToken(token, password, url, base);
-        return mojiTokenService.create(mojiToken);
     }
 }
