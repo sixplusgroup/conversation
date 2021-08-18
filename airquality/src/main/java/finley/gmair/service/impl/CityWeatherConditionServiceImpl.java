@@ -10,6 +10,7 @@ import finley.gmair.model.air.WeatherCondition;
 import finley.gmair.model.district.City;
 import finley.gmair.model.district.District;
 import finley.gmair.model.district.Province;
+import finley.gmair.pool.CrawlerPool;
 import finley.gmair.service.CityWeatherConditionService;
 import finley.gmair.service.MojiLocationService;
 import finley.gmair.service.MojiTokenService;
@@ -45,7 +46,7 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
     private CityWeatherConditionDao cityWeatherConditionDao;
 
     private void rank() {
-        new Thread(() -> {
+        CrawlerPool.getCrawlerPool().execute(() -> {
             Map<String, CityWeatherCondition> map = new HashMap<>();
             for (Map.Entry<String, Province> entry : mojiLocationService.getProvinces().entrySet()) {
                 String provinceId = entry.getKey();
@@ -93,7 +94,7 @@ public class CityWeatherConditionServiceImpl implements CityWeatherConditionServ
 
             List<CityWeatherCondition> data = map.values().stream().collect(Collectors.toList());
             insertCityWeatherConditionDetail(data);
-        }).start();
+        });
     }
 
 
