@@ -1,13 +1,14 @@
 package finley.gmair.service;
 
+import finley.gmair.model.installation.Userassign;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient("install-agent")
 public interface AssignService {
+//    @RequestMapping("/install/assign/test")
+//    String test();
 
     @GetMapping("/install/assign/tasks")
     ResultData fetchAssign(@RequestParam("memberId") String memberId);
@@ -57,4 +58,14 @@ public interface AssignService {
 
     @GetMapping("/install/assign/assignTypeInfo/one")
     ResultData queryAssignTypeInfoByType(@RequestParam("assignType") String assignType);
+
+    @GetMapping("/install/assign/assignTypeInfo/all")
+    ResultData queryAllAssignTypeInfo();
+
+    @PostMapping("/install/assign/queryAssignState")
+    ResultData queryAssignState(@RequestParam("consumerPhone") String consumerPhone);
+
+    @PostMapping("/install/assign/reservation/save")
+    ResultData saveReservations(@RequestBody Userassign userassign);
+
 }

@@ -41,6 +41,13 @@ public class Assign extends Entity {
         this.assignStatus = AssignStatus.TODOASSIGN;
     }
 
+    public Assign(String consumerConsignee, String consumerPhone, String consumerAddress, String detail) {
+        this();
+        this.consumerConsignee = consumerConsignee;
+        this.consumerPhone = consumerPhone;
+        this.consumerAddress = consumerAddress;
+        this.detail = detail;
+    }
     public Assign(String consumerConsignee, String consumerPhone, String consumerAddress, String detail, String source) {
         this();
         this.consumerConsignee = consumerConsignee;

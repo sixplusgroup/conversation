@@ -73,6 +73,7 @@ public class MemberController {
     }
 
     @GetMapping("/list")
+    //    INT000000001
     public ResultData list(String teamId) {
         ResultData result = new ResultData();
         if (StringUtils.isEmpty(teamId)) {
