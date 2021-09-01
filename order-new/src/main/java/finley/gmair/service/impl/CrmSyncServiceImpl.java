@@ -105,9 +105,9 @@ public class CrmSyncServiceImpl implements CrmSyncService {
                 if (tmpOrder.getPartMjzDiscount() != null) {
                     ssje -= tmpOrder.getPartMjzDiscount();
                 }
-                // 多子订单且有邮费，除了甲醛检测仪包含邮费，其他子订单减去邮费
-                if (interTrade.getPostFee() != null && !property.contains("检测仪")) {
-                    ssje -= interTrade.getPostFee();
+                // 多子订单且有邮费，甲醛检测仪子订单包含邮费
+                if (interTrade.getPostFee() != null && property.contains("检测仪")) {
+                    ssje += interTrade.getPostFee();
                 }
             }
             newCrmOrder.setSsje(String.valueOf(ssje));
