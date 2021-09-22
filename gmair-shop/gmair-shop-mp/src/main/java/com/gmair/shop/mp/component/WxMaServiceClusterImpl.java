@@ -3,7 +3,7 @@ package com.gmair.shop.mp.component;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
 import cn.hutool.http.HttpUtil;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.error.WxError;
@@ -45,7 +45,7 @@ public class WxMaServiceClusterImpl extends WxMaServiceImpl {
             }
 
             if (!lockSuccess) {
-                throw new GmairShopBindException("服务器繁忙，请稍后再试");
+                throw new GmairShopGlobalException("服务器繁忙，请稍后再试");
             }
 
             if (!this.getWxMaConfig().isAccessTokenExpired()) {

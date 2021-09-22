@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * 自定义AbstractAuthenticationToken，
+ * 自定义AbstractAuthenticationToken，和AbstractAuthenticationToken的源码实现类UsernamePasswordAuthenticationToken一模一样
  */
 @Getter
 @Setter

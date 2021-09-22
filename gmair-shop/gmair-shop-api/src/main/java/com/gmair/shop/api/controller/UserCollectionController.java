@@ -9,7 +9,7 @@ import com.gmair.shop.bean.app.dto.ProductDto;
 import com.gmair.shop.bean.app.dto.UserCollectionDto;
 import com.gmair.shop.bean.model.Product;
 import com.gmair.shop.bean.model.UserCollection;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.PageParam;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.ProductService;
@@ -45,7 +45,7 @@ public class UserCollectionController {
     public ResponseEntity<Boolean> isCollection(Long prodId) {
         if (productService.count(new LambdaQueryWrapper<Product>()
                 .eq(Product::getProdId, prodId)) < 1) {
-            throw new GmairShopBindException("该商品不存在");
+            throw new GmairShopGlobalException("该商品不存在");
         }
         return ResponseEntity.ok(userCollectionService.count(new LambdaQueryWrapper<UserCollection>()
                 .eq(UserCollection::getProdId, prodId)
@@ -57,7 +57,7 @@ public class UserCollectionController {
     @ApiImplicitParam(name = "prodId", value = "商品id", required = true, dataType = "Long")
     public ResponseEntity<Void> addOrCancel(@RequestBody Long prodId) {
         if (Objects.isNull(productService.getProductByProdId(prodId))) {
-            throw new GmairShopBindException("该商品不存在");
+            throw new GmairShopGlobalException("该商品不存在");
         }
         String userId = SecurityUtils.getUser().getUserId();
         if (userCollectionService.count(new LambdaQueryWrapper<UserCollection>()

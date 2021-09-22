@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Data
 public class UserAddrDto implements Serializable {
-        @ApiModelProperty(value = "地址id", required = true)
+    @ApiModelProperty(value = "地址id", required = true)
     private Long addrId;
 
     @ApiModelProperty(value = "收货人", required = true)

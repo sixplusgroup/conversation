@@ -2,7 +2,7 @@
 
 package com.gmair.shop.common.config;
 
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -43,8 +43,8 @@ public class DefaultExceptionHandlerConfig {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining()));
     }
 
-    @ExceptionHandler(GmairShopBindException.class)
-    public ResponseEntity<String> unauthorizedExceptionHandler(GmairShopBindException e){
+    @ExceptionHandler(GmairShopGlobalException.class)
+    public ResponseEntity<String> unauthorizedExceptionHandler(GmairShopGlobalException e){
         e.printStackTrace();
         return ResponseEntity.status(e.getHttpStatusCode()).body(e.getMessage());
     }

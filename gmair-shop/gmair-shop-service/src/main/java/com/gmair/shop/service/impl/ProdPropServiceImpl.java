@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gmair.shop.bean.enums.ProdPropRule;
 import com.gmair.shop.bean.model.ProdProp;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.PageAdapter;
 import com.gmair.shop.dao.CategoryPropMapper;
 import com.gmair.shop.dao.ProdPropMapper;
@@ -50,7 +50,7 @@ public class ProdPropServiceImpl extends ServiceImpl<ProdPropMapper, ProdProp> i
     public void saveProdPropAndValues(@Valid ProdProp prodProp) {
         ProdProp dbProdProp = prodPropMapper.getProdPropByPropNameAndShopId(prodProp.getPropName(), prodProp.getShopId(), prodProp.getRule());
         if (dbProdProp != null) {
-            throw new GmairShopBindException("已有相同名称规格");
+            throw new GmairShopGlobalException("已有相同名称规格");
         }
         prodPropMapper.insert(prodProp);
         if (CollUtil.isEmpty(prodProp.getProdPropValues())) {
@@ -65,7 +65,7 @@ public class ProdPropServiceImpl extends ServiceImpl<ProdPropMapper, ProdProp> i
     public void updateProdPropAndValues(ProdProp prodProp) {
         ProdProp dbProdProp = prodPropMapper.getProdPropByPropNameAndShopId(prodProp.getPropName(), prodProp.getShopId(), prodProp.getRule());
         if (dbProdProp != null && !Objects.equals(prodProp.getPropId(), dbProdProp.getPropId())) {
-            throw new GmairShopBindException("已有相同名称规格");
+            throw new GmairShopGlobalException("已有相同名称规格");
         }
         prodPropMapper.updateById(prodProp);
         // 先删除原有的属性值，再添加新的属性值

@@ -8,7 +8,7 @@ import com.gmair.shop.api.security.AuthenticationToken;
 import com.gmair.shop.bean.enums.SmsType;
 import com.gmair.shop.bean.model.User;
 import com.gmair.shop.bean.param.UserRegisterParam;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.IPHelper;
 import com.gmair.shop.common.util.PrincipalUtil;
 import com.gmair.shop.mp.config.WxMaConfiguration;
@@ -78,15 +78,15 @@ public class UserRegisterController {
         User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUserMobile, userRegisterParam.getUserMail()));
         if (user == null) {
             // 无法获取用户信息
-            throw new GmairShopBindException("无法获取用户信息");
+            throw new GmairShopGlobalException("无法获取用户信息");
         }
         if (StrUtil.isBlank(userRegisterParam.getPassword())) {
             // 新密码不能为空
-            throw new GmairShopBindException("新密码不能为空");
+            throw new GmairShopGlobalException("新密码不能为空");
         }
         if (StrUtil.equals(passwordEncoder.encode(userRegisterParam.getPassword()), user.getLoginPassword())) {
             // 新密码不能与原密码相同
-            throw new GmairShopBindException("新密码不能与原密码相同");
+            throw new GmairShopGlobalException("新密码不能与原密码相同");
         }
         user.setModifyTime(new Date());
         user.setLoginPassword(passwordEncoder.encode(userRegisterParam.getPassword()));
@@ -115,7 +115,7 @@ public class UserRegisterController {
             // 正在进行申请注册
             if (userService.count(new LambdaQueryWrapper<User>().eq(User::getUserMobile,userRegisterParam.getMobile())) > 0) {
                 // 手机号已存在，无法注册
-                throw new GmairShopBindException("gmair.user.phone.exist");
+                throw new GmairShopGlobalException("gmair.user.phone.exist");
             }
         }
         // 小程序注册/绑定手机号
@@ -131,11 +131,11 @@ public class UserRegisterController {
 
                 } catch (Exception e) {
                     // 授权失败，请重新授权
-                    throw new GmairShopBindException(" 授权失败，请重新授权");
+                    throw new GmairShopGlobalException(" 授权失败，请重新授权");
                 }
                 if (StrUtil.isBlank(mobile)) {
                     // 无法获取用户手机号信息
-                    throw new GmairShopBindException("无法获取用户手机号信息");
+                    throw new GmairShopGlobalException("无法获取用户手机号信息");
                 }
                 user = gmairUserDetailsService.loadUserByMobileOrUserName(mobile, 0);
             }
@@ -144,21 +144,21 @@ public class UserRegisterController {
                 user = gmairUserDetailsService.loadUserByMobileOrUserName(mobile, 0);
                 if (user == null) {
                     // 账号或密码不正确
-                    throw new GmairShopBindException("gmair.user.account.error");
+                    throw new GmairShopGlobalException("gmair.user.account.error");
                 }
                 String encodedPassword = user.getLoginPassword();
                 String rawPassword = userRegisterParam.getPassword();
                 // 密码不正确
                 if (StrUtil.isBlank(encodedPassword) || !passwordEncoder.matches(rawPassword,encodedPassword)){
                     // 账号或密码不正确
-                    throw new GmairShopBindException("gmair.user.account.error");
+                    throw new GmairShopGlobalException("gmair.user.account.error");
                 }
             }
             // 通过验证码校验
             else {
                 if (!smsLogService.checkValidCode(userRegisterParam.getMobile(), userRegisterParam.getValidCode(), SmsType.VALID)){
                     // 验证码有误或已过期
-                    throw new GmairShopBindException("gmair.user.code.error");
+                    throw new GmairShopGlobalException("gmair.user.code.error");
                 }
             }
         }
@@ -179,7 +179,7 @@ public class UserRegisterController {
 
             // 如果有用户名,就判断用户名格式是否正确
             if (!PrincipalUtil.isUserName(userRegisterParam.getUserName())) {
-                throw new GmairShopBindException("用户名应由4-16位数字字母下划线组成");
+                throw new GmairShopGlobalException("用户名应由4-16位数字字母下划线组成");
             }
 
             user.setModifyTime(now);

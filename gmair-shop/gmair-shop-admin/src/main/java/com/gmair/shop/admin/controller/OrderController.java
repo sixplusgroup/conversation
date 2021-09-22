@@ -11,14 +11,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gmair.shop.bean.param.OrderParam;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.*;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -87,7 +86,7 @@ public class OrderController {
         Long shopId = SecurityUtils.getSysUser().getShopId();
         Order order = orderService.getOrderByOrderNumber(orderNumber);
         if (!Objects.equal(shopId, order.getShopId())) {
-            throw new GmairShopBindException("您没有权限获取该订单信息");
+            throw new GmairShopGlobalException("您没有权限获取该订单信息");
         }
         List<OrderItem> orderItems = orderItemService.getOrderItemsByOrderNumber(orderNumber);
         order.setOrderItems(orderItems);
@@ -105,7 +104,7 @@ public class OrderController {
         Long shopId = SecurityUtils.getSysUser().getShopId();
         Order order = orderService.getOrderByOrderNumber(deliveryOrderParam.getOrderNumber());
         if (!Objects.equal(shopId, order.getShopId())) {
-            throw new GmairShopBindException("您没有权限修改该订单信息");
+            throw new GmairShopGlobalException("您没有权限修改该订单信息");
         }
 
         Order orderParam = new Order();

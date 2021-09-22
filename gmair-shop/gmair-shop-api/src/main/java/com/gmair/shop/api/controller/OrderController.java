@@ -8,7 +8,7 @@ import javax.validation.Valid;
 
 import com.gmair.shop.bean.app.dto.*;
 import com.gmair.shop.bean.event.ConfirmOrderEvent;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class OrderController {
         List<ShopCartItemDto> shopCartItems = basketService.getShopCartItemsByOrderItems(orderParam.getBasketIds(),orderParam.getOrderItem(),userId);
 
         if (CollectionUtil.isEmpty(shopCartItems)) {
-            throw new GmairShopBindException("请选择您需要的商品加入购物车");
+            throw new GmairShopGlobalException("请选择您需要的商品加入购物车");
         }
 
         // 根据店铺组装购车中的商品信息，返回每个店铺中的购物车商品信息
@@ -138,7 +138,7 @@ public class OrderController {
         String userId = SecurityUtils.getUser().getUserId();
         ShopCartOrderMergerDto mergerOrder = orderService.getConfirmOrderCache(userId);
         if (mergerOrder == null) {
-            throw new GmairShopBindException("订单已过期，请重新下单");
+            throw new GmairShopGlobalException("订单已过期，请重新下单");
         }
 
         List<OrderShopParam> orderShopParams = submitOrderParam.getOrderShopParam();

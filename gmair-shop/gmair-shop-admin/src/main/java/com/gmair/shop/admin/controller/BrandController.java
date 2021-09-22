@@ -6,7 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.gmair.shop.bean.model.Brand;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.PageParam;
 import com.gmair.shop.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class BrandController {
     public ResponseEntity<Void> save(@Valid Brand brand) {
         Brand dbBrand = brandService.getByBrandName(brand.getBrandName());
         if (dbBrand != null) {
-            throw new GmairShopBindException("该品牌名称已存在");
+            throw new GmairShopGlobalException("该品牌名称已存在");
         }
         brandService.save(brand);
         return ResponseEntity.ok().build();
@@ -75,7 +75,7 @@ public class BrandController {
     public ResponseEntity<Void> update(@Valid Brand brand) {
         Brand dbBrand = brandService.getByBrandName(brand.getBrandName());
         if (dbBrand != null && !Objects.equals(dbBrand.getBrandId(), brand.getBrandId())) {
-            throw new GmairShopBindException("该品牌名称已存在");
+            throw new GmairShopGlobalException("该品牌名称已存在");
         }
         brandService.updateById(brand);
         return ResponseEntity.ok().build();

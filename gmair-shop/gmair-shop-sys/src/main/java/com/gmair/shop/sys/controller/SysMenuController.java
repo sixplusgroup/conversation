@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gmair.shop.sys.service.SysMenuService;
 import com.gmair.shop.common.annotation.SysLog;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.ApiOperation;
@@ -170,11 +170,11 @@ public class SysMenuController{
 
 		if(menu.getType() == MenuType.MENU.getValue()){
 			if(StrUtil.isBlank(menu.getUrl())){
-				throw new GmairShopBindException("菜单URL不能为空");
+				throw new GmairShopGlobalException("菜单URL不能为空");
 			}
 		}
 		if(Objects.equals(menu.getMenuId(), menu.getParentId())){
-			throw new GmairShopBindException("自己不能是自己的上级");
+			throw new GmairShopGlobalException("自己不能是自己的上级");
 		}
 
 		//上级菜单类型
@@ -188,7 +188,7 @@ public class SysMenuController{
 		if(menu.getType() == MenuType.CATALOG.getValue() ||
 				menu.getType() == MenuType.MENU.getValue()){
 			if(parentType != MenuType.CATALOG.getValue()){
-				throw new GmairShopBindException("上级菜单只能为目录类型");
+				throw new GmairShopGlobalException("上级菜单只能为目录类型");
 			}
 			return ;
 		}
@@ -196,7 +196,7 @@ public class SysMenuController{
 		//按钮
 		if(menu.getType() == MenuType.BUTTON.getValue()){
 			if(parentType != MenuType.MENU.getValue()){
-				throw new GmairShopBindException("上级菜单只能为菜单类型");
+				throw new GmairShopGlobalException("上级菜单只能为菜单类型");
 			}
 		}
 	}

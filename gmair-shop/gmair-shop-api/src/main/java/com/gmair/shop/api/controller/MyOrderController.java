@@ -4,20 +4,16 @@ package com.gmair.shop.api.controller;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.gmair.shop.bean.enums.OrderStatus;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.PageParam;
 import com.gmair.shop.bean.app.dto.*;
-import com.gmair.shop.dao.OrderMapper;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.*;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -132,10 +128,10 @@ public class MyOrderController {
         String userId = SecurityUtils.getUser().getUserId();
         Order order = orderService.getOrderByOrderNumber(orderNumber);
         if (!Objects.equals(order.getUserId(), userId)) {
-            throw new GmairShopBindException("你没有权限获取该订单信息");
+            throw new GmairShopGlobalException("你没有权限获取该订单信息");
         }
         if (!Objects.equals(order.getStatus(), OrderStatus.UNPAY.value())) {
-            throw new GmairShopBindException("订单已支付，无法取消订单");
+            throw new GmairShopGlobalException("订单已支付，无法取消订单");
         }
         List<OrderItem> orderItems = orderItemService.getOrderItemsByOrderNumber(orderNumber);
         order.setOrderItems(orderItems);
@@ -160,10 +156,10 @@ public class MyOrderController {
         String userId = SecurityUtils.getUser().getUserId();
         Order order = orderService.getOrderByOrderNumber(orderNumber);
         if (!Objects.equals(order.getUserId(), userId)) {
-            throw new GmairShopBindException("你没有权限获取该订单信息");
+            throw new GmairShopGlobalException("你没有权限获取该订单信息");
         }
         if (!Objects.equals(order.getStatus(), OrderStatus.CONSIGNMENT.value())) {
-            throw new GmairShopBindException("订单未发货，无法确认收货");
+            throw new GmairShopGlobalException("订单未发货，无法确认收货");
         }
         List<OrderItem> orderItems = orderItemService.getOrderItemsByOrderNumber(orderNumber);
         order.setOrderItems(orderItems);
@@ -188,13 +184,13 @@ public class MyOrderController {
 
         Order order = orderService.getOrderByOrderNumber(orderNumber);
         if (order == null) {
-            throw new GmairShopBindException("该订单不存在");
+            throw new GmairShopGlobalException("该订单不存在");
         }
         if (!Objects.equals(order.getUserId(), userId)) {
-            throw new GmairShopBindException("你没有权限获取该订单信息");
+            throw new GmairShopGlobalException("你没有权限获取该订单信息");
         }
         if (!Objects.equals(order.getStatus(), OrderStatus.SUCCESS.value()) && !Objects.equals(order.getStatus(), OrderStatus.CLOSE.value()) ) {
-            throw new GmairShopBindException("订单未完成或未关闭，无法删除订单");
+            throw new GmairShopGlobalException("订单未完成或未关闭，无法删除订单");
         }
 
         // 删除订单

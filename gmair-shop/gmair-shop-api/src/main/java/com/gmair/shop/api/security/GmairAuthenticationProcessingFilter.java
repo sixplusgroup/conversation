@@ -1,7 +1,7 @@
 package com.gmair.shop.api.security;
 
 import cn.hutool.extra.servlet.ServletUtil;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.Json;
 import com.gmair.shop.common.xss.XssUtil;
 import com.gmair.shop.security.exception.BadCredentialsException;
@@ -127,7 +127,7 @@ public class GmairAuthenticationProcessingFilter extends AbstractAuthenticationP
     public String getStringFromStream(HttpServletRequest req) {
         if (req.getContentLength() > MAX_STRING_SIZE) {
             // 请求数据过长
-            throw new GmairShopBindException("gmair.request.data.too.long");
+            throw new GmairShopGlobalException("gmair.request.data.too.long");
         }
         ServletInputStream is;
         try {
@@ -143,7 +143,7 @@ public class GmairAuthenticationProcessingFilter extends AbstractAuthenticationP
             }
             if (nTotalRead > MAX_STRING_SIZE) {
                 // 请求数据过长
-                throw new GmairShopBindException("gmair.request.data.too.long");
+                throw new GmairShopGlobalException("gmair.request.data.too.long");
             }
             return XssUtil.clean(new String(bytes, 0, nTotalRead, StandardCharsets.UTF_8));
         } catch (IOException e) {

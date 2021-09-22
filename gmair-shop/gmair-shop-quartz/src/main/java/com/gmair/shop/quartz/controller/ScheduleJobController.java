@@ -6,7 +6,7 @@ import javax.validation.Valid;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.quartz.model.ScheduleJob;
 import com.gmair.shop.quartz.service.ScheduleJobService;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +72,7 @@ public class ScheduleJobController {
 
 		int dbAlikeCount = scheduleJobService.count(new LambdaQueryWrapper<ScheduleJob>().eq(ScheduleJob::getBeanName, scheduleJob.getBeanName()).eq(ScheduleJob::getMethodName, scheduleJob.getMethodName()));
 		if (dbAlikeCount > 0) {
-			throw new GmairShopBindException("定时任务已存在");
+			throw new GmairShopGlobalException("定时任务已存在");
 		}
 
 		scheduleJobService.saveAndStart(scheduleJob);
@@ -89,7 +89,7 @@ public class ScheduleJobController {
 
 		int dbAlikeCount = scheduleJobService.count(new LambdaQueryWrapper<ScheduleJob>().eq(ScheduleJob::getBeanName, scheduleJob.getBeanName()).eq(ScheduleJob::getMethodName, scheduleJob.getMethodName()).ne(ScheduleJob::getJobId,scheduleJob.getJobId()));
 		if (dbAlikeCount > 0) {
-			throw new GmairShopBindException("定时任务已存在");
+			throw new GmairShopGlobalException("定时任务已存在");
 		}
 
 		scheduleJobService.updateScheduleJob(scheduleJob);

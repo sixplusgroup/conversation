@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gmair.shop.sys.service.SysRoleService;
 import com.gmair.shop.sys.service.SysUserService;
 import com.gmair.shop.common.annotation.SysLog;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
@@ -87,7 +87,7 @@ public class SysUserController {
         // 开源版代码，禁止用户修改admin 的账号密码
         // 正式使用时，删除此部分代码即可
         if (Objects.equals(1L,userId) && StrUtil.isNotBlank(param.getNewPassword())) {
-            throw new GmairShopBindException("禁止修改admin的账号密码");
+            throw new GmairShopGlobalException("禁止修改admin的账号密码");
         }
 		SysUser dbUser = sysUserService.getSysUserById(userId);
 		if (!passwordEncoder.matches(param.getPassword(), dbUser.getPassword())) {
@@ -109,7 +109,7 @@ public class SysUserController {
 		SysUser user = sysUserService.getSysUserById(userId);
 		user.setUserId(null);
 		if (!Objects.equals(user.getShopId(), SecurityUtils.getSysUser().getShopId())) {
-			throw new GmairShopBindException("没有权限获取该用户信息");
+			throw new GmairShopGlobalException("没有权限获取该用户信息");
 		}
 		//获取用户所属的角色列表
 		List<Long> roleIdList = sysRoleService.listRoleIdByUserId(userId);
@@ -147,7 +147,7 @@ public class SysUserController {
 		SysUser dbUser = sysUserService.getSysUserById(user.getUserId());
 
 		if (!Objects.equals(dbUser.getShopId(), SecurityUtils.getSysUser().getShopId())) {
-			throw new GmairShopBindException("没有权限修改该用户信息");
+			throw new GmairShopGlobalException("没有权限修改该用户信息");
 		}
 		SysUser dbUserNameInfo = sysUserService.getByUserName(user.getUsername());
 
@@ -163,11 +163,11 @@ public class SysUserController {
 		// 正式使用时，删除此部分代码即可
 		boolean is = Objects.equals(1L,dbUser.getUserId()) && (StrUtil.isNotBlank(password) || !StrUtil.equals("admin",user.getUsername()));
 		if (is) {
-			throw new GmairShopBindException("禁止修改admin的账号密码");
+			throw new GmairShopGlobalException("禁止修改admin的账号密码");
 		}
 
 		if (Objects.equals(1L,user.getUserId()) && user.getStatus()==0) {
-			throw new GmairShopBindException("admin用户不可以被禁用");
+			throw new GmairShopGlobalException("admin用户不可以被禁用");
 		}
 		sysUserService.updateUserAndUserRole(user);
 		return ResponseEntity.ok().build();

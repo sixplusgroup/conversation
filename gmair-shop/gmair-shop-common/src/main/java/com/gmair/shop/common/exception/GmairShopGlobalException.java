@@ -5,7 +5,7 @@ package com.gmair.shop.common.exception;
 import com.gmair.shop.common.enums.GmairHttpStatus;
 import org.springframework.http.HttpStatus;
 
-public class GmairShopBindException extends RuntimeException{
+public class GmairShopGlobalException extends RuntimeException{
 
 	/**
 	 *
@@ -21,7 +21,7 @@ public class GmairShopBindException extends RuntimeException{
 	/**
 	 * @param httpStatus http状态码
 	 */
-	public GmairShopBindException(GmairHttpStatus httpStatus) {
+	public GmairShopGlobalException(GmairHttpStatus httpStatus) {
 		super(httpStatus.getMsg());
 		this.httpStatusCode = httpStatus.value();
 	}
@@ -29,13 +29,13 @@ public class GmairShopBindException extends RuntimeException{
 	/**
 	 * @param httpStatus http状态码
 	 */
-	public GmairShopBindException(GmairHttpStatus httpStatus, String msg) {
+	public GmairShopGlobalException(GmairHttpStatus httpStatus, String msg) {
 		super(msg);
 		this.httpStatusCode = httpStatus.value();
 	}
 
 
-	public GmairShopBindException(String msg) {
+	public GmairShopGlobalException(String msg) {
 		super(msg);
 		this.httpStatusCode = HttpStatus.BAD_REQUEST.value();
 	}

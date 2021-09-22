@@ -5,7 +5,7 @@ package com.gmair.shop.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gmair.shop.bean.model.*;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.dao.TranscityMapper;
 import com.gmair.shop.dao.TransfeeMapper;
 import com.gmair.shop.dao.TransportMapper;
@@ -96,7 +96,7 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
 		for (TransfeeFree transfeeFree : transfeeFrees) {
 			List<Area> cityList = transfeeFree.getFreeCityList();
 			if (CollectionUtil.isEmpty(cityList)) {
-				throw new GmairShopBindException("请选择指定包邮城市");
+				throw new GmairShopGlobalException("请选择指定包邮城市");
 			}
 			// 当地址不为空时
 			for (Area area : cityList) {

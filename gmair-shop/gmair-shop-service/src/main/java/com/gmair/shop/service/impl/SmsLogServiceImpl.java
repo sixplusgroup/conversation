@@ -18,17 +18,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gmair.shop.bean.enums.SmsType;
 import com.gmair.shop.bean.model.SmsLog;
 import com.gmair.shop.common.bean.ALiDaYu;
-import com.gmair.shop.common.enums.GmairHttpStatus;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.Json;
 import com.gmair.shop.common.util.RedisUtil;
 import com.gmair.shop.dao.SmsLogMapper;
 import com.gmair.shop.service.SmsLogService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,7 +87,7 @@ public class SmsLogServiceImpl extends ServiceImpl<SmsLogMapper, SmsLog> impleme
                     .eq(SmsLog::getUserId, userId)
                     .eq(SmsLog::getType, smsType.value()));
             if (todaySendSmsNumber >= TODAY_MAX_SEND_VALID_SMS_NUMBER) {
-                throw new GmairShopBindException("今日发送短信验证码次数已达到上限");
+                throw new GmairShopGlobalException("今日发送短信验证码次数已达到上限");
             }
 
             // 将上一条验证码失效
@@ -111,7 +107,7 @@ public class SmsLogServiceImpl extends ServiceImpl<SmsLogMapper, SmsLog> impleme
         try {
             this.sendSms(mobile, smsType.getTemplateCode(), params);
         } catch (ClientException e) {
-            throw new GmairShopBindException("发送短信失败，请稍后再试");
+            throw new GmairShopGlobalException("发送短信失败，请稍后再试");
         }
 
 
@@ -126,7 +122,7 @@ public class SmsLogServiceImpl extends ServiceImpl<SmsLogMapper, SmsLog> impleme
             RedisUtil.expire(CHECK_VALID_CODE_NUM_PREFIX, 1800);
         }
         if (checkValidCodeNum >= TIMES_CHECK_VALID_CODE_NUM) {
-            throw new GmairShopBindException("验证码校验过频繁，请稍后再试");
+            throw new GmairShopGlobalException("验证码校验过频繁，请稍后再试");
         }
         SmsLog sms = new SmsLog();
         sms.setUserPhone(mobile);
@@ -184,7 +180,7 @@ public class SmsLogServiceImpl extends ServiceImpl<SmsLogMapper, SmsLog> impleme
         SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
         log.debug(Json.toJsonString(sendSmsResponse));
         if (sendSmsResponse.getCode() == null || !SEND_SMS_SUCCESS_FLAG.equals(sendSmsResponse.getCode())) {
-            throw new GmairShopBindException("发送短信失败，请稍后再试:" + sendSmsResponse.getMessage());
+            throw new GmairShopGlobalException("发送短信失败，请稍后再试:" + sendSmsResponse.getMessage());
         }
     }
 

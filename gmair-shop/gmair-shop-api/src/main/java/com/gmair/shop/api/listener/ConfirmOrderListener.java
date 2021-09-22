@@ -2,33 +2,24 @@
 
 package com.gmair.shop.api.listener;
 
-import com.google.common.collect.Lists;
 import com.gmair.shop.bean.app.dto.*;
 import com.gmair.shop.bean.app.param.OrderParam;
 import com.gmair.shop.bean.event.ConfirmOrderEvent;
-import com.gmair.shop.bean.event.ShopCartEvent;
 import com.gmair.shop.bean.model.Product;
 import com.gmair.shop.bean.model.Sku;
 import com.gmair.shop.bean.model.UserAddr;
 import com.gmair.shop.bean.order.ConfirmOrderOrder;
-import com.gmair.shop.bean.order.ShopCartEventOrder;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.Arith;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.ProductService;
 import com.gmair.shop.service.SkuService;
 import com.gmair.shop.service.TransportManagerService;
 import com.gmair.shop.service.UserAddrService;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
-import ma.glasnost.orika.MapperFacade;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 确认订单信息时的默认操作
@@ -75,10 +66,10 @@ public class ConfirmOrderListener {
             // 获取sku信息
             Sku sku = skuService.getSkuBySkuId(shopCartItem.getSkuId());
             if (product == null || sku == null) {
-                throw new GmairShopBindException("购物车包含无法识别的商品");
+                throw new GmairShopGlobalException("购物车包含无法识别的商品");
             }
             if (product.getStatus() != 1 || sku.getStatus() != 1) {
-                throw new GmairShopBindException("商品[" + sku.getProdName() + "]已下架");
+                throw new GmairShopGlobalException("商品[" + sku.getProdName() + "]已下架");
             }
 
             totalCount = shopCartItem.getProdCount() + totalCount;

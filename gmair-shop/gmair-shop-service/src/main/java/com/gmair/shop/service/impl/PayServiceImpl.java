@@ -11,7 +11,7 @@ import com.gmair.shop.bean.model.Order;
 import com.gmair.shop.bean.model.OrderSettlement;
 import com.gmair.shop.bean.app.param.PayParam;
 import com.gmair.shop.bean.pay.PayInfoDto;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.Arith;
 import com.gmair.shop.dao.OrderMapper;
 import com.gmair.shop.dao.OrderSettlementMapper;
@@ -97,11 +97,11 @@ public class PayServiceImpl implements PayService {
 
         // 订单已支付
         if (settlement.getPayStatus() == 1) {
-            throw new GmairShopBindException("订单已支付");
+            throw new GmairShopGlobalException("订单已支付");
         }
         // 修改订单结算信息
         if (orderSettlementMapper.updateToPay(payNo, settlement.getVersion()) < 1) {
-            throw new GmairShopBindException("结算信息已更改");
+            throw new GmairShopGlobalException("结算信息已更改");
         }
 
 

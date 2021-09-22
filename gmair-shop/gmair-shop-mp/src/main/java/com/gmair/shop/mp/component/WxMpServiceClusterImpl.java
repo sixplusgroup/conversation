@@ -1,7 +1,7 @@
 package com.gmair.shop.mp.component;
 
 import cn.hutool.http.HttpUtil;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import me.chanjar.weixin.common.WxType;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.error.WxError;
@@ -46,7 +46,7 @@ public class WxMpServiceClusterImpl extends WxMpServiceHttpClientImpl {
             }
 
             if (!doingUpdateAccessToken) {
-                throw new GmairShopBindException("服务器繁忙，请稍后再试");
+                throw new GmairShopGlobalException("服务器繁忙，请稍后再试");
             }
 
             if (!this.getWxMpConfigStorage().isAccessTokenExpired()) {

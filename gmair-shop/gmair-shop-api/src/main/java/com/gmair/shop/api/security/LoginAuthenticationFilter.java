@@ -69,7 +69,7 @@ public class LoginAuthenticationFilter extends AbstractAuthenticationProcessingF
         AppConnect appConnect = new AppConnect();
         appConnect.setAppId(App.MINI.value());
         try {
-
+            // 前端传来code, 访问wx的oauth2认证, wx服务器返回一些信息
             session = wxMaService.getUserService().getSessionInfo(code);
 
             loadedUser = gmairUserDetailsService.loadUserByAppIdAndBizUserId(App.MINI,session.getOpenid());
@@ -79,6 +79,7 @@ public class LoginAuthenticationFilter extends AbstractAuthenticationProcessingF
             if (session == null) {
                 throw new WxErrorExceptionBase("无法获取用户登陆信息");
             }
+            // 不存在用户就插入用户
             appConnect.setBizUserId(session.getOpenid());
             appConnect.setBizUnionid(session.getUnionid());
             gmairUserDetailsService.insertUserIfNecessary(appConnect);

@@ -8,12 +8,10 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -162,7 +160,7 @@ public class AddrController {
         String userId = SecurityUtils.getUser().getUserId();
         UserAddr userAddr = userAddrService.getUserAddrByUserId(addrId, userId);
         if (userAddr == null) {
-            throw new GmairShopBindException("该地址已被删除");
+            throw new GmairShopGlobalException("该地址已被删除");
         }
         return ResponseEntity.ok(mapperFacade.map(userAddr, UserAddrDto.class));
     }

@@ -3,7 +3,7 @@
 package com.gmair.shop.common.config;
 
 import com.baomidou.mybatisplus.core.injector.ISqlInjector;
-import com.baomidou.mybatisplus.extension.injector.LogicSqlInjector;
+//import com.baomidou.mybatisplus.extension.injector.LogicSqlInjector;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -39,11 +39,11 @@ public class MybatisPlusConfig {
      *
      * @return LogicSqlInjector
      */
-    @Bean
-    @ConditionalOnMissingBean
-    public ISqlInjector sqlInjector() {
-        return new LogicSqlInjector();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean
+//    public ISqlInjector sqlInjector() {
+//        return new LogicSqlInjector();
+//    }
 
     /**
      * 乐观锁插件

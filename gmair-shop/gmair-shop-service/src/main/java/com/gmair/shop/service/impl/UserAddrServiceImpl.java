@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gmair.shop.bean.model.UserAddr;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.dao.UserAddrMapper;
 import com.gmair.shop.service.UserAddrService;
 
@@ -31,7 +31,7 @@ public class UserAddrServiceImpl extends ServiceImpl<UserAddrMapper, UserAddr> i
 		userAddrMapper.removeDefaultUserAddr(userId);
 		int setCount = userAddrMapper.setDefaultUserAddr(addrId,userId);
 		if (setCount == 0) {
-			throw new GmairShopBindException("无法修改用户默认地址，请稍后再试");
+			throw new GmairShopGlobalException("无法修改用户默认地址，请稍后再试");
 		}
 	}
 

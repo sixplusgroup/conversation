@@ -10,8 +10,7 @@ import com.gmair.shop.common.util.PageParam;
 import com.gmair.shop.bean.model.Product;
 import com.gmair.shop.bean.model.Sku;
 import com.gmair.shop.bean.param.ProductParam;
-import com.gmair.shop.common.enums.GmairHttpStatus;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.Json;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.BasketService;
@@ -79,7 +78,7 @@ public class ProductController {
     public ResponseEntity<Product> info(@PathVariable("prodId") Long prodId) {
         Product prod = productService.getProductByProdId(prodId);
         if (!Objects.equals(prod.getShopId(), SecurityUtils.getSysUser().getShopId())) {
-            throw new GmairShopBindException("没有权限获取该商品规格信息");
+            throw new GmairShopGlobalException("没有权限获取该商品规格信息");
         }
         List<Sku> skuList = skuService.listByProdId(prodId);
         prod.setSkuList(skuList);
@@ -153,7 +152,7 @@ public class ProductController {
     public ResponseEntity<Void> delete(Long prodId) {
         Product dbProduct = productService.getProductByProdId(prodId);
         if (!Objects.equals(dbProduct.getShopId(), SecurityUtils.getSysUser().getShopId())) {
-            throw new GmairShopBindException("无法获取非本店铺商品信息");
+            throw new GmairShopGlobalException("无法获取非本店铺商品信息");
         }
         List<Sku> dbSkus = skuService.listByProdId(dbProduct.getProdId());
         // 删除商品
@@ -209,14 +208,14 @@ public class ProductController {
 
     private void checkParam(ProductParam productParam) {
         if (CollectionUtil.isEmpty(productParam.getTagList())) {
-            throw new GmairShopBindException("请选择产品分组");
+            throw new GmairShopGlobalException("请选择产品分组");
         }
 
         Product.DeliveryModeVO deliveryMode = productParam.getDeliveryModeVo();
         boolean hasDeliverMode = deliveryMode != null
                 && (deliveryMode.getHasShopDelivery() || deliveryMode.getHasUserPickUp());
         if (!hasDeliverMode) {
-            throw new GmairShopBindException("请选择配送方式");
+            throw new GmairShopGlobalException("请选择配送方式");
         }
         List<Sku> skuList = productParam.getSkuList();
         boolean isAllUnUse = true;
@@ -226,7 +225,7 @@ public class ProductController {
             }
         }
         if (isAllUnUse) {
-            throw new GmairShopBindException("至少要启用一种商品规格");
+            throw new GmairShopGlobalException("至少要启用一种商品规格");
         }
     }
 }

@@ -7,7 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gmair.shop.bean.model.User;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.dao.UserMapper;
 import com.gmair.shop.security.dao.AppConnectMapper;
 import com.gmair.shop.security.enums.App;
@@ -15,7 +15,6 @@ import com.gmair.shop.security.model.AppConnect;
 import com.gmair.shop.security.service.AppConnectService;
 import com.gmair.shop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +57,7 @@ public class AppConnectServiceImpl extends ServiceImpl<AppConnectMapper, AppConn
 		if (StrUtil.isBlank(user.getUserId())) {
 			if (userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getUserMobile, user.getUserMobile())) > 0) {
 				// 该电话号码已存在
-				throw new GmairShopBindException("该电话号码已存在");
+				throw new GmairShopGlobalException("该电话号码已存在");
 			}
 			String userId = IdUtil.simpleUUID();
 			user.setUserId(userId);

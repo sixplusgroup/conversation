@@ -42,8 +42,9 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                         "/swagger-resources/**",
                         "/captcha.jpg").permitAll()
                 .and()
-                .authorizeRequests()
-                .antMatchers("/**").authenticated();//配置所有访问控制，必须认证过后才可以访问
+                .authorizeRequests();
+//                .antMatchers("/**").authenticated();//配置所有访问控制，必须认证过后才可以访问
+
         // @formatter:on
     }
 

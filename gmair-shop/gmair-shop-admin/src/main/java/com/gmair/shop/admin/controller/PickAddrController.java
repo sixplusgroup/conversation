@@ -3,7 +3,6 @@
 package com.gmair.shop.admin.controller;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import javax.validation.Valid;
@@ -11,7 +10,7 @@ import javax.validation.Valid;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.gmair.shop.common.enums.GmairHttpStatus;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -88,7 +87,7 @@ public class PickAddrController {
 		PickAddr dbPickAddr = pickAddrService.getById(pickAddr.getAddrId());
 
 		if (!Objects.equals(dbPickAddr.getShopId(),SecurityUtils.getSysUser().getShopId())) {
-			throw new GmairShopBindException(GmairHttpStatus.UNAUTHORIZED);
+			throw new GmairShopGlobalException(GmairHttpStatus.UNAUTHORIZED);
 		}
 		pickAddrService.updateById(pickAddr);
 		return ResponseEntity.ok().build();

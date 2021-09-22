@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.gmair.shop.common.util.PageParam;
 import com.gmair.shop.bean.model.ProdTag;
 import com.gmair.shop.common.annotation.SysLog;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.ProdTagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class ProdTagController {
         // 查看是否相同的标签
         List<ProdTag> list = prodTagService.list(new LambdaQueryWrapper<ProdTag>().like(ProdTag::getTitle, prodTag.getTitle()));
         if (CollectionUtil.isNotEmpty(list)) {
-            throw new GmairShopBindException("标签名称已存在，不能添加相同的标签");
+            throw new GmairShopGlobalException("标签名称已存在，不能添加相同的标签");
         }
         prodTag.setIsDefault(0);
         prodTag.setProdCount(0L);
@@ -115,7 +115,7 @@ public class ProdTagController {
     public ResponseEntity<Boolean> removeById(@PathVariable Long id) {
         ProdTag prodTag = prodTagService.getById(id);
         if (prodTag.getIsDefault() != 0) {
-            throw new GmairShopBindException("默认标签不能删除");
+            throw new GmairShopGlobalException("默认标签不能删除");
         }
         prodTagService.removeProdTag();
         return ResponseEntity.ok(prodTagService.removeById(id));

@@ -8,7 +8,7 @@ import java.util.Objects;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gmair.shop.bean.model.Category;
 import com.gmair.shop.common.annotation.SysLog;
-import com.gmair.shop.service.BrandService;
 import com.gmair.shop.service.CategoryService;
-import com.gmair.shop.service.ProdPropService;
-
-import cn.hutool.core.collection.CollectionUtil;
-
 
 
 /**
@@ -79,7 +74,7 @@ public class CategoryController {
 		Category categoryName = categoryService.getOne(new LambdaQueryWrapper<Category>().eq(Category::getCategoryName,category.getCategoryName())
 				.eq(Category::getShopId,category.getShopId()));
 		if(categoryName != null){
-			throw new GmairShopBindException("类目名称已存在！");
+			throw new GmairShopGlobalException("类目名称已存在！");
 		}
 		categoryService.saveCategroy(category);
 		return ResponseEntity.ok().build();
@@ -99,7 +94,7 @@ public class CategoryController {
 		Category categoryName = categoryService.getOne(new LambdaQueryWrapper<Category>().eq(Category::getCategoryName,category.getCategoryName())
 				.eq(Category::getShopId,category.getShopId()).ne(Category::getCategoryId,category.getCategoryId()));
 		if(categoryName != null){
-			throw new GmairShopBindException("类目名称已存在！");
+			throw new GmairShopGlobalException("类目名称已存在！");
 		}
 		Category categoryDB = categoryService.getById(category.getCategoryId());
 		// 如果从下线改成正常，则需要判断上级的状态
@@ -107,7 +102,7 @@ public class CategoryController {
 			Category parentCategory = categoryService.getOne(new LambdaQueryWrapper<Category>().eq(Category::getCategoryId, category.getParentId()));
 			if(Objects.isNull(parentCategory) || Objects.equals(parentCategory.getStatus(),0)){
 				// 修改失败，上级分类不存在或者不为正常状态
-				throw new GmairShopBindException("修改失败，上级分类不存在或者不为正常状态");
+				throw new GmairShopGlobalException("修改失败，上级分类不存在或者不为正常状态");
 			}
 		}
 		categoryService.updateCategroy(category);

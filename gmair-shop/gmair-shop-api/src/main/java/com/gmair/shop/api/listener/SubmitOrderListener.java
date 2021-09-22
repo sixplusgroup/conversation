@@ -12,7 +12,7 @@ import com.gmair.shop.bean.enums.OrderStatus;
 import com.gmair.shop.bean.event.SubmitOrderEvent;
 import com.gmair.shop.bean.model.*;
 import com.gmair.shop.bean.order.SubmitOrderOrder;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.Arith;
 import com.gmair.shop.dao.*;
 import com.gmair.shop.security.util.SecurityUtils;
@@ -82,7 +82,7 @@ public class SubmitOrderListener {
         // 把订单地址保存到数据库
         UserAddrOrder userAddrOrder = mapperFacade.map(mergerOrder.getUserAddr(), UserAddrOrder.class);
         if (userAddrOrder == null) {
-            throw new GmairShopBindException("请填写收货地址");
+            throw new GmairShopGlobalException("请填写收货地址");
         }
         userAddrOrder.setUserId(userId);
         userAddrOrder.setCreateTime(now);
@@ -198,7 +198,7 @@ public class SubmitOrderListener {
 
             if (skuMapper.updateStocks(sku) == 0) {
                 skuService.removeSkuCacheBySkuId(key, sku.getProdId());
-                throw new GmairShopBindException("商品：[" + sku.getProdName() + "]库存不足");
+                throw new GmairShopGlobalException("商品：[" + sku.getProdName() + "]库存不足");
             }
         });
 
@@ -207,7 +207,7 @@ public class SubmitOrderListener {
 
             if (productMapper.updateStocks(prod) == 0) {
                 productService.removeProductCacheByProdId(prodId);
-                throw new GmairShopBindException("商品：[" + prod.getProdName() + "]库存不足");
+                throw new GmairShopGlobalException("商品：[" + prod.getProdName() + "]库存不足");
             }
         });
 
@@ -217,11 +217,11 @@ public class SubmitOrderListener {
     private Product checkAndGetProd(Long prodId, ShopCartItemDto shopCartItem, Map<Long, Product> prodStocksMap) {
         Product product = productService.getProductByProdId(prodId);
         if (product == null) {
-            throw new GmairShopBindException("购物车包含无法识别的商品");
+            throw new GmairShopGlobalException("购物车包含无法识别的商品");
         }
 
         if (product.getStatus() != 1) {
-            throw new GmairShopBindException("商品[" + product.getProdName() + "]已下架");
+            throw new GmairShopGlobalException("商品[" + product.getProdName() + "]已下架");
         }
 
         // 商品需要改变的库存
@@ -242,7 +242,7 @@ public class SubmitOrderListener {
 
         // -1为无限库存
         if (product.getTotalStocks() != -1 && mapProduct.getTotalStocks() > product.getTotalStocks()) {
-            throw new GmairShopBindException("商品：[" + product.getProdName() + "]库存不足");
+            throw new GmairShopGlobalException("商品：[" + product.getProdName() + "]库存不足");
         }
 
         return product;
@@ -253,15 +253,15 @@ public class SubmitOrderListener {
         // 获取sku信息
         Sku sku = skuService.getSkuBySkuId(skuId);
         if (sku == null) {
-            throw new GmairShopBindException("购物车包含无法识别的商品");
+            throw new GmairShopGlobalException("购物车包含无法识别的商品");
         }
 
         if (sku.getStatus() != 1) {
-            throw new GmairShopBindException("商品[" + sku.getProdName() + "]已下架");
+            throw new GmairShopGlobalException("商品[" + sku.getProdName() + "]已下架");
         }
         // -1为无限库存
         if (sku.getStocks() != -1 && shopCartItem.getProdCount() > sku.getStocks()) {
-            throw new GmairShopBindException("商品：[" + sku.getProdName() + "]库存不足");
+            throw new GmairShopGlobalException("商品：[" + sku.getProdName() + "]库存不足");
         }
 
         if (sku.getStocks() != -1) {

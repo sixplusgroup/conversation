@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gmair.shop.common.enums.GmairHttpStatus;
 
 import com.gmair.shop.security.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.gmair.shop.bean.enums.ProdPropRule;
 import com.gmair.shop.bean.model.ProdProp;
 import com.gmair.shop.bean.model.ProdPropValue;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.service.ProdPropService;
 import com.gmair.shop.service.ProdPropValueService;
 
@@ -98,7 +97,7 @@ public class SpecController {
     public ResponseEntity<Void> update(@Valid @RequestBody ProdProp prodProp) {
         ProdProp dbProdProp = prodPropService.getById(prodProp.getPropId());
         if (!Objects.equals(dbProdProp.getShopId(), SecurityUtils.getSysUser().getShopId())) {
-            throw new GmairShopBindException("没有权限获取该商品规格信息");
+            throw new GmairShopGlobalException("没有权限获取该商品规格信息");
         }
         prodProp.setRule(ProdPropRule.SPEC.value());
         prodProp.setShopId(SecurityUtils.getSysUser().getShopId());

@@ -43,7 +43,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints.authenticationManager(authenticationManager)  // 配置认证 manager
                 .tokenStore(tokenStore)// 从 token 中读取特定字段构成 Authentication
-                .tokenEnhancer(tokenEnhancer)
+                .tokenEnhancer(tokenEnhancer)// token增强, 加入额外信息
                 // refresh_token需要userDetailsService
                 .reuseRefreshTokens(false)
                 .userDetailsService(userDetailsService);

@@ -4,23 +4,19 @@ package com.gmair.shop.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.emoji.EmojiUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gmair.shop.bean.model.User;
 import com.gmair.shop.bean.param.UserRegisterParam;
-import com.gmair.shop.bean.vo.UserVO;
-import com.gmair.shop.common.exception.GmairShopBindException;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.RedisUtil;
 import com.gmair.shop.dao.UserMapper;
 import com.gmair.shop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  *
@@ -42,7 +38,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Boolean insertUser(UserRegisterParam uParam) {
         User mail = userMapper.getUserByUserMail(uParam.getUserMail());
         if (mail != null) {
-            throw new GmairShopBindException("账号已存在");
+            throw new GmairShopGlobalException("账号已存在");
         }
         Date now = new Date();
         User user = new User();
@@ -64,12 +60,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void validate(UserRegisterParam userRegisterParam, String checkRegisterSmsFlag) {
         if (StrUtil.isBlank(userRegisterParam.getCheckRegisterSmsFlag())) {
             // 验证码已过期，请重新发送验证码校验
-            throw new GmairShopBindException("验证码已过期，请重新发送验证码校验");
+            throw new GmairShopGlobalException("验证码已过期，请重新发送验证码校验");
         } else {
             String checkRegisterSmsFlagMobile = RedisUtil.get(checkRegisterSmsFlag);
             if (!Objects.equals(checkRegisterSmsFlagMobile, userRegisterParam.getMobile())) {
                 // 验证码已过期，请重新发送验证码校验
-                throw new GmairShopBindException("验证码已过期，请重新发送验证码校验");
+                throw new GmairShopGlobalException("验证码已过期，请重新发送验证码校验");
             }
         }
     }

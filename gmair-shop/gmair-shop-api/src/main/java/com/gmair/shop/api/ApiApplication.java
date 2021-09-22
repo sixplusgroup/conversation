@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.gmair.shop"})
 @EnableTransactionManagement
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 // extends SpringBootServletInitializer 使用外置的容器启动
 // 该部分注释亦可
 public class ApiApplication extends SpringBootServletInitializer{
