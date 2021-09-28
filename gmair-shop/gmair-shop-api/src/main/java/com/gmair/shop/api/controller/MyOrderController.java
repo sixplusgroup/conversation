@@ -90,14 +90,20 @@ public class MyOrderController {
         orderShopDto.setRemarks(order.getRemarks());
         orderShopDto.setStatus(order.getStatus());
 
+        orderShopDto.setIsNeedCashOfAll(order.getIsNeedCashOfAll());
+        orderShopDto.setIsNeedIntegralOfAll(order.getIsNeedIntegralOfAll());
+
         double total = 0.0;
         Integer totalNum = 0;
+        Integer totalIntegral = 0;
         for (OrderItemDto orderItem : orderShopDto.getOrderItemDtos()) {
             total = Arith.add(total, orderItem.getProductTotalAmount());
             totalNum += orderItem.getProdCount();
+            totalIntegral += orderItem.getIntegralTotalAmount();
         }
         orderShopDto.setTotal(total);
         orderShopDto.setTotalNum(totalNum);
+        orderShopDto.setTotalIntegral(totalIntegral);
 
         return ResponseEntity.ok(orderShopDto);
     }

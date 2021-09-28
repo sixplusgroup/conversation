@@ -61,11 +61,23 @@ public class ProductController {
     @GetMapping("/page")
     @PreAuthorize("@pms.hasPermission('prod:prod:page')")
     public ResponseEntity<IPage<Product>> page(ProductParam product, PageParam<Product> page, HttpServletRequest request) {
+        Boolean isNeedCash = false;
+        Boolean isNeedIntegral = false;
+        if(product.getPayWay()!=null){
+            if(product.getPayWay()==0) isNeedCash = true;
+            if(product.getPayWay()==1) isNeedIntegral = true;
+            if(product.getPayWay()==2){
+                isNeedCash = true;
+                isNeedIntegral = true;
+            }
+        }
         IPage<Product> products = productService.page(page,
                 new LambdaQueryWrapper<Product>()
                         .like(StrUtil.isNotBlank(product.getProdName()), Product::getProdName, product.getProdName())
                         .eq(Product::getShopId, SecurityUtils.getSysUser().getShopId())
                         .eq(product.getStatus() != null, Product::getStatus, product.getStatus())
+                        .eq(product.getPayWay()!=null&&isNeedCash,Product::getIsNeedCash,true)
+                        .eq(product.getPayWay()!=null&&isNeedIntegral,Product::getIsNeedIntegral,true)
                         .orderByDesc(Product::getPutawayTime));
         return ResponseEntity.ok(products);
     }

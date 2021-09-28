@@ -18,17 +18,21 @@
     <result column="product_total_amount" jdbcType="DECIMAL" property="productTotalAmount" />
     <result column="rec_time" jdbcType="TIMESTAMP" property="recTime" />
     <result column="comm_sts" jdbcType="INTEGER" property="commSts" />
+      <result column="is_need_cash" jdbcType="BOOLEAN" property="isNeedCash" />
+      <result column="is_need_integral" jdbcType="BOOLEAN" property="isNeedIntegral" />
+      <result column="integral_price" jdbcType="INTEGER" property="integralPrice" />
+      <result column="integral_total_amount" jdbcType="INTEGER" property="integralTotalAmount" />
   </resultMap>
 
 
   <insert id="insertBatch">
   	INSERT INTO `tz_order_item` (shop_id,order_number,prod_id,sku_id,sku_name,
   		prod_count,prod_name,pic,price,user_id,product_total_amount,rec_time,comm_sts,
-  	                             distribution_card_no,basket_date) VALUES
+  	                             distribution_card_no,basket_date,is_need_cash,is_need_integral,integral_price,integral_total_amount) VALUES
   	<foreach collection="list" item="orderItem" separator=",">
   		(#{orderItem.shopId},#{orderItem.orderNumber},#{orderItem.prodId},#{orderItem.skuId},#{orderItem.skuName},
   		#{orderItem.prodCount},#{orderItem.prodName},#{orderItem.pic},#{orderItem.price},#{orderItem.userId},#{orderItem.productTotalAmount},#{orderItem.recTime},#{orderItem.commSts},
-        #{orderItem.distributionCardNo},#{orderItem.basketDate})
+        #{orderItem.distributionCardNo},#{orderItem.basketDate},#{orderItem.isNeedCash},#{orderItem.isNeedIntegral},#{orderItem.integralPrice},#{orderItem.integralTotalAmount})
   	</foreach>
   </insert>
 

@@ -36,10 +36,10 @@ public class IntegralAddServiceImpl extends ServiceImpl<IntegralAddMapper, Integ
     @Override
     public void confirmIntegralById(Long integralAddId) {
         IntegralAdd integralAdd = integralAddMapper.selectById(integralAddId);
-        if(integralAdd.isConfirmed()){
+        if(integralAdd.getIsConfirmed()){
             throw new GmairShopGlobalException("this record is already confirmed!");
         }
-        integralAdd.setConfirmed(true);
+        integralAdd.setIsConfirmed(true);
         integralAdd.setConfirmedTime(new Date());
         integralAddMapper.updateById(integralAdd);
         membershipService.addIntegral(integralAdd.getMembershipUserId(),integralAdd.getIntegralValue());

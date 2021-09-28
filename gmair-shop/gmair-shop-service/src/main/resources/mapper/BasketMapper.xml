@@ -17,7 +17,7 @@
     </resultMap>
 
     <select id="getShopCartItems" resultType="com.gmair.shop.bean.app.dto.ShopCartItemDto">
-        SELECT tb.*,tb.basket_count as prod_count,tsd.shop_name,IFNULL(ts.pic,tp.pic)AS pic,ts.price,ts.ori_price,tp.brief,ts.properties,ts.prod_name,ts.sku_name
+        SELECT tb.*,tb.basket_count as prod_count,tsd.shop_name,IFNULL(ts.pic,tp.pic)AS pic,ts.price,ts.ori_price,tp.brief,ts.properties,ts.prod_name,ts.sku_name,ts.is_need_cash,ts.is_need_integral,ts.integral_price
         FROM tz_basket tb
         LEFT JOIN tz_shop_detail tsd ON tb.shop_id = tsd.shop_id
         LEFT JOIN tz_prod tp ON tb.prod_id = tp.prod_id

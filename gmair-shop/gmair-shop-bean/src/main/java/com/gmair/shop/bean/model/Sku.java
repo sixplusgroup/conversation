@@ -109,4 +109,19 @@ public class Sku implements Serializable {
      */
     private Integer isDelete;
 
+    /**
+     * 是否需要现金
+     */
+    private Boolean isNeedCash = true;
+
+    /**
+     * 是否需要积分
+     */
+    private Boolean isNeedIntegral = false;
+
+    /**
+     * 积分价格
+     */
+    private Integer integralPrice;
+
 }

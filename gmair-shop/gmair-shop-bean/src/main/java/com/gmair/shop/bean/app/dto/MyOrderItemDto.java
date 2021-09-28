@@ -25,6 +25,18 @@ public class MyOrderItemDto {
     @ApiModelProperty(value = "商品价格", required = true)
     private Double price;
 
+    @ApiModelProperty(value = "是否需要现金", required = true)
+    private Boolean isNeedCash = true;
+
+    @ApiModelProperty(value = "是否需要积分", required = true)
+    private Boolean isNeedIntegral = false;
+
+    @ApiModelProperty(value = "积分单价", required = true)
+    private Integer integralPrice;
+
+    @ApiModelProperty(value = "积分总额", required = true)
+    private Integer integralTotalAmount;
+
     @ApiModelProperty(value = "skuName", required = true)
     private String skuName;
 

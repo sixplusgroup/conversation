@@ -63,27 +63,6 @@ public class PayController {
         return result;
 
 
-        // try one
-//        return ResponseEntity.ok(new WxPayMpOrderResult("wx8888888888888888","1412000000","5K8264ILTKCH16CQ2502SI8ZNMTM67VS","Sign=WXPay","HMAC-SHA256","C380BEC2BFD727A4B6845133519F3AD6"));
-//        return ResponseEntity.ok((WxPayMpOrderResult)new Object());
-
-        // try two
-//        {
-//                "appId": "wx7c4e32274bf32ba4",
-//                "nonceStr": "5K8264ILTKCH16CQ2502SI8ZNMTM67VS",
-//                "packageValue": "Sign=WXPay",
-//                "paySign": "C380BEC2BFD727A4B6845133519F3AD6",
-//                "signType": "HMAC-SHA256",
-//                "timeStamp": "1412000000"
-//        }
-//        Map<String,String> map = new HashMap<>();
-//        map.put("appId", "wx7c4e32274bf32ba4");
-//        map.put("nonceStr", "5K8264ILTKCH16CQ2502SI8ZNMTM67VS");
-//        map.put("packageValue", "Sign=WXPay");
-//        map.put("paySign", "C380BEC2BFD727A4B6845133519F3AD6");
-//        map.put("signType","HMAC-SHA256");
-//        map.put("timeStamp", "1412000000");
-//        return ResponseEntity.ok(map);
     }
 
     /**

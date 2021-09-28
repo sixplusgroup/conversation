@@ -200,7 +200,10 @@ public class ShopCartController {
         double total = 0.0;
         int count = 0;
         double reduce = 0.0;
-        for (Long shopId : shopCartMap.keySet()) {
+        int integralTotol = 0;
+        Boolean isNeedCashOfAll = false;
+        Boolean isNeedIntegralOfAll = false;
+        for (Long shopId : shopCartMap.keySet()) {// 只有一个shop 循环一次
             //获取店铺的所有商品项
             List<ShopCartItemDto> shopCartItemDtoList = shopCartMap.get(shopId);
             // 构建每个店铺的购物车信息
@@ -217,6 +220,9 @@ public class ShopCartController {
                 for (ShopCartItemDto shopCartItem : shopCartItems) {
                     count = shopCartItem.getProdCount() + count;
                     total = Arith.add(shopCartItem.getProductTotalAmount(), total);
+                    integralTotol = shopCartItem.getIntegralTotalAmount()+integralTotol;
+                    isNeedCashOfAll |= shopCartItem.getIsNeedCash();
+                    isNeedIntegralOfAll |= shopCartItem.getIsNeedIntegral();
                 }
             }
         }
@@ -224,7 +230,10 @@ public class ShopCartController {
         shopCartAmountDto.setCount(count);
         shopCartAmountDto.setTotalMoney(total);
         shopCartAmountDto.setSubtractMoney(reduce);
+        shopCartAmountDto.setTotalIntegral(integralTotol);
         shopCartAmountDto.setFinalMoney(Arith.sub(shopCartAmountDto.getTotalMoney(), shopCartAmountDto.getSubtractMoney()));
+        shopCartAmountDto.setIsNeedCashOfAll(isNeedCashOfAll);
+        shopCartAmountDto.setIsNeedIntegralOfAll(isNeedIntegralOfAll);
 
         return ResponseEntity.ok(shopCartAmountDto);
     }

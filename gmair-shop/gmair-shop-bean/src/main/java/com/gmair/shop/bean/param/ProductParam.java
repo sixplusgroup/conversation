@@ -96,4 +96,23 @@ public class ProductParam {
      */
     private List<Long> tagList;
 
+    /**
+     * 是否需要现金
+     */
+    private Boolean isNeedCash = true;
+
+    /**
+     * 是否需要积分
+     */
+    private Boolean isNeedIntegral = false;
+
+    /**
+     * 积分价格
+     */
+    private Integer integralPrice;
+
+    /**
+     * 商品支付方式, 现金: 0, 积分: 1, 积分与现金: 2
+     */
+    private Integer payWay;
 }

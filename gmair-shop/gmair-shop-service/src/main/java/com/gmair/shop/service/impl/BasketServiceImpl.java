@@ -85,13 +85,15 @@ public class BasketServiceImpl extends ServiceImpl<BasketMapper, Basket> impleme
     @Override
     public List<ShopCartItemDto> getShopCartItems(String userId) {
         // 在这个类里面要调用这里的缓存信息，并没有使用aop，所以不使用注解
-        List<ShopCartItemDto> shopCartItemDtoList = cacheManagerUtil.getCache("ShopCartItems", userId);
-        if (shopCartItemDtoList != null) {
-            return shopCartItemDtoList;
-        }
+//        List<ShopCartItemDto> shopCartItemDtoList = cacheManagerUtil.getCache("ShopCartItems", userId);
+//        if (shopCartItemDtoList != null) {
+//            return shopCartItemDtoList;
+//        }
+        List<ShopCartItemDto> shopCartItemDtoList = null;
         shopCartItemDtoList = basketMapper.getShopCartItems(userId);
         for (ShopCartItemDto shopCartItemDto : shopCartItemDtoList) {
             shopCartItemDto.setProductTotalAmount(Arith.mul(shopCartItemDto.getProdCount(), shopCartItemDto.getPrice()));
+            shopCartItemDto.setIntegralTotalAmount(shopCartItemDto.getProdCount()*shopCartItemDto.getIntegralPrice());
         }
         cacheManagerUtil.putCache("ShopCartItems", userId, shopCartItemDtoList);
         return shopCartItemDtoList;
@@ -186,6 +188,10 @@ public class BasketServiceImpl extends ServiceImpl<BasketMapper, Basket> impleme
             ShopDetail shopDetail = shopDetailService.getShopDetailByShopId(orderItem.getShopId());
             shopCartItemDto.setShopId(shopDetail.getShopId());
             shopCartItemDto.setShopName(shopDetail.getShopName());
+            shopCartItemDto.setIsNeedCash(sku.getIsNeedCash());
+            shopCartItemDto.setIsNeedIntegral(sku.getIsNeedIntegral());
+            shopCartItemDto.setIntegralPrice(sku.getIntegralPrice());
+            shopCartItemDto.setIntegralTotalAmount(sku.getIntegralPrice()*orderItem.getProdCount());
             return Collections.singletonList(shopCartItemDto);
         }
         List<ShopCartItemDto> dbShopCartItems = getShopCartItems(userId);

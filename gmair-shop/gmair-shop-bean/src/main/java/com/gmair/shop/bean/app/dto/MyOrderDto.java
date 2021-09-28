@@ -23,5 +23,14 @@ public class MyOrderDto {
 	
 	@ApiModelProperty(value = "订单状态",required=true)
 	private Integer status;
+
+	@ApiModelProperty(value = "积分总额",required=true)
+	private Integer totalIntegral;
+
+	@ApiModelProperty(value = "是否需要现金",required=true)
+	private Boolean isNeedCashOfAll;
+
+	@ApiModelProperty(value = "是否需要积分",required=true)
+	private Boolean isNeedIntegralOfAll;
 	
 }

@@ -101,4 +101,25 @@ public class OrderItem implements Serializable {
      * 加入购物车的时间
      */
     private Date basketDate;
+
+
+    /**
+     * 是否需要现金
+     */
+    private Boolean isNeedCash = true;
+
+    /**
+     * 是否需要积分
+     */
+    private Boolean isNeedIntegral = false;
+
+    /**
+     * 单份价格
+     */
+    private Integer integralPrice;
+
+    /**
+     * 订单项积分总额
+     */
+    private Integer integralTotalAmount;
 }

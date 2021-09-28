@@ -130,6 +130,12 @@ public class SubmitOrderListener {
                     orderProdName.append(orderItem.getProdName()).append(",");
                     //推广员卡号
                     orderItem.setDistributionCardNo(shopCartItem.getDistributionCardNo());
+                    //积分相关
+                    orderItem.setIsNeedCash(sku.getIsNeedCash());
+                    orderItem.setIsNeedIntegral(sku.getIsNeedIntegral());
+                    orderItem.setIntegralPrice(sku.getIntegralPrice());
+                    orderItem.setIntegralTotalAmount(shopCartItem.getIntegralTotalAmount());
+
 
                     orderItems.add(orderItem);
 
@@ -170,8 +176,10 @@ public class SubmitOrderListener {
             order.setReduceAmount(Arith.sub(shopCartOrderDto.getTotal(), shopCartOrderDto.getActualTotal()));
             order.setFreightAmount(shopCartOrderDto.getTransfee());
             order.setRemarks(shopCartOrderDto.getRemarks());
-
+            order.setTotalIntegral(shopCartOrderDto.getTotalIntegral());
             order.setOrderItems(orderItems);
+            order.setIsNeedCashOfAll(shopCartOrderDto.getIsNeedCashOfAll());
+            order.setIsNeedIntegralOfAll(shopCartOrderDto.getIsNeedIntegralOfAll());
             event.getOrders().add(order);
             // 插入订单结算表
             OrderSettlement orderSettlement = new OrderSettlement();
@@ -182,6 +190,9 @@ public class SubmitOrderListener {
             orderSettlement.setPayAmount(order.getActualTotal());
             orderSettlement.setPayStatus(0);
             orderSettlement.setVersion(0);
+            orderSettlement.setPayIntegralAmount(order.getTotalIntegral());
+            orderSettlement.setIsNeedCashOfAll(order.getIsNeedCashOfAll());
+            orderSettlement.setIsNeedIntegralOfAll(order.getIsNeedIntegralOfAll());
             orderSettlementMapper.insert(orderSettlement);
 
         }

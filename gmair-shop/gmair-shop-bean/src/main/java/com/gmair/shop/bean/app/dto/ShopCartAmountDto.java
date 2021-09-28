@@ -21,4 +21,13 @@ public class ShopCartAmountDto {
 
     @ApiModelProperty("商品数量")
     private Integer count;
+
+    @ApiModelProperty("积分总额")
+    private Integer totalIntegral;
+
+    @ApiModelProperty("是否需要现金")
+    private Boolean isNeedCashOfAll;
+
+    @ApiModelProperty("是否需要积分")
+    private Boolean isNeedIntegralOfAll;
 }

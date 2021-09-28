@@ -37,6 +37,15 @@ public class OrderShopDto implements Serializable {
     @ApiModelProperty(value = "商品总值", required = true)
     private Double total;
 
+    @ApiModelProperty(value = "积分总值", required = true)
+    private Integer totalIntegral;
+
+    @ApiModelProperty(value = "是否需要现金",required=true)
+    private Boolean isNeedCashOfAll;
+
+    @ApiModelProperty(value = "是否需要积分",required=true)
+    private Boolean isNeedIntegralOfAll;
+
     @ApiModelProperty(value = "商品总数", required = true)
     private Integer totalNum;
 

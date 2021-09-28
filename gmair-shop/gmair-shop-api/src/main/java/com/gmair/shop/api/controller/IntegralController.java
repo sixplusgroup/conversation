@@ -59,7 +59,7 @@ public class IntegralController {
         }
         String userId = SecurityUtils.getUser().getUserId();
         IntegralAdd integralAdd = new IntegralAdd();
-        integralAdd.setConfirmed(false);
+        integralAdd.setIsConfirmed(false);
         integralAdd.setMembershipUserId(membershipService.getMembershipIdByUserId(userId));
         integralAdd.setIntegralValue(integral);
         integralAdd.setDescription(description);
@@ -79,7 +79,7 @@ public class IntegralController {
 
         // log the integral operation
         IntegralRecord integralRecord = new IntegralRecord();
-        integralRecord.setAdd(false);
+        integralRecord.setIsAdd(false);
         integralRecord.setDescription(description);
         integralRecord.setIntegralValue(integral);
         integralRecord.setMembershipUserId(membershipId);

@@ -176,4 +176,19 @@ public class ProductDto {
      */
     private String categoryName;
 
+    /**
+     * 是否需要现金
+     */
+    private Boolean isNeedCash;
+
+    /**
+     * 是否需要积分
+     */
+    private Boolean isNeedIntegral;
+
+    /**
+     * 积分价格
+     */
+    private Integer integralPrice;
+
 }

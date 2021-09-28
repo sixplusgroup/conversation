@@ -60,4 +60,6 @@ public interface ProductService extends IService<Product> {
     List<TagProductDto> tagProdList();
 
     IPage<ProductDto> collectionProds(PageParam page, String userId);
+
+    IPage<ProductDto> pageBymembershipProdsList(Page page);
 }

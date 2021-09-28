@@ -4,6 +4,7 @@ package com.gmair.shop.bean.app.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gmair.shop.common.serializer.json.ImgJsonSerializer;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -41,4 +42,8 @@ public class ShopCartItemDto extends ProductItemDto implements Serializable {
 
     @ApiModelProperty(value = "加入购物车的时间")
     private Date basketDate;
+
+
+
+
 }

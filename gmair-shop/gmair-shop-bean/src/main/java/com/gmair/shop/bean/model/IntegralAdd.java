@@ -19,7 +19,7 @@ public class IntegralAdd implements Serializable {
     private Long id;
     private Long membershipUserId;
     private Integer integralValue;
-    private boolean isConfirmed=false;
+    private Boolean isConfirmed=false;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime = new Date();
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

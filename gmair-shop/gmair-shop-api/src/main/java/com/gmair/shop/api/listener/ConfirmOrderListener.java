@@ -60,6 +60,12 @@ public class ConfirmOrderListener {
 
         double transfee = 0.0;
 
+        int totalIntegral = 0;
+
+        Boolean isNeedCashOfAll = false;
+
+        Boolean isNeedIntegralOfAll = false;
+
         for (ShopCartItemDto shopCartItem : event.getShopCartItems()) {
             // 获取商品信息
             Product product = productService.getProductByProdId(shopCartItem.getProdId());
@@ -74,6 +80,9 @@ public class ConfirmOrderListener {
 
             totalCount = shopCartItem.getProdCount() + totalCount;
             total = Arith.add(shopCartItem.getProductTotalAmount(), total);
+            totalIntegral = totalIntegral+shopCartItem.getIntegralTotalAmount();
+            isNeedCashOfAll |= shopCartItem.getIsNeedCash();
+            isNeedIntegralOfAll |= shopCartItem.getIsNeedIntegral();
             // 用户地址如果为空，则表示该用户从未设置过任何地址相关信息
             if (userAddr != null) {
                 // 每个产品的运费相加
@@ -85,6 +94,9 @@ public class ConfirmOrderListener {
             shopCartOrderDto.setTotal(total);
             shopCartOrderDto.setTotalCount(totalCount);
             shopCartOrderDto.setTransfee(transfee);
+            shopCartOrderDto.setTotalIntegral(totalIntegral);
+            shopCartOrderDto.setIsNeedCashOfAll(isNeedCashOfAll);
+            shopCartOrderDto.setIsNeedIntegralOfAll(isNeedIntegralOfAll);
         }
     }
 }

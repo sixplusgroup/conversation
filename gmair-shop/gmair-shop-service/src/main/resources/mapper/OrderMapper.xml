@@ -33,12 +33,20 @@
         <result column="order_number" jdbcType="VARCHAR" property="orderNumber"/>
         <result column="actual_total" jdbcType="DECIMAL" property="actualTotal"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="total_integral" jdbcType="INTEGER" property="totalIntegral"/>
+        <result column="is_need_cash_of_all" jdbcType="BOOLEAN" property="isNeedCashOfAll"/>
+        <result column="is_need_integral_of_all" jdbcType="BOOLEAN" property="isNeedIntegralOfAll"/>
         <collection property="orderItemDtos" ofType="com.gmair.shop.bean.app.dto.MyOrderItemDto">
             <result column="pic" jdbcType="VARCHAR" property="pic"/>
             <result column="prod_name" jdbcType="VARCHAR" property="prodName"/>
             <result column="prod_count" jdbcType="INTEGER" property="prodCount"/>
             <result column="price" jdbcType="DECIMAL" property="price"/>
             <result column="sku_name" jdbcType="VARCHAR" property="skuName"/>
+
+            <result column="is_need_cash" jdbcType="BOOLEAN" property="isNeedCash"/>
+            <result column="is_need_integral" jdbcType="BOOLEAN" property="isNeedIntegral"/>
+            <result column="integral_price" jdbcType="INTEGER" property="integralPrice"/>
+            <result column="integral_total_amount" jdbcType="INTEGER" property="integralTotalAmount"/>
         </collection>
     </resultMap>
 
@@ -139,6 +147,10 @@
         <result column="is_payed" jdbcType="BIT" property="isPayed"/>
         <result column="delete_status" jdbcType="INTEGER" property="deleteStatus"/>
         <result column="refund_sts" jdbcType="INTEGER" property="refundSts"/>
+
+        <result column="total_integral" jdbcType="INTEGER" property="totalIntegral"/>
+        <result column="is_need_cash_of_all" jdbcType="BOOLEAN" property="isNeedCashOfAll"/>
+        <result column="is_need_integral_of_all" jdbcType="BOOLEAN" property="isNeedIntegralOfAll"/>
         <association property="userAddrOrder" javaType="com.gmair.shop.bean.model.UserAddrOrder">
             <id column="addr_order_id" jdbcType="BIGINT" property="addrOrderId"/>
             <result column="province" jdbcType="VARCHAR" property="province"/>
@@ -163,6 +175,13 @@
             <result column="product_total_amount" jdbcType="DECIMAL" property="productTotalAmount"/>
             <result column="rec_time" jdbcType="TIMESTAMP" property="recTime"/>
             <result column="comm_sts" jdbcType="INTEGER" property="commSts"/>
+
+            <result column="is_need_cash" jdbcType="BOOLEAN" property="isNeedCash"/>
+            <result column="is_need_integral" jdbcType="BOOLEAN" property="isNeedIntegral"/>
+            <result column="integral_price" jdbcType="INTEGER" property="integralPrice"/>
+            <result column="integral_total_amount" jdbcType="INTEGER" property="integralTotalAmount"/>
+
+
         </collection>
     </resultMap>
 
@@ -308,7 +327,7 @@
     </select>
 
     <select id="listMyOrderByUserIdAndStatus" resultMap="MyOrderMap">
-        SELECT o.actual_total,oi.pic,oi.price,oi.prod_name,oi.sku_name,oi.prod_count,o.status,o.order_number
+        SELECT o.actual_total,oi.pic,oi.price,oi.prod_name,oi.sku_name,oi.prod_count,o.status,o.order_number,o.total_integral,o.is_need_cash_of_all,o.is_need_integral_of_all,oi.is_need_integral,oi.is_need_cash,oi.integral_price,oi.integral_total_amount
         FROM (
         SELECT * FROM tz_order temp
         WHERE temp.user_id = #{userId} and temp.delete_status = 0

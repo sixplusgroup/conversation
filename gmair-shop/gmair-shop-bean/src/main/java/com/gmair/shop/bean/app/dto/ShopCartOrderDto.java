@@ -29,6 +29,9 @@ public class ShopCartOrderDto implements Serializable{
     @ApiModelProperty(value = "商品总数", required = true)
     private Integer totalCount;
 
+    @ApiModelProperty(value = "积分总值", required = true)
+    private Integer totalIntegral=0;
+
     @ApiModelProperty(value = "运费", required = true)
     private Double transfee;
 
@@ -52,4 +55,11 @@ public class ShopCartOrderDto implements Serializable{
 
     @ApiModelProperty(value = "订单编号", required = true)
     private String orderNumber;
+
+
+    @ApiModelProperty("是否需要现金")
+    private Boolean isNeedCashOfAll;
+
+    @ApiModelProperty("是否需要积分")
+    private Boolean isNeedIntegralOfAll;
 }

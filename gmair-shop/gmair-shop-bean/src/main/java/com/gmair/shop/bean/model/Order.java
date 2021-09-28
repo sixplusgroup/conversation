@@ -9,6 +9,7 @@ import java.util.List;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -53,6 +54,11 @@ public class Order implements Serializable {
      * 实际总值
      */
     private Double actualTotal;
+
+    /**
+     * Order的积分总额, OrderItem的叫integralTotalAmount;
+     */
+    private Integer totalIntegral;
 
     /**
      * 支付方式 1 微信支付 2 支付宝
@@ -166,6 +172,18 @@ public class Order implements Serializable {
      * 优惠总额
      */
     private Double reduceAmount;
+
+
+    /**
+     * 是否需要现金
+     */
+    private Boolean isNeedCashOfAll;
+
+    /**
+     * 是否需要积分
+     */
+    private Boolean isNeedIntegralOfAll;
+
 
     /**
      * 店铺名称

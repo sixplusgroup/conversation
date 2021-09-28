@@ -6,6 +6,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gmair.shop.bean.app.dto.ProductDto;
@@ -21,6 +22,7 @@ import com.gmair.shop.dao.ProductMapper;
 import com.gmair.shop.dao.SkuMapper;
 import com.gmair.shop.service.AttachFileService;
 import com.gmair.shop.service.ProductService;
+import ma.glasnost.orika.MapperFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private AttachFileService attachFileService;
     @Autowired
     private ProdTagReferenceMapper prodTagReferenceMapper;
+    @Autowired
+    private MapperFacade mapperFacade;
 
     private static final Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
 
@@ -200,5 +204,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return productMapper.collectionProds(page, userId);
     }
 
-
+    @Override
+    public IPage<ProductDto> pageBymembershipProdsList(Page page) {
+        IPage<Product> prodsList = productMapper.selectPage(page,new LambdaQueryWrapper<Product>().eq(Product::getStatus,1).eq(Product::getIsNeedIntegral,true));
+        IPage<ProductDto> prodDtosList = new Page<>();
+        prodDtosList.setRecords(mapperFacade.mapAsList(prodsList.getRecords(),ProductDto.class));
+        prodDtosList.setCurrent(prodsList.getCurrent());
+        prodDtosList.setSize(prodsList.getSize());
+        prodDtosList.setTotal(prodsList.getTotal());
+        prodDtosList.setPages(prodsList.getPages());
+        return prodDtosList;
+    }
 }

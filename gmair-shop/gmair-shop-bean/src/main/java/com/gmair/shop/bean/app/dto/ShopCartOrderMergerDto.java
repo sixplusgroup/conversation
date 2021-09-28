@@ -24,6 +24,9 @@ public class ShopCartOrderMergerDto implements Serializable{
     @ApiModelProperty(value = "商品总数", required = true)
     private Integer totalCount;
 
+    @ApiModelProperty(value = "积分总值", required = true)
+    private Integer totalIntegral;
+
     @ApiModelProperty(value = "订单优惠金额(所有店铺优惠金额相加)", required = true)
     private Double orderReduce;
 
@@ -35,4 +38,11 @@ public class ShopCartOrderMergerDto implements Serializable{
 
     @ApiModelProperty(value = "整个订单可以使用的优惠券列表", required = true)
     private List<CouponOrderDto> coupons;
+
+
+    @ApiModelProperty("是否需要现金")
+    private Boolean isNeedCashOfAll;
+
+    @ApiModelProperty("是否需要积分")
+    private Boolean isNeedIntegralOfAll;
 }

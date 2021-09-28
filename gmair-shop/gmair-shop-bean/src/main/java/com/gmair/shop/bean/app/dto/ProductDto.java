@@ -94,5 +94,20 @@ public class ProductDto {
 
     public static interface WithContent extends WithNoContent{}
 
+    /**
+     * 是否需要现金
+     */
+    private Boolean isNeedCash = true;
+
+    /**
+     * 是否需要积分
+     */
+    private Boolean isNeedIntegral = false;
+
+    /**
+     * 积分价格
+     */
+    private Integer integralPrice;
+
 
 }

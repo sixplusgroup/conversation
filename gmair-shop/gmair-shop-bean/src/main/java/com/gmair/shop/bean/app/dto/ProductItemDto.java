@@ -57,4 +57,18 @@ public class ProductItemDto implements Serializable {
 
 	@ApiModelProperty("参与满减活动列表")
 	private List<DiscountDto> discounts = new ArrayList<>();
+
+	@ApiModelProperty(value = "是否需要现金")
+	private Boolean isNeedCash = true;
+
+
+	@ApiModelProperty(value = "是否需要积分")
+	private Boolean isNeedIntegral = false;
+
+
+	@ApiModelProperty(value = "积分价格")
+	private Integer integralPrice;
+
+	@ApiModelProperty(value="积分总额")
+	private Integer integralTotalAmount;
 }

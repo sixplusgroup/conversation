@@ -47,7 +47,7 @@ public class IntegralController {
         // log integral operation
         IntegralAdd integralAdd = integralAddService.getById(integralAddId);
         IntegralRecord integralRecord = new IntegralRecord();
-        integralRecord.setAdd(true);
+        integralRecord.setIsAdd(true);
         integralRecord.setDescription(integralAdd.getDescription());
         integralRecord.setIntegralValue(integralAdd.getIntegralValue());
         integralRecord.setMembershipUserId(integralAdd.getMembershipUserId());

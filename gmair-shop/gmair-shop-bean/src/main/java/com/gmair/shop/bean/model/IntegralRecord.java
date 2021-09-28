@@ -18,7 +18,7 @@ public class IntegralRecord {
     private Long id;
     private Long membershipUserId;
     private Integer integralValue;
-    private boolean isAdd = false;
+    private Boolean isAdd = false;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime = new Date();
     private String description;

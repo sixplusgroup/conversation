@@ -44,6 +44,22 @@ public class OrderSettlement implements Serializable {
     private Double payAmount;
 
     /**
+     * 支付积分
+     */
+    private Integer payIntegralAmount;
+
+    /**
+     * 是否需要现金
+     */
+    private Boolean isNeedCashOfAll;
+
+    /**
+     * 是否需要积分
+     */
+    private Boolean isNeedIntegralOfAll;
+
+
+    /**
      * 用户ID
      */
 

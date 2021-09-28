@@ -85,8 +85,11 @@ public class OrderController {
 
         double actualTotal = 0.0;
         double total = 0.0;
+        int totalIntegral = 0;
         int totalCount = 0;
         double orderReduce = 0.0;
+        Boolean isNeedCashOfAll = false;
+        Boolean isNeedIntegralOfAll = false;
 //        List<CouponOrderDto> coupons = new ArrayList<>();
         for (ShopCartDto shopCart : shopCarts) {
 
@@ -94,7 +97,6 @@ public class OrderController {
             ShopCartOrderDto shopCartOrder = new ShopCartOrderDto();
             shopCartOrder.setShopId(shopCart.getShopId());
             shopCartOrder.setShopName(shopCart.getShopName());
-
 
             List<ShopCartItemDiscountDto> shopCartItemDiscounts = shopCart.getShopCartItemDiscounts();
 
@@ -113,6 +115,9 @@ public class OrderController {
             total = Arith.add(total,shopCartOrder.getTotal());
             totalCount = totalCount + shopCartOrder.getTotalCount();
             orderReduce = Arith.add(orderReduce,shopCartOrder.getShopReduce());
+            totalIntegral = totalIntegral + shopCartOrder.getTotalIntegral();
+            isNeedCashOfAll |= shopCartOrder.getIsNeedCashOfAll();
+            isNeedIntegralOfAll |= shopCartOrder.getIsNeedIntegralOfAll();
             shopCartOrders.add(shopCartOrder);
 
 
@@ -123,7 +128,9 @@ public class OrderController {
         shopCartOrderMergerDto.setTotalCount(totalCount);
         shopCartOrderMergerDto.setShopCartOrders(shopCartOrders);
         shopCartOrderMergerDto.setOrderReduce(orderReduce);
-
+        shopCartOrderMergerDto.setTotalIntegral(totalIntegral);
+        shopCartOrderMergerDto.setIsNeedCashOfAll(isNeedCashOfAll);
+        shopCartOrderMergerDto.setIsNeedIntegralOfAll(isNeedIntegralOfAll);
         orderService.putConfirmOrderCache(userId,shopCartOrderMergerDto);
 
         return ResponseEntity.ok(shopCartOrderMergerDto);
@@ -136,7 +143,7 @@ public class OrderController {
     @ApiOperation(value = "提交订单，返回支付流水号", notes = "根据传入的参数判断是否为购物车提交订单，同时对购物车进行删除，用户开始进行支付")
     public ResponseEntity<OrderNumbersDto> submitOrders(@Valid @RequestBody SubmitOrderParam submitOrderParam) {
         String userId = SecurityUtils.getUser().getUserId();
-        ShopCartOrderMergerDto mergerOrder = orderService.getConfirmOrderCache(userId);
+        ShopCartOrderMergerDto mergerOrder = orderService.getConfirmOrderCache(userId);//缓存, 未涉及数据库
         if (mergerOrder == null) {
             throw new GmairShopGlobalException("订单已过期，请重新下单");
         }
