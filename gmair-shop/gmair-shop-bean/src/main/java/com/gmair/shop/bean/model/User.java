@@ -126,4 +126,14 @@ public class User implements Serializable {
      */
     private Integer score;
 
+
+    /**
+     * 国家编号
+     */
+    private String countryCode;
+
+    /**
+     * 用户唯一标识
+     */
+    private String consumerId;
 }

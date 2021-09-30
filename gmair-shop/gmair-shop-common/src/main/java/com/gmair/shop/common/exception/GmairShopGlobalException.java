@@ -9,8 +9,7 @@ public class GmairShopGlobalException extends RuntimeException{
 
 	/**
 	 *
-	 */
-	private static final long serialVersionUID = -4137688758944857209L;
+	 */	private static final long serialVersionUID = -4137688758944857209L;
 
 	/**
 	 * http状态码

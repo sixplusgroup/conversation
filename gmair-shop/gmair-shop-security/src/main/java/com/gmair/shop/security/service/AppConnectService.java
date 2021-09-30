@@ -18,6 +18,6 @@ public interface AppConnectService extends IService<AppConnect> {
 
 	User registerOrBindUser(User user, AppConnect appConnect, Integer appId);
 
-
+	AppConnect getByUserId(String userId, App app);
 
 }

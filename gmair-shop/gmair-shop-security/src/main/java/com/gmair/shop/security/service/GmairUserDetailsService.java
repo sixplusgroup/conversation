@@ -43,4 +43,11 @@ public interface GmairUserDetailsService extends UserDetailsService {// 两个�
 	User loadUserByMobileOrUserName(String mobileOrUserName, Integer loginType);
 
 	GmairUser getGmairUser(Integer appId, User user, String bizUserId);
+
+	void deleteSessionkey(String bizUserId);
+
+	String setOrGetSessionkey(String bizUserId,String sessionKey);
+
+
+
 }

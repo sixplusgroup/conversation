@@ -52,6 +52,14 @@ public class AppConnectServiceImpl extends ServiceImpl<AppConnectMapper, AppConn
 	}
 
 	@Override
+	@Cacheable(cacheNames = "AppConnect", key = "#app.value() + ':' + #userId")
+	public AppConnect getByUserId(String userId, App app) {
+		return appConnectMapper.getByUserId(userId, app.value());
+	}
+
+
+
+	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public User registerOrBindUser(User user, AppConnect appConnect, Integer appId) {
 		if (StrUtil.isBlank(user.getUserId())) {

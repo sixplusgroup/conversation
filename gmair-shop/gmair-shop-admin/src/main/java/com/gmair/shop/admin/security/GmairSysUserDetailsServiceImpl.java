@@ -20,6 +20,7 @@ import com.gmair.shop.sys.model.SysUser;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class GmairSysUserDetailsServiceImpl implements GmairUserDetailsService {
-	final String me = "GmairSysUserDetailsServiceImpl";
+
 	private final SysMenuMapper sysMenuMapper;
 	private final SysUserMapper sysUserMapper;
 	private final CacheManagerUtil cacheManagerUtil;
@@ -126,4 +127,16 @@ public class GmairSysUserDetailsServiceImpl implements GmairUserDetailsService {
     public GmairUser getGmairUser(Integer appId, User user, String bizUserId) {
         return null;
     }
+
+	@Override
+	public void deleteSessionkey(String bizUserId) {
+
+	}
+
+	@Override
+	public String setOrGetSessionkey(String bizUserId, String sessionKey) {
+		return null;
+	}
+
+
 }

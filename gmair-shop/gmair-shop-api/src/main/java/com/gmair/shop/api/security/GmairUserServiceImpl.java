@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -91,7 +92,8 @@ public class GmairUserServiceImpl implements GmairUserDetailsService {
 	@RedisLock(lockName = "insertUser", key = "#appConnect.appId + ':' + #appConnect.bizUserId")
 	@Caching(evict = {
 			@CacheEvict(cacheNames = "gmair_user", key = "#appConnect.appId + ':' + #appConnect.bizUserId"),
-			@CacheEvict(cacheNames = "AppConnect", key = "#appConnect.appId + ':' + #appConnect.bizUserId")
+			@CacheEvict(cacheNames = "AppConnect", key = "#appConnect.appId + ':' + #appConnect.bizUserId"),
+			@CacheEvict(cacheNames = "AppConnect", key = "#appConnect.appId + ':' + #appConnect.userId")
 	})
 	public void insertUserIfNecessary(AppConnect appConnect) {
 		// 进入锁后再重新判断一遍用户是否创建
@@ -177,4 +179,18 @@ public class GmairUserServiceImpl implements GmairUserDetailsService {
 		gmairUser.setPassword(user.getLoginPassword());
 		return gmairUser;
 	}
+
+	@Override
+	@CacheEvict(cacheNames = "SessionKey", key = "#bizUserId")
+	public void deleteSessionkey(String bizUserId) {
+
+	}
+
+	@Override
+	@Cacheable(cacheNames = "SessionKey", key = "#bizUserId")
+	public String setOrGetSessionkey(String bizUserId, String sessionKey) {
+		return sessionKey;
+	}
+
+
 }

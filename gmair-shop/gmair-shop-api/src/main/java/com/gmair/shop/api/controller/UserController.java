@@ -2,10 +2,20 @@
 
 package com.gmair.shop.api.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.hutool.core.util.StrUtil;
+import com.gmair.shop.bean.app.param.UserPhoneParam;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.CacheManagerUtil;
 import com.gmair.shop.security.enums.App;
+import com.gmair.shop.security.model.AppConnect;
+import com.gmair.shop.security.service.AppConnectService;
+import com.gmair.shop.security.service.GmairUserDetailsService;
 import com.gmair.shop.security.util.SecurityUtils;
+import com.gmair.shop.service.feign.UserFeignService;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResultData;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
@@ -40,6 +50,14 @@ public class UserController {
 	private final CacheManagerUtil cacheManagerUtil;
 
 	private final ConsumerTokenServices consumerTokenServices;
+
+	private final AppConnectService appConnectService;
+
+	private final GmairUserDetailsService gmairUserDetailsService;
+
+	private final WxMaService wxMaService;
+
+	private final UserFeignService userFeignService;
 	/**
 	 * 查看用户接口
 	 */
@@ -73,6 +91,44 @@ public class UserController {
 	public Boolean removeToken(HttpServletRequest httpRequest){
 		String authorization = httpRequest.getHeader("authorization");
 		String token = authorization.replace("bearer", "");
+		String userId = SecurityUtils.getUser().getUserId();
+		AppConnect appConnect =appConnectService.getByUserId(userId,App.MINI);
+		gmairUserDetailsService.deleteSessionkey(appConnect.getBizUserId());
 		return consumerTokenServices.revokeToken(token);
+	}
+
+	/**
+	 * set user's phone number
+	 **/
+	@PutMapping("/setUserPhone")
+	public ResponseEntity<Void> setUserPhone(@RequestBody UserPhoneParam userPhoneParam){
+		String userId = SecurityUtils.getUser().getUserId();
+		AppConnect appConnect =appConnectService.getByUserId(userId,App.MINI);
+		String sessionKey = gmairUserDetailsService.setOrGetSessionkey(appConnect.getBizUserId(),"");
+		WxMaPhoneNumberInfo phoneNoInfo;
+		try{
+			phoneNoInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, userPhoneParam.getEncryptedData(), userPhoneParam.getIv());
+		}catch (Exception e){
+			throw new GmairShopGlobalException("手机号获取失败");
+			// if there throw a Exception, the below code can't be run
+		}
+
+		if(phoneNoInfo==null||StrUtil.isBlank(phoneNoInfo.getPhoneNumber())||StrUtil.isBlank(phoneNoInfo.getCountryCode())){
+			throw new GmairShopGlobalException("绑定手机号失败");
+		}
+
+		User user = new User();
+		user.setUserId(userId);
+		user.setUserMobile(phoneNoInfo.getPhoneNumber());
+		user.setCountryCode(phoneNoInfo.getCountryCode());
+
+		// get consumer_id from module auth-consumer
+		ResultData resultData = userFeignService.getConsumerIdByPhone(user.getUserMobile());
+		if(resultData.getResponseCode()!= ResponseCode.RESPONSE_OK){
+			throw new GmairShopGlobalException("绑定手机号失败");
+		}
+		user.setConsumerId((String)resultData.getData());
+		userService.updateById(user);
+		return ResponseEntity.ok().build();
 	}
 }

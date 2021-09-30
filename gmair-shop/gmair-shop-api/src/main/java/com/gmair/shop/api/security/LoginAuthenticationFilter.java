@@ -13,6 +13,7 @@ import com.gmair.shop.security.exception.WxErrorExceptionBase;
 import com.gmair.shop.security.model.AppConnect;
 import com.gmair.shop.security.entity.GmairUser;
 import com.gmair.shop.security.service.GmairUserDetailsService;
+import com.gmair.shop.security.util.SecurityUtils;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -90,6 +91,9 @@ public class LoginAuthenticationFilter extends AbstractAuthenticationProcessingF
         }
         MiniAppAuthenticationToken result = new MiniAppAuthenticationToken(loadedUser, authentication.getCredentials());
         result.setDetails(authentication.getDetails());
+        gmairUserDetailsService.deleteSessionkey(session.getOpenid());
+        gmairUserDetailsService.setOrGetSessionkey(session.getOpenid(),session.getSessionKey());
+
         return result;
     }
 

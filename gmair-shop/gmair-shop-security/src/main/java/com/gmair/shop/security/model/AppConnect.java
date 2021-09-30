@@ -3,13 +3,14 @@
 package com.gmair.shop.security.model;
 
 
+import java.io.Serializable;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 @Data
 @TableName("tz_app_connect")
-public class AppConnect {
+public class AppConnect implements Serializable {
     /**
      * id
      */
