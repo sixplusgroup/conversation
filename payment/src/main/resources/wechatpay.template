@@ -1,3 +1,11 @@
-app_id=
-merchant_id=
-key=
+#oa Official Account
+pay.oa.appId=OfficialAccountTest
+pay.oa.merchantId=OfficialAccountTest
+pay.oa.key=OfficialAccountTest
+pay.oa.notifyUrl=OfficialAccountTest
+
+#mp mimi program
+pay.mp.appId=MimiProgramTest
+pay.mp.merchantId=MimiProgramTest
+pay.mp.key=MimiProgramTest
+pay.mp.notifyUrl=OfficialAccountTest

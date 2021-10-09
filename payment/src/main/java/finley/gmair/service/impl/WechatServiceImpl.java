@@ -1,9 +1,11 @@
 package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import finley.gmair.config.PayConfig;
 import finley.gmair.dao.ConfigurationDao;
 import finley.gmair.dao.ReturnInfoDao;
 import finley.gmair.dao.TradeDao;
+import finley.gmair.enums.PayClientType;
 import finley.gmair.model.payment.Configuration;
 import finley.gmair.model.payment.ReturnInfo;
 import finley.gmair.model.payment.TradeState;
@@ -16,36 +18,32 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @ClassName: WechatService
  * @Description: TODO
- * @Author fan
+ * @Author fan, Joby
  * @Date 2019/7/23 4:28 PM
  */
+
 @Service
-@PropertySource({"classpath:wechatpay.properties"})
 public class WechatServiceImpl implements WechatService {
 
     private static Logger logger = Logger.getLogger(WechatServiceImpl.class);
 
-    @Value("${app_id}")
-    private String appId;
-
-    @Value("${merchant_id}")
-    private String merchantId;
-
-    @Value("${key}")
-    private String key;
-
-    private String environment;
-    private String sandboxKey;
+    @Autowired
+    private PayConfig payConfig;
 
     @Autowired
     private TradeDao tradeDao;
@@ -59,8 +57,49 @@ public class WechatServiceImpl implements WechatService {
     @Autowired
     private OrderService orderService;
 
+    private String environment;
+    private String sandboxKey;
+
+//    private String appId;
+//
+//    private String merchantId;
+//
+//    private String key;
+//
+//    private String notify_url;
+//
+//    @PostConstruct
+//    public void initPayConfig(){
+//        appId = payConfig.getOa().getAppId();
+//        merchantId = payConfig.getOa().getMerchantId();
+//        key = payConfig.getOa().getKey();
+//        notify_url = payConfig.getOa().getNotifyUrl();
+//    }
+
+
     @Override
-    public ResultData payCreate(String orderId, String openId, String money, String ipAddress, String body) {
+    public ResultData payCreate(String orderId, String openId, String money, String ipAddress, String body,String payClient) {
+        // select pay config by payClient
+        String appId = payConfig.getOa().getAppId();
+        String merchantId =payConfig.getOa().getMerchantId();
+        String key = payConfig.getOa().getKey();
+        String notify_url = payConfig.getOa().getNotifyUrl();
+        Integer payClientNum = 0;
+        if(payClient.equals(PayClientType.OFFICIALACCOUNT.name())){
+            appId = payConfig.getOa().getAppId();
+            merchantId = payConfig.getOa().getMerchantId();
+            key = payConfig.getOa().getKey();
+            notify_url = payConfig.getOa().getNotifyUrl();
+            payClientNum = 0;
+        }else if(payClient.equals(PayClientType.SHOPMP.name())){
+            appId = payConfig.getMp().getAppId();
+            merchantId = payConfig.getMp().getMerchantId();
+            key = payConfig.getMp().getKey();
+            notify_url = payConfig.getMp().getNotifyUrl();
+            payClientNum = 1;
+        }
+
+
 
         ResultData result = new ResultData();
 
@@ -79,8 +118,7 @@ public class WechatServiceImpl implements WechatService {
         String nonce_str=UUID.randomUUID().toString().replace("-", "");
         //String body="果麦新风-甲醛检测";
         String spbill_create_ip=ipAddress;
-        String notify_url="https://microservice.gmair.net/payment/bill/notify";
-        String trade_type="JSAPI";//小程序
+        String trade_type="JSAPI";//JSAPI支付（或小程序支付）
         String total_fee=money;//订单总结额，单位为分
         String out_trade_no=orderId;//订单号
         //非必传参数
@@ -168,7 +206,7 @@ public class WechatServiceImpl implements WechatService {
             trade.setTradeOpenId(openId);
             trade.setTradeStartTime(new Timestamp(System.currentTimeMillis()));
             trade.setTradeState(TradeState.UNPAYED);
-
+            trade.setPayClient(payClientNum);
             String return_code = respMap.get("return_code");
             if ("SUCCESS".equals(return_code)) {
                 if (respMap.containsKey("err_code_des") && !respMap.get("err_code_des").toLowerCase().equals("ok")
@@ -218,7 +256,23 @@ public class WechatServiceImpl implements WechatService {
     }
 
     @Override
-    public String payNotify(String notifyXml) {
+    public String payNotify(String notifyXml,String payClient) {
+        // select pay config by payClient
+        String appId = payConfig.getOa().getAppId();
+        String merchantId =payConfig.getOa().getMerchantId();
+        String key = payConfig.getOa().getKey();
+        String notify_url = payConfig.getOa().getNotifyUrl();
+        if(payClient.equals(PayClientType.OFFICIALACCOUNT.name())){
+            appId = payConfig.getOa().getAppId();
+            merchantId = payConfig.getOa().getMerchantId();
+            key = payConfig.getOa().getKey();
+            notify_url = payConfig.getOa().getNotifyUrl();
+        }else if(payClient.equals(PayClientType.SHOPMP.name())){
+            appId = payConfig.getMp().getAppId();
+            merchantId = payConfig.getMp().getMerchantId();
+            key = payConfig.getMp().getKey();
+            notify_url = payConfig.getMp().getNotifyUrl();
+        }
         logger.info("notify String: " + notifyXml);
         try {
             Map<String, String> notifyMap = XMLUtil.doXMLParse(notifyXml);
@@ -304,13 +358,33 @@ public class WechatServiceImpl implements WechatService {
         return exist;
     }
 
-    public ResultData getTradeByOrderId(String orderId) {
+    public ResultData getTradeByOrderId(String orderId,String payClient) {
+        // don't need select pay config
+        //
+
         Map<String, Object> map = new HashMap<>();
         map.put("orderId", orderId);
         return tradeDao.query(map);
     }
 
-    public ResultData getCreateResult(String orderId) {
+    public ResultData getCreateResult(String orderId,String payClient) {
+        // select pay config by payClient
+        String appId = payConfig.getOa().getAppId();
+        String merchantId =payConfig.getOa().getMerchantId();
+        String key = payConfig.getOa().getKey();
+        String notify_url = payConfig.getOa().getNotifyUrl();
+        if(payClient.equals(PayClientType.OFFICIALACCOUNT.name())){
+            appId = payConfig.getOa().getAppId();
+            merchantId = payConfig.getOa().getMerchantId();
+            key = payConfig.getOa().getKey();
+            notify_url = payConfig.getOa().getNotifyUrl();
+        }else if(payClient.equals(PayClientType.SHOPMP.name())){
+            appId = payConfig.getMp().getAppId();
+            merchantId = payConfig.getMp().getMerchantId();
+            key = payConfig.getMp().getKey();
+            notify_url = payConfig.getMp().getNotifyUrl();
+        }
+
 
         ResultData result = new ResultData();
 
@@ -351,7 +425,25 @@ public class WechatServiceImpl implements WechatService {
         return result;
     }
 
-    public ResultData checkTradePayed() {
+    public ResultData checkTradePayed(String payClient) {
+        // select pay config by payClient
+        String appId = payConfig.getOa().getAppId();
+        String merchantId =payConfig.getOa().getMerchantId();
+        String key = payConfig.getOa().getKey();
+        String notify_url = payConfig.getOa().getNotifyUrl();
+        if(payClient.equals(PayClientType.OFFICIALACCOUNT.name())){
+            appId = payConfig.getOa().getAppId();
+            merchantId = payConfig.getOa().getMerchantId();
+            key = payConfig.getOa().getKey();
+            notify_url = payConfig.getOa().getNotifyUrl();
+        }else if(payClient.equals(PayClientType.SHOPMP.name())){
+            appId = payConfig.getMp().getAppId();
+            merchantId = payConfig.getMp().getMerchantId();
+            key = payConfig.getMp().getKey();
+            notify_url = payConfig.getMp().getNotifyUrl();
+        }
+
+
         ResultData result = new ResultData();
         // 查询数据库获取所有满足条件的未支付状态的订单编号
         ResultData orderResult = tradeDao.queryUnpayed();

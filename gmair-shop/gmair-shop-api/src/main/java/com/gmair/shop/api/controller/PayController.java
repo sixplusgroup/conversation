@@ -14,15 +14,13 @@ import com.gmair.shop.common.util.IPHelper;
 import com.gmair.shop.security.entity.GmairUser;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.PayService;
+import com.gmair.shop.service.feign.PayFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/p/order")
@@ -36,6 +34,8 @@ public class PayController {
 
     private final WxPayService wxMiniPayService;
 
+    private final PayFeignService payFeignService;
+
     /**
      * 支付接口
      */
@@ -43,7 +43,7 @@ public class PayController {
     @ApiOperation(value = "根据订单号进行支付", notes = "根据订单号进行支付")
     @SneakyThrows
     public ResponseEntity<WxPayMpOrderResult> pay(@RequestBody PayParam payParam) {
-        //ResponseEntity<Map<String,String>> ResponseEntity<WxPayMpOrderResult>
+
         GmairUser user = SecurityUtils.getUser();
         String userId = user.getUserId();
         String openId = user.getBizUserId();
@@ -81,5 +81,10 @@ public class PayController {
         payService.paySuccess(pay.getPayNo(), "");
 
         return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/test")
+    public void Test1(){
+        payFeignService.createTrade("123","123",123,"321","ip");
     }
 }

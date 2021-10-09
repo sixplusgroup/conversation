@@ -8,6 +8,7 @@ CREATE TABLE `gmair_userinfo`.`admin_info` (
   PRIMARY KEY (`admin_id`));
 
 #2018-09-01 修改view
+DROP VIEW IF EXISTS `gmair_userinfo`.`view_consumer_info`
 CREATE
     ALGORITHM = UNDEFINED
     DEFINER = `root`@`localhost`

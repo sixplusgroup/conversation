@@ -37,8 +37,9 @@ public class BillController {
      * @return
      */
     @PostMapping("/create")
-    public ResultData createTrade(String orderId, String openid, int price, String body, String ip) {
-        return wechatService.payCreate(orderId, openid, price + "", ip, body);
+    public ResultData createTrade(String orderId, String openid, int price, String body, String ip, @RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+
+        return wechatService.payCreate(orderId, openid, price + "", ip, body,payClient);
     }
 
     /**
@@ -49,12 +50,12 @@ public class BillController {
      */
     @PostMapping("/notify")
     @ResponseBody
-    public void notified(HttpServletRequest request, HttpServletResponse response) {
+    public void notified(@RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient,HttpServletRequest request, HttpServletResponse response) {
         PrintWriter writer = null;
         try {
             writer = response.getWriter();
             String notityXml = parseRequst(request);
-            String responseXml = wechatService.payNotify(notityXml);
+            String responseXml = wechatService.payNotify(notityXml,payClient);
             writer.write(responseXml);
             writer.flush();
         } catch (Exception e) {
@@ -98,8 +99,8 @@ public class BillController {
      * @return
      */
     @GetMapping("/getTrade")
-    public ResultData getTrade(String orderId) {
-        return wechatService.getTradeByOrderId(orderId);
+    public ResultData getTrade(String orderId,@RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+        return wechatService.getTradeByOrderId(orderId,payClient);
     }
 
     /**
@@ -109,8 +110,8 @@ public class BillController {
      * @return
      */
     @GetMapping("/getCreateResult")
-    public ResultData getCreateResult(String orderId) {
-        return wechatService.getCreateResult(orderId);
+    public ResultData getCreateResult(String orderId,@RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+        return wechatService.getCreateResult(orderId,payClient);
     }
 
     /**
@@ -119,11 +120,11 @@ public class BillController {
      * @return
      */
     @PostMapping("/sync")
-    public ResultData sync() {
+    public ResultData sync(@RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
         // 查询数据库获取所有满足条件的未支付状态的订单编号
 
         //遍历逐个查询当前账单的支付状态，若发现账单已支付，则更新账单状态，并通知drift模块进行更新
-        return wechatService.checkTradePayed();
+        return wechatService.checkTradePayed(payClient);
     }
 
 }
