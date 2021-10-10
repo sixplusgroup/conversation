@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("drift-agent")
-public interface OrderService {
+public interface DriftOrderService {
 
     @RequestMapping(value = "/drift/order/payed", method = RequestMethod.POST)
     ResultData updateOrderPayed(@RequestParam("orderId") String orderId);

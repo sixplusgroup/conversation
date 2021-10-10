@@ -10,9 +10,11 @@ import com.gmair.shop.bean.event.PaySuccessOrderEvent;
 import com.gmair.shop.bean.model.Order;
 import com.gmair.shop.bean.model.OrderSettlement;
 import com.gmair.shop.bean.app.param.PayParam;
+import com.gmair.shop.bean.pay.PayFeignParam;
 import com.gmair.shop.bean.pay.PayInfoDto;
 import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.Arith;
+import com.gmair.shop.common.util.IPHelper;
 import com.gmair.shop.dao.OrderMapper;
 import com.gmair.shop.dao.OrderSettlementMapper;
 import com.gmair.shop.service.PayService;
@@ -50,67 +52,43 @@ public class PayServiceImpl implements PayService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PayInfoDto pay(String userId, PayParam payParam) {
+    public PayFeignParam pay(String userId, PayParam payParam) {
 
+        PayFeignParam payFeignParam = new PayFeignParam();
 
-        // 不同的订单号的产品名称
-        StringBuilder prodName = new StringBuilder();
         // 支付单号
-        String payNo = String.valueOf(snowflake.nextId());
-        String[] orderNumbers = payParam.getOrderNumbers().split(StrUtil.COMMA);
-        // 修改订单信息
-        for (String orderNumber : orderNumbers) {
-            OrderSettlement orderSettlement = new OrderSettlement();
-            orderSettlement.setPayNo(payNo);
-            orderSettlement.setPayType(payParam.getPayType());
-            orderSettlement.setUserId(userId);
-            orderSettlement.setOrderNumber(orderNumber);
-            orderSettlementMapper.updateByOrderNumberAndUserId(orderSettlement);
-
-            Order order = orderMapper.getOrderByOrderNumber(orderNumber);
-            prodName.append(order.getProdName()).append(StrUtil.COMMA);
-        }
-        // 除了ordernumber不一样，其他都一样
-        List<OrderSettlement> settlements = orderSettlementMapper.getSettlementsByPayNo(payNo);
-        // 应支付的总金额
-        double payAmount = 0.0;
-        for (OrderSettlement orderSettlement : settlements) {
-            payAmount = Arith.add(payAmount, orderSettlement.getPayAmount());
-        }
-
-        prodName.substring(0, Math.min(100, prodName.length() - 1));
-
-        PayInfoDto payInfoDto = new PayInfoDto();
-        payInfoDto.setBody(prodName.toString());
-        payInfoDto.setPayAmount(payAmount);
-        payInfoDto.setPayNo(payNo);
-        return payInfoDto;
+        String orderNumber = payParam.getOrderNumbers();
+        payFeignParam.setOrderId(orderNumber);
+        Order order = orderMapper.getOrderByOrderNumber(orderNumber);
+        payFeignParam.setBody(order.getProdName());
+        payFeignParam.setPrice((int) Arith.mul(order.getActualTotal(), 100));
+        payFeignParam.setIp(IPHelper.getIpAddr());
+        return payFeignParam;
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<String> paySuccess(String payNo, String bizPayNo) {
-        List<OrderSettlement> orderSettlements = orderSettlementMapper.selectList(new LambdaQueryWrapper<OrderSettlement>().eq(OrderSettlement::getPayNo, payNo));
+    public List<String> paySuccess(String orderId) {
 
-        OrderSettlement settlement = orderSettlements.get(0);
+        String[] orderNumbersArray =orderId.split(StrUtil.COMMA);
+        List<String> orderNumbers = Arrays.asList(orderNumbersArray);
 
-        // 订单已支付
-        if (settlement.getPayStatus() == 1) {
-            throw new GmairShopGlobalException("订单已支付");
+        List<Order> orders = orderNumbers.stream().map(orderNumber -> orderMapper.getOrderByOrderNumber(orderNumber)).collect(Collectors.toList());
+        for(Order order:orders){
+            if(order.getIsPayed()==1){ // 1代表已经支付
+                throw new GmairShopGlobalException("订单已支付");
+            }
+            if(order.getDeleteStatus()!=0){ // 0代表未删除
+                throw new GmairShopGlobalException("订单无效");
+            }
+            if(order.getStatus()!=1){ // 1:待付款 2:待发货 3:待收货 4:待评价 5:成功 6:失败
+                throw new GmairShopGlobalException("订单无效");
+            }
         }
-        // 修改订单结算信息
-        if (orderSettlementMapper.updateToPay(payNo, settlement.getVersion()) < 1) {
-            throw new GmairShopGlobalException("结算信息已更改");
-        }
-
-
-        List<String> orderNumbers = orderSettlements.stream().map(OrderSettlement::getOrderNumber).collect(Collectors.toList());
-
         // 将订单改为已支付状态
         orderMapper.updateByToPaySuccess(orderNumbers, PayType.WECHATPAY.value());
 
-        List<Order> orders = orderNumbers.stream().map(orderNumber -> orderMapper.getOrderByOrderNumber(orderNumber)).collect(Collectors.toList());
         eventPublisher.publishEvent(new PaySuccessOrderEvent(orders));
         return orderNumbers;
     }

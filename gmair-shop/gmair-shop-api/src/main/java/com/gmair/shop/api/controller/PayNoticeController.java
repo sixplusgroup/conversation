@@ -26,18 +26,19 @@ public class PayNoticeController {
 
     private final PayService payService;
 
-
-    @RequestMapping("/order")
-    public ResponseEntity<Void> submit(@RequestBody String xmlData) throws WxPayException {
-        WxPayOrderNotifyResult parseOrderNotifyResult = wxMiniPayService.parseOrderNotifyResult(xmlData);
-
-        String payNo = parseOrderNotifyResult.getOutTradeNo();
-        String bizPayNo = parseOrderNotifyResult.getTransactionId();
-
-        // 根据内部订单号更新order settlement
-        payService.paySuccess(payNo, bizPayNo);
-
-
-        return ResponseEntity.ok().build();
-    }
+    // 更新order
+    // 更新settlement == payment.trade
+//    @RequestMapping("/order")
+//    public ResponseEntity<Void> submit(@RequestBody String xmlData) throws WxPayException {
+//        WxPayOrderNotifyResult parseOrderNotifyResult = wxMiniPayService.parseOrderNotifyResult(xmlData);
+//
+//        String payNo = parseOrderNotifyResult.getOutTradeNo();
+//        String bizPayNo = parseOrderNotifyResult.getTransactionId();
+//
+//        // 根据内部订单号更新order settlement
+//        payService.paySuccess(payNo, bizPayNo);
+//
+//
+//        return ResponseEntity.ok().build();
+//    }
 }
