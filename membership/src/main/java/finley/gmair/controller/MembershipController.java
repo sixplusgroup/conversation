@@ -27,6 +27,7 @@ public class MembershipController {
     private MembershipService membershipService;
     @Autowired
     private IntegralService integralService;
+
     /**
      * 果麦系统用户成为会员接口，录入membership表
      *
@@ -36,13 +37,13 @@ public class MembershipController {
     @PostMapping(value = "/enroll")
     public ResultData enroll(String consumerId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(consumerId)){
+        if (StringUtils.isEmpty(consumerId)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please pass in the ID");
             return result;
         }
         ResultData response = membershipService.create(consumerId);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("the operation of adding membership failed");
         }
@@ -56,18 +57,18 @@ public class MembershipController {
      * @param integral
      * @return
      */
-    @Transactional(rollbackFor=Exception.class) // this annotation need add at controller layer
+    @Transactional(rollbackFor = Exception.class) // this annotation need add at controller layer
     @PostMapping(value = "/deposit")
-    public ResultData deposit(String consumerId, Integer integral, String productId) {
+    public ResultData deposit(String consumerId, Integer integral) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(consumerId)||StringUtils.isEmpty(productId)||integral<0){
+        if (StringUtils.isEmpty(consumerId) || integral < 0) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please keep the validity of parameters");
             return result;
         }
-        IntegralAdd integralAdd = new IntegralAdd(consumerId,integral,productId);
+        IntegralAdd integralAdd = new IntegralAdd(consumerId, integral);
         ResultData response = integralService.addIntegral(integralAdd);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("add the integral failed");
         }
@@ -75,36 +76,36 @@ public class MembershipController {
     }
 
     /**
-     * @Description integral confirm, add to `secondIntegral` after confirming
-     * @Date  2021/7/18 19:35
      * @param addId:
      * @return finley.gmair.util.ResultData
+     * @Description integral confirm, add to `secondIntegral` after confirming
+     * @Date 2021/7/18 19:35
      **/
     @Transactional(rollbackFor = Exception.class)
-    @PostMapping(value="/confirmIntegral")
-    public ResultData confirmIntegral(String addId,String consumerId){
+    @PostMapping(value = "/confirmIntegral")
+    public ResultData confirmIntegral(String addId, String consumerId) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(addId)||StringUtils.isEmpty(consumerId)){
+        if (StringUtils.isEmpty(addId) || StringUtils.isEmpty(consumerId)) {
             result.setDescription("parameters can not be null");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
-        if(!integralService.checkIntegralIsValid(addId)){
+        if (!integralService.checkIntegralIsValid(addId)) {
             result.setDescription("the record of integral is not exist or is confirmed");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
-        if(!membershipService.checkMemberIsValid(consumerId)){
+        if (!membershipService.checkMemberIsValid(consumerId)) {
             result.setDescription("the member is not exist");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
-        ResultData response = integralService.confirmIntegral(addId,consumerId);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        ResultData response = integralService.confirmIntegral(addId, consumerId);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setDescription("integral confirmation failed");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
-        }else{
+        } else {
             result.setResponseCode(ResponseCode.RESPONSE_OK);
         }
         return result;
@@ -117,22 +118,22 @@ public class MembershipController {
      * @param integral
      * @return
      */
-    @Transactional(rollbackFor=Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping(value = "/withdraw")
     public ResultData withdraw(String consumerId, Integer integral) {
         ResultData result = new ResultData();
-        if(StringUtils.isEmpty(consumerId)||integral<0){
+        if (StringUtils.isEmpty(consumerId) || integral < 0) {
             result.setDescription("parameters are not valid");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
-        if(!membershipService.checkMemberIsValid(consumerId)){
+        if (!membershipService.checkMemberIsValid(consumerId)) {
             result.setDescription("the member is not exist");
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;
         }
-        ResultData response = membershipService.withdrawIntegral(consumerId,integral);
-        if(response.getResponseCode() != ResponseCode.RESPONSE_OK){
+        ResultData response = membershipService.withdrawIntegral(consumerId, integral);
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
             result.setDescription(response.getDescription());
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             return result;

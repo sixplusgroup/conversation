@@ -29,6 +29,7 @@ public class IntegralServiceImpl implements IntegralService {
     IntegralDao integralDao;
     @Autowired
     MembershipDao membershipDao;
+
     @Override
     public ResultData addIntegral(IntegralAdd integralAdd) {
         return integralDao.insert(integralAdd);
@@ -37,27 +38,27 @@ public class IntegralServiceImpl implements IntegralService {
     @Override
     public boolean checkIntegralIsValid(String addId) {
         ResultData response = integralDao.getOneById(addId);
-        if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR||response.getData()==null){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR || response.getData() == null) {
             return false;
         }
-        IntegralAdd integralAdd = (IntegralAdd)response.getData();
+        IntegralAdd integralAdd = (IntegralAdd) response.getData();
         return !integralAdd.isConfirmed();
     }
 
     @Override
-    public ResultData confirmIntegral(String addId,String consumerId) {
+    public ResultData confirmIntegral(String addId, String consumerId) {
         ResultData result = new ResultData();
         ResultData response = integralDao.getOneById(addId);
         IntegralAdd integralAdd;
-        if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR||response.getData()==null){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR || response.getData() == null) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("confirm integral failed");
             return result;
-        }else{
+        } else {
             integralAdd = (IntegralAdd) response.getData();
         }
         Integer integral = integralAdd.getIntegralValue();
-        if(integral<0){
+        if (integral < 0) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("confirm integral failed");
             return result;
@@ -65,25 +66,25 @@ public class IntegralServiceImpl implements IntegralService {
 
         response = membershipDao.getOneById(consumerId);
         MembershipConsumer membershipConsumer;
-        if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR||response.getData()==null){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR || response.getData() == null) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("confirm integral failed");
             return result;
-        }else{
+        } else {
             membershipConsumer = (MembershipConsumer) response.getData();
         }
 
         response = integralDao.updateConfirm(addId);
-        if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("confirm integral failed");
             return result;
         }
 
-        Map<String,Object> condition = new HashMap<>();
-        condition.put("secondIntegral",integral+membershipConsumer.getSecondIntegral());
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("secondIntegral", integral + membershipConsumer.getSecondIntegral());
         response = membershipDao.update(condition);
-        if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR){
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("confirm integral failed");
             return result;
