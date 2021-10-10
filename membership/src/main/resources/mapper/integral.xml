@@ -2,13 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gmair.membership.integral">
     <insert id="insert" parameterType="finley.gmair.model.membership.IntegralAdd">
-        insert into gmair_membership.integral_add (add_id,consumer_id,product_id,integral_value,is_confirmed,create_time)
-        value (#{addId},#{consumerId},#{productId},#{integralValue},#{isConfirmed},#{createAt})
+        INSERT INTO gmair_membership.integral_add (add_id, consumer_id, integral_value, is_confirmed, create_time)
+            VALUE (#{addId}, #{consumerId}, #{integralValue}, #{isConfirmed}, #{createAt})
     </insert>
     <select id="selectOne" resultType="finley.gmair.model.membership.IntegralAdd">
-        select * from gmair_membership.integral_add where add_id = #{addId}
+        SELECT *
+        FROM gmair_membership.integral_add
+        WHERE add_id = #{addId}
     </select>
     <update id="updateConfirm">
-        update gmair_membership.integral_add set is_confirmed = true , confirmed_time = now() where add_id = #{addId}
+        UPDATE gmair_membership.integral_add
+        SET is_confirmed = TRUE, confirmed_time = now()
+        WHERE add_id = #{addId}
     </update>
 </mapper>
