@@ -56,6 +56,7 @@
         <module>mqtt-logger</module>
         <module>tmall-genie</module>
         <module>membership</module>
+        <module>gmair-shop</module>
     </modules>
 
     <parent>
