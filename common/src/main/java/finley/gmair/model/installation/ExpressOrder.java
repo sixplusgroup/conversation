@@ -1,7 +1,6 @@
 package finley.gmair.model.installation;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 public class ExpressOrder {
     private String expressId;

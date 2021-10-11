@@ -1,7 +1,6 @@
 package finley.gmair.service.impl;
 
 import finley.gmair.dao.DriftOrderCancelDao;
-import finley.gmair.model.drift.DriftAddress;
 import finley.gmair.model.drift.DriftOrderCancel;
 import finley.gmair.service.DriftOrderCancelService;
 import finley.gmair.util.ResponseCode;

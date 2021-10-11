@@ -1,14 +1,12 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.LoggerRecordDao;
-import finley.gmair.model.mqtt.Firmware;
 import finley.gmair.model.mqtt.LoggerRecord;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -2,9 +2,6 @@ package finley.gmair.form.drift;
 
 import finley.gmair.model.ordernew.TradeFrom;
 
-import java.util.List;
-import java.util.Map;
-
 public class DriftOrderForm {
     private String consumerId;
 

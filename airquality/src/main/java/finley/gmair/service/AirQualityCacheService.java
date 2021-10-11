@@ -1,10 +1,7 @@
 package finley.gmair.service;
 
 import finley.gmair.model.air.CityAirQuality;
-import finley.gmair.util.ResultData;
 import org.springframework.cache.annotation.CachePut;
-
-import java.util.Map;
 
 public interface AirQualityCacheService{
 

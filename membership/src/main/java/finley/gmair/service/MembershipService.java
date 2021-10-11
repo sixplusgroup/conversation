@@ -1,17 +1,25 @@
 package finley.gmair.service;
 
-import finley.gmair.model.membership.IntegralAdd;
-import finley.gmair.util.ResultData;
+import com.baomidou.mybatisplus.extension.service.IService;
+import finley.gmair.model.MembershipUser;
+
 
 /**
- * @InterfaceName MembershipService
- * @Description
  * @Author Joby
- * @Date 2021/7/16 17:27
  */
-public interface MembershipService {
-    ResultData create(String consumerId);
-    boolean checkMemberIsValid(String consumerId);
-    ResultData withdrawIntegral(String consumerId,Integer integral);
-    ResultData setEventScheduler();
+public interface MembershipService extends IService<MembershipUser> {
+
+    Boolean createMembership(String consumerId);
+
+    MembershipUser getMembershipById(Long membershipId);
+
+    MembershipUser getMembershipByConsumerId(String consumerId);
+
+    Long getMembershipIdByConsumerId(String consumerId);
+
+    void addIntegral(Long membershipId, Integer integralValue);
+
+    void withdrawIntegralById(Long membershipId, Integer integral);
+
+
 }

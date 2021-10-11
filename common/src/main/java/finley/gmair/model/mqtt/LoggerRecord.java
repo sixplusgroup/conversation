@@ -2,8 +2,6 @@ package finley.gmair.model.mqtt;
 
 import finley.gmair.model.Entity;
 
-import java.sql.Timestamp;
-
 
 public class LoggerRecord extends Entity {
 

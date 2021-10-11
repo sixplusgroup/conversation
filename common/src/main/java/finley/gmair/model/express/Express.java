@@ -1,7 +1,5 @@
 package finley.gmair.model.express;
 
-import finley.gmair.model.Entity;
-
 public class Express {
 
     //对应 status，订阅状态

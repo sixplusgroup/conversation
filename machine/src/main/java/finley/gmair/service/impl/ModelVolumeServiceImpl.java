@@ -5,7 +5,6 @@ import finley.gmair.dao.QRCodeDao;
 import finley.gmair.model.machine.ModelVolume;
 import finley.gmair.model.machine.QRCode;
 import finley.gmair.service.ModelVolumeService;
-import finley.gmair.service.QRCodeService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;

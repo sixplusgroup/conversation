@@ -1,8 +1,6 @@
 package finley.gmair.mybatis.handler;
 
 import finley.gmair.model.machine.EfficientFilterRemindStatus;
-import finley.gmair.model.machine.EfficientFilterStatus;
-import finley.gmair.model.machine.Ownership;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 

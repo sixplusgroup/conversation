@@ -2,9 +2,6 @@ package finley.gmair.model.minivoice;
 
 import finley.gmair.model.EnumValue;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 用户通过哪个平台进行操作
  */

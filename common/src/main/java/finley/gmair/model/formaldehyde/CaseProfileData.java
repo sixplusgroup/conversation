@@ -2,7 +2,6 @@ package finley.gmair.model.formaldehyde;
 
 import finley.gmair.model.Entity;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 

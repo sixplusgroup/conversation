@@ -1,9 +1,7 @@
 package finley.gmair.dao.impl;
 
-import finley.gmair.dao.AccessTokenDao;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.MessageTemplateDao;
-import finley.gmair.model.wechat.AccessToken;
 import finley.gmair.model.wechat.MessageTemplate;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

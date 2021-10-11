@@ -2,14 +2,11 @@ package finley.gmair.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.research.ws.wadl.Link;
-import finley.gmair.model.machine.ConsumerQRcodeBind;
 import finley.gmair.service.AirqualityService;
 import finley.gmair.service.MachineService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 

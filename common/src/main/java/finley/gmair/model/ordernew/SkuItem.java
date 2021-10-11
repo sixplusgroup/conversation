@@ -3,8 +3,6 @@ package finley.gmair.model.ordernew;
 import finley.gmair.model.Entity;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @author ：tsl
  * @date ：Created in 2020/10/19 15:43

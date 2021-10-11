@@ -6,7 +6,7 @@ import finley.gmair.config.SelectPayConfig;
 import finley.gmair.dao.ConfigurationDao;
 import finley.gmair.dao.ReturnInfoDao;
 import finley.gmair.dao.TradeDao;
-import finley.gmair.enums.PayClientType;
+import finley.gmair.bean.enums.PayClientType;
 import finley.gmair.model.payment.Configuration;
 import finley.gmair.model.payment.ReturnInfo;
 import finley.gmair.model.payment.TradeState;

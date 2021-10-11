@@ -5,7 +5,6 @@ import finley.gmair.service.LoggerRecordService;
 import finley.gmair.util.QueryPage;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.apache.catalina.util.RequestUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
 

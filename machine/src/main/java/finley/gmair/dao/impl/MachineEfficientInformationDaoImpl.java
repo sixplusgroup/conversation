@@ -1,9 +1,7 @@
 package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
-import finley.gmair.dao.MachineEfficientFilterDao;
 import finley.gmair.dao.MachineEfficientInformationDao;
-import finley.gmair.model.machine.MachineEfficientFilter;
 import finley.gmair.model.machine.MachineEfficientInformation;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

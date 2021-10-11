@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.installation.Assign;
 import finley.gmair.service.AssignService;
 import finley.gmair.service.ResourceService;
 import finley.gmair.util.ResponseCode;
@@ -10,11 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * @ClassName: AssignController

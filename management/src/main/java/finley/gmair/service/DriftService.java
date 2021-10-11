@@ -1,20 +1,9 @@
 package finley.gmair.service;
 
-import feign.codec.Encoder;
-import feign.form.spring.SpringFormEncoder;
-import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.model.ordernew.TradeFrom;
 import finley.gmair.util.ResultData;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.cloud.netflix.feign.support.SpringEncoder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 @FeignClient("drift-agent")
 public interface DriftService {

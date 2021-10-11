@@ -1,6 +1,6 @@
 package finley.gmair.config;
 
-import finley.gmair.enums.PayClientType;
+import finley.gmair.bean.enums.PayClientType;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

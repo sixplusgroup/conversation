@@ -6,10 +6,9 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.emoji.EmojiUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gmair.shop.bean.model.MembershipUser;
+
 import com.gmair.shop.bean.model.User;
 import com.gmair.shop.common.annotation.RedisLock;
-import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.common.util.PrincipalUtil;
 import com.gmair.shop.dao.UserMapper;
 import com.gmair.shop.security.dao.AppConnectMapper;
@@ -19,14 +18,13 @@ import com.gmair.shop.security.exception.UsernameNotFoundExceptionBase;
 import com.gmair.shop.security.model.AppConnect;
 import com.gmair.shop.security.entity.GmairUser;
 import com.gmair.shop.security.service.GmairUserDetailsService;
-import com.gmair.shop.service.MembershipService;
+import com.gmair.shop.service.feign.MembershipFeignService;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +47,7 @@ public class GmairUserServiceImpl implements GmairUserDetailsService {
 
 	private final PasswordEncoder passwordEncoder;
 
-	private final MembershipService membershipService;
+	private final MembershipFeignService membershipFeignService;
 	@Override
 	@SneakyThrows
 	public GmairUser loadUserByUsername(String username) {
@@ -127,14 +125,6 @@ public class GmairUserServiceImpl implements GmairUserDetailsService {
 		appConnect.setUserId(user.getUserId());
 		// 微信小程序登录成功, 记录登录信息 openid等等
 		appConnectMapper.insert(appConnect);
-		// 让用户成为普通会员
-		if(StrUtil.isBlank(user.getUserId())){
-			throw new GmairShopGlobalException("用户ID不可为空");
-		}
-		if(membershipService.count(new LambdaQueryWrapper<MembershipUser>().eq(MembershipUser::getUserId, userId))!=0){
-			throw new GmairShopGlobalException("该用户已是会员, 请联系管理员处理!");
-		}
-		membershipService.createMembership(user.getUserId());
 
 	}
 

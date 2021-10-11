@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * @Author Joby
  */
-@Component
+
 public class PayClientFeignInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {

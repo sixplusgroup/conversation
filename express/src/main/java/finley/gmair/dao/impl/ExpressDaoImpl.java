@@ -1,6 +1,5 @@
 package finley.gmair.dao.impl;
 
-import com.mongodb.WriteResult;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.ExpressDao;
 import finley.gmair.model.express.Express;
@@ -8,7 +7,6 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

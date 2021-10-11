@@ -3,7 +3,6 @@ package finley.gmair.dao.impl;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.ConsumerQRcodeBindDao;
 import finley.gmair.model.machine.ConsumerQRcodeBind;
-import finley.gmair.model.machine.MachineListDaily;
 import finley.gmair.model.machine.MachineSecondListView;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;

@@ -1,76 +1,80 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.dao.MembershipDao;
-import finley.gmair.model.membership.MembershipConsumer;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import finley.gmair.bean.exception.MembershipGlobalException;
+import finley.gmair.dao.MembershipMapper;
+import finley.gmair.bean.enums.MembershipType;
+import finley.gmair.model.MembershipUser;
 import finley.gmair.service.MembershipService;
-import finley.gmair.util.ResponseCode;
-import finley.gmair.util.ResultData;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 
 /**
- * @ClassName MembershipServiceImpl
- * @Description TODO
  * @Author Joby
- * @Date 2021/7/16 17:30
  */
+@AllArgsConstructor
 @Service
-public class MembershipServiceImpl implements MembershipService {
-    @Autowired
-    private MembershipDao membershipDao;
+public class MembershipServiceImpl extends ServiceImpl<MembershipMapper, MembershipUser> implements MembershipService {
+
+    private final MembershipMapper membershipMapper;
+
     @Override
-    public ResultData create(String consumerId) {
-        MembershipConsumer member = new MembershipConsumer(consumerId);
-        return membershipDao.insert(member);
+    public Boolean createMembership(String consumerId) {
+        MembershipUser membership = new MembershipUser();
+        membership.setIntegral(0);
+        membership.setMembershipType(MembershipType.ORDINARY.value());
+        membership.setConsumerId(consumerId);
+        membership.setCreateTime(new Date());
+        return membershipMapper.insert(membership)==1;
     }
 
     @Override
-    public boolean checkMemberIsValid(String consumerId) {
-        ResultData response = membershipDao.getOneById(consumerId);
-        if(response.getResponseCode()== ResponseCode.RESPONSE_ERROR||response.getData()==null){
-            return false;
-        }
-        return true;
+    public MembershipUser getMembershipById(Long membershipId) {
+        return membershipMapper.selectById(membershipId);
     }
 
     @Override
-    public ResultData withdrawIntegral(String consumerId, Integer integral) {
-        ResultData result = new ResultData();
-        ResultData response =  membershipDao.getOneById(consumerId);
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription(response.getDescription());
-            return result;
+    public Long getMembershipIdByConsumerId(String consumerId) {
+        Long membershipId =membershipMapper.selectOne(new LambdaQueryWrapper<MembershipUser>().eq(MembershipUser::getConsumerId, consumerId)).getId();
+        if(membershipId==null||membershipId==0){
+            throw new MembershipGlobalException("this consumer isn't a membership!");
         }
-        MembershipConsumer membershipConsumer = (MembershipConsumer)response.getData();
-        if(membershipConsumer.getAllIntegral()<integral){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("you don't have enough integral");
-            return result;
-        }
-        if(membershipConsumer.getFirstIntegral()<integral){
-            Map<String,Object> condition = new HashMap<>();
-            condition.put("firstIntegral",0);
-            condition.put("secondIntegral",membershipConsumer.getAllIntegral()-integral);
-            response = membershipDao.update(condition);
-        }else{
-            Map<String,Object> condition = new HashMap<>();
-            condition.put("firstIntegral",membershipConsumer.getFirstIntegral()-integral);
-            response = membershipDao.update(condition);
-        }
-        if(response.getResponseCode()!=ResponseCode.RESPONSE_OK){
-            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            result.setDescription("the operation of `withdrawIntegral` failed");
-            return result;
-        }
-        return result;
+        return membershipId;
     }
 
     @Override
-    public ResultData setEventScheduler() {
-        return membershipDao.setEventScheduler();
+    public MembershipUser getMembershipByConsumerId(String consumerId) {
+        MembershipUser membershipUser = membershipMapper.selectOne(new LambdaQueryWrapper<MembershipUser>().eq(MembershipUser::getConsumerId, consumerId));
+        if(membershipUser==null){
+            throw new MembershipGlobalException("this consumer isn't a membership!");
+        }
+        return membershipUser;
+    }
+
+    @Override
+    public void addIntegral(Long membershipId, Integer integralValue) {
+        MembershipUser membershipUser = membershipMapper.selectById(membershipId);
+        membershipUser.setIntegral(membershipUser.getIntegral()+integralValue);
+        membershipMapper.updateById(membershipUser);
+    }
+
+    @Override
+    public void withdrawIntegralById(Long membershipId, Integer integral) {
+        MembershipUser membershipUser =  membershipMapper.selectById(membershipId);
+        if(membershipUser==null){
+            throw new MembershipGlobalException("can not find the membership!");
+        }
+        if(integral==null||integral<0){
+            throw new MembershipGlobalException("the parameters are invalid!");
+        }
+        if(membershipUser.getIntegral()<integral){
+            throw new MembershipGlobalException("the membership don't have enough integral!");
+        }
+        membershipUser.setIntegral(membershipUser.getIntegral()-integral);
+        membershipMapper.updateById(membershipUser);
     }
 }

@@ -2,8 +2,6 @@ package finley.gmair.model.machine;
 
 import finley.gmair.model.Entity;
 
-import java.sql.Timestamp;
-
 public class OutPm25Daily extends Entity {
     private String recordId;
     private String machineId;

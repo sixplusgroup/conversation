@@ -2,8 +2,6 @@ package finley.gmair.model.machine;
 
 import finley.gmair.model.Entity;
 
-import java.sql.Timestamp;
-
 public class FilterLimitConfig extends Entity {
 
     private String configId;

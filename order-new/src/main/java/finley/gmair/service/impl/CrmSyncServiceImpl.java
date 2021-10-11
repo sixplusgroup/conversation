@@ -5,7 +5,6 @@ import finley.gmair.dao.OrderMapper;
 import finley.gmair.dao.SkuItemMapper;
 import finley.gmair.dao.TradeMapper;
 import finley.gmair.model.dto.CrmOrderDTO;
-import finley.gmair.model.dto.CrmStatusDTO;
 import finley.gmair.model.ordernew.*;
 import finley.gmair.service.CrmAPIService;
 import finley.gmair.service.CrmSyncService;

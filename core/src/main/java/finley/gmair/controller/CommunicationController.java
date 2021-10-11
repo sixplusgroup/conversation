@@ -6,7 +6,6 @@ import finley.gmair.model.machine.MachineV1Status;
 import finley.gmair.model.packet.*;
 import finley.gmair.netty.GMRepository;
 import finley.gmair.util.*;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;

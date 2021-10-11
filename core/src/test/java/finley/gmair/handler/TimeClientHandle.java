@@ -1,6 +1,5 @@
 package finley.gmair.handler;
 
-import finley.gmair.model.packet.HeartBeatPacket;
 import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.util.ByteUtil;
 
@@ -10,7 +9,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.security.Provider;
 import java.util.Iterator;
 import java.util.Set;
 

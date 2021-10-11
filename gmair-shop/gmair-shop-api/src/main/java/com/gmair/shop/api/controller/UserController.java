@@ -13,17 +13,16 @@ import com.gmair.shop.security.model.AppConnect;
 import com.gmair.shop.security.service.AppConnectService;
 import com.gmair.shop.security.service.GmairUserDetailsService;
 import com.gmair.shop.security.util.SecurityUtils;
+import com.gmair.shop.service.feign.MembershipFeignService;
 import com.gmair.shop.service.feign.UserFeignService;
+import finley.gmair.model.consumer.Consumer;
+import finley.gmair.form.consumer.ConsumerForm;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.gmair.shop.bean.app.dto.UserDto;
 import com.gmair.shop.bean.app.param.UserInfoParam;
@@ -58,6 +57,8 @@ public class UserController {
 	private final WxMaService wxMaService;
 
 	private final UserFeignService userFeignService;
+
+	private final MembershipFeignService membershipFeignService;
 	/**
 	 * 查看用户接口
 	 */
@@ -124,11 +125,36 @@ public class UserController {
 
 		// get consumer_id from module auth-consumer
 		ResultData resultData = userFeignService.getConsumerIdByPhone(user.getUserMobile());
-		if(resultData.getResponseCode()!= ResponseCode.RESPONSE_OK){
+
+		if(resultData.getResponseCode()== ResponseCode.RESPONSE_NULL){// no consumer in auth-consumer
+			ConsumerForm form = new ConsumerForm();
+			form.setPhone(user.getUserMobile());
+			ResultData result = userFeignService.consumerRegister(form);// create new consumer
+			if(result.getResponseCode()!=ResponseCode.RESPONSE_OK){
+				throw new GmairShopGlobalException("绑定手机号失败");
+			}
+			Consumer consumer = (Consumer) result.getData();
+			user.setConsumerId(consumer.getConsumerId());
+		}else if(resultData.getResponseCode()== ResponseCode.RESPONSE_ERROR){
 			throw new GmairShopGlobalException("绑定手机号失败");
+		}else{ // success to get ConsumerId
+			user.setConsumerId((String)resultData.getData());
 		}
-		user.setConsumerId((String)resultData.getData());
 		userService.updateById(user);
 		return ResponseEntity.ok().build();
 	}
+	/**
+	 * @Description user join membership
+	 * @Date  2021/10/11 14:39
+	 * @return org.springframework.http.ResponseEntity<java.lang.Void>
+	 */
+	@PostMapping("/joinMemebership")
+	public ResponseEntity<Void> joinMembership(){
+		// feign: make the user be a membership
+		String userId = SecurityUtils.getUser().getUserId();
+		User user = userService.getUserByUserId(userId);
+		ResponseEntity<Void> response =membershipFeignService.enrollMembership(user.getConsumerId());
+		return response;
+	}
+
 }

@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.model.enterpriseselling.MerchantContact;
 import finley.gmair.model.mode.MachineMode;
 import finley.gmair.util.ResultData;
 

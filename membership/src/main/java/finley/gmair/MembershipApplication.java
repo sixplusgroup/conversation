@@ -2,6 +2,8 @@ package finley.gmair;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -13,8 +15,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 
 @SpringBootApplication
-@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao"})
+@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao","finley.gmair.config"})
+@EnableDiscoveryClient
 @EnableTransactionManagement //also can not add this annotation
+@EnableFeignClients
 public class MembershipApplication {
     public static void main(String[] args) {
         SpringApplication.run(MembershipApplication.class, args);

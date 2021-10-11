@@ -1,10 +1,7 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.dao.BoundaryPM2_5Dao;
 import finley.gmair.dao.OutPm25DailyDao;
-import finley.gmair.model.machine.BoundaryPM2_5;
 import finley.gmair.model.machine.OutPm25Daily;
-import finley.gmair.service.BoundaryPM2_5Service;
 import finley.gmair.service.OutPm25DailyService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

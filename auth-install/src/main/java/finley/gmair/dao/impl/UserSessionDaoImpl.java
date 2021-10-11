@@ -1,6 +1,5 @@
 package finley.gmair.dao.impl;
 
-import com.alibaba.fastjson.JSON;
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.UserSessionDao;
 import finley.gmair.model.wechat.UserSession;

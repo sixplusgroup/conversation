@@ -6,7 +6,6 @@ import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.machine.MachineQrcodeBindVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
