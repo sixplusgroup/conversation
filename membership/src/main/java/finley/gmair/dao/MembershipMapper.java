@@ -1,7 +1,7 @@
 package finley.gmair.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import finley.gmair.model.MembershipUser;
+import finley.gmair.model.membership.MembershipUser;
 
 
 /**

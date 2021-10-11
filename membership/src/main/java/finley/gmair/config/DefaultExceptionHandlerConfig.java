@@ -3,7 +3,7 @@
 package finley.gmair.config;
 
 
-import finley.gmair.bean.exception.MembershipGlobalException;
+import finley.gmair.exception.MembershipGlobalException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,6 +47,6 @@ public class DefaultExceptionHandlerConfig {
     @ExceptionHandler(MembershipGlobalException.class)
     public ResponseEntity<String> unauthorizedExceptionHandler(MembershipGlobalException e){
         e.printStackTrace();
-        return ResponseEntity.status(e.getHttpStatusCode()).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

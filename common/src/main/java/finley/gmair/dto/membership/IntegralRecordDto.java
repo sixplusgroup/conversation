@@ -1,4 +1,4 @@
-package finley.gmair.bean.dto;
+package finley.gmair.dto.membership;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;

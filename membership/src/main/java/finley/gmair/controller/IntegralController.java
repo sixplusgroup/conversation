@@ -3,13 +3,13 @@ package finley.gmair.controller;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 
-import finley.gmair.bean.dto.IntegralRecordDto;
-import finley.gmair.bean.exception.MembershipGlobalException;
-import finley.gmair.model.IntegralAdd;
-import finley.gmair.model.IntegralRecord;
-import finley.gmair.model.MembershipUser;
-import finley.gmair.bean.param.IntegralDepositParam;
-import finley.gmair.bean.param.IntegralWithdrawParam;
+import finley.gmair.dto.membership.IntegralRecordDto;
+import finley.gmair.exception.MembershipGlobalException;
+import finley.gmair.model.membership.IntegralAdd;
+import finley.gmair.model.membership.IntegralRecord;
+import finley.gmair.model.membership.MembershipUser;
+import finley.gmair.param.membership.IntegralDepositParam;
+import finley.gmair.param.membership.IntegralWithdrawParam;
 import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.IntegralRecordService;
 import finley.gmair.service.MembershipService;
@@ -31,8 +31,7 @@ import java.util.List;
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("p/integral")
-
+@RequestMapping("/membership/integral")
 public class IntegralController {
 
     private final IntegralAddService integralAddService;
@@ -99,14 +98,12 @@ public class IntegralController {
 
     @PostMapping("/getIntegral")
     public ResponseEntity<Integer> getMembershipIntegral(String consumerId){
-
         MembershipUser membershipUser = membershipService.getMembershipByConsumerId(consumerId);
         return ResponseEntity.ok(membershipUser.getIntegral());
     }
 
     @PostMapping("/getIntegralRecords")
     public ResponseEntity<List<IntegralRecordDto>> getIntegralRecords(String consumerId){
-
         List<IntegralRecord> integralRecords = integralRecordService.getMyRecordsByConsumerId(consumerId);
         return ResponseEntity.ok(mapperFacade.mapAsList(integralRecords, IntegralRecordDto.class));
 

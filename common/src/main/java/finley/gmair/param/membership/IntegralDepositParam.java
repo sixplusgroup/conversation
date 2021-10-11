@@ -1,4 +1,4 @@
-package com.gmair.shop.bean.app.param;
+package finley.gmair.param.membership;
 
 import lombok.Data;
 
@@ -10,8 +10,12 @@ import javax.validation.constraints.Size;
  */
 @Data
 public class IntegralDepositParam {
+
+    @NotNull
+    private String consumerId;
     @NotNull
     private Integer integral;
     @Size(max=80)
     private String description;
+
 }

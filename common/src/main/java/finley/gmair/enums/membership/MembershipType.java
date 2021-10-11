@@ -1,4 +1,4 @@
-package finley.gmair.bean.enums;
+package finley.gmair.enums.membership;
 
 public enum MembershipType {
     ORDINARY(0),

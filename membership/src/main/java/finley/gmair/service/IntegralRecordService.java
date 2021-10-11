@@ -1,7 +1,7 @@
 package finley.gmair.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import finley.gmair.model.IntegralRecord;
+import finley.gmair.model.membership.IntegralRecord;
 
 
 import java.util.List;

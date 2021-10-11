@@ -1,9 +1,9 @@
 
 
-package finley.gmair.bean.exception;
+package finley.gmair.exception;
 
 
-import finley.gmair.bean.enums.MembershipHttpStatus;
+import finley.gmair.enums.membership.MembershipHttpStatus;
 import org.springframework.http.HttpStatus;
 
 public class MembershipGlobalException extends RuntimeException{

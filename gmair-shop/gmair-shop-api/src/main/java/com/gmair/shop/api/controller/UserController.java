@@ -143,18 +143,6 @@ public class UserController {
 		userService.updateById(user);
 		return ResponseEntity.ok().build();
 	}
-	/**
-	 * @Description user join membership
-	 * @Date  2021/10/11 14:39
-	 * @return org.springframework.http.ResponseEntity<java.lang.Void>
-	 */
-	@PostMapping("/joinMemebership")
-	public ResponseEntity<Void> joinMembership(){
-		// feign: make the user be a membership
-		String userId = SecurityUtils.getUser().getUserId();
-		User user = userService.getUserByUserId(userId);
-		ResponseEntity<Void> response =membershipFeignService.enrollMembership(user.getConsumerId());
-		return response;
-	}
+
 
 }

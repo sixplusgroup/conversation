@@ -3,9 +3,9 @@ package finley.gmair.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 
-import finley.gmair.bean.exception.MembershipGlobalException;
+import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.dao.IntegralAddMapper;
-import finley.gmair.model.IntegralAdd;
+import finley.gmair.model.membership.IntegralAdd;
 import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.MembershipService;
 import lombok.AllArgsConstructor;

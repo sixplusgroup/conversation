@@ -1,7 +1,7 @@
 package finley.gmair.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import finley.gmair.model.MembershipUser;
+import finley.gmair.model.membership.MembershipUser;
 
 
 /**

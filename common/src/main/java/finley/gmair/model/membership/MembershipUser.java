@@ -1,4 +1,4 @@
-package finley.gmair.model;
+package finley.gmair.model.membership;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;

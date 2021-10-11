@@ -3,10 +3,10 @@ package finley.gmair.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import finley.gmair.bean.exception.MembershipGlobalException;
+import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.dao.MembershipMapper;
-import finley.gmair.bean.enums.MembershipType;
-import finley.gmair.model.MembershipUser;
+import finley.gmair.enums.membership.MembershipType;
+import finley.gmair.model.membership.MembershipUser;
 import finley.gmair.service.MembershipService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

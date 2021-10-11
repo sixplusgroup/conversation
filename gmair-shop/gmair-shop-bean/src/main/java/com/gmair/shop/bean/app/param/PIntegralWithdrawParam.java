@@ -1,4 +1,4 @@
-package finley.gmair.bean.param;
+package com.gmair.shop.bean.app.param;
 
 import lombok.Data;
 
@@ -9,13 +9,9 @@ import javax.validation.constraints.Size;
  * @Author Joby
  */
 @Data
-public class IntegralWithdrawParam {
-
-    @NotNull
-    private String consumerId;
+public class PIntegralWithdrawParam {
     @NotNull
     private Integer integral;
     @Size(max=80)
     private String description;
-
 }

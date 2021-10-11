@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 
-import finley.gmair.bean.exception.MembershipGlobalException;
+import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.dao.IntegralRecordMapper;
-import finley.gmair.model.IntegralRecord;
-import finley.gmair.model.MembershipUser;
+import finley.gmair.model.membership.IntegralRecord;
+import finley.gmair.model.membership.MembershipUser;
 import finley.gmair.service.IntegralRecordService;
 import finley.gmair.service.MembershipService;
 import lombok.AllArgsConstructor;

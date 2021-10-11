@@ -1,8 +1,8 @@
 package finley.gmair.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import finley.gmair.bean.exception.MembershipGlobalException;
-import finley.gmair.model.MembershipUser;
+import finley.gmair.exception.MembershipGlobalException;
+import finley.gmair.model.membership.MembershipUser;
 import finley.gmair.service.MembershipService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Author Joby
  */
 @RestController
-@RequestMapping("/p/membership")
+@RequestMapping("/membership/membership")
 @AllArgsConstructor
 
 public class MembershipController {
