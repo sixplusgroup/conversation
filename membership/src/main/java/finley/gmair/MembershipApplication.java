@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 
 @SpringBootApplication
-@ComponentScan({"finley.gmair.controller", "finley.gmair.service", "finley.gmair.dao","finley.gmair.config"})
+@ComponentScan({"finley.gmair.dao", "finley.gmair.service", "finley.gmair.controller",  "finley.gmair.config"})
 @EnableDiscoveryClient
 @EnableTransactionManagement //also can not add this annotation
 @EnableFeignClients
