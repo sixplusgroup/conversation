@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.model.membership.MembershipUser;
 import finley.gmair.service.MembershipService;
+import finley.gmair.util.ResponseData;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,12 +23,20 @@ public class MembershipController {
     private final MembershipService membershipService;
 
     @PostMapping(value = "/enroll")
-    public ResponseEntity<Void> enroll(String consumerId) {
+    public ResponseData<Void> enroll(String consumerId) {
         if(membershipService.count(new LambdaQueryWrapper<MembershipUser>().eq(MembershipUser::getConsumerId, consumerId))!=0){
             throw new MembershipGlobalException("该用户已是会员, 请联系管理员处理!");
         }
         membershipService.createMembership(consumerId);
-        return ResponseEntity.ok().build();
+        return ResponseData.ok();
     }
+
+    @PostMapping(value = "/isMembership")
+    public ResponseData<Boolean> isMembership(String consumerId){
+        int num = membershipService.count(new LambdaQueryWrapper<MembershipUser>().eq(MembershipUser::getConsumerId, consumerId));
+        if(num==1) return ResponseData.ok(true);
+        else return ResponseData.ok(false);
+    }
+
 
 }

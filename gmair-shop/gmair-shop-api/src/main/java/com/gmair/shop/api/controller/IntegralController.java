@@ -4,11 +4,14 @@ import com.gmair.shop.bean.app.dto.IntegralRecordDto;
 import com.gmair.shop.bean.app.param.PIntegralDepositParam;
 import com.gmair.shop.bean.app.param.PIntegralWithdrawParam;
 import com.gmair.shop.bean.model.User;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.UserService;
 import com.gmair.shop.service.feign.MembershipFeignService;
 import finley.gmair.param.membership.IntegralDepositParam;
 import finley.gmair.param.membership.IntegralWithdrawParam;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResponseData;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +44,13 @@ public class IntegralController {
         integralDepositParam.setConsumerId(user.getConsumerId());
         integralDepositParam.setDescription(params.getDescription());
         integralDepositParam.setIntegral(params.getIntegral());
-        return membershipFeignService.deposit(integralDepositParam);
+        ResponseData<Void> responseData = membershipFeignService.deposit(integralDepositParam);
+        if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
+            return ResponseEntity.ok().build();
+        }else{
+            throw new GmairShopGlobalException(responseData.getDescription());
+        }
+
     }
 
     @PostMapping(value = "/withdrawIntegral")
@@ -52,21 +61,36 @@ public class IntegralController {
         integralWithdrawParam.setConsumerId(user.getConsumerId());
         integralWithdrawParam.setDescription(params.getDescription());
         integralWithdrawParam.setIntegral(params.getIntegral());
-        return membershipFeignService.withdrawIntegral(integralWithdrawParam);
+        ResponseData<Void> responseData =  membershipFeignService.withdrawIntegral(integralWithdrawParam);
+
+        if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
+            return ResponseEntity.ok().build();
+        }else{
+            throw new GmairShopGlobalException(responseData.getDescription());
+        }
     }
 
     @PostMapping("/getIntegral")
     public ResponseEntity<Integer> getMembershipIntegral(){
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
-        ResponseEntity<Integer> response = membershipFeignService.getMembershipIntegral(user.getConsumerId());
-        return response;
+        ResponseData<Integer> responseData = membershipFeignService.getMembershipIntegral(user.getConsumerId());
+        if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
+            return ResponseEntity.ok(responseData.getData());
+        }else{
+            throw new GmairShopGlobalException(responseData.getDescription());
+        }
     }
 
     @PostMapping("/getIntegralRecords")
     public ResponseEntity<List<IntegralRecordDto>> getIntegralRecords(){
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
-        return membershipFeignService.getIntegralRecords(user.getConsumerId());
+        ResponseData<List<IntegralRecordDto>> responseData = membershipFeignService.getIntegralRecords(user.getConsumerId());
+        if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
+            return ResponseEntity.ok(responseData.getData());
+        }else{
+            throw new GmairShopGlobalException(responseData.getDescription());
+        }
     }
 }

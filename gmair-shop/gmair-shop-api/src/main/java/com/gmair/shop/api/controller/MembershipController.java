@@ -1,9 +1,12 @@
 package com.gmair.shop.api.controller;
 
 import com.gmair.shop.bean.model.User;
+import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.UserService;
 import com.gmair.shop.service.feign.MembershipFeignService;
+import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResponseData;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +35,23 @@ public class MembershipController {
         // feign: make the user be a membership
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
-        ResponseEntity<Void> response =membershipFeignService.enrollMembership(user.getConsumerId());
-        return response;
+        ResponseData<Void> response =membershipFeignService.enrollMembership(user.getConsumerId());
+        if(response.getResponseCode()== ResponseCode.RESPONSE_OK){
+
+            return ResponseEntity.ok().build();
+        }else{
+            throw new GmairShopGlobalException(response.getDescription());
+        }
+    }
+    @PostMapping("/isMembership")
+    public ResponseEntity<Boolean> isMembership(){
+        String userId = SecurityUtils.getUser().getUserId();
+        User user = userService.getUserByUserId(userId);
+        ResponseData<Boolean> responseData = membershipFeignService.isMembership(user.getConsumerId());
+        if(responseData.getResponseCode()==ResponseCode.RESPONSE_OK){
+            return ResponseEntity.ok(responseData.getData());
+        }else{
+            throw new GmairShopGlobalException(responseData.getDescription());
+        }
     }
 }

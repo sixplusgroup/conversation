@@ -14,6 +14,8 @@ import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.IntegralRecordService;
 import finley.gmair.service.MembershipService;
 
+import finley.gmair.util.ResponseData;
+import finley.gmair.util.ResultData;
 import lombok.AllArgsConstructor;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +46,7 @@ public class IntegralController {
 
     @PostMapping("/deposit")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<Void> deposit(@Valid @RequestBody IntegralDepositParam params){
+    public ResponseData<Void> deposit(@Valid @RequestBody IntegralDepositParam params){
         Integer integral = params.getIntegral();
         String description = params.getDescription();
         String consumerId = params.getConsumerId();
@@ -66,13 +68,13 @@ public class IntegralController {
         integralAdd.setDescription(description);
         integralAddService.createAdd(integralAdd);
 
-        return ResponseEntity.ok().build();
+        return ResponseData.ok();
     }
 
 
     @PostMapping(value = "/withdrawIntegral")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<Void> withdrawIntegral(@Valid @RequestBody IntegralWithdrawParam params){
+    public ResponseData<Void> withdrawIntegral(@Valid @RequestBody IntegralWithdrawParam params){
         String consumerId = params.getConsumerId();
         String description = params.getDescription();
         Integer integral = params.getIntegral();
@@ -93,25 +95,25 @@ public class IntegralController {
         integralRecord.setMembershipUserId(membershipId);
         integralRecordService.createRecord(integralRecord);
 
-        return ResponseEntity.ok().build();
+        return ResponseData.ok();
     }
 
     @PostMapping("/getIntegral")
-    public ResponseEntity<Integer> getMembershipIntegral(String consumerId){
+    public ResponseData<Integer> getMembershipIntegral(String consumerId){
         MembershipUser membershipUser = membershipService.getMembershipByConsumerId(consumerId);
-        return ResponseEntity.ok(membershipUser.getIntegral());
+        return ResponseData.ok(membershipUser.getIntegral());
     }
 
     @PostMapping("/getIntegralRecords")
-    public ResponseEntity<List<IntegralRecordDto>> getIntegralRecords(String consumerId){
+    public ResponseData<List<IntegralRecordDto>> getIntegralRecords(String consumerId){
         List<IntegralRecord> integralRecords = integralRecordService.getMyRecordsByConsumerId(consumerId);
-        return ResponseEntity.ok(mapperFacade.mapAsList(integralRecords, IntegralRecordDto.class));
+        return ResponseData.ok(mapperFacade.mapAsList(integralRecords, IntegralRecordDto.class));
 
     }
 
     @PostMapping("/confirmIntegral")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<Void> confirmIntegral(Long integralAddId){
+    public ResponseData<Void> confirmIntegral(Long integralAddId){
         if(ObjectUtil.isNull(integralAddId)||integralAddService.getById(integralAddId)==null){
             throw new MembershipGlobalException("can not find this record!");
         }
@@ -125,8 +127,7 @@ public class IntegralController {
         integralRecord.setIntegralValue(integralAdd.getIntegralValue());
         integralRecord.setMembershipUserId(integralAdd.getMembershipUserId());
         integralRecordService.createRecord(integralRecord);
-
-        return ResponseEntity.ok().build();
+        return ResponseData.ok();
     }
 
 
