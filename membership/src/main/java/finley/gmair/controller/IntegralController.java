@@ -22,12 +22,14 @@ import lombok.AllArgsConstructor;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -36,6 +38,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/membership/integral")
+@Validated
 public class IntegralController {
 
     private final IntegralAddService integralAddService;
@@ -145,13 +148,13 @@ public class IntegralController {
     }
 
     @PostMapping("/getIntegral")
-    public ResponseData<Integer> getMembershipIntegral(String consumerId){
+    public ResponseData<Integer> getMembershipIntegral(@NotBlank String consumerId){
         MembershipUser membershipUser = membershipService.getMembershipByConsumerId(consumerId);
         return ResponseData.ok(membershipUser.getIntegral());
     }
 
     @PostMapping("/getIntegralRecords")
-    public ResponseData<List<IntegralRecordDto>> getIntegralRecords(String consumerId){
+    public ResponseData<List<IntegralRecordDto>> getIntegralRecords(@NotBlank String consumerId){
         List<IntegralRecord> integralRecords = integralRecordService.getMyRecordsByConsumerId(consumerId);
         return ResponseData.ok(mapperFacade.mapAsList(integralRecords, IntegralRecordDto.class));
 

@@ -29,7 +29,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
     @Override
-    @Cacheable(cacheNames = "user", key = "#userId")
     public User getUserByUserId(String userId) {
         return userMapper.selectById(userId);
     }

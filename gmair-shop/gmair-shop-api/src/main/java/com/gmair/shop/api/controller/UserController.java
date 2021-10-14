@@ -98,11 +98,13 @@ public class UserController {
 		return consumerTokenServices.revokeToken(token);
 	}
 
+
+
 	/**
 	 * set user's phone number
 	 **/
 	@PutMapping("/setUserPhone")
-	public ResponseEntity<Void> setUserPhone(@RequestBody UserPhoneParam userPhoneParam){
+	public ResponseEntity<String> setUserPhone(@RequestBody UserPhoneParam userPhoneParam){
 		String userId = SecurityUtils.getUser().getUserId();
 		AppConnect appConnect =appConnectService.getByUserId(userId,App.MINI);
 		String sessionKey = gmairUserDetailsService.setOrGetSessionkey(appConnect.getBizUserId(),"");
@@ -122,7 +124,19 @@ public class UserController {
 		user.setUserId(userId);
 		user.setUserMobile(phoneNoInfo.getPhoneNumber());
 		user.setCountryCode(phoneNoInfo.getCountryCode());
+		userService.updateById(user);
+		return ResponseEntity.ok(user.getUserMobile());
 
+	}
+	/**
+	 * @Description get consumer_id from module auth-consumer
+	 * @Date  2021/10/14 16:34
+	 * @return org.springframework.http.ResponseEntity<java.lang.String>
+	 */
+	@PutMapping("/setConsumerId")
+	public ResponseEntity<Void> setConsumerId(){
+		String userId = SecurityUtils.getUser().getUserId();
+		User user = userService.getUserByUserId(userId);
 		// get consumer_id from module auth-consumer
 		ResultData resultData = userFeignService.getConsumerIdByPhone(user.getUserMobile());
 
@@ -131,18 +145,16 @@ public class UserController {
 			form.setPhone(user.getUserMobile());
 			ResultData result = userFeignService.consumerRegister(form);// create new consumer
 			if(result.getResponseCode()!=ResponseCode.RESPONSE_OK){
-				throw new GmairShopGlobalException("绑定手机号失败");
+				throw new GmairShopGlobalException("用户绑定失败");
 			}
 			Consumer consumer = (Consumer) result.getData();
 			user.setConsumerId(consumer.getConsumerId());
 		}else if(resultData.getResponseCode()== ResponseCode.RESPONSE_ERROR){
-			throw new GmairShopGlobalException("绑定手机号失败");
+			throw new GmairShopGlobalException("用户绑定失败");
 		}else{ // success to get ConsumerId
 			user.setConsumerId((String)resultData.getData());
 		}
 		userService.updateById(user);
 		return ResponseEntity.ok().build();
 	}
-
-
 }

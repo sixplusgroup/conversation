@@ -1,5 +1,6 @@
 package com.gmair.shop.api.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.gmair.shop.bean.model.User;
 import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
@@ -35,6 +36,9 @@ public class MembershipController {
         // feign: make the user be a membership
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
+        if(StrUtil.isBlank(user.getConsumerId())){
+            throw new GmairShopGlobalException("用户未绑定");
+        }
         ResponseData<Void> response =membershipFeignService.enrollMembership(user.getConsumerId());
         if(response.getResponseCode()== ResponseCode.RESPONSE_OK){
 
@@ -47,6 +51,9 @@ public class MembershipController {
     public ResponseEntity<Boolean> isMembership(){
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
+        if(StrUtil.isBlank(user.getConsumerId())){
+            throw new GmairShopGlobalException("用户未绑定");
+        }
         ResponseData<Boolean> responseData = membershipFeignService.isMembership(user.getConsumerId());
         if(responseData.getResponseCode()==ResponseCode.RESPONSE_OK){
             return ResponseEntity.ok(responseData.getData());
