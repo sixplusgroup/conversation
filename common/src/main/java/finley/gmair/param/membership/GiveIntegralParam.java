@@ -9,13 +9,10 @@ import javax.validation.constraints.Size;
  * @Author Joby
  */
 @Data
-public class IntegralDepositParam {
-
+public class GiveIntegralParam {
     @NotNull
-    private String consumerId;
+    private Long integralAddId;
     @NotNull
     private Integer integral;
-    @Size(max=100)
-    private String description;
 
 }

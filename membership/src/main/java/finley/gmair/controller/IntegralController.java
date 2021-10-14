@@ -8,8 +8,10 @@ import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.model.membership.IntegralAdd;
 import finley.gmair.model.membership.IntegralRecord;
 import finley.gmair.model.membership.MembershipUser;
+import finley.gmair.param.membership.GiveIntegralParam;
 import finley.gmair.param.membership.IntegralDepositParam;
 import finley.gmair.param.membership.IntegralWithdrawParam;
+import finley.gmair.param.membership.SupplementaryIntegralParam;
 import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.IntegralRecordService;
 import finley.gmair.service.MembershipService;
@@ -44,30 +46,70 @@ public class IntegralController {
 
     private final MapperFacade mapperFacade;
 
+    /**
+     * @Description directly add integral, don't need to confirm
+     * @Date  2021/10/13 21:25 
+     * @param params: 
+     * @return finley.gmair.util.ResponseData<java.lang.Void>
+     */
     @PostMapping("/deposit")
     @Transactional(rollbackFor = Exception.class)
     public ResponseData<Void> deposit(@Valid @RequestBody IntegralDepositParam params){
         Integer integral = params.getIntegral();
-        String description = params.getDescription();
         String consumerId = params.getConsumerId();
-
+        String description = "【手动添加】"+ params.getDescription();
         if(integral==null||integral<0){
             throw new MembershipGlobalException("the data is invalid, please try again!");
         }
         if(integral>10000){
             throw new MembershipGlobalException("integral is too large in one time!");
         }
-        if(StrUtil.isNullOrUndefined(description)||description.length()>80){
-            throw new MembershipGlobalException("the description is invalid!");
-        }
-
+        // create integralAdd record
         IntegralAdd integralAdd = new IntegralAdd();
         integralAdd.setIsConfirmed(false);
         integralAdd.setMembershipUserId(membershipService.getMembershipIdByConsumerId(consumerId));
         integralAdd.setIntegralValue(integral);
         integralAdd.setDescription(description);
         integralAddService.createAdd(integralAdd);
+        // directly confirm this integralAdd record
+        integralAddService.confirmIntegralById(integralAdd.getId());
+        // log integral operation
+        IntegralAdd confirmIntegralAdd = integralAddService.getById(integralAdd.getId());
+        IntegralRecord integralRecord = new IntegralRecord();
+        integralRecord.setIsAdd(true);
+        integralRecord.setDescription(confirmIntegralAdd.getDescription());
+        integralRecord.setIntegralValue(confirmIntegralAdd.getIntegralValue());
+        integralRecord.setMembershipUserId(confirmIntegralAdd.getMembershipUserId());
+        integralRecordService.createRecord(integralRecord);
+        return ResponseData.ok();
+    }
 
+    @PostMapping("/createIntegralAdd")
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseData<Void> createIntegralAdd(@Valid @RequestBody SupplementaryIntegralParam params){
+        String consumerId = params.getConsumerId();
+        IntegralAdd integralAdd = new IntegralAdd();
+        integralAdd.setIsConfirmed(false);
+        integralAdd.setDescription(params.getDescription());
+        integralAdd.setMembershipUserId(membershipService.getMembershipIdByConsumerId(consumerId));
+        integralAdd.setDeviceModel(params.getDeviceModel());
+        integralAdd.setPictures(params.getPictures());
+        integralAddService.createAdd(integralAdd);
+        return ResponseData.ok();
+    }
+
+    @PostMapping("/giveIntegralOfIntegralAdd")
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseData<Void> giveIntegralOfIntegralAdd(@Valid @RequestBody GiveIntegralParam params){
+        IntegralAdd integralAdd = integralAddService.getById(params.getIntegralAddId());
+        if(ObjectUtil.isNull(params.getIntegralAddId())||integralAdd==null){
+            throw new MembershipGlobalException("can not find this record!");
+        }
+        Integer integral = params.getIntegral();
+        if(integral==null||integral>10000||integral<0){
+            throw new MembershipGlobalException("integral is too large in one time!");
+        }
+        integralAdd.setIntegralValue(integral);
         return ResponseData.ok();
     }
 

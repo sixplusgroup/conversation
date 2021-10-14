@@ -25,4 +25,6 @@ public class IntegralAdd implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date confirmedTime;
     private String description;
+    private String deviceModel;
+    private String pictures;
 }

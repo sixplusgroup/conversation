@@ -1,8 +1,10 @@
 package com.gmair.shop.service.feign;
 
 import com.gmair.shop.bean.app.dto.IntegralRecordDto;
+import com.gmair.shop.bean.app.param.PSupplementaryIntegralParam;
 import finley.gmair.param.membership.IntegralDepositParam;
 import finley.gmair.param.membership.IntegralWithdrawParam;
+import finley.gmair.param.membership.SupplementaryIntegralParam;
 import finley.gmair.util.ResponseData;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +25,11 @@ public interface MembershipFeignService {
     @PostMapping("/membership/membership/enroll")
     ResponseData<Void> enrollMembership(@RequestParam("consumerId") String consumerId);
 
-    @PostMapping("/membership/integral/deposit")
-    ResponseData<Void> deposit(@RequestBody IntegralDepositParam param);
+//    @PostMapping("/membership/integral/deposit")
+//    ResponseData<Void> deposit(@RequestBody IntegralDepositParam param);
+
+    @PostMapping("/membership/integral/createIntegralAdd")
+    ResponseData<Void> createIntegralAdd(@RequestBody SupplementaryIntegralParam param);
 
     @PostMapping("/membership/integral/withdrawIntegral")
     ResponseData<Void> withdrawIntegral(@RequestBody IntegralWithdrawParam param);

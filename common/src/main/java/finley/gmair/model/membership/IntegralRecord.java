@@ -22,5 +22,4 @@ public class IntegralRecord {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime = new Date();
     private String description;
-
 }

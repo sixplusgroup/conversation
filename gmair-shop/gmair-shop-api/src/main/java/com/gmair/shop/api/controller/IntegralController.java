@@ -1,15 +1,15 @@
 package com.gmair.shop.api.controller;
 
 import com.gmair.shop.bean.app.dto.IntegralRecordDto;
-import com.gmair.shop.bean.app.param.PIntegralDepositParam;
+import com.gmair.shop.bean.app.param.PSupplementaryIntegralParam;
 import com.gmair.shop.bean.app.param.PIntegralWithdrawParam;
 import com.gmair.shop.bean.model.User;
 import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.UserService;
 import com.gmair.shop.service.feign.MembershipFeignService;
-import finley.gmair.param.membership.IntegralDepositParam;
 import finley.gmair.param.membership.IntegralWithdrawParam;
+import finley.gmair.param.membership.SupplementaryIntegralParam;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResponseData;
 import lombok.AllArgsConstructor;
@@ -35,22 +35,22 @@ public class IntegralController {
 
     private final MembershipFeignService membershipFeignService;
 
-    @PostMapping("/deposit")
+    @PostMapping("/supplementaryIntegral")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<Void> deposit(@Valid @RequestBody PIntegralDepositParam params){
+    public ResponseEntity<Void> supplementaryIntegral(@Valid @RequestBody PSupplementaryIntegralParam params){
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
-        IntegralDepositParam integralDepositParam = new IntegralDepositParam();
-        integralDepositParam.setConsumerId(user.getConsumerId());
-        integralDepositParam.setDescription(params.getDescription());
-        integralDepositParam.setIntegral(params.getIntegral());
-        ResponseData<Void> responseData = membershipFeignService.deposit(integralDepositParam);
+        SupplementaryIntegralParam supplementaryIntegralParam = new SupplementaryIntegralParam();
+        supplementaryIntegralParam.setConsumerId(user.getConsumerId());
+        supplementaryIntegralParam.setDescription(params.getDescription());
+        supplementaryIntegralParam.setDeviceModel(params.getDeviceModel());
+        supplementaryIntegralParam.setPictures(params.getPictures());
+        ResponseData<Void> responseData = membershipFeignService.createIntegralAdd(supplementaryIntegralParam);
         if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
             return ResponseEntity.ok().build();
         }else{
             throw new GmairShopGlobalException(responseData.getDescription());
         }
-
     }
 
     @PostMapping(value = "/withdrawIntegral")
