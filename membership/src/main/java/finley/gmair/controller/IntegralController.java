@@ -109,7 +109,11 @@ public class IntegralController {
         if(integral==null||integral>10000||integral<0){
             throw new MembershipGlobalException("integral is too large in one time!");
         }
+        if(integralAdd.getIsConfirmed()){
+            throw new MembershipGlobalException("this record is already confirmed!");
+        }
         integralAdd.setIntegralValue(integral);
+        integralAddService.updateById(integralAdd);
         return ResponseData.ok();
     }
 

@@ -12,4 +12,6 @@ public interface IntegralAddService extends IService<IntegralAdd> {
     void createAdd(IntegralAdd integralAdd);
 
     void confirmIntegralById(Long integralAddId);
+
+
 }

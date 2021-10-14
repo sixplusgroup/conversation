@@ -2,6 +2,7 @@ package finley.gmair.param.membership;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -10,12 +11,12 @@ import javax.validation.constraints.Size;
  */
 @Data
 public class SupplementaryIntegralParam {
-    @NotNull
+    @NotBlank
     private String consumerId;
-    @NotNull
+    @NotBlank
     private String deviceModel;
     @Size(max=80)
     private String description;
-    @NotNull
+    @NotBlank
     private String pictures;
 }
