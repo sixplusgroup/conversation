@@ -77,4 +77,9 @@ public class MembershipServiceImpl extends ServiceImpl<MembershipMapper, Members
         membershipUser.setIntegral(membershipUser.getIntegral()-integral);
         membershipMapper.updateById(membershipUser);
     }
+
+    @Override
+    public void updateMembership(MembershipUser membershipUser) {
+        membershipMapper.updateById(membershipUser);
+    }
 }

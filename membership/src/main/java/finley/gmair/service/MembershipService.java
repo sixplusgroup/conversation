@@ -21,5 +21,6 @@ public interface MembershipService extends IService<MembershipUser> {
 
     void withdrawIntegralById(Long membershipId, Integer integral);
 
+    void updateMembership(MembershipUser membershipUser);
 
 }

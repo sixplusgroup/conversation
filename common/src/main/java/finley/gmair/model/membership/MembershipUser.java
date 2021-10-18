@@ -24,7 +24,10 @@ public class MembershipUser extends EntityPlus implements Serializable {
     private Integer integral;
     private Integer membershipType= 0;
     private String consumerId;
-
+    private String userMobile;
+    private String pic;
+    private String nickName;
+    private String consumerName;
 
 
 }

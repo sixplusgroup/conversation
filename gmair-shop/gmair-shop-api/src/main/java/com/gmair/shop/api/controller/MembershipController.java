@@ -6,6 +6,7 @@ import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.UserService;
 import com.gmair.shop.service.feign.MembershipFeignService;
+import finley.gmair.param.membership.MembershipInfoParam;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResponseData;
 import lombok.AllArgsConstructor;
@@ -41,7 +42,16 @@ public class MembershipController {
         }
         ResponseData<Void> response =membershipFeignService.enrollMembership(user.getConsumerId());
         if(response.getResponseCode()== ResponseCode.RESPONSE_OK){
-
+            MembershipInfoParam membershipInfoParam = new MembershipInfoParam();
+            membershipInfoParam.setConsumerId(user.getConsumerId());
+            membershipInfoParam.setConsumerName(user.getRealName());
+            membershipInfoParam.setNickName(user.getNickName());
+            membershipInfoParam.setPic(user.getPic());
+            membershipInfoParam.setUserMobile(user.getUserMobile());
+            ResponseData<Void> responseData = membershipFeignService.setMembershipInfo(membershipInfoParam);
+            if(responseData.getResponseCode()!=ResponseCode.RESPONSE_OK){
+                throw new GmairShopGlobalException("绑定用户信息失败");
+            }
             return ResponseEntity.ok().build();
         }else{
             throw new GmairShopGlobalException(response.getDescription());

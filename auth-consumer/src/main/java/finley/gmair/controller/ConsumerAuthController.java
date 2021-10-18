@@ -15,7 +15,9 @@ import finley.gmair.service.MessageService;
 import finley.gmair.service.SerialService;
 import finley.gmair.service.WechatService;
 import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResponseData;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.consumer.ConsumerPartInfoVo;
 import finley.gmair.vo.consumer.ConsumerVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -520,14 +522,14 @@ public class ConsumerAuthController {
     }
 
     /**
-     * get ConsumerId by phone
-     *
-     * @param
-     * @return
+     * @Date  10/18/2021 6:28 PM
+     * @param phone:
+     * @return finley.gmair.util.ResultData
+     * get ConsumerInfo by phone
      */
-    @GetMapping("/probe/consumerid/by/phone")
-    public ResultData probeConsumerIdByPhone(String phone) {
-        ResultData result = new ResultData();
+    @GetMapping("/probe/consumerInfo/by/phone")
+    public ResponseData<ConsumerPartInfoVo> probeConsumerInfoByPhone(String phone) {
+        ResponseData<ConsumerPartInfoVo> result = new ResponseData();
         if (StringUtils.isEmpty(phone)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("please provide all information");
@@ -546,7 +548,13 @@ public class ConsumerAuthController {
             result.setDescription("not find consumer info by phone");
             return result;
         } else {
-            result.setData(((List<ConsumerVo>) response.getData()).get(0).getConsumerId());
+            ConsumerVo consumerVo = ((List<ConsumerVo>) response.getData()).get(0);
+            ConsumerPartInfoVo consumerPartInfoVo = new ConsumerPartInfoVo();
+            consumerPartInfoVo.setConsumerId(consumerVo.getConsumerId());
+            consumerPartInfoVo.setName(consumerVo.getName());
+            consumerPartInfoVo.setUsername(consumerVo.getUsername());
+            consumerPartInfoVo.setPhone(consumerVo.getPhone());
+            result.setData(consumerPartInfoVo);
             result.setResponseCode(ResponseCode.RESPONSE_OK);
             result.setDescription("success to find consumer info by phone");
             return result;

@@ -3,12 +3,14 @@ package finley.gmair.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.model.membership.MembershipUser;
+import finley.gmair.param.membership.MembershipInfoParam;
 import finley.gmair.service.MembershipService;
 import finley.gmair.util.ResponseData;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,5 +45,18 @@ public class MembershipController {
         else return ResponseData.ok(false);
     }
 
+    @PostMapping("/setMembershipInfo")
+    public ResponseData<Void> setMembershipInfo(@Valid @RequestBody MembershipInfoParam membershipInfoParam){
+        MembershipUser membershipUser = membershipService.getMembershipByConsumerId(membershipInfoParam.getConsumerId());
+        if(membershipUser==null){
+            throw new MembershipGlobalException("can not find this membership");
+        }
+        membershipUser.setUserMobile(membershipInfoParam.getUserMobile());
+        membershipUser.setPic(membershipInfoParam.getPic());
+        membershipUser.setNickName(membershipInfoParam.getNickName());
+        membershipUser.setConsumerName(membershipInfoParam.getConsumerName());
+        membershipService.updateMembership(membershipUser);
+        return ResponseData.ok();
+    }
 
 }

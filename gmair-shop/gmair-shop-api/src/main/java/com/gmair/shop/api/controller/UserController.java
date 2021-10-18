@@ -18,7 +18,9 @@ import com.gmair.shop.service.feign.UserFeignService;
 import finley.gmair.model.consumer.Consumer;
 import finley.gmair.form.consumer.ConsumerForm;
 import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResponseData;
 import finley.gmair.util.ResultData;
+import finley.gmair.vo.consumer.ConsumerPartInfoVo;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
@@ -138,7 +140,7 @@ public class UserController {
 		String userId = SecurityUtils.getUser().getUserId();
 		User user = userService.getUserByUserId(userId);
 		// get consumer_id from module auth-consumer
-		ResultData resultData = userFeignService.getConsumerIdByPhone(user.getUserMobile());
+		ResponseData<ConsumerPartInfoVo> resultData = userFeignService.getConsumerInfoByPhone(user.getUserMobile());
 
 		if(resultData.getResponseCode()== ResponseCode.RESPONSE_NULL){// no consumer in auth-consumer
 			ConsumerForm form = new ConsumerForm();
@@ -151,8 +153,10 @@ public class UserController {
 			user.setConsumerId(consumer.getConsumerId());
 		}else if(resultData.getResponseCode()== ResponseCode.RESPONSE_ERROR){
 			throw new GmairShopGlobalException("用户绑定失败");
-		}else{ // success to get ConsumerId
-			user.setConsumerId((String)resultData.getData());
+		}else{ // success to get ConsumerId and other info
+			ConsumerPartInfoVo consumerPartInfoVo =resultData.getData();
+			user.setConsumerId(consumerPartInfoVo.getConsumerId());
+			user.setRealName(consumerPartInfoVo.getName());
 		}
 		userService.updateById(user);
 		return ResponseEntity.ok().build();
