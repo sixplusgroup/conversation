@@ -90,7 +90,7 @@
             AND consumer_consignee = #{consumerConsignee}
         </if>
         <if test="consumerPhone != null">
-            AND consumer_phone = #{consumer_phone}
+            AND consumer_phone = #{consumerPhone}
         </if>
         <if test="assignStatus != null">
             AND assign_status = #{assignStatus}
@@ -372,4 +372,7 @@
         DELETE FROM gmair_install.install_assign
         WHERE assign_id = #{assignId}
     </delete>
+
+
+
 </mapper>

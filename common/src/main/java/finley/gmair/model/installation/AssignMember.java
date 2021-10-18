@@ -2,6 +2,7 @@ package finley.gmair.model.installation;
 
 import finley.gmair.model.Entity;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class AssignMember extends Entity {
