@@ -4,6 +4,8 @@ package finley.gmair.model.membership;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import finley.gmair.model.Entity;
+import finley.gmair.model.EntityPlus;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,7 +17,7 @@ import java.util.Date;
  */
 @Data
 @TableName("tz_membership_user")
-public class MembershipUser implements Serializable {
+public class MembershipUser extends EntityPlus implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
@@ -23,7 +25,6 @@ public class MembershipUser implements Serializable {
     private Integer membershipType= 0;
     private String consumerId;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime = new Date();
+
 
 }
