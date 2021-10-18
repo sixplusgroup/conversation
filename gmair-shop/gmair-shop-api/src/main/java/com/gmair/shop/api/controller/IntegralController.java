@@ -8,10 +8,12 @@ import com.gmair.shop.common.exception.GmairShopGlobalException;
 import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.UserService;
 import com.gmair.shop.service.feign.MembershipFeignService;
+import com.gmair.shop.service.feign.ResourceFeignService;
 import finley.gmair.param.membership.IntegralWithdrawParam;
 import finley.gmair.param.membership.SupplementaryIntegralParam;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResponseData;
+import finley.gmair.util.ResultData;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,8 @@ public class IntegralController {
 
     private final MembershipFeignService membershipFeignService;
 
+    private final ResourceFeignService resourceFeignService;
+
     @PostMapping("/supplementaryIntegral")
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<Void> supplementaryIntegral(@Valid @RequestBody PSupplementaryIntegralParam params){
@@ -46,6 +50,11 @@ public class IntegralController {
         supplementaryIntegralParam.setDeviceModel(params.getDeviceModel());
         supplementaryIntegralParam.setPictures(params.getPictures());
         ResponseData<Void> responseData = membershipFeignService.createIntegralAdd(supplementaryIntegralParam);
+
+        ResultData resultData = resourceFeignService.save(params.getPictures());
+        if(resultData.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            throw new GmairShopGlobalException(resultData.getDescription());
+        }
         if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
             return ResponseEntity.ok().build();
         }else{
