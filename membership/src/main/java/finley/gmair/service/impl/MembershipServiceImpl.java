@@ -4,12 +4,18 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.netflix.discovery.converters.Auto;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.dao.MembershipMapper;
 import finley.gmair.enums.membership.MembershipType;
+import finley.gmair.model.membership.IntegralRecord;
 import finley.gmair.model.membership.MembershipUser;
+import finley.gmair.service.IntegralRecordService;
+import finley.gmair.service.MembershipConfigService;
 import finley.gmair.service.MembershipService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -17,20 +23,47 @@ import java.util.Date;
 /**
  * @Author Joby
  */
-@AllArgsConstructor
 @Service
 public class MembershipServiceImpl extends ServiceImpl<MembershipMapper, MembershipUser> implements MembershipService {
 
+
     private final MembershipMapper membershipMapper;
+
+    private final MembershipConfigService membershipConfigService;
+    //Use constructor injection
+    public MembershipServiceImpl(MembershipMapper membershipMapper, MembershipConfigService membershipConfigService) {
+        this.membershipMapper = membershipMapper;
+        this.membershipConfigService = membershipConfigService;
+    }
+
+    //Prevent service cycle dependency
+    @Lazy
+    @Autowired
+    private IntegralRecordService integralRecordService;
 
     @Override
     public Boolean createMembership(String consumerId) {
         MembershipUser membership = new MembershipUser();
-        membership.setIntegral(0);
+
         membership.setMembershipType(MembershipType.ORDINARY.value());
         membership.setConsumerId(consumerId);
         membership.setCreateTime(new Date());
-        return membershipMapper.insert(membership)==1;
+
+        Integer initIntegral = membershipConfigService.getConfigSignUpIntegral();
+        membership.setIntegral(initIntegral);
+
+        Boolean resultFlag = membershipMapper.insert(membership)==1;
+
+        // log the integral operation
+        IntegralRecord integralRecord = new IntegralRecord();
+        integralRecord.setIsAdd(true);
+        integralRecord.setDescription("加入会员");
+        integralRecord.setIntegralValue(initIntegral);
+        integralRecord.setMembershipUserId(membership.getId());
+        integralRecordService.createRecord(integralRecord);
+
+
+        return resultFlag;
     }
 
     @Override
@@ -40,11 +73,11 @@ public class MembershipServiceImpl extends ServiceImpl<MembershipMapper, Members
 
     @Override
     public Long getMembershipIdByConsumerId(String consumerId) {
-        Long membershipId =membershipMapper.selectOne(new LambdaQueryWrapper<MembershipUser>().eq(MembershipUser::getConsumerId, consumerId)).getId();
-        if(membershipId==null||membershipId==0){
+        MembershipUser membershipUser =membershipMapper.selectOne(new LambdaQueryWrapper<MembershipUser>().eq(MembershipUser::getConsumerId, consumerId));
+        if(membershipUser==null){
             throw new MembershipGlobalException("this consumer isn't a membership!");
         }
-        return membershipId;
+        return membershipUser.getId();
     }
 
     @Override

@@ -11,8 +11,8 @@ import javax.validation.constraints.Size;
 @Data
 public class GiveIntegralParam {
     @NotNull
-    private Long integralAddId;
+    private Long id;
     @NotNull
-    private Integer integral;
+    private Integer integralValue;
 
 }

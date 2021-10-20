@@ -51,8 +51,11 @@
 				)
 			</if>
 		</where>
-		<if test='integralRecordParam.sortType == "CREATETIME"'>
+		<if test='integralRecordParam.sortType == ""'>
 			ORDER BY create_time desc
+		</if>
+		<if test='integralRecordParam.sortType == "CREATETIME"'>
+			ORDER BY create_time asc
 		</if>
 		<if test='paginationAdapter.begin != null and paginationAdapter.size != null'>
 			LIMIT #{paginationAdapter.begin},#{paginationAdapter.size}

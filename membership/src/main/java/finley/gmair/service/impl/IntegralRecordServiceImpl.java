@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 
+import finley.gmair.dao.MembershipMapper;
 import finley.gmair.dto.membership.IntegralRecordDto;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.dao.IntegralRecordMapper;
@@ -11,10 +12,13 @@ import finley.gmair.model.membership.IntegralRecord;
 import finley.gmair.model.membership.MembershipUser;
 import finley.gmair.param.installation.IntegralRecordParam;
 import finley.gmair.service.IntegralRecordService;
+import finley.gmair.service.MembershipConfigService;
 import finley.gmair.service.MembershipService;
 import finley.gmair.util.PaginationAdapter;
 import finley.gmair.util.PaginationParam;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,12 +27,17 @@ import java.util.List;
  * @Author Joby
  */
 @Service
-@AllArgsConstructor
 public class IntegralRecordServiceImpl extends ServiceImpl<IntegralRecordMapper, IntegralRecord> implements IntegralRecordService {
 
     private final IntegralRecordMapper integralRecordMapper;
-
-    private final MembershipService membershipService;
+    // Use constructor injection
+    public IntegralRecordServiceImpl(IntegralRecordMapper integralRecordMapper) {
+        this.integralRecordMapper = integralRecordMapper;
+    }
+    //Prevent service cycle dependency
+    @Lazy
+    @Autowired
+    private MembershipService membershipService;
 
     @Override
     public void createRecord(IntegralRecord integralRecord) {

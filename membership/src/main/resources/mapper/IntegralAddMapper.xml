@@ -3,4 +3,110 @@
 <mapper namespace="finley.gmair.dao.IntegralAddMapper">
 
 
+    <select id="listConfirmPage" resultType="finley.gmair.dto.installation.IntegralConfirmDto">
+        SELECT
+			`ia`.`id` AS `id`,
+			`ia`.`membership_user_id` AS `membership_user_id`,
+			`ia`.`integral_value` AS `integral_value`,
+			`ia`.`is_confirmed` AS `is_confirmed`,
+			`ia`.`confirmed_time` AS `confirmed_time`,
+			`ia`.`create_time` AS `create_time`,
+			`ia`.`description` AS `description`,
+			`ia`.`device_model` AS `device_model`,
+			`ia`.`pictures` AS `pictures`,
+			`mu`.`integral` AS `membership_integral`,
+			`mu`.`membership_type` AS `membership_type`,
+			`mu`.`user_mobile` AS `user_mobile`,
+			`mu`.`consumer_name` AS `consumer_name` 
+		FROM
+			( `tz_integral_add` `ia` LEFT JOIN `tz_membership_user` `mu` ON ( ( `ia`.`membership_user_id` = `mu`.`id` ) ) )
+		<where>
+			<if test="integralConfirmParam.membershipType!=null">
+				and membership_type = #{integralConfirmParam.membershipType}
+			</if>
+			<if test="integralConfirmParam.isConfirmed!=null">
+				and is_confirmed = #{integralConfirmParam.isConfirmed}
+			</if>
+			<if test="integralConfirmParam.blockFlag!=null">
+				and ia.block_flag = #{integralConfirmParam.blockFlag}
+				and mu.block_flag = #{integralConfirmParam.blockFlag}
+
+			</if>
+			<if test="integralConfirmParam.membershipUserId!=null">
+				and membership_user_id = #{integralConfirmParam.membershipUserId}
+			</if>
+
+			<if test="integralConfirmParam.search != null and integralConfirmParam.search != '' ">
+				and (
+				user_mobile like concat('%',#{integralConfirmParam.search},'%')
+				or consumer_name like concat('%',#{integralConfirmParam.search},'%')
+				or description like concat('%',#{integralConfirmParam.search},'%')
+				or device_model like concat('%',#{integralConfirmParam.search},'%')
+				)
+			</if>
+		</where>
+
+		<if test='integralConfirmParam.sortType == "CREATETIME"'>
+			ORDER BY create_time desc
+		</if>
+		<if test='integralConfirmParam.sortType == "CONFIRMEDTIME"'>
+			ORDER BY confirmed_time desc
+		</if>
+		<if test='paginationAdapter.begin != null and paginationAdapter.size != null'>
+			LIMIT #{paginationAdapter.begin},#{paginationAdapter.size}
+		</if>
+    </select>
+    <select id="countConfirmPage" resultType="java.lang.Long">
+		SELECT
+			COUNT(0)
+		FROM
+			( `tz_integral_add` `ia` LEFT JOIN `tz_membership_user` `mu` ON ( ( `ia`.`membership_user_id` = `mu`.`id` ) ) )
+		<where>
+			<if test="integralConfirmParam.membershipType!=null">
+				and membership_type = #{integralConfirmParam.membershipType}
+			</if>
+			<if test="integralConfirmParam.isConfirmed!=null">
+				and is_confirmed = #{integralConfirmParam.isConfirmed}
+			</if>
+			<if test="integralConfirmParam.blockFlag!=null">
+				and ia.block_flag = #{integralConfirmParam.blockFlag}
+				and mu.block_flag = #{integralConfirmParam.blockFlag}
+
+			</if>
+			<if test="integralConfirmParam.membershipUserId!=null">
+				and membership_user_id = #{integralConfirmParam.membershipUserId}
+			</if>
+
+			<if test="integralConfirmParam.search != null and integralConfirmParam.search != '' ">
+				and (
+				user_mobile like concat('%',#{integralConfirmParam.search},'%')
+				or consumer_name like concat('%',#{integralConfirmParam.search},'%')
+				or description like concat('%',#{integralConfirmParam.search},'%')
+				or device_model like concat('%',#{integralConfirmParam.search},'%')
+				)
+			</if>
+		</where>
+
+	</select>
+	<select id="getIntegralConfirmById" resultType="finley.gmair.dto.installation.IntegralConfirmDto">
+		SELECT
+			`ia`.`id` AS `id`,
+			`ia`.`membership_user_id` AS `membership_user_id`,
+			`ia`.`integral_value` AS `integral_value`,
+			`ia`.`is_confirmed` AS `is_confirmed`,
+			`ia`.`confirmed_time` AS `confirmed_time`,
+			`ia`.`create_time` AS `create_time`,
+			`ia`.`description` AS `description`,
+			`ia`.`device_model` AS `device_model`,
+			`ia`.`pictures` AS `pictures`,
+			`mu`.`integral` AS `membership_integral`,
+			`mu`.`membership_type` AS `membership_type`,
+			`mu`.`user_mobile` AS `user_mobile`,
+			`mu`.`consumer_name` AS `consumer_name`
+		FROM
+			( `tz_integral_add` `ia` LEFT JOIN `tz_membership_user` `mu` ON ( ( `ia`.`membership_user_id` = `mu`.`id` ) ) )
+		where ia.id = #{id}	and ia.block_flag = 0 and mu.block_flag = 0
+
+
+	</select>
 </mapper>
