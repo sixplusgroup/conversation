@@ -8,6 +8,7 @@ import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.model.membership.IntegralAdd;
 import finley.gmair.model.membership.IntegralRecord;
 import finley.gmair.model.membership.MembershipUser;
+import finley.gmair.param.installation.IntegralRecordParam;
 import finley.gmair.param.membership.GiveIntegralParam;
 import finley.gmair.param.membership.IntegralDepositParam;
 import finley.gmair.param.membership.IntegralWithdrawParam;
@@ -16,6 +17,7 @@ import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.IntegralRecordService;
 import finley.gmair.service.MembershipService;
 
+import finley.gmair.util.PaginationParam;
 import finley.gmair.util.ResponseData;
 import finley.gmair.util.ResultData;
 import lombok.AllArgsConstructor;
@@ -23,10 +25,7 @@ import ma.glasnost.orika.MapperFacade;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -157,7 +156,6 @@ public class IntegralController {
     public ResponseData<List<IntegralRecordDto>> getIntegralRecords(@NotBlank String consumerId){
         List<IntegralRecord> integralRecords = integralRecordService.getMyRecordsByConsumerId(consumerId);
         return ResponseData.ok(mapperFacade.mapAsList(integralRecords, IntegralRecordDto.class));
-
     }
 
     @PostMapping("/confirmIntegral")
@@ -177,6 +175,13 @@ public class IntegralController {
         integralRecord.setMembershipUserId(integralAdd.getMembershipUserId());
         integralRecordService.createRecord(integralRecord);
         return ResponseData.ok();
+    }
+
+    @GetMapping("/getAllIntegralRecord/page")
+    public ResponseData<PaginationParam<IntegralRecordDto>> getAllintegralRecords(IntegralRecordParam integralRecordParam,PaginationParam<IntegralRecordDto> paginationParam){
+        integralRecordParam.setBlockFlag(false);
+        PaginationParam<IntegralRecordDto> integralRecordList = integralRecordService.getRecordPage(integralRecordParam,paginationParam);
+        return ResponseData.ok(integralRecordList);
     }
 
 

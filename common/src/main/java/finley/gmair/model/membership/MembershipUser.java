@@ -20,7 +20,6 @@ import java.util.Date;
 public class MembershipUser extends EntityPlus implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
-
     private Integer integral;
     private Integer membershipType= 0;
     private String consumerId;

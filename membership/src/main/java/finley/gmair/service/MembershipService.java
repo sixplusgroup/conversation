@@ -23,4 +23,6 @@ public interface MembershipService extends IService<MembershipUser> {
 
     void updateMembership(MembershipUser membershipUser);
 
+    void deleteMembershipById(String id);
+
 }

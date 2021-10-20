@@ -1,6 +1,7 @@
 package finley.gmair.model;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -17,6 +18,7 @@ public abstract class EntityPlus {
     @TableLogic
     protected Boolean blockFlag;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat( pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     public EntityPlus() {
         this.blockFlag = false;

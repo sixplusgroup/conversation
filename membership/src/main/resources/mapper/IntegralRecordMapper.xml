@@ -2,5 +2,92 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="finley.gmair.dao.IntegralRecordMapper">
 
+<!--	<resultMap id="IntegralRecordDto" type="finley.gmair.dto.membership.IntegralRecordDto">-->
+<!--		<result property="membershipUserId" column="membership_user_id"></result>-->
+<!--		<result property="integralValue" column="integral_value"></result>-->
+<!--		<result property="isAdd" column="is_add"></result>-->
+<!--		<result property="createTime" column="create_time"></result>-->
+<!--		<result property="description" column="description"></result>-->
+<!--		<result property="consumerName" column="consumer_name"></result>-->
+<!--		<result property="userMobile" column="user_mobile"></result>-->
+<!--		<result property="membershipIntegral" column="membership_integral"></result>-->
+<!--		<result property="membershipType" column="membership_type"></result>-->
+<!--	</resultMap>-->
 
+    <select id="listRecordPage" resultType="finley.gmair.dto.membership.IntegralRecordDto">
+        SELECT
+			ir.membership_user_id AS membership_user_id,
+			ir.integral_value AS integral_value,
+			ir.is_add AS is_add,
+			ir.create_time AS create_time,
+			ir.description AS description,
+			mu.user_mobile AS user_mobile,
+			mu.consumer_name AS consumer_name,
+			mu.integral AS membership_integral,
+			mu.membership_type AS membership_type
+		FROM
+			( tz_integral_record AS ir LEFT JOIN tz_membership_user AS mu ON ( ( ir.membership_user_id = mu.id ) ) )
+		<where>
+			<if test="integralRecordParam.membershipType!=null">
+				and membership_type = #{integralRecordParam.membershipType}
+			</if>
+			<if test="integralRecordParam.isAdd!=null">
+				and is_add = #{integralRecordParam.isAdd}
+			</if>
+			<if test="integralRecordParam.blockFlag!=null">
+				and ir.block_flag = #{integralRecordParam.blockFlag}
+				and mu.block_flag = #{integralRecordParam.blockFlag}
+
+			</if>
+			<if test="integralRecordParam.membershipUserId!=null">
+				and membership_user_id = #{integralRecordParam.membershipUserId}
+			</if>
+
+			<if test="integralRecordParam.search != null and integralRecordParam.search != '' ">
+				and (
+					user_mobile like concat('%',#{integralRecordParam.search},'%')
+					or consumer_name like concat('%',#{integralRecordParam.search},'%')
+					or description like concat('%',#{integralRecordParam.search},'%')
+				)
+			</if>
+		</where>
+		<if test='integralRecordParam.sortType == "CREATETIME"'>
+			ORDER BY create_time desc
+		</if>
+		<if test='paginationAdapter.begin != null and paginationAdapter.size != null'>
+			LIMIT #{paginationAdapter.begin},#{paginationAdapter.size}
+		</if>
+    </select>
+
+
+    <select id="countRecordPage" resultType="java.lang.Long">
+		SELECT
+			COUNT(0)
+		FROM
+		( tz_integral_record ir LEFT JOIN tz_membership_user mu ON ( ( ir.membership_user_id = mu.id ) ) )
+		<where>
+			<if test="integralRecordParam.membershipType!=null">
+				and membership_type = #{integralRecordParam.membershipType}
+			</if>
+			<if test="integralRecordParam.isAdd!=null">
+				and is_add = #{integralRecordParam.isAdd}
+			</if>
+			<if test="integralRecordParam.blockFlag!=null">
+				and ir.block_flag = #{integralRecordParam.blockFlag}
+				and mu.block_flag = #{integralRecordParam.blockFlag}
+			</if>
+			<if test="integralRecordParam.membershipUserId!=null">
+				and membership_user_id = #{integralRecordParam.membershipUserId}
+			</if>
+
+			<if test="integralRecordParam.search != null and integralRecordParam.search != '' ">
+				and (
+				user_mobile like concat('%',#{integralRecordParam.search},'%')
+				or consumer_name like concat('%',#{integralRecordParam.search},'%')
+				or description like concat('%',#{integralRecordParam.search},'%')
+				)
+			</if>
+		</where>
+
+	</select>
 </mapper>

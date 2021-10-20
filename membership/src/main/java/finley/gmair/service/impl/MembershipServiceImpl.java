@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -81,5 +82,13 @@ public class MembershipServiceImpl extends ServiceImpl<MembershipMapper, Members
     @Override
     public void updateMembership(MembershipUser membershipUser) {
         membershipMapper.updateById(membershipUser);
+    }
+
+    @Override
+    public void deleteMembershipById(String id) {
+        if(StrUtil.isBlank(id)){
+            throw new MembershipGlobalException("param can not be blank!");
+        }
+        membershipMapper.deleteById(id);
     }
 }
