@@ -38,7 +38,7 @@ public class WebLoginAuthenticationFilter extends AbstractAuthenticationProcessi
 
     @Autowired
     public WebLoginAuthenticationFilter(GmairUserDetailsService gmairUserDetailsService, WxMaService wxMaService) {
-        super("/webLogin");
+        super("/shop/consumer/webLogin");
         this.gmairUserDetailsService = gmairUserDetailsService;
         this.wxMaService = wxMaService;
     }

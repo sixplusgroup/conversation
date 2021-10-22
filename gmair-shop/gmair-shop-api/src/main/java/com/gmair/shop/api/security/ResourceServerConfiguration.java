@@ -31,7 +31,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .and()
                 .authorizeRequests()
                 //配置/p访问控制，必须认证过后才可以访问
-                .antMatchers("/px/**").authenticated();
+                .antMatchers("/shop/consumer/**").authenticated();
     }
 
 
