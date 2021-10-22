@@ -7,7 +7,7 @@
 
     <groupId>finley.gmair</groupId>
     <artifactId>membership</artifactId>
-    <version>3.7.0-SNAPSHOT</version>
+    <version>3.10.1-SNAPSHOT</version>
 
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -16,7 +16,6 @@
         <spring-cloud.version>Hoxton.SR12</spring-cloud.version>
         <spring-boot.version>2.3.6.RELEASE</spring-boot.version>
         <java.version>1.8</java.version>
-        <guava.version>28.2-jre</guava.version>
         <hutool.version>4.5.0</hutool.version>
         <mybatis-plus.version>3.3.0</mybatis-plus.version>
         <orika.version>1.5.4</orika.version>
@@ -133,13 +132,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

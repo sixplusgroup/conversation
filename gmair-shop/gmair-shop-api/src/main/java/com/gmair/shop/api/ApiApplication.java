@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = "com.gmair.shop.service")
-public class ApiApplication extends SpringBootServletInitializer{ // extends SpringBootServletInitializer 使用外置的容器启动  该部分注释亦可
-	public static void main(String[] args) {
+public class ApiApplication extends SpringBootServletInitializer {
+    public static void main(String[] args) {
         SpringApplication.run(ApiApplication.class, args);
-	}
+    }
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-		return builder.sources(ApiApplication.class);
-	}
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(ApiApplication.class);
+    }
 }
