@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/shop/notice")
+@RequestMapping("/shop/consumer/notice")
 @Api(tags = "公告管理接口")
 @AllArgsConstructor
 public class NoticeController {

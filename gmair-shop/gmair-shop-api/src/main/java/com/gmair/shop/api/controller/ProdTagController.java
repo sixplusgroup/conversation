@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/prod/tag")
+@RequestMapping("/shop/consumer/prod/tag")
 @Api(tags = "商品分组标签接口")
 @AllArgsConstructor
 public class ProdTagController {

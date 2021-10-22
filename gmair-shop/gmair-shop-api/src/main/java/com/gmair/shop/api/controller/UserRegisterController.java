@@ -41,7 +41,7 @@ import java.util.Objects;
  *
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/shop/consumer/user")
 @Api(tags = "用户注册相关接口")
 @AllArgsConstructor
 public class UserRegisterController {

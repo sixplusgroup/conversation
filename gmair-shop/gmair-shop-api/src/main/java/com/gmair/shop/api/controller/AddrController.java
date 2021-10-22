@@ -34,7 +34,7 @@ import ma.glasnost.orika.MapperFacade;
 
 
 @RestController
-@RequestMapping("/p/address")
+@RequestMapping("/shop/consumer/address")
 @Api(tags = "地址接口")
 @AllArgsConstructor
 public class AddrController {

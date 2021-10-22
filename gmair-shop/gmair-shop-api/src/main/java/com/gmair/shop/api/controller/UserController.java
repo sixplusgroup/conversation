@@ -40,7 +40,7 @@ import ma.glasnost.orika.MapperFacade;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/p/user")
+@RequestMapping("/shop/consumer/user")
 @Api(tags="用户接口")
 @AllArgsConstructor
 public class UserController {

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Author Joby
  */
 @RestController
-@RequestMapping("/p/membership")
+@RequestMapping("/shop/consumer/membership")
 @AllArgsConstructor
 public class MembershipController {
 

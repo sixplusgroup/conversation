@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/p/shopCart")
+@RequestMapping("/shop/consumer/shopCart")
 @Api(tags = "购物车接口")
 @AllArgsConstructor
 public class ShopCartController {

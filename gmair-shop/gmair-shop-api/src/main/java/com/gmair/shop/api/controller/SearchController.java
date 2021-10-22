@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/search")
+@RequestMapping("/shop/consumer/search")
 @Api(tags = "搜索接口")
 @AllArgsConstructor
 public class SearchController {

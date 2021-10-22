@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/shop/consumer/category")
 @Api(tags = "分类接口")
 public class CategoryController {
 

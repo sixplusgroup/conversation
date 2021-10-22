@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sku")
+@RequestMapping("/shop/consumer/sku")
 @Api(tags = "sku规格接口")
 @AllArgsConstructor
 public class SkuController {

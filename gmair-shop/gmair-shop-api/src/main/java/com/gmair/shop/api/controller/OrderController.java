@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
 
 @RestController
-@RequestMapping("/p/order")
+@RequestMapping("/shop/consumer/order")
 @Api(tags = "订单接口")
 public class OrderController {
 

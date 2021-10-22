@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
 
 @RestController
-@RequestMapping("/p/myOrder")
+@RequestMapping("/shop/consumer/myOrder")
 @Api(tags = "我的订单接口")
 @AllArgsConstructor
 public class MyOrderController {
