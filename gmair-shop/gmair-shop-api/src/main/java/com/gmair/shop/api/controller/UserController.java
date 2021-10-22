@@ -22,6 +22,7 @@ import finley.gmair.util.ResponseData;
 import finley.gmair.util.ResultData;
 import finley.gmair.vo.consumer.ConsumerPartInfoVo;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.web.bind.annotation.*;
@@ -141,13 +142,15 @@ public class UserController {
 		User user = userService.getUserByUserId(userId);
 		// get consumer_id from module auth-consumer
 		ResponseData<ConsumerPartInfoVo> resultData = userFeignService.getConsumerInfoByPhone(user.getUserMobile());
-
+		AppConnect appConnect =appConnectService.getByUserId(userId,App.MINI);
 		if(resultData.getResponseCode()== ResponseCode.RESPONSE_NULL){// no consumer in auth-consumer
-			ConsumerForm form = new ConsumerForm();
-			form.setPhone(user.getUserMobile());
-			ResultData result = userFeignService.consumerRegister(form);// create new consumer
+		    String realName =user.getRealName();
+		    if(StringUtils.isBlank(realName)){
+		    	realName = user.getNickName();
+			}
+			ResultData result = userFeignService.consumerRegister(realName,user.getNickName(),user.getUserMobile(),appConnect.getBizUserId());// create new consumer
 			if(result.getResponseCode()!=ResponseCode.RESPONSE_OK){
-				throw new GmairShopGlobalException("用户绑定失败");
+				throw new GmairShopGlobalException(result.getDescription());
 			}
 			Consumer consumer = (Consumer) result.getData();
 			user.setConsumerId(consumer.getConsumerId());
