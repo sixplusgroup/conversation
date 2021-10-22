@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @Date 10/18/2021 5:17 PM
  * @Description
  */
-@RequestMapping("/management/integral")
+@RequestMapping("/management/membership/integral")
 @AllArgsConstructor
 @RestController
 public class IntegralController {
