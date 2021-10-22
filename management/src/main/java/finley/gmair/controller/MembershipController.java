@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("/management/membership/membership")
+@RequestMapping("/management/membership")
 public class MembershipController {
 
     private final MembershipFeignService membershipFeignService;
 
-    @GetMapping("/getList")
+    @GetMapping("/list")
     public ResponseData<PaginationParam<MembershipUserDto>> getMembershipList(MembershipParam membershipParam, PaginationParam<MembershipUserDto> page){
         ResponseData<PaginationParam<MembershipUserDto>> responseData;
         responseData = membershipFeignService.getMembershipList(membershipParam.getId(),membershipParam.getMembershipType(),membershipParam.getUserMobile(),membershipParam.getConsumerName(),page.getSize(),page.getCurrent(),page.getCreateTimeSort());
@@ -32,7 +32,7 @@ public class MembershipController {
         }
         return responseData;
     }
-    @GetMapping("/deleteMembership")
+    @GetMapping("/delete")
     public ResponseData<Void> deleteMembership(String id){
         ResponseData<Void> responseData = membershipFeignService.deleteMembership(id);
         if(responseData.getResponseCode()!=ResponseCode.RESPONSE_OK){
