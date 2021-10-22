@@ -7,10 +7,8 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.drift.ChangeOrderStatusForm;
 import finley.gmair.form.drift.DriftOrderForm;
 import finley.gmair.form.drift.EXCodeCreateForm;
-import finley.gmair.form.installation.AssignForm;
 import finley.gmair.model.admin.Admin;
 import finley.gmair.model.drift.*;
-import finley.gmair.model.installation.AssignReport;
 import finley.gmair.util.IPUtil;
 import finley.gmair.service.AuthService;
 import finley.gmair.service.DriftService;
@@ -37,7 +35,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.print.DocFlavor;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +46,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin
 @RestController

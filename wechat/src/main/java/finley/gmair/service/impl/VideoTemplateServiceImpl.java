@@ -1,10 +1,7 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.dao.PictureTemplateDao;
 import finley.gmair.dao.VideoTemplateDao;
-import finley.gmair.model.wechat.PictureTemplate;
 import finley.gmair.model.wechat.VideoTemplate;
-import finley.gmair.service.PictureTemplateService;
 import finley.gmair.service.VideoTemplateService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

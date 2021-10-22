@@ -1,7 +1,6 @@
 package finley.gmair.model.drift;
 
 import finley.gmair.model.Entity;
-import finley.gmair.model.drift.DriftExpressStatus;
 
 public class DriftExpress extends Entity {
 

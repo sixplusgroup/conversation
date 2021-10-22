@@ -1,8 +1,6 @@
 package finley.gmair.service.impl;
 
-import finley.gmair.dao.ActivityDao;
 import finley.gmair.dao.EXCodeDao;
-import finley.gmair.model.drift.Activity;
 import finley.gmair.model.drift.EXCode;
 import finley.gmair.model.drift.EXCodeStatus;
 import finley.gmair.service.EXCodeService;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

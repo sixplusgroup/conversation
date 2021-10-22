@@ -2,13 +2,8 @@ package finley.gmair.model.machine;
 
 import finley.gmair.annotation.AQIData;
 import finley.gmair.annotation.Command;
-import finley.gmair.model.machine.v1.MachineStatus;
 import finley.gmair.util.Constant;
-import finley.gmair.util.MethodUtil;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 @Document(collection = "machine_v1_status")
 public class MachineV1Status extends Entity {

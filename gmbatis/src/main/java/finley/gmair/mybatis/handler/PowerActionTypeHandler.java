@@ -1,6 +1,5 @@
 package finley.gmair.mybatis.handler;
 
-import finley.gmair.model.machine.QRCodeStatus;
 import finley.gmair.model.machine.v2.PowerAction;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;

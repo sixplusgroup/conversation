@@ -1,7 +1,5 @@
 package finley.gmair.util;
 
-import finley.gmair.model.drift.DriftOrderStatus;
-import finley.gmair.model.drift.EXCodeStatus;
 import org.springframework.util.StringUtils;
 
 public class DriftUtil {

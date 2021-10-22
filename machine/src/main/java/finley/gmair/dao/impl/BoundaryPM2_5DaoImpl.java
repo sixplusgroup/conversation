@@ -6,7 +6,6 @@ import finley.gmair.model.machine.BoundaryPM2_5;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.springframework.cglib.proxy.Mixin;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

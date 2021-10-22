@@ -1,7 +1,6 @@
 package finley.gmair.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.dao.CorpNotificationDao;
 import finley.gmair.model.openplatform.CorpNotification;

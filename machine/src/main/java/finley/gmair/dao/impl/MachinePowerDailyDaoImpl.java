@@ -2,9 +2,7 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.MachinePowerDailyDao;
-import finley.gmair.dao.OutPm25DailyDao;
 import finley.gmair.model.machine.MachinePowerDaily;
-import finley.gmair.model.machine.OutPm25Daily;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

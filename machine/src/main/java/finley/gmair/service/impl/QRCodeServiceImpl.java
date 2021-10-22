@@ -1,6 +1,5 @@
 package finley.gmair.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import finley.gmair.dao.GoodsModelDao;
 import finley.gmair.dao.QRCodeDao;
 import finley.gmair.model.machine.QRCode;

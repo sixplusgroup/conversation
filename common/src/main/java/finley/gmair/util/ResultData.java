@@ -70,4 +70,3 @@ public class ResultData {
         return JSONObject.toJSONString(this, SerializerFeature.DisableCircularReferenceDetect);
     }
 }
-

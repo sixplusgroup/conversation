@@ -1,6 +1,5 @@
 package finley.gmair.model.dto;
 
-import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 
 import java.util.Date;

@@ -3,7 +3,6 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.machine.MachineQrcodeBind;
 import finley.gmair.model.machine.OutPm25Hourly;
 import finley.gmair.service.MachineQrcodeBindService;
 import finley.gmair.service.OutPm25DailyService;

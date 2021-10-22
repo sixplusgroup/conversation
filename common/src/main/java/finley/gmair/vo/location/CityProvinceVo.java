@@ -2,8 +2,6 @@ package finley.gmair.vo.location;
 
 import finley.gmair.model.Entity;
 
-import java.sql.Timestamp;
-
 public class CityProvinceVo extends Entity {
     private String cityId;
     private String provinceId;

@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.model.enterpriseselling.MerchantProfile;
 import finley.gmair.model.formaldehyde.CaseProfile;
 import finley.gmair.util.ResultData;
 

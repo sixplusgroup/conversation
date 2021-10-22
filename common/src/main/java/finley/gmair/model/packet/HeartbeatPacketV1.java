@@ -1,15 +1,7 @@
 package finley.gmair.model.packet;
 
-import finley.gmair.annotation.AQIData;
-import finley.gmair.model.machine.v1.MachineStatus;
 import finley.gmair.util.ByteUtil;
 import finley.gmair.util.CRC16;
-import finley.gmair.util.MethodUtil;
-import finley.gmair.util.ResultData;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class HeartbeatPacketV1 extends AbstractPacketV1{
 

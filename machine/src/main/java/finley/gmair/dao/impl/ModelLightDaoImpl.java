@@ -2,7 +2,6 @@ package finley.gmair.dao.impl;
 
 import finley.gmair.dao.BaseDao;
 import finley.gmair.dao.ModelLightDao;
-import finley.gmair.dao.ModelVolumeDao;
 import finley.gmair.model.machine.ModelLight;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;

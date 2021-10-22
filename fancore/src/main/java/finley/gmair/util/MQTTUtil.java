@@ -1,11 +1,9 @@
 package finley.gmair.util;
 
 import com.alibaba.fastjson.JSONObject;
-import finley.gmair.datastructrue.LimitQueue;
 import finley.gmair.model.fan.FanStatus;
 import finley.gmair.pool.CorePool;
 import finley.gmair.service.MqttService;
-import finley.gmair.service.RedisService;
 
 /**
  * @ClassName: MQTTUtil

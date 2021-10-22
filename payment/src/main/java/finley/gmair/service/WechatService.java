@@ -4,13 +4,13 @@ import finley.gmair.util.ResultData;
 
 public interface WechatService {
 
-    ResultData payCreate(String orderId, String openId, String money, String ipAddress, String body);
+    ResultData payCreate(String orderId, String openId, String money, String ipAddress, String body,String payClient);
 
-    String payNotify(String notifyXml);
+    String payNotify(String notifyXml,String payClient);
 
-    ResultData getTradeByOrderId(String orderId);
+    ResultData getTradeByOrderId(String orderId,String payClient);
 
-    ResultData getCreateResult(String orderId);
+    ResultData getCreateResult(String orderId,String payClient);
 
-    ResultData checkTradePayed();
+    ResultData checkTradePayed(String payClient);
 }

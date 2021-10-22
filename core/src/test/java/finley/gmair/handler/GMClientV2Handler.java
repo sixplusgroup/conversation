@@ -11,8 +11,6 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.util.UUID;
-
 @ChannelHandler.Sharable
 public class GMClientV2Handler extends ChannelInboundHandlerAdapter {
     public GMClientV2Handler() {

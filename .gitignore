@@ -9,6 +9,7 @@ logs/**
 **.jks
 **.properties
 **.yml
+*.yml
 *.png
 *.jpg
 **.yaml
@@ -16,3 +17,4 @@ logs/**
 *.pem
 **/logs/**
 **.log
+*.gitignore

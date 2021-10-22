@@ -2,8 +2,6 @@ package finley.gmair.model.wechat;
 
 import finley.gmair.model.Entity;
 
-import java.sql.Timestamp;
-
 public class MessageTemplate extends Entity {
 
     private String templateId;

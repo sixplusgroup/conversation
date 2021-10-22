@@ -1,7 +1,6 @@
 package finley.gmair.dao;
 
 import finley.gmair.model.machine.ConsumerQRcodeBind;
-import finley.gmair.model.machine.MachineListDaily;
 import finley.gmair.util.ResultData;
 import org.springframework.transaction.annotation.Transactional;
 

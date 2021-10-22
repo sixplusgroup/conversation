@@ -1,10 +1,8 @@
 package finley.gmair.model.drift;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import finley.gmair.model.Entity;
 
 import java.util.Date;
-import java.util.List;
 
 public abstract class AbstractDriftOrder extends Entity {
     private String orderId;

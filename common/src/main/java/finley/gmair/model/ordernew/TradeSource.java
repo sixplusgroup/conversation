@@ -1,7 +1,5 @@
 package finley.gmair.model.ordernew;
 
-import finley.gmair.model.EnumValue;
-
 /**
  * @author zm
  * @date 2020/10/26 0026 17:55

@@ -4,7 +4,6 @@ package finley.gmair.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.mysql.cj.xdevapi.JsonArray;
 import finley.gmair.model.air.MojiToken;
 import finley.gmair.service.AirQualityStatisticService;
 import finley.gmair.service.MojiTokenService;
@@ -12,10 +11,7 @@ import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
 import finley.gmair.util.TimeUtil;
 import finley.gmair.vo.air.CityAirQualityStatisticVo;
-import finley.gmair.vo.machine.MachineQrcodeBindVo;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;

@@ -4,7 +4,6 @@ import finley.gmair.model.resource.FileMap;
 import finley.gmair.util.ResultData;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 

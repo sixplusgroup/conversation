@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @Date 2019/7/23 3:03 PM
  */
 
-@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller"})
+@ComponentScan({"finley.gmair.service", "finley.gmair.dao", "finley.gmair.controller","finley.gmair.config"})
 @EnableDiscoveryClient
 @EnableFeignClients({"finley.gmair.service"})
 @SpringBootApplication

@@ -6,7 +6,6 @@ import finley.gmair.model.message.TextMessage;
 import finley.gmair.util.IDGenerator;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

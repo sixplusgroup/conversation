@@ -1,7 +1,6 @@
 package finley.gmair.model.dto;
 
 import lombok.Data;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author zm

@@ -2,7 +2,6 @@ package finley.gmair.model.machine;
 
 import finley.gmair.model.Entity;
 
-import java.sql.Timestamp;
 import java.time.LocalTime;
 
 public class Machine_on_off extends Entity {

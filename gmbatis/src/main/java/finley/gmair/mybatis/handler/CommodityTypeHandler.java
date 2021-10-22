@@ -1,7 +1,6 @@
 package finley.gmair.mybatis.handler;
 
 import finley.gmair.model.goods.CommodityType;
-import finley.gmair.model.installation.AssignStatus;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 

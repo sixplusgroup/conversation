@@ -1,7 +1,6 @@
 package finley.gmair.model.machine;
 
 import finley.gmair.model.Entity;
-import finley.gmair.util.IDGenerator;
 
 
 public class MachinePowerDaily extends Entity {

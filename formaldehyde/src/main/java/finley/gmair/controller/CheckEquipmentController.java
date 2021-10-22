@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.formaldehyde.CaseLngLat;
 import finley.gmair.service.CheckEquipmentService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;

@@ -6,7 +6,6 @@ import finley.gmair.dao.MachineListDailyDao;
 import finley.gmair.model.machine.MachineListDaily;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
-import finley.gmair.vo.machine.MachineInfoVo;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Repository;
 

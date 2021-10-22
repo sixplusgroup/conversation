@@ -1,7 +1,6 @@
 package finley.gmair.handler;
 
 import finley.gmair.model.packet.HeartbeatPacketV1;
-import finley.gmair.model.packet.ProbePacket;
 import finley.gmair.util.ByteUtil;
 import finley.gmair.util.CRC16;
 

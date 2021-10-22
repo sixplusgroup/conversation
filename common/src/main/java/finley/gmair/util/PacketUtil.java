@@ -3,7 +3,6 @@ package finley.gmair.util;
 import finley.gmair.annotation.Command;
 import finley.gmair.annotation.PacketConfig;
 import finley.gmair.model.packet.*;
-import org.apache.commons.codec.binary.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.Calendar;

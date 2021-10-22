@@ -1,6 +1,5 @@
 package finley.gmair.service;
 
-import finley.gmair.model.wechat.PictureTemplate;
 import finley.gmair.model.wechat.VideoTemplate;
 import finley.gmair.util.ResultData;
 

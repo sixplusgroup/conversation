@@ -1,6 +1,5 @@
 package finley.gmair.controller;
 
-import finley.gmair.model.drift.Activity;
 import finley.gmair.model.drift.Notification;
 import finley.gmair.service.ActivityService;
 import finley.gmair.service.NotificationService;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

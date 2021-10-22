@@ -14,10 +14,11 @@
         <result property="tradeEndTime" column="end_time"></result>
         <result property="tradeState" column="trade_status"
                 typeHandler="finley.gmair.mybatis.handler.TradeStateHandler"></result>
+        <result property="payClient" column="pay_client"></result>
     </resultMap>
 
     <select id="query" parameterType="java.util.Map" resultMap="infoVo">
-        select trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status
+        select trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status, pay_client
         from gmair_payment.trade
         where 1 = 1
         <if test="tradeId != null">
@@ -29,8 +30,8 @@
     </select>
 
     <insert id="insert" parameterType="finley.gmair.model.payment.Trade">
-        insert into gmair_payment.trade(trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status)
-        values (#{tradeId}, #{orderId}, #{tradeDescription}, #{tradeNonceStr},#{tradeTotalFee},#{tradeSpbillCreateIp},#{tradeType},#{tradeOpenId},#{tradeStartTime},#{tradeEndTime}, #{tradeState, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler})
+        insert into gmair_payment.trade(trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status, pay_client)
+        values (#{tradeId}, #{orderId}, #{tradeDescription}, #{tradeNonceStr},#{tradeTotalFee},#{tradeSpbillCreateIp},#{tradeType},#{tradeOpenId},#{tradeStartTime},#{tradeEndTime}, #{tradeState, typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},#{payClient})
     </insert>
 
     <update id="update" parameterType="finley.gmair.model.payment.Trade">
@@ -53,7 +54,7 @@
     </delete>
 
     <select id="queryUnpayed" parameterType="java.util.Map" resultMap="infoVo">
-        select trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status
+        select trade_id, out_trade_no, trade_description, nonce_str, total_fee,spbill_create_ip,trade_type, openid, start_time, end_time, trade_status, pay_client
         from gmair_payment.trade
         where start_time >= ADDDATE(NOW(),-1)
         <if test="tradeState != null">
