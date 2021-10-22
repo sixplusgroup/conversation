@@ -1,5 +1,6 @@
 package finley.gmair.controller;
 
+import finley.gmair.pool.CrawlerPool;
 import finley.gmair.service.CityAQIService;
 import finley.gmair.util.ResultData;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class CityAQIController {
     @GetMapping("/aqi/refresh")
     public ResultData refresh() {
         ResultData result = new ResultData();
-        new Thread(() -> cityAQIService.obtain()).start();
+        CrawlerPool.getCrawlerPool().execute(() -> cityAQIService.obtain());
         result.setDescription("已开始获取城市空气信息，请稍后");
         return result;
     }

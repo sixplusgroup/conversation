@@ -17,7 +17,7 @@ public class CityWeatherConditionDaoImpl extends BaseDao implements CityWeatherC
     public ResultData insertBatch(List<CityWeatherCondition> list) {
         ResultData result = new ResultData();
         try {
-            sqlSession.insert("gmair.weathercondition.cityweathercondition.insertBatch", list);
+            sqlSession.insert("gmair.weather.city.insertBatch", list);
             result.setData(list);
         } catch (Exception e) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
@@ -31,7 +31,7 @@ public class CityWeatherConditionDaoImpl extends BaseDao implements CityWeatherC
     public ResultData select(Map<String, Object> condition) {
         ResultData result = new ResultData();
         try {
-            List<CityTempVo> list = sqlSession.selectList("gmair.weathercondition.cityweathercondition.select", condition);
+            List<CityTempVo> list = sqlSession.selectList("gmair.weather.city.query", condition);
             if (list.isEmpty()) {
                 result.setResponseCode(ResponseCode.RESPONSE_NULL);
             } else {

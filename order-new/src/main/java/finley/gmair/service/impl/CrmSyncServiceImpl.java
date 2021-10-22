@@ -84,7 +84,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // if (DRIFT_NUM_IID.equals(tmpOrder.getNumIid())) continue;
             CrmOrderDTO newCrmOrder = new CrmOrderDTO();
             // 渠道来源
-             newCrmOrder.setQdly(QDLY);
+            newCrmOrder.setQdly(QDLY);
             // 机器型号（根据sku_id和num_iid去获取）
             String machineModel = getMachineModel(tmpOrder);
             // 属性名称
@@ -99,15 +99,15 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             // 数量
             newCrmOrder.setSl(String.valueOf(tmpOrder.getNum()));
             // 实收金额
-            Double ssje;
-            if (tmpOrder.getDivideOrderFee() != null) {
-                ssje = tmpOrder.getDivideOrderFee();
-            }else{
-                if (isMultiOrders && tmpOrder.getPartMjzDiscount() != null){
-                    // 多子订单且part_mjz_discount（优惠分摊）不为空
-                    ssje = tmpOrder.getPayment() - tmpOrder.getPartMjzDiscount();
-                }else{
-                    ssje = tmpOrder.getPayment();
+            Double ssje = tmpOrder.getPayment();
+            if (isMultiOrders) {
+                // 多子订单且part_mjz_discount（优惠分摊）不为空，减去优惠分摊
+                if (tmpOrder.getPartMjzDiscount() != null) {
+                    ssje -= tmpOrder.getPartMjzDiscount();
+                }
+                // 多子订单且有邮费，甲醛检测仪子订单包含邮费
+                if (interTrade.getPostFee() != null && property.contains("检测仪")) {
+                    ssje += interTrade.getPostFee();
                 }
             }
             newCrmOrder.setSsje(String.valueOf(ssje));

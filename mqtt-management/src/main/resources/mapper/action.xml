@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.ActionDao">
+    <resultMap id="actionMap" type="finley.gmair.model.mqttManagement.Action">
+        <result property="actionId" column="action_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="blockFlag" column="block_flag"/>
+        <result property="createAt" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="collectionMap" type="finley.gmair.model.mqttManagement.Action" extends="actionMap">
+        <collection property="attributes" ofType="finley.gmair.model.mqttManagement.Attribute">
+            <result property="attributeId" column="attribute_id"/>
+            <result property="name" column="attribute_name"/>
+            <result property="description" column="attribute_description"/>
+            <result property="required" column="attribute_required"/>
+            <result property="blockFlag" column="attribute_block_flag"/>
+            <result property="createAt" column="attribute_create_time"/>
+        </collection>
+    </resultMap>
+
+    <insert id="insertAction" useGeneratedKeys="false" parameterType="finley.gmair.model.mqttManagement.Action">
+        insert into gmair_mqtt_management.action(action_id, name, description, block_flag, create_time)
+        values(#{actionId}, #{name}, #{description}, #{blockFlag}, #{createAt})
+    </insert>
+
+    <update id="updateAction" parameterType="finley.gmair.model.mqttManagement.Action">
+        update gmair_mqtt_management.action
+        <set>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            action_id = #{actionId}
+        </set>
+        where action_id = #{actionId}
+    </update>
+
+    <select id="queryOneWithoutAttribute" resultMap="actionMap" parameterType="java.lang.String">
+        select action_id, name, description, block_flag, create_time
+        from gmair_mqtt_management.action
+        where action_id = #{actionId}
+    </select>
+
+    <select id="queryActionsWithoutAttribute" resultMap="actionMap" parameterType="finley.gmair.model.mqttManagement.Action">
+        select action_id, name, description, block_flag, create_time
+        from gmair_mqtt_management.action
+        where 1 = 1
+        <if test="actionId != null">
+            and action_id = #{actionId}
+        </if>
+        <if test="name != null">
+            and name = #{name}
+        </if>
+        <if test="description != null">
+            and description = #{description}
+        </if>
+        <if test="blockFlag != null">
+            and block_flag = #{blockFlag}
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="queryActionsWithoutAttributeByName" resultMap="actionMap" parameterType="java.lang.String">
+        select action_id, name, description, block_flag, create_time
+        from gmair_mqtt_management.action
+        where
+        block_flag = false
+        and
+        name like CONCAT('%',#{name},'%')
+        order by create_time desc
+    </select>
+
+    <insert id="insertActionAttributeRelation" keyProperty="action_attribute_id" useGeneratedKeys="true">
+        insert into gmair_mqtt_management.action_attribute_relate(action_id, attribute_id)
+        select #{actionId}, #{attributeId} from dual
+        WHERE not exists (
+        select action_id, attribute_id from action_attribute_relate
+        where action_id = #{actionId} and attribute_id = #{attributeId}
+        )
+    </insert>
+
+    <select id="queryActionsWithAttribute" resultMap="collectionMap">
+        select
+        a.action_id, a.name, a.description, a.block_flag, a.create_time,
+        t.attribute_id as attribute_id, t.name as attribute_name, t.description as attribute_description, t.required as attribute_required, t.block_flag as attribute_block_flag, t.create_time as attribute_create_time
+        from
+        gmair_mqtt_management.action a
+        left join
+        gmair_mqtt_management.action_attribute_relate r
+        on
+        a.action_id = r.action_id
+        left join
+        gmair_mqtt_management.attribute t
+        on
+        t.attribute_id = r.attribute_id
+    </select>
+
+    <select id="queryActionsByModel" resultMap="actionMap" parameterType="java.lang.String">
+        select
+        a.action_id, a.name, a.description, a.block_flag, a.create_time
+        from
+        gmair_mqtt_management.model_action_relate r
+        left join
+        gmair_mqtt_management.action a
+        on
+        a.action_id = r.action_id
+        where
+        r.model_id = #{modelId}
+    </select>
+
+    <select id="getAttributeUsedNumber" resultType="int" parameterType="java.lang.String">
+        select
+        count(attribute_id)
+        from
+        gmair_mqtt_management.action_attribute_relate
+        where
+        action_id = #{actionId}
+    </select>
+
+    <select id="getModelUsedNumber" resultType="int" parameterType="java.lang.String">
+        select
+        count(model_id)
+        from
+        gmair_mqtt_management.model_action_relate
+        where
+        action_id = #{actionId}
+    </select>
+
+    <update id="deleteAction" parameterType="java.lang.String">
+        update gmair_mqtt_management.action
+        set block_flag = true
+        where action_id = #{actionId}
+    </update>
+
+</mapper>

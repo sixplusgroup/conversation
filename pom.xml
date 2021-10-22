@@ -57,6 +57,9 @@
         <module>tmall-genie</module>
         <module>membership</module>
         <module>gmair-shop</module>
+        <module>mqtt-management</module>
+        <module>maintenance</module>
+        <module>scene</module>
     </modules>
 
     <parent>

@@ -688,13 +688,23 @@ public class DriftController {
 
     /**
      * 管理员创建免费甲醛检测订单
+     *
      * @param form
      * @return
      */
     @PostMapping("/order/create")
     public ResultData createOrder(DriftOrderForm form) {
-        return driftService.createDriftOrder(form.getConsumerId(), form.getActivityId(), form.getEquipId(), form.getConsignee(),
+        String activityId = form.getActivityId();
+        if (StringUtils.isEmpty(activityId)) {
+            activityId = "ACT20190723a545nr39";
+        }
+        ResultData response = driftService.createDriftOrder(activityId, form.getEquipId(), form.getConsignee(),
                 form.getPhone(), form.getAddress(), form.getProvince(), form.getCity(), form.getDistrict(), form.getDescription(),
                 form.getExpectedDate(), form.getIntervalDate(), form.getAttachItem(), form.getTradeFrom());
+        if (response.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            logger.error("[Error] fail to create drift order");
+        }
+        logger.info("[Info] response: " + JSON.toJSONString(response));
+        return response;
     }
 }

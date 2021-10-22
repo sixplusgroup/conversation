@@ -51,12 +51,13 @@ public class ExcelUtil {
     public static JSONArray decode(Sheet sheet) {
         JSONArray result = new JSONArray();
         int num = sheet.getLastRowNum() + 1;
+        System.out.println("num: " + num);
         Row header = sheet.getRow(0);
         int[] index = index(HEADER, header);
         if (index == null) return result;
         for (int i = 1; i < num; i++) {
             Row current = sheet.getRow(i);
-            if (current == null) break;
+            if (current == null || StringUtils.isEmpty(getCellValue(current.getCell(index[0])))) break;
             String name = getCellValue(current.getCell(index[0]));
             String phone = getCellValue(current.getCell(index[1]), Integer.class);
             String address = getCellValue(current.getCell(index[2]));

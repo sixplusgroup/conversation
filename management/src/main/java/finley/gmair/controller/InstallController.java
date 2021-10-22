@@ -91,6 +91,7 @@ public class InstallController {
             JSONArray data = ExcelUtil.decode(sheet);
             result.setData(data);
         } catch (Exception e) {
+            e.printStackTrace();
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("文件未能成功解析");
         }
