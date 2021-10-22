@@ -31,7 +31,7 @@ public class IndexImgController {
     /**
      * 首页轮播图接口
      */
-    @GetMapping("/indexImgs")
+    @GetMapping("/get")
     @ApiOperation(value = "首页轮播图", notes = "获取首页轮播图列表信息")
     public ResponseEntity<List<IndexImgDto>> indexImgs() {
         List<IndexImg> indexImgList = indexImgService.listIndexImgs();

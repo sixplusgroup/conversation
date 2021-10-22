@@ -45,7 +45,7 @@ public class LoginAuthenticationFilter extends AbstractAuthenticationProcessingF
 
     @Autowired
     public LoginAuthenticationFilter(GmairUserDetailsService gmairUserDetailsService, WxMaService wxMaService) {
-        super("/login");
+        super("/shop/consumer/login");
         this.gmairUserDetailsService = gmairUserDetailsService;
         this.wxMaService = wxMaService;
     }
