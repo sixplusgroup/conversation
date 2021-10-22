@@ -65,6 +65,7 @@ public class IntegralController {
 
     @PostMapping("/confirm/give")
     public ResponseData<Void> giveIntegral(@RequestBody GiveIntegralParam giveIntegralParam){
+        System.out.println("GiveIntegralParam1-id: "+giveIntegralParam.getId());
         ResponseData<Void> responseData = integralFeignService.giveIntegralById(giveIntegralParam);
         if(responseData.getResponseCode()!=ResponseCode.RESPONSE_OK){
             return ResponseData.error(responseData.getDescription());
