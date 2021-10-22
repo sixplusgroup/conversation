@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("/management/membership")
+@RequestMapping("/management/membership/membership")
 public class MembershipController {
 
     private final MembershipFeignService membershipFeignService;
