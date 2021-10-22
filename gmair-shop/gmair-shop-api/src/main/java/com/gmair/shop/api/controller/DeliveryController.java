@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/delivery")
+@RequestMapping("/shop/consumer/delivery")
 @Api(tags="查看物流接口")
 public class DeliveryController {
 

@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/p/user/collection")
+@RequestMapping("/shop/consumer/user/collection")
 @Api(tags = "收藏接口")
 @AllArgsConstructor
 public class UserCollectionController {

@@ -29,7 +29,7 @@ import java.util.List;
  * @Author Joby
  */
 @RestController
-@RequestMapping("/p/integral")
+@RequestMapping("/shop/consumer/integral")
 @AllArgsConstructor
 public class IntegralController {
 

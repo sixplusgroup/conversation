@@ -15,7 +15,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 @ApiIgnore
 @RestController
-@RequestMapping("/notice/pay")
+@RequestMapping("/shop/consumer/notice/pay")
 @AllArgsConstructor
 public class PayNoticeController {
 

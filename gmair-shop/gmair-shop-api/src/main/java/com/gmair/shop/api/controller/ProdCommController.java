@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/prodComm")
+@RequestMapping("/shop/consumer/prodComm")
 @Api(tags = "评论接口")
 @AllArgsConstructor
 public class ProdCommController {

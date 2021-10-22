@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/p/order")
+@RequestMapping("/shop/consumer/order")
 @Api(tags = "订单接口")
 @AllArgsConstructor
 public class PayController {

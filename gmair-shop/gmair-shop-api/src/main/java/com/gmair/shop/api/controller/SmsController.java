@@ -19,7 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/p/sms")
+@RequestMapping("/shop/consumer/sms")
 @Api(tags="发送验证码接口")
 public class SmsController {
 

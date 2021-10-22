@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/prod")
+@RequestMapping("/shop/consumer/prod")
 @Api(tags = "商品接口")
 public class ProdController {
 

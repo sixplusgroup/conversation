@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiOperation;
  *
  */
 @RestController
-@RequestMapping("/p/area")
+@RequestMapping("/shop/consumer/area")
 @Api(tags="省市区接口")
 public class AreaController {
 
