@@ -103,7 +103,6 @@ public class IntegralController {
     @PostMapping("/giveIntegralOfIntegralAdd")
     @Transactional(rollbackFor = Exception.class)
     public ResponseData<Void> giveIntegralOfIntegralAdd(@Valid @RequestBody GiveIntegralParam params){
-        System.out.println("GiveIntegralParam-membership-id: "+params.getId());
         IntegralAdd integralAdd = integralAddService.getById(params.getId());
         if(ObjectUtil.isNull(params.getId())||integralAdd==null){
             throw new MembershipGlobalException("can not find this record!");
