@@ -2,7 +2,6 @@ package finley.gmair.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-
 import finley.gmair.dto.installation.IntegralConfirmDto;
 import finley.gmair.dto.membership.IntegralRecordDto;
 import finley.gmair.exception.MembershipGlobalException;
@@ -15,20 +14,16 @@ import finley.gmair.param.membership.*;
 import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.IntegralRecordService;
 import finley.gmair.service.MembershipService;
-
 import finley.gmair.util.PaginationParam;
 import finley.gmair.util.ResponseData;
-import finley.gmair.util.ResultData;
 import lombok.AllArgsConstructor;
 import ma.glasnost.orika.MapperFacade;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -102,7 +97,7 @@ public class IntegralController {
 
     @PostMapping("/giveIntegralOfIntegralAdd")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseData<Void> giveIntegralOfIntegralAdd(@Valid @RequestBody GiveIntegralParam params) {
+    public ResponseData<Void> giveIntegralOfIntegralAdd(GiveIntegralParam params) {
         IntegralAdd integralAdd = integralAddService.getById(params.getId());
         if (ObjectUtil.isNull(params.getId()) || integralAdd == null) {
             throw new MembershipGlobalException("can not find this record!");
@@ -160,7 +155,7 @@ public class IntegralController {
 
     @PostMapping("/confirmIntegral")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseData<Void> confirmIntegral(@Valid @RequestBody ConfirmIntegralParam confirmIntegralParam) {
+    public ResponseData<Void> confirmIntegral(@Valid ConfirmIntegralParam confirmIntegralParam) {
         Long id = confirmIntegralParam.getId();
         if (ObjectUtil.isNull(id) || integralAddService.getById(id) == null) {
             throw new MembershipGlobalException("can not find this record!");
