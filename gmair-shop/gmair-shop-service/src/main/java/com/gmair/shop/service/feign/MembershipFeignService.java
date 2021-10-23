@@ -1,18 +1,18 @@
 package com.gmair.shop.service.feign;
 
-import com.gmair.shop.bean.app.dto.IntegralRecordDto;
+
 import com.gmair.shop.bean.app.param.PSupplementaryIntegralParam;
+import finley.gmair.dto.management.IntegralConfirmDto;
+import finley.gmair.dto.membership.IntegralRecordDto;
 import finley.gmair.param.membership.IntegralDepositParam;
 import finley.gmair.param.membership.IntegralWithdrawParam;
 import finley.gmair.param.membership.MembershipInfoParam;
 import finley.gmair.param.membership.SupplementaryIntegralParam;
+import finley.gmair.util.PaginationParam;
 import finley.gmair.util.ResponseData;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,13 +38,16 @@ public interface MembershipFeignService {
     @PostMapping("/membership/integral/withdrawIntegral")
     ResponseData<Void> withdrawIntegral(@RequestBody IntegralWithdrawParam param);
 
+    @PostMapping("/membership/membership/isMembership")
+    ResponseData<Boolean> isMembership(@RequestParam("consumerId") String consumerId);
+
     @PostMapping("/membership/integral/getIntegral")
     ResponseData<Integer> getMembershipIntegral(@RequestParam("consumerId") String consumerId);
 
-    @PostMapping("/membership/integral/getIntegralRecords")
-    ResponseData<List<IntegralRecordDto>> getIntegralRecords(@RequestParam("consumerId") String consumerId);
+    @GetMapping("/membership/integral/getAllIntegralRecord/page")
+    ResponseData<PaginationParam<IntegralRecordDto>> getIntegralRecords(@RequestParam("consumerId") String consumerId,@RequestParam("current") long current,@RequestParam("size") long size,@RequestParam("sortType")String sortType);
 
-    @PostMapping("/membership/membership/isMembership")
-    ResponseData<Boolean> isMembership(@RequestParam("consumerId") String consumerId);
+    @GetMapping("/membership/integral/getAllIntegralConfirm/page")
+    ResponseData<PaginationParam<IntegralConfirmDto>> getIntegralAdds(@RequestParam("consumerId") String consumerId, @RequestParam("current") long current, @RequestParam("size") long size,@RequestParam("sortType")String sortType);
 
 }

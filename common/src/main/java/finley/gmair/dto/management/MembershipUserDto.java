@@ -1,4 +1,4 @@
-package finley.gmair.dto.installation;
+package finley.gmair.dto.management;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.JsonSerializer;

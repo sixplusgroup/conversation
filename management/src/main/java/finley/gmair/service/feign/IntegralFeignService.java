@@ -1,15 +1,12 @@
 package finley.gmair.service.feign;
 
-import finley.gmair.dto.installation.IntegralConfirmDto;
+import finley.gmair.dto.management.IntegralConfirmDto;
 import finley.gmair.dto.membership.IntegralRecordDto;
-import finley.gmair.param.membership.ConfirmIntegralParam;
-import finley.gmair.param.membership.GiveIntegralParam;
 import finley.gmair.util.PaginationParam;
 import finley.gmair.util.ResponseData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**

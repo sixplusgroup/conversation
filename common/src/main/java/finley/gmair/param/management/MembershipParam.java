@@ -1,4 +1,4 @@
-package finley.gmair.param.installation;
+package finley.gmair.param.management;
 
 import lombok.Data;
 

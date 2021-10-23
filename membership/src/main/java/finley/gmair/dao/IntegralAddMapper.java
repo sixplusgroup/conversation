@@ -2,11 +2,9 @@ package finley.gmair.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-import finley.gmair.dto.installation.IntegralConfirmDto;
-import finley.gmair.dto.membership.IntegralRecordDto;
+import finley.gmair.dto.management.IntegralConfirmDto;
 import finley.gmair.model.membership.IntegralAdd;
-import finley.gmair.param.installation.IntegralConfirmParam;
-import finley.gmair.param.installation.IntegralRecordParam;
+import finley.gmair.param.management.IntegralConfirmParam;
 import finley.gmair.util.PaginationAdapter;
 import org.apache.ibatis.annotations.Param;
 

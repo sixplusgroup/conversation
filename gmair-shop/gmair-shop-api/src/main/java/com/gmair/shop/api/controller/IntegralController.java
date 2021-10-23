@@ -1,6 +1,5 @@
 package com.gmair.shop.api.controller;
 
-import com.gmair.shop.bean.app.dto.IntegralRecordDto;
 import com.gmair.shop.bean.app.param.PSupplementaryIntegralParam;
 import com.gmair.shop.bean.app.param.PIntegralWithdrawParam;
 import com.gmair.shop.bean.model.User;
@@ -9,18 +8,18 @@ import com.gmair.shop.security.util.SecurityUtils;
 import com.gmair.shop.service.UserService;
 import com.gmair.shop.service.feign.MembershipFeignService;
 import com.gmair.shop.service.feign.ResourceFeignService;
+import finley.gmair.dto.management.IntegralConfirmDto;
+import finley.gmair.dto.membership.IntegralRecordDto;
 import finley.gmair.param.membership.IntegralWithdrawParam;
 import finley.gmair.param.membership.SupplementaryIntegralParam;
+import finley.gmair.util.PaginationParam;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResponseData;
 import finley.gmair.util.ResultData;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -91,11 +90,22 @@ public class IntegralController {
         }
     }
 
-    @PostMapping("/getIntegralRecords")
-    public ResponseEntity<List<IntegralRecordDto>> getIntegralRecords(){
+    @GetMapping("/getIntegralRecords")
+    public ResponseEntity<PaginationParam<IntegralRecordDto>> getIntegralRecords(String sortType,PaginationParam<IntegralRecordDto> paginationParam){
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
-        ResponseData<List<IntegralRecordDto>> responseData = membershipFeignService.getIntegralRecords(user.getConsumerId());
+        ResponseData<PaginationParam<IntegralRecordDto>> responseData = membershipFeignService.getIntegralRecords(user.getConsumerId(),paginationParam.getCurrent(),paginationParam.getSize(),sortType);
+        if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
+            return ResponseEntity.ok(responseData.getData());
+        }else{
+            throw new GmairShopGlobalException(responseData.getDescription());
+        }
+    }
+    @GetMapping("/getIntegralAdds")
+    public ResponseEntity<PaginationParam<IntegralConfirmDto>> getIntegralAdds(String sortType,PaginationParam<IntegralRecordDto> paginationParam){
+        String userId = SecurityUtils.getUser().getUserId();
+        User user = userService.getUserByUserId(userId);
+        ResponseData<PaginationParam<IntegralConfirmDto>> responseData = membershipFeignService.getIntegralAdds(user.getConsumerId(),paginationParam.getCurrent(),paginationParam.getSize(),sortType);
         if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
             return ResponseEntity.ok(responseData.getData());
         }else{

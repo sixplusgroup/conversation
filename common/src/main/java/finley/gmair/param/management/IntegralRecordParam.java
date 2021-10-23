@@ -1,4 +1,4 @@
-package finley.gmair.param.installation;
+package finley.gmair.param.management;
 
 import lombok.Data;
 
@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 public class IntegralRecordParam {
     private Boolean isAdd;
+    private String consumerId;
     private String membershipUserId;
     private String search;
     private Integer membershipType;

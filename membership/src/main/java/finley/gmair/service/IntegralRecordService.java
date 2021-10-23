@@ -3,7 +3,7 @@ package finley.gmair.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import finley.gmair.dto.membership.IntegralRecordDto;
 import finley.gmair.model.membership.IntegralRecord;
-import finley.gmair.param.installation.IntegralRecordParam;
+import finley.gmair.param.management.IntegralRecordParam;
 import finley.gmair.util.PaginationParam;
 
 

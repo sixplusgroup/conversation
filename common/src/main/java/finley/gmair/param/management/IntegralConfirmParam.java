@@ -1,4 +1,4 @@
-package finley.gmair.param.installation;
+package finley.gmair.param.management;
 
 import lombok.Data;
 
@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 public class IntegralConfirmParam {
     private String id;
+    private String consumerId;
     private Boolean isConfirmed;
     private String membershipUserId;
     private String search;
