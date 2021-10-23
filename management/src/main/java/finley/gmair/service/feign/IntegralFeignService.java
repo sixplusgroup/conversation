@@ -33,10 +33,10 @@ public interface IntegralFeignService {
     ResponseData<Void> deleteIntegralConfirmById(@RequestParam("id") String id);
 
     @PostMapping("/membership/integral/giveIntegralOfIntegralAdd")
-    ResponseData<Void> giveIntegralById(@RequestBody GiveIntegralParam giveIntegralParam);
+    ResponseData<Void> giveIntegralById(@RequestParam("id") Long id, @RequestParam("integralValue") Integer integralValue);
 
     @PostMapping("/membership/integral/confirmIntegral")
-    ResponseData<Void> confirmIntegralById(@RequestBody ConfirmIntegralParam confirmIntegralParam);
+    ResponseData<Void> confirmIntegralById(@RequestParam("id") Long id);
 
 }
 

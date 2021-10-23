@@ -2,7 +2,6 @@ package finley.gmair.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-
 import finley.gmair.dto.installation.IntegralConfirmDto;
 import finley.gmair.dto.membership.IntegralRecordDto;
 import finley.gmair.exception.MembershipGlobalException;
@@ -15,20 +14,16 @@ import finley.gmair.param.membership.*;
 import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.IntegralRecordService;
 import finley.gmair.service.MembershipService;
-
 import finley.gmair.util.PaginationParam;
 import finley.gmair.util.ResponseData;
-import finley.gmair.util.ResultData;
 import lombok.AllArgsConstructor;
 import ma.glasnost.orika.MapperFacade;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -49,21 +44,21 @@ public class IntegralController {
     private final MapperFacade mapperFacade;
 
     /**
-     * @Description directly add integral, don't need to confirm
-     * @Date  2021/10/13 21:25 
-     * @param params: 
+     * @param params:
      * @return finley.gmair.util.ResponseData<java.lang.Void>
+     * @Description directly add integral, don't need to confirm
+     * @Date 2021/10/13 21:25
      */
     @PostMapping("/deposit")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseData<Void> deposit(@Valid @RequestBody IntegralDepositParam params){
+    public ResponseData<Void> deposit(@Valid @RequestBody IntegralDepositParam params) {
         Integer integral = params.getIntegral();
         String consumerId = params.getConsumerId();
-        String description = "【手动添加】"+ params.getDescription();
-        if(integral==null||integral<0){
+        String description = "【手动添加】" + params.getDescription();
+        if (integral == null || integral < 0) {
             throw new MembershipGlobalException("the data is invalid, please try again!");
         }
-        if(integral>10000){
+        if (integral > 10000) {
             throw new MembershipGlobalException("integral is too large in one time!");
         }
         // create integralAdd record
@@ -88,7 +83,7 @@ public class IntegralController {
 
     @PostMapping("/createIntegralAdd")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseData<Void> createIntegralAdd(@Valid @RequestBody SupplementaryIntegralParam params){
+    public ResponseData<Void> createIntegralAdd(@Valid @RequestBody SupplementaryIntegralParam params) {
         String consumerId = params.getConsumerId();
         IntegralAdd integralAdd = new IntegralAdd();
         integralAdd.setIsConfirmed(false);
@@ -102,16 +97,16 @@ public class IntegralController {
 
     @PostMapping("/giveIntegralOfIntegralAdd")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseData<Void> giveIntegralOfIntegralAdd(@Valid @RequestBody GiveIntegralParam params){
+    public ResponseData<Void> giveIntegralOfIntegralAdd(GiveIntegralParam params) {
         IntegralAdd integralAdd = integralAddService.getById(params.getId());
-        if(ObjectUtil.isNull(params.getId())||integralAdd==null){
+        if (ObjectUtil.isNull(params.getId()) || integralAdd == null) {
             throw new MembershipGlobalException("can not find this record!");
         }
         Integer integral = params.getIntegralValue();
-        if(integral==null||integral>10000||integral<0){
+        if (integral == null || integral > 10000 || integral < 0) {
             throw new MembershipGlobalException("integral is too large in one time!");
         }
-        if(integralAdd.getIsConfirmed()){
+        if (integralAdd.getIsConfirmed()) {
             throw new MembershipGlobalException("this record is already confirmed!");
         }
         integralAdd.setIntegralValue(integral);
@@ -122,18 +117,18 @@ public class IntegralController {
 
     @PostMapping(value = "/withdrawIntegral")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseData<Void> withdrawIntegral(@Valid @RequestBody IntegralWithdrawParam params){
+    public ResponseData<Void> withdrawIntegral(@Valid @RequestBody IntegralWithdrawParam params) {
         String consumerId = params.getConsumerId();
         String description = params.getDescription();
         Integer integral = params.getIntegral();
-        if(consumerId==null||integral==null||StrUtil.isBlank(consumerId)||integral<0){
+        if (consumerId == null || integral == null || StrUtil.isBlank(consumerId) || integral < 0) {
             throw new MembershipGlobalException("the parameters are invalid!");
         }
         Long membershipId = membershipService.getMembershipIdByConsumerId(consumerId);
-        if(membershipId==null||membershipId==0){
+        if (membershipId == null || membershipId == 0) {
             throw new MembershipGlobalException("this consumer isn't a membership!");
         }
-        membershipService.withdrawIntegralById(membershipId,integral);
+        membershipService.withdrawIntegralById(membershipId, integral);
 
         // log the integral operation
         IntegralRecord integralRecord = new IntegralRecord();
@@ -147,22 +142,22 @@ public class IntegralController {
     }
 
     @PostMapping("/getIntegral")
-    public ResponseData<Integer> getMembershipIntegral(@NotBlank String consumerId){
+    public ResponseData<Integer> getMembershipIntegral(@NotBlank String consumerId) {
         MembershipUser membershipUser = membershipService.getMembershipByConsumerId(consumerId);
         return ResponseData.ok(membershipUser.getIntegral());
     }
 
     @PostMapping("/getIntegralRecords")
-    public ResponseData<List<IntegralRecordDto>> getIntegralRecords(@NotBlank String consumerId){
+    public ResponseData<List<IntegralRecordDto>> getIntegralRecords(@NotBlank String consumerId) {
         List<IntegralRecord> integralRecords = integralRecordService.getMyRecordsByConsumerId(consumerId);
         return ResponseData.ok(mapperFacade.mapAsList(integralRecords, IntegralRecordDto.class));
     }
 
     @PostMapping("/confirmIntegral")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseData<Void> confirmIntegral(@Valid @RequestBody ConfirmIntegralParam confirmIntegralParam){
+    public ResponseData<Void> confirmIntegral(@Valid ConfirmIntegralParam confirmIntegralParam) {
         Long id = confirmIntegralParam.getId();
-        if(ObjectUtil.isNull(id)||integralAddService.getById(id)==null){
+        if (ObjectUtil.isNull(id) || integralAddService.getById(id) == null) {
             throw new MembershipGlobalException("can not find this record!");
         }
         integralAddService.confirmIntegralById(id);
@@ -179,27 +174,28 @@ public class IntegralController {
     }
 
     @GetMapping("/getAllIntegralRecord/page")
-    public ResponseData<PaginationParam<IntegralRecordDto>> getAllintegralRecords(IntegralRecordParam integralRecordParam,PaginationParam<IntegralRecordDto> paginationParam){
+    public ResponseData<PaginationParam<IntegralRecordDto>> getAllintegralRecords(IntegralRecordParam integralRecordParam, PaginationParam<IntegralRecordDto> paginationParam) {
         integralRecordParam.setBlockFlag(false);
-        PaginationParam<IntegralRecordDto> integralRecordList = integralRecordService.getRecordPage(integralRecordParam,paginationParam);
+        PaginationParam<IntegralRecordDto> integralRecordList = integralRecordService.getRecordPage(integralRecordParam, paginationParam);
         return ResponseData.ok(integralRecordList);
     }
+
     @GetMapping("/getAllIntegralConfirm/page")
-    public ResponseData<PaginationParam<IntegralConfirmDto>> getAllIntegralConfirm(IntegralConfirmParam integralConfirmParam, PaginationParam<IntegralConfirmDto> paginationParam){
+    public ResponseData<PaginationParam<IntegralConfirmDto>> getAllIntegralConfirm(IntegralConfirmParam integralConfirmParam, PaginationParam<IntegralConfirmDto> paginationParam) {
         integralConfirmParam.setBlockFlag(false);
-        PaginationParam<IntegralConfirmDto> integralConfirmList = integralAddService.getConfirmPage(integralConfirmParam,paginationParam);
+        PaginationParam<IntegralConfirmDto> integralConfirmList = integralAddService.getConfirmPage(integralConfirmParam, paginationParam);
         return ResponseData.ok(integralConfirmList);
     }
 
     @GetMapping("/getIntegralConfirm")
-    public ResponseData<IntegralConfirmDto> getIntegralConfirm(@NotBlank String id){
+    public ResponseData<IntegralConfirmDto> getIntegralConfirm(@NotBlank String id) {
         IntegralConfirmDto integralConfirmDto = integralAddService.getIntegralConfirmById(id);
 
         return ResponseData.ok(integralConfirmDto);
     }
 
     @GetMapping("deleteIntegralConfirm")
-    public ResponseData<Void> deleteIntegralConfirm(@NotBlank String id){
+    public ResponseData<Void> deleteIntegralConfirm(@NotBlank String id) {
         integralAddService.deleteById(id);
         return ResponseData.ok();
     }
