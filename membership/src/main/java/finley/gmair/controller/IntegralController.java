@@ -2,14 +2,14 @@ package finley.gmair.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import finley.gmair.dto.installation.IntegralConfirmDto;
+import finley.gmair.dto.management.IntegralConfirmDto;
 import finley.gmair.dto.membership.IntegralRecordDto;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.model.membership.IntegralAdd;
 import finley.gmair.model.membership.IntegralRecord;
 import finley.gmair.model.membership.MembershipUser;
-import finley.gmair.param.installation.IntegralConfirmParam;
-import finley.gmair.param.installation.IntegralRecordParam;
+import finley.gmair.param.management.IntegralConfirmParam;
+import finley.gmair.param.management.IntegralRecordParam;
 import finley.gmair.param.membership.*;
 import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.IntegralRecordService;
@@ -97,7 +97,7 @@ public class IntegralController {
 
     @PostMapping("/giveIntegralOfIntegralAdd")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseData<Void> giveIntegralOfIntegralAdd(GiveIntegralParam params) {
+    public ResponseData<Void> giveIntegralOfIntegralAdd(@Valid GiveIntegralParam params) {
         IntegralAdd integralAdd = integralAddService.getById(params.getId());
         if (ObjectUtil.isNull(params.getId()) || integralAdd == null) {
             throw new MembershipGlobalException("can not find this record!");

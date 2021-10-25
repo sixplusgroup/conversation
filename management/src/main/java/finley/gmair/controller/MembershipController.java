@@ -1,7 +1,7 @@
 package finley.gmair.controller;
 
-import finley.gmair.dto.installation.MembershipUserDto;
-import finley.gmair.param.installation.MembershipParam;
+import finley.gmair.dto.management.MembershipUserDto;
+import finley.gmair.param.management.MembershipParam;
 import finley.gmair.service.feign.MembershipFeignService;
 import finley.gmair.util.PaginationParam;
 import finley.gmair.util.ResponseCode;

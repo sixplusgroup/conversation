@@ -1,6 +1,6 @@
 package finley.gmair.service.feign;
 
-import finley.gmair.dto.installation.MembershipUserDto;
+import finley.gmair.dto.management.MembershipUserDto;
 import finley.gmair.util.PaginationParam;
 import finley.gmair.util.ResponseData;
 import org.springframework.cloud.netflix.feign.FeignClient;

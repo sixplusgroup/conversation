@@ -4,19 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 
-import finley.gmair.dao.MembershipMapper;
 import finley.gmair.dto.membership.IntegralRecordDto;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.dao.IntegralRecordMapper;
 import finley.gmair.model.membership.IntegralRecord;
 import finley.gmair.model.membership.MembershipUser;
-import finley.gmair.param.installation.IntegralRecordParam;
+import finley.gmair.param.management.IntegralRecordParam;
 import finley.gmair.service.IntegralRecordService;
-import finley.gmair.service.MembershipConfigService;
 import finley.gmair.service.MembershipService;
 import finley.gmair.util.PaginationAdapter;
 import finley.gmair.util.PaginationParam;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

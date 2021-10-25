@@ -3,17 +3,15 @@ package finley.gmair.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 
-import finley.gmair.dto.installation.IntegralConfirmDto;
-import finley.gmair.dto.membership.IntegralRecordDto;
+import finley.gmair.dto.management.IntegralConfirmDto;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.dao.IntegralAddMapper;
 import finley.gmair.model.membership.IntegralAdd;
-import finley.gmair.param.installation.IntegralConfirmParam;
+import finley.gmair.param.management.IntegralConfirmParam;
 import finley.gmair.service.IntegralAddService;
 import finley.gmair.service.MembershipService;
 import finley.gmair.util.PaginationAdapter;
 import finley.gmair.util.PaginationParam;
-import finley.gmair.util.ResponseData;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

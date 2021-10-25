@@ -3,7 +3,7 @@
 <mapper namespace="finley.gmair.dao.IntegralAddMapper">
 
 
-    <select id="listConfirmPage" resultType="finley.gmair.dto.installation.IntegralConfirmDto">
+    <select id="listConfirmPage" resultType="finley.gmair.dto.management.IntegralConfirmDto">
         SELECT
 			`ia`.`id` AS `id`,
 			`ia`.`membership_user_id` AS `membership_user_id`,
@@ -23,6 +23,9 @@
 		<where>
 			<if test="integralConfirmParam.membershipType!=null">
 				and membership_type = #{integralConfirmParam.membershipType}
+			</if>
+			<if test="integralConfirmParam.consumerId!=null">
+				and consumer_id = #{integralConfirmParam.consumerId}
 			</if>
 			<if test="integralConfirmParam.isConfirmed!=null">
 				and is_confirmed = #{integralConfirmParam.isConfirmed}
@@ -65,6 +68,9 @@
 			<if test="integralConfirmParam.membershipType!=null">
 				and membership_type = #{integralConfirmParam.membershipType}
 			</if>
+			<if test="integralConfirmParam.consumerId!=null">
+				and consumer_id = #{integralConfirmParam.consumerId}
+			</if>
 			<if test="integralConfirmParam.isConfirmed!=null">
 				and is_confirmed = #{integralConfirmParam.isConfirmed}
 			</if>
@@ -88,7 +94,7 @@
 		</where>
 
 	</select>
-	<select id="getIntegralConfirmById" resultType="finley.gmair.dto.installation.IntegralConfirmDto">
+	<select id="getIntegralConfirmById" resultType="finley.gmair.dto.management.IntegralConfirmDto">
 		SELECT
 			`ia`.`id` AS `id`,
 			`ia`.`membership_user_id` AS `membership_user_id`,

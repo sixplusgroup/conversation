@@ -1,9 +1,9 @@
 package finley.gmair.controller;
 
-import finley.gmair.dto.installation.IntegralConfirmDto;
+import finley.gmair.dto.management.IntegralConfirmDto;
 import finley.gmair.dto.membership.IntegralRecordDto;
-import finley.gmair.param.installation.IntegralConfirmParam;
-import finley.gmair.param.installation.IntegralRecordParam;
+import finley.gmair.param.management.IntegralConfirmParam;
+import finley.gmair.param.management.IntegralRecordParam;
 import finley.gmair.param.membership.ConfirmIntegralParam;
 import finley.gmair.param.membership.GiveIntegralParam;
 import finley.gmair.service.feign.IntegralFeignService;

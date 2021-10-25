@@ -31,6 +31,9 @@
 			<if test="integralRecordParam.membershipType!=null">
 				and membership_type = #{integralRecordParam.membershipType}
 			</if>
+			<if test="integralRecordParam.consumerId!=null">
+				and consumer_id = #{integralRecordParam.consumerId}
+			</if>
 			<if test="integralRecordParam.isAdd!=null">
 				and is_add = #{integralRecordParam.isAdd}
 			</if>
@@ -51,7 +54,7 @@
 				)
 			</if>
 		</where>
-		<if test='integralRecordParam.sortType == ""'>
+		<if test='integralRecordParam.sortType==null or integralRecordParam.sortType == ""'>
 			ORDER BY create_time desc
 		</if>
 		<if test='integralRecordParam.sortType == "CREATETIME"'>
@@ -71,6 +74,9 @@
 		<where>
 			<if test="integralRecordParam.membershipType!=null">
 				and membership_type = #{integralRecordParam.membershipType}
+			</if>
+			<if test="integralRecordParam.consumerId!=null">
+				and consumer_id = #{integralRecordParam.consumerId}
 			</if>
 			<if test="integralRecordParam.isAdd!=null">
 				and is_add = #{integralRecordParam.isAdd}
