@@ -48,7 +48,15 @@ public class UserassignServiceImpl implements UserassignService {
 
     @Override
     public ResultData confirmReservation(String userassignId) {
-        ResultData response = userassignDao.updateUserassignStatus(userassignId);
+        int status = 1;
+        ResultData response = userassignDao.updateUserassignStatus(userassignId,status);
+        return response;
+    }
+
+    @Override
+    public ResultData closeReservation(String userassignId) {
+        int status = 2;
+        ResultData response = userassignDao.updateUserassignStatus(userassignId,status);
         return response;
     }
 

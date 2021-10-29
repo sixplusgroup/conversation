@@ -17,7 +17,7 @@ public interface UserassignDao {
 
     ResultData principal(Map<String, Object> condition,int start,int length);
 
-    ResultData updateUserassignStatus(String userassignId);
+    ResultData updateUserassignStatus(String userassignId,int status);
 
     ResultData update(Userassign userassign);
 }

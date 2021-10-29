@@ -46,7 +46,9 @@
         <if test="consumerAddress != null">
             AND consumer_address = #{consumerAddress}
         </if>
-
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
         <if test="userassignDetail != null">
             AND userassign_detail = #{userassignDetail}
         </if>
@@ -91,6 +93,9 @@
         WHERE 1 = 1
         <if test="userassignId != null">
             AND userassign_id = #{userassignId}
+        </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
         </if>
         <if test="consumerConsignee != null">
             AND consumer_consignee like #{consumerConsignee}
@@ -137,6 +142,9 @@
         <if test="userassignId != null">
             AND userassign_id = #{userassignId}
         </if>
+        <if test="blockFlag != null">
+            AND block_flag = #{blockFlag}
+        </if>
         <if test="consumerConsignee != null">
             AND consumer_consignee like #{consumerConsignee}
         </if>
@@ -177,7 +185,7 @@
     <update id="updateUserassignStatus" parameterType="java.util.Map">
         UPDATE gmair_install.install_userassign
         <set>
-            userassign_status = 1,
+            userassign_status = #{status},
             <if test="userassignDate != null">
                 userassign_date = #{userassignDate},
             </if>

@@ -117,13 +117,15 @@ public class UserassignDaoImpl extends BaseDao implements UserassignDao {
     }
 
     @Override
-    public ResultData updateUserassignStatus(String userassignId) {
+    public ResultData updateUserassignStatus(String userassignId,int status) {
         ResultData result = new ResultData();
         try {
             Timestamp userassignDate = new Timestamp(System.currentTimeMillis());
             Map<String,Object> map = new HashMap<>();
             map.put("userassignId",userassignId);
             map.put("userassignDate",userassignDate);
+            map.put("status",status);
+
             sqlSession.update("gmair.install.userassign.updateUserassignStatus", map);
         } catch (Exception e) {
             logger.error(e.getMessage());
