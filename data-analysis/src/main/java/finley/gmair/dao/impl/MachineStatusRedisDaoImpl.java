@@ -34,7 +34,13 @@ public class MachineStatusRedisDaoImpl implements MachineStatusRedisDao {
         try {
             Set<String> keys = redisTemplate.keys("*");
             for (String key : keys) {
-                map.put(key, redisTemplate.opsForValue().get(key));
+                try {
+                    if(key.length() == 12) {
+                        map.put(key, redisTemplate.opsForValue().get(key));
+                    }
+                } catch (Exception e) {
+                    logger.info("[Error] fail to serialize data from redis: " + e.getMessage() + ", key = " + key);
+                }
             }
         } catch (Exception e) {
             logger.info("[Error] fail to retrieve data from redis: " + e.getMessage());
