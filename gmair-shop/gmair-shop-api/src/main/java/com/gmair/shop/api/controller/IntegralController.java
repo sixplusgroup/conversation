@@ -10,6 +10,8 @@ import com.gmair.shop.service.feign.MembershipFeignService;
 import com.gmair.shop.service.feign.ResourceFeignService;
 import finley.gmair.dto.management.IntegralConfirmDto;
 import finley.gmair.dto.membership.IntegralRecordDto;
+import finley.gmair.param.management.IntegralConfirmParam;
+import finley.gmair.param.management.IntegralRecordParam;
 import finley.gmair.param.membership.IntegralWithdrawParam;
 import finley.gmair.param.membership.SupplementaryIntegralParam;
 import finley.gmair.util.PaginationParam;
@@ -91,10 +93,10 @@ public class IntegralController {
     }
 
     @GetMapping("/getIntegralRecords")
-    public ResponseEntity<PaginationParam<IntegralRecordDto>> getIntegralRecords(String sortType,PaginationParam<IntegralRecordDto> paginationParam){
+    public ResponseEntity<PaginationParam<IntegralRecordDto>> getIntegralRecords(IntegralRecordParam integralRecordParam, PaginationParam<IntegralRecordDto> paginationParam){
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
-        ResponseData<PaginationParam<IntegralRecordDto>> responseData = membershipFeignService.getIntegralRecords(user.getConsumerId(),paginationParam.getCurrent(),paginationParam.getSize(),sortType);
+        ResponseData<PaginationParam<IntegralRecordDto>> responseData = membershipFeignService.getIntegralRecords(user.getConsumerId(),paginationParam.getCurrent(),paginationParam.getSize(),integralRecordParam.getSortType());
         if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
             return ResponseEntity.ok(responseData.getData());
         }else{
@@ -102,10 +104,10 @@ public class IntegralController {
         }
     }
     @GetMapping("/getIntegralAdds")
-    public ResponseEntity<PaginationParam<IntegralConfirmDto>> getIntegralAdds(String sortType,PaginationParam<IntegralRecordDto> paginationParam){
+    public ResponseEntity<PaginationParam<IntegralConfirmDto>> getIntegralAdds(IntegralConfirmParam integralConfirmParam, PaginationParam<IntegralRecordDto> paginationParam){
         String userId = SecurityUtils.getUser().getUserId();
         User user = userService.getUserByUserId(userId);
-        ResponseData<PaginationParam<IntegralConfirmDto>> responseData = membershipFeignService.getIntegralAdds(user.getConsumerId(),paginationParam.getCurrent(),paginationParam.getSize(),sortType);
+        ResponseData<PaginationParam<IntegralConfirmDto>> responseData = membershipFeignService.getIntegralAdds(user.getConsumerId(),paginationParam.getCurrent(),paginationParam.getSize(),integralConfirmParam.getSortType(),integralConfirmParam.getIsConfirmed(),integralConfirmParam.getStatus());
         if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
             return ResponseEntity.ok(responseData.getData());
         }else{

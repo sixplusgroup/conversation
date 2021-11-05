@@ -328,8 +328,24 @@ VIEW `assign_report_view` AS
             AND (`install_assign`.`member_id` = `team_member`.`member_id`))
     ORDER BY `install_assign`.`team_id` , `install_assign`.`member_id` , `install_assign`.`create_time`;
 
+#2021-7-20
+CREATE TABLE `install_userassign`  (
+  `userassign_id` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `consumer_consignee` varchar(45) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `consumer_phone` varchar(45) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `consumer_address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `userassign_detail` varchar(45) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `userassign_status` tinyint(1) NOT NULL COMMENT '0unconfirmed 1confimed 2closed',
+  `userassign_date` date NULL DEFAULT NULL,
+  `userassign_type` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'install',
+  `remarks` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `create_time` datetime(0) NOT NULL,
+  `block_flag` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`userassign_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 
-
-
+#2021-11-5
+alter table `install_assign_type_info` add `is_need_qrcode` tinyint(1) not null default 1;
+UPDATE `gmair_install`.`install_assign_type_info` SET `is_need_qrcode` = 0 WHERE `assign_type` = '新风勘测';
 

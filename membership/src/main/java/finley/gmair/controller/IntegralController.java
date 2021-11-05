@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import finley.gmair.dto.management.IntegralConfirmDto;
 import finley.gmair.dto.membership.IntegralRecordDto;
+import finley.gmair.enums.membership.IntegralAddStatus;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.model.membership.IntegralAdd;
 import finley.gmair.model.membership.IntegralRecord;
@@ -67,6 +68,7 @@ public class IntegralController {
         integralAdd.setMembershipUserId(membershipService.getMembershipIdByConsumerId(consumerId));
         integralAdd.setIntegralValue(integral);
         integralAdd.setDescription(description);
+        integralAdd.setStatus(IntegralAddStatus.CONFIRMED.value());
         integralAddService.createAdd(integralAdd);
         // directly confirm this integralAdd record
         integralAddService.confirmIntegralById(integralAdd.getId());
@@ -87,6 +89,7 @@ public class IntegralController {
         String consumerId = params.getConsumerId();
         IntegralAdd integralAdd = new IntegralAdd();
         integralAdd.setIsConfirmed(false);
+        integralAdd.setStatus(IntegralAddStatus.TODOCONFIRM.value());
         integralAdd.setDescription(params.getDescription());
         integralAdd.setMembershipUserId(membershipService.getMembershipIdByConsumerId(consumerId));
         integralAdd.setDeviceModel(params.getDeviceModel());
@@ -98,19 +101,15 @@ public class IntegralController {
     @PostMapping("/giveIntegralOfIntegralAdd")
     @Transactional(rollbackFor = Exception.class)
     public ResponseData<Void> giveIntegralOfIntegralAdd(@Valid GiveIntegralParam params) {
-        IntegralAdd integralAdd = integralAddService.getById(params.getId());
-        if (ObjectUtil.isNull(params.getId()) || integralAdd == null) {
+
+        if (ObjectUtil.isNull(params.getId())) {
             throw new MembershipGlobalException("can not find this record!");
         }
         Integer integral = params.getIntegralValue();
         if (integral == null || integral > 10000 || integral < 0) {
             throw new MembershipGlobalException("integral is too large in one time!");
         }
-        if (integralAdd.getIsConfirmed()) {
-            throw new MembershipGlobalException("this record is already confirmed!");
-        }
-        integralAdd.setIntegralValue(integral);
-        integralAddService.updateById(integralAdd);
+        integralAddService.giveIntegral(params.getId(),integral);
         return ResponseData.ok();
     }
 
@@ -197,6 +196,11 @@ public class IntegralController {
     @GetMapping("deleteIntegralConfirm")
     public ResponseData<Void> deleteIntegralConfirm(@NotBlank String id) {
         integralAddService.deleteById(id);
+        return ResponseData.ok();
+    }
+    @GetMapping("closeIntegral")
+    public ResponseData<Void> closeIntegral(@NotBlank String id){
+        integralAddService.closeIntegralById(id);
         return ResponseData.ok();
     }
 }

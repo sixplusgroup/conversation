@@ -14,6 +14,7 @@
 			`ia`.`description` AS `description`,
 			`ia`.`device_model` AS `device_model`,
 			`ia`.`pictures` AS `pictures`,
+			`ia`.`status` AS `status`,
 			`mu`.`integral` AS `membership_integral`,
 			`mu`.`membership_type` AS `membership_type`,
 			`mu`.`user_mobile` AS `user_mobile`,
@@ -37,6 +38,9 @@
 			</if>
 			<if test="integralConfirmParam.membershipUserId!=null">
 				and membership_user_id = #{integralConfirmParam.membershipUserId}
+			</if>
+			<if test="integralConfirmParam.status!=null">
+				and ia.status = #{integralConfirmParam.status}
 			</if>
 
 			<if test="integralConfirmParam.search != null and integralConfirmParam.search != '' ">
@@ -82,7 +86,9 @@
 			<if test="integralConfirmParam.membershipUserId!=null">
 				and membership_user_id = #{integralConfirmParam.membershipUserId}
 			</if>
-
+			<if test="integralConfirmParam.status!=null">
+				and ia.status = #{integralConfirmParam.status}
+			</if>
 			<if test="integralConfirmParam.search != null and integralConfirmParam.search != '' ">
 				and (
 				user_mobile like concat('%',#{integralConfirmParam.search},'%')
@@ -105,6 +111,7 @@
 			`ia`.`description` AS `description`,
 			`ia`.`device_model` AS `device_model`,
 			`ia`.`pictures` AS `pictures`,
+			`ia`.`status` AS `status`,
 			`mu`.`integral` AS `membership_integral`,
 			`mu`.`membership_type` AS `membership_type`,
 			`mu`.`user_mobile` AS `user_mobile`,

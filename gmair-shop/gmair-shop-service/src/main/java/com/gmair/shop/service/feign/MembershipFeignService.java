@@ -48,6 +48,6 @@ public interface MembershipFeignService {
     ResponseData<PaginationParam<IntegralRecordDto>> getIntegralRecords(@RequestParam("consumerId") String consumerId,@RequestParam("current") long current,@RequestParam("size") long size,@RequestParam("sortType")String sortType);
 
     @GetMapping("/membership/integral/getAllIntegralConfirm/page")
-    ResponseData<PaginationParam<IntegralConfirmDto>> getIntegralAdds(@RequestParam("consumerId") String consumerId, @RequestParam("current") long current, @RequestParam("size") long size,@RequestParam("sortType")String sortType);
+    ResponseData<PaginationParam<IntegralConfirmDto>> getIntegralAdds(@RequestParam("consumerId") String consumerId, @RequestParam("current") long current, @RequestParam("size") long size,@RequestParam("sortType")String sortType,@RequestParam("isConfirmed") Boolean isConfirmed,@RequestParam("status") Integer status);
 
 }

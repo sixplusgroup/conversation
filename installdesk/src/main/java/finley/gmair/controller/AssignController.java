@@ -584,6 +584,26 @@ public class AssignController {
         return result;
     }
 
+    /***
+     * @Description TODO
+     * @Date  11/5/2021 8:35 PM
+     * @param assignId:
+     * @return boolean
+     */
+    public boolean getIsNeedQrcode(String assignId){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        ResultData res = assignService.fetch(condition);
+        if(res.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            return true;
+        }else{
+            String assignType = ((List<Assign>)res.getData()).get(0).getType();
+            AssignTypeInfo one = assignTypeInfoService.queryByAssignType(assignType);
+            return one.getNeedQrcode();
+        }
+    }
+
     /**
      * 提交安装任务相关信息
      *
@@ -599,10 +619,16 @@ public class AssignController {
     @PostMapping("/submit")
     public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description, String date, Integer hole) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
+
+        if (StringUtils.isEmpty(assignId)  || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装快照相关的信息");
             return result;
+        }
+        if(getIsNeedQrcode(assignId)){
+            if((StringUtils.isEmpty(qrcode))){
+                return ResultData.error("请提供安装快照相关的信息");
+            }
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
