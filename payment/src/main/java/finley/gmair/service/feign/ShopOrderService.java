@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("gmair-shop-api")
 public interface ShopOrderService {
 
-    @PostMapping("/p/order/payed")
+    @PostMapping("/shop/consumer/order/payed")
     ResponseEntity<Void> updateOrderPayed (@RequestParam("orderId") String orderId);
 
 }

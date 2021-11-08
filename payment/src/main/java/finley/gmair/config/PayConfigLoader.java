@@ -1,5 +1,6 @@
 package finley.gmair.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -14,9 +15,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "pay")
 public class PayConfigLoader {
 
-    private Oa oa;// official account
+    private PayConfig oa;// official account
 
-    private Mp mp;// mini program
-
+    private PayConfig mp;// mini program
 
 }

@@ -15,7 +15,7 @@ public class Trade {
     private Timestamp tradeStartTime;
     private Timestamp tradeEndTime;
     private TradeState tradeState;
-    private Integer payClient;// 0:official account, 1:mini program
+    private String payClient;// OFFICIALACCOUNT:official account, SHOPMP:mini program
 
     public Trade () {
         super();
@@ -109,11 +109,11 @@ public class Trade {
         this.tradeState = tradeState;
     }
 
-    public Integer getPayClient() {
+    public String getPayClient() {
         return payClient;
     }
 
-    public void setPayClient(Integer payClient) {
+    public void setPayClient(String payClient) {
         this.payClient = payClient;
     }
 }
