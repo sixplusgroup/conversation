@@ -56,5 +56,4 @@ public class MachineStatusRedisDaoImpl implements MachineStatusRedisDao {
         result.setDescription("success to fetch machine data");
         return result;
     }
-
 }
