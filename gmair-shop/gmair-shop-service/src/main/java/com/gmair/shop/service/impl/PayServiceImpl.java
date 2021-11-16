@@ -51,20 +51,18 @@ public class PayServiceImpl implements PayService {
      * 不同的订单号，同一个支付流水号
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public PayFeignParam pay(String userId, PayParam payParam) {
+    public PayFeignParam getCashPayParam(String userId,String openId , Order order) {
 
         PayFeignParam payFeignParam = new PayFeignParam();
-
         // 支付单号
-        String orderNumber = payParam.getOrderNumbers();
-        payFeignParam.setOrderId(orderNumber);
-        Order order = orderMapper.getOrderByOrderNumber(orderNumber);
+        payFeignParam.setOpenid(openId);
+        payFeignParam.setOrderId(order.getOrderNumber());
         payFeignParam.setBody(order.getProdName());
         payFeignParam.setPrice((int) Arith.mul(order.getActualTotal(), 100));
         payFeignParam.setIp(IPHelper.getIpAddr());
         return payFeignParam;
     }
+
 
 
     @Override

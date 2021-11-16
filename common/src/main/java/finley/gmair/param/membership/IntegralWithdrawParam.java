@@ -19,4 +19,13 @@ public class IntegralWithdrawParam {
     @Size(max=80)
     private String description;
 
+    public IntegralWithdrawParam(){
+
+    }
+
+    public IntegralWithdrawParam(String consumerId, Integer integral, String description) {
+        this.consumerId = consumerId;
+        this.integral = integral;
+        this.description = description;
+    }
 }

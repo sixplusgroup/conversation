@@ -185,7 +185,7 @@
         </collection>
     </resultMap>
 
-    <select id="getOrderByOrderNumber" resultType="com.gmair.shop.bean.model.Order">
+  <select id="getOrderByOrderNumber" resultType="com.gmair.shop.bean.model.Order">
     select * from tz_order o where o.order_number = #{orderNumber}
   </select>
 

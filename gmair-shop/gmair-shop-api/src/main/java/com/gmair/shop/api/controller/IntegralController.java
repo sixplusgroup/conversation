@@ -63,22 +63,22 @@ public class IntegralController {
         }
     }
 
-    @PostMapping(value = "/withdrawIntegral")
-    public ResponseEntity<Void> withdrawIntegral(@Valid @RequestBody PIntegralWithdrawParam params){
-        String userId = SecurityUtils.getUser().getUserId();
-        User user = userService.getUserByUserId(userId);
-        IntegralWithdrawParam integralWithdrawParam = new IntegralWithdrawParam();
-        integralWithdrawParam.setConsumerId(user.getConsumerId());
-        integralWithdrawParam.setDescription(params.getDescription());
-        integralWithdrawParam.setIntegral(params.getIntegral());
-        ResponseData<Void> responseData =  membershipFeignService.withdrawIntegral(integralWithdrawParam);
-
-        if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
-            return ResponseEntity.ok().build();
-        }else{
-            throw new GmairShopGlobalException(responseData.getDescription());
-        }
-    }
+//    @PostMapping(value = "/withdrawIntegral")
+//    public ResponseEntity<Void> withdrawIntegral(@Valid @RequestBody PIntegralWithdrawParam params){
+//        String userId = SecurityUtils.getUser().getUserId();
+//        User user = userService.getUserByUserId(userId);
+//        IntegralWithdrawParam integralWithdrawParam = new IntegralWithdrawParam();
+//        integralWithdrawParam.setConsumerId(user.getConsumerId());
+//        integralWithdrawParam.setDescription(params.getDescription());
+//        integralWithdrawParam.setIntegral(params.getIntegral());
+//        ResponseData<Void> responseData =  membershipFeignService.withdrawIntegral(integralWithdrawParam);
+//
+//        if(responseData.getResponseCode()== ResponseCode.RESPONSE_OK){
+//            return ResponseEntity.ok().build();
+//        }else{
+//            throw new GmairShopGlobalException(responseData.getDescription());
+//        }
+//    }
 
     @PostMapping("/getIntegral")
     public ResponseEntity<Integer> getMembershipIntegral(){
