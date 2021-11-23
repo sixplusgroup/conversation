@@ -208,11 +208,28 @@ public class WechatServiceImpl implements WechatService {
                     info.setSign(respMap.get("sign"));
                     info.setTradeType(respMap.get("trade_type"));
                     returnInfoDao.insert(info);
+                    /**
+                     * 根据开发文档, 微信小程序(SHOPMP)需要二次签名
+                     */
+                    if(payClient.equals("SHOPMP")){
+                        Map<String, String> mpMap = new HashMap<>();
+                        mpMap.put("appId",appId);
+                        mpMap.put("timeStamp",String.valueOf(System.currentTimeMillis() / 1000));
+                        mpMap.put("nonceStr",respMap.get("nonce_str"));
+                        mpMap.put("package","prepay_id="+respMap.get("prepay_id"));
+                        mpMap.put("signType","MD5");
+                        String secondarySign =PayUtil.generateSignature(mpMap,key);
+                        mpMap.put("paySign",secondarySign);
+                        result.setResponseCode(ResponseCode.RESPONSE_OK);
+                        result.setData(mpMap);
+                        return result;
+                    }else if(payClient.equals("OFFICIALACCOUNT")){
+                        //返回的map
+                        result.setResponseCode(ResponseCode.RESPONSE_OK);
+                        result.setData(respMap);
+                        return result;
+                    }
 
-                    //返回的map
-                    result.setResponseCode(ResponseCode.RESPONSE_OK);
-                    result.setData(respMap);
-                    return result;
                 }
             } else {
                 logger.error("return_msg:" + respMap.get("return_msg"));
@@ -283,9 +300,10 @@ public class WechatServiceImpl implements WechatService {
                             trade.setTradeEndTime(new Timestamp(System.currentTimeMillis()));
                             //支付完成,更新订单状态
                             trade.setTradeState(TradeState.PAYED);
-
-                            //调用并更改订单的状态
-                            // select feign pay order service
+                            /**
+                             * 调用并更改订单的状态
+                             * select feign pay order service
+                             */
                             if(payClient.equals("OFFICIALACCOUNT")){
                                 driftOrderService.updateOrderPayed(trade.getOrderId());
                             }else if(payClient.equals("SHOPMP")){

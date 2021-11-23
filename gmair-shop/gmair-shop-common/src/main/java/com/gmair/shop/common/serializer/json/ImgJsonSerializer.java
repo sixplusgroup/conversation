@@ -15,8 +15,6 @@ import java.io.IOException;
 @Component
 public class ImgJsonSerializer extends JsonSerializer<String> {
 
-    @Autowired
-    private Qiniu qiniu;
 
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
@@ -27,7 +25,7 @@ public class ImgJsonSerializer extends JsonSerializer<String> {
         String[] imgs = value.split(StrUtil.COMMA);
         StringBuilder sb = new StringBuilder();
         for (String img : imgs) {
-            sb.append(qiniu.getResourcesUrl()).append(img).append(StrUtil.COMMA);
+            sb.append(img).append(StrUtil.COMMA);
         }
         sb.deleteCharAt(sb.length()-1);
         gen.writeString(sb.toString());
