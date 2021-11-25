@@ -34,7 +34,7 @@ import cn.hutool.extra.emoji.EmojiUtil;
  *
  */
 @RestController
-@RequestMapping("/admin/user")
+@RequestMapping("/shop/manager/admin/user")
 public class UserController {
 
     @Autowired

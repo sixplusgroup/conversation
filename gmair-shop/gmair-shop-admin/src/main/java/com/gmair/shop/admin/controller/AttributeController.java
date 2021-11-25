@@ -32,7 +32,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  *
  */
 @RestController
-@RequestMapping("/admin/attribute")
+@RequestMapping("/shop/manager/admin/attribute")
 public class AttributeController {
 
     @Autowired

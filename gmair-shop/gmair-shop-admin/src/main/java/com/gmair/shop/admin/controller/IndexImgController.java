@@ -23,7 +23,7 @@ import java.util.Objects;
  *
  */
 @RestController
-@RequestMapping("/admin/indexImg")
+@RequestMapping("/shop/manager/admin/indexImg")
 public class IndexImgController {
 
     @Autowired

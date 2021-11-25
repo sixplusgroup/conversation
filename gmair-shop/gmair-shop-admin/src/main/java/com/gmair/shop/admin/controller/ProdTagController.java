@@ -28,7 +28,7 @@ import java.util.List;
  * @date 2019-04-18 09:08:36
  */
 @RestController
-@RequestMapping("/prod/prodTag")
+@RequestMapping("/shop/manager/prod/prodTag")
 public class ProdTagController {
 
     @Autowired

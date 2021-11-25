@@ -33,7 +33,7 @@ import java.util.Date;
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("/prod/prodComm" )
+@RequestMapping("/shop/manager/prod/prodComm" )
 public class ProdCommController {
 
     private final ProdCommService prodCommService;

@@ -32,7 +32,7 @@ import com.gmair.shop.service.TransportService;
  *
  */
 @RestController
-@RequestMapping("/shop/transport")
+@RequestMapping("/shop/manager/shop/transport")
 public class TransportController {
 
     @Autowired

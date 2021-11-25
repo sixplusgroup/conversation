@@ -34,7 +34,7 @@ import com.gmair.shop.service.CategoryService;
  *
  */
 @RestController
-@RequestMapping("/prod/category")
+@RequestMapping("/shop/manager/prod/category")
 public class CategoryController {
 
 	@Autowired

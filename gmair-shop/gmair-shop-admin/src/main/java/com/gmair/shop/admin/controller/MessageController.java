@@ -33,7 +33,7 @@ import cn.hutool.core.util.StrUtil;
  *
  */
 @RestController
-@RequestMapping("/admin/message")
+@RequestMapping("/shop/manager/admin/message")
 public class MessageController {
 
     @Autowired

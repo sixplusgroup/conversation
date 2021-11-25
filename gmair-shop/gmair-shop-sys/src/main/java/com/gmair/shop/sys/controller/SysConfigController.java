@@ -35,7 +35,7 @@ import cn.hutool.core.util.StrUtil;
  *
  */
 @RestController
-@RequestMapping("/sys/config")
+@RequestMapping("/shop/manager/sys/config")
 public class SysConfigController{
 	@Autowired
 	private SysConfigService sysConfigService;

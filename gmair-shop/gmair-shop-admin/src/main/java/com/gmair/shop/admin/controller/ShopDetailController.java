@@ -35,7 +35,7 @@ import ma.glasnost.orika.MapperFacade;
  *
  */
 @Controller
-@RequestMapping("/shop/shopDetail")
+@RequestMapping("/shop/manager/shop/shopDetail")
 public class ShopDetailController {
 
     @Autowired

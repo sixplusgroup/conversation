@@ -35,7 +35,7 @@ import cn.hutool.core.util.StrUtil;
  *
  */
 @RestController
-@RequestMapping("/sys/role")
+@RequestMapping("/shop/manager/sys/role")
 public class SysRoleController{
 	@Autowired
 	private SysRoleService sysRoleService;

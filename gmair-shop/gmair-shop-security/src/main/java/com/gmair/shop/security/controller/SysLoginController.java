@@ -33,7 +33,7 @@ public class SysLoginController {
 	private final CacheManager cacheManager;
 
 
-	@GetMapping("/captcha.jpg")
+	@GetMapping("/shop/manager/captcha.jpg")
 	public void login(HttpServletResponse response,String uuid) {
 		//定义图形验证码的长、宽、验证码字符数、干扰元素个数
 		SimpleCaptcha simpleCaptcha = new SimpleCaptcha(200, 50, 4, 20);
@@ -48,7 +48,7 @@ public class SysLoginController {
 	/**
 	 * 退出
 	 */
-	@PostMapping(value = "/sys/logout")
+	@PostMapping(value = "/shop/manager/sys/logout")
 	public ResponseEntity<String> logout() {
 		SecurityContextHolder.clearContext();
 		return ResponseEntity.ok().build();

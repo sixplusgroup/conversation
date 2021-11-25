@@ -37,7 +37,7 @@ import cn.hutool.core.util.StrUtil;
  */
 @Slf4j
 @RestController
-@RequestMapping("/sys/schedule")
+@RequestMapping("/shop/manager/sys/schedule")
 public class ScheduleJobController {
 	@Autowired
 	private ScheduleJobService scheduleJobService;

@@ -37,7 +37,7 @@ import java.util.Objects;
  *
  */
 @Controller
-@RequestMapping("/prod/prod")
+@RequestMapping("/shop/manager/prod/prod")
 public class ProductController {
 
     @Autowired
