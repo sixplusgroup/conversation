@@ -72,13 +72,13 @@ public class PayController {
                 return ResponseData.error(responseData.getDescription());
             }
             if(responseData.getData()<order.getTotalIntegral()){
-                return ResponseData.error("您的积分余额不足!");
+                return ResponseData.error("您的积分不足!");
             }
         }
         Map<String,String> responseResult = new HashMap<>();
         if(order.getIsNeedCashOfAll()){
             PayFeignParam payFeignParam = payService.getCashPayParam(userId,openId,order);
-            ResultData result = payFeignService.createTrade(payFeignParam.getOrderId(),payFeignParam.getOpenid(),payFeignParam.getPrice(),payFeignParam.getBody(),payFeignParam.getIp());
+            ResultData result = payFeignService.payAllowExist(payFeignParam.getOrderId(),payFeignParam.getOpenid(),payFeignParam.getPrice(),payFeignParam.getBody(),payFeignParam.getIp());
             if(result.getResponseCode()!= ResponseCode.RESPONSE_OK){
                 throw new GmairShopGlobalException("支付失败");
             }

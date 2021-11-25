@@ -15,4 +15,8 @@ public interface PayFeignService {
     @PostMapping("/payment/bill/create")
     ResultData createTrade(@RequestParam("orderId") String orderId, @RequestParam("openid") String openid, @RequestParam("price") int price, @RequestParam("body") String body, @RequestParam("ip") String ip);
 
+    @PostMapping("/payment/bill/payAllowExist")
+    ResultData payAllowExist(@RequestParam("orderId") String orderId, @RequestParam("openid") String openid, @RequestParam("price") int price, @RequestParam("body") String body, @RequestParam("ip") String ip);
+
+
 }

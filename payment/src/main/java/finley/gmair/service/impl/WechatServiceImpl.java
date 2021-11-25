@@ -63,7 +63,7 @@ public class WechatServiceImpl implements WechatService {
 
 
     /**
-     * @Description create trade of order
+     * @Description create trade of order, Re-entry not allowed
      * @Date  2021/10/10 14:04
      * @param orderId:
      * @param openId:
@@ -249,6 +249,189 @@ public class WechatServiceImpl implements WechatService {
         result.setDescription("null error");
         return result;
     }
+
+    /**
+     * @Description  Re-entry allowed. it always create new trade and returnInfo in database whether orderId exists or not
+     * @Date  2021/10/10 14:04
+     * @param orderId:
+     * @param openId:
+     * @param money:
+     * @param ipAddress:
+     * @param body:
+     * @param payClient: the client that access this function. client init by feign interceptor
+     * @return finley.gmair.util.ResultData
+     */
+    @Override
+    public ResultData payAllowExist(String orderId, String openId, String money, String ipAddress, String body,String payClient) {
+        // select pay config by payClient
+        PayConfig payConfig = payConfigStrategyFactory.getPayConfig(payClient);
+        String appId = payConfig.getAppId(),merchantId = payConfig.getMerchantId(),key = payConfig.getKey(),notify_url = payConfig.getNotifyUrl();
+
+        ResultData result = new ResultData();
+
+        String payUrl = null;
+
+        ResultData configData = configurationDao.query();
+        if(configData.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            Configuration config = ((List<Configuration>)configData.getData()).get(0);
+            environment = config.getEnvironment();
+            payUrl = config.getPayUrl();
+        }
+
+        String tradeId = PayUtil.generateId();
+
+        //必传参数
+        String nonce_str=UUID.randomUUID().toString().replace("-", "");
+        //String body="果麦新风-甲醛检测";
+        String spbill_create_ip=ipAddress;
+        String trade_type="JSAPI";//JSAPI支付（或小程序支付）
+        String total_fee=money;//订单总结额，单位为分
+        String out_trade_no=orderId;//订单号
+        //非必传参数
+
+
+
+        //组装参数map
+        try {
+
+            //沙盒测试获取key
+            if(!environment.equals("actual")) {
+                Map<String,String> paramMap=new TreeMap<>();
+                paramMap.put("mch_id", merchantId);
+                paramMap.put("nonce_str", nonce_str);
+                paramMap.put("sign_type","MD5");
+                String tempsign = PayUtil.generateSignature(paramMap,key);
+                paramMap.put("sign", tempsign);
+                String paramXml=PayUtil.mapToXml(paramMap);
+                String returnStr = PayUtil.httpRequest("https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", "POST", paramXml);
+                Map<String, String> respMap = XMLUtil.doXMLParse(returnStr);
+                if ("SUCCESS".equals(respMap.get("return_code"))) {
+                    sandboxKey = respMap.get("sandbox_signkey");
+                    logger.info("sandbox key：" + sandboxKey);
+                }
+            }
+
+
+            Map<String,String> paramMap=new TreeMap<>();
+            paramMap.put("appid", appId);
+            paramMap.put("body", body);
+            paramMap.put("mch_id", merchantId);
+            paramMap.put("nonce_str", nonce_str);
+            paramMap.put("sign_type","MD5");
+            paramMap.put("out_trade_no", out_trade_no);
+            paramMap.put("total_fee", total_fee);
+            paramMap.put("spbill_create_ip", spbill_create_ip);
+            paramMap.put("notify_url", notify_url);
+            paramMap.put("trade_type", trade_type);
+            paramMap.put("openid", openId);
+            String sign = PayUtil.generateSignature(paramMap,environment.equals("actual")?key:sandboxKey);
+            paramMap.put("sign", sign);
+
+            //转换 xml
+            String paramXml=PayUtil.mapToXml(paramMap);
+            logger.info("send xml: " + paramXml);
+
+            //发送请求
+            String resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
+            logger.info("tryNum:0, result:"+resultXml);
+
+            int tryCount = 0;
+            while(tryCount < 5 && resultXml.contains("<title>302")) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                tryCount++;
+                resultXml =PayUtil.httpRequest(payUrl, "POST", paramXml);
+                logger.info("tryNum:" + tryCount + ", result:"+resultXml);
+            }
+            if(resultXml.contains("<title>302")) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("302 error");
+                return result;
+            }
+
+            //解析响应xml
+            Map<String, String> respMap = XMLUtil.doXMLParse(resultXml);
+
+            Trade trade=new Trade();
+            trade.setTradeId(tradeId);
+            trade.setOrderId(orderId);
+            trade.setTradeDescription(body);
+            trade.setTradeNonceStr(nonce_str);
+            trade.setTradeTotalFee(Integer.parseInt(total_fee));
+            trade.setTradeSpbillCreateIp(spbill_create_ip);
+            trade.setTradeType(trade_type);
+            trade.setTradeOpenId(openId);
+            trade.setTradeStartTime(new Timestamp(System.currentTimeMillis()));
+            trade.setTradeState(TradeState.UNPAYED);
+            trade.setPayClient(payClient);
+            String return_code = respMap.get("return_code");
+            if ("SUCCESS".equals(return_code)) {
+                if (respMap.containsKey("err_code_des") && !respMap.get("err_code_des").toLowerCase().equals("ok")
+                        && !respMap.get("err_code_des").toUpperCase().equals("SUCCESS")) {
+                    logger.error("err_code_des:"+respMap.get("err_code_des"));
+                    result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                    result.setDescription(respMap.get("err_code_des"));
+                    return result;
+                }
+                String result_code = respMap.get("result_code");
+                if ("SUCCESS".equals(result_code)) {//业务结果
+                    tradeDao.insert(trade);
+
+                    //存储微信返回的map
+                    ReturnInfo info = new ReturnInfo();
+                    info.setInfoId(PayUtil.generateId());
+                    info.setOrderId(orderId);
+                    info.setDeviceInfo(respMap.get("device_info"));
+                    info.setNonceStr(respMap.get("nonce_str"));
+                    info.setPrepayId(respMap.get("prepay_id"));
+                    info.setSign(respMap.get("sign"));
+                    info.setTradeType(respMap.get("trade_type"));
+                    returnInfoDao.insert(info);
+                    /**
+                     * 根据开发文档, 微信小程序(SHOPMP)需要二次签名
+                     */
+                    if(payClient.equals("SHOPMP")){
+                        Map<String, String> mpMap = new HashMap<>();
+                        mpMap.put("appId",appId);
+                        mpMap.put("timeStamp",String.valueOf(System.currentTimeMillis() / 1000));
+                        mpMap.put("nonceStr",respMap.get("nonce_str"));
+                        mpMap.put("package","prepay_id="+respMap.get("prepay_id"));
+                        mpMap.put("signType","MD5");
+                        String secondarySign =PayUtil.generateSignature(mpMap,key);
+                        mpMap.put("paySign",secondarySign);
+                        result.setResponseCode(ResponseCode.RESPONSE_OK);
+                        result.setData(mpMap);
+                        return result;
+                    }else if(payClient.equals("OFFICIALACCOUNT")){
+                        //返回的map
+                        result.setResponseCode(ResponseCode.RESPONSE_OK);
+                        result.setData(respMap);
+                        return result;
+                    }
+
+                }
+            } else {
+                logger.error("return_msg:" + respMap.get("return_msg"));
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription(respMap.get("return_msg"));
+                return result;
+            }
+
+        } catch (Exception e) {
+            logger.error("error message:"+e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription(e.getMessage());
+            return result;
+        }
+        logger.error("咋执行到这了，好奇怪");
+        result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+        result.setDescription("null error");
+        return result;
+    }
+
 
     @Override
     public String payNotify(String notifyXml,String payClient) {
