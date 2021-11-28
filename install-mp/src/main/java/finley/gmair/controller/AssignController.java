@@ -267,7 +267,7 @@ public class AssignController {
      * 查询设备型号名，如GM420
      * @return 设备型号名集合
      */
-    @GetMapping("/filter/info/model/name")
+    @GetMapping("/model/name")
     public ResultData queryMachineModelName() {
         return qrCodeService.queryMachineModelName();
     }
