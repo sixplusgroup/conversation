@@ -18,7 +18,7 @@ public interface QRCodeService {
     @PostMapping("/machine/qrcode/probe/byurl")
     ResultData decodeURL(@RequestParam("codeUrl") String codeUrl);
 
-    @GetMapping("/machine/filter/info/model/name")
+    @GetMapping("/machine/goods/model/list")
     ResultData queryMachineModelName();
 
 }
