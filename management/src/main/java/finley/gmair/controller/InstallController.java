@@ -722,7 +722,7 @@ public class InstallController {
         return installService.reservationAdjust(userassign);
     }
 
-    @GetMapping("/assign/reservation/list")
+    @GetMapping("/assign/list/recent")
     public ResultData getRecentAssign( String phone,String assignDetail , String duration, String sortType) {
         return installService.getRecentAssign(phone,assignDetail , duration,sortType);
     }
