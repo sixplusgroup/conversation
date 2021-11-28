@@ -3,6 +3,7 @@ package finley.gmair.controller;
 import finley.gmair.model.installation.Assign;
 import finley.gmair.model.installation.Userassign;
 import finley.gmair.service.AssignService;
+import finley.gmair.service.QRCodeService;
 import finley.gmair.service.ResourceService;
 import finley.gmair.util.ResponseCode;
 import finley.gmair.util.ResultData;
@@ -34,6 +35,8 @@ public class AssignController {
     @Autowired
     private ResourceService resourceService;
 
+    @Autowired
+    private QRCodeService qrCodeService;
 //    @RequestMapping("/test")
 //    public String test(){
 //        return assignService.test();
@@ -259,6 +262,16 @@ public class AssignController {
     public ResultData saveReservations(@RequestBody Userassign userassign){
         return assignService.saveReservations(userassign);
     }
+
+    /**
+     * 查询设备型号名，如GM420
+     * @return 设备型号名集合
+     */
+    @GetMapping("/model/name")
+    public ResultData queryMachineModelName() {
+        return qrCodeService.queryMachineModelName();
+    }
+
 }
 
 
