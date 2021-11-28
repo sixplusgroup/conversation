@@ -27,4 +27,5 @@ public class IntegralAdd extends EntityPlus implements Serializable {
     private String description;
     private String deviceModel;
     private String pictures;
+    private Integer status;
 }

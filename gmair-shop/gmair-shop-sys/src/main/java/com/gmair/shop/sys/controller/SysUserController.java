@@ -44,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
  *
  */
 @RestController
-@RequestMapping("/sys/user")
+@RequestMapping("/shop/manager/sys/user")
 public class SysUserController {
 	@Autowired
 	private SysUserService sysUserService;

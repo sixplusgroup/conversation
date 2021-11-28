@@ -9,6 +9,7 @@ import finley.gmair.model.installation.*;
 import finley.gmair.pool.InstallPool;
 import finley.gmair.service.*;
 import finley.gmair.util.ResponseCode;
+import finley.gmair.util.ResponseData;
 import finley.gmair.util.ResultData;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -583,6 +584,26 @@ public class AssignController {
         return result;
     }
 
+    /***
+     * @Description TODO
+     * @Date  11/5/2021 8:35 PM
+     * @param assignId:
+     * @return boolean
+     */
+    public boolean getIsNeedQrcode(String assignId){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("assignId", assignId);
+        condition.put("blockFlag", false);
+        ResultData res = assignService.fetch(condition);
+        if(res.getResponseCode()!=ResponseCode.RESPONSE_OK){
+            return true;
+        }else{
+            String assignType = ((List<Assign>)res.getData()).get(0).getType();
+            AssignTypeInfo one = assignTypeInfoService.queryByAssignType(assignType);
+            return one.getNeedQrcode();
+        }
+    }
+
     /**
      * 提交安装任务相关信息
      *
@@ -598,10 +619,16 @@ public class AssignController {
     @PostMapping("/submit")
     public ResultData submit(String assignId, String qrcode, String picture, Boolean wifi, String method, String description, String date, Integer hole) {
         ResultData result = new ResultData();
-        if (StringUtils.isEmpty(assignId) || StringUtils.isEmpty(qrcode) || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
+
+        if (StringUtils.isEmpty(assignId)  || StringUtils.isEmpty(picture) || wifi == null || StringUtils.isEmpty(method)) {
             result.setResponseCode(ResponseCode.RESPONSE_ERROR);
             result.setDescription("请提供安装快照相关的信息");
             return result;
+        }
+        if(getIsNeedQrcode(assignId)){
+            if((StringUtils.isEmpty(qrcode))){
+                return ResultData.error("请提供安装快照相关的信息");
+            }
         }
         //检测图片是否已存在
         String[] urls = picture.split(",");
@@ -1617,6 +1644,7 @@ public class AssignController {
                 result.setDescription("确认安装预约失败，请稍后尝试");
             }
             Map<String, Object> condition = new HashMap<>();
+            condition.put("blockFlag", false);
             condition.put("userassignId", userassignId);
             response = userassignService.fetch(condition);
             if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
@@ -1646,6 +1674,32 @@ public class AssignController {
         return result;
 
     }
+    /***
+     * @Description TODO
+     * @Date  10/29/2021 1:33 PM
+     * @param userassignId:
+     * @return finley.gmair.util.ResultData
+     */
+    @PostMapping("/reservation/close")
+    public ResultData reservationClose(@RequestParam String userassignId) {
+        ResultData result = new ResultData();
+        ResultData response;
+        if (!StringUtils.isEmpty(userassignId)) {
+            response = userassignService.closeReservation(userassignId);
+            if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+                result.setResponseCode(ResponseCode.RESPONSE_NULL);
+                result.setDescription("请提供需要确认的预约ID");
+            } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+                result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+                result.setDescription("确认安装预约失败，请稍后尝试");
+            }
+        } else {
+           return ResultData.error("id can not be empty");
+        }
+        return result;
+
+    }
+
 
     /**
      * 预约修改
@@ -1669,4 +1723,56 @@ public class AssignController {
         }
         return result;
     }
+    /***
+     * @Description list recent assign task to check if has a duplicate task
+     * @Date  10/28/2021 10:15 PM
+     * @param phone:
+     * @param assignDetail:
+     * @param duration:
+     * @param sortType:
+     * @return finley.gmair.util.ResultData
+     */
+    @GetMapping("/list/recent")
+    public ResultData getRecentAssign( String phone,String assignDetail , String duration, String sortType){
+        ResultData result = new ResultData();
+        Map<String, Object> condition = new HashMap<>();
+
+        condition.put("blockFlag", false);
+        ResultData response;
+
+        if(!StringUtils.isBlank(phone)){
+            condition.put("phone", phone);
+        }else{
+            return ResultData.error("phone can not be empty!");
+        }
+        if(!StringUtils.isBlank(assignDetail)){
+            condition.put("detail", assignDetail);
+        }else{
+            return ResultData.error("device model can not be empty!");
+        }
+        if(!StringUtils.isBlank(duration)){
+            condition.put("duration", duration);
+        }else{
+            condition.put("duration","lastMonth");
+        }
+
+        if (!StringUtils.isBlank(sortType)) {
+            condition.put("sortType", sortType);
+        }
+        response = assignService.principal(condition);
+
+        if (response.getResponseCode() == ResponseCode.RESPONSE_NULL) {
+            result.setResponseCode(ResponseCode.RESPONSE_NULL);
+            result.setDescription("当前没有符合条件的安装任务");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("查询安装任务失败，请稍后尝试");
+        } else if (response.getResponseCode() == ResponseCode.RESPONSE_OK) {
+            result.setResponseCode(ResponseCode.RESPONSE_OK);
+            result.setData(response.getData());
+        }
+
+        return result;
+    }
+
 }

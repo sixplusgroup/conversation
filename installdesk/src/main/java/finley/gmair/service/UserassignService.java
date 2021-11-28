@@ -19,5 +19,7 @@ public interface UserassignService {
 
     ResultData confirmReservation(String userassignId);
 
+    ResultData closeReservation(String userassignId);
+
     ResultData adjust(Userassign userassign);
 }

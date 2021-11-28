@@ -172,6 +172,9 @@
         <if test="type != null">
             AND assign_type = #{type}
         </if>
+        <if test="detail != null">
+            AND assign_detail = #{detail}
+        </if>
         <if test="region != null">
             AND assgin_region = #{region}
         </if>
@@ -190,6 +193,11 @@
         <if test="duration =='lastWeek' ">
             <![CDATA[
                 AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(create_time)
+			]]>
+        </if>
+        <if test="duration =='lastMonth' ">
+            <![CDATA[
+                AND DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= DATE(create_time)
 			]]>
         </if>
         <if test="duration =='thisMonth' ">
@@ -255,6 +263,11 @@
         <if test="duration =='lastWeek' ">
             <![CDATA[
                 AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(create_time)
+			]]>
+        </if>
+        <if test="duration =='lastMonth' ">
+            <![CDATA[
+                AND DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= DATE(create_time)
 			]]>
         </if>
         <if test="duration =='thisMonth' ">

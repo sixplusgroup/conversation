@@ -48,7 +48,7 @@ public class LoginAuthenticationFilter extends AbstractAuthenticationProcessingF
 
     @Autowired
     public LoginAuthenticationFilter(GmairUserDetailsService gmairUserDetailsService, PasswordEncoder passwordEncoder) {
-        super("/login");
+        super("/shop/manager/login");
         this.gmairUserDetailsService = gmairUserDetailsService;
         this.passwordEncoder = passwordEncoder;
     }

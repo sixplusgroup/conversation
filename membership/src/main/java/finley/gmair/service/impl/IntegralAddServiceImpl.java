@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 
 import finley.gmair.dto.management.IntegralConfirmDto;
+import finley.gmair.enums.membership.IntegralAddStatus;
 import finley.gmair.exception.MembershipGlobalException;
 import finley.gmair.dao.IntegralAddMapper;
 import finley.gmair.model.membership.IntegralAdd;
@@ -41,11 +42,15 @@ public class IntegralAddServiceImpl extends ServiceImpl<IntegralAddMapper, Integ
     @Override
     public void confirmIntegralById(Long integralAddId) {
         IntegralAdd integralAdd = integralAddMapper.selectById(integralAddId);
-        if(integralAdd.getIsConfirmed()){
+        if(integralAdd.getIsConfirmed()||integralAdd.getStatus().equals(IntegralAddStatus.CONFIRMED.value())){
             throw new MembershipGlobalException("this record is already confirmed!");
+        }
+        if(integralAdd.getStatus().equals(IntegralAddStatus.CLOSED.value())){
+            throw new MembershipGlobalException("this record is already closed!");
         }
         integralAdd.setIsConfirmed(true);
         integralAdd.setConfirmedTime(new Date());
+        integralAdd.setStatus(IntegralAddStatus.CONFIRMED.value());
         integralAddMapper.updateById(integralAdd);
         membershipService.addIntegral(integralAdd.getMembershipUserId(),integralAdd.getIntegralValue());
     }
@@ -68,10 +73,42 @@ public class IntegralAddServiceImpl extends ServiceImpl<IntegralAddMapper, Integ
     }
 
     @Override
+    public void giveIntegral(Long id, Integer integralValue) {
+        IntegralAdd integralAdd = integralAddMapper.selectById(id);
+        if(integralAdd.getIsConfirmed()||integralAdd.getStatus().equals(IntegralAddStatus.CONFIRMED.value())){
+            throw new MembershipGlobalException("this record is already confirmed!");
+        }
+        if(integralAdd.getStatus().equals(IntegralAddStatus.CLOSED.value())){
+            throw new MembershipGlobalException("this record is already closed!");
+        }
+        integralAdd.setIntegralValue(integralValue);
+        integralAdd.setStatus(IntegralAddStatus.GIVED.value());
+        integralAddMapper.updateById(integralAdd);
+    }
+
+    @Override
     public void deleteById(String id) {
+       IntegralAdd integralAdd = integralAddMapper.selectById(id);
+       if(integralAdd!=null&&integralAdd.getIsConfirmed()){
+           throw new MembershipGlobalException("this record is already confirmed!");
+       }
        int num = integralAddMapper.deleteById(id);
        if(num==0){
            throw new MembershipGlobalException("can not find this record or delete failed!");
        }
+    }
+
+    @Override
+    public void closeIntegralById(String id) {
+        IntegralAdd integralAdd = integralAddMapper.selectById(id);
+        if(integralAdd.getIsConfirmed()||integralAdd.getStatus().equals(IntegralAddStatus.CONFIRMED.value())){
+            throw new MembershipGlobalException("this record is already confirmed!");
+        }
+        if(integralAdd.getStatus().equals(IntegralAddStatus.CLOSED.value())){
+            throw new MembershipGlobalException("this record is already closed!");
+        }
+        integralAdd.setConfirmedTime(new Date());
+        integralAdd.setStatus(IntegralAddStatus.CLOSED.value());
+        integralAddMapper.updateById(integralAdd);
     }
 }

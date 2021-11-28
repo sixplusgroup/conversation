@@ -24,7 +24,7 @@ import java.util.Objects;
  *
  */
 @RestController
-@RequestMapping("/admin/brand")
+@RequestMapping("/shop/manager/admin/brand")
 public class BrandController {
 
     @Autowired

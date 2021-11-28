@@ -22,5 +22,8 @@ public interface IntegralAddService extends IService<IntegralAdd> {
 
     void deleteById(String id);
 
+    void closeIntegralById(String id);
+
+    void giveIntegral(Long id,Integer integralValue);
 
 }

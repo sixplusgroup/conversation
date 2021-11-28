@@ -24,7 +24,7 @@ import javax.validation.Valid;
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("/generator/prodTagReference" )
+@RequestMapping("/shop/manager/generator/prodTagReference" )
 public class ProdTagReferenceController {
 
     private final ProdTagReferenceService prodTagReferenceService;

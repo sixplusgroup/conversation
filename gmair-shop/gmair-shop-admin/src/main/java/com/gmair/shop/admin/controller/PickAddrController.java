@@ -39,7 +39,7 @@ import cn.hutool.core.util.StrUtil;
  *
  */
 @RestController
-@RequestMapping("/shop/pickAddr")
+@RequestMapping("/shop/manager/shop/pickAddr")
 public class PickAddrController {
 
     @Autowired

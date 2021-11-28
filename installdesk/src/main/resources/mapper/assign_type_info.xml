@@ -8,6 +8,7 @@
         <result property="pictureNumLimit" column="picture_num_limit"/>
         <result property="blockFlag" column="block_flag"/>
         <result property="createAt" column="create_time"/>
+        <result property="isNeedQrcode" column="is_need_qrcode"/>
     </resultMap>
 
     <insert id="insert" parameterType="finley.gmair.model.installation.AssignTypeInfo" useGeneratedKeys="false">
@@ -47,7 +48,7 @@
     </select>
 
     <select id="query_by_assign_type" parameterType="java.lang.String" resultMap="assignTypeInfo">
-        SELECT assign_type_info_id, assign_type, picture_num_limit, block_flag, create_time
+        SELECT assign_type_info_id, assign_type, picture_num_limit, block_flag, create_time, is_need_qrcode
         FROM gmair_install.install_assign_type_info
         WHERE block_flag = false
         <if test="_parameter != null">

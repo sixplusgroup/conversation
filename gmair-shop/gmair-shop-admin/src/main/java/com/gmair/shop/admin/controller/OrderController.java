@@ -45,7 +45,7 @@ import cn.hutool.poi.excel.ExcelWriter;
  *
  */
 @Controller
-@RequestMapping("/order/order")
+@RequestMapping("/shop/manager/order/order")
 public class OrderController {
 
     @Autowired

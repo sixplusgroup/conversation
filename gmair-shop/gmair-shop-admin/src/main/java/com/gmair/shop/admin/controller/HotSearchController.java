@@ -36,7 +36,7 @@ import com.gmair.shop.bean.model.HotSearch;
  *
  */
 @RestController
-@RequestMapping("/admin/hotSearch")
+@RequestMapping("/shop/manager/admin/hotSearch")
 public class HotSearchController {
 
     @Autowired

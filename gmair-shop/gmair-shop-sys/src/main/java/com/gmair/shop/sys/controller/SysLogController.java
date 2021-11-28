@@ -27,7 +27,7 @@ import cn.hutool.core.util.StrUtil;
  *
  */
 @RestController
-@RequestMapping("/sys/log")
+@RequestMapping("/shop/manager/sys/log")
 public class SysLogController {
 	@Autowired
 	private SysLogService sysLogService;

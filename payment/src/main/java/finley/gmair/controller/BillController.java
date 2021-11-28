@@ -43,6 +43,24 @@ public class BillController {
     }
 
     /**
+     * @Description allow Re-entry
+     * @Date  11/25/2021 3:22 PM
+     * @param orderId:订单号
+     * @param openid:用户openid
+     * @param price:交易金额，单位：分
+     * @param body:订单信息
+     * @param ip:终端ip，调用微信支付API的机器IP
+     * @param payClient:
+     * @return finley.gmair.util.ResultData
+     */
+    @PostMapping("/payAllowExist")
+    public ResultData payAllowExist(String orderId, String openid, int price, String body, String ip, @RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+
+        return wechatService.payAllowExist(orderId, openid, price + "", ip, body,payClient);
+    }
+
+
+    /**
      * 微信支付回调方法
      *
      * @param

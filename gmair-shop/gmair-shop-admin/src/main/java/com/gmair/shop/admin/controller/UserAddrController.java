@@ -23,7 +23,7 @@ import javax.validation.Valid;
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("/user/addr")
+@RequestMapping("/shop/manager/user/addr")
 public class UserAddrController {
 
     private final UserAddrService userAddrService;

@@ -20,7 +20,7 @@ public class Userassign extends Entity {
 
     private String userassignDetail;
 
-    private int userassignStatus;// 0 未确认 1 已确认
+    private int userassignStatus;// 0 未确认 1 已确认 2 已关闭
 
     private Timestamp userassignDate;
 

@@ -106,7 +106,7 @@ public class MembershipServiceImpl extends ServiceImpl<MembershipMapper, Members
             throw new MembershipGlobalException("the parameters are invalid!");
         }
         if(membershipUser.getIntegral()<integral){
-            throw new MembershipGlobalException("the membership don't have enough integral!");
+            throw new MembershipGlobalException("您的积分不足!");
         }
         membershipUser.setIntegral(membershipUser.getIntegral()-integral);
         membershipMapper.updateById(membershipUser);

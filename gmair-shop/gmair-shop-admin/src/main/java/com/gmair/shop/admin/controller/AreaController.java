@@ -20,7 +20,7 @@ import java.util.Map;
  *
  */
 @RestController
-@RequestMapping("/admin/area")
+@RequestMapping("/shop/manager/admin/area")
 public class AreaController {
 
     @Autowired

@@ -18,7 +18,7 @@ import com.gmair.shop.service.DeliveryService;
  *
  */
 @RestController
-@RequestMapping("/admin/delivery")
+@RequestMapping("/shop/manager/admin/delivery")
 public class DeliveryController {
 
     @Autowired

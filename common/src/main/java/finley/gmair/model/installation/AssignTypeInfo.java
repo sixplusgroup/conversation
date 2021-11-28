@@ -24,6 +24,16 @@ public class AssignTypeInfo extends Entity {
      */
     private int pictureNumLimit;
 
+    private Boolean isNeedQrcode;
+
+    public Boolean getNeedQrcode() {
+        return isNeedQrcode;
+    }
+
+    public void setNeedQrcode(Boolean needQrcode) {
+        isNeedQrcode = needQrcode;
+    }
+
     public AssignTypeInfo() {
         super();
     }

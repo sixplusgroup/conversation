@@ -21,7 +21,7 @@ public interface IntegralFeignService {
     ResponseData<PaginationParam<IntegralRecordDto>> getAllIntegralRecords(@RequestParam("isAdd") Boolean isAdd, @RequestParam("membershipUserId") String membershipUserId, @RequestParam("search") String search, @RequestParam("membershipType") Integer membershipType, @RequestParam("sortType") String sortType, @RequestParam("current") long current, @RequestParam("size") long size);
 
     @GetMapping("/membership/integral/getAllIntegralConfirm/page")
-    ResponseData<PaginationParam<IntegralConfirmDto>> getIntegralConfirms(@RequestParam("isConfirmed") Boolean isConfirmed, @RequestParam("membershipUserId") String membershipUserId, @RequestParam("search") String search, @RequestParam("membershipType") Integer membershipType, @RequestParam("sortType") String sortType, @RequestParam("current") long current, @RequestParam("size") long size);
+    ResponseData<PaginationParam<IntegralConfirmDto>> getIntegralConfirms(@RequestParam("isConfirmed") Boolean isConfirmed, @RequestParam("membershipUserId") String membershipUserId, @RequestParam("search") String search, @RequestParam("membershipType") Integer membershipType, @RequestParam("sortType") String sortType, @RequestParam("status") Integer status,@RequestParam("current") long current, @RequestParam("size") long size);
 
     @GetMapping("/membership/integral/getIntegralConfirm")
     ResponseData<IntegralConfirmDto> getIntegralConfirmById(@RequestParam("id") String id);
@@ -34,6 +34,10 @@ public interface IntegralFeignService {
 
     @PostMapping("/membership/integral/confirmIntegral")
     ResponseData<Void> confirmIntegralById(@RequestParam("id") Long id);
+
+    @GetMapping("/membership/integral/closeIntegral")
+    ResponseData<Void> closeIntegralById(@RequestParam("id") String id);
+
 
 }
 

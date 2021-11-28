@@ -51,3 +51,6 @@ CREATE TABLE `return_info`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- 2021.11.2
+ALTER TABLE `gmair_payment`.`trade` add `pay_client` varchar(50) NOT NULL DEFAULT 'OFFICIALACCOUNT';

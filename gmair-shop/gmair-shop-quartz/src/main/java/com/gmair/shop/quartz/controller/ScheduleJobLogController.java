@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  *
  */
 @RestController
-@RequestMapping("/sys/scheduleLog")
+@RequestMapping("/shop/manager/sys/scheduleLog")
 public class ScheduleJobLogController {
 	@Autowired
 	private ScheduleJobLogService scheduleJobLogService;

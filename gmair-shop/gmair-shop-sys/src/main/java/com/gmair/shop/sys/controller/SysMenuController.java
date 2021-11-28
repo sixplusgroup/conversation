@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiOperation;
  *
  */
 @RestController
-@RequestMapping("/sys/menu")
+@RequestMapping("/shop/manager/sys/menu")
 @AllArgsConstructor
 public class SysMenuController{
 

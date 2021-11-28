@@ -25,7 +25,7 @@ import java.util.Date;
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("/shop/notice")
+@RequestMapping("/shop/manager/shop/notice")
 public class NoticeController {
 
     private final NoticeService noticeService;

@@ -38,7 +38,7 @@ import javax.validation.Valid;
  *
  */
 @RestController
-@RequestMapping("/prod/spec")
+@RequestMapping("/shop/manager/prod/spec")
 public class SpecController {
 
     @Autowired

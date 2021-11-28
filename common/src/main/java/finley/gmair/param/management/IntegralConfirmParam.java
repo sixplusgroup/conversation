@@ -18,4 +18,5 @@ public class IntegralConfirmParam {
     private Integer membershipType;
     private Boolean blockFlag;
     private String sortType;
+    private Integer status;
 }

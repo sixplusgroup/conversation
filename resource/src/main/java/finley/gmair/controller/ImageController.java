@@ -96,6 +96,59 @@ public class ImageController {
         return result;
     }
 
+
+    @PostMapping(value = "/upload/save")
+    public ResultData uploadAndSave(MultipartHttpServletRequest request) {
+        ResultData result = new ResultData();
+        MultipartFile file = request.getFile("image");
+        String md5 = "null";
+        try {
+            md5 = tempFileMapService.transToMD5(file);
+            logger.info(md5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String name = file.getOriginalFilename();
+        String path = tempDir + File.separator + "image" + File.separator + new SimpleDateFormat("yyyyMMdd").format(new Date());
+        File base = null;
+        try {
+            base = new File(path);
+            if (!base.exists()) base.mkdirs();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("存储文件夹创建失败，请稍后尝试");
+            return result;
+        }
+        String filename = IDGenerator.generate("IMG") + name.substring(name.lastIndexOf('.'));
+        File target = new File(path + File.separator + filename);
+        try {
+            file.transferTo(target);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("文件存储失败，请稍后尝试");
+            return result;
+        }
+        String url = imageBase + File.separator + filename;
+        FileMap temp = new FileMap(url, path, filename, md5);
+        ResultData response = tempFileMapService.createTempFileMap(temp);
+        if (response.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("存储图片失败");
+            return result;
+        }
+        ResultData response1 = fileMapService.createFileMap(temp);
+        if (response1.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
+            result.setResponseCode(ResponseCode.RESPONSE_ERROR);
+            result.setDescription("存储图片失败");
+            return result;
+        }
+        result.setData(response.getData());
+        return result;
+    }
+
+
     @RequestMapping(method = RequestMethod.GET, value = "/{filename:.+}")
     public String image(HttpServletResponse hsr, @PathVariable("filename") String filename) {
         ResultData result = new ResultData();

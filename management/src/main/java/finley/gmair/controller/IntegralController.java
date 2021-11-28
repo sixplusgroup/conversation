@@ -38,7 +38,7 @@ public class IntegralController {
     @GetMapping("/confirm/list")
     public ResponseData<PaginationParam<IntegralConfirmDto>> getIntegralConfirmPage(IntegralConfirmParam integralConfirmParam, PaginationParam<IntegralConfirmDto> paginationParam) {
         ResponseData<PaginationParam<IntegralConfirmDto>> responseData;
-        responseData = integralFeignService.getIntegralConfirms(integralConfirmParam.getIsConfirmed(), integralConfirmParam.getMembershipUserId(), integralConfirmParam.getSearch(), integralConfirmParam.getMembershipType(), integralConfirmParam.getSortType(), paginationParam.getCurrent(), paginationParam.getSize());
+        responseData = integralFeignService.getIntegralConfirms(integralConfirmParam.getIsConfirmed(), integralConfirmParam.getMembershipUserId(), integralConfirmParam.getSearch(), integralConfirmParam.getMembershipType(), integralConfirmParam.getSortType(), integralConfirmParam.getStatus(),paginationParam.getCurrent(), paginationParam.getSize());
         if (responseData.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return ResponseData.error(responseData.getDescription());
         }
@@ -75,6 +75,14 @@ public class IntegralController {
     @PostMapping("/confirm")
     public ResponseData<Void> confirmIntegral(@RequestBody ConfirmIntegralParam confirmIntegralParam) {
         ResponseData<Void> responseData = integralFeignService.confirmIntegralById(confirmIntegralParam.getId());
+        if (responseData.getResponseCode() != ResponseCode.RESPONSE_OK) {
+            return ResponseData.error(responseData.getDescription());
+        }
+        return responseData;
+    }
+    @GetMapping("/confirm/close")
+    public ResponseData<Void> closeIntegral(String id){
+        ResponseData<Void> responseData = integralFeignService.closeIntegralById(id);
         if (responseData.getResponseCode() != ResponseCode.RESPONSE_OK) {
             return ResponseData.error(responseData.getDescription());
         }

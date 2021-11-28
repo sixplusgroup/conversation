@@ -23,6 +23,7 @@ public class IntegralConfirmDto {
     private String description;
     private String deviceModel;
     private String pictures;
+    private Integer status;
 
     private String membershipUserId;
     private String userMobile;
