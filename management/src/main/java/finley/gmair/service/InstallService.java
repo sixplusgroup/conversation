@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.model.installation.Userassign;
 import finley.gmair.util.ResultData;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -149,4 +150,24 @@ public interface InstallService {
 
     @GetMapping("/install/assign/assignTypeInfo/one")
     ResultData queryAssignTypeInfoByType(@RequestParam("assignType") String assignType);
+
+    @PostMapping("/install/assign/reservation/save")
+    ResultData saveReservations(@RequestBody Userassign userassign);
+
+    @GetMapping("/install/assign/reservation/list")
+    ResultData reservationList(@RequestParam("status") String status,@RequestParam("curPage")  Integer curPage,@RequestParam("length")  Integer length,@RequestParam("search")  String search,@RequestParam("sortType")  String sortType);
+
+    @PostMapping("/install/assign/reservation/confirm")
+    ResultData reservationConfirm(@RequestParam("userassignId") String userassignId);
+
+    @PostMapping("/install/assign/reservation/close")
+    ResultData reservationClose(@RequestParam("userassignId") String userassignId);
+
+    @PostMapping("/install/assign/reservation/adjust")
+    ResultData reservationAdjust(@RequestBody Userassign userassign);
+
+    @GetMapping("/install/assign/list/recent")
+    ResultData getRecentAssign(@RequestParam("phone") String phone,@RequestParam("assignDetail") String assignDetail ,@RequestParam("duration")  String duration,@RequestParam("sortType")  String sortType);
+
+
 }

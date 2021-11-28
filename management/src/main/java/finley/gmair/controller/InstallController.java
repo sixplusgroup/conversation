@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import finley.gmair.form.installation.AssignForm;
 import finley.gmair.form.installation.TeamForm;
 import finley.gmair.model.installation.AssignReport;
+import finley.gmair.model.installation.Userassign;
 import finley.gmair.service.InstallService;
 import finley.gmair.service.ResourceService;
 import finley.gmair.util.ExcelUtil;
@@ -703,4 +704,27 @@ public class InstallController {
     public ResultData queryAssignTypeInfoByType(@RequestParam String assignType) {
         return installService.queryAssignTypeInfoByType(assignType);
     }
+
+    @GetMapping("/assign/reservation/list")
+    public ResultData reservationList(String status, Integer curPage, Integer length, String search, String sortType) {
+        return installService.reservationList(status, curPage, length, search, sortType);
+    }
+    @PostMapping("/assign/reservation/confirm")
+    public ResultData reservationConfirm(@RequestParam String userassignId) {
+        return installService.reservationConfirm(userassignId);
+    }
+    @PostMapping("/assign/reservation/close")
+    public ResultData reservationClose(@RequestParam String userassignId) {
+        return installService.reservationClose(userassignId);
+    }
+    @PostMapping("/assign/reservation/adjust")
+    public ResultData reservationAdjust(@RequestBody Userassign userassign) {
+        return installService.reservationAdjust(userassign);
+    }
+
+    @GetMapping("/assign/reservation/list")
+    public ResultData getRecentAssign( String phone,String assignDetail , String duration, String sortType) {
+        return installService.getRecentAssign(phone,assignDetail , duration,sortType);
+    }
+
 }
