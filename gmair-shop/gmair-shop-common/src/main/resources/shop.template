@@ -1,12 +1,1 @@
-shop.qiniu.resourcesUrl=http://122.51.253.204/
-shop.qiniu.accessKey=Jo3T2OcV9F7FxCNXD1pXjYptdPpsAOUazf57Ty2R
-shop.qiniu.secretKey=3J-YFTQNVD87_KAV3Ey96JU_uwbloExZPf2HkdQ2
-shop.qiniu.bucket=jobyterryfileupload
-# \u5177\u4F53\u67E5\u770BQiniuZone.java
-shop.qiniu.zone=HUA_NAN
-
-shop.aLiDaYu.accessKeyId=
-shop.aLiDaYu.accessKeySecret=
-shop.aLiDaYu.signName=
-
 shop.tokenAesKey=q5e6w6w9f4q497te

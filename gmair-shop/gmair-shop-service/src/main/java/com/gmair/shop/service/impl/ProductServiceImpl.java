@@ -20,7 +20,6 @@ import com.gmair.shop.common.util.PageParam;
 import com.gmair.shop.dao.ProdTagReferenceMapper;
 import com.gmair.shop.dao.ProductMapper;
 import com.gmair.shop.dao.SkuMapper;
-import com.gmair.shop.service.AttachFileService;
 import com.gmair.shop.service.ProductService;
 import ma.glasnost.orika.MapperFacade;
 import org.slf4j.Logger;
@@ -44,8 +43,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private ProductMapper productMapper;
     @Autowired
     private SkuMapper skuMapper;
-    @Autowired
-    private AttachFileService attachFileService;
+
     @Autowired
     private ProdTagReferenceMapper prodTagReferenceMapper;
     @Autowired
