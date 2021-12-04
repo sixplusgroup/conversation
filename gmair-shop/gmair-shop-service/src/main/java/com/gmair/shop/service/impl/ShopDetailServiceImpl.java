@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gmair.shop.bean.model.ShopDetail;
 import com.gmair.shop.dao.ShopDetailMapper;
-import com.gmair.shop.service.AttachFileService;
+
 import com.gmair.shop.service.ShopDetailService;
 
 import cn.hutool.core.util.ArrayUtil;
@@ -29,8 +29,7 @@ public class ShopDetailServiceImpl extends ServiceImpl<ShopDetailMapper, ShopDet
     @Autowired
     private ShopDetailMapper shopDetailMapper;
     
-    @Autowired
-    private AttachFileService attachFileService;
+
 
     @Override
     @Transactional(rollbackFor=Exception.class)

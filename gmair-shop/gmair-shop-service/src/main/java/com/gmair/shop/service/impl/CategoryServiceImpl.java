@@ -20,7 +20,6 @@ import com.gmair.shop.bean.model.Category;
 import com.gmair.shop.dao.CategoryBrandMapper;
 import com.gmair.shop.dao.CategoryMapper;
 import com.gmair.shop.dao.CategoryPropMapper;
-import com.gmair.shop.service.AttachFileService;
 import com.gmair.shop.service.CategoryService;
 
 import cn.hutool.core.collection.CollUtil;
@@ -39,8 +38,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 	@Autowired
 	private CategoryPropMapper categoryPropMapper;
 	
-	@Autowired
-	private AttachFileService attachFileService;
+
 	
 	@Autowired
 	private MapperFacade mapperFacade;

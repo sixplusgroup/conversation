@@ -2,8 +2,6 @@
 
 package com.gmair.shop.common.config;
 
-import com.gmair.shop.common.bean.ALiDaYu;
-import com.gmair.shop.common.bean.Qiniu;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -20,15 +18,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "shop")
 public class ShopBasicConfig {
 
-	/**
-	 * 七牛云的配置信息
-	 */
-	private Qiniu qiniu;
-
-	/**
-	 * 阿里大于短信平台
-	 */
-	private ALiDaYu aLiDaYu;
 
 	/**
 	 * 用于加解密token的密钥

@@ -28,9 +28,6 @@ public class ApiConfig {
 	 */
 	private Integer workerId;
 
-	/**
-	 * 域名
-	 */
-	private String domainName;
+
 
 }
