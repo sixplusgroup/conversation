@@ -37,7 +37,7 @@ public class BillController {
      * @return
      */
     @PostMapping("/create")
-    public ResultData createTrade(String orderId, String openid, int price, String body, String ip, @RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+    public ResultData createTrade(String orderId, String openid, int price, String body, String ip, @RequestHeader(defaultValue = "DRIFTMP") String payClient) {
 
         return wechatService.payCreate(orderId, openid, price + "", ip, body,payClient);
     }
@@ -54,7 +54,7 @@ public class BillController {
      * @return finley.gmair.util.ResultData
      */
     @PostMapping("/payAllowExist")
-    public ResultData payAllowExist(String orderId, String openid, int price, String body, String ip, @RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+    public ResultData payAllowExist(String orderId, String openid, int price, String body, String ip, @RequestHeader(defaultValue = "DRIFTMP") String payClient) {
 
         return wechatService.payAllowExist(orderId, openid, price + "", ip, body,payClient);
     }
@@ -68,7 +68,7 @@ public class BillController {
      */
     @PostMapping("/notify")
     @ResponseBody
-    public void notified(@RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient,HttpServletRequest request, HttpServletResponse response) {
+    public void notified(@RequestHeader(defaultValue = "DRIFTMP") String payClient,HttpServletRequest request, HttpServletResponse response) {
         PrintWriter writer = null;
         try {
             writer = response.getWriter();
@@ -117,7 +117,7 @@ public class BillController {
      * @return
      */
     @GetMapping("/getTrade")
-    public ResultData getTrade(String orderId,@RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+    public ResultData getTrade(String orderId,@RequestHeader(defaultValue = "DRIFTMP") String payClient) {
         return wechatService.getTradeByOrderId(orderId,payClient);
     }
 
@@ -128,7 +128,7 @@ public class BillController {
      * @return
      */
     @GetMapping("/getCreateResult")
-    public ResultData getCreateResult(String orderId,@RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+    public ResultData getCreateResult(String orderId,@RequestHeader(defaultValue = "DRIFTMP") String payClient) {
         return wechatService.getCreateResult(orderId,payClient);
     }
 
@@ -138,7 +138,7 @@ public class BillController {
      * @return
      */
     @PostMapping("/sync")
-    public ResultData sync(@RequestHeader(defaultValue = "OFFICIALACCOUNT") String payClient) {
+    public ResultData sync(@RequestHeader(defaultValue = "DRIFTMP") String payClient) {
         // 查询数据库获取所有满足条件的未支付状态的订单编号
 
         //遍历逐个查询当前账单的支付状态，若发现账单已支付，则更新账单状态，并通知drift模块进行更新

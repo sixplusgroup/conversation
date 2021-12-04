@@ -6,7 +6,6 @@ import finley.gmair.config.PayConfigStrategyFactory;
 import finley.gmair.dao.ConfigurationDao;
 import finley.gmair.dao.ReturnInfoDao;
 import finley.gmair.dao.TradeDao;
-import finley.gmair.bean.enums.PayClientType;
 import finley.gmair.model.payment.Configuration;
 import finley.gmair.model.payment.ReturnInfo;
 import finley.gmair.model.payment.TradeState;
@@ -223,7 +222,7 @@ public class WechatServiceImpl implements WechatService {
                         result.setResponseCode(ResponseCode.RESPONSE_OK);
                         result.setData(mpMap);
                         return result;
-                    }else if(payClient.equals("OFFICIALACCOUNT")){
+                    }else if(payClient.equals("DRIFTMP")){
                         //返回的map
                         result.setResponseCode(ResponseCode.RESPONSE_OK);
                         result.setData(respMap);
@@ -405,7 +404,7 @@ public class WechatServiceImpl implements WechatService {
                         result.setResponseCode(ResponseCode.RESPONSE_OK);
                         result.setData(mpMap);
                         return result;
-                    }else if(payClient.equals("OFFICIALACCOUNT")){
+                    }else if(payClient.equals("DRIFTMP")){
                         //返回的map
                         result.setResponseCode(ResponseCode.RESPONSE_OK);
                         result.setData(respMap);
@@ -487,7 +486,7 @@ public class WechatServiceImpl implements WechatService {
                              * 调用并更改订单的状态
                              * select feign pay order service
                              */
-                            if(payClient.equals("OFFICIALACCOUNT")){
+                            if(payClient.equals("DRIFTMP")){
                                 driftOrderService.updateOrderPayed(trade.getOrderId());
                             }else if(payClient.equals("SHOPMP")){
                                 shopOrderService.updateOrderPayed(trade.getOrderId());

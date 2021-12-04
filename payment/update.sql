@@ -53,4 +53,4 @@ CREATE TABLE `return_info`  (
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 2021.11.2
-ALTER TABLE `gmair_payment`.`trade` add `pay_client` varchar(50) NOT NULL DEFAULT 'OFFICIALACCOUNT';
+ALTER TABLE `gmair_payment`.`trade` add `pay_client` varchar(50) NOT NULL DEFAULT 'DRIFTMP';

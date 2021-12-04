@@ -15,7 +15,7 @@ public class Trade {
     private Timestamp tradeStartTime;
     private Timestamp tradeEndTime;
     private TradeState tradeState;
-    private String payClient;// OFFICIALACCOUNT:official account, SHOPMP:mini program
+    private String payClient;// DRIFTMP:甲醛检测 mp, SHOPMP:mini program
 
     public Trade () {
         super();

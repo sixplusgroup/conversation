@@ -1,11 +1,11 @@
-#oa Official Account
-pay.oa.appId=OfficialAccountTest
-pay.oa.merchantId=OfficialAccountTest
-pay.oa.key=OfficialAccountTest
-pay.oa.notifyUrl=OfficialAccountTest
+#oa drift mini program
+pay.oa.appId=
+pay.oa.merchantId=
+pay.oa.key=
+pay.oa.notifyUrl=
 
 #mp mimi program
-pay.mp.appId=MimiProgramTest
-pay.mp.merchantId=MimiProgramTest
-pay.mp.key=MimiProgramTest
-pay.mp.notifyUrl=OfficialAccountTest
+pay.mp.appId=
+pay.mp.merchantId=
+pay.mp.key=
+pay.mp.notifyUrl=
