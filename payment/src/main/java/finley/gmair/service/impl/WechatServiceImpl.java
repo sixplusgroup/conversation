@@ -1,5 +1,6 @@
 package finley.gmair.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import finley.gmair.config.PayConfig;
 import finley.gmair.config.PayConfigStrategyFactory;
@@ -472,7 +473,7 @@ public class WechatServiceImpl implements WechatService {
                 // select pay config by payClient
                 PayConfig payConfig = payConfigStrategyFactory.getPayConfig(payClient);
                 String key = payConfig.getKey();
-                logger.info("trade: " + trade.toString());
+                logger.info("trade: " + JSON.toJSONString(trade));
                 if (trade!=null) {
                     //签名验证,并校验返回的订单金额是否与商户侧的订单金额一致
                     Map<String, String> signMap=notifyMap;
