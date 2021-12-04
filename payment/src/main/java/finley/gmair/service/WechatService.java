@@ -8,7 +8,7 @@ public interface WechatService {
 
     ResultData payAllowExist(String orderId, String openId, String money, String ipAddress, String body,String payClient);
 
-    String payNotify(String notifyXml,String payClient);
+    String payNotify(String notifyXml);
 
     ResultData getTradeByOrderId(String orderId,String payClient);
 

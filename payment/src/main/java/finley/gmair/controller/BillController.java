@@ -73,7 +73,7 @@ public class BillController {
         try {
             writer = response.getWriter();
             String notityXml = parseRequst(request);
-            String responseXml = wechatService.payNotify(notityXml,payClient);
+            String responseXml = wechatService.payNotify(notityXml);
             writer.write(responseXml);
             writer.flush();
         } catch (Exception e) {

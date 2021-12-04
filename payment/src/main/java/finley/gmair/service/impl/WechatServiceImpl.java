@@ -433,12 +433,7 @@ public class WechatServiceImpl implements WechatService {
 
 
     @Override
-    public String payNotify(String notifyXml,String payClient) {
-        // select pay config by payClient
-        PayConfig payConfig = payConfigStrategyFactory.getPayConfig(payClient);
-        String appId = payConfig.getAppId(),merchantId = payConfig.getMerchantId(),key = payConfig.getKey(),notify_url = payConfig.getNotifyUrl();
-
-
+    public String payNotify(String notifyXml) {
         logger.info("notify String: " + notifyXml);
         try {
             Map<String, String> notifyMap = XMLUtil.doXMLParse(notifyXml);
@@ -463,13 +458,21 @@ public class WechatServiceImpl implements WechatService {
                 Map<String, Object> queryMap = new HashMap<>();
                 queryMap.put("orderId", out_trade_no);
                 ResultData tradeResult = tradeDao.query(queryMap);
+
                 if(tradeResult.getResponseCode() == ResponseCode.RESPONSE_ERROR) {
                     logger.error(tradeResult.getDescription());
                 }
                 if(tradeResult.getResponseCode() == ResponseCode.RESPONSE_NULL) {
                     logger.error("orderId query null !");
                 }
+
                 Trade trade = ((List<Trade>)tradeResult.getData()).get(0);
+                String payClient = trade.getPayClient();
+
+                // select pay config by payClient
+                PayConfig payConfig = payConfigStrategyFactory.getPayConfig(payClient);
+                String key = payConfig.getKey();
+                logger.info("trade: " + trade.toString());
                 if (trade!=null) {
                     //签名验证,并校验返回的订单金额是否与商户侧的订单金额一致
                     Map<String, String> signMap=notifyMap;
