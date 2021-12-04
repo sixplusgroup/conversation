@@ -119,9 +119,9 @@ public class PayController {
     @ApiOperation(value = "根据订单号进行更新支付状态(仅用于回调通知)", notes = "根据订单号进行更新支付状态")
     @SneakyThrows
     public ResponseData<Void> payed(String orderId){
-        String userId = SecurityUtils.getUser().getUserId();
-        User user = userService.getUserByUserId(userId);
         final Order order = orderService.getOrderByOrderNumber(orderId);
+        User user = userService.getUserByUserId(order.getUserId());
+
         if(order.getIsPayed().equals(1)){
             throw new GmairShopGlobalException("订单已支付!");
         }
