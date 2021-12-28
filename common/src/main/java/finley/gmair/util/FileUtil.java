@@ -12,9 +12,10 @@ public class FileUtil {
 
     /**
      * 存文件
+     *
      * @param fileParentPath 保存文件的父路径，最后需要以 '/' 结尾
-     * @param filename 文件名，带后缀
-     * @param content 文件内容
+     * @param filename       文件名，带后缀
+     * @param content        文件内容
      * @return 保存结果，是否成功
      */
     public static boolean saveFile(String fileParentPath, String filename, byte[] content) {
@@ -22,16 +23,17 @@ public class FileUtil {
 
         try {
             File file = new File(fileParentPath);
-            boolean flag = false;
-            if (!file.exists()) flag = file.mkdirs();
-
-            if (flag) {
-                FileOutputStream outputStream = new FileOutputStream(fileParentPath + filename);
-                outputStream.write(content);
-                outputStream.flush();
-                outputStream.close();
-                res = true;
+            if (!file.exists()) {
+                boolean mkdirRes = file.mkdirs();
+                if (!mkdirRes) {
+                    return false;
+                }
             }
+            FileOutputStream outputStream = new FileOutputStream(fileParentPath + filename);
+            outputStream.write(content);
+            outputStream.flush();
+            outputStream.close();
+            res = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
