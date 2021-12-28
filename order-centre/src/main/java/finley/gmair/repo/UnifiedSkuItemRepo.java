@@ -25,7 +25,6 @@ public class UnifiedSkuItemRepo {
     UnifiedSkuItemDOMapper unifiedSkuItemDOMapper;
 
     public void save(UnifiedSkuItem skuItem) {
-        System.out.println(JSON.toJSONString(skuItem));
         if (skuItem.getItemId() != null) {
             // 更新
             UnifiedSkuItemDO unifiedSkuItemDO = unifiedSkuItemDataConverter.toData(skuItem);

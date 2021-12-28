@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient("order-centre-agent")
 public interface OrderCentreFeignService {
-    @PostMapping("/order-center/trade/schedulePullAll")
+    @PostMapping("/order-centre/trade/schedulePullAll")
     ResultData schedulePullAll();
 }

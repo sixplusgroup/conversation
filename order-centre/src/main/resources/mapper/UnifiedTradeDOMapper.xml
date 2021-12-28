@@ -370,9 +370,9 @@
             <if test="platform != null">
                 and trade_platform = #{platform,jdbcType=INTEGER}
             </if>
-            <if test="startTime=null">
+            <if test="startTime!=null">
                 <![CDATA[
-                and pay_time >= #{beginTime,jdbcType=TIMESTAMP}
+                and pay_time >= #{startTime,jdbcType=TIMESTAMP}
             ]]>
             </if>
             <if test="endTime!=null">

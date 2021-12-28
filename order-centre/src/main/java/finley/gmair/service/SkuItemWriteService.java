@@ -28,14 +28,12 @@ public class SkuItemWriteService {
     }
 
     public void updateSkuItem(SkuItemDTO skuItemDTO) {
-        System.out.println(skuItemDTO);
         UnifiedSkuItem skuItem;
         if (skuItemDTO.getItemId() != null) {
             skuItem = skuItemRepo.findByPrimaryKey(skuItemDTO.getItemId());
         } else {
             skuItem = skuItemRepo.findByShopAndSku(skuItemDTO.getShopId(), skuItemDTO.getNumId(), skuItemDTO.getNumId());
         }
-        System.out.println(skuItem);
         if (skuItem == null) {
             return;
         }
