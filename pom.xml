@@ -60,6 +60,7 @@
         <module>mqtt-management</module>
         <module>maintenance</module>
         <module>scene</module>
+        <module>order-centre</module>
     </modules>
 
     <parent>
