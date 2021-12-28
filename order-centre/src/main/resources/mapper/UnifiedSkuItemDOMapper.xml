@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.UnifiedSkuItemDOMapper">
+    <resultMap id="BaseResultMap" type="finley.gmair.model.entity.UnifiedSkuItemDO">
+        <constructor>
+            <idArg column="item_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="platform" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="shop_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="num_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="sku_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="channel" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="machine_model" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="is_fictitious" javaType="java.lang.Boolean" jdbcType="BIT"/>
+            <arg column="title" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="properties_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="price" javaType="java.lang.Double" jdbcType="DOUBLE"/>
+            <arg column="sys_create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <arg column="sys_update_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <arg column="sys_block_flag" javaType="java.lang.Boolean" jdbcType="BIT"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        item_id, platform, shop_id, num_id, sku_id, channel, machine_model, is_fictitious,
+    title, properties_name, price, sys_create_time, sys_update_time, sys_block_flag
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from unified_sku_item
+        where item_id = #{itemId,jdbcType=VARCHAR}
+    </select>
+    <insert id="insert" parameterType="finley.gmair.model.entity.UnifiedSkuItemDO">
+        insert into unified_sku_item (item_id, platform, shop_id,
+                                      num_id, sku_id, channel,
+                                      machine_model, is_fictitious, title,
+                                      properties_name, price, sys_create_time,
+                                      sys_update_time, sys_block_flag)
+        values (#{itemId,jdbcType=VARCHAR}, #{platform,jdbcType=INTEGER}, #{shopId,jdbcType=VARCHAR},
+                #{numId,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{channel,jdbcType=VARCHAR},
+                #{machineModel,jdbcType=VARCHAR}, #{isFictitious,jdbcType=BIT}, #{title,jdbcType=VARCHAR},
+                #{propertiesName,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, #{sysCreateTime,jdbcType=TIMESTAMP},
+                #{sysUpdateTime,jdbcType=TIMESTAMP}, #{sysBlockFlag,jdbcType=BIT})
+    </insert>
+    <insert id="insertSelective" parameterType="finley.gmair.model.entity.UnifiedSkuItemDO">
+        insert into unified_sku_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemId != null">
+                item_id,
+            </if>
+            <if test="platform != null">
+                platform,
+            </if>
+            <if test="shopId != null">
+                shop_id,
+            </if>
+            <if test="numId != null">
+                num_id,
+            </if>
+            <if test="skuId != null">
+                sku_id,
+            </if>
+            <if test="channel != null">
+                channel,
+            </if>
+            <if test="machineModel != null">
+                machine_model,
+            </if>
+            <if test="isFictitious != null">
+                is_fictitious,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="propertiesName != null">
+                properties_name,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="sysCreateTime != null">
+                sys_create_time,
+            </if>
+            <if test="sysUpdateTime != null">
+                sys_update_time,
+            </if>
+            <if test="sysBlockFlag != null">
+                sys_block_flag,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemId != null">
+                #{itemId,jdbcType=VARCHAR},
+            </if>
+            <if test="platform != null">
+                #{platform,jdbcType=INTEGER},
+            </if>
+            <if test="shopId != null">
+                #{shopId,jdbcType=VARCHAR},
+            </if>
+            <if test="numId != null">
+                #{numId,jdbcType=VARCHAR},
+            </if>
+            <if test="skuId != null">
+                #{skuId,jdbcType=VARCHAR},
+            </if>
+            <if test="channel != null">
+                #{channel,jdbcType=VARCHAR},
+            </if>
+            <if test="machineModel != null">
+                #{machineModel,jdbcType=VARCHAR},
+            </if>
+            <if test="isFictitious != null">
+                #{isFictitious,jdbcType=BIT},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="propertiesName != null">
+                #{propertiesName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="sysCreateTime != null">
+                #{sysCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sysUpdateTime != null">
+                #{sysUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sysBlockFlag != null">
+                #{sysBlockFlag,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="finley.gmair.model.entity.UnifiedSkuItemDO">
+        update unified_sku_item
+        <set>
+            <if test="platform != null">
+                platform = #{platform,jdbcType=INTEGER},
+            </if>
+            <if test="shopId != null">
+                shop_id = #{shopId,jdbcType=VARCHAR},
+            </if>
+            <if test="numId != null">
+                num_id = #{numId,jdbcType=VARCHAR},
+            </if>
+            <if test="skuId != null">
+                sku_id = #{skuId,jdbcType=VARCHAR},
+            </if>
+            <if test="channel != null">
+                channel = #{channel,jdbcType=VARCHAR},
+            </if>
+            <if test="machineModel != null">
+                machine_model = #{machineModel,jdbcType=VARCHAR},
+            </if>
+            <if test="isFictitious != null">
+                is_fictitious = #{isFictitious,jdbcType=BIT},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="propertiesName != null">
+                properties_name = #{propertiesName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="sysCreateTime != null">
+                sys_create_time = #{sysCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sysUpdateTime != null">
+                sys_update_time = #{sysUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sysBlockFlag != null">
+                sys_block_flag = #{sysBlockFlag,jdbcType=BIT},
+            </if>
+        </set>
+        where item_id = #{itemId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="finley.gmair.model.entity.UnifiedSkuItemDO">
+        update unified_sku_item
+        set platform        = #{platform,jdbcType=INTEGER},
+            shop_id         = #{shopId,jdbcType=VARCHAR},
+            num_id          = #{numId,jdbcType=VARCHAR},
+            sku_id          = #{skuId,jdbcType=VARCHAR},
+            channel         = #{channel,jdbcType=VARCHAR},
+            machine_model   = #{machineModel,jdbcType=VARCHAR},
+            is_fictitious   = #{isFictitious,jdbcType=BIT},
+            title           = #{title,jdbcType=VARCHAR},
+            properties_name = #{propertiesName,jdbcType=VARCHAR},
+            price           = #{price,jdbcType=DOUBLE},
+            sys_create_time = #{sysCreateTime,jdbcType=TIMESTAMP},
+            sys_update_time = #{sysUpdateTime,jdbcType=TIMESTAMP},
+            sys_block_flag  = #{sysBlockFlag,jdbcType=BIT}
+        where item_id = #{itemId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByShopAndSku" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from unified_sku_item
+        where shop_id = #{shopId,jdbcType=VARCHAR}
+        and sku_id = #{skuId,jdbcType=VARCHAR}
+        and num_id = #{numId,jdbcType=VARCHAR}
+    </select>
+</mapper>
