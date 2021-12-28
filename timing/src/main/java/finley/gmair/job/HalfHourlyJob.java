@@ -3,16 +3,13 @@ package finley.gmair.job;
 import finley.gmair.pool.TimingPool;
 import finley.gmair.service.AirQualityFeignService;
 import finley.gmair.service.MachineFeignService;
+import finley.gmair.service.OrderCentreFeignService;
 import finley.gmair.service.OrderNewFeignService;
-import finley.gmair.service.TaskService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Component
@@ -26,6 +23,9 @@ public class HalfHourlyJob implements Job {
 
     @Autowired
     private OrderNewFeignService orderNewFeignService;
+
+    @Autowired
+    private OrderCentreFeignService orderCentreFeignService;
 
 //    @Autowired
 //    private TaskService taskService;
@@ -51,6 +51,8 @@ public class HalfHourlyJob implements Job {
         }));
 
         TimingPool.getTimingExecutor().execute(new Thread(() -> orderNewFeignService.incrementalImport()));
+
+        TimingPool.getTimingExecutor().execute(new Thread(() -> orderCentreFeignService.schedulePullAll()));
     }
 
 }

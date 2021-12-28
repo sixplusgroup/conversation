@@ -9,7 +9,7 @@ import finley.gmair.model.EnumValue;
  */
 
 public enum TradeFrom implements EnumValue {
-    TMALL(0, "天猫"), WECHAT(1, "微信小程序"), ALIPAY(2, "支付宝小程序"),FREE(3,"免费创建");
+    TMALL(0, "天猫"), WECHAT(1, "微信小程序"), ALIPAY(2, "支付宝小程序"),FREE(3,"免费创建"),JD(4,"京东");
 
     private int value;
 
