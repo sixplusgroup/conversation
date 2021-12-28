@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.TradeRecordDOMapper">
+  <resultMap id="BaseResultMap" type="finley.gmair.model.entity.TradeRecordDO">
+    <constructor>
+      <idArg column="record_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="platform" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="shop_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="tid" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="order_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="record_message" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="user_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="sys_create_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="sys_update_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="sys_block_flag" javaType="java.lang.Boolean" jdbcType="BIT" />
+    </constructor>
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="finley.gmair.model.entity.TradeRecordDO">
+    <constructor>
+      <idArg column="record_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="platform" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="shop_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="tid" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="order_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="record_message" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="user_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="sys_create_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="sys_update_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="sys_block_flag" javaType="java.lang.Boolean" jdbcType="BIT" />
+      <arg column="trade_data" javaType="java.lang.String" jdbcType="LONGVARCHAR" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    record_id, platform, shop_id, tid, order_id, record_message, user_name, sys_create_time, 
+    sys_update_time, sys_block_flag
+  </sql>
+  <sql id="Blob_Column_List">
+    trade_data
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from trade_record
+    where record_id = #{recordId,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="finley.gmair.model.entity.TradeRecordDO">
+    insert into trade_record (record_id, platform, shop_id, 
+      tid, order_id, record_message, 
+      user_name, sys_create_time, sys_update_time, 
+      sys_block_flag, trade_data)
+    values (#{recordId,jdbcType=VARCHAR}, #{platform,jdbcType=INTEGER}, #{shopId,jdbcType=VARCHAR}, 
+      #{tid,jdbcType=VARCHAR}, #{orderId,jdbcType=VARCHAR}, #{recordMessage,jdbcType=VARCHAR}, 
+      #{userName,jdbcType=VARCHAR}, #{sysCreateTime,jdbcType=TIMESTAMP}, #{sysUpdateTime,jdbcType=TIMESTAMP}, 
+      #{sysBlockFlag,jdbcType=BIT}, #{tradeData,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="finley.gmair.model.entity.TradeRecordDO">
+    insert into trade_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="recordId != null">
+        record_id,
+      </if>
+      <if test="platform != null">
+        platform,
+      </if>
+      <if test="shopId != null">
+        shop_id,
+      </if>
+      <if test="tid != null">
+        tid,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="recordMessage != null">
+        record_message,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="sysCreateTime != null">
+        sys_create_time,
+      </if>
+      <if test="sysUpdateTime != null">
+        sys_update_time,
+      </if>
+      <if test="sysBlockFlag != null">
+        sys_block_flag,
+      </if>
+      <if test="tradeData != null">
+        trade_data,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="recordId != null">
+        #{recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="platform != null">
+        #{platform,jdbcType=INTEGER},
+      </if>
+      <if test="shopId != null">
+        #{shopId,jdbcType=VARCHAR},
+      </if>
+      <if test="tid != null">
+        #{tid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="recordMessage != null">
+        #{recordMessage,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="sysCreateTime != null">
+        #{sysCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sysUpdateTime != null">
+        #{sysUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sysBlockFlag != null">
+        #{sysBlockFlag,jdbcType=BIT},
+      </if>
+      <if test="tradeData != null">
+        #{tradeData,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="finley.gmair.model.entity.TradeRecordDO">
+    update trade_record
+    <set>
+      <if test="platform != null">
+        platform = #{platform,jdbcType=INTEGER},
+      </if>
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=VARCHAR},
+      </if>
+      <if test="tid != null">
+        tid = #{tid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="recordMessage != null">
+        record_message = #{recordMessage,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="sysCreateTime != null">
+        sys_create_time = #{sysCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sysUpdateTime != null">
+        sys_update_time = #{sysUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sysBlockFlag != null">
+        sys_block_flag = #{sysBlockFlag,jdbcType=BIT},
+      </if>
+      <if test="tradeData != null">
+        trade_data = #{tradeData,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where record_id = #{recordId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="finley.gmair.model.entity.TradeRecordDO">
+    update trade_record
+    set platform = #{platform,jdbcType=INTEGER},
+      shop_id = #{shopId,jdbcType=VARCHAR},
+      tid = #{tid,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      record_message = #{recordMessage,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      sys_create_time = #{sysCreateTime,jdbcType=TIMESTAMP},
+      sys_update_time = #{sysUpdateTime,jdbcType=TIMESTAMP},
+      sys_block_flag = #{sysBlockFlag,jdbcType=BIT},
+      trade_data = #{tradeData,jdbcType=LONGVARCHAR}
+    where record_id = #{recordId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="finley.gmair.model.entity.TradeRecordDO">
+    update trade_record
+    set platform = #{platform,jdbcType=INTEGER},
+      shop_id = #{shopId,jdbcType=VARCHAR},
+      tid = #{tid,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      record_message = #{recordMessage,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      sys_create_time = #{sysCreateTime,jdbcType=TIMESTAMP},
+      sys_update_time = #{sysUpdateTime,jdbcType=TIMESTAMP},
+      sys_block_flag = #{sysBlockFlag,jdbcType=BIT}
+    where record_id = #{recordId,jdbcType=VARCHAR}
+  </update>
+</mapper>
