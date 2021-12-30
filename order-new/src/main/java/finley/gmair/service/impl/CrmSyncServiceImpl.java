@@ -91,7 +91,7 @@ public class CrmSyncServiceImpl implements CrmSyncService {
             String skuPropertyName = tmpOrder.getSkuPropertiesName();
             // 拼接型号和属性名称
             String property = skuPropertyName != null && skuPropertyName.length() > 5 ? skuPropertyName.substring(5) : "";
-            newCrmOrder.setJqxh(machineModel + property);
+            newCrmOrder.setJqxh(machineModel);
             // 订单号
             String ddh = interTrade.getTid().equals(tmpOrder.getOid()) ? String.valueOf(tmpOrder.getOid()) :
                     interTrade.getTid() + "-" + tmpOrder.getOid();
