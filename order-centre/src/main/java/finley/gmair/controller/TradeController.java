@@ -2,7 +2,6 @@ package finley.gmair.controller;
 
 import com.alibaba.excel.EasyExcel;
 import finley.gmair.converter.OrderExcelConverter;
-import finley.gmair.model.dto.ConsigneeDTO;
 import finley.gmair.model.domain.UnifiedTrade;
 import finley.gmair.model.dto.OrderExcel;
 import finley.gmair.model.request.TradeQuery;
@@ -76,35 +75,17 @@ public class TradeController {
     public ResultData upload(@RequestParam MultipartFile file,
                              @RequestParam(required = false) String password,
                              @RequestParam String shopId) {
-        ResultData res = new ResultData();
-
         String filename = file.getOriginalFilename();
-        // 以时间戳为文件父路径名，避免文件名冲突导致的文件覆盖
-        String fileParentPath = FILE_ROOT_PATH + shopId + "/";
-        // 保存Excel文件 -> 调用读取方法读取保存的文件 -> 用得到的数据更新数据库
-        logger.info("upload consigneeInfo,shopId:{},filePath:{},filename:{},password:{}", shopId, fileParentPath, filename, password);
+        logger.info("upload consigneeInfo,shopId:{},filename:{},password:{}", shopId, filename, password);
+
+        ResultData res = new ResultData();
         try {
-            boolean saveRes =
-                    consigneeInfoUploadService.saveOrderPartInfoExcel(fileParentPath, filename, file.getBytes());
-            if (saveRes) {
-                String filePath = fileParentPath + filename;
-                List<ConsigneeDTO> store = consigneeInfoUploadService.getConsigneeInfoList(filePath, password);
-                tradeWriteService.defuzzyConsigneeInfoList(store, shopId);
-            } else {
-                res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-                res.setDescription("save file " + filename + " failed!");
-            }
-        } catch (IOException e) {
-            logger.error("file " + filename + " gets bytes failed" + e);
-            res.setResponseCode(ResponseCode.RESPONSE_ERROR);
-            res.setDescription("file gets bytes failed!");
-            return res;
+            return consigneeInfoUploadService.handleConsigneeInfoFile(file, password, shopId);
         } catch (Exception e) {
             logger.error("upload consigneeInfo excel failed", e);
             res.setResponseCode(ResponseCode.RESPONSE_ERROR);
             res.setDescription("upload consigneeInfo excel failed!");
             return res;
         }
-        return res;
     }
 }

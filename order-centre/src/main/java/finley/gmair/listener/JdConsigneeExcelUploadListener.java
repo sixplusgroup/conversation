@@ -2,6 +2,7 @@ package finley.gmair.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.fastjson.JSON;
 import finley.gmair.model.dto.JdConsigneeExcel;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class JdConsigneeExcelUploadListener extends AnalysisEventListener<JdCons
     @Override
     public void invoke(JdConsigneeExcel data, AnalysisContext context) {
         data.setPhone(getTruePhoneNumber(data.getPhone()));
+        System.out.println(JSON.toJSON(data));
         readData.add(data);
     }
 

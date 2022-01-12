@@ -43,6 +43,7 @@ public abstract class AbstractTradePullHandler<T> {
             tradeRecord.setTid(getTid(originalTrade));
             tradeRecord.setPlatform(getPlatform().getValue());
             tradeRecord.setShopId(unifiedShop.getShopId());
+            tradeRecord.setUserName("sys");
             tradeRecord.setRecordMessage("同步一条订单");
             tradeRecord.setTradeData(JSON.toJSONString(originalTrade));
             tradeRecordRepo.add(tradeRecord);

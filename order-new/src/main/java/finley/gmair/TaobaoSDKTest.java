@@ -1,13 +1,18 @@
 package finley.gmair;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
+import com.taobao.api.domain.Item;
 import com.taobao.api.domain.Trade;
 import com.taobao.api.internal.util.StringUtils;
 import com.taobao.api.request.*;
 import com.taobao.api.response.*;
+import finley.gmair.model.ordernew.SkuItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +33,7 @@ public class TaobaoSDKTest {
             "discount_fee,post_fee,credit_card_fee,step_paid_fee";
 
     public static void main(String[] args) throws ApiException {
-        getTradeFullInfo();
+        getSkuList();
     }
 
     private static void getTrades() {
@@ -82,6 +87,36 @@ public class TaobaoSDKTest {
             e.printStackTrace();
         }
         System.out.println(rsp.getBody());
+    }
+
+    private static void getSkuList() {
+        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+        ItemsOnsaleGetRequest request = new ItemsOnsaleGetRequest();
+        request.setFields("num_iid");
+        ItemsOnsaleGetResponse response = null;
+        try {
+            response = client.execute(request, sessionKey);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        assert response != null;
+        List<Item> itemList = response.getItems();
+        List<Item> completeItemList = Lists.newArrayList();
+        //通过API获取skuItemList
+        List<SkuItem> skuItemList = new ArrayList<>();
+        for (Item item : itemList) {
+            ItemSellerGetRequest req = new ItemSellerGetRequest();
+            req.setNumIid(item.getNumIid());
+            req.setFields("num_iid,title,sku.properties_name,property_alias,price");
+            ItemSellerGetResponse itemSellerGetResponse = null;
+            try {
+                itemSellerGetResponse = client.execute(req, sessionKey);
+            } catch (ApiException e) {
+                e.printStackTrace();
+            }
+            completeItemList.add(itemSellerGetResponse.getItem());
+        }
+        System.out.println(JSON.toJSON(completeItemList));
     }
 
     /**

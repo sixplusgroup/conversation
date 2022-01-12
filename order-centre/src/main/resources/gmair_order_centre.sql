@@ -1,6 +1,12 @@
 create database if not exists gmair_order_centre;
 use gmair_order_centre;
 
+## 线上MySQL版本<5.5无法自动更新时间戳,建表语句调整为：
+##      ……
+##      sys_create_time datetime   comment '系统创建时间',
+##      sys_update_time datetime   comment '系统更新时间',
+##      ……
+
 drop table if exists `unified_shop`;
 create table `unified_shop`
 (
@@ -17,8 +23,8 @@ create table `unified_shop`
     session_key     varchar(100)         not null comment '店铺授权token',
     authorize_time  datetime             null comment '店铺授权时间',
     expire_time     datetime             null comment '授权过期时间',
-    sys_create_time datetime   default current_timestamp comment '系统创建时间',
-    sys_update_time datetime   default current_timestamp on update current_timestamp comment '系统更新时间',
+    sys_create_time datetime             null comment '系统创建时间',
+    sys_update_time datetime             null comment '系统更新时间',
     sys_block_flag  tinyint(1) default 0 not null comment '是否删除',
     unique key `uniqueIndex` (`sid`, `platform`)
 )
@@ -57,8 +63,8 @@ create table `unified_trade`
     is_fuzzy           tinyint(1)           not null comment '是否模糊化',
     crm_push_status    int        default 0 not null comment 'CRM推送状态',
     drift_push_status  int        default 0 not null comment 'CRM推送状态',
-    sys_create_time    datetime   default current_timestamp comment '系统创建时间',
-    sys_update_time    datetime   default current_timestamp on update current_timestamp comment '系统更新时间',
+    sys_create_time    datetime             null comment '系统创建时间',
+    sys_update_time    datetime             null comment '系统更新时间',
     sys_block_flag     tinyint(1) default 0 not null comment '是否删除',
     unique key `uniqueIndex` (`tid`, `trade_platform`)
 )
@@ -81,8 +87,8 @@ create table `unified_order`
     payment           double               null comment '子订单实付金额(不含邮费),多子订单为（主订单实付-邮费）分摊;精确到2位小数;单位:元。如:200.07，表示:200元7分',
     logistics_company varchar(30)          null comment '子订单发货的快递公司名称',
     logistics_id      varchar(50)          null comment '子订单所在包裹的运单号',
-    sys_create_time   datetime   default current_timestamp comment '系统创建时间',
-    sys_update_time   datetime   default current_timestamp on update current_timestamp comment '系统更新时间',
+    sys_create_time   datetime             null comment '系统创建时间',
+    sys_update_time   datetime             null comment '系统更新时间',
     sys_block_flag    tinyint(1) default 0 not null comment '是否删除'
 )
     DEFAULT CHARSET = utf8
@@ -103,8 +109,8 @@ create table `unified_sku_item`
     title           varchar(50)          null comment '商品标题,不能超过60字节',
     properties_name varchar(255)         null comment '属性名称',
     price           double               null comment '属于这个sku的商品的价格 取值范围:0-100000000;精确到2位小数;单位:元',
-    sys_create_time datetime   default current_timestamp comment '系统创建时间',
-    sys_update_time datetime   default current_timestamp on update current_timestamp comment '系统更新时间',
+    sys_create_time datetime             null comment '系统创建时间',
+    sys_update_time datetime             null comment '系统更新时间',
     sys_block_flag  tinyint(1) default 0 not null comment '是否删除',
     unique key `uniqueIndex` (`shop_id`, `num_id`, `sku_id`)
 )
@@ -121,10 +127,10 @@ create table trade_record
     tid             varchar(50)          not null comment '主订单id',
     order_id        varchar(50)          null comment '子订单id',
     record_message  varchar(255)         null comment '记录信息',
-    trade_data      json                 null comment '订单数据',
+    trade_data      longtext             null comment '订单数据',
     user_name       varchar(30)          null comment '操作人',
-    sys_create_time datetime   default current_timestamp comment '系统创建时间',
-    sys_update_time datetime   default current_timestamp on update current_timestamp comment '系统更新时间',
+    sys_create_time datetime             null comment '系统创建时间',
+    sys_update_time datetime             null comment '系统更新时间',
     sys_block_flag  tinyint(1) default 0 not null comment '是否删除'
 )
     DEFAULT CHARSET = utf8
