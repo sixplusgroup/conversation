@@ -2,7 +2,6 @@ package finley.gmair.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.fastjson.JSON;
 import finley.gmair.model.dto.JdConsigneeExcel;
 
 import java.util.ArrayList;
