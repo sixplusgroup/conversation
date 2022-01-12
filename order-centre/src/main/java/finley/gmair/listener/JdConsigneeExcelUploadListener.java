@@ -20,7 +20,6 @@ public class JdConsigneeExcelUploadListener extends AnalysisEventListener<JdCons
     @Override
     public void invoke(JdConsigneeExcel data, AnalysisContext context) {
         data.setPhone(getTruePhoneNumber(data.getPhone()));
-        System.out.println(JSON.toJSON(data));
         readData.add(data);
     }
 
