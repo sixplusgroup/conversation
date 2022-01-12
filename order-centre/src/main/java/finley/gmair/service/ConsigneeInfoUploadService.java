@@ -30,11 +30,10 @@ import java.io.*;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.zip.ZipException;
 
 /**
  * @author ：tsl
@@ -84,7 +83,7 @@ public class ConsigneeInfoUploadService {
             } else if (shop.getPlatform() == PlatformEnum.TMALL.getValue()) {
                 list = getTbConsigneeInfoList(savedFile, password);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("get consigneeInfo from file error", e);
             return ResultData.error("文件解析失败");
         }
@@ -113,7 +112,10 @@ public class ConsigneeInfoUploadService {
         ZipFile zipFile = new ZipFile(file, password.toCharArray());
         List<FileHeader> fileHeaders = zipFile.getFileHeaders();
         if (CollectionUtils.isEmpty(fileHeaders)) {
-            return resultList;
+            throw new ZipException("京东文件格式错误:压缩文件内容为空");
+        }
+        if (fileHeaders.size() > 1) {
+            throw new ZipException("京东文件格式错误:压缩文件内容有多个");
         }
         //读取zip第一个csv文件的输入流
         InputStream inputStream = zipFile.getInputStream(fileHeaders.get(0));
