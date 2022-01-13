@@ -13,6 +13,7 @@ import finley.gmair.util.IDGenerator;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -110,10 +111,13 @@ public class UnifiedTradeRepo {
         if (unifiedTrade.getTradeId() != null) {
             // 更新(主订单更新,子订单也只能更新不能插入)
             UnifiedTradeDO unifiedTradeDO = unifiedTradeDataConverter.toData(unifiedTrade);
+            Date now = new Date();
+            unifiedTradeDO.setSysUpdateTime(now);
             unifiedTradeDOMapper.updateByPrimaryKeySelective(unifiedTradeDO);
             if (unifiedTrade.getOrderList() != null) {
                 for (UnifiedOrder unifiedOrder : unifiedTrade.getOrderList()) {
                     UnifiedOrderDO unifiedOrderDO = unifiedOrderDataConverter.toData(unifiedOrder);
+                    unifiedOrderDO.setSysUpdateTime(now);
                     unifiedOrderDOMapper.updateByPrimaryKeySelective(unifiedOrderDO);
                 }
             }
@@ -125,11 +129,16 @@ public class UnifiedTradeRepo {
                 unifiedOrder.setTradeId(unifiedTrade.getTradeId());
             }
             UnifiedTradeDO unifiedTradeDO = unifiedTradeDataConverter.toData(unifiedTrade);
+            Date now = new Date();
+            unifiedTradeDO.setSysCreateTime(now);
+            unifiedTradeDO.setSysUpdateTime(now);
             unifiedTradeDOMapper.insertSelective(unifiedTradeDO);
             if (unifiedTrade.getOrderList() != null) {
                 for (UnifiedOrder unifiedOrder : unifiedTrade.getOrderList()) {
                     unifiedOrder.setTradeId(unifiedTradeDO.getTradeId());
                     UnifiedOrderDO unifiedOrderDO = unifiedOrderDataConverter.toData(unifiedOrder);
+                    unifiedOrderDO.setSysCreateTime(now);
+                    unifiedOrderDO.setSysUpdateTime(now);
                     unifiedOrderDOMapper.insertSelective(unifiedOrderDO);
                 }
             }
@@ -176,6 +185,8 @@ public class UnifiedTradeRepo {
             throw new IllegalArgumentException("cannot update consigneeInfo with null tradeId");
         }
         UnifiedTradeDO unifiedTradeDO = unifiedTradeDataConverter.toData(unifiedTrade);
+        Date now = new Date();
+        unifiedTradeDO.setSysUpdateTime(now);
         unifiedTradeDOMapper.updateByPrimaryKeySelective(unifiedTradeDO);
     }
 

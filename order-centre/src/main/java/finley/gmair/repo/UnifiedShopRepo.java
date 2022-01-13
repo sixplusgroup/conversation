@@ -3,9 +3,11 @@ package finley.gmair.repo;
 import finley.gmair.converter.UnifiedShopDataConverter;
 import finley.gmair.dao.UnifiedShopDOMapper;
 import finley.gmair.model.domain.UnifiedShop;
+import finley.gmair.model.entity.UnifiedShopDO;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +33,9 @@ public class UnifiedShopRepo {
     }
 
     public void updatePullInfo(UnifiedShop shop) {
-        unifiedShopDOMapper.updatePullInfo(unifiedShopDataConverter.toData(shop));
+        UnifiedShopDO unifiedShopDO = unifiedShopDataConverter.toData(shop);
+        Date now = new Date();
+        unifiedShopDO.setSysUpdateTime(now);
+        unifiedShopDOMapper.updatePullInfo(unifiedShopDO);
     }
 }

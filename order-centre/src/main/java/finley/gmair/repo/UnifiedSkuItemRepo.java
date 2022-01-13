@@ -9,6 +9,7 @@ import finley.gmair.util.IDGenerator;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author ：tsl
@@ -28,11 +29,16 @@ public class UnifiedSkuItemRepo {
         if (skuItem.getItemId() != null) {
             // 更新
             UnifiedSkuItemDO unifiedSkuItemDO = unifiedSkuItemDataConverter.toData(skuItem);
+            Date now = new Date();
+            unifiedSkuItemDO.setSysUpdateTime(now);
             int updateResult = unifiedSkuItemDOMapper.updateByPrimaryKeySelective(unifiedSkuItemDO);
         } else {
             // 插入
             skuItem.setItemId(IDGenerator.generate("ITE"));
             UnifiedSkuItemDO unifiedSkuItemDO = unifiedSkuItemDataConverter.toData(skuItem);
+            Date now = new Date();
+            unifiedSkuItemDO.setSysCreateTime(now);
+            unifiedSkuItemDO.setSysUpdateTime(now);
             int insertResult = unifiedSkuItemDOMapper.insertSelective(unifiedSkuItemDO);
         }
     }

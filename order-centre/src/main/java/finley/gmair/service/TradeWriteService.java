@@ -1,8 +1,8 @@
 package finley.gmair.service;
 
 import com.alibaba.fastjson.JSON;
-import finley.gmair.model.dto.ConsigneeDTO;
 import finley.gmair.model.domain.UnifiedTrade;
+import finley.gmair.model.dto.ConsigneeDTO;
 import finley.gmair.repo.UnifiedTradeRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +32,16 @@ public class TradeWriteService {
     @Resource
     DriftPushService driftPushService;
 
-    public void defuzzyConsigneeInfoList(List<ConsigneeDTO> list, String shopId) {
+    /**
+     * 根据顾客信息和shopId去模糊化
+     * @param list
+     * @param shopId
+     * @return 成功去模糊化记录条数
+     */
+    public int defuzzyConsigneeInfoList(List<ConsigneeDTO> list, String shopId) {
+        int count = 0;
         if (CollectionUtils.isEmpty(list)) {
-            return;
+            return count;
         }
         //先按下单时间排序保证顺序处理
         list.sort((o1, o2) -> {
@@ -49,24 +56,23 @@ public class TradeWriteService {
             return 0;
         });
         for (ConsigneeDTO info : list) {
-            try {
-                defuzzy(info, shopId);
-            } catch (Exception e) {
-                logger.error("defuzzy error,consigneeInfo:{}", JSON.toJSONString(info), e);
-            }
+            count += defuzzy(info, shopId) ? 1 : 0;
         }
+        return count;
     }
 
-    private void defuzzy(ConsigneeDTO info, String shopId) {
+    private boolean defuzzy(ConsigneeDTO info, String shopId) {
+        boolean res = false;
         UnifiedTrade unifiedTrade = unifiedTradeRepo.findByTid(info.getTid(), shopId);
         if (unifiedTrade == null) {
-            return;
+            return res;
         }
         if (unifiedTrade.getIsFuzzy()) {
             unifiedTrade.setConsigneePhone(info.getPhone());
             unifiedTrade.setIsFuzzy(false);
             logger.info("defuzzy success,tid:{},shopId:{},consigneeInfo:{}", unifiedTrade.getTid(), JSON.toJSONString(info), shopId);
             unifiedTradeRepo.updateTradeOnly(unifiedTrade);
+            res = true;
         }
         try {
             driftPushService.pushCreate(unifiedTrade.getTradeId());
@@ -78,5 +84,6 @@ public class TradeWriteService {
         } catch (Exception e) {
             logger.error("exception occur when pushCreate to crm", e);
         }
+        return res;
     }
 }

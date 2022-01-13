@@ -8,6 +8,7 @@ import finley.gmair.util.IDGenerator;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author ：tsl
@@ -26,6 +27,9 @@ public class TradeRecordRepo {
     public void add(TradeRecord tradeRecord) {
         tradeRecord.setRecordId(IDGenerator.generate("REC"));
         TradeRecordDO tradeRecordDO = tradeRecordDataConverter.toData(tradeRecord);
+        Date now = new Date();
+        tradeRecordDO.setSysCreateTime(now);
+        tradeRecordDO.setSysUpdateTime(now);
         tradeRecordDOMapper.insertSelective(tradeRecordDO);
     }
 }
