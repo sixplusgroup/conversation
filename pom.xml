@@ -61,6 +61,8 @@
         <module>maintenance</module>
         <module>scene</module>
         <module>order-centre</module>
+        <module>chatlog-analysis</module>
+        <module>chatlog-query</module>
     </modules>
 
     <parent>
