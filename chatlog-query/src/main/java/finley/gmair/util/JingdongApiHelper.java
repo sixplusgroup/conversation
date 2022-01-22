@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.net.URL;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -93,7 +92,7 @@ public class JingdongApiHelper {
                 + "?360buy_param_json=" + object
                 + "&access_token=" + properties.getAccessToken()
                 + "&app_key=" + properties.getAppKey()
-                + "&method=" + JingdongCommon.GET_CHAT_LOG_METHOD
+                + "&method=" + JingdongCommon.CHATLOG_GET_API
                 + "&v=" + JingdongCommon.VERSION
                 + "&timestamp=" + timeStamp + "&sign=D70825340F4084360B9362B60DFD7930";
     }
