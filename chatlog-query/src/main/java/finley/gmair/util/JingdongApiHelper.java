@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class JingdongApiHelper {
@@ -45,7 +46,7 @@ public class JingdongApiHelper {
      * 获取指定时间段内的会话列表页面
      *
      * @param beginTime 开始时间
-     * @param endTime 结束时间
+     * @param endTime   结束时间
      * @return 会话列表页面
      */
     public Optional<ChatSessionPage> querySessionList(String beginTime, String endTime) {
@@ -71,7 +72,11 @@ public class JingdongApiHelper {
      */
     public Optional<String> queryChatLog(String beginTime, String endTime, String customer) {
         try {
-            return Optional.of(executeUrl(getQueryChatLogUrl(beginTime, endTime, customer)));
+            JSONObject object = new JSONObject();
+            object.put("startTime", beginTime);
+            object.put("endTime", endTime);
+            object.put("customer", customer);
+            return Optional.of(executeUrl(getUrl(object, JingdongCommon.CHATLOG_GET_API)));
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
@@ -79,27 +84,21 @@ public class JingdongApiHelper {
     }
 
     /**
-     * 查询用户聊天记录API调用URL拼接
-     *
+     * URL拼接
      */
-    private String getQueryChatLogUrl(String beginTime, String endTime, String customer) {
-        JSONObject object = new JSONObject();
-        object.put("startTime", beginTime);
-        object.put("endTime", endTime);
-        object.put("customer", customer);
+    private String getUrl(JSONObject object, String method) {
         String timeStamp = TimeCommon.DATE_FORMAT.format(new Date());
         return JingdongCommon.BASE_URL
                 + "?360buy_param_json=" + object
                 + "&access_token=" + properties.getAccessToken()
                 + "&app_key=" + properties.getAppKey()
-                + "&method=" + JingdongCommon.CHATLOG_GET_API
+                + "&method=" + method
                 + "&v=" + JingdongCommon.VERSION
                 + "&timestamp=" + timeStamp + "&sign=D70825340F4084360B9362B60DFD7930";
     }
 
     /**
      * 执行拼装好的api调用url，返回结果
-     *
      */
     private String executeUrl(String url_string) throws Exception {
         URL url = new URL(url_string);
@@ -116,19 +115,43 @@ public class JingdongApiHelper {
 
     /**
      * 将聊天记录信息转换为指定格式
-     * @param chatLog
+     *
+     * @param chatLog 聊天记录
      * @return 返回处理后的json格式聊天记录信息
      */
     public JSONObject formatChatLog(String chatLog) {
-        JSONObject chatLogJson = JSON.parseObject(chatLog);
-        JSONObject response=chatLogJson.getJSONObject("jingdong_im_pop_chatlog_get_responce");
-        JSONObject chatLogPage=response.getJSONObject("ChatLogPage");
-        int totalRecord=chatLogPage.getInteger("totalRecord");
-        JSONArray chatLogList=chatLogPage.getJSONArray("chatLogList");
-        for(Object chatLogItem:chatLogList){
-            // TODO 没想好
-        }
-        return null;
+        AtomicReference<String> sid = new AtomicReference<>();
+        AtomicReference<String> customer = new AtomicReference<>();
+        AtomicReference<String> waiter = new AtomicReference<>();
+        AtomicReference<String> product = new AtomicReference<>();
+        JSONArray chatMessages = new JSONArray();
+
+        JSON.parseObject(chatLog)
+                .getJSONObject("jingdong_im_pop_chatlog_get_responce")
+                .getJSONObject("ChatLogPage")
+                .getJSONArray("chatLogList")
+                .stream()
+                .map(Object::toString)
+                .map(JSON::parseObject)
+                .forEach(chatLogItem -> {
+                    JSONObject item = new JSONObject();
+                    sid.set(chatLogItem.getString("sid"));
+                    customer.set(chatLogItem.getString("customer"));
+                    waiter.set(chatLogItem.getString("waiter"));
+                    product.set(chatLogItem.getString("skuId"));
+                    item.put(JingdongCommon.KEY_CONTENT, chatLogItem.getString("content"));
+                    item.put(JingdongCommon.KEY_IS_FROM_WAITER, chatLogItem.getBooleanValue("waiterSend"));
+                    item.put(JingdongCommon.KEY_TIMESTAMP, chatLogItem.getLongValue("time"));
+                    chatMessages.add(item);
+                });
+
+        JSONObject resChatLog = new JSONObject();
+        resChatLog.put(JingdongCommon.KEY_SESSION_ID, sid);
+        resChatLog.put(JingdongCommon.KEY_USER_NAME, customer);
+        resChatLog.put(JingdongCommon.KEY_WAITER_NAME, waiter);
+        resChatLog.put(JingdongCommon.KEY_PRODUCT_ID, product);
+        resChatLog.put(JingdongCommon.KEY_CHAT_MESSAGES, chatMessages);
+        return resChatLog;
 
     }
 }
