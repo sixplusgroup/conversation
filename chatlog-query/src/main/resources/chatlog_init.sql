@@ -26,19 +26,27 @@ create table `waiter_jd`
 insert into `waiter_jd`
 set waiter_name='果麦果果';
 
-# 创建会话表，转换字符sessionId为整型id
-drop table if exists `session_jd`;
-create table `session_jd`
+
+# 创建用户聊天会话表,转换sessionId为整型id
+drop table if exists `usr_session_jd`;
+create table `usr_session_jd`
 (
     session_id          int         not null comment '主键会话id' auto_increment primary key,
-    original_session_id varchar(50) not null comment '京东原会话id'
+    original_session_id varchar(50) not null comment '京东原会话id',
+    usr_id             int         not null comment '用户id',
+    waiter_id          int         not null comment '客服id',
+    product_id         varchar(20) not null comment '商品id',
+    analysis           text comment '会话评价',
+    foreign key (usr_id) references usr_jd (usr_id),
+    foreign key (waiter_id) references waiter_jd (waiter_id)
 )
     DEFAULT CHARSET = utf8
-    comment '京东会话表';
+    comment '京东用户会话表';
 
-# 创建聊天信息表
-drop table if exists `message_jd`;
-create table `message_jd`
+
+# 创建会话聊天信息表
+drop table if exists `session_message_jd`;
+create table `session_message_jd`
 (
     message_id     int  not null comment '主键id' auto_increment primary key,
     session_id     int  not null comment '会话id',
@@ -46,28 +54,11 @@ create table `message_jd`
     is_from_waiter boolean default false comment '是否由客服发送',
     timestamp      long not null comment '发送时间',
     analysis       text comment '消息评价',
-    foreign key (session_id) references session_jd (session_id)
+    foreign key (session_id) references usr_session_jd (session_id)
 )
     DEFAULT CHARSET = utf8
     comment '京东消息内容表';
 
-# 创建用户聊天会话表
-drop table if exists `usr_session_jd`;
-create table `usr_session_jd`
-(
-    usr_id             int         not null comment '用户id',
-    session_id         int         not null comment '会话id',
-    waiter_id          int         not null comment '客服id',
-    product_id         varchar(20) not null comment '商品id',
-    analysis           text comment '会话评价',
-    foreign key (usr_id) references usr_jd (usr_id),
-    foreign key (waiter_id) references waiter_jd (waiter_id),
-    foreign key (session_id) references session_jd (session_id)
-)
-    DEFAULT CHARSET = utf8
-    comment '京东用户会话表';
-
-create index usr_chats on `usr_session_jd` (usr_id, session_id);
 
 
 

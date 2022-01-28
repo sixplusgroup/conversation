@@ -6,7 +6,6 @@ import finley.gmair.common.JingdongCommon;
 import finley.gmair.common.TimeCommon;
 import finley.gmair.dao.JdUserDOMapper;
 import finley.gmair.dao.JdWaiterDOMapper;
-import finley.gmair.dao.SessionDOMapper;
 import finley.gmair.dao.UserSessionDOMapper;
 import finley.gmair.util.JingdongApiHelper;
 import finley.gmair.util.TimeUtil;
@@ -31,7 +30,7 @@ public class ChatLogFetchService {
     JingdongApiHelper jingdongApiHelper;
 
     @Autowired
-    KafkaTemplate<String, String> kafkaTemplate;
+    KafkaTemplate kafkaTemplate;
 
     @Resource
     JdUserDOMapper userDOMapper;
@@ -39,8 +38,6 @@ public class ChatLogFetchService {
     @Resource
     JdWaiterDOMapper waiterDOMapper;
 
-    @Resource
-    SessionDOMapper sessionDOMapper;
 
     @Resource
     UserSessionDOMapper userSessionDOMapper;
@@ -69,9 +66,9 @@ public class ChatLogFetchService {
     private JSONObject storeUserSession(JSONObject chatLog) {
         int usrId = userDOMapper.getUserIdByName(chatLog.remove(JingdongCommon.KEY_USER_NAME).toString());
         int waiterId = waiterDOMapper.getWaiterIdByName(chatLog.remove(JingdongCommon.KEY_WAITER_NAME).toString());
-        int sessionId = sessionDOMapper.insertSession(chatLog.remove(JingdongCommon.KEY_SESSION_ID).toString());
         String productId = chatLog.remove(JingdongCommon.KEY_PRODUCT_ID).toString();
-        userSessionDOMapper.insertUserSession(usrId, waiterId, sessionId, productId);
+        String originalSessionId = chatLog.remove(JingdongCommon.KEY_SESSION_ID).toString();
+        int sessionId = userSessionDOMapper.insertUserSession(originalSessionId, usrId, waiterId, productId);
 
         // 剩下sessionId + chatMessages
         chatLog.put(JingdongCommon.KEY_SESSION_ID, sessionId);
