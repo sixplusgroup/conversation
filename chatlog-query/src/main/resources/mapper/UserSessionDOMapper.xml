@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="finley.gmair.dao.JdUserDOMapper">
+<mapper namespace="finley.gmair.dao.UserSessionDOMapper">
     <insert id="insertUserSession">
         insert into usr_session_jd(original_session_id, usr_id, waiter_id, product_id)
         VALUES (#{sid}, #{uid}, #{wid}, #{pid})
