@@ -63,6 +63,7 @@
         <module>order-centre</module>
         <module>chatlog-analysis</module>
         <module>chatlog-query</module>
+        <module>knowledge-base</module>
     </modules>
 
     <parent>
