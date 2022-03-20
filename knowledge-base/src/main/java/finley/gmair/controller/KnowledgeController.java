@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/knowledgebase/")
+@RequestMapping("/knowledgebase")
 @AllArgsConstructor
 @Validated
 public class KnowledgeController {

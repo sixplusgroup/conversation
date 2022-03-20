@@ -1,4 +1,4 @@
-package finley.gmair.po;
+package finley.gmair.model.knowledgebase;
 
 import lombok.Data;
 
@@ -10,5 +10,4 @@ public class Knowledge {
     private String title;
     private String content;
     private Integer views;
-
 }

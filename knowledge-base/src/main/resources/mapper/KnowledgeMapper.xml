@@ -3,9 +3,14 @@
 <mapper namespace="finley.gmair.dao.KnowledgeMapper">
 
     <insert id="insert" parameterType="finley.gmair.po.Knowledge" useGeneratedKeys="true" keyProperty="id">
-        insert into knowledge (title, content, state, content,views,knowledge_type)
-        values ( #{title}, #{content}, #{state},#{content},#{views},#{knowledge_type})
+        insert into knowledge (title, content, state, views,knowledge_type)
+        values ( #{title}, #{content}, #{state}, #{views},#{knowledge_type})
     </insert>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from knowledge where id = #{id}
+    </delete>
+
 
     <resultMap id="Knowledge" type="finley.gmair.po.Knowledge">
     </resultMap>
