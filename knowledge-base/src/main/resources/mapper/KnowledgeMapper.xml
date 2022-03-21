@@ -14,20 +14,24 @@
     <update id="changeStatusTo2">
         update knowledge set status = 2 where id = #{id}
     </update>
-
     <update id="changeStatusTo1">
         update knowledge set status = 1 where id = #{id}
     </update>
-
-    <select id="getById" resultMap="Knowledge">
-        select * from knowledge where id = #{id}
-    </select>
-
     <update id="modify" parameterType="finley.gmair.po.Knowledge">
         update knowledge
         set title=#{title},content=#{content},state=#{state}, views=#{views}, knowledge_type=#{knowledge_type}
         where id=#{id}
     </update>
+
+    <select id="getById" resultMap="Knowledge">
+        select * from knowledge where id = #{id}
+    </select>
+    <select id="getByType" resultMap="Knowledge">
+        select * from knowledge where knowledge_type = #{knowledge_type}
+    </select>
+    <select id="getByState" resultMap="Knowledge">
+        select * from knowledge where state = #{state}
+    </select>
 
     <resultMap id="Knowledge" type="finley.gmair.po.Knowledge"/>
 
