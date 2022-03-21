@@ -4,23 +4,28 @@
 
     <insert id="insert" parameterType="finley.gmair.po.Knowledge" useGeneratedKeys="true" keyProperty="id">
         insert into knowledge (title, content, state, views, knowledge_type)
-        values ( #{title}, #{content}, #{state}, #{views}, #{knowledge_type})
+        values ( #{title}, #{content}, 0, 0, #{knowledge_type})
     </insert>
 
     <delete id="delete" parameterType="java.lang.Integer">
         delete from knowledge where id = #{id}
     </delete>
 
-    <update id="changeStatusTo2">
+    <update id="changeStatusTo2" parameterType="java.lang.Integer">
         update knowledge set status = 2 where id = #{id}
     </update>
-    <update id="changeStatusTo1">
+    <update id="changeStatusTo1" parameterType="java.lang.Integer">
         update knowledge set status = 1 where id = #{id}
     </update>
     <update id="modify" parameterType="finley.gmair.po.Knowledge">
         update knowledge
         set title=#{title},content=#{content},state=#{state}, views=#{views}, knowledge_type=#{knowledge_type}
         where id=#{id}
+    </update>
+    <update id="increaseViews" parameterType="java.lang.Integer">
+        update knowledge
+        set views = views+1
+        where id = #{id}
     </update>
 
     <select id="getById" resultMap="Knowledge">
@@ -32,6 +37,8 @@
     <select id="getByState" resultMap="Knowledge">
         select * from knowledge where state = #{state}
     </select>
+
+
 
     <resultMap id="Knowledge" type="finley.gmair.po.Knowledge"/>
 

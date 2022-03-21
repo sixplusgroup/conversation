@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public interface KnowledgeService {
-    void insert(Knowledge knowledge);
+    void create(Knowledge knowledge);
 
     void delete(Integer id);
 
@@ -21,4 +21,10 @@ public interface KnowledgeService {
     KnowledgePagerVO getPage(Integer pageNum, Integer pageSize);
 
     KnowledgePagerVO getAuditPage(Integer pageNum, Integer pageSize);
+
+    KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize);
+
+    Knowledge getById(Integer id);
+
+    void modify(Knowledge knowledge);
 }

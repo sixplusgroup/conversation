@@ -27,4 +27,5 @@ public interface KnowledgeMapper {
     @Select("select * from document")
     List<Knowledge> getAll();
 
+    void increaseViews(@Param("id") Integer id);
 }

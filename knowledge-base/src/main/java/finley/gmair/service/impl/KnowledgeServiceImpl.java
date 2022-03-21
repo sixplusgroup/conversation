@@ -21,12 +21,13 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     KnowledgeMapper knowledgeMapper;
 
     @Override
-    public void insert(Knowledge knowledge) {
+    public void create(Knowledge knowledge) {
+        knowledgeMapper.insert(knowledge);
     }
 
     @Override
     public void delete(Integer id) {
-
+        knowledgeMapper.delete(id);
     }
 
     @Override
@@ -67,5 +68,29 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return knowledgePagerVO;
     }
 
+    @Override
+    public KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        List<Knowledge> knowledges = knowledgeMapper.getByType(id);
 
+        KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
+        knowledgePagerVO.setKnowledgeVOS(knowledges);
+
+        PageInfo<Knowledge> pageInfo = new PageInfo<>(knowledges);
+        Long totalNum = pageInfo.getTotal();
+        knowledgePagerVO.setTotalNum(totalNum);
+        return knowledgePagerVO;
+    }
+
+    @Override
+    public Knowledge getById(Integer id) {
+        Knowledge knowledge = knowledgeMapper.getById(id);
+        knowledgeMapper.increaseViews(id);
+        return knowledge;
+    }
+
+    @Override
+    public void modify(Knowledge knowledge) {
+        knowledgeMapper.modify(knowledge);
+    }
 }

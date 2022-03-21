@@ -41,6 +41,36 @@ public class KnowledgeController {
     @PostMapping("/getAuditPage")
     public ResultData getAuditPage(@RequestBody PageParam pageParam) {
         KnowledgePagerVO knowledgeList = knowledgeService.getAuditPage(pageParam.getPageNum(), pageParam.getPageSize());
-        return ResultData.ok(knowledgeList,null);
+        return ResultData.ok(knowledgeList, null);
+    }
+
+    @PostMapping("/getPageByType/{id}")
+    public ResultData getPageByType(@PathVariable Integer id, @RequestBody PageParam pageParam) {
+        KnowledgePagerVO knowledgePagerList = knowledgeService.getPageByType(id, pageParam.getPageNum(), pageParam.getPageSize());
+        return ResultData.ok(knowledgePagerList, null);
+    }
+
+    @GetMapping("/delete/{id}")
+    public ResultData delete(@PathVariable Integer id) {
+        knowledgeService.delete(id);
+        return ResultData.ok(null);
+    }
+
+    @PostMapping("/create")
+    public ResultData create(@RequestBody Knowledge knowledge) {
+        knowledgeService.create(knowledge);
+        return ResultData.ok(null);
+    }
+
+    @PostMapping("/getById/{id}")
+    public ResultData getById(@PathVariable Integer id) {
+        knowledgeService.getById(id);
+        return ResultData.ok(null);
+    }
+
+    @PostMapping("/modify")
+    public ResultData modify(@RequestBody Knowledge knowledge){
+        knowledgeService.modify(knowledge);
+        return ResultData.ok(null);
     }
 }
