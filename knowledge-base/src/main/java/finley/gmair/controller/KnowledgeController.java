@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/knowledgebase")
+@RequestMapping("/api/knowledge")
 @AllArgsConstructor
 @Validated
 public class KnowledgeController {
