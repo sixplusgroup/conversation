@@ -18,7 +18,7 @@ public interface KnowledgeMapper {
 
     //
     void changeStatusTo2(@Param("id") Integer id);
-    void changeStatusTo1(@Param("id") Integer id);
+    void changeStatusTo1AddComment(@Param("id") Integer id, @Param("comment") String comment);
     void modify(Knowledge knowledge);
 
     Knowledge getById(@Param("id") Integer id);
@@ -28,4 +28,6 @@ public interface KnowledgeMapper {
     List<Knowledge> getAll();
 
     void increaseViews(@Param("id") Integer id);
+
+    List<Knowledge> search(@Param("key") String key);
 }

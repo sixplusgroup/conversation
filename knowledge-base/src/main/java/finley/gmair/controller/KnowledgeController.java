@@ -5,6 +5,7 @@ import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
+import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -26,9 +27,9 @@ public class KnowledgeController {
         return ResultData.ok(null);
     }
 
-    @GetMapping("/reedit/{id}")
-    public ResultData reedit(@PathVariable Integer id) {
-        knowledgeService.reedit(id);
+    @PostMapping("/reedit/{id}")
+    public ResultData reedit(@PathVariable Integer id, @RequestBody String comment) {
+        knowledgeService.reedit(id, comment);
         return ResultData.ok(null);
     }
 
@@ -57,20 +58,32 @@ public class KnowledgeController {
     }
 
     @PostMapping("/create")
-    public ResultData create(@RequestBody Knowledge knowledge) {
-        knowledgeService.create(knowledge);
+    public ResultData create(@RequestBody KnowledgeVO knowledgeVO) {
+        knowledgeService.create(knowledgeVO);
         return ResultData.ok(null);
     }
 
     @PostMapping("/getById/{id}")
     public ResultData getById(@PathVariable Integer id) {
-        knowledgeService.getById(id);
-        return ResultData.ok(null);
+        Knowledge knowledge = knowledgeService.getById(id);
+        return ResultData.ok(knowledge, null);
     }
 
     @PostMapping("/modify")
-    public ResultData modify(@RequestBody Knowledge knowledge){
-        knowledgeService.modify(knowledge);
+    public ResultData modify(@RequestBody KnowledgeVO knowledgeVO){
+        knowledgeService.modify(knowledgeVO);
+        return ResultData.ok(null);
+    }
+
+    @PostMapping("/fulltext_search")
+    public ResultData fulltextSearch(@RequestBody String key) {
+        List<Knowledge> knowledges = knowledgeService.fulltextSearch(key);
+        return ResultData.ok(knowledges, null);
+    }
+
+    @PostMapping("/correct/{id}")
+    public ResultData correct(@PathVariable Integer id, @RequestBody String comment) {
+        knowledgeService.correct(id, comment);
         return ResultData.ok(null);
     }
 }

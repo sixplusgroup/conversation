@@ -3,8 +3,8 @@
 <mapper namespace="finley.gmair.dao.KnowledgeMapper">
 
     <insert id="insert" parameterType="finley.gmair.po.Knowledge" useGeneratedKeys="true" keyProperty="id">
-        insert into knowledge (title, content, state, views, knowledge_type)
-        values ( #{title}, #{content}, 0, 0, #{knowledge_type})
+        insert into knowledge (title, content, state, views, knowledge_type, comment)
+        values ( #{title}, #{content}, 0, 0, #{knowledge_type}, NULL)
     </insert>
 
     <delete id="delete" parameterType="java.lang.Integer">
@@ -14,12 +14,12 @@
     <update id="changeStatusTo2" parameterType="java.lang.Integer">
         update knowledge set status = 2 where id = #{id}
     </update>
-    <update id="changeStatusTo1" parameterType="java.lang.Integer">
-        update knowledge set status = 1 where id = #{id}
+    <update id="changeStatusTo1AddComment" >
+        update knowledge set status = 1, comment=#{comment} where id = #{id}
     </update>
     <update id="modify" parameterType="finley.gmair.po.Knowledge">
         update knowledge
-        set title=#{title},content=#{content},state=#{state}, views=#{views}, knowledge_type=#{knowledge_type}
+        set title=#{title},content=#{content},state=#{state}, views=#{views}, knowledge_type=#{knowledge_type}, comment=#{comment}
         where id=#{id}
     </update>
     <update id="increaseViews" parameterType="java.lang.Integer">
@@ -38,7 +38,9 @@
         select * from knowledge where state = #{state}
     </select>
 
-
+    <select id="search" resultMap="Knowledge">
+        select * from knowledge where match(title, content) against #{key}
+    </select>
 
     <resultMap id="Knowledge" type="finley.gmair.po.Knowledge"/>
 

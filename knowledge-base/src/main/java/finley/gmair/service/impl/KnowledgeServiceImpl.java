@@ -8,6 +8,7 @@ import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
+import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import finley.gmair.model.knowledgebase.Knowledge;
@@ -21,7 +22,11 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     KnowledgeMapper knowledgeMapper;
 
     @Override
-    public void create(Knowledge knowledge) {
+    public void create(KnowledgeVO vo) {
+        Knowledge knowledge = new Knowledge();
+        knowledge.setKnowledge_type(vo.getKnowledge_type());
+        knowledge.setContent(vo.getContent());
+        knowledge.setTitle(vo.getTitle());
         knowledgeMapper.insert(knowledge);
     }
 
@@ -36,8 +41,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public void reedit(Integer id) {
-        knowledgeMapper.changeStatusTo1(id);
+    public void reedit(Integer id, String comment) {
+        knowledgeMapper.changeStatusTo1AddComment(id, comment);
     }
 
     @Override
@@ -90,7 +95,25 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public void modify(Knowledge knowledge) {
+    public void modify(KnowledgeVO knowledgeVO) {
+        Knowledge knowledge = knowledgeMapper.getById(knowledgeVO.getId());
+        knowledge.setContent(knowledgeVO.getContent());
+        knowledge.setTitle(knowledgeVO.getTitle());
+        knowledge.setKnowledge_type(knowledgeVO.getKnowledge_type());
+        knowledgeMapper.modify(knowledge);
+    }
+
+    @Override
+    public List<Knowledge> fulltextSearch(String key) {
+        List<Knowledge> knowledges = knowledgeMapper.search(key);
+        return knowledges;
+    }
+
+    @Override
+    public void correct(Integer id, String comment) {
+        Knowledge knowledge = knowledgeMapper.getById(id);
+        knowledge.setStatus(1);
+        knowledge.setComment(comment);
         knowledgeMapper.modify(knowledge);
     }
 }

@@ -1,4 +1,4 @@
-package finley.gmair.model.knowledgebase;
+package finley.gmair.vo.knowledgebase;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,12 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Knowledge {
+public class KnowledgeVO {
     private Integer id;
-    private Integer status;
     private Integer knowledge_type;
     private String title;
     private String content;
-    private Integer views;
-    private String comment;
 }
