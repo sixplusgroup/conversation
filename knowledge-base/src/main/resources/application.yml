@@ -1,6 +1,6 @@
 
 server:
-  port: 8000
+  port: 8001
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/gmair?serverTimezone=CTT&characterEncoding=UTF-8
@@ -18,4 +18,4 @@ spring:
     name: knowledge-base
 
 mybatis:
-  mapper-locations: classpath:mapper/*/*Mapper.xml
+  mapper-locations: classpath:mapper/*Mapper.xml

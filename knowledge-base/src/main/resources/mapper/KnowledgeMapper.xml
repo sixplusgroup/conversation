@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="finley.gmair.dao.KnowledgeMapper">
 
-    <insert id="insert" parameterType="finley.gmair.po.Knowledge" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="finley.gmair.model.knowledgebase.Knowledge" useGeneratedKeys="true" keyProperty="id">
         insert into knowledge (title, content, state, views, knowledge_type, comment)
         values ( #{title}, #{content}, 0, 0, #{knowledge_type}, NULL)
     </insert>
@@ -17,7 +17,7 @@
     <update id="changeStatusTo1AddComment" >
         update knowledge set status = 1, comment=#{comment} where id = #{id}
     </update>
-    <update id="modify" parameterType="finley.gmair.po.Knowledge">
+    <update id="modify" parameterType="finley.gmair.model.knowledgebase.Knowledge">
         update knowledge
         set title=#{title},content=#{content},state=#{state}, views=#{views}, knowledge_type=#{knowledge_type}, comment=#{comment}
         where id=#{id}
@@ -42,6 +42,6 @@
         select * from knowledge where match(title, content) against #{key}
     </select>
 
-    <resultMap id="Knowledge" type="finley.gmair.po.Knowledge"/>
+    <resultMap id="Knowledge" type="finley.gmair.model.knowledgebase.Knowledge"/>
 
 </mapper>

@@ -5,6 +5,6 @@
 
 
 
-    <resultMap id="Knowledge" type="finley.gmair.po.Type"/>
+    <resultMap id="Knowledge" type="finley.gmair.model.knowledgebase.Type"/>
 
 </mapper>

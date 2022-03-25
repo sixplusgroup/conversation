@@ -108,7 +108,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.3.7.RELEASE</version>
                 <configuration>
-                    <mainClass>finley.gmair.knowledgebase.KnowledgeBaseApplication</mainClass>
+                    <mainClass>finley.gmair.KnowledgeBaseApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
