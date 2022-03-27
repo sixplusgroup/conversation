@@ -3,6 +3,7 @@ package finley.gmair.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import finley.gmair.dao.CommentMapper;
 import finley.gmair.dao.KnowledgeMapper;
 import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
@@ -20,6 +21,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Autowired
     KnowledgeMapper knowledgeMapper;
+
+    @Autowired
+    CommentMapper commentMapper;
 
     @Override
     public void create(KnowledgeVO vo) {
@@ -42,7 +46,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public void reedit(Integer id, String comment) {
-        knowledgeMapper.changeStatusTo1AddComment(id, comment);
+        knowledgeMapper.changeStatusTo1(id);
+
     }
 
     @Override

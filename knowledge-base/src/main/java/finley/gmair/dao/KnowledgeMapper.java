@@ -18,7 +18,7 @@ public interface KnowledgeMapper {
 
     //
     void changeStatusTo2(@Param("id") Integer id);
-    void changeStatusTo1AddComment(@Param("id") Integer id, @Param("comment") String comment);
+    void changeStatusTo1(@Param("id") Integer id);
     void modify(Knowledge knowledge);
 
     Knowledge getById(@Param("id") Integer id);

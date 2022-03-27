@@ -70,4 +70,18 @@ public class TimeUtil {
         }
         return date;
     }
+
+
+    /**
+     *
+     *将date转换成String
+     *得到像 2018-11-26 11:04:34 这种格式的时间字符串
+     */
+    public static String datetimeToString(Date date){
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateStr=sdf.format(date);
+        return dateStr;
+    }
+
+
 }

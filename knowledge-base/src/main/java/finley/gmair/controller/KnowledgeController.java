@@ -40,7 +40,7 @@ public class KnowledgeController {
      */
     @PostMapping("/reedit/{id}")
     public ResultData reedit(@PathVariable Integer id, @RequestBody String comment) {
-        knowledgeService.reedit(id, comment);
+        knowledgeService.reedit(id,comment);
         return ResultData.ok(null);
     }
 
