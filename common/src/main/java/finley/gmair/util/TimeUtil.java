@@ -1,5 +1,8 @@
 package finley.gmair.util;
 
+import cn.hutool.core.util.ObjectUtil;
+import org.springframework.util.StringUtils;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,6 +45,9 @@ public class TimeUtil {
 
     //将String类型转化为时间 年月日
     public static Date formatTimeToDate(String str) {
+        if(ObjectUtil.isNull(str)){
+            return null;
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         try {
@@ -61,6 +67,9 @@ public class TimeUtil {
      * @date 2020/10/21 0021 12:47
      **/
     public static Date formatTimeToDatetime(String strDateTime) {
+        if(ObjectUtil.isNull(strDateTime)){
+            return null;
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         try {
@@ -78,6 +87,9 @@ public class TimeUtil {
      *得到像 2018-11-26 11:04:34 这种格式的时间字符串
      */
     public static String datetimeToString(Date date){
+        if(ObjectUtil.isNull(date)){
+            return null;
+        }
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateStr=sdf.format(date);
         return dateStr;

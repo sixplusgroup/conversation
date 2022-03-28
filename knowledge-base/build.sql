@@ -27,7 +27,7 @@ CREATE TABLE `comment`(
     `knowledge_id` bigint not null,
     `content` varchar(255) NOT NULL ,
     `status` TINYINT NOT NULL,
-    `create_time` DATETIME NOT NULL,
+    `create_time` DATETIME default CURRENT_TIMESTAMP,
     `solve_time` DATETIME,
     `responser_id` int NOT NULL,
     `type` TINYINT NOT NULL,

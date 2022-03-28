@@ -13,9 +13,9 @@ public class CommentDTO {
     private Integer id;
     private Integer knowledgeId;
     private String content;
-    private short status;
+    private Integer status;
     private String createTime;
     private String solveTime;
     private Integer responserId;
-    private short type;
+    private Integer type;
 }

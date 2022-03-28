@@ -1,5 +1,6 @@
 package finley.gmair.service;
 
+import finley.gmair.dto.knowledgebase.CommentDTO;
 import finley.gmair.model.knowledgebase.Knowledge;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
@@ -19,7 +20,7 @@ public interface KnowledgeService {
 
     void publish(Integer id);
 
-    void reedit(Integer id, String comment);
+    void reedit(Integer id, CommentDTO comment);
 
     KnowledgePagerVO getPage(Integer pageNum, Integer pageSize);
 

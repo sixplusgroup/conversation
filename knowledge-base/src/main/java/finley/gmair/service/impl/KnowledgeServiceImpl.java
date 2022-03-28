@@ -3,8 +3,10 @@ package finley.gmair.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import finley.gmair.converter.CommentConverter;
 import finley.gmair.dao.CommentMapper;
 import finley.gmair.dao.KnowledgeMapper;
+import finley.gmair.dto.knowledgebase.CommentDTO;
 import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
@@ -34,6 +36,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         knowledgeMapper.insert(knowledge);
     }
 
+
     @Override
     public void delete(Integer id) {
         knowledgeMapper.delete(id);
@@ -45,9 +48,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public void reedit(Integer id, String comment) {
+    public void reedit(Integer id, CommentDTO commentDTO) {
         knowledgeMapper.changeStatusTo1(id);
-
+        commentMapper.insert(CommentConverter.DTO2model(commentDTO));
     }
 
     @Override

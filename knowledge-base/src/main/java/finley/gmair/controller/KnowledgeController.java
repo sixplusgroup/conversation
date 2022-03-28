@@ -1,9 +1,12 @@
 package finley.gmair.controller;
 
+import finley.gmair.converter.CommentConverter;
+import finley.gmair.dto.knowledgebase.CommentDTO;
 import finley.gmair.model.knowledgebase.Knowledge;
 import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
+import finley.gmair.vo.knowledgebase.CommentVO;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import lombok.AllArgsConstructor;
@@ -39,8 +42,9 @@ public class KnowledgeController {
      * @return
      */
     @PostMapping("/reedit/{id}")
-    public ResultData reedit(@PathVariable Integer id, @RequestBody String comment) {
-        knowledgeService.reedit(id,comment);
+    public ResultData reedit(@PathVariable Integer id, @RequestBody CommentVO comment) {
+        CommentDTO commentDTO = CommentConverter.VO2DTO(comment);
+        knowledgeService.reedit(id,commentDTO);
         return ResultData.ok(null);
     }
 
@@ -133,6 +137,7 @@ public class KnowledgeController {
         return ResultData.ok(knowledges, null);
     }
 
+    //todo 修改传底CommentVO,纠错后将comment状态改为已解决，将知识状态改为待审核（还是定义一个新状态，纠错后待审核）
     /**
      * 知识使用者对某条知识进行纠错
      * @param id
@@ -144,4 +149,6 @@ public class KnowledgeController {
         knowledgeService.correct(id, comment);
         return ResultData.ok(null);
     }
+
+    //todo 根据状态筛选获取评论列表
 }

@@ -16,9 +16,9 @@ public class Comment {
     private Integer id;
     private Integer knowledgeId;
     private String content;
-    private short status;
+    private Integer status;
     private Date createTime;
     private Date solveTime;
     private Integer responserId;
-    private short type;
+    private Integer type;
 }

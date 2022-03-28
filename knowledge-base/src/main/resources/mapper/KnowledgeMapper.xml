@@ -3,8 +3,8 @@
 <mapper namespace="finley.gmair.dao.KnowledgeMapper">
 
     <insert id="insert" parameterType="finley.gmair.model.knowledgebase.Knowledge" useGeneratedKeys="true" keyProperty="id">
-        insert into knowledge (title, content, state, views, knowledge_type, comment)
-        values ( #{title}, #{content}, 0, 0, #{knowledge_type}, NULL)
+        insert into knowledge (title, content, state, views, knowledge_type)
+        values ( #{title}, #{content}, 0, 0, #{knowledge_type})
     </insert>
 
     <delete id="delete" parameterType="java.lang.Integer">
