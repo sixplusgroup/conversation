@@ -9,11 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Knowledge {
+public class Tag {
     private Integer id;
-    private Integer status;
-    private String title;
-    private String content;
-    private Integer views;
-    private String comment;
+    private String tag_name;
 }

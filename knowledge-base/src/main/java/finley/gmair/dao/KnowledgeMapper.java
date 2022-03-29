@@ -16,16 +16,18 @@ public interface KnowledgeMapper {
 
     void delete(@Param("id") Integer id);
 
-    //
     void changeStatusTo2(@Param("id") Integer id);
     void changeStatusTo1(@Param("id") Integer id);
     void modify(Knowledge knowledge);
 
     Knowledge getById(@Param("id") Integer id);
-    List<Knowledge> getByType(@Param("knowledge_type") Integer knowledge_type);
+    //List<Knowledge> getByType(@Param("knowledge_type") Integer knowledge_type);
     List<Knowledge> getByState(@Param("state") Integer state);
     @Select("select * from document")
     List<Knowledge> getAll();
+    List<Knowledge> getByIdList(@Param("list") List<Integer> list);
+   // https://blog.csdn.net/u011781521/article/details/79669180
+//https://stackoverflow.com/questions/37885076/lists-in-mybatis-in-clause
 
     void increaseViews(@Param("id") Integer id);
 

@@ -1,4 +1,4 @@
-package finley.gmair.utils;
+package finley.gmair.vo.knowledgebase;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,11 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageParam {
-    private Integer pageSize;
-
-    private Integer pageNum;
-
-    //tagController.getByTags用到
+public class KnowledgeTagsVO {
+    private Integer knowledge_id;
     private List<Integer> tag_ids;
 }

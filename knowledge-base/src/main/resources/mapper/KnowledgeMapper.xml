@@ -3,8 +3,8 @@
 <mapper namespace="finley.gmair.dao.KnowledgeMapper">
 
     <insert id="insert" parameterType="finley.gmair.model.knowledgebase.Knowledge" useGeneratedKeys="true" keyProperty="id">
-        insert into knowledge (title, content, state, views, knowledge_type)
-        values ( #{title}, #{content}, 0, 0, #{knowledge_type})
+        insert into knowledge (title, content, state, views)
+        values ( #{title}, #{content}, 0, 0)
     </insert>
 
     <delete id="delete" parameterType="java.lang.Integer">
@@ -19,7 +19,7 @@
     </update>
     <update id="modify" parameterType="finley.gmair.model.knowledgebase.Knowledge">
         update knowledge
-        set title=#{title},content=#{content},state=#{state}, views=#{views}, knowledge_type=#{knowledge_type}, comment=#{comment}
+        set title=#{title},content=#{content},state=#{state}, views=#{views}, comment=#{comment}
         where id=#{id}
     </update>
     <update id="increaseViews" parameterType="java.lang.Integer">
@@ -31,15 +31,22 @@
     <select id="getById" resultMap="Knowledge">
         select * from knowledge where id = #{id}
     </select>
-    <select id="getByType" resultMap="Knowledge">
-        select * from knowledge where knowledge_type = #{knowledge_type}
-    </select>
+<!--    <select id="getByType" resultMap="Knowledge">-->
+<!--        select * from knowledge where knowledge_type = #{knowledge_type}-->
+<!--    </select>-->
     <select id="getByState" resultMap="Knowledge">
         select * from knowledge where state = #{state}
     </select>
 
     <select id="search" resultMap="Knowledge">
         select * from knowledge where match(title, content) against #{key}
+    </select>
+
+    <select id="getByIdList" resultMap="Knowledge">
+        select * from knowledge where id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
     <resultMap id="Knowledge" type="finley.gmair.model.knowledgebase.Knowledge"/>

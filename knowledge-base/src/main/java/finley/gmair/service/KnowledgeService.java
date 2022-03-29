@@ -26,7 +26,7 @@ public interface KnowledgeService {
 
     KnowledgePagerVO getAuditPage(Integer pageNum, Integer pageSize);
 
-    KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize);
+    //KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize);
 
     Knowledge getById(Integer id);
 

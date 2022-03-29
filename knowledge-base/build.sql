@@ -4,7 +4,6 @@ CREATE TABLE `knowledge` (
   `state`           int(10)         NOT NULL,
   `title`           varchar(200)    NOT NULL,
   `content`         text      NOT NULL,
-  `knowledge_type`  int(10)         NOT NULL,
   `views`           int(100)        DEFAULT 0,
   PRIMARY KEY (`id`),
   FULLTEXT KEY title_content_fulltext(title, content) # 创建联合全文索引列
@@ -36,3 +35,25 @@ CREATE TABLE `comment`(
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
+
+DROP TABLE IF EXISTS `tag`;
+CREATE TABLE `tag` (
+    `id` int(10) NOT NULL AUTO_INCREMENT,
+    `tag_name` varchar(255) NOT NULL,
+    PRIMARY KEY (`id`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
+alter table tag add index index_tag_name(tag_name) ;
+
+DROP TABLE IF EXISTS `tag_relation`;
+CREATE TABLE `tag_relation` (
+   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+   `knowledge_id` bigint(10) NOT NULL,
+   `tag_id` int(10) NOT NULL,
+   PRIMARY KEY (`id`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
+alter table tag_relation add index index_knowledge_id(knowledge_id) ;
+alter table tag_relation add index index_tag_id(tag_id) ;

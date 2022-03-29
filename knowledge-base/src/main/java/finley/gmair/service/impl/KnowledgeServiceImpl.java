@@ -30,7 +30,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Override
     public void create(KnowledgeVO vo) {
         Knowledge knowledge = new Knowledge();
-        knowledge.setKnowledge_type(vo.getKnowledge_type());
+        //knowledge.setKnowledge_type(vo.getKnowledge_type());
         knowledge.setContent(vo.getContent());
         knowledge.setTitle(vo.getTitle());
         knowledgeMapper.insert(knowledge);
@@ -81,19 +81,19 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return knowledgePagerVO;
     }
 
-    @Override
-    public KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum,pageSize);
-        List<Knowledge> knowledges = knowledgeMapper.getByType(id);
-
-        KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
-        knowledgePagerVO.setKnowledgeVOS(knowledges);
-
-        PageInfo<Knowledge> pageInfo = new PageInfo<>(knowledges);
-        Long totalNum = pageInfo.getTotal();
-        knowledgePagerVO.setTotalNum(totalNum);
-        return knowledgePagerVO;
-    }
+//    @Override
+//    public KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize) {
+//        PageHelper.startPage(pageNum,pageSize);
+//        List<Knowledge> knowledges = knowledgeMapper.getByType(id);
+//
+//        KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
+//        knowledgePagerVO.setKnowledgeVOS(knowledges);
+//
+//        PageInfo<Knowledge> pageInfo = new PageInfo<>(knowledges);
+//        Long totalNum = pageInfo.getTotal();
+//        knowledgePagerVO.setTotalNum(totalNum);
+//        return knowledgePagerVO;
+//    }
 
     @Override
     public Knowledge getById(Integer id) {
@@ -107,7 +107,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         Knowledge knowledge = knowledgeMapper.getById(knowledgeVO.getId());
         knowledge.setContent(knowledgeVO.getContent());
         knowledge.setTitle(knowledgeVO.getTitle());
-        knowledge.setKnowledge_type(knowledgeVO.getKnowledge_type());
+        //knowledge.setKnowledge_type(knowledgeVO.getKnowledge_type());
         knowledgeMapper.modify(knowledge);
     }
 

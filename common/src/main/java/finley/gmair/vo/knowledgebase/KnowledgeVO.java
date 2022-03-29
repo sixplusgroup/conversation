@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class KnowledgeVO {
     private Integer id;
-    private Integer knowledge_type;
     private String title;
     private String content;
 }

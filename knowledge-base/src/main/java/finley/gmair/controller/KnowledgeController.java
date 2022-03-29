@@ -76,11 +76,11 @@ public class KnowledgeController {
      * @param pageParam
      * @return
      */
-    @PostMapping("/getPageByType/{id}")
-    public ResultData getPageByType(@PathVariable Integer id, @RequestBody PageParam pageParam) {
-        KnowledgePagerVO knowledgePagerList = knowledgeService.getPageByType(id, pageParam.getPageNum(), pageParam.getPageSize());
-        return ResultData.ok(knowledgePagerList, null);
-    }
+//    @PostMapping("/getPageByType/{id}")
+//    public ResultData getPageByType(@PathVariable Integer id, @RequestBody PageParam pageParam) {
+//        KnowledgePagerVO knowledgePagerList = knowledgeService.getPageByType(id, pageParam.getPageNum(), pageParam.getPageSize());
+//        return ResultData.ok(knowledgePagerList, null);
+//    }
 
     /**
      * 删除某条知识
@@ -151,4 +151,6 @@ public class KnowledgeController {
     }
 
     //todo 根据状态筛选获取评论列表
+
+
 }
