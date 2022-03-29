@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class TagRelation {
     private Integer id;
     private Integer tag_id;
-    private String tag_name;
     private Integer knowledge_id;
 }

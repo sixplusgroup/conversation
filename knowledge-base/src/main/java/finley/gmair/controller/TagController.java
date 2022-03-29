@@ -6,6 +6,7 @@ import finley.gmair.model.knowledgebase.Type;
 import finley.gmair.service.TagService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
+import finley.gmair.utils.TagsPageParam;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeTagsVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,6 @@ public class TagController {
         }catch (Exception e) {
             return ResultData.error("标签名已存在！");
         }
-
-
     }
 
     @PostMapping("/delete")
@@ -61,7 +60,7 @@ public class TagController {
     }
 
     @PostMapping("/getByTags")
-    public ResultData getPageByTags(@RequestBody PageParam pageParam) {
+    public ResultData getPageByTags(@RequestBody TagsPageParam pageParam) {
         KnowledgePagerVO knowledgePagerList = tagService.getPageByTags(pageParam.getTag_ids(), pageParam.getPageNum(), pageParam.getPageSize());
         return ResultData.ok(knowledgePagerList, null);
     }

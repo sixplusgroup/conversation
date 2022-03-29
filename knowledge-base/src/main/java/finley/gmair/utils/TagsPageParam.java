@@ -11,9 +11,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageParam {
+public class TagsPageParam {
     private Integer pageSize;
 
     private Integer pageNum;
 
+    //tagController.getByTags用到
+    private List<Integer> tag_ids;
 }

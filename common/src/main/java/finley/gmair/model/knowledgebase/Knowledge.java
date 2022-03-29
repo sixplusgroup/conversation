@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class Knowledge {
     private Integer id;
     private Integer status;
+    private Integer views;
     private String title;
     private String content;
-    private Integer views;
-    private String comment;
+
 }

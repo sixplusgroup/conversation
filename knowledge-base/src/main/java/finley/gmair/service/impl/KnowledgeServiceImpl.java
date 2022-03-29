@@ -44,12 +44,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public void publish(Integer id) {
-        knowledgeMapper.changeStatusTo2(id);
+        knowledgeMapper.changeStatus(2,id);
     }
 
     @Override
     public void reedit(Integer id, CommentDTO commentDTO) {
-        knowledgeMapper.changeStatusTo1(id);
+        knowledgeMapper.changeStatus(1, id);
         commentMapper.insert(CommentConverter.DTO2model(commentDTO));
     }
 
@@ -121,7 +121,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     public void correct(Integer id, String comment) {
         Knowledge knowledge = knowledgeMapper.getById(id);
         knowledge.setStatus(1);
-        knowledge.setComment(comment);
         knowledgeMapper.modify(knowledge);
     }
 }

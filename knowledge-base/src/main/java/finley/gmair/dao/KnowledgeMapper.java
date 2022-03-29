@@ -16,8 +16,7 @@ public interface KnowledgeMapper {
 
     void delete(@Param("id") Integer id);
 
-    void changeStatusTo2(@Param("id") Integer id);
-    void changeStatusTo1(@Param("id") Integer id);
+    void changeStatus(Integer status, Integer id);
     void modify(Knowledge knowledge);
 
     Knowledge getById(@Param("id") Integer id);
