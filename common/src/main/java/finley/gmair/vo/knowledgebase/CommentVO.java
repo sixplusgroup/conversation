@@ -13,7 +13,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentVO {
-  private Integer id;
+    private Integer id;
     private Integer knowledgeId;
     private String content;
     //在插入评论时默认给予待解决的初始属性

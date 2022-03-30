@@ -4,9 +4,12 @@ package finley.gmair.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import finley.gmair.converter.CommentConverter;
+import finley.gmair.converter.KnowledgeConverter;
 import finley.gmair.dao.CommentMapper;
 import finley.gmair.dao.KnowledgeMapper;
 import finley.gmair.dto.knowledgebase.CommentDTO;
+import finley.gmair.dto.knowledgebase.KnowledgeDTO;
+import finley.gmair.enums.knowledgeBase.CommentStatus;
 import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
@@ -118,9 +121,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public void correct(Integer id, String comment) {
-        Knowledge knowledge = knowledgeMapper.getById(id);
-        knowledge.setStatus(1);
+    public void correct(KnowledgeDTO knowledgeDTO,int commentId) {
+        commentMapper.updateStatus(commentId, CommentStatus.RESOLVED.getCode());
+        Knowledge knowledge = KnowledgeConverter.DTO2model(knowledgeDTO);
         knowledgeMapper.modify(knowledge);
     }
 }

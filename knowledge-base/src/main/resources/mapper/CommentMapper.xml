@@ -7,6 +7,15 @@
         values(#{knowledgeId},#{content},#{status},#{responserId},#{type})
     </insert>
 
+    <update id="updateStatus">
+        update comment set stauts=#{status} where id = #{id}
+    </update>
+
+    <select id="getByStatus" resultMap="comment">
+        select * from comment
+        where status=#{status}
+    </select>
+
     <resultMap id="comment" type="finley.gmair.model.knowledgebase.Comment">
         <result property="id" column="id"></result>
         <result property="knowledgeId" column="knowledge_id"></result>

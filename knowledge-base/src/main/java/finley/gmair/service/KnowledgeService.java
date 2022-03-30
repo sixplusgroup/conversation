@@ -1,6 +1,7 @@
 package finley.gmair.service;
 
 import finley.gmair.dto.knowledgebase.CommentDTO;
+import finley.gmair.dto.knowledgebase.KnowledgeDTO;
 import finley.gmair.model.knowledgebase.Knowledge;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
@@ -34,5 +35,5 @@ public interface KnowledgeService {
 
     List<Knowledge> fulltextSearch(String key);
 
-    void correct(Integer id, String comment);
+    void correct(KnowledgeDTO knowledgeDTO,int commentId);
 }
