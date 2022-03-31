@@ -15,7 +15,7 @@ import java.util.List;
 public interface TagMapper {
     void insert(@Param("tag_name") String tag_name);
 
-    void delete(@Param("tag_name") String tag_name);
+    void delete(Integer tag_id);
 
     void modify(Tag tag);
 

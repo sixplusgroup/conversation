@@ -8,7 +8,7 @@
     </insert>
 
     <delete id="delete" >
-        delete from tag where tag_name = #{tag_name}
+        delete from tag where id = #{id}
     </delete>
 
     <update id="modify" parameterType="finley.gmair.model.knowledgebase.Tag">

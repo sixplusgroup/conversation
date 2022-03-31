@@ -44,14 +44,16 @@ CREATE TABLE `tag` (
 )
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
-alter table tag add index index_tag_name(tag_name) ;
+
 
 DROP TABLE IF EXISTS `tag_relation`;
 CREATE TABLE `tag_relation` (
    `id` bigint(20) NOT NULL AUTO_INCREMENT,
    `knowledge_id` bigint(10) NOT NULL,
    `tag_id` int(10) NOT NULL,
-   PRIMARY KEY (`id`)
+   PRIMARY KEY (`id`),
+   FOREIGN KEY(knowledge_id) REFERENCES knowledge(id) on delete cascade,
+   FOREIGN KEY(tag_id) REFERENCES tag(id) on delete cascade
 )
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;

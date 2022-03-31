@@ -12,9 +12,9 @@ import java.util.List;
 @Service
 public interface TagService {
     void create(String tagName);
-    void delete(String tagName);
+    void delete(Integer tagId);
     void modify(Tag tag);
-    void modifyKnowledgeTag(Integer knowledgeId, List<Integer> tagIds);
+    void modifyKnowledgeTag(Integer knowledgeId, List<Integer> addTagIds, List<Integer> deleteTagIds);
     List<Tag> getAllTags();
     List<Tag> getTagsByKnowledge(Integer id);
 

@@ -44,8 +44,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void delete(String tagName) {
-        tagMapper.delete(tagName);
+    public void delete(Integer tagId) {
+        tagMapper.delete(tagId);
     }
 
     @Override
@@ -54,15 +54,20 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void modifyKnowledgeTag(Integer knowledgeId, List<Integer> tagIds) {
-        //先根据knowledge_id全部删除
-        tagRelationMapper.deleteAllByKnowledgeId(knowledgeId);
-        //再全部添加
-        for(Integer tagId: tagIds) {
+    public void modifyKnowledgeTag(Integer knowledgeId, List<Integer> addTagIds, List<Integer> deleteTagIds) {
+        //添加
+        for(Integer tagId: addTagIds) {
             TagRelation tagReltion = new TagRelation();
             tagReltion.setTag_id(tagId);
             tagReltion.setKnowledge_id(knowledgeId);
             tagRelationMapper.insert(tagReltion);
+        }
+        //删除
+        for(Integer tagId: deleteTagIds) {
+            TagRelation tagReltion = new TagRelation();
+            tagReltion.setTag_id(tagId);
+            tagReltion.setKnowledge_id(knowledgeId);
+            tagRelationMapper.delete(tagReltion);
         }
     }
 

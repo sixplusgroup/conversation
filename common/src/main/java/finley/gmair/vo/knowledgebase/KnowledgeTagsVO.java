@@ -13,5 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class KnowledgeTagsVO {
     private Integer knowledge_id;
-    private List<Integer> tag_ids;
+    private List<Integer> add_tags;
+    private List<Integer> delete_tags;
 }

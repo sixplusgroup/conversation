@@ -11,6 +11,10 @@
         delete from tag_relation where knowledge_id = #{knowledge_id}
     </delete>
 
+    <delete id="delete">
+        delete from tag_relation where  knowledge_id = #{knowledge_id} and tag_id=#{tag_id}
+    </delete>
+
     <insert id="insert" parameterType="finley.gmair.model.knowledgebase.TagRelation" useGeneratedKeys="true" keyProperty="id">
         insert into tag_relation (knowledge_id, tag_id)
         values ( #{knowledge_id}, #{tag_id})

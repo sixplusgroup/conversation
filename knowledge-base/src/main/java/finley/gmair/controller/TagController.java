@@ -29,9 +29,9 @@ public class TagController {
         }
     }
 
-    @PostMapping("/delete")
-    public ResultData delete(@RequestBody String tagName) {
-        tagService.delete(tagName);
+    @PostMapping("/delete/{id}")
+    public ResultData delete(@PathVariable Integer tagId) {
+        tagService.delete(tagId);
         return ResultData.ok(null);
     }
 
@@ -43,7 +43,7 @@ public class TagController {
 
     @PostMapping("/modifyKnowledgeTags")
     public ResultData knowledgeTags(@RequestBody KnowledgeTagsVO knowledgeTagsVO) {
-        tagService.modifyKnowledgeTag(knowledgeTagsVO.getKnowledge_id(), knowledgeTagsVO.getTag_ids());
+        tagService.modifyKnowledgeTag(knowledgeTagsVO.getKnowledge_id(), knowledgeTagsVO.getAdd_tags(), knowledgeTagsVO.getDelete_tags());
         return ResultData.ok(null);
     }
 

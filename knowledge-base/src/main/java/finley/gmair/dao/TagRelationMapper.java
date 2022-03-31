@@ -19,4 +19,6 @@ public interface TagRelationMapper {
     void deleteAllByKnowledgeId(@Param("id") Integer id);
 
     void insert(TagRelation tagRelation);
+
+    void delete(TagRelation tagRelation);
 }
