@@ -1,38 +1,47 @@
 package finley.gmair.service;
 
 import cn.hutool.crypto.digest.DigestUtil;
-import com.netflix.discovery.converters.Auto;
 import finley.gmair.dao.SessionMessageDOMapper;
+import finley.gmair.dto.chatlog.KafkaMessage;
+import finley.gmair.model.chatlog.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class DataDeduplicationService {
-    @Autowired
+    //    @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     @Resource
     private SessionMessageDOMapper sessionMessageDOMapper;
 
-    public Map<Integer, String> deduplicate(Map<Integer, String> messageIdContent) {
-        Map<Integer, String> analyzedIdRes = new HashMap<>();
-        Map<Integer, String> toAnalyseIdContent = new HashMap<>();
-        messageIdContent.forEach((id, content) -> {
-            String redisKey = getRedisKey(content);
-            if (redisCheckHasKey(redisKey)) analyzedIdRes.put(id, redisGet(redisKey));
-            else toAnalyseIdContent.put(id, content);
+    public List<Message> deduplicate(List<KafkaMessage> messageList) {
+        List<Message> analyzedMessages = new ArrayList<>();
+        List<Message> toAnalyzeMessages = new ArrayList<>();
+        messageList.forEach(message -> {
+            String redisKey = getRedisKey(message.getContent());
+            if (redisCheckHasKey(redisKey))
+                analyzedMessages.add(new Message()
+                        .setMessageId(message.getMessageId())
+                        .setContent(message.getContent())
+                        .setScore(Double.parseDouble(redisGet(redisKey))));
+            else toAnalyzeMessages.add(new Message()
+                    .setMessageId(message.getMessageId())
+                    .setContent(message.getContent()));
         });
-        storeAnalyzedRes(analyzedIdRes);
-        return toAnalyseIdContent;
+        storeAnalyzedRes(analyzedMessages);
+        return toAnalyzeMessages;
     }
 
-    private void storeAnalyzedRes(Map<Integer, String> idRes) {
-        sessionMessageDOMapper.updateSentimentAnalysis(idRes);
+    private void storeAnalyzedRes(List<Message> messages) {
+//        sessionMessageDOMapper.updateSentimentAnalysis(idRes);
     }
 
     private boolean redisCheckHasKey(String key) {

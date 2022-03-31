@@ -1,16 +1,18 @@
 package finley.gmair.service;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import finley.gmair.model.chatlog.KafkaRecordCommon;
+import finley.gmair.bert.BertProcessHandler;
+import finley.gmair.dto.chatlog.KafkaMessage;
+import finley.gmair.dto.chatlog.KafkaSession;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @EnableKafka
@@ -19,19 +21,27 @@ public class ChatLogListenService {
     @Autowired
     private CycleSentimentAnalysis cycleSentimentAnalysis;
 
+    @Autowired
+    private BertProcessHandler bertProcessHandler;
 
-    @KafkaListener(id = "chat-log-listener", topics = "test")
+//    @Value("kafka.topics.fetch")
+//    private String topicFetch;
+
+    //    @Autowired
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+
+    @KafkaListener(id = "consumer-fetch", idIsGroup = false, topics = "${kafka.topics.fetch}")
     public void listenChatLog(ConsumerRecord<String, String> record) {
-        JSONObject recordJson = JSON.parseObject(record.value());
-        int sessionId = recordJson.getInteger(KafkaRecordCommon.KEY_INT_SESSION_ID);
-        Map<Integer, String> messageIdContentMap
-                = recordJson.getJSONArray(KafkaRecordCommon.KEY_JSON_ARRAY_MESSAGES)
-                .toJavaList(JSONObject.class)
-                .stream()
-                .collect(Collectors.toMap(o -> o.getInteger(KafkaRecordCommon.KEY_INT_MESSAGE_ID),
-                        o -> o.getString(KafkaRecordCommon.KEY_STRING_MESSAGE_CONTENT)));
+        KafkaSession session = JSON.parseObject(record.value(), KafkaSession.class);
+        int sessionId = session.getSessionId();
+        List<KafkaMessage> messageList = session.getMessages();
 
-        cycleSentimentAnalysis.prepare(sessionId, messageIdContentMap);
+        threadPoolTaskExecutor.execute(() -> {
+            cycleSentimentAnalysis.analyze(sessionId, messageList);
+            bertProcessHandler.runBertProcess();
+        });
+
     }
 
 }
