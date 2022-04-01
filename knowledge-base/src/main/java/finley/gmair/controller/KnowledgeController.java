@@ -91,7 +91,7 @@ public class KnowledgeController {
      * @param id
      * @return
      */
-    @GetMapping("/delete/{id}")
+    @GetMapping("/delete/{id}") //done
     public ResultData delete(@PathVariable Integer id) {
         knowledgeService.delete(id);
         return ResultData.ok(null);
@@ -102,7 +102,7 @@ public class KnowledgeController {
      * @param knowledgeVO
      * @return
      */
-    @PostMapping("/create")
+    @PostMapping("/create") //done
     public ResultData create(@RequestBody KnowledgeVO knowledgeVO) {
         knowledgeService.create(knowledgeVO);
         return ResultData.ok(null);

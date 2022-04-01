@@ -15,4 +15,6 @@ public class KnowledgeVO {
     private String content;
     private Integer status;
     private Integer views;
+    private String createTime;
+    private String modifyTime;
 }
