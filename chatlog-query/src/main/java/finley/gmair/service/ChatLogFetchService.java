@@ -10,6 +10,8 @@ import finley.gmair.dao.JdUserDOMapper;
 import finley.gmair.dao.JdWaiterDOMapper;
 import finley.gmair.dao.SessionMessageDOMapper;
 import finley.gmair.dao.UserSessionDOMapper;
+import finley.gmair.dto.chatlog.KafkaMessage;
+import finley.gmair.dto.chatlog.KafkaSession;
 import finley.gmair.model.chatlog.KafkaRecordCommon;
 import finley.gmair.util.JingdongApiHelper;
 import finley.gmair.util.TimeUtil;
@@ -66,10 +68,10 @@ public class ChatLogFetchService {
                         .map(Optional::get)
                         .map(jingdongApiHelper::formatChatLog)
                         .map(this::storeAndTransformForKafka)
-                        .forEach(this::sendKafka));
+                        .forEach(kafkaSession -> kafkaTemplate.send("test", JSON.toJSONString(kafkaSession))));
     }
 
-    private JSONObject storeAndTransformForKafka(JSONObject chatLog) {
+    private KafkaSession storeAndTransformForKafka(JSONObject chatLog) {
         // store user
         int usrId = userDOMapper.getUserIdByName(chatLog.getString(JingdongCommon.KEY_USER_NAME));
 
@@ -83,18 +85,14 @@ public class ChatLogFetchService {
 
         // store message and transform to map list:(messageId, content)
         JSONArray rawMessages = chatLog.getJSONArray(JingdongCommon.KEY_CHAT_MESSAGES);
-        JSONArray messageIdContent = storeAndTransformMessage(rawMessages);
+        List<KafkaMessage> kafkaMessageList = storeAndTransformMessage(rawMessages);
 
         // prepare for kafka
-        JSONObject sessionIdAndMessageListJson = new JSONObject();
-        sessionIdAndMessageListJson.put(KafkaRecordCommon.KEY_INT_SESSION_ID, sessionId);
-        sessionIdAndMessageListJson.put(KafkaRecordCommon.KEY_JSON_ARRAY_MESSAGES, messageIdContent);
-
-        return sessionIdAndMessageListJson;
+        return new KafkaSession(sessionId, kafkaMessageList);
     }
 
-    private JSONArray storeAndTransformMessage(JSONArray messages) {
-        JSONArray messageIdContentJsonArray = new JSONArray();
+    private List<KafkaMessage> storeAndTransformMessage(JSONArray messages) {
+        List<KafkaMessage> kafkaMessageList = new ArrayList<>();
         messages.stream()
                 .map(Object::toString)
                 .map(JSON::parseObject)
@@ -105,16 +103,10 @@ public class ChatLogFetchService {
                             message.getString(JingdongCommon.KEY_CONTENT),
                             message.getBoolean(JingdongCommon.KEY_IS_FROM_WAITER),
                             message.getLong(JingdongCommon.KEY_TIMESTAMP));
-                    JSONObject item = new JSONObject();
-                    item.put(KafkaRecordCommon.KEY_INT_MESSAGE_ID, messageId);
-                    item.put(KafkaRecordCommon.KEY_STRING_MESSAGE_CONTENT, content);
-                    messageIdContentJsonArray.add(item);
+                    KafkaMessage item = new KafkaMessage().setMessageId(messageId).setContent(content);
+                    kafkaMessageList.add(item);
                 });
-        return messageIdContentJsonArray;
-    }
-
-    private void sendKafka(JSONObject sessionIdAndMessageListJson) {
-        kafkaTemplate.send("test", sessionIdAndMessageListJson.toJSONString());
+        return kafkaMessageList;
     }
 
 
