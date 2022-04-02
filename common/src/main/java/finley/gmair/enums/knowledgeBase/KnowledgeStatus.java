@@ -6,7 +6,7 @@ package finley.gmair.enums.knowledgeBase;
 public enum KnowledgeStatus {
     PENDING_REVIEW(0,"待审核"),
     PENDING_DDIT(1,"待编辑"),
-    PENDING_PUBLISH(2,"待发布");
+    PENDING_PUBLISH(2,"发布");
 
     private Integer code;
     private String value;

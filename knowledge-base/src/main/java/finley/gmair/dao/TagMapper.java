@@ -22,7 +22,7 @@ public interface TagMapper {
     @Select("select * from tag")
     List<Tag> getAll();
 
-    Tag getByName();
+    Tag getByName(@Param("tag_name") String tag_name);
 
     List<Tag> getTagsByKnowledge(Integer id);
 

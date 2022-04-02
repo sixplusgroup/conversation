@@ -19,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import finley.gmair.model.knowledgebase.Knowledge;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class KnowledgeServiceImpl implements KnowledgeService {
@@ -62,7 +64,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         List<Knowledge> knowledges = knowledgeMapper.getAll();
 
         KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
-        knowledgePagerVO.setKnowledgeVOS(knowledges);
+        List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
+        knowledgePagerVO.setKnowledgeVOS(knowledgeVOs);
 
         PageInfo<Knowledge> pageInfo = new PageInfo<>(knowledges);
         Long totalNum = pageInfo.getTotal();
@@ -76,7 +79,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         List<Knowledge> knowledges = knowledgeMapper.getByState(0);
 
         KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
-        knowledgePagerVO.setKnowledgeVOS(knowledges);
+        List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
+        knowledgePagerVO.setKnowledgeVOS(knowledgeVOs);
 
         PageInfo<Knowledge> pageInfo = new PageInfo<>(knowledges);
         Long totalNum = pageInfo.getTotal();
@@ -99,10 +103,11 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 //    }
 
     @Override
-    public Knowledge getById(Integer id) {
+    public KnowledgeVO getById(Integer id) {
         Knowledge knowledge = knowledgeMapper.getById(id);
         knowledgeMapper.increaseViews(id);
-        return knowledge;
+        KnowledgeVO knowledgeVO = KnowledgeConverter.model2VO(knowledge);
+        return knowledgeVO;
     }
 
     @Override
@@ -110,7 +115,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         Knowledge knowledge = knowledgeMapper.getById(knowledgeVO.getId());
         knowledge.setContent(knowledgeVO.getContent());
         knowledge.setTitle(knowledgeVO.getTitle());
-        //knowledge.setKnowledge_type(knowledgeVO.getKnowledge_type());
+        knowledge.setModifyTime(new Date());
         knowledgeMapper.modify(knowledge);
     }
 

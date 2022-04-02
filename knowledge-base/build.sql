@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `knowledge`;
 CREATE TABLE `knowledge` (
   `id`    bigint(20)      AUTO_INCREMENT  NOT NULL,
-  `state`           int(10)         NOT NULL,
+  `status`           int(10)         NOT NULL,
   `title`           varchar(200)    NOT NULL,
   `content`         text      NOT NULL,
   `views`           int(100)        DEFAULT 0,

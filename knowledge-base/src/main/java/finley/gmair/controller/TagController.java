@@ -9,6 +9,7 @@ import finley.gmair.utils.PageParam;
 import finley.gmair.utils.TagsPageParam;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeTagsVO;
+import finley.gmair.vo.knowledgebase.TagVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +21,20 @@ public class TagController {
     @Autowired
     TagService tagService;
     @PostMapping("/create")
-    public ResultData create(@RequestBody String tagName) {
-        try{
-            tagService.create(tagName);
-            return ResultData.ok(null);
-        }catch (Exception e) {
-            return ResultData.error("标签名已存在！");
-        }
+    public ResultData create(@RequestBody TagVO tagVO) {
+//        try{
+//            tagService.create(tagVO.getTag_name());
+//            return ResultData.ok(null);
+//        }catch (Exception e) {
+//            return ResultData.error("标签名已存在！");
+//        }
+        tagService.create(tagVO.getTag_name());
+        return ResultData.ok(null);
     }
 
     @PostMapping("/delete/{id}")
-    public ResultData delete(@PathVariable Integer tagId) {
-        tagService.delete(tagId);
+    public ResultData delete(@PathVariable Integer id) {
+        tagService.delete(id);
         return ResultData.ok(null);
     }
 

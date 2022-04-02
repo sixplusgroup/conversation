@@ -2,17 +2,21 @@ package finley.gmair.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import finley.gmair.converter.KnowledgeConverter;
 import finley.gmair.dao.KnowledgeMapper;
 import finley.gmair.dao.TagMapper;
 import finley.gmair.dao.TagRelationMapper;
 import finley.gmair.dao.TypeMapper;
+import finley.gmair.dto.knowledgebase.CommentDTO;
 import finley.gmair.model.knowledgebase.Knowledge;
 import finley.gmair.model.knowledgebase.Tag;
 import finley.gmair.model.knowledgebase.TagRelation;
 import finley.gmair.model.knowledgebase.Type;
 import finley.gmair.service.TagService;
 import finley.gmair.service.TypeService;
+import finley.gmair.util.TimeUtil;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
+import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +36,14 @@ public class TagServiceImpl implements TagService {
     KnowledgeMapper knowledgeMapper;
 
     @Override
-    public void create(String tagName) {
-        Tag tag = tagMapper.getByName(); //在tag表中对tag_name建立索引
-        if (tag==null)
-            tagMapper.insert(tagName);
-        else{
-            throw new IllegalArgumentException();
-        }
-
+    public void create(String tag_name) {
+//        Tag tag = tagMapper.getByName(tagName); //在tag表中对tag_name建立索引
+//        if (tag==null)
+//            tagMapper.insert(tagName);
+//        else{
+//            throw new IllegalArgumentException();
+//        }
+        tagMapper.insert(tag_name);
 
     }
 
@@ -93,11 +97,15 @@ public class TagServiceImpl implements TagService {
         }
         PageHelper.startPage(pageNum,pageSize);
         List<Knowledge> knowledges = knowledgeMapper.getByIdList(knowledgeIds);
+
         KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
-        knowledgePagerVO.setKnowledgeVOS(knowledges);
+        List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
+        knowledgePagerVO.setKnowledgeVOS(knowledgeVOs);
         PageInfo<Knowledge> pageInfo = new PageInfo<>(knowledges);
         Long totalNum = pageInfo.getTotal();
         knowledgePagerVO.setTotalNum(totalNum);
         return knowledgePagerVO;
     }
+
+
 }
