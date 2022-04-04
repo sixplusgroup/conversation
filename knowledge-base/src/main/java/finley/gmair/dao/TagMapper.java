@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface TagMapper {
-    void insert(@Param("tag_name") String tag_name);
+    void insert(Tag tag);
 
     void delete(Integer tag_id);
 

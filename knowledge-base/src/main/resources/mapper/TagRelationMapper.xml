@@ -7,6 +7,10 @@
         select * from tag_relation where knowledge_id = #{knowledge_id}
     </select>
 
+    <select id="getByTagId" resultMap="TagRelation">
+        select * from tag_relation where tag_id = #{tag_id}
+    </select>
+
     <delete id="deleteAllByKnowledgeId" parameterType="java.lang.Integer">
         delete from tag_relation where knowledge_id = #{knowledge_id}
     </delete>

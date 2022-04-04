@@ -37,14 +37,13 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void create(String tag_name) {
-//        Tag tag = tagMapper.getByName(tagName); //在tag表中对tag_name建立索引
-//        if (tag==null)
-//            tagMapper.insert(tagName);
-//        else{
-//            throw new IllegalArgumentException();
-//        }
-        tagMapper.insert(tag_name);
-
+        if (tagMapper.getByName(tag_name)==null) {//在tag表中对tag_name建立索引
+            Tag tag = new Tag();
+            tag.setTag_name(tag_name);
+            tagMapper.insert(tag);
+        } else{
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override
@@ -54,7 +53,12 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void modify(Tag tag) {
-        tagMapper.modify(tag);
+        if(tagMapper.getByName(tag.getTag_name())==null){
+            tagMapper.modify(tag);
+        }else{
+            throw new IllegalArgumentException();
+        }
+
     }
 
     @Override
@@ -87,17 +91,20 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public KnowledgePagerVO getPageByTags(List<Integer> tagIds, Integer pageNum, Integer pageSize) {
-        List<Integer> knowledgeIds = tagRelationMapper.getByKnowledgeId(tagIds.get(0)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
+        //根据tagIds列表里的每个tagId，依次从tag_Relation表中获得knowledgeID，然后做个交集。
+        List<Integer> knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(0)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
         if(tagIds.size()>1){
             for (int i=1;i<tagIds.size();i++){//在tag_relation表中对tag_id建立索引
                 //https://www.cnblogs.com/Andya/p/14037640.html
-                List<Integer> tmp_knowledgeIds = tagRelationMapper.getByKnowledgeId(tagIds.get(0)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
+                List<Integer> tmp_knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(i)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
                 knowledgeIds=knowledgeIds.stream().filter(tmp_knowledgeIds::contains).collect(Collectors.toList());
             }
         }
+        //分页展示，根据knowledgeIds的列表获得所有的knowledge
         PageHelper.startPage(pageNum,pageSize);
         List<Knowledge> knowledges = knowledgeMapper.getByIdList(knowledgeIds);
 
+        //Knowledge to KnowledgeVO
         KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
         List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
         knowledgePagerVO.setKnowledgeVOS(knowledgeVOs);
