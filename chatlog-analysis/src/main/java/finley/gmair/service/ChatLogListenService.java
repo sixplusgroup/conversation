@@ -6,7 +6,6 @@ import finley.gmair.dto.chatlog.KafkaMessage;
 import finley.gmair.dto.chatlog.KafkaSession;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -19,7 +18,7 @@ import java.util.*;
 public class ChatLogListenService {
 
     @Autowired
-    private CycleSentimentAnalysis cycleSentimentAnalysis;
+    private SentimentAnalysisService sentimentAnalysisService;
 
     @Autowired
     private BertProcessHandler bertProcessHandler;
@@ -27,7 +26,7 @@ public class ChatLogListenService {
 //    @Value("kafka.topics.fetch")
 //    private String topicFetch;
 
-    //    @Autowired
+    @Autowired
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
 
@@ -36,10 +35,12 @@ public class ChatLogListenService {
         KafkaSession session = JSON.parseObject(record.value(), KafkaSession.class);
         int sessionId = session.getSessionId();
         List<KafkaMessage> messageList = session.getMessages();
+        System.out.println(session);
 
         threadPoolTaskExecutor.execute(() -> {
-            cycleSentimentAnalysis.analyze(sessionId, messageList);
-            bertProcessHandler.runBertProcess();
+            sentimentAnalysisService.analyze(sessionId, messageList);
+            boolean startBert = bertProcessHandler.runBertProcess();
+            System.out.println("start bert:" + startBert);
         });
 
     }

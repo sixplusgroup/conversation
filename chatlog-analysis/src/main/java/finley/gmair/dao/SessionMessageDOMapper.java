@@ -12,7 +12,7 @@ import java.util.Map;
 @Mapper
 @Repository
 public interface SessionMessageDOMapper {
-    void updateSentimentAnalysis(@Param("idAnalysis") Map<Integer, String> map);
-
     int batchStoreMessagesAnalysisRes(@Param("messages") List<Message> messageList);
+
+    Message getMessage();
 }

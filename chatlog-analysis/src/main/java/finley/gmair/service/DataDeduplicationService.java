@@ -1,23 +1,27 @@
 package finley.gmair.service;
 
-import cn.hutool.crypto.digest.DigestUtil;
 import finley.gmair.dao.SessionMessageDOMapper;
 import finley.gmair.dto.chatlog.KafkaMessage;
+import finley.gmair.dto.chatlog.RedisMessage;
+import finley.gmair.enums.chatlog.SentimentLabel;
 import finley.gmair.model.chatlog.Message;
+import finley.gmair.util.RedisUtil;
+import finley.gmair.util.TemplateMessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class DataDeduplicationService {
-    //    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    private TemplateMessageUtil templateMessageUtil;
 
     @Resource
     private SessionMessageDOMapper sessionMessageDOMapper;
@@ -25,36 +29,34 @@ public class DataDeduplicationService {
     public List<Message> deduplicate(List<KafkaMessage> messageList) {
         List<Message> analyzedMessages = new ArrayList<>();
         List<Message> toAnalyzeMessages = new ArrayList<>();
-        messageList.forEach(message -> {
-            String redisKey = getRedisKey(message.getContent());
-            if (redisCheckHasKey(redisKey))
+        messageList.forEach(kafkaMessage -> {
+            System.out.println(kafkaMessage);
+            String redisKey = redisUtil.getRedisKeyForMessageContent(kafkaMessage.getContent());
+            if (templateMessageUtil.isTemplate(kafkaMessage.getContent()))
                 analyzedMessages.add(new Message()
-                        .setMessageId(message.getMessageId())
-                        .setContent(message.getContent())
-                        .setScore(Double.parseDouble(redisGet(redisKey))));
-            else toAnalyzeMessages.add(new Message()
-                    .setMessageId(message.getMessageId())
-                    .setContent(message.getContent()));
+                        .setId(kafkaMessage.getMessageId())
+                        .setContent(kafkaMessage.getContent())
+                        .setLabel(SentimentLabel.NEUTRAL)
+                        .setScore(0));
+            if (redisUtil.redisCheckHasKey(redisKey)) {
+                redisUtil.refreshExpireTime(redisKey, 1, TimeUnit.DAYS);
+                System.out.println("redis hit!!!!!!");
+                RedisMessage redisMessage = redisUtil.redisGet(redisKey);
+                analyzedMessages.add(new Message()
+                        .setId(kafkaMessage.getMessageId())
+                        .setContent(kafkaMessage.getContent())
+                        .setScore(redisMessage.getScore())
+                        .setLabel(redisMessage.getLabel()));
+            } else toAnalyzeMessages.add(new Message()
+                    .setId(kafkaMessage.getMessageId())
+                    .setContent(kafkaMessage.getContent()));
         });
-        storeAnalyzedRes(analyzedMessages);
+        if (analyzedMessages.size() > 0) storeAnalyzedRes(analyzedMessages);
         return toAnalyzeMessages;
     }
 
     private void storeAnalyzedRes(List<Message> messages) {
-//        sessionMessageDOMapper.updateSentimentAnalysis(idRes);
+        sessionMessageDOMapper.batchStoreMessagesAnalysisRes(messages);
     }
-
-    private boolean redisCheckHasKey(String key) {
-        return redisTemplate.hasKey(key);
-    }
-
-    private String redisGet(String key) {
-        return redisTemplate.opsForValue().get(key);
-    }
-
-    private String getRedisKey(String origin) {
-        return "sa_message_" + DigestUtil.md5Hex(origin);
-    }
-
 
 }

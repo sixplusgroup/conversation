@@ -33,10 +33,9 @@ create table `usr_session_jd`
 (
     session_id          int         not null comment '主键会话id' auto_increment primary key,
     original_session_id varchar(50) not null comment '京东原会话id',
-    usr_id             int         not null comment '用户id',
-    waiter_id          int         not null comment '客服id',
-    product_id         varchar(20) not null comment '商品id',
-    analysis           text comment '会话评价',
+    usr_id              int         not null comment '用户id',
+    waiter_id           int         not null comment '客服id',
+    product_id          varchar(20) not null comment '商品id',
     foreign key (usr_id) references usr_jd (usr_id),
     foreign key (waiter_id) references waiter_jd (waiter_id)
 )
@@ -53,11 +52,38 @@ create table `session_message_jd`
     content        text not null comment '聊天内容',
     is_from_waiter boolean default false comment '是否由客服发送',
     timestamp      long not null comment '发送时间',
-    analysis       text comment '消息评价',
+    label          varchar(10) comment '消息评价，0-negative，1-neutral，2-positive',
+    score          double comment '消息评分',
     foreign key (session_id) references usr_session_jd (session_id)
 )
     DEFAULT CHARSET = utf8
     comment '京东消息内容表';
+
+
+# insert into usr_jd
+# set usr_name='user1';
+#
+# insert into waiter_jd
+# set waiter_name='waiter1';
+#
+# insert into usr_session_jd
+# set original_session_id='1234567',
+#     usr_id=1,
+#     waiter_id=1,
+#     product_id='12345';
+#
+# insert into session_message_jd
+# set content='test1',
+#     session_id=1,
+#     timestamp=0;
+# insert into session_message_jd
+# set content='test2',
+#     session_id=1,
+#     timestamp=0;
+# insert into session_message_jd
+# set content='test3',
+#     session_id=1,
+#     timestamp=0;
 
 
 

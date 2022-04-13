@@ -1,10 +1,17 @@
 package finley.gmair.dao;
 
-import org.apache.ibatis.annotations.Param;
+import finley.gmair.model.chatlog.Message;
+import finley.gmair.model.chatlog.UserSession;
+import org.apache.ibatis.annotations.*;
 
 import java.util.Map;
 
+@Mapper
 public interface SessionMessageDOMapper {
-    Integer insertSessionMessage(@Param("sid") int sessionId, @Param("content") String content,
-                             @Param("isFromWaiter") boolean isFromWaiter, @Param("timestamp") long timestamp);
+
+    @Insert("insert into session_message_jd(session_id, content, is_from_waiter, timestamp) values\n" +
+            "        (#{message.sessionId}, #{message.content}, #{message.isFromWaiter}, #{message.timestamp})")
+//    @Options(useGeneratedKeys = true, keyProperty = "session_id")
+    @SelectKey(statement = "select last_insert_id()", keyProperty = "message.id", before = false, resultType = Integer.class)
+    void insertSessionMessage(@Param("message") Message message);
 }
