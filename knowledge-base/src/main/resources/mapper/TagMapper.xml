@@ -17,12 +17,6 @@
         where id=#{id}
     </update>
 
-    <update id="modify" parameterType="finley.gmair.model.knowledgebase.Tag">
-        update tag
-        set tag_name=#{tag_name}
-        where id=#{id}
-    </update>
-
 
     <select id="getByName" resultMap="Tag">
         select * from tag where tag_name = #{tag_name}
