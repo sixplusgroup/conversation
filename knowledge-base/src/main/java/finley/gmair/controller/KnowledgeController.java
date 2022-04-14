@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/knowledge")
@@ -32,6 +33,7 @@ public class KnowledgeController {
      * 审核者审核通过，发布知识
      * @param id
      * @return
+     *
      */
     @GetMapping("/publish/{id}")
     public ResultData publish(@PathVariable Integer id) {
@@ -56,6 +58,7 @@ public class KnowledgeController {
      * 分页获取所有知识
      * @param pageParam
      * @return
+     *
      */
     @PostMapping("/getPage")
     public ResultData getPage(@RequestBody PageParam pageParam) {
@@ -67,6 +70,7 @@ public class KnowledgeController {
      * 分页获取"待审核"状态的知识
      * @param pageParam
      * @return
+     *
      */
     @PostMapping("/getAuditPage")
     public ResultData getAuditPage(@RequestBody PageParam pageParam) {
@@ -90,8 +94,9 @@ public class KnowledgeController {
      * 删除某条知识
      * @param id
      * @return
+     *
      */
-    @GetMapping("/delete/{id}")
+    @GetMapping("/delete/{id}") //done
     public ResultData delete(@PathVariable Integer id) {
         knowledgeService.delete(id);
         return ResultData.ok(null);
@@ -101,8 +106,9 @@ public class KnowledgeController {
      * 创建知识
      * @param knowledgeVO
      * @return
+     *
      */
-    @PostMapping("/create")
+    @PostMapping("/create") //done
     public ResultData create(@RequestBody KnowledgeVO knowledgeVO) {
         knowledgeService.create(knowledgeVO);
         return ResultData.ok(null);
@@ -112,17 +118,19 @@ public class KnowledgeController {
      * 根据ID获取某条知识
      * @param id
      * @return
+     *
      */
     @PostMapping("/getById/{id}")
     public ResultData getById(@PathVariable Integer id) {
-        Knowledge knowledge = knowledgeService.getById(id);
-        return ResultData.ok(knowledge, null);
+        KnowledgeVO knowledgeVO = knowledgeService.getById(id);
+        return ResultData.ok(knowledgeVO, null);
     }
 
     /**
-     * 修改某条知识(需要提供知识ID)
+     * 修改某条知识(需要提供知识ID, title, content)
      * @param knowledgeVO
      * @return
+     *
      */
     @PostMapping("/modify")
     public ResultData modify(@RequestBody KnowledgeVO knowledgeVO){
@@ -134,11 +142,13 @@ public class KnowledgeController {
      * 根据搜索关键字，对标题和内容进行全文搜索
      * @param key
      * @return
+     *
      */
     @PostMapping("/fulltext_search")
     public ResultData fulltextSearch(@RequestBody String key) {
         List<Knowledge> knowledges = knowledgeService.fulltextSearch(key);
-        return ResultData.ok(knowledges, null);
+        List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
+        return ResultData.ok(knowledgeVOs, null);
     }
 
     /**

@@ -29,7 +29,7 @@ public interface KnowledgeService {
 
     //KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize);
 
-    Knowledge getById(Integer id);
+    KnowledgeVO getById(Integer id);
 
     void modify(KnowledgeVO knowledgeVO);
 

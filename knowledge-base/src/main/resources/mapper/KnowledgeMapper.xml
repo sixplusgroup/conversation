@@ -3,7 +3,7 @@
 <mapper namespace="finley.gmair.dao.KnowledgeMapper">
 
     <insert id="insert" parameterType="finley.gmair.model.knowledgebase.Knowledge" useGeneratedKeys="true" keyProperty="id">
-        insert into knowledge (title, content, state, views)
+        insert into knowledge (title, content, status, views)
         values ( #{title}, #{content}, 0, 0)
     </insert>
 
@@ -12,11 +12,11 @@
     </delete>
 
     <update id="changeStatus">
-        update knowledge set stauts=#{status} where id = #{id}
+        update knowledge set status=#{status} where id = #{id}
     </update>
     <update id="modify" parameterType="finley.gmair.model.knowledgebase.Knowledge">
         update knowledge
-        set title=#{title},content=#{content},state=#{state}, views=#{views}, comment=#{comment}
+        set title=#{title},content=#{content},modify_time=#{modifyTime}
         where id=#{id}
     </update>
     <update id="increaseViews" parameterType="java.lang.Integer">
@@ -32,11 +32,11 @@
 <!--        select * from knowledge where knowledge_type = #{knowledge_type}-->
 <!--    </select>-->
     <select id="getByState" resultMap="Knowledge">
-        select * from knowledge where state = #{state}
+        select * from knowledge where status = #{status}
     </select>
 
     <select id="search" resultMap="Knowledge">
-        select * from knowledge where match(title, content) against #{key}
+        select * from knowledge where match(title, content) against (#{key})
     </select>
 
     <select id="getByIdList" resultMap="Knowledge">
@@ -46,6 +46,9 @@
         </foreach>
     </select>
 
-    <resultMap id="Knowledge" type="finley.gmair.model.knowledgebase.Knowledge"/>
+    <resultMap id="Knowledge" type="finley.gmair.model.knowledgebase.Knowledge">
+        <result property="createTime" column="create_time"></result>
+        <result property="modifyTime" column="modify_time"></result>
+    </resultMap>
 
 </mapper>

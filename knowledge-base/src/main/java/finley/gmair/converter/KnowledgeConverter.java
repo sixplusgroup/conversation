@@ -2,6 +2,7 @@ package finley.gmair.converter;
 
 import finley.gmair.dto.knowledgebase.KnowledgeDTO;
 import finley.gmair.model.knowledgebase.Knowledge;
+import finley.gmair.util.TimeUtil;
 import finley.gmair.vo.knowledgebase.KnowledgeVO;
 
 public class KnowledgeConverter {
@@ -56,4 +57,20 @@ public class KnowledgeConverter {
         knowledgeDTO.setViews(knowledgeVO.getViews());
         return knowledgeDTO;
     }
+
+    public static KnowledgeVO model2VO(Knowledge knowledge){
+        if (knowledge == null) {
+            return null;
+        }
+        KnowledgeVO knowledgeVO = new KnowledgeVO();
+        knowledgeVO.setContent(knowledge.getContent());
+        knowledgeVO.setTitle(knowledge.getTitle());
+        knowledgeVO.setCreateTime(TimeUtil.datetimeToString(knowledge.getCreateTime()));
+        knowledgeVO.setModifyTime(TimeUtil.datetimeToString(knowledge.getModifyTime()));
+        knowledgeVO.setStatus(knowledge.getStatus());
+        knowledgeVO.setViews(knowledge.getViews());
+        knowledgeVO.setId(knowledge.getId());
+        return knowledgeVO;
+    }
+
 }

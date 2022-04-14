@@ -1,4 +1,4 @@
-package finley.gmair.util;
+package finley.gmair.jd;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -9,7 +9,6 @@ import com.jd.open.api.sdk.request.im.ImPopSessionlistGetRequest;
 import com.jd.open.api.sdk.response.im.ChatSessionPage;
 import finley.gmair.common.JingdongCommon;
 import finley.gmair.common.TimeCommon;
-import finley.gmair.config.JingDongProperties;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;

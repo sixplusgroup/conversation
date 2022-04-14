@@ -1,10 +1,12 @@
 DROP TABLE IF EXISTS `knowledge`;
 CREATE TABLE `knowledge` (
   `id`    bigint(20)      AUTO_INCREMENT  NOT NULL,
-  `state`           int(10)         NOT NULL,
+  `status`           int(10)         NOT NULL,
   `title`           varchar(200)    NOT NULL,
   `content`         text      NOT NULL,
   `views`           int(100)        DEFAULT 0,
+  `create_time` DATETIME default CURRENT_TIMESTAMP,
+  `modify_time` DATETIME,
   PRIMARY KEY (`id`),
   FULLTEXT KEY title_content_fulltext(title, content) # 创建联合全文索引列
 )

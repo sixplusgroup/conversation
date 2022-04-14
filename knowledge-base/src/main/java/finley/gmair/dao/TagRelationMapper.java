@@ -14,7 +14,9 @@ import java.util.List;
 @Repository
 public interface TagRelationMapper {
 
-    List<TagRelation> getByKnowledgeId(@Param("id") Integer id);
+    List<TagRelation> getByKnowledgeId(@Param("knowledge_id") Integer id);
+
+    List<TagRelation> getByTagId(@Param("tag_id") Integer id);
 
     void deleteAllByKnowledgeId(@Param("id") Integer id);
 

@@ -18,6 +18,8 @@
     </update>
 
 
+
+
     <select id="getByName" resultMap="Tag">
         select * from tag where tag_name = #{tag_name}
     </select>

@@ -1,4 +1,4 @@
-package finley.gmair.config;
+package finley.gmair.jd;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -1,0 +1,75 @@
+{
+  "properties": [
+    {
+      "name": "python.env",
+      "type": "java.lang.String",
+      "description": "Location of python interpreter."
+    },
+    {
+      "name": "python.bert-entry",
+      "type": "java.lang.String",
+      "description": "Location of bert model entrance."
+    },
+    {
+      "name": "python.bert.do-train",
+      "type": "java.lang.Boolean",
+      "description": "Train bert model."
+    },
+    {
+      "name": "python.bert.do-eval",
+      "type": "java.lang.Boolean",
+      "description": "Eval bert model."
+    },
+    {
+      "name": "python.bert.do-predict",
+      "type": "java.lang.Boolean",
+      "description": "Predict with bert model."
+    },
+    {
+      "name": "python.bert.config-file",
+      "type": "java.lang.String",
+      "description": "Location of bert config file."
+    },
+    {
+      "name": "python.bert.vocab-file",
+      "type": "java.lang.String",
+      "description": "Location of bert vocabulary file."
+    },
+    {
+      "name": "python.bert.checkpoint-dir",
+      "type": "java.lang.String",
+      "description": "Direction of bert checkpoint."
+    },
+    {
+      "name": "kafka.topics.fetch",
+      "type": "java.lang.String",
+      "description": "Kafka topic for messages sent from chatlog-query service."
+    },
+    {
+      "name": "kafka.topics.to-bert",
+      "type": "java.lang.String",
+      "description": "Kafka topic for messages sent to bert model."
+    },
+    {
+      "name": "kafka.topics.after-bert",
+      "type": "java.lang.String",
+      "description": "Kafka topic for message analysis results sent from bert model."
+    },
+    {
+      "name": "thread-pool.core-pool-size",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "thread-pool.keep-alive-seconds",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "thread-pool.max-pool-size",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "thread-pool.queue-capacity",
+      "type": "java.lang.String"
+    }
+  ]
+}

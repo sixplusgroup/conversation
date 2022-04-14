@@ -4,8 +4,10 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/gmair?serverTimezone=CTT&characterEncoding=UTF-8
+    #url: jdbc:mysql://47.98.191.109:3306/gmair?serverTimezone=CTT&characterEncoding=UTF-8
     username: root
     password: Juplusnexidao4
+    #password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     max-active: 200
     max-idle: 20
