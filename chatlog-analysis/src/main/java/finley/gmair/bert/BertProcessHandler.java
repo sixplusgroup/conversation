@@ -9,19 +9,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class BertProcessHandler {
     static Boolean isBertProcessOn = false;
 
-    @Value("python.env")
+    @Value("${python.env}")
     String pythonEnv;
 
-    @Value("python.bert-entry")
+    @Value("${python.bert-entry}")
     String bertEntry;
 
     @Autowired
     BertProperties bertProperties;
+
+    @Value("${kafka.topics.to-bert}")
+    String topicToAnalysis;
+
+    @Value("${kafka.topics.after-bert}")
+    String topicAfterAnalysis;
 
 
     public boolean checkIfBertProcessOn() {
@@ -36,7 +43,9 @@ public class BertProcessHandler {
             else isBertProcessOn = true;
         }
         try {
-            String[] commands = new String[]{pythonEnv, bertEntry, JSON.toJSONString(bertProperties)};
+            String[] commands = new String[]{pythonEnv, bertEntry, JSON.toJSONString(bertProperties),
+                    topicToAnalysis, topicAfterAnalysis};
+            System.out.println(pythonEnv + bertEntry + JSON.toJSONString(bertProperties));
 
             Process process = Runtime.getRuntime().exec(commands);
             PythonOutStream error = new PythonOutStream(process.getErrorStream());
@@ -68,8 +77,9 @@ public class BertProcessHandler {
             try {
                 InputStreamReader isr = new InputStreamReader(is);
                 BufferedReader br = new BufferedReader(isr);
-                while (br.readLine() != null) {
-                    continue;
+                String line;
+                while ((line = br.readLine()) != null) {
+                    System.out.println(line);
                 }
             } catch (Exception ioe) {
                 ioe.printStackTrace();

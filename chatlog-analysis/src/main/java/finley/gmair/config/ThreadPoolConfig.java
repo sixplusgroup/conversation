@@ -1,5 +1,6 @@
 package finley.gmair.config;
 
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,22 +12,19 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
-//@Configuration
-//@ConfigurationProperties(
-//        prefix = "thread.pool"
-//)
+@Configuration
+@Setter
+@ConfigurationProperties(
+        prefix = "thread-pool"
+)
 public class ThreadPoolConfig {
     //线程池维护线程的最少数量
-    @Value("${core-pool-size}")
     private Integer corePoolSize;
     //允许的空闲时间
-    @Value("${keep-alive-seconds}")
     private Integer keepAliveSeconds;
     //线程池维护线程的最大数量
-    @Value("${max-pool-size}")
     private Integer maxPoolSize;
     //缓存队列
-    @Value("${queue-capacity}")
     private Integer queueCapacity;
 
     @Bean
