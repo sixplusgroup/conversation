@@ -26,7 +26,7 @@ public class TagController {
      * @param tagVO
      * @return
      */
-    @PostMapping("/create")
+    @PostMapping("/create")//todo
     public ResultData create(@RequestBody TagVO tagVO) {
         try{
             tagService.create(tagVO.getTag_name());
@@ -52,7 +52,7 @@ public class TagController {
      * @param tag
      * @return
      */
-    @PostMapping("/modifyTagName")
+    @PostMapping("/modifyTagName") //todo
     public ResultData modify(@RequestBody Tag tag) {
         try{
             tagService.modify(tag);

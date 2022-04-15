@@ -127,7 +127,7 @@ public class KnowledgeController {
     }
 
     /**
-     * 修改某条知识(需要提供知识ID, title, content)
+     * 修改某条知识(除了modifyTime都传， 其中知识ID, title, content必传)
      * @param knowledgeVO
      * @return
      *
@@ -141,11 +141,13 @@ public class KnowledgeController {
     /**
      * 根据搜索关键字，对标题和内容进行全文搜索
      * @param key
-     * @return
+     * @return todo 分页
      *
      */
     @PostMapping("/fulltext_search")
     public ResultData fulltextSearch(@RequestBody String key) {
+        //todo split
+        // order by views
         List<Knowledge> knowledges = knowledgeService.fulltextSearch(key);
         List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
         return ResultData.ok(knowledgeVOs, null);
@@ -157,7 +159,7 @@ public class KnowledgeController {
      * @param knowledgeVO
      * @return
      */
-    @PostMapping("/correct")
+    @PostMapping("/correct")//todo
     public ResultData correct(@RequestParam Integer commentId, @RequestBody KnowledgeVO knowledgeVO) {
         KnowledgeDTO knowledgeDTO= KnowledgeConverter.VO2DTO(knowledgeVO);
         knowledgeDTO.setStatus(KnowledgeStatus.PENDING_REVIEW.getCode());
