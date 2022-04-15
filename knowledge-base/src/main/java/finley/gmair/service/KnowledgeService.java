@@ -35,5 +35,7 @@ public interface KnowledgeService {
 
     List<Knowledge> fulltextSearch(String key);
 
+    List<KnowledgeVO> fulltextListSearch(List<String> keys);
+
     void correct(KnowledgeDTO knowledgeDTO,int commentId);
 }

@@ -37,13 +37,13 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void create(String tag_name) {
-        if (tagMapper.getByName(tag_name)==null) {//在tag表中对tag_name建立索引
+//        if (tagMapper.getByName(tag_name)==null) {//在tag表中对tag_name建立索引
             Tag tag = new Tag();
             tag.setTag_name(tag_name);
             tagMapper.insert(tag);
-        } else{
-            throw new IllegalArgumentException();
-        }
+//        } else{
+//            throw new IllegalArgumentException();
+//        }
     }
 
     @Override
@@ -53,11 +53,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void modify(Tag tag) {
-        if(tagMapper.getByName(tag.getTag_name())==null){
+//        if(tagMapper.getByName(tag.getTag_name())==null){
             tagMapper.modify(tag);
-        }else{
-            throw new IllegalArgumentException();
-        }
+//        }else{
+//            throw new IllegalArgumentException();
+//        }
 
     }
 

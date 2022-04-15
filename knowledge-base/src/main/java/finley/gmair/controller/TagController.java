@@ -26,14 +26,14 @@ public class TagController {
      * @param tagVO
      * @return
      */
-    @PostMapping("/create")//todo
+    @PostMapping("/create")
     public ResultData create(@RequestBody TagVO tagVO) {
-        try{
+//        try{
             tagService.create(tagVO.getTag_name());
             return ResultData.ok(null);
-        }catch (Exception e) {
-            return ResultData.error("标签名已存在！");
-        }
+//        }catch (Exception e) {
+//            return ResultData.error("标签名已存在！");
+//        }
     }
 
     /**
@@ -52,14 +52,14 @@ public class TagController {
      * @param tag
      * @return
      */
-    @PostMapping("/modifyTagName") //todo
+    @PostMapping("/modifyTagName")
     public ResultData modify(@RequestBody Tag tag) {
-        try{
+//        try{
             tagService.modify(tag);
             return ResultData.ok(null);
-        }catch (Exception e) {
-            return ResultData.error("标签名已存在！");
-        }
+//        }catch (Exception e) {
+//            return ResultData.error("标签名已存在！");
+//        }
 
     }
 

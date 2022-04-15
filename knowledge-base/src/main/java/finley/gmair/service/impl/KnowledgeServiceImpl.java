@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import finley.gmair.model.knowledgebase.Knowledge;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,8 +62,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public KnowledgePagerVO getPage(Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum,pageSize);
-        List<Knowledge> knowledges = knowledgeMapper.getAll();//todo
+        PageHelper.startPage(pageNum,pageSize,"views desc");//todo test
+        List<Knowledge> knowledges = knowledgeMapper.getAll();
 
         KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
         List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
@@ -123,6 +125,23 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     public List<Knowledge> fulltextSearch(String key) {
         List<Knowledge> knowledges = knowledgeMapper.search(key);
         return knowledges;
+    }
+
+    @Override
+    public List<KnowledgeVO> fulltextListSearch(List<String> keys) {
+
+        List<Knowledge> ret = new ArrayList<>();
+        for(String key: keys){
+            List<Knowledge> knowledges = knowledgeMapper.search(key);
+            ret.addAll(knowledges);
+        }
+        List<KnowledgeVO> f_ret = ret.stream().map(KnowledgeConverter::model2VO).sorted(new Comparator<KnowledgeVO>() {
+            @Override
+            public int compare(KnowledgeVO o1, KnowledgeVO o2) {
+                return o2.getViews()-o1.getViews();
+            }
+        }).collect(Collectors.toList());
+        return f_ret;
     }
 
     @Override

@@ -11,6 +11,7 @@ import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
 import finley.gmair.vo.knowledgebase.CommentVO;
+import finley.gmair.vo.knowledgebase.IDVO;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,9 +37,9 @@ public class KnowledgeController {
      * @return
      *
      */
-    @PostMapping("/publish/{id}")//todo
-    public ResultData publish(@PathVariable Integer id) {
-        knowledgeService.publish(id);
+    @PostMapping("/publish")
+    public ResultData publish(@RequestBody IDVO id) {
+        knowledgeService.publish(id.getId());
         return ResultData.ok(null);
     }
 
@@ -140,16 +142,14 @@ public class KnowledgeController {
     /**
      * 根据搜索关键字，对标题和内容进行全文搜索
      * @param key
-     * @return todo 分页
+     * @return  ps: 无分页
      *
      */
     @PostMapping("/fulltext_search")
-    public ResultData fulltextSearch(@RequestBody String key) {
-        //todo split
-        // order by views
-        List<Knowledge> knowledges = knowledgeService.fulltextSearch(key);
-        List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
-        return ResultData.ok(knowledgeVOs, null);
+    public ResultData fulltextSearch(@RequestBody String key) { //todo test
+        //split , search each key, and then order list by views
+        List<KnowledgeVO> knowledgeList = knowledgeService.fulltextListSearch(Arrays.asList(key.split(" ")));
+        return ResultData.ok(knowledgeList, null);
     }
 
     /**
