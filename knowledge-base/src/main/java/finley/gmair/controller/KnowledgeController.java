@@ -35,22 +35,21 @@ public class KnowledgeController {
      * @return
      *
      */
-    @GetMapping("/publish/{id}")
+    @PostMapping("/publish/{id}")//todo
     public ResultData publish(@PathVariable Integer id) {
         knowledgeService.publish(id);
         return ResultData.ok(null);
     }
 
     /**
-     * 管理员审核不通过，反馈评论
-     * @param id
+     * 评论(管理员、使用者)
      * @param comment
      * @return
      */
-    @PostMapping("/reedit/{id}")
-    public ResultData reedit(@PathVariable Integer id, @RequestBody CommentVO comment) {
+    @PostMapping("/comment")
+    public ResultData comment(@RequestBody CommentVO comment) {
         CommentDTO commentDTO = CommentConverter.VO2DTO(comment);
-        knowledgeService.reedit(id,commentDTO);
+        //knowledgeService.reedit(id,commentDTO);//todo
         return ResultData.ok(null);
     }
 
@@ -159,7 +158,7 @@ public class KnowledgeController {
      * @param knowledgeVO
      * @return
      */
-    @PostMapping("/correct")//todo
+    @PostMapping("/correct")//todo @RequestParam
     public ResultData correct(@RequestParam Integer commentId, @RequestBody KnowledgeVO knowledgeVO) {
         KnowledgeDTO knowledgeDTO= KnowledgeConverter.VO2DTO(knowledgeVO);
         knowledgeDTO.setStatus(KnowledgeStatus.PENDING_REVIEW.getCode());

@@ -61,7 +61,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Override
     public KnowledgePagerVO getPage(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);
-        List<Knowledge> knowledges = knowledgeMapper.getAll();
+        List<Knowledge> knowledges = knowledgeMapper.getAll();//todo
 
         KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
         List<KnowledgeVO> knowledgeVOs = knowledges.stream().map(KnowledgeConverter::model2VO).collect(Collectors.toList());
