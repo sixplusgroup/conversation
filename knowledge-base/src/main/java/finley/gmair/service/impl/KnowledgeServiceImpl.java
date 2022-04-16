@@ -10,6 +10,7 @@ import finley.gmair.dao.KnowledgeMapper;
 import finley.gmair.dto.knowledgebase.CommentDTO;
 import finley.gmair.dto.knowledgebase.KnowledgeDTO;
 import finley.gmair.enums.knowledgeBase.CommentStatus;
+import finley.gmair.enums.knowledgeBase.KnowledgeStatus;
 import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
@@ -55,9 +56,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public void reedit(Integer id, CommentDTO commentDTO) {
-        knowledgeMapper.changeStatus(1, id);
-        commentMapper.insert(CommentConverter.DTO2model(commentDTO));
+    public void reedit(Integer id) {
+        knowledgeMapper.changeStatus(KnowledgeStatus.PENDING_DDIT.getCode(), id);
     }
 
     @Override

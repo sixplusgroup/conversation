@@ -1,11 +1,12 @@
 package finley.gmair.enums.knowledgeBase;
 
 /**
- * 状态，0为待解决，1为已解决
+ * 状态，0为待解决，1为已解决，2为废弃
  */
 public enum CommentStatus {
     UNRESOLVED(0,"待解决"),
-    RESOLVED(1,"已解决");
+    RESOLVED(1,"已解决"),
+    ABANDON(2,"废弃");
 
     private Integer code;
     private String value;

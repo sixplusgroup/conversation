@@ -21,7 +21,7 @@ public interface KnowledgeService {
 
     void publish(Integer id);
 
-    void reedit(Integer id, CommentDTO comment);
+    void reedit(Integer id);
 
     KnowledgePagerVO getPage(Integer pageNum, Integer pageSize);
 

@@ -16,6 +16,27 @@
         where status=#{status}
     </select>
 
+    <select id="query" parameterType="java.util.Map" resultMap="comment">
+        SELECT *
+        FROM comment
+        WHERE 1 = 1
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="knowledge_id != null">
+            AND knowledge_id = #{knowledge_id}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="responser_id != null">
+            AND responser_id = #{responser_id}
+        </if>
+        <if test="type != null">
+            AND type = #{type}
+        </if>
+    </select>
+
     <resultMap id="comment" type="finley.gmair.model.knowledgebase.Comment">
         <result property="id" column="id"></result>
         <result property="knowledgeId" column="knowledge_id"></result>

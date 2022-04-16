@@ -44,18 +44,6 @@ public class KnowledgeController {
     }
 
     /**
-     * 评论(管理员、使用者)
-     * @param comment
-     * @return
-     */
-    @PostMapping("/comment")
-    public ResultData comment(@RequestBody CommentVO comment) {
-        CommentDTO commentDTO = CommentConverter.VO2DTO(comment);
-        //knowledgeService.reedit(id,commentDTO);//todo
-        return ResultData.ok(null);
-    }
-
-    /**
      * 分页获取所有知识
      * @param pageParam
      * @return
@@ -152,18 +140,5 @@ public class KnowledgeController {
         return ResultData.ok(knowledgeList, null);
     }
 
-    /**
-     * 知识使用者对某条知识进行纠错
-     * @param commentId
-     * @param knowledgeVO
-     * @return
-     */
-    @PostMapping("/correct")//todo @RequestParam
-    public ResultData correct(@RequestParam Integer commentId, @RequestBody KnowledgeVO knowledgeVO) {
-        KnowledgeDTO knowledgeDTO= KnowledgeConverter.VO2DTO(knowledgeVO);
-        knowledgeDTO.setStatus(KnowledgeStatus.PENDING_REVIEW.getCode());
-        knowledgeService.correct(knowledgeDTO,commentId);
-        return ResultData.ok(null);
-    }
 
 }
