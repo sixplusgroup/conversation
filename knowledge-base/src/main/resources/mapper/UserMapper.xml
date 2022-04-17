@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.UserMapper">
+
+
+    <select id="query" parameterType="java.util.Map" resultMap="User">
+        SELECT *
+        FROM user
+        WHERE 1 = 1
+        <if test="id != null">
+            AND user_id = #{id}
+        </if>
+        <if test="name != null">
+            AND user_name = #{name}
+        </if>
+        <if test="pwd != null">
+            AND user_pwd = #{pwd}
+        </if>
+    </select>
+
+    <select id="getPermiisionId" resultType="Integer">
+        select ps.pid
+        from user_assignment us left  join permission_assignment ps
+        on us.rid = ps.rid
+         where us.uid =#{userId}
+    </select>
+
+    <resultMap id="User" type="finley.gmair.model.knowledgebaseAuth.KnowledgebaseUser">
+        <result property="id" column="user_id"></result>
+        <result property="name" column="user_name"></result>
+        <result property="pwd" column="user_pwd"></result>
+    </resultMap>
+
+</mapper>

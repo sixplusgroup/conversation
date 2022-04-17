@@ -17,6 +17,7 @@ import finley.gmair.utils.PageParam;
 import finley.gmair.vo.knowledgebase.CommentVO;
 import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -63,6 +64,7 @@ public class CommentController {
      * @Date 16:28 2022/4/16
      */
     @PostMapping("abandon/{id}")
+    @PreAuthorize("hasAuthority('approveKnowledge')")
     public ResultData abandon(@PathVariable Integer id){
         commentService.abandonComment(id);
         return ResultData.ok(null);

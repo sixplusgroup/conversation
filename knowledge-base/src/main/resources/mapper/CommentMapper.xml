@@ -8,7 +8,7 @@
     </insert>
 
     <update id="updateStatus">
-        update comment set stauts=#{status} where id = #{id}
+        update comment set status=#{status} where id = #{id}
     </update>
 
     <select id="getByStatus" resultMap="comment">
