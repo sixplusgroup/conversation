@@ -10,6 +10,7 @@ import finley.gmair.service.CommentService;
 import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
+import finley.gmair.utils.SearchPageParam;
 import finley.gmair.vo.knowledgebase.CommentVO;
 import finley.gmair.vo.knowledgebase.IDVO;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
@@ -128,15 +129,16 @@ public class KnowledgeController {
     }
 
     /**
-     * 根据搜索关键字，对标题和内容进行全文搜索
-     * @param key
-     * @return  ps: 无分页
+     * 根据搜索关键字（用空格分割），对标题和内容进行全文搜索
+     * @param searchPageParam
+     * @return
      *
      */
     @PostMapping("/fulltext_search")
-    public ResultData fulltextSearch(@RequestBody String key) { //todo test
+
+    public ResultData fulltextSearch(@RequestBody SearchPageParam searchPageParam) { //todo test
         //split , search each key, and then order list by views
-        List<KnowledgeVO> knowledgeList = knowledgeService.fulltextListSearch(Arrays.asList(key.split(" ")));
+        KnowledgePagerVO knowledgeList = knowledgeService.fulltextListSearch(searchPageParam.getPageSize(), searchPageParam.getPageNum(),Arrays.asList(searchPageParam.getKey().split(" ")));
         return ResultData.ok(knowledgeList, null);
     }
 
