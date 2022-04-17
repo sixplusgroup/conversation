@@ -36,7 +36,6 @@ public class MyCustomUserDetailsService implements UserDetailsService {
 ////        System.out.println(passwordEncoder.encode("goodGmair"));
 ////        UserDetails userDetails = new User("enduser",passwordEncoder.encode("password"),authorities);
 ////        return userDetails;
-        System.out.println("hh");
         List<SimpleGrantedAuthority> authorities = new LinkedList<>();
         Map<String, Object> condition = new HashMap<>();
         condition.put("name",username);
@@ -46,7 +45,6 @@ public class MyCustomUserDetailsService implements UserDetailsService {
         }
         KnowledgebaseUser user = users.get(0);
         List<Integer> PermissionIds = userMapper.getPermiisionId(user.getId());
-        PermissionIds.forEach(e->System.out.println(e));
         List<KnowledgebasePermission> permissions =  permissionMapper.queryByIds(PermissionIds);
         permissions.forEach(e->authorities.add(new SimpleGrantedAuthority(e.getAuthorize())));
         return new User(user.getName(),user.getPwd(), authorities);

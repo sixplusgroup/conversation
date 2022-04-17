@@ -38,9 +38,9 @@ public enum CommentStatus {
      * @return
      */
     public static String getValueByCode(Integer code){
-        for(CommentType commentType:CommentType.values()){
-            if(code.equals(commentType.getCode())){
-                return commentType.getValue();
+        for(CommentStatus commentStatus:CommentStatus.values()){
+            if(code.equals(commentStatus.getCode())){
+                return commentStatus.getValue();
             }
         }
         return  null;
@@ -52,11 +52,13 @@ public enum CommentStatus {
      * @return
      */
     public static Integer getCodeByValue(String value){
-        for(CommentType commentType:CommentType.values()){
-            if(value.equals(commentType.getValue())){
-                return commentType.getCode();
+        for(CommentStatus commentStatus:CommentStatus.values()){
+            if(value.equals(commentStatus.getValue())){
+                return commentStatus.getCode();
             }
         }
         return  null;
     }
 }
+
+

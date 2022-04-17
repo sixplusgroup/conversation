@@ -34,6 +34,7 @@ public class CommentController {
      * @param comment
      * @return
      */
+    @PreAuthorize("hasAuthority('comment_create')")
     @PostMapping("/create")
     public ResultData comment(@RequestBody CommentVO comment) {
         CommentDTO commentDTO = CommentConverter.VO2DTO(comment);
@@ -45,11 +46,12 @@ public class CommentController {
     }
 
     /**
-     * 知识使用者对某条知识进行纠错
+     * 知识采编者对某条知识进行纠错
      * @param commentId
      * @param knowledgeVO
      * @return
      */
+    @PreAuthorize("hasAuthority('comment_modify')")
     @PostMapping("/correct/{id}")
     public ResultData correct(@PathVariable Integer commentId, @RequestBody KnowledgeVO knowledgeVO) {
         KnowledgeDTO knowledgeDTO= KnowledgeConverter.VO2DTO(knowledgeVO);
@@ -64,7 +66,7 @@ public class CommentController {
      * @Date 16:28 2022/4/16
      */
     @PostMapping("abandon/{id}")
-    @PreAuthorize("hasAuthority('approveKnowledge')")
+    @PreAuthorize("hasAuthority('comment_modify')")
     public ResultData abandon(@PathVariable Integer id){
         commentService.abandonComment(id);
         return ResultData.ok(null);
@@ -75,7 +77,8 @@ public class CommentController {
      * @Author great fish
      * @Date 16:36 2022/4/16
      */
-    @GetMapping("getCommentListByStatus/{status}")
+    @PreAuthorize("hasAuthority('comment_getAll')")
+    @PostMapping("getCommentListByStatus/{status}")
     public ResultData getCommentListByStatus(@PathVariable String status, @RequestBody PageParam pageParam){
         CommentPagerDTO commentPagerDTO = commentService.getCommentListByStatus(CommentStatus.getCodeByValue(status),pageParam.getPageNum(),pageParam.getPageSize());
         return ResultData.ok(CommentPagerConverter.DTO2VO(commentPagerDTO),null);
@@ -86,7 +89,8 @@ public class CommentController {
      * @Author great fish
      * @Date 17:00 2022/4/16
      */
-    @GetMapping("getUserCommentListByStatus/{userId}/{status}")
+    @PreAuthorize("hasAuthority('comment_getOwn')")
+    @PostMapping("getUserCommentListByStatus/{userId}/{status}")
     public ResultData getUserCommentListByStatus(@PathVariable Integer userId,@PathVariable String status,@RequestBody PageParam pageParam){
         CommentPagerDTO commentPagerDTO = commentService.getUserCommentListByStatus(
                 CommentStatus.getCodeByValue(status),userId,pageParam.getPageNum(),pageParam.getPageSize());

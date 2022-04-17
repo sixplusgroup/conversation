@@ -115,10 +115,10 @@ INSERT INTO `role` (role_id, role_name, role_description) VALUES
 (3,'knowledgeBase_user','知识库使用人员');
 
 INSERT INTO `permission`(`id`,`authorize`,`describe`) VALUES
-(1,'updateKnowledge','更新知识'),
-(2,'approveKnowledge','通过一条知识的审批'),
-(3,'getKnowledge','查看一条知识'),
-(4,'getUnApproveKnowledge','获得待审核知识列表');
+(1,'comment_create','创建评论'),
+(2,'comment_modify','修改评论的状态'),
+(3,'comment_getOwn','获取自己的评论列表'),
+(4,'comment_getAll','获取所有的评论列表');
 
 INSERT INTO `user_assignment`(`uid`,`rid`) VALUES
 (1,1),
@@ -126,8 +126,10 @@ INSERT INTO `user_assignment`(`uid`,`rid`) VALUES
 (3,3);
 
 INSERT INTO `permission_assignment`(`rid`,`pid`) VALUES
-(1,2),
-(2,1),
-(3,3),
-(1,4);
+(1,1),
+(1,3),
+(2,2),
+(2,4),
+(3,1),
+(3,3);
 
