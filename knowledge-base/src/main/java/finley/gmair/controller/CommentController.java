@@ -20,6 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("knowledge-base/comment")
 public class CommentController {
@@ -85,16 +89,16 @@ public class CommentController {
     }
 
     /**
-     * @Description 用户根据评论状态分页获得自己的评论列表
+     * @Description 用户根据评论状态获得自己的评论列表
      * @Author great fish
      * @Date 17:00 2022/4/16
      */
     @PreAuthorize("hasAuthority('comment_getOwn')")
-    @PostMapping("getUserCommentListByStatus/{userId}/{status}")
-    public ResultData getUserCommentListByStatus(@PathVariable Integer userId,@PathVariable String status,@RequestBody PageParam pageParam){
-        CommentPagerDTO commentPagerDTO = commentService.getUserCommentListByStatus(
-                CommentStatus.getCodeByValue(status),userId,pageParam.getPageNum(),pageParam.getPageSize());
-        return ResultData.ok(CommentPagerConverter.DTO2VO(commentPagerDTO),null);
+    @PostMapping("getUserCommentListByStatus")
+    public ResultData getUserCommentListByStatus(@RequestParam("userId") Integer userId,@RequestParam("status") String status){
+        List<CommentDTO> commentDTOS= commentService.getUserCommentListByStatus(
+                CommentStatus.getCodeByValue(status),userId);
+        return ResultData.ok(commentDTOS.stream().map(CommentConverter::DTO2VO).collect(Collectors.toList()),null);
     }
 
 

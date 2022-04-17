@@ -37,5 +37,5 @@ public interface CommentService {
      * @Author great fish
      * @Date 16:54 2022/4/16
      */
-    CommentPagerDTO getUserCommentListByStatus(int status,int userId,Integer pageNum, Integer pageSize);
+    List<CommentDTO> getUserCommentListByStatus(int status,int userId);
 }

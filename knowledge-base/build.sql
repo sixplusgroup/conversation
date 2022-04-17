@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS `gmair`;
+create database `gmair`;
+use gmair;
 DROP TABLE IF EXISTS `knowledge`;
 CREATE TABLE `knowledge` (
   `id`    bigint(20)      AUTO_INCREMENT  NOT NULL,
