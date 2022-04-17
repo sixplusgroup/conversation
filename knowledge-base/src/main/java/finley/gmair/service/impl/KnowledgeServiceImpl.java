@@ -128,20 +128,21 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public List<KnowledgeVO> fulltextListSearch(List<String> keys) {
+    public KnowledgePagerVO fulltextListSearch(Integer pageSize, Integer pageNum, List<String> keys) {
 
         List<Knowledge> ret = new ArrayList<>();
         for(String key: keys){
             List<Knowledge> knowledges = knowledgeMapper.search(key);
             ret.addAll(knowledges);
         }
-        List<KnowledgeVO> f_ret = ret.stream().map(KnowledgeConverter::model2VO).sorted(new Comparator<KnowledgeVO>() {
-            @Override
-            public int compare(KnowledgeVO o1, KnowledgeVO o2) {
-                return o2.getViews()-o1.getViews();
-            }
-        }).collect(Collectors.toList());
-        return f_ret;
+        List<KnowledgeVO> f_ret = ret.stream().map(KnowledgeConverter::model2VO)
+                .sorted((o1, o2) -> o2.getViews()-o1.getViews())
+                .collect(Collectors.toList());
+
+        KnowledgePagerVO knowledgePagerVO = new KnowledgePagerVO();
+        knowledgePagerVO.setTotalNum(Long.valueOf(String.valueOf(f_ret.size())));
+        knowledgePagerVO.setKnowledgeVOS(f_ret.subList((pageNum-1)*pageSize, pageNum*pageSize));
+        return knowledgePagerVO;
     }
 
     @Override
