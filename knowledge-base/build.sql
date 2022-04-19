@@ -73,6 +73,7 @@ CREATE TABLE `user`(
 `user_pwd` varchar(32) NOT NULL ,
 `block_flag` TINYINT(1) NOT NULL DEFAULT '0',
 `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+`user_type` int NOT NULL,
   PRIMARY KEY(`user_id`)
 ) ENGINE = InnoDB
 DEFAULT CHARSET = utf8;
@@ -107,10 +108,10 @@ CREATE TABLE `user_assignment` (
   `rid` int(11) unsigned NOT NULL COMMENT '角色ID'
 ) ENGINE=InnoDB  COMMENT='用户与角色关联表';
 
-INSERT INTO `user` (`user_id`, `user_name`,`user_pwd`) VALUES
-(1,'manager1',md5('manager1')),
-(2,'editor1',md5('editor1')),
-(3,'user1',md5('user1'));
+INSERT INTO `user` (`user_id`, `user_name`,`user_pwd`,`user_type`) VALUES
+(1,'manager1',md5('manager1'),1),
+(2,'editor1',md5('editor1'),2),
+(3,'user1',md5('user1'),3);
 
 INSERT INTO `role` (role_id, role_name, role_description) VALUES
 (1,'knowledgeBase_manager','知识库管理人员'),

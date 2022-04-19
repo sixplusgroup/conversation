@@ -16,6 +16,9 @@
         <if test="pwd != null">
             AND user_pwd = #{pwd}
         </if>
+        <if test="type != null">
+            AND user_type = #{type}
+        </if>
     </select>
 
     <select id="getPermiisionId" resultType="Integer">
@@ -29,6 +32,7 @@
         <result property="id" column="user_id"></result>
         <result property="name" column="user_name"></result>
         <result property="pwd" column="user_pwd"></result>
+        <result property="type" column="user_type"></result>
     </resultMap>
 
 </mapper>
