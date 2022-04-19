@@ -1,7 +1,6 @@
 package finley.gmair.config;
 
 import finley.gmair.encode.Md5Encoder;
-import finley.gmair.service.impl.MyCustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    MyCustomUserDetailsService userDetailsService;
+    UserDetailsService userDetailsService;
 
     @Autowired
     PasswordEncoder passwordEncoder;

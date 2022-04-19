@@ -1,6 +1,7 @@
 package finley.gmair.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,19 +13,32 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 @Configuration
 public class Oauth2ServerConfig {
+
 
     @Configuration
     @EnableAuthorizationServer
     protected static class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
+
+        @Autowired
+        JwtTokenStore tokenStore;
+
         @Autowired
         private AuthenticationManager authenticationManager;//密码模式需要注入认证管理器
+
         @Autowired
         public PasswordEncoder passwordEncoder;
+
+        @Autowired
+        @Qualifier("myJwtTokenService")
+        AuthorizationServerTokenServices tokenService;
 
         public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
             clients
@@ -37,7 +51,16 @@ public class Oauth2ServerConfig {
 
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-            endpoints.authenticationManager(authenticationManager);
+            endpoints.authenticationManager(authenticationManager)
+                    .tokenStore(tokenStore)
+                    .tokenServices(tokenService);
+        }
+
+        @Override
+        public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+            //允许表单认证
+            oauthServer.allowFormAuthenticationForClients();
+            oauthServer.checkTokenAccess("permitAll()");
         }
     }
 
@@ -45,8 +68,13 @@ public class Oauth2ServerConfig {
     @EnableResourceServer
     protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
+        @Autowired
+        JwtTokenStore tokenStore;
+
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) {
+            resources.tokenStore(tokenStore)
+                    .stateless(true);
         }
 
         @Override

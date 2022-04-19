@@ -13,4 +13,5 @@ public class KnowledgebaseUser {
     private int id;
     private String name;
     private String pwd;
+    private int type;
 }
