@@ -1,31 +1,18 @@
 package finley.gmair.controller;
 
-import finley.gmair.converter.CommentConverter;
-import finley.gmair.converter.KnowledgeConverter;
-import finley.gmair.dto.knowledgebase.CommentDTO;
-import finley.gmair.dto.knowledgebase.KnowledgeDTO;
-import finley.gmair.enums.knowledgeBase.KnowledgeStatus;
-import finley.gmair.model.knowledgebase.Knowledge;
-import finley.gmair.service.CommentService;
 import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
 import finley.gmair.utils.SearchPageParam;
 import finley.gmair.utils.SearchParam;
-import finley.gmair.vo.knowledgebase.CommentVO;
-import finley.gmair.vo.knowledgebase.IDVO;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeVO;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/knowledge-base/knowledge")

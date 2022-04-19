@@ -23,8 +23,8 @@ public class CommentServiceImpl implements CommentService {
     CommentMapper commentMapper;
 
     @Override
-    public CommentPagerDTO getCommentListByStatus(int status, Integer pageNum, Integer pageSize){
-        PageHelper.startPage(pageNum,pageSize);
+    public CommentPagerDTO getCommentListByStatus(int status, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
         List<Comment> comments = commentMapper.getByStatus(status);
         CommentPagerDTO commentPagerDTO = new CommentPagerDTO();
         commentPagerDTO.setCommentDTOS(comments.stream().map(CommentConverter::model2DTO).collect(Collectors.toList()));
@@ -35,20 +35,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void insertComment(CommentDTO commentDTO){
+    public void insertComment(CommentDTO commentDTO) {
         commentMapper.insert(CommentConverter.DTO2model(commentDTO));
     }
 
     @Override
-    public void abandonComment(Integer commentId){
-        commentMapper.updateStatus(commentId,CommentStatus.ABANDON.getCode());
+    public void abandonComment(Integer commentId) {
+        commentMapper.updateStatus(commentId, CommentStatus.ABANDON.getCode());
     }
 
     @Override
-    public List<CommentDTO> getUserCommentListByStatus(int status,int userId){
-        Map<String,Object> condition  = new HashMap<>();
-        condition.put("status",status);
-        condition.put("responser_id",userId);
+    public List<CommentDTO> getUserCommentListByStatus(int status, int userId) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("status", status);
+        condition.put("responser_id", userId);
         List<Comment> comments = commentMapper.query(condition);
         return comments.stream().map(CommentConverter::model2DTO).collect(Collectors.toList());
     }

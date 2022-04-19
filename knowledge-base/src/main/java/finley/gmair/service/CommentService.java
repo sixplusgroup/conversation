@@ -2,8 +2,6 @@ package finley.gmair.service;
 
 import finley.gmair.dto.knowledgebase.CommentDTO;
 import finley.gmair.dto.knowledgebase.CommentPagerDTO;
-import finley.gmair.model.knowledgebase.Comment;
-import finley.gmair.utils.PageParam;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

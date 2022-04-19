@@ -1,11 +1,8 @@
 package finley.gmair.controller;
 
 import finley.gmair.model.knowledgebase.Tag;
-import finley.gmair.model.knowledgebase.TagRelation;
-import finley.gmair.model.knowledgebase.Type;
 import finley.gmair.service.TagService;
 import finley.gmair.util.ResultData;
-import finley.gmair.utils.PageParam;
 import finley.gmair.utils.TagsPageParam;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeTagsVO;
