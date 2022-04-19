@@ -25,7 +25,11 @@ public interface KnowledgeService {
 
     KnowledgePagerVO getPage(Integer pageNum, Integer pageSize);
 
+    List<KnowledgeVO> getAll();
+
     KnowledgePagerVO getAuditPage(Integer pageNum, Integer pageSize);
+
+    List<KnowledgeVO> getAudit();
 
     //KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize);
 
@@ -36,6 +40,8 @@ public interface KnowledgeService {
     List<Knowledge> fulltextSearch(String key);
 
     KnowledgePagerVO fulltextListSearch(Integer pageSize, Integer pageNum, List<String> keys);
+
+    List<KnowledgeVO> searchByTagsKeys(List<Integer> tagIdxs, String keywords);
 
     void correct(KnowledgeDTO knowledgeDTO,int commentId);
 }

@@ -7,10 +7,12 @@ import finley.gmair.converter.CommentConverter;
 import finley.gmair.converter.KnowledgeConverter;
 import finley.gmair.dao.CommentMapper;
 import finley.gmair.dao.KnowledgeMapper;
+import finley.gmair.dao.TagRelationMapper;
 import finley.gmair.dto.knowledgebase.CommentDTO;
 import finley.gmair.dto.knowledgebase.KnowledgeDTO;
 import finley.gmair.enums.knowledgeBase.CommentStatus;
 import finley.gmair.enums.knowledgeBase.KnowledgeStatus;
+import finley.gmair.model.knowledgebase.TagRelation;
 import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
@@ -34,6 +36,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Autowired
     CommentMapper commentMapper;
+
+    @Autowired
+    TagRelationMapper tagRelationMapper;
 
     @Override
     public void create(KnowledgeVO vo) {
@@ -76,6 +81,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
+    public List<KnowledgeVO> getAll() {
+        List<Knowledge> knowledges = knowledgeMapper.getAll();
+        return knowledges.stream().map(KnowledgeConverter::model2VO).sorted((o1, o2) -> o2.getViews()-o1.getViews()).collect(Collectors.toList());
+    }
+
+    @Override
     public KnowledgePagerVO getAuditPage(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);
         List<Knowledge> knowledges = knowledgeMapper.getByState(0);
@@ -90,7 +101,13 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return knowledgePagerVO;
     }
 
-//    @Override
+    @Override
+    public List<KnowledgeVO> getAudit() {
+        List<Knowledge> knowledges = knowledgeMapper.getByState(0);
+        return knowledges.stream().map(KnowledgeConverter::model2VO).sorted((o1, o2) -> o2.getViews()-o1.getViews()).collect(Collectors.toList());
+    }
+
+    //    @Override
 //    public KnowledgePagerVO getPageByType(Integer id, Integer pageNum, Integer pageSize) {
 //        PageHelper.startPage(pageNum,pageSize);
 //        List<Knowledge> knowledges = knowledgeMapper.getByType(id);
@@ -143,6 +160,27 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         knowledgePagerVO.setTotalNum(Long.valueOf(String.valueOf(f_ret.size())));
         knowledgePagerVO.setKnowledgeVOS(f_ret.subList((pageNum-1)*pageSize, pageNum*pageSize));
         return knowledgePagerVO;
+    }
+
+    @Override
+    public List<KnowledgeVO> searchByTagsKeys(List<Integer> tagIds, String keywords) {
+        //根据tagIds列表里的每个tagId，依次从tag_Relation表中获得knowledgeID，然后做个交集。
+        List<Integer> knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(0)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
+        if(tagIds.size()>1){
+            for (int i=1;i<tagIds.size();i++){//在tag_relation表中对tag_id建立索引
+                //https://www.cnblogs.com/Andya/p/14037640.html
+                List<Integer> tmp_knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(i)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
+                knowledgeIds=knowledgeIds.stream().filter(tmp_knowledgeIds::contains).collect(Collectors.toList());
+            }
+        }
+        List<Knowledge> knowledges = knowledgeMapper.getByIdList(knowledgeIds);
+        String[] keys = keywords.split(" ");
+        for(String key: keys){
+            List<Knowledge> tmp_knowledges = knowledgeMapper.search(key);
+            knowledges.addAll(tmp_knowledges);
+        }
+
+        return knowledges.stream().sorted((o1,o2)->(o2.getViews()-o1.getViews())).map(KnowledgeConverter::model2VO).collect(Collectors.toList());
     }
 
     @Override

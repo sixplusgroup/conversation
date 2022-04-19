@@ -11,6 +11,7 @@ import finley.gmair.service.KnowledgeService;
 import finley.gmair.util.ResultData;
 import finley.gmair.utils.PageParam;
 import finley.gmair.utils.SearchPageParam;
+import finley.gmair.utils.SearchParam;
 import finley.gmair.vo.knowledgebase.CommentVO;
 import finley.gmair.vo.knowledgebase.IDVO;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
@@ -54,7 +55,21 @@ public class KnowledgeController {
      */
     @PostMapping("/getPage")
     public ResultData getPage(@RequestBody PageParam pageParam) {
+
         KnowledgePagerVO knowledgeList = knowledgeService.getPage(pageParam.getPageNum(), pageParam.getPageSize());
+        return ResultData.ok(knowledgeList, null);
+    }
+
+    /**
+     * 获取所有知识
+     * @param
+     * @return
+     *
+     */
+    @PostMapping("/getAll")
+    public ResultData getAll() {
+
+        List<KnowledgeVO> knowledgeList = knowledgeService.getAll();
         return ResultData.ok(knowledgeList, null);
     }
 
@@ -67,6 +82,18 @@ public class KnowledgeController {
     @PostMapping("/getAuditPage")
     public ResultData getAuditPage(@RequestBody PageParam pageParam) {
         KnowledgePagerVO knowledgeList = knowledgeService.getAuditPage(pageParam.getPageNum(), pageParam.getPageSize());
+        return ResultData.ok(knowledgeList, null);
+    }
+
+    /**
+     * 分页获取"待审核"状态的知识
+     * @param
+     * @return
+     *
+     */
+    @PostMapping("/getAudit")
+    public ResultData getAudit() {
+        List<KnowledgeVO> knowledgeList = knowledgeService.getAudit();
         return ResultData.ok(knowledgeList, null);
     }
 
@@ -140,12 +167,17 @@ public class KnowledgeController {
      *
      */
     @PostMapping("/fulltext_search")
-
     public ResultData fulltextSearch(@RequestBody SearchPageParam searchPageParam) { //todo test
         //split , search each key, and then order list by views
         KnowledgePagerVO knowledgeList = knowledgeService.fulltextListSearch(searchPageParam.getPageSize(), searchPageParam.getPageNum(),Arrays.asList(searchPageParam.getKey().split(" ")));
         return ResultData.ok(knowledgeList, null);
     }
 
+    @PostMapping("/searchByTagsKeys")
+    public ResultData searchByTagsKeys(@RequestBody SearchParam searchParam) { //todo test
+        //split , search each key, and then order list by views
+        List<KnowledgeVO> knowledgeList = knowledgeService.searchByTagsKeys(searchParam.getTags(), searchParam.getKeywords());
+        return ResultData.ok(knowledgeList, null);
+    }
 
 }
