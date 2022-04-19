@@ -122,7 +122,8 @@ INSERT INTO `permission`(`id`,`authorize`,`describe`) VALUES
 (1,'comment_create','创建评论'),
 (2,'comment_modify','修改评论的状态'),
 (3,'comment_getOwn','获取自己的评论列表'),
-(4,'comment_getAll','获取所有的评论列表');
+(4,'comment_getAll','获取所有的评论列表'),
+(5,'user_create','创建用户');
 
 INSERT INTO `user_assignment`(`uid`,`rid`) VALUES
 (1,1),
@@ -132,6 +133,7 @@ INSERT INTO `user_assignment`(`uid`,`rid`) VALUES
 INSERT INTO `permission_assignment`(`rid`,`pid`) VALUES
 (1,1),
 (1,3),
+(1,5),
 (2,2),
 (2,4),
 (3,1),

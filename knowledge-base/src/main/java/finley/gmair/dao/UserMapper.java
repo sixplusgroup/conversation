@@ -13,4 +13,6 @@ public interface UserMapper {
     List<KnowledgebaseUser> query(Map<String, Object> condition);
 
     List<Integer> getPermiisionId(int userId);
+
+    int create(KnowledgebaseUser knowledgebaseUser);
 }
