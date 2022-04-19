@@ -17,6 +17,7 @@ import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/knowledge")
+@RequestMapping("/knowledge-base/knowledge")
 public class KnowledgeController {
 
     @Autowired
@@ -38,9 +39,10 @@ public class KnowledgeController {
      * @return
      *
      */
+    @PreAuthorize("hasAuthority('knowledge_audit')")
     @PostMapping("/publish")
-    public ResultData publish(@RequestBody IDVO id) {
-        knowledgeService.publish(id.getId());
+    public ResultData publish(@RequestParam Integer id) {
+        knowledgeService.publish(id);
         return ResultData.ok(null);
     }
 
@@ -86,6 +88,7 @@ public class KnowledgeController {
      * @return
      *
      */
+    @PreAuthorize("hasAuthority('knowledge_update')")
     @GetMapping("/delete/{id}") //done
     public ResultData delete(@PathVariable Integer id) {
         knowledgeService.delete(id);
@@ -98,6 +101,7 @@ public class KnowledgeController {
      * @return
      *
      */
+    @PreAuthorize("hasAuthority('knowledge_update')")
     @PostMapping("/create") //done
     public ResultData create(@RequestBody KnowledgeVO knowledgeVO) {
         knowledgeService.create(knowledgeVO);
@@ -122,6 +126,7 @@ public class KnowledgeController {
      * @return
      *
      */
+    @PreAuthorize("hasAuthority('knowledge_update')")
     @PostMapping("/modify")
     public ResultData modify(@RequestBody KnowledgeVO knowledgeVO){
         knowledgeService.modify(knowledgeVO);

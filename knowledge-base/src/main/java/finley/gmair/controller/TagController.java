@@ -11,12 +11,13 @@ import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeTagsVO;
 import finley.gmair.vo.knowledgebase.TagVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tag")
+@RequestMapping("/knowledge-base/tag")
 public class TagController {
     @Autowired
     TagService tagService;
@@ -26,6 +27,7 @@ public class TagController {
      * @param tagVO
      * @return
      */
+    @PreAuthorize("hasAuthority('tag_operation')")
     @PostMapping("/create")
     public ResultData create(@RequestBody TagVO tagVO) {
 //        try{
@@ -41,6 +43,7 @@ public class TagController {
      * @param id
      * @return
      */
+    @PreAuthorize("hasAuthority('tag_operation')")
     @PostMapping("/delete/{id}")
     public ResultData delete(@PathVariable Integer id) {
         tagService.delete(id);
@@ -52,6 +55,7 @@ public class TagController {
      * @param tag
      * @return
      */
+    @PreAuthorize("hasAuthority('tag_operation')")
     @PostMapping("/modifyTagName")
     public ResultData modify(@RequestBody Tag tag) {
 //        try{
@@ -69,6 +73,7 @@ public class TagController {
      * @param knowledgeTagsVO
      * @return
      */
+    @PreAuthorize("hasAuthority('tag_operation')")
     @PostMapping("/modifyKnowledgeTags")
     public ResultData knowledgeTags(@RequestBody KnowledgeTagsVO knowledgeTagsVO) {
         tagService.modifyKnowledgeTag(knowledgeTagsVO.getKnowledge_id(), knowledgeTagsVO.getAdd_tags(), knowledgeTagsVO.getDelete_tags());

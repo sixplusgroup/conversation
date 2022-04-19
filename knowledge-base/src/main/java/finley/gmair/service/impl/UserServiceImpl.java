@@ -19,7 +19,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void create(KnowledgebaseUser knowledgebaseUser){
         userMapper.create(knowledgebaseUser);
-        System.out.println(knowledgebaseUser.getId());
         userAssignmentMapper.insert(knowledgebaseUser.getId(),3); //插入用户
     }
 }

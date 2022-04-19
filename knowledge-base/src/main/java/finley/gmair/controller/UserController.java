@@ -41,8 +41,6 @@ public class UserController {
     @PreAuthorize("hasAuthority('user_create')")
     @PostMapping("create")
     public ResultData create(@RequestBody Map<String,String > userInfo){
-        //todo pathparam改成requestpram/requestbody
-        //todo 给其它controller加上鉴权
         String name =  userInfo.get("name");
         String pwd = userInfo.get("pwd");
         pwd = passwordEncoder.encode(pwd);
