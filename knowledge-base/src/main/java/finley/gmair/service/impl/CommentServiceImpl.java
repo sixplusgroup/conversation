@@ -23,15 +23,9 @@ public class CommentServiceImpl implements CommentService {
     CommentMapper commentMapper;
 
     @Override
-    public CommentPagerDTO getCommentListByStatus(int status, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
+    public List<CommentDTO> getCommentListByStatus(int status) {
         List<Comment> comments = commentMapper.getByStatus(status);
-        CommentPagerDTO commentPagerDTO = new CommentPagerDTO();
-        commentPagerDTO.setCommentDTOS(comments.stream().map(CommentConverter::model2DTO).collect(Collectors.toList()));
-        PageInfo<Comment> pageInfo = new PageInfo<>(comments);
-        Long totalNum = pageInfo.getTotal();
-        commentPagerDTO.setTotalNum(totalNum);
-        return commentPagerDTO;
+        return comments.stream().map(CommentConverter::model2DTO).collect(Collectors.toList());
     }
 
     @Override

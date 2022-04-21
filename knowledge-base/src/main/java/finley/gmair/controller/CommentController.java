@@ -89,7 +89,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAuthority('comment_getAll')")
-    @PostMapping("getCommentListByStatus/{status}")
+    @PostMapping("getCommentListByStatus")
     /**
      *@Description 采编人员根据评论状态分页获得评论列表
      *@Author great fish
@@ -100,9 +100,9 @@ public class CommentController {
      * @return {@link ResultData }
      */
 
-    public ResultData getCommentListByStatus(@PathVariable String status, @RequestBody PageParam pageParam){
-        CommentPagerDTO commentPagerDTO = commentService.getCommentListByStatus(CommentStatus.getCodeByValue(status),pageParam.getPageNum(),pageParam.getPageSize());
-        return ResultData.ok(CommentPagerConverter.DTO2VO(commentPagerDTO),null);
+    public ResultData getCommentListByStatus(@RequestParam("status") String status){
+        List<CommentDTO>  commentDTOS = commentService.getCommentListByStatus(CommentStatus.getCodeByValue(status));
+        return ResultData.ok(commentDTOS.stream().map(CommentConverter::DTO2VO).collect(Collectors.toList()),null);
     }
 
     @PreAuthorize("hasAuthority('comment_getOwn')")
