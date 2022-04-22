@@ -84,7 +84,7 @@ public class KnowledgeController {
     }
 
     /**
-     * 分页获取"待审核"状态的知识
+     * 获取"待审核"状态的知识
      * @param
      * @return
      *
@@ -168,6 +168,11 @@ public class KnowledgeController {
         return ResultData.ok(knowledgeList, null);
     }
 
+    /**
+     * 根据keys tags获取知识
+     * @param searchParam
+     * @return
+     */
     @PostMapping("/searchByTagsKeys")
     public ResultData searchByTagsKeys(@RequestBody SearchParam searchParam) { //todo test
         //split , search each key, and then order list by views
