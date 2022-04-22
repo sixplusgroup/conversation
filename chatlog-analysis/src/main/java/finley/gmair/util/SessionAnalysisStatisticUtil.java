@@ -7,12 +7,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class SessionAnalysisStatisticUtil {
 
-    private final double EXTREME_NEGATIVE_SCORE_THRESHOLD = -3.5;
+    private static final double EXTREME_NEGATIVE_SCORE_THRESHOLD = -3.5;
 
-    public void refreshSessionStatistics(KafkaSession session, List<Message> messages) {
+    public static void refreshSessionStatistics(KafkaSession session, List<Message> messages) {
         int waiterNegativeCount = session.getWaiterNegativeCount();
         int customerNegativeCount = session.getCustomerExtremeNegativeCount();
         double customerScoreSum = session.getSumOfCustomerScore();

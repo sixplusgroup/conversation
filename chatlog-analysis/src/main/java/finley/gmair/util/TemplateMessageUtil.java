@@ -10,7 +10,7 @@ public class TemplateMessageUtil {
     public boolean isTemplate(String str) {
         String s = str.replaceAll("[\\s]", "");
 //        System.out.println("template check:" + s);
-        return str.isEmpty() || isMobile(s) || isTaxNum(s);
+        return str.isEmpty() || isMobile(s) || isTaxNum(s) || isUrl(s);
     }
 
     private boolean isMobile(String str) {
@@ -22,6 +22,10 @@ public class TemplateMessageUtil {
         b = m.matches();
 //        System.out.println("is mobile:" + b);
         return b;
+    }
+
+    private boolean isUrl(String str) {
+        return str.startsWith("http");
     }
 
     private boolean isTaxNum(String str) {

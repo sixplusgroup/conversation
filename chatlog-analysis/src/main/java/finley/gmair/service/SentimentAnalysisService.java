@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import finley.gmair.bert.BertProperties;
 import finley.gmair.dao.SessionMessageDOMapper;
+import finley.gmair.dao.TypicalSessionDOMapper;
 import finley.gmair.dao.UserSessionDOMapper;
 import finley.gmair.dto.chatlog.KafkaSession;
 import finley.gmair.dto.chatlog.RedisMessage;
@@ -11,6 +12,7 @@ import finley.gmair.model.chatlog.Message;
 import finley.gmair.model.chatlog.UserSession;
 import finley.gmair.util.RedisUtil;
 import finley.gmair.util.SessionAnalysisStatisticUtil;
+import finley.gmair.util.TypicalSessionUtil;
 import org.apache.ibatis.annotations.Param;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +50,11 @@ public class SentimentAnalysisService {
     UserSessionDOMapper sessionDOMapper;
 
     @Autowired
-    RedisTemplate<String, String> redisTemplate;
+    TypicalSessionDOMapper typicalSessionDOMapper;
 
     @Autowired
-    SessionAnalysisStatisticUtil statisticUtil;
+    RedisTemplate<String, String> redisTemplate;
+
 
     @Autowired
     RedisUtil redisUtil;
@@ -83,11 +86,18 @@ public class SentimentAnalysisService {
             List<Message> messages = session.getMessages();
             updateSessionAnalysis(session);
             updateMessageAnalysis(messages);
+            storeTypicalCases(session);
         });
     }
 
+    private void storeTypicalCases(KafkaSession session){
+        if(TypicalSessionUtil.isTypicalSession(session)){
+            typicalSessionDOMapper.insertTypicalSession(session);
+        }
+    }
+
     private void updateSessionAnalysis(KafkaSession session){
-        statisticUtil.refreshSessionStatistics(session, session.getMessages());
+        SessionAnalysisStatisticUtil.refreshSessionStatistics(session, session.getMessages());
         sessionDOMapper.storeSessionAnalysisRes(session);
     }
 

@@ -46,8 +46,6 @@ public class DataDeduplicationService {
         List<Message> toAnalyzeMessages = new ArrayList<>();
 
         messageList.forEach(kafkaMessage -> {
-//            System.out.println(kafkaMessage);
-//            boolean isFromWaiter = kafkaMessage.isFromWaiter();
             String redisKey = redisUtil.getRedisKeyForMessageContent(kafkaMessage.getContent());
 
             // 模板消息过滤，设置label=neutral，score=0

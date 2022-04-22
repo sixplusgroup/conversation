@@ -46,6 +46,16 @@ create table `usr_session_jd`
     DEFAULT CHARSET = utf8
     comment '京东用户会话表';
 
+# 创建用户聊天会话表,转换sessionId为整型id
+drop table if exists `typical_session_jd`;
+create table `typical_session_jd`
+(
+    session_id                      int         not null comment '主键会话id' auto_increment primary key,
+    foreign key (session_id) references usr_session_jd (session_id)
+)
+    DEFAULT CHARSET = utf8
+    comment '京东典型会话表';
+
 
 # 创建会话聊天信息表
 drop table if exists `session_message_jd`;
