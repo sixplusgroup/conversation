@@ -31,11 +31,15 @@ set waiter_name='果麦果果';
 drop table if exists `usr_session_jd`;
 create table `usr_session_jd`
 (
-    session_id          int         not null comment '主键会话id' auto_increment primary key,
-    original_session_id varchar(50) not null comment '京东原会话id',
-    usr_id              int         not null comment '用户id',
-    waiter_id           int         not null comment '客服id',
-    product_id          varchar(20) not null comment '商品id',
+    session_id                      int         not null comment '主键会话id' auto_increment primary key,
+    original_session_id             varchar(50) not null comment '京东原会话id',
+    usr_id                          int         not null comment '用户id',
+    waiter_id                       int         not null comment '客服id',
+    product_id                      varchar(20) not null comment '商品id',
+    timestamp                       long comment '会话发起时间戳',
+    customer_average_score          double default 0 comment '用户消息情感平均分',
+    customer_extreme_negative_count int    default 0 comment '用户消息极端负面情感数',
+    waiter_negative_count           int    default 0 comment '客服负面情感数',
     foreign key (usr_id) references usr_jd (usr_id),
     foreign key (waiter_id) references waiter_jd (waiter_id)
 )
@@ -56,7 +60,7 @@ create table `session_message_jd`
     score          double comment '消息评分',
     foreign key (session_id) references usr_session_jd (session_id)
 )
-    DEFAULT CHARSET = utf8
+    DEFAULT CHARSET = utf8mb4
     comment '京东消息内容表';
 
 

@@ -9,11 +9,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class BertProcessHandler {
-    static Boolean isBertProcessOn = false;
+    static volatile Boolean isBertProcessOn = false;
 
     @Value("${python.env}")
     String pythonEnv;

@@ -12,11 +12,4 @@
         </foreach>
     </update>
 
-    <select id="getMessage" resultType="finley.gmair.model.chatlog.Message">
-        select *
-        from session_message_jd
-        where message_id = 3
-    </select>
-
-
 </mapper>

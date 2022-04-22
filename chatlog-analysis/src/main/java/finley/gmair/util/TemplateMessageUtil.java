@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class TemplateMessageUtil {
     public boolean isTemplate(String str) {
         String s = str.replaceAll("[\\s]", "");
-        System.out.println("template check:" + s);
+//        System.out.println("template check:" + s);
         return str.isEmpty() || isMobile(s) || isTaxNum(s);
     }
 
@@ -20,7 +20,7 @@ public class TemplateMessageUtil {
         p = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$"); // 验证手机号
         m = p.matcher(str);
         b = m.matches();
-        System.out.println("is mobile:" + b);
+//        System.out.println("is mobile:" + b);
         return b;
     }
 
