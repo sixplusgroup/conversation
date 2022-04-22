@@ -1,4 +1,4 @@
-package finley.gmair.model.chatlog;
+package finley.gmair.common;
 
 public interface KafkaRecordCommon {
     String KEY_INT_SESSION_ID = "sessionId";

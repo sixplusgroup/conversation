@@ -1,6 +1,11 @@
 package finley.gmair.model.chatlog.usr.jd;
 
-public abstract class JingdongUser {
-    int id;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+@Data
+@Accessors(chain = true)
+public class JingdongUser {
     String name;
+    Integer id;
 }
