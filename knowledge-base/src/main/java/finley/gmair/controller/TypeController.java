@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/type")
+@RequestMapping("/knowledge-base/type")
 @AllArgsConstructor
 @Validated
 public class TypeController {

@@ -4,11 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import finley.gmair.bert.BertProperties;
 import finley.gmair.dao.SessionMessageDOMapper;
-import finley.gmair.dto.chatlog.KafkaMessage;
+import finley.gmair.dao.TypicalSessionDOMapper;
+import finley.gmair.dao.UserSessionDOMapper;
+import finley.gmair.dto.chatlog.KafkaSession;
 import finley.gmair.dto.chatlog.RedisMessage;
-import finley.gmair.enums.chatlog.SentimentLabel;
 import finley.gmair.model.chatlog.Message;
+import finley.gmair.model.chatlog.UserSession;
 import finley.gmair.util.RedisUtil;
+import finley.gmair.util.SessionAnalysisStatisticUtil;
+import finley.gmair.util.TypicalSessionUtil;
 import org.apache.ibatis.annotations.Param;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +47,14 @@ public class SentimentAnalysisService {
     SessionMessageDOMapper messageDOMapper;
 
     @Autowired
+    UserSessionDOMapper sessionDOMapper;
+
+    @Autowired
+    TypicalSessionDOMapper typicalSessionDOMapper;
+
+    @Autowired
     RedisTemplate<String, String> redisTemplate;
+
 
     @Autowired
     RedisUtil redisUtil;
@@ -58,30 +68,44 @@ public class SentimentAnalysisService {
     @Autowired
     private DataDeduplicationService dataDeduplicationService;
 
-    public void analyze(int sessionId, List<KafkaMessage> messageList) {
-        List<Message> deduplicatedMessages =
-                dataDeduplicationService.deduplicate(messageList);
-        deduplicatedMessages.forEach(message -> kafkaTemplate.send(topicToAnalysis, JSON.toJSONString(message)));
+    public void analyze(KafkaSession session) {
+//        System.out.println(session);
+        dataDeduplicationService.deduplicate(session);
+        kafkaTemplate.send(topicToAnalysis, JSON.toJSONString(session));
     }
 
     @KafkaListener(id = "consumer-after-bert", idIsGroup = false, topics = "${kafka.topics.after-bert}")
     public void afterAnalyze(ConsumerRecord<String, String> record) {
-        List<Message> messages = JSON.parseObject(record.value(), new TypeReference<ArrayList<Message>>() {
-        });
+        KafkaSession session = JSON.parseObject(record.value(), KafkaSession.class);
 //        Message message = JSON.parseObject(record.value(), Message.class);
 //        System.out.println(message);
-        for (Message mes : messages) {
-            System.out.println(mes.toString());
-        }
+        System.out.println("--------------------------------------------------------------------");
+        System.out.println(session.toString());
+        System.out.println("--------------------------------------------------------------------");
         threadPoolTaskExecutor.execute(() -> {
-            store(messages);
+            List<Message> messages = session.getMessages();
+            updateSessionAnalysis(session);
+            updateMessageAnalysis(messages);
+            storeTypicalCases(session);
         });
     }
 
-    private void store(List<Message> messages) {
-        System.out.println("store!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    private void storeTypicalCases(KafkaSession session){
+        if(TypicalSessionUtil.isTypicalSession(session)){
+            typicalSessionDOMapper.insertTypicalSession(session);
+        }
+    }
+
+    private void updateSessionAnalysis(KafkaSession session){
+        SessionAnalysisStatisticUtil.refreshSessionStatistics(session, session.getMessages());
+        sessionDOMapper.storeSessionAnalysisRes(session);
+    }
+
+    private void updateMessageAnalysis(List<Message> messages) {
         messageDOMapper.batchStoreMessagesAnalysisRes(messages);
+
         for (Message mes : messages) {
+//            System.out.println(mes);
             String redisKey = redisUtil.getRedisKeyForMessageContent(mes.getContent());
             RedisMessage redisMessage = new RedisMessage().setLabel(mes.getLabel()).setScore(mes.getScore());
             redisUtil.redisSet(redisKey, JSON.toJSONString(redisMessage), 1, TimeUnit.DAYS);
@@ -116,13 +140,13 @@ public class SentimentAnalysisService {
         return "done";
     }
 
-    @GetMapping("/api/mysql")
-    public boolean mysqlTest() {
-        threadPoolTaskExecutor.execute(() ->
-                messageDOMapper.batchStoreMessagesAnalysisRes(Collections.singletonList(new Message().setId(3).setLabel(SentimentLabel.POSITIVE).setScore(4.9))));
-        System.out.println(messageDOMapper.getMessage());
-        return true;
-    }
+//    @GetMapping("/api/mysql")
+//    public boolean mysqlTest() {
+//        threadPoolTaskExecutor.execute(() ->
+//                messageDOMapper.batchStoreMessagesAnalysisRes(Collections.singletonList(new Message().setId(3).setLabel(SentimentLabel.POSITIVE).setScore(4.9))));
+//        System.out.println(messageDOMapper.getMessage());
+//        return true;
+//    }
 
     @GetMapping("api/redis")
     public boolean redisTest() {

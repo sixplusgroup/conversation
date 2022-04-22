@@ -28,6 +28,11 @@
          where us.uid =#{userId}
     </select>
 
+    <insert id="create" parameterType="finley.gmair.model.knowledgebaseAuth.KnowledgebaseUser" useGeneratedKeys="true"  keyProperty="id">
+        insert into user(`user_name`,`user_pwd`,`user_type`)
+        values (#{name},#{pwd},#{type})
+    </insert>
+
     <resultMap id="User" type="finley.gmair.model.knowledgebaseAuth.KnowledgebaseUser">
         <result property="id" column="user_id"></result>
         <result property="name" column="user_name"></result>

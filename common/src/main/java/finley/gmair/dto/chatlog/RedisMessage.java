@@ -1,4 +1,4 @@
-package finley.gmair.model.chatlog;
+package finley.gmair.dto.chatlog;
 
 import finley.gmair.enums.chatlog.SentimentLabel;
 import lombok.Data;
@@ -6,13 +6,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class Message {
-    Integer id;
-    int sessionId;
-    String content;
-    boolean isFromWaiter;
-    long timestamp;
+public class RedisMessage {
     SentimentLabel label;
     double score;
-
 }

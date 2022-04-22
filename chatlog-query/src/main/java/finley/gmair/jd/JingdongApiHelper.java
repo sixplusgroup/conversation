@@ -123,6 +123,7 @@ public class JingdongApiHelper {
         AtomicReference<String> customer = new AtomicReference<>();
         AtomicReference<String> waiter = new AtomicReference<>();
         AtomicReference<String> product = new AtomicReference<>();
+        AtomicReference<Long> timestamp = new AtomicReference<>();
         JSONArray chatMessages = new JSONArray();
 
         JSON.parseObject(chatLog)
@@ -133,22 +134,28 @@ public class JingdongApiHelper {
                 .map(Object::toString)
                 .map(JSON::parseObject)
                 .forEach(chatLogItem -> {
-                    JSONObject item = new JSONObject();
-                    sid.set(chatLogItem.getString("sid"));
-                    customer.set(chatLogItem.getString("customer"));
-                    waiter.set(chatLogItem.getString("waiter"));
-                    product.set(chatLogItem.getString("skuId"));
-                    item.put(JingdongCommon.KEY_CONTENT, chatLogItem.getString("content"));
-                    item.put(JingdongCommon.KEY_IS_FROM_WAITER, chatLogItem.getBooleanValue("waiterSend"));
-                    item.put(JingdongCommon.KEY_TIMESTAMP, chatLogItem.getLongValue("time"));
-                    chatMessages.add(item);
+                    // 第一条message的时间作为会话时间
+                    System.out.println(timestamp.get());
+                    if (timestamp.get() == null) timestamp.set(chatLogItem.getLongValue("time"));
+                    if (!chatLogItem.getString("content").equals("")) {
+                        JSONObject item = new JSONObject();
+                        sid.set(chatLogItem.getString("sid"));
+                        customer.set(chatLogItem.getString("customer"));
+                        waiter.set(chatLogItem.getString("waiter"));
+                        product.set(chatLogItem.getString("skuId"));
+                        item.put(JingdongCommon.KEY_CONTENT, chatLogItem.getString("content"));
+                        item.put(JingdongCommon.KEY_IS_FROM_WAITER, chatLogItem.getBooleanValue("waiterSend"));
+                        item.put(JingdongCommon.KEY_TIMESTAMP, chatLogItem.getLongValue("time"));
+                        chatMessages.add(item);
+                    }
                 });
 
         JSONObject resChatLog = new JSONObject();
-        resChatLog.put(JingdongCommon.KEY_SESSION_ID, sid);
-        resChatLog.put(JingdongCommon.KEY_USER_NAME, customer);
-        resChatLog.put(JingdongCommon.KEY_WAITER_NAME, waiter);
-        resChatLog.put(JingdongCommon.KEY_PRODUCT_ID, product);
+        resChatLog.put(JingdongCommon.KEY_SESSION_ID, sid.get());
+        resChatLog.put(JingdongCommon.KEY_USER_NAME, customer.get());
+        resChatLog.put(JingdongCommon.KEY_WAITER_NAME, waiter.get());
+        resChatLog.put(JingdongCommon.KEY_PRODUCT_ID, product.get());
+        resChatLog.put(JingdongCommon.KEY_TIMESTAMP, timestamp.get());
         resChatLog.put(JingdongCommon.KEY_CHAT_MESSAGES, chatMessages);
         return resChatLog;
 

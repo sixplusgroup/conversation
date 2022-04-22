@@ -9,7 +9,7 @@ CREATE TABLE `knowledge` (
   `content`         text      NOT NULL,
   `views`           int(100)        DEFAULT 0,
   `create_time` DATETIME default CURRENT_TIMESTAMP,
-  `modify_time` DATETIME,
+  `modify_time` DATETIME ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   FULLTEXT KEY title_content_fulltext(title, content) # 创建联合全文索引列
 )
@@ -32,7 +32,7 @@ CREATE TABLE `comment`(
     `content` varchar(255) NOT NULL ,
     `status` TINYINT NOT NULL,
     `create_time` DATETIME default CURRENT_TIMESTAMP,
-    `solve_time` DATETIME,
+    `solve_time` DATETIME ON UPDATE CURRENT_TIMESTAMP,
     `responser_id` int NOT NULL,
     `type` TINYINT NOT NULL,
      PRIMARY KEY (`id`),
@@ -122,8 +122,11 @@ INSERT INTO `permission`(`id`,`authorize`,`describe`) VALUES
 (1,'comment_create','创建评论'),
 (2,'comment_modify','修改评论的状态'),
 (3,'comment_getOwn','获取自己的评论列表'),
-(4,'comment_getAll','获取所有的评论列表');
-
+(4,'comment_getAll','获取所有的评论列表'),
+(5,'user_create','创建用户'),
+(6,'knowledge_audit','知识审核'),
+(7,'knowledge_update','知识更新')
+(8,'tag_operation','对tag进行操作');
 INSERT INTO `user_assignment`(`uid`,`rid`) VALUES
 (1,1),
 (2,2),
@@ -132,7 +135,12 @@ INSERT INTO `user_assignment`(`uid`,`rid`) VALUES
 INSERT INTO `permission_assignment`(`rid`,`pid`) VALUES
 (1,1),
 (1,3),
+(1,5),
+(1,6),
+(1,8),
 (2,2),
 (2,4),
+(2,7),
+(2,8),
 (3,1),
 (3,3);

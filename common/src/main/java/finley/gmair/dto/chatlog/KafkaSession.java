@@ -1,16 +1,23 @@
 package finley.gmair.dto.chatlog;
 
-import lombok.AllArgsConstructor;
+import finley.gmair.model.chatlog.Message;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Accessors(chain = true)
 public class KafkaSession implements Serializable {
     int sessionId;
-    List<KafkaMessage> messages;
+    List<Message> messages;
+    // 用户情绪评分平均值
+    double customerAverageScore;
+    // 用户情绪评分和，暂存redis有记录的部分数据，传递给bert计算总值
+    double sumOfCustomerScore;
+    // 用户情绪评分低于极端阈值的消息条数
+    int customerExtremeNegativeCount;
+    // 客服情绪标签为negative的消息条数
+    int waiterNegativeCount;
 }

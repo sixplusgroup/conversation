@@ -2,8 +2,6 @@ package finley.gmair.service;
 
 import finley.gmair.dto.knowledgebase.CommentDTO;
 import finley.gmair.dto.knowledgebase.CommentPagerDTO;
-import finley.gmair.model.knowledgebase.Comment;
-import finley.gmair.utils.PageParam;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +10,11 @@ import java.util.List;
 public interface CommentService {
 
     /**
-     * @Description 根据状态分页取反馈
+     * @Description 根据状态取反馈
      * @Author great fish
      * @Date 21:57 2022/3/30
      */
-    CommentPagerDTO getCommentListByStatus(int status, Integer pageNum, Integer pageSize);
+    List<CommentDTO> getCommentListByStatus(int status);
 
     /**
      * @Description 插入一条评论
