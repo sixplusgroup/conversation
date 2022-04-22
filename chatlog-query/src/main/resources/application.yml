@@ -1,0 +1,42 @@
+server:
+  port: 8001
+spring:
+  datasource:
+    url: jdbc:mysql://47.98.191.109:3306/gmair_chatlog?serverTimezone=CTT&characterEncoding=UTF-8&allowMultiQueries=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    max-active: 200
+    max-idle: 20
+    min-idle: 10
+  thymeleaf:
+    cache: false
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers: 47.98.191.109:9092
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      bootstrap-servers: 47.98.191.109:9092
+      group-id: chatlog-analysis
+    bootstrap-servers: 47.98.191.109:9092
+  jackson:
+    time-zone: GMT+8
+  application: # 应用名称
+    name: chatlog-query
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+
+api:
+  jingdong:
+    server-url: http://api.jd.com/routerjson
+    access-token: fd764b94465e45328315d1bf12029330riot
+    app-key: 6861B1CF2C2FA7D763AA34F0254E6BAB
+    app-secret: f9f7f2f76f62497cb74875b930295ca9
+
+kafka:
+  topics:
+    to-analysis: query_to_analysis
