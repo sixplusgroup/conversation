@@ -31,4 +31,14 @@ public interface KnowledgeMapper {
     void increaseViews(@Param("id") Integer id);
 
     List<Knowledge> search(@Param("key") String key);
+
+    /**
+     *@Description 选取id最大（最新的）keyword记录
+     *@Author great fish
+     *@Date  2022/4/25
+     *
+     * @return {@link null }
+     */
+
+    String getKeywords();
 }

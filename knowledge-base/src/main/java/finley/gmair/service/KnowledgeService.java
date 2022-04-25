@@ -39,4 +39,6 @@ public interface KnowledgeService {
     List<KnowledgeVO> searchByTagsKeys(List<Integer> tagIdxs, String keywords);
 
     void correct(KnowledgeDTO knowledgeDTO,int commentId);
+
+    String getKeywords();
 }
