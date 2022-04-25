@@ -46,6 +46,10 @@
         </foreach>
     </select>
 
+    <select id="getKeywords">
+        select keyword from keywords order by id desc limit 1
+    </select>
+
     <resultMap id="Knowledge" type="finley.gmair.model.knowledgebase.Knowledge">
         <result property="createTime" column="create_time"></result>
         <result property="modifyTime" column="modify_time"></result>
