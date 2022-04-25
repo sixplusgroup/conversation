@@ -61,6 +61,16 @@ public class KnowledgeController {
     }
 
     /**
+     * 获取所有已发布的知识
+     * @return
+     */
+    @PostMapping("/getPublished")
+    public ResultData getPublished() {
+        List<KnowledgeVO> knowledgeVOList = knowledgeService.getPublished();
+        return ResultData.ok(knowledgeVOList, null);
+    }
+
+    /**
      * 分页获取"待审核"状态的知识
      * @param pageParam
      * @return

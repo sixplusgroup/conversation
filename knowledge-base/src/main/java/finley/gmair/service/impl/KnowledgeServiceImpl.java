@@ -82,6 +82,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
+    public List<KnowledgeVO> getPublished() {
+        List<Knowledge> knowledges = knowledgeMapper.getByState(2);
+        return knowledges.stream().map(KnowledgeConverter::model2VO).sorted((o1, o2) -> o2.getViews() - o1.getViews()).collect(Collectors.toList());
+    }
+
+    @Override
     public KnowledgePagerVO getAuditPage(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Knowledge> knowledges = knowledgeMapper.getByState(0);
