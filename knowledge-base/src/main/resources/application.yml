@@ -27,3 +27,6 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
+python:
+  env: D:\app\anaconda\anaconda\python.exe
+  script: D:\finalDesign\算法\keyword_extraction\keyextract_textrank.py

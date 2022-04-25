@@ -16,9 +16,15 @@ import finley.gmair.utils.RedisUtil;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import finley.gmair.model.knowledgebase.Knowledge;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +45,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Autowired
     RedisUtil redisUtil;
+
+    @Value("${python.env}")
+    String pythonEnv;
+
+    @Value("${python.script}")
+    String pythonScrip;
+
+
 
     @Override
     public void create(KnowledgeVO vo) {
@@ -191,15 +205,41 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public String getKeywords(){
-        String keywords  = "keywords";
-        if(redisUtil.redisCheckHasKey(keywords)){
+    public String getKeywords() {
+        String keywords = "keywords";
+        if (redisUtil.redisCheckHasKey(keywords)) {
             System.out.println("redis hit keywords");
             return redisUtil.redisGet(keywords);
         }
+
+
+
         System.out.println("redis miss keywords");
         String keyword = knowledgeMapper.getKeywords();
-        redisUtil.redisSet(keywords,keyword,30, TimeUnit.DAYS);
+        redisUtil.redisSet(keywords, keyword, 30, TimeUnit.DAYS);
         return keyword;
+    }
+
+    //每月一号0点10分执行
+    @Scheduled(cron = "0 10 0 1 * ?")
+    public void scheduleGetKeywords(){
+        String[] commands = new String[]{pythonEnv,pythonScrip};
+        try {
+            Process process = Runtime.getRuntime().exec(commands);
+            runPython(process.getErrorStream());
+            runPython(process.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void runPython(InputStream is) throws IOException {
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        String line;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+
+        }
     }
 }

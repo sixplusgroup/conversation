@@ -41,4 +41,6 @@ public interface KnowledgeService {
     void correct(KnowledgeDTO knowledgeDTO,int commentId);
 
     String getKeywords();
+
+    void scheduleGetKeywords();
 }
