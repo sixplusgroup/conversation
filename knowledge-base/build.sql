@@ -50,6 +50,15 @@ CREATE TABLE `tag` (
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
 
+DROP TABLE IF EXISTS `keywords`;
+CREATE TABLE `keywords`(
+ `id` int auto_increment,
+ `keyword` varchar(256) not null,
+ `createTime` timestamp default CURRENT_TIMESTAMP  not null,
+  primary key (`id`)
+)
+ENGINE = InnoDB
+DEFAULT CHARSET = utf8;
 
 DROP TABLE IF EXISTS `tag_relation`;
 CREATE TABLE `tag_relation` (
@@ -125,7 +134,7 @@ INSERT INTO `permission`(`id`,`authorize`,`describe`) VALUES
 (4,'comment_getAll','获取所有的评论列表'),
 (5,'user_create','创建用户'),
 (6,'knowledge_audit','知识审核'),
-(7,'knowledge_update','知识更新')
+(7,'knowledge_update','知识更新'),
 (8,'tag_operation','对tag进行操作');
 INSERT INTO `user_assignment`(`uid`,`rid`) VALUES
 (1,1),

@@ -172,4 +172,10 @@ public class KnowledgeController {
         return ResultData.ok(knowledgeList, null);
     }
 
+    @GetMapping("/keywords")
+    public ResultData getKeywords(){
+        String keywords = knowledgeService.getKeywords();
+        return ResultData.ok(keywords);
+    }
+
 }

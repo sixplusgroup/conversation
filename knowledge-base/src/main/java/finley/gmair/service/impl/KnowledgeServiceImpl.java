@@ -12,6 +12,7 @@ import finley.gmair.enums.knowledgeBase.CommentStatus;
 import finley.gmair.enums.knowledgeBase.KnowledgeStatus;
 import finley.gmair.model.knowledgebase.TagRelation;
 import finley.gmair.service.KnowledgeService;
+import finley.gmair.utils.RedisUtil;
 import finley.gmair.vo.knowledgebase.KnowledgePagerVO;
 import finley.gmair.vo.knowledgebase.KnowledgeVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import finley.gmair.model.knowledgebase.Knowledge;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +36,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Autowired
     TagRelationMapper tagRelationMapper;
+
+    @Autowired
+    RedisUtil redisUtil;
 
     @Override
     public void create(KnowledgeVO vo) {
@@ -183,5 +188,18 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         commentMapper.updateStatus(commentId, CommentStatus.RESOLVED.getCode());
         Knowledge knowledge = KnowledgeConverter.DTO2model(knowledgeDTO);
         knowledgeMapper.modify(knowledge);
+    }
+
+    @Override
+    public String getKeywords(){
+        String keywords  = "keywords";
+        if(redisUtil.redisCheckHasKey(keywords)){
+            System.out.println("redis hit keywords");
+            return redisUtil.redisGet(keywords);
+        }
+        System.out.println("redis miss keywords");
+        String keyword = knowledgeMapper.getKeywords();
+        redisUtil.redisSet(keywords,keyword,30, TimeUnit.DAYS);
+        return keyword;
     }
 }
