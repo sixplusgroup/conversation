@@ -182,10 +182,20 @@ public class KnowledgeController {
         return ResultData.ok(knowledgeList, null);
     }
 
+    /**
+     *@Description 获取根据历史聊天记录提取出的关键词
+     *@Author great fish
+     *@Date  2022/4/26
+     *@param
+     *
+     * @return {@link null }
+     */
+
     @GetMapping("/keywords")
     public ResultData getKeywords(){
         String keywords = knowledgeService.getKeywords();
         return ResultData.ok(keywords);
     }
+
 
 }
