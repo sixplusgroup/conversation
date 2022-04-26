@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
     @Autowired
     KnowledgeService knowledgeService;
+
     @GetMapping("/get")
     public ResultData comment() {
         return ResultData.ok("hello");

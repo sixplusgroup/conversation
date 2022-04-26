@@ -22,6 +22,8 @@ public interface KnowledgeService {
 
     List<KnowledgeVO> getAll();
 
+    List<KnowledgeVO> getPublished();
+
     KnowledgePagerVO getAuditPage(Integer pageNum, Integer pageSize);
 
     List<KnowledgeVO> getAudit();
@@ -42,5 +44,4 @@ public interface KnowledgeService {
 
     String getKeywords();
 
-    void scheduleGetKeywords();
 }

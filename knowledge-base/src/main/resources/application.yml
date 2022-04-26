@@ -29,4 +29,5 @@ mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
 python:
   env: D:\app\anaconda\anaconda\python.exe
-  script: D:\finalDesign\算法\keyword_extraction\keyextract_textrank.py
+  script: D:\finalDesign\Gmair\knowledge-base\src\main\java\finley\gmair\python\keyextract.py
+  stopdataSource: D:\finalDesign\Gmair\knowledge-base\src\main\java\finley\gmair\python\stopWord.txt

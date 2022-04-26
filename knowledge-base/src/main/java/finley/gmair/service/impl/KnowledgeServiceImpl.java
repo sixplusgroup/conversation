@@ -25,9 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -51,6 +49,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Value("${python.script}")
     String pythonScrip;
+
+    @Value("${python.stopdataSource}")
+    String stopdata;
 
 
 
@@ -97,6 +98,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Override
     public List<KnowledgeVO> getAll() {
         List<Knowledge> knowledges = knowledgeMapper.getAll();
+        return knowledges.stream().map(KnowledgeConverter::model2VO).sorted((o1, o2) -> o2.getViews() - o1.getViews()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<KnowledgeVO> getPublished() {
+        List<Knowledge> knowledges = knowledgeMapper.getByState(2);
         return knowledges.stream().map(KnowledgeConverter::model2VO).sorted((o1, o2) -> o2.getViews() - o1.getViews()).collect(Collectors.toList());
     }
 
@@ -178,23 +185,32 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public List<KnowledgeVO> searchByTagsKeys(List<Integer> tagIds, String keywords) {
+        Set<Knowledge> knowledgesSet = new HashSet<>();
         //根据tagIds列表里的每个tagId，依次从tag_Relation表中获得knowledgeID，然后做个交集。
-        List<Integer> knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(0)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
-        if (tagIds.size() > 1) {
-            for (int i = 1; i < tagIds.size(); i++) {//在tag_relation表中对tag_id建立索引
-                //https://www.cnblogs.com/Andya/p/14037640.html
-                List<Integer> tmp_knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(i)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
-                knowledgeIds = knowledgeIds.stream().filter(tmp_knowledgeIds::contains).collect(Collectors.toList());
+        if (tagIds.size()!=0){
+            List<Integer> knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(0)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
+            if (tagIds.size() > 1) {
+                for (int i = 1; i < tagIds.size(); i++) {//在tag_relation表中对tag_id建立索引
+                    //https://www.cnblogs.com/Andya/p/14037640.html
+                    List<Integer> tmp_knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(i)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
+                    knowledgeIds = knowledgeIds.stream().filter(tmp_knowledgeIds::contains).collect(Collectors.toList());
+                }
             }
+            if (knowledgeIds.size()>0) {
+                List<Knowledge> knowledges = knowledgeMapper.getByIdList(knowledgeIds);
+//                for(Knowledge k: knowledges) {
+                knowledgesSet.addAll(knowledges);
+            }
+
         }
-        List<Knowledge> knowledges = knowledgeMapper.getByIdList(knowledgeIds);
+
         String[] keys = keywords.split(" ");
         for (String key : keys) {
             List<Knowledge> tmp_knowledges = knowledgeMapper.search(key);
-            knowledges.addAll(tmp_knowledges);
+            knowledgesSet.addAll(tmp_knowledges);
         }
 
-        return knowledges.stream().sorted((o1, o2) -> (o2.getViews() - o1.getViews())).map(KnowledgeConverter::model2VO).collect(Collectors.toList());
+        return knowledgesSet.stream().sorted((o1, o2) -> (o2.getViews() - o1.getViews())).map(KnowledgeConverter::model2VO).collect(Collectors.toList());
     }
 
     @Override
@@ -220,10 +236,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return keyword;
     }
 
-    //每月一号0点10分执行
+    //每月一号0点10分执行 调用python脚本更新关键词
     @Scheduled(cron = "0 10 0 1 * ?")
-    public void scheduleGetKeywords(){
-        String[] commands = new String[]{pythonEnv,pythonScrip};
+    private void scheduleGetKeywords(){
+        String[] commands = new String[]{pythonEnv,pythonScrip,stopdata};
         try {
             Process process = Runtime.getRuntime().exec(commands);
             runPython(process.getErrorStream());
@@ -239,7 +255,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         String line;
         while ((line = br.readLine()) != null) {
             System.out.println(line);
-
         }
     }
 }
