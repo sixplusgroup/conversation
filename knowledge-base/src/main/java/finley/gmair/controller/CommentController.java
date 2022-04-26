@@ -54,7 +54,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAuthority('comment_modify')")
-    @PostMapping("/correct/{id}")
+    @PostMapping("/correct/{commentId}")
     /**
      *@Description 知识采编者对某条知识进行纠错
      *@Author great fish

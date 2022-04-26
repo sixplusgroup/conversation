@@ -64,6 +64,7 @@
         <module>chatlog-analysis</module>
         <module>chatlog-query</module>
         <module>knowledge-base</module>
+        <module>chatlog-review</module>
     </modules>
 
     <parent>
