@@ -16,7 +16,7 @@
     </update>
     <update id="modify" parameterType="finley.gmair.model.knowledgebase.Knowledge">
         update knowledge
-        set title=#{title},content=#{content},modify_time=#{modifyTime},status=#{0}
+        set title=#{title},content=#{content},modify_time=#{modifyTime},status=0
         where id=#{id}
     </update>
     <update id="increaseViews" parameterType="java.lang.Integer">
