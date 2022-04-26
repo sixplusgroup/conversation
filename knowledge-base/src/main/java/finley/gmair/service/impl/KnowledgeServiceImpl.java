@@ -168,7 +168,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public List<KnowledgeVO> searchByTagsKeys(List<Integer> tagIds, String keywords) {
-        Set<Knowledge> knowledgesSet = new HashSet<>();
+        Set<Knowledge> knowledgesSet = new HashSet<>();//用于去重
         //根据tagIds列表里的每个tagId，依次从tag_Relation表中获得knowledgeID，然后做个交集。
         if (tagIds.size()!=0){
             List<Integer> knowledgeIds = tagRelationMapper.getByTagId(tagIds.get(0)).stream().map(TagRelation::getKnowledge_id).collect(Collectors.toList());
@@ -191,8 +191,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         for (String key : keys) {
             List<Knowledge> tmp_knowledges = knowledgeMapper.search(key);
             knowledgesSet.addAll(tmp_knowledges);
-        }
+        }//标签要去并集
 
+        //关键词和标签要取交集
         return knowledgesSet.stream().sorted((o1, o2) -> (o2.getViews() - o1.getViews())).map(KnowledgeConverter::model2VO).collect(Collectors.toList());
     }
 
