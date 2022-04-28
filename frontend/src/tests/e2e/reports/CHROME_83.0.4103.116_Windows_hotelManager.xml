@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites errors="0"
+            failures="0"
+            tests="2">
+
+  <testsuite name="hotelManager"
+    errors="0" failures="0" hostname="" id="" package="hotelManager" skipped="0"
+    tests="2" time="2.305" timestamp="">
+  
+    <testcase name="查看酒店经营情况" classname="hotelManager" time="1.610" assertions="1">
+
+    
+    </testcase>
+  
+    <testcase name="更新客房基本信息" classname="hotelManager" time="0.6950" assertions="2">
+
+    
+
+    
+    </testcase>
+  
+
+  
+
+    
+
+  
+  </testsuite>
+</testsuites>

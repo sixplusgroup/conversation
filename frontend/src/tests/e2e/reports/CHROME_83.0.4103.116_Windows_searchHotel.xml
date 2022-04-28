@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites errors="1"
+            failures="0"
+            tests="1">
+
+  <testsuite name="searchHotel"
+    errors="1" failures="0" hostname="" id="" package="searchHotel" skipped="0"
+    tests="1" time="37.49" timestamp="">
+  
+    <testcase name="搜索酒店测试" classname="searchHotel" time="37.49" assertions="3">
+
+    
+
+    
+
+    
+    <error message="An error occurred while running .click() command on &lt;.ant-input-search&gt;button&gt;: " type="error"><![CDATA[
+    NoSuchElementError: An error occurred while running .click() command on &lt;.ant-input-search&gt;button&gt;: 
+    at ClickElement.noSuchElementError (C:\Users\18250\Desktop\软工二\大作业正式版\front_end\node_modules\@vue\cli-plugin-e2e-nightwatch\node_modules\nightwatch\lib\element\command.js:368:12)
+    at Object.errorHandler (C:\Users\18250\Desktop\软工二\大作业正式版\front_end\node_modules\@vue\cli-plugin-e2e-nightwatch\node_modules\nightwatch\lib\api\element-commands\_baseElementCommand.js:42:30)
+    at PeriodicPromise.runAction (C:\Users\18250\Desktop\软工二\大作业正式版\front_end\node_modules\@vue\cli-plugin-e2e-nightwatch\node_modules\nightwatch\lib\utils\periodic-promise.js:64:29)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+    ]]></error>
+    
+    </testcase>
+  
+
+  
+    <system-err>
+        NoSuchElementError: An error occurred while running .click() command on &lt;.ant-input-search&gt;button&gt;: 
+   {&#34;sessionId&#34;:&#34;c042279114ba7609549792507aa21463&#34;,&#34;status&#34;:0,&#34;value&#34;:[]}
+   
+    </system-err>
+  
+
+    
+
+  
+  </testsuite>
+</testsuites>

@@ -1,0 +1,82 @@
+{
+  "name": "gmairfe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "```\r npm install\r ```",
+  "author": "",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test:e2e": "vue-cli-service test:e2e",
+    "lint": "vue-cli-service lint",
+    "e2e": "nightwatch --env chrome",
+    "unit": "jest --config test/unit/jest.conf.js --coverage"
+  },
+  "main": "babel.config.js",
+  "dependencies": {
+    "@babel/polyfill": "^7.10.1",
+    "ant-design-vue": "^1.4.11",
+    "axios": "^0.22.0",
+    "chromedriver": "^94.0.0",
+    "core-js": "^3.6.4",
+    "echarts": "^5.2.1",
+    "flush-promises": "^1.0.2",
+    "js-cookie": "^2.2.1",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
+    "moment": "^2.24.0",
+    "nightwatch": "^1.7.11",
+    "nprogress": "^0.2.0",
+    "progressive-image": "^1.2.0",
+    "qs": "^6.9.4",
+    "selenium-server": "^3.141.59",
+    "vue": "^2.6.11",
+    "vue-router": "^3.1.5",
+    "vuex": "^3.1.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@vue/cli-plugin-babel": "^4.2.0",
+    "@vue/cli-plugin-e2e-nightwatch": "^4.4.6",
+    "@vue/cli-plugin-eslint": "^4.5.13",
+    "@vue/cli-plugin-router": "^4.2.3",
+    "@vue/cli-plugin-vuex": "^4.2.3",
+    "@vue/cli-service": "^4.2.0",
+    "@vue/test-utils": "^1.0.3",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^27.2.5",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^6.1.2",
+    "jest": "^27.2.5",
+    "jest-serializer-vue": "^2.0.2",
+    "jest-transform-stub": "^2.0.0",
+    "vue-jest": "^3.0.5",
+    "vue-lazyload": "^1.3.3",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {
+      "no-unused-vars": "off",
+      "no-console": "off",
+      "no-empty": "off"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ],
+  "license": "ISC"
+}
