@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "api.jingdong.server-url",
+      "type": "java.lang.String",
+      "description": "Description for api.jingdong.server-url."
+    },
+    {
+      "name": "api.jingdong.access-token",
+      "type": "java.lang.String",
+      "description": "Description for api.jingdong.access-token."
+    },
+    {
+      "name": "api.jingdong.app-key",
+      "type": "java.lang.String",
+      "description": "Description for api.jingdong.app-key."
+    },
+    {
+      "name": "api.jingdong.app-secret",
+      "type": "java.lang.String",
+      "description": "Description for api.jingdong.app-secret."
+    },
+    {
+      "name": "kafka.topics.to-analysis",
+      "type": "java.lang.String",
+      "description": "Description for kafka.topics.to-analysis."
+    }
+  ] }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.RoleMapper">
+
+
+    <select id="query" parameterType="java.util.Map" resultMap="Role">
+        SELECT *
+        FROM role
+        WHERE 1 = 1
+        <if test="id != null">
+            AND role_id = #{id}
+        </if>
+        <if test="name != null">
+            AND role_name = #{name}
+        </if>
+        <if test="description != null">
+            AND role_description = #{description}
+        </if>
+    </select>
+
+    <resultMap id="Role" type="finley.gmair.model.knowledgebaseAuth.KnowledgebaseRole">
+        <result property="id" column="role_id"></result>
+        <result property="name" column="role_name"></result>
+        <result property="description" column="role_description"></result>
+    </resultMap>
+
+</mapper>
