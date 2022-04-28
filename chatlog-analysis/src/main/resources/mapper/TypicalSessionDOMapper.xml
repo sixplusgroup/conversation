@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="finley.gmair.dao.SessionMessageDOMapper">
-    <insert id="insertTypicalSession" >
-            insert into typical_session_jd
-            values (#{session.sessionId})
-    </insert>
-
-</mapper>

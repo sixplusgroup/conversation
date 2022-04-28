@@ -1,9 +1,0 @@
-server.port=8006
-
-spring.application.name=express-agent
-
-eureka.client.healthcheck=true
-eureka.client.service-url.defaultZone=http://127.0.0.1:8080/eureka/
-
-##mongodb
-spring.data.mongodb.uri=mongodb://localhost:27017/gmair_express
