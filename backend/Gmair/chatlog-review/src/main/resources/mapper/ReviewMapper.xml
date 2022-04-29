@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="finley.gmair.dao.ReviewMapper">
+    <select id="getAllStaff" resultMap="Staff">
+        select * from waiter_jd;
+    </select>
+
+    <select id="getAllCustomerByStaff" resultMap="Customer">
+        select * from usr_jd
+        where usr_id in(
+            select usr_id from usr_session_jd
+            where waiter_id=#{staffId}
+        );
+    </select>
+
+    <select id="getSessionByCondition" parameterType="java.util.Map" resultMap="Session">
+        SELECT *
+        FROM usr_session_jd
+        WHERE 1 = 1
+        <if test="sessionId != null">
+            AND session_id = #{sessionId}
+        </if>
+        <if test="userId != null">
+            AND usr_id = #{userId}
+        </if>
+        <if test="waiterId != null">
+            AND waiter_id = #{waiterId}
+        </if>
+        <if test="productId != null">
+            AND product_id = #{productId}
+        </if>
+        <if test="isTypical != null">
+            AND is_typical = #{isTypical}
+        </if>
+    </select>
+
+    <select id="getMessageByCondition" parameterType="java.util.Map" resultMap="Session">
+        SELECT *
+        FROM session_message_jd
+        WHERE 1 = 1
+        <if test="messageId != null">
+            AND message_id = #{messageId}
+        </if>
+        <if test="sessionId != null">
+            AND session_id = #{sessionId}
+        </if>
+        <if test="isFromWaiter != null">
+            AND is_from_waiter = #{isFromWaiter}
+        </if>
+        <if test="label != null">
+            AND label = #{label}
+        </if>
+    </select>
+
+
+    <resultMap id="Staff" type="finley.gmair.model.chatlogReview.Staff">
+        <result property="waiterId" column="waiter_id"></result>
+        <result property="waiterName" column="waiter_name"></result>
+    </resultMap>
+
+    <resultMap id="Customer" type="finley.gmair.model.chatlogReview.Customer">
+        <result property="userId" column="usr_id"></result>
+        <result property="userName" column="usr_name"></result>
+    </resultMap>
+
+    <resultMap id="Session" type="finley.gmair.model.chatlogReview.Session">
+        <result property="sessionId" column="session_id"></result>
+        <result property="originalSessionId" column="original_session_id"></result>
+        <result property="userId" column="usr_id"></result>
+        <result property="waiterId" column="waiter_id"></result>
+        <result property="productId" column="product_id"></result>
+        <result property="timestamp" column="timestamp"></result>
+        <result property="customerAverageScore" column="customer_average_score"></result>
+        <result property="customerExtremeNegativeCount" column="customer_extreme_negative_count"></result>
+        <result property="sessionId" column="customer_extreme_negative_count"></result>
+        <result property="messageNum" column="message_num"></result>
+        <result property="isTypical" column="is_typical"></result>
+    </resultMap>
+
+    <resultMap id="Message" type="finley.gmair.model.chatlogReview.Message">
+        <result property="messageId" column="message_id"></result>
+        <result property="sessionId" column="session_id"></result>
+        <result property="content" column="content"></result>
+        <result property="isFromWaiter" column="is_from_waiter"></result>
+        <result property="timestamp" column="timestamp"></result>
+        <result property="label" column="label"></result>
+        <result property="score" column="score"></result>
+    </resultMap>
+
+
+
+</mapper>
