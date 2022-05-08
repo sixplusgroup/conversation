@@ -13,7 +13,8 @@ public class UserSession {
     int waiterId;
     String productId;
     String originalSessionId;
-    List<Message> messageList;
+//    List<Message> messageList;
+    int messageNum;
     long timestamp;
     // 用户情绪评分平均值
     double customerAverageScore;

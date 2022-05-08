@@ -1,13 +1,17 @@
-package finley.gmair.vo.chatlogReview;
+package finley.gmair.pagination;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class sessionPreview {
+public class PageResult<T> {
+    private List<T> list;
+    private int totalNum;
 }

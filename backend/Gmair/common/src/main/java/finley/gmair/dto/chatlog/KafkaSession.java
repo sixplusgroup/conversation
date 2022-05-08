@@ -12,6 +12,7 @@ import java.util.List;
 public class KafkaSession implements Serializable {
     int sessionId;
     List<Message> messages;
+    int messageNum;
     // 用户情绪评分平均值
     double customerAverageScore;
     // 用户情绪评分和，暂存redis有记录的部分数据，传递给bert计算总值

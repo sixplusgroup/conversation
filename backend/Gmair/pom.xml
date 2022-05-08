@@ -15,6 +15,7 @@
         <module>chatlog-query</module>
         <module>knowledge-base</module>
         <module>chatlog-review</module>
+        <module>information</module>
     </modules>
 
     <parent>
