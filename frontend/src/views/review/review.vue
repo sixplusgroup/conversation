@@ -4,16 +4,12 @@
     <a-layout-sider v-model="collapsed" collapsible :width="150">
       <a-menu theme="dark" :selected-keys="currentRight" mode="inline" style="margin-top:50px">
         <a-menu-item key="1" @click="jumpToReviewHome">
-          <a-icon type="pie-chart" />
-          <span>复盘主页</span>
+          <a-icon type="bulb" />
+          <span>复盘推荐</span>
         </a-menu-item>
-        <a-menu-item key="2" @click="jumpToReviewChatlog">
-          <a-icon type="wechat" />
-          <span>对话框展示</span>
-        </a-menu-item>
-        <a-menu-item key="3" @click="jumpToReviewDiagram">
-          <a-icon type="line-chart" />
-          <span>折线图展示</span>
+        <a-menu-item key="2" @click="jumpToReviewSearch">
+          <a-icon type="search" />
+          <span>历史搜索</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
@@ -25,6 +21,9 @@
           <span class="title">GMair 客服工单系统</span>
         </div>
         <a-menu :selected-keys="currentUp" mode="horizontal" theme="light">
+          <a-menu-item key="goBack" @click="jumpBack" class="toBack" v-if="this.$route.name === 'reviewDetail'">
+            <a-icon type="rollback" />返回上个页面
+          </a-menu-item>
           <a-menu-item key="register" @click="jumpToRegister" class="toRegister" v-if=userIsManager>
             <a-icon type="user" />
             新用户注册
@@ -78,38 +77,42 @@ export default {
     ...mapGetters(["userId", "userInfo","userIsManager","userIsMarket"]),
     currentRight: function() {
       let res = ["1"];
-      if (this.$route.name === "reviewDetailChatlog") {
+      if (this.$route.name === "reviewSearch") {
         res = ["2"];
-      } else if (this.$route.name === "reviewDetailDiagram") {
-        res = ["3"];
+      } else if(this.$route.name === "reviewHome"){
+        res = ["1"]
+      }else{
+        res=["0"]
       }
       return res;
     },
-    // todo
     currentUp: function() {
-      let res = ["1"];
+      let res = ["0"];
       return res;
     }
   },
   async mounted() {
   },
   methods: {
+    ...mapMutations(["set_reviewList","set_reviewListLoading"]),
     ...mapActions([]),
     jumpToKnowledgeList() {
       console.log("跳转到知识库页面")
-      router.push("/knowledgeList");
+      this.$router.push("/knowledgeList");
     },
     jumpToReviewHome() {
-      console.log("跳转到复盘主页面")
-      router.push("/reviewHome");
+      console.log("跳转到复盘推荐页面")
+      this.$router.push("/reviewHome");
     },
-    jumpToReviewChatlog() {
-      console.log("跳转到对话模式复盘")
-      this.$router.push({ name: "reviewDetailChatlog", params: { rid: this.$store.state.currentReviewId } });
+    jumpToReviewSearch() {
+      console.log("跳转到历史复盘")
+      this.set_reviewListLoading(false)
+      this.set_reviewList([])
+      this.$router.push("/reviewSearch");
     },
-    jumpToReviewDiagram() {
-      console.log("跳转到图表模式复盘")
-      this.$router.push({ name: "reviewDetailDiagram", params: { rid: this.$store.state.currentReviewId } });
+    jumpBack() {
+      console.log("跳转到上一个页面")
+      this.$router.go(-1) ;
     },
     jumpToRegister(){
       console.log("跳转到管理员注册用户信息")
@@ -141,6 +144,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom:15px;
   .logout {
     margin-right: 40px;
     .user {

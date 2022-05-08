@@ -53,14 +53,14 @@ const routes = [{
         component:()=>import('@/views/review/reviewHome')
       },
       {
-        path: '/review/reviewDetailChatlog/:rid', //动态路由参数，用$route.params.hotelId使用
-        name: 'reviewDetailChatlog',
-        component: () => import('@/views/review/component/reviewChatlog')
+        path:'/reviewSearch',
+        name:'reviewSearch',
+        component:()=>import('@/views/review/reviewSearch')
       },
       {
-        path: '/review/reviewDetailDiagram/:rid', //动态路由参数，用$route.params.hotelId使用
-        name: 'reviewDetailDiagram',
-        component: () => import('@/views/review/component/reviewDiagram')
+        path: '/review/reviewDetail/:rid', //动态路由参数，用$route.params.hotelId使用
+        name: 'reviewDetail',
+        component: () => import('@/views/review/reviewDetail')
       },
     ]
   },

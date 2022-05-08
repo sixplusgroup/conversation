@@ -35,7 +35,7 @@ const user = {
             id: 0,
             password: '',
             username: '',
-            type: 'Manager',
+            type: 'Client',
             url: 'https://software3.oss-cn-beijing.aliyuncs.com/2020-06-28/1593351539438-a3b864b0dfe84abaa0.jpeg',
         },
         userIsManager:false,
@@ -146,19 +146,6 @@ const user = {
                 console.log(err)
                 message.error('登录失败')
             })
-            // const res = {
-            //     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJlZGl0b3IxIiwic2NvcGUiOlsicmVzb3VyY2U6cmVhZCJdLCJleHAiOjE2NTA4OTU4NTgsImF1dGhvcml0aWVzIjpbImNvbW1lbnRfZ2V0QWxsIiwiY29tbWVudF9tb2RpZnkiXSwianRpIjoiVXMtN1hyVVFHc3pMVHl3cTZwM1R5SXN0X3FBIiwiY2xpZW50X2lkIjoiY2xpZW50MSIsImluZm8iOnsiaWQiOjIsInVzZXJuYW1lIjoiZWRpdG9yMSIsInR5cGUiOiJNYXJrZXQifX0.XBKtWMOY50LNm5XDUrGDdQh8cYRljwxpeLMrOQTgfw4",
-            //     "token_type": "bearer",
-            //     "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJlZGl0b3IxIiwic2NvcGUiOlsicmVzb3VyY2U6cmVhZCJdLCJhdGkiOiJVcy03WHJVUUdzekxUeXdxNnAzVHlJc3RfcUEiLCJleHAiOjE2NTM0NDQ2NTgsImF1dGhvcml0aWVzIjpbImNvbW1lbnRfZ2V0QWxsIiwiY29tbWVudF9tb2RpZnkiXSwianRpIjoiZV9GaE16S3B1QlJOdzNZTGY5Z1Q2UU9weVVRIiwiY2xpZW50X2lkIjoiY2xpZW50MSIsImluZm8iOnsiaWQiOjIsInVzZXJuYW1lIjoiZWRpdG9yMSIsInR5cGUiOiJNYXJrZXQifX0.BkBS1UT6B7eYs2YZFOi7NmjVTs1a6YJetCZvflZz5TA",
-            //     "expires_in": 43199,
-            //     "scope": "resource:read",
-            //     "info": {
-            //         "id": 2,
-            //         "username": "editor1",
-            //         "type": "Market"
-            //     },
-            //     "jti": "Us-7XrUQGszLTywq6p3TyIst_qA"
-            // }
             console.log('获取到登录token :')
             console.log(res)
             if (res) {
@@ -176,12 +163,6 @@ const user = {
         
         // 获取分页知识
         getKnowledgeList: async({commit, state}) => {
-            // state.knowledgeList=[]
-            // for (let i = 0; i < 60; i++) {
-            //     state.knowledgeList.push({ id:i+10,title: "liu" ,content:"very handsome:getKnowledgeAPI(knowledgePageListParams).catch(err => {"});
-            // }
-            // commit('set_knowledgeTotalNum',60)
-
             const res = await getKnowledgeAPI().catch(err => {
                 console.log('获取分页失败')
                 console.log(err)
@@ -193,36 +174,27 @@ const user = {
                 commit('set_knowledgeListLoading', false)
             }
         },
-        // 获取分页知识ydl 
-        // getPage(pageNum) {
-        //     this.loading = true;
-        //     const pageSize = this.pagination.defaultPageSize;
-        //     judgement
-        //         .getPageAPI({ pageSize, pageNum })
-        //         .then((res) => {
-        //         this.pagination.total = res.data.data.docs.totalNum;
-        //         this.data = res.data.data.docs.documents.map((o) => ({
-        //             ...o,
-        //             status: o.status === '0' ? '未发布' : '已发布',
-        //         }));
-        //         this.loading = false;
-        //         })
-        //         .catch((e) => {
-        //         this.$message.error(e);
-        //         });
-        //     },
         
 
         // 
-        searchKnowledge:async({ state, commit },searchPageParam) => {//GET
-            const res = await searchKnowledgeAPI(searchPageParam).catch(err=>{
-                console.log('搜索知识失败')
-                console.log(err)
-                message.error('搜索知识失败')
-            })
+        searchKnowledge:async({ state, commit },searchPageParam) => {
+            let res = [];
+            if(searchPageParam.tags.length===0 && searchPageParam.keywords ===""){
+                res = await getKnowledgeAPI().catch(err => {
+                    console.log('搜索知识失败')
+                    console.log(err)
+                    message.error('搜索知识失败')
+                })
+            }else{
+                res = await searchKnowledgeAPI(searchPageParam).catch(err=>{
+                    console.log('搜索知识失败')
+                    console.log(err)
+                    message.error('搜索知识失败')
+                })
+            }
             commit('set_knowledgeListLoading', false)
             if(res){
-                message.success('搜索知识成功')
+                console.log('搜索知识成功')
                 console.log(res)
                 commit('set_knowledgeList', res)
                 commit('set_knowledgeListLoading', false)
@@ -259,12 +231,12 @@ const user = {
         },data) => {
             getUserCommentListByStatusAPI(data).then((res) => {
                 if (res) {
-                    message.success('获取自身的知识评论成功')
+                    console.log('获取自身的知识评论成功')
                     if(data.status=='待解决'){commit('set_commentUnresolvedList', res)}
                     if(data.status=='已解决'){commit('set_commentResolvedList', res)}
                     if(data.status=='废弃'){commit('set_commentAbandonList', res)}
                 }else{
-                    message.success('没有相应评论')
+                    console.log('没有相应评论')
                     console.log(res)
                     if(data.status=='待解决'){commit('set_commentUnresolvedList', [])}
                     if(data.status=='已解决'){commit('set_commentResolvedList', [])}
@@ -291,7 +263,7 @@ const user = {
                         data.push({...s,tagEditable:false})
                     }
                 })
-                message.success('获取所有标签成功')
+                console.log('获取所有标签成功')
                 commit("set_tagList",data)
             }
         },
@@ -310,7 +282,7 @@ const user = {
                         data.push(s)
                     }
                 })
-                message.success('获取知识对应标签成功')
+                console.log('获取知识对应标签成功')
                 commit("set_currentKnowledgeTags",data)
             }
         },
@@ -338,7 +310,7 @@ const user = {
                 message.error('获取id对应知识失败')
             })
             if(res){
-                message.success('获取id对应知识成功')
+                console.log('获取id对应知识成功')
                 console.log(res)
                 commit('set_currentKnowledgeInfo', res)
                 await dispatch('getTagsByKnowledge',id)
@@ -349,12 +321,6 @@ const user = {
         // tagName
         createTags:async({ state, commit,dispatch }, data) => {//POST
             var duplication = false;
-            // for (let item of this.$store.state.tagList) {
-            //     if(item.tag_name == data.tag_name){
-            //         duplication = true;
-            //         break
-            //     }
-            // }
             console.log(state)
             state.tagList.some(s=>{
                 if(s.tag_name == data.tag_name){
@@ -369,8 +335,8 @@ const user = {
                 console.log(err)
                 message.error('添加标签失败')
                 })
-
                 message.success('添加标签成功')
+                console.log('添加标签成功')
                 console.log(res)
                 await dispatch('getAllTags')
             }

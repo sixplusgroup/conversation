@@ -120,7 +120,7 @@ export default {
     },
     jumpToReview(){
       console.log("跳转到复盘")
-      this.$refs.rev.showDrawer();
+      router.push("review")
     },
     async quit() {
       await this.$store.dispatch("logout");

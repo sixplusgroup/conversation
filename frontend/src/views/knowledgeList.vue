@@ -32,12 +32,11 @@
     </div>
 <!-- 编辑和添加 -->
     <div class="editAndAdd">
-      <span style="padding-top:3px;width:17%;height:28px">关键词提示</span>
-      <span style="padding-top:3px;width:17%;height:28px">搜索结果：共找到 {{knowledgeList.length}} 条知识</span>
+      <div style="padding-top:3px;width:17%;height:28px">搜索结果：共找到 {{knowledgeList.length}} 条知识</div>
       <a-button style="margin-right:15px;width:13%;height:28px" type="primary" @click="add" v-if=userIsMarket>
           <a-icon type="plus" />添加新知识
       </a-button>
-      
+      <div v-if=userIsMarket style="padding-top:3px;width:70%;height:28px;text-align: left">可添加关键词：{{this.key}}</div>
       <!-- <a-divider type="vertical"></a-divider> -->
     </div>
 <!-- 搜索结果 -->
@@ -114,10 +113,11 @@ export default {
   async mounted() {
     await this.getAllTags();
     await this.getKnowledgeList();
+    await this.getKeywords();
   },
   
   computed: {
-    ...mapGetters(["knowledgeList", "knowledgeListLoading","knowledgeTotalNum","userIsMarket","tagList","userIsManager","userInfo"]),
+    ...mapGetters(["knowledgeList", "knowledgeListLoading","knowledgeTotalNum","userIsMarket","tagList","userIsManager","userInfo","key"]),
     filteredTags() {
       return this.$store.getters.tagList.filter(o => !this.searchInfo.tags.includes(o));
     },
@@ -128,6 +128,7 @@ export default {
       "getKnowledgeList",
       "getAllTags",
       "searchKnowledge",
+      "getKeywords",
     ]),
     
 // 添加知识
@@ -192,8 +193,8 @@ export default {
     }
   }
   .editAndAdd{
-    // display: flex;
-    // flex-direction: row-reverse;
+    display: flex;
+    flex-direction: row-reverse;
     margin-top: 15px;
   }
   .search-result {

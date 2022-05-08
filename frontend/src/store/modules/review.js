@@ -1,6 +1,8 @@
 import {
   loginReviewAPI,
-  getrecommendReviewListAPI,
+  getAllStaffAPI,
+  getAllCustomerAPI,
+  getRecommendReviewListAPI,
   searchReviewAPI,
   getReviewDetailAPI,
 } from '@/api/review'
@@ -13,19 +15,31 @@ import {
 
 const review = {
   state: {
-      reviewList:[],
+      //pid,cid,sentigraph,totalnum
+      reviewList:[], 
       reviewListLoading: false,
       chatlog:[],
-      chatlogLoading:false,
+      chatlogLoading:false, //userType,time,content
+      sentiGraph:[],
+      sentiGraphLoading:false, //userType,time,emoRate
+      reviewDetail:{},
       currentReviewId:1,
-      reviewPageParam:{
+      currentPid:0,
+      currentCid:0,
+      totalNumReviewRecommend:0,
+      pageNumReviewRecommend:1,
+      totalNumReviewSearch:0,
+      pageNumReviewSearch:1,
+      recommendPageParam:{
         pageNo:1,
-        pageSize:4,
+        pageSize:3,
       },
       historyPageParam:{
         pageNo:1,
-        pageSize:4,
-      }
+        pageSize:3,
+      },
+      staff:[],
+      customer:[],
   },
   mutations: {
       set_reviewList: function(state, data) {
@@ -40,9 +54,52 @@ const review = {
       set_chatlogLoading: function(state, data) {
         state.chatlogLoading = data
       },
+      set_sentiGraph: function(state, data) {
+        state.sentiGraph = data
+      },
+      set_sentiGraphLoading: function(state, data) {
+        state.sentiGraphLoading = data
+      },
+      set_reviewDetail: function(state, data) {
+        state.reviewDetail = {
+          ...data
+        }
+      },
       set_currentReviewId: function(state, data) {
         state.currentReviewId = data
-    },
+      },
+      set_currentPid: function(state, data) {
+        state.currentPid = data
+      },
+      set_currentCid: function(state, data) {
+        state.currentCid = data
+      },
+      set_totalNumReviewRecommend: function(state, data) {
+        state.totalNumReviewRecommend = data
+      },
+      set_pageNumReviewRecommend:function(state, data) {
+        state.pageNumReviewRecommend = data
+      },
+      set_totalNumReviewSearch: function(state, data) {
+        state.totalNumReviewSearch = data
+      },
+      set_pageNumReviewSearch: function(state, data) {
+        state.pageNumReviewSearch = data
+      },
+      set_recommendPageParam:function(state,data){
+        state.pageNo = data,
+        state.pageSize = 3
+      },
+      set_historyPageParam:function(state,data){
+        state.pageNo = data,
+        state.pageSize = 3
+      },
+      set_staff: function(state, data) {
+        state.staff = data
+      },
+      set_customer: function(state, data) {
+        state.customer = data
+      },
   },
   actions: {
       loginReview: async({ state, commit },data) => {
@@ -52,36 +109,57 @@ const review = {
               message.error('登录复盘页面失败')
           })
           console.log('跳转到复盘页面 :')
-          if(res){
-
-          }
+          router.push('/review')
+      },
+      getAllStaff: async({state,commit,dispatch})=>{
+        const res = await getAllStaffAPI().catch(err=>{
+          console.log('获取所有客服失败')
+          console.log(err)
+          console.log('获取所有客服失败')
+        })
+        if(res){
+          console.log('获取所有客服成功')
+          console.log(res)
+          commit('set_staff',res)
+        }
+      },
+      getAllCustomer: async({state,commit,dispatch},data)=>{
+        const res = await getAllCustomerAPI(data).catch(err=>{
+          console.log('获取所有用户失败')
+          console.log(err)
+          console.log('获取所有用户失败')
+        })
+        if(res){
+          console.log('获取所有用户成功')
+          console.log(res)
+          commit('set_customer',res)
+        }
       },
       // 
-      getrecommendReviewList:async({ state, commit,dispatch }) => {
-          // const res = await getrecommendReviewListAPI().catch(err => {
-          //     console.log('获取复盘推荐列表失败')
-          //     console.log(err)
-          //     message.error('获取复盘推荐列表失败')
-          // })
-          const res=[
-            {rid:1,pid:1,uid:1,startTime:"2022-04-12 11:20:22",endTime:"2022-06-12 11:20:22",rate:5.33},
-            {rid:2,pid:2,uid:2,startTime:"2022-04-12 11:20:22",endTime:"2022-06-12 11:20:22",rate:5.33},
-            {rid:3,pid:3,uid:3,startTime:"2022-04-12 11:20:22",endTime:"2022-06-12 11:20:22",rate:5.33},
-            {rid:4,pid:4,uid:4,startTime:"2022-04-12 11:20:22",endTime:"2022-06-12 11:20:22",rate:5.33},
-            {rid:5,pid:5,uid:5,startTime:"2022-04-12 11:20:22",endTime:"2022-06-12 11:20:22",rate:5.33},
-            {rid:6,pid:6,uid:6,startTime:"2022-04-12 11:20:22",endTime:"2022-06-12 11:20:22",rate:5.33},
-          ]
+      getRecommendReviewList:async({ state, commit,dispatch },recommendPageParam) => {
+          const res = await getRecommendReviewListAPI(recommendPageParam).catch(err => {
+              console.log('获取复盘推荐列表失败')
+              console.log(err)
+              message.error('获取复盘推荐列表失败')
+          })
           console.log('获取到复盘推荐列表 :')
           if(res){
             message.success('复盘推荐列表获取成功')
             console.log(res)
-            commit('set_reviewList',res)
+            commit('set_reviewList',res.list)
+            commit('set_totalNumReviewRecommend',res.totalNum+1)
+            // commit('set_pageNumReviewRecommend',Math.ceil((res.totalNum+1)/3))
             commit('set_reviewListLoading',false)
+            console.log("loading变成false")
           }else{
             message.success('复盘空推荐列表获取成功')
             console.log(res)
             commit('set_reviewList',[])
+            commit('set_totalNumReviewRecommend',0)
+            // commit('set_pageNumReviewRecommend',0)
             commit('set_reviewListLoading',false)
+            console.log("loading变成false")
+
           }
       },
       // 
@@ -95,12 +173,16 @@ const review = {
           if(res){
             message.success('复盘查找列表获取成功')
             console.log(res)
-            commit('set_reviewList',res)
+            commit('set_reviewList',res.list)
+            commit('set_totalNumReviewSearch',res.totalNum+1)
+            // commit('set_pageNumReviewSearch',Math.ceil((res.totalNum+1)/3))
             commit('set_reviewListLoading',false)
           }else{
             message.success('复盘空查找列表获取成功')
             console.log(res)
             commit('set_reviewList',[])
+            commit('set_totalNumReviewSearch',0)
+            // commit('set_pageNumReviewSearch',0)
             commit('set_reviewListLoading',false)
           }
       },
@@ -114,8 +196,7 @@ const review = {
         if(res){
           message.success('复盘详细信息获取成功')
           console.log(res)
-          commit('set_chatlog',res)
-          commit('set_chatlogLoading',false)
+          commit('set_reviewDetail',res)
         }
     },
       

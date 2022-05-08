@@ -33,7 +33,7 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
-
+import {    message} from 'ant-design-vue'
 export default {
   name:"knowledgeShow",
   data() {
@@ -82,13 +82,14 @@ export default {
         content: this.commentText,
         responserId:this.userInfo.userId,
         type:"使用人员反馈",
-      });
-      console.log(this.knowledgeId)
-      console.log(this.commentText)
-      this.submitting = false;
-      this.modalVisible = false;
-      this.commentText='';
-
+      }).then(()=>{
+        console.log(this.knowledgeId)
+        console.log(this.commentText)
+        this.submitting = false;
+        this.modalVisible = false;
+        this.commentText='';
+        message.success('知识评价成功')
+      })
     },
   }
 };

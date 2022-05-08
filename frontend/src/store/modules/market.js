@@ -98,6 +98,7 @@ const market = {
             await dispatch('getKnowledgeList')
             await dispatch('getCommentListByStatus','待解决')
             await dispatch('getCommentListByStatus','已解决')
+            await dispatch('getAuditKnowledgePage')
         },
         // commentId
         abandonComment:async({ state, commit ,dispatch}, commentId) => {
@@ -106,12 +107,10 @@ const market = {
                 console.log(err)
                 message.error('废弃评论失败')
             })
-            if(res){
-                message.success('废弃评论成功')
-                console.log(res)
-                await dispatch('getCommentListByStatus','待解决',state.marketCommentListParams)
-                await dispatch('getCommentListByStatus','废弃',state.marketCommentListParams)
-            }
+            message.success('废弃评论成功')
+            console.log(res)
+            await dispatch('getCommentListByStatus','待解决')
+            await dispatch('getCommentListByStatus','废弃')
         },
         // String status
         getCommentListByStatus: async ({
@@ -121,7 +120,7 @@ const market = {
             console.log("获取评论列表")
             getCommentListByStatusAPI(data).then(res => {
                 if (res) {
-                    message.success('采编人员获取修改建议成功')
+                    console.log('采编人员获取修改建议成功')
 
                     //！important 好好检查自己传进来的数据是什么，下面的处理函数要什么，不要复制粘贴写代码
 
@@ -130,7 +129,7 @@ const market = {
                     if(data=='废弃'){commit('set_commentAbandonListMarket', res)}
                     
                 }else{
-                    message.success('没有相应评论')
+                    console.log('没有相应评论')
                     console.log(res)
                     if(data=='待解决'){commit('set_commentUnresolvedListMarket', [])}
                     if(data=='已解决'){commit('set_commentResolvedListMarket', [])}

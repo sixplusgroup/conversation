@@ -3,15 +3,19 @@
     <div class="QA-content" @touchstart="toShowMaskInfo=false" ref="xwBody">
       <div class="QA-chat-wrap">
         <ul>
-          <li v-for="messageList in records" :key="messageList.type">
-            <div v-if="messageList.type==1">
+          <li v-for="messageList in this.reviewDetail.sentigraph" :key="messageList.index">
+            <div v-if="messageList.waiterSend">
               <div class="xw-chat-time">{{ messageList.time }}</div>
               <div class="QA-chat-servicer">
                 <div class="QA-servicer-avantar-wrap">
                   <img src="@/assets/favicon.svg" class="QA-servicer-avantar">
                 </div>
-                <div class="QA-chat-msg">
+                <div class="QA-chat-msg" style="position: relative">
                   <span v-html="replaceFace(messageList.content)"></span>
+                  <div class="QA-chat-emoji">
+                    <a-icon v-if="messageList.emoRate > 0" style="fontSize:24px;position:absolute;top: calc(50% - 12px); left:calc(100% + 10px)" type="smile" theme="twoTone" twoToneColor="#52c41a" class="QA-chat-smile"/>
+                    <a-icon v-if="messageList.emoRate < 0" style="fontSize:24px;position:absolute;top: calc(50% - 12px); left:calc(100% + 10px)" type="frown" theme="twoTone" twoToneColor="#ff0052" class="QA-chat-frown"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -22,8 +26,12 @@
                 <div class="QA-customer-avantar-wrap">
                   <img src='https://software3.oss-cn-beijing.aliyuncs.com/2020-06-28/1593351539438-a3b864b0dfe84abaa0.jpeg' class="QA-customer-avantar">
                 </div>
-                <div class="QA-chat-msg" style="display:inline-block">
+                <div class="QA-chat-msg" style="position: relative">
                   <span v-html="replaceFace(messageList.content)"></span>
+                  <div class="QA-chat-emoji">
+                    <a-icon v-if="messageList.emoRate > 0" style="fontSize:24px;position:absolute;top: calc(50% - 12px); right:calc(100% + 10px)" type="smile" theme="twoTone" twoToneColor="#52c41a" class="QA-chat-smile"/>
+                    <a-icon v-if="messageList.emoRate < 0" style="fontSize:24px;position:absolute;top: calc(50% - 12px); right:calc(100% + 10px)" type="frown" theme="twoTone" twoToneColor="#ff0052" class="QA-chat-frown"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -38,12 +46,12 @@
 //
 import {mapActions, mapGetters, mapMutations} from 'vuex'
 export default {
+  name:"reviewChatlog",
   data () {
     return {
       comment: {},
       showMoreOpratin: false,
       toShowMaskInfo: false,
-      testContents: ['这是一个回答', '这个问题还没遇到过', '正在查询'],
       content: '',
       // 聊天记录
       records: [{
@@ -76,8 +84,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'answer',
-      'DialogueItemShow'
+      'reviewDetail',
     ])
   },
   methods: {
@@ -165,8 +172,8 @@ export default {
 .QASystem {
   display: flex;
   flex-direction: column;
-  width: 90%;
-  margin-left: 5%;
+  width: 42%;
+  margin-left: 55%;
   height: 100%;
 }
 
@@ -175,175 +182,6 @@ export default {
   position: relative;
   overflow: auto;
   transition: height .8s;
-}
-
-.animated {
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-}
-
-.animated.bounceIn,
-.animated.bounceOut {
-  -webkit-animation-duration: .75s;
-  animation-duration: .75s;
-}
-
-@-webkit-keyframes bounceInDown {
-  from, 60%, 75%, 90%, to {
-    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-  }
-
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -3000px, 0);
-    transform: translate3d(0, -3000px, 0);
-  }
-
-  60% {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 25px, 0);
-    transform: translate3d(0, 25px, 0);
-  }
-
-  75% {
-    -webkit-transform: translate3d(0, -10px, 0);
-    transform: translate3d(0, -10px, 0);
-  }
-
-  90% {
-    -webkit-transform: translate3d(0, 5px, 0);
-    transform: translate3d(0, 5px, 0);
-  }
-
-  to {
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-@keyframes bounceInLeft {
-  from, 60%, 75%, 90%, to {
-    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-  }
-
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(-3000px, 0, 0);
-    transform: translate3d(-3000px, 0, 0);
-  }
-
-  60% {
-    opacity: 1;
-    -webkit-transform: translate3d(25px, 0, 0);
-    transform: translate3d(25px, 0, 0);
-  }
-
-  75% {
-    -webkit-transform: translate3d(-10px, 0, 0);
-    transform: translate3d(-10px, 0, 0);
-  }
-
-  90% {
-    -webkit-transform: translate3d(5px, 0, 0);
-    transform: translate3d(5px, 0, 0);
-  }
-
-  to {
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-.bounceInLeft {
-  -webkit-animation-name: bounceInLeft;
-  animation-name: bounceInLeft;
-}
-
-#backButton {
-  background-color: Transparent;
-  border-style: none;
-  outline: none;
-  float:right;
-  margin-top: 8px;
-  font-size: 20px;
-  color: #fff;
-}
-
-@-webkit-keyframes bounceInRight {
-  from, 60%, 75%, 90%, to {
-    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-  }
-
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(3000px, 0, 0);
-    transform: translate3d(3000px, 0, 0);
-  }
-
-  60% {
-    opacity: 1;
-    -webkit-transform: translate3d(-25px, 0, 0);
-    transform: translate3d(-25px, 0, 0);
-  }
-
-  75% {
-    -webkit-transform: translate3d(10px, 0, 0);
-    transform: translate3d(10px, 0, 0);
-  }
-
-  90% {
-    -webkit-transform: translate3d(-5px, 0, 0);
-    transform: translate3d(-5px, 0, 0);
-  }
-
-  to {
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-.bounceInRight {
-  -webkit-animation-name: bounceInRight;
-  animation-name: bounceInRight;
-}
-
-@keyframes bounceInUp {
-  from, 60%, 75%, 90%, to {
-    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-  }
-
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 3000px, 0);
-    transform: translate3d(0, 3000px, 0);
-  }
-
-  60% {
-    opacity: 1;
-    -webkit-transform: translate3d(0, -20px, 0);
-    transform: translate3d(0, -20px, 0);
-  }
-
-  75% {
-    -webkit-transform: translate3d(0, 10px, 0);
-    transform: translate3d(0, 10px, 0);
-  }
-
-  90% {
-    -webkit-transform: translate3d(0, -5px, 0);
-    transform: translate3d(0, -5px, 0);
-  }
-
-  to {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
 }
 
 html,body,a,button,input,textarea,img,ul,li,p,dl,dd,h1,h2,h3,h4,h5,h6{
@@ -702,15 +540,6 @@ ul{
   height: 50px;
   border-radius: 50%;
   margin-top: 20px;
-}
-
-.QA-header-info p{
-  height: 110px;
-  padding:0 16px;
-  line-height: 1.6rem;
-  word-wrap: break-word;
-  text-align: left;
-  overflow: auto;
 }
 
 .QA-chat-msg span img{

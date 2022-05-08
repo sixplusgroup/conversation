@@ -19,7 +19,7 @@
           <a-input
             type="textarea"
             :rows="4"
-            :placeholder="this.key"
+            placeholder="请填写知识内容"
             v-decorator="['content', { rules: [{ required: true,message: '请填写知识内容' }] }]"
           ></a-input>
         </a-form-item>
@@ -55,18 +55,16 @@ export default {
 
   },
   computed: {
-    ...mapGetters(["key"]),
+    ...mapGetters([]),
 
   },
   methods: {
     ...mapActions([
       "createKnowledge",
-      "getKeywords"
     ]),
 // 添加新知识
     add() {
       this.addKnowledge_Visible = true;
-      this.getKeywords();
     },
     beforeCreate() {
       // 表单名默认为“form”

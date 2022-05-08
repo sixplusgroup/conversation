@@ -53,7 +53,7 @@
                     rules: [{ required: true, message: '请输入知识内容' }],
                   },
                 ]"
-                :rows="6"
+                :rows="14"
                 placeholder="请输入知识内容"
               />
             </a-form-item>

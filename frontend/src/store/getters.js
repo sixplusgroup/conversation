@@ -39,8 +39,20 @@ const getters = {
   reviewListLoading: state => state.review.reviewListLoading,
   chatlog: state => state.review.chatlog,
   chatlogLoading: state => state.review.chatlogLoading,
+  sentiGraph: state => state.review.chatlog,
+  sentiGraphLoading: state => state.review.chatlogLoading,
+  reviewDetail: state => state.review.reviewDetail,
   currentReviewId: state => state.review.currentReviewId,
-
+  currentPid: state => state.review.currentPid,
+  currentCid: state => state.review.currentCid,
+  totalNumReviewRecommend: state => state.review.totalNumReviewRecommend,
+  pageNumReviewRecommend: state => state.review.pageNumReviewRecommend,
+  totalNumReviewSearch: state => state.review.totalNumReviewSearch,
+  pageNumReviewSearch: state => state.review.pageNumReviewSearch,
+  recommendPageParam: state => state.review.recommendPageParam,
+  historyPageParam: state => state.review.historyPageParam,
+  staff: state => state.review.staff,
+  customer: state => state.review.customer,
 }
 
 export default getters
